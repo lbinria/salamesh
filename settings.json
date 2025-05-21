@@ -1,5 +1,5 @@
 {
 	"modules": [
-		
+		"../module_a_test"
 	]
 }

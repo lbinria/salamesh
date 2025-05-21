@@ -1,12 +1,21 @@
 #include "my_app.h"
+#include "settings_manager.h"
 
 // TODO call load model here in init function
 
 void MyApp::init() {
 	std::cout << "INIT" << std::endl;
+
+	Settings settings;
+	settings.load("../settings.json");
+	for (auto m : settings.modules) {
+		std::cout << "module: " << m << std::endl;
+	}
+	
+	// load_settings(settings);
+
+
 	CellFacetAttribute<float> cell_highlights(hex, 0.f);
-	// Triangles tri;
-	// model = std::make_unique<Model>(tri, mesh->m, cell_highlights);
 
 	// Engines loading...
 	lua_engine.init();

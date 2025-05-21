@@ -345,8 +345,8 @@ void App::run()
 	glViewport(0, 0, SCR_WIDTH, SCR_HEIGHT);
 	glfwSetFramebufferSizeCallback(window, framebuffer_size_callback);  
 
-	load_model("/home/me/catorus_hex.geogram");
-	// load_model("/home/tex/Documents/Models/catorus_hex_attr.geogram");
+	// load_model("/home/me/catorus_hex.geogram");
+	load_model("/home/tex/Documents/Models/catorus_hex_attr.geogram");
 	// load_model("/home/tex/Documents/Models/joint.geogram");
 
 	std::chrono::steady_clock::time_point end = std::chrono::steady_clock::now();
@@ -699,15 +699,15 @@ long App::pick(double x, double y) {
 		pixel[1] * 256 +
 		pixel[2] * 256 * 256;
 
-	std::cout << 
-		static_cast<int>(pixel[0]) << "," << 
-		static_cast<int>(pixel[1]) << "," << 
-		static_cast<int>(pixel[2]) << "," << 
-		static_cast<int>(pixel[3]) << 
-	std::endl;
+	// std::cout << 
+	// 	static_cast<int>(pixel[0]) << "," << 
+	// 	static_cast<int>(pixel[1]) << "," << 
+	// 	static_cast<int>(pixel[2]) << "," << 
+	// 	static_cast<int>(pixel[3]) << 
+	// std::endl;
 
-	std::cout << "pick id: " << pickID << std::endl;
-	std::cout << "---" << std::endl;
+	// std::cout << "pick id: " << pickID << std::endl;
+	// std::cout << "---" << std::endl;
 	return pickID;
 }
 

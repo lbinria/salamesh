@@ -6,7 +6,7 @@
 
 struct MyApp : App {
 
-	MyApp() : App(), lua_engine(*this, st), lua_script(*this, "../script_test.lua") {}
+	MyApp() : App(), lua_engine(*this, st), lua_script(*this, "../module_a_test/script.lua") {}
 
 	int pick_edge(Volume &m, glm::vec3 p0, int c) {
 		// Search nearest edge

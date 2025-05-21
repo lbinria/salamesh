@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.10)
 
-project(OpenGLExample)
+project(salamesh)
 
 # Find the GLFW library
 find_package(glfw3 REQUIRED)
@@ -60,7 +60,7 @@ set(JSON_SOURCES
 )
 
 # Add the executable
-add_executable(OpenGLExample 
+add_executable(salamesh 
   main.cpp 
   app.cpp app.h
   my_app.cpp my_app.h
@@ -73,20 +73,21 @@ add_executable(OpenGLExample
   tool.h hex_collapse_tool.h hex_collapse_tool.cpp debug_tool.h debug_tool.cpp
   lua_console.h lua_console.cpp
   lua_engine.h lua_engine.cpp
+  settings_manager.h
   stb_include.cpp 
   glad.c 
   ${SOL_SOURCES}
   ${IMGUI_SOURCES}
   ${JSON_SOURCES}
 )
-# add_executable(OpenGLExample main.cpp glad.c)
+# add_executable(salamesh main.cpp glad.c)
 
-target_include_directories(OpenGLExample PRIVATE include)
-target_include_directories(OpenGLExample PRIVATE include/imgui)
+target_include_directories(salamesh PRIVATE include)
+target_include_directories(salamesh PRIVATE include/imgui)
 
-target_include_directories(OpenGLExample PRIVATE ${LUA_INCLUDE_DIR})
+target_include_directories(salamesh PRIVATE ${LUA_INCLUDE_DIR})
 
 # Link the libraries
-target_link_libraries(OpenGLExample PRIVATE glfw)
-target_link_libraries(OpenGLExample PRIVATE ImGuiFileDialog ${CMAKE_DL_LIBS} ultimaille m $<$<BOOL:${OpenMP_CXX_FOUND}>:OpenMP::OpenMP_CXX>)
-target_link_libraries(OpenGLExample PRIVATE ${LUA_LIBRARIES})
+target_link_libraries(salamesh PRIVATE glfw)
+target_link_libraries(salamesh PRIVATE ImGuiFileDialog ${CMAKE_DL_LIBS} ultimaille m $<$<BOOL:${OpenMP_CXX_FOUND}>:OpenMP::OpenMP_CXX>)
+target_link_libraries(salamesh PRIVATE ${LUA_LIBRARIES})
