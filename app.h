@@ -55,7 +55,15 @@ struct App {
     const float FAR_PLANE = 100.f;
     const float NEAR_PLANE = 0.1f;
 
-    App() : SCR_WIDTH(1024), SCR_HEIGHT(768), leftMouse(false), rightMouse(false), mousePos(0,0), lastMousePos(0,0), scrollDelta(0,0) {}
+    App() : 
+        SCR_WIDTH(1024), 
+        SCR_HEIGHT(768), 
+        leftMouse(false), 
+        rightMouse(false), 
+        mousePos(0,0), 
+        lastMousePos(0,0), 
+        scrollDelta(0,0)
+    {}
 
 
     std::unique_ptr<ArcBallCamera> camera;

@@ -58,58 +58,6 @@ static void init_lua_state(sol::state &lua, App &app) {
 
 }
 
-struct LuaScript {
-
-	LuaScript(App &app, const std::string& script) : app(app) {
-
-		init_lua_state(lua, app);
-
-		// TODO load / bind symbols from C++ shared lib associated to the script
-
-		try {
-			lua.script_file(script);
-		} catch (const sol::error& e) {
-			std::cerr << "Error loading script: " << e.what() << std::endl;
-		}
-
-		// Get the function
-		init_func = lua.get<sol::function>("init");
-		key_event_func = lua.get<sol::function>("key_event");
-		draw_gui_func = lua.get<sol::function>("draw_gui");
-
-		// Check if function exists
-		has_init = init_func.valid();
-		has_key_event = key_event_func.valid();
-		has_draw_gui = draw_gui_func.valid();
-
-	}
-
-	inline void init() {
-		if (has_init)
-			init_func();
-	}
-
-	inline void key_event(int key, int scancode, int action, int mods)	{
-		if (has_key_event)
-			key_event_func(key, scancode, action, mods);
-	}
-
-	inline void draw_gui() {
-		if (has_draw_gui)
-			draw_gui_func();
-	}
-
-	private:
-	App &app;
-
-	sol::state lua;
-	sol::function init_func;
-	sol::function key_event_func;
-	sol::function draw_gui_func;
-
-	bool has_init, has_key_event, has_draw_gui;
-};
-
 struct LuaEngine {
 
 	// TODO must have access to core function of app to be able to expose them
