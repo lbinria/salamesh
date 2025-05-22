@@ -140,6 +140,19 @@ struct App : public IApp {
     void reset_zoom() final override;
     void look_at_center() final override;
 
+    int getTest() final override {
+        std::cout << "getTest: " << test << std::endl;
+        return test;
+    }
+    void setTest(int value) final override {
+        std::cout << "setTest: " << value << std::endl;
+        test = value;
+    }
+
+    void printTest() final override {
+        std::cout << test << std::endl;
+    }
+
     // To override lifecycle functions
     virtual void init() = 0;
     virtual void update(float dt) = 0;
@@ -177,5 +190,8 @@ struct App : public IApp {
     // TODO must merge tools and scripts
     std::vector<std::unique_ptr<Tool>> tools;
     std::vector<std::unique_ptr<LuaScript>> scripts;
+
+    private:
+    int test = 0;
 
 };
