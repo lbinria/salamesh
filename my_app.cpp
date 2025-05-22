@@ -6,13 +6,8 @@
 void MyApp::init() {
 	std::cout << "INIT" << std::endl;
 
-	Settings settings;
-	settings.load("../settings.json");
-	for (auto m : settings.modules) {
-		std::cout << "module: " << m << std::endl;
-	}
+
 	
-	// load_settings(settings);
 
 
 	CellFacetAttribute<float> cell_highlights(hex, 0.f);
@@ -20,7 +15,7 @@ void MyApp::init() {
 	// Engines loading...
 	lua_engine.init();
 
-	lua_script.init();
+	// lua_script.init();
 
 
 	// Components loading...
@@ -28,6 +23,17 @@ void MyApp::init() {
 	lua_console = std::make_unique<LuaConsole>(lua_engine);
 
 	tools.push_back(std::make_unique<HexCollapseTool>(hex, *hex_renderer, st));
+
+	// Load modules
+	Settings settings;
+	settings.load("../settings.json");
+	for (auto m : settings.modules) {
+		std::cout << "load module: " << m << std::endl;
+		std::string script_path = m + "/script.lua";
+		auto script = std::make_unique<LuaScript>(*this, script_path);
+		script->init();
+		scripts.push_back(std::move(script));
+	}
 
 }
 
@@ -257,10 +263,15 @@ void MyApp::draw_gui() {
 	for (auto &tool : tools) {
 		tool->draw_gui();
 	}
-	// hex_collapse_tool->draw_gui();
-	lua_console->draw_gui();
 
-	lua_script.draw_gui();
+	for (auto &script : scripts) {
+		script->draw_gui();
+	}
+
+	// hex_collapse_tool->draw_gui();
+	// lua_script.draw_gui();
+
+	lua_console->draw_gui();
 
 }
 
@@ -299,9 +310,13 @@ void MyApp::key_event(int key, int scancode, int action, int mods) {
 	for (auto &tool : tools) {
 		tool->key_event(key, scancode, action, mods);
 	}
-	// hex_collapse_tool->key_event(key, scancode, action, mods);
 
-	lua_script.key_event(key, scancode, action, mods);
+	for (auto &script : scripts) {
+		script->key_event(key, scancode, action, mods);
+	}
+
+	// hex_collapse_tool->key_event(key, scancode, action, mods);
+	// lua_script.key_event(key, scancode, action, mods);
 }
 
 void MyApp::mouse_scroll(double xoffset, double yoffset) {

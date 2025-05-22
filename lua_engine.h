@@ -2,7 +2,8 @@
 
 #include <sol/sol.hpp>
 #include "states.h"
-#include "app.h"
+// #include "app.h"
+#include "app_interface.h"
 #include <imgui.h>
 
 // TODO complete bindings
@@ -10,7 +11,7 @@
 // - I look at SWIG quickly and it seems to be a bit heavy for what we need
 // - Don't want to create another tool to do that, that will parse code, etc. too heavy, too complicated
 // After doing it simply, we'll could think about doing better automated mecanisms
-static void init_lua_state(sol::state &lua, App &app) {
+static void init_lua_state(sol::state &lua, IApp &app) {
 	lua.open_libraries(sol::lib::base);
 
 	// Imgui bindings
@@ -50,9 +51,9 @@ static void init_lua_state(sol::state &lua, App &app) {
 	auto camera_tbl = lua.create_table();
 	app_tbl["camera"] = camera_tbl;
 
-	camera_tbl.set_function("look_at", [&app = app](float x, float y, float z) {
-		app.camera->LookAt(glm::vec3(x, y, z));
-	});
+	// camera_tbl.set_function("look_at", [&app = app](float x, float y, float z) {
+	// 	app.camera->LookAt(glm::vec3(x, y, z));
+	// });
 
 
 
@@ -61,7 +62,7 @@ static void init_lua_state(sol::state &lua, App &app) {
 struct LuaEngine {
 
 	// TODO must have access to core function of app to be able to expose them
-	LuaEngine(App &app, InputState& st) : app(app), st(st) {
+	LuaEngine(IApp &app, InputState& st) : app(app), st(st) {
 		
 	}
 
@@ -95,7 +96,7 @@ struct LuaEngine {
 
 	private:
 	const std::string name = "lua_engine";
-	App &app;
+	IApp &app;
 	InputState& st;
 	sol::state lua;	
 

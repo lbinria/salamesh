@@ -3,6 +3,8 @@
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
 
+#include "app_interface.h"
+
 #include "imgui.h"
 #include "backends/imgui_impl_glfw.h"
 #include "backends/imgui_impl_opengl3.h"
@@ -30,14 +32,17 @@
 #include "arcball_camera.h"
 
 #include "tool.h"
+#include "script.h"
 
 #include <ultimaille/all.h>
+
+
 
 using namespace UM;
 
 // void mouse_callback(GLFWwindow* window, double xpos, double ypos);
 
-struct App {
+struct App : public IApp {
 
     enum Element {
         CORNERS = -1,
@@ -132,8 +137,8 @@ struct App {
 
 
     // Camera functions
-    void reset_zoom();
-    void look_at_center();
+    void reset_zoom() final override;
+    void look_at_center() final override;
 
     // To override lifecycle functions
     virtual void init() = 0;
@@ -171,6 +176,6 @@ struct App {
     
     // TODO must merge tools and scripts
     std::vector<std::unique_ptr<Tool>> tools;
-    // std::vector<std::unique_ptr<Script>> scripts;
+    std::vector<std::unique_ptr<LuaScript>> scripts;
 
 };

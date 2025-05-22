@@ -2,13 +2,15 @@
 
 #include <sol/sol.hpp>
 #include "states.h"
-#include "app.h"
+// #include "app.h"
+#include "app_interface.h"
 #include <imgui.h>
 
+// Declare app
 
 struct LuaScript {
 
-	LuaScript(App &app, const std::string& script) {
+	LuaScript(IApp &app, const std::string& script) {
 
 		load_bindings(app);
 
@@ -38,7 +40,7 @@ struct LuaScript {
 	// - I look at SWIG quickly and it seems to be a bit heavy for what we need
 	// - Don't want to create another tool to do that, that will parse code, etc. too heavy, too complicated
 	// After doing it simply, we'll could think about doing better automated mecanisms
-	void load_bindings(App &app) {
+	void load_bindings(IApp &app) {
 
 		lua.open_libraries(sol::lib::base);
 
@@ -79,9 +81,9 @@ struct LuaScript {
 		auto camera_tbl = lua.create_table();
 		app_tbl["camera"] = camera_tbl;
 
-		camera_tbl.set_function("look_at", [&app = app](float x, float y, float z) {
-			app.camera->LookAt(glm::vec3(x, y, z));
-		});
+		// camera_tbl.set_function("look_at", [&app = app](float x, float y, float z) {
+		// 	app.camera->LookAt(glm::vec3(x, y, z));
+		// });
 
 
 
