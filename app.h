@@ -120,6 +120,10 @@ struct App : public IApp {
 
     void run();
 
+    // Frame functions
+    int getWidth() final override;
+    int getHeight() final override;
+
     // Utils functions
     void load_model(const std::string& filename);
     void screenshot(const std::string& filename);
@@ -139,6 +143,9 @@ struct App : public IApp {
     // Camera functions
     void reset_zoom() final override;
     void look_at_center() final override;
+
+    // Rendering functions
+    void setLight(bool enabled) final override;
 
     int getTest() final override {
         std::cout << "getTest: " << test << std::endl;

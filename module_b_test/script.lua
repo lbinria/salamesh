@@ -7,8 +7,6 @@ function init()
 	app.test = 2;
 	app.print_test()
 
-
-
 	print(app.test)
 
 	print("END INIT")
@@ -20,22 +18,30 @@ end
 -- 		app.reset_zoom();
 -- 	end
 -- end
-local b = false
+
+local val = false
 function draw_gui()
-	if (imgui.Begin("Script B")) then
+	imgui.Begin("Script B")
 
-		imgui.Text("Hello script B !")
+	imgui.Text("Hello script B !")
 
-		imgui.Button("ok0")
-
-		
-		local a, res = imgui.Checkbox("Enable light", b)
-		b = a
-		print("Is checked: " .. tostring(b))
-
-		-- imgui.SliderFloat("slider", 0, 0, 10)
-		-- imgui.InputText("text", "my text", 100)
-		imgui.End()
+	
+	local sel, newval = imgui.Checkbox("Enable light", val)
+	if (sel) then 
+		val = newval
+		-- app.setLight(val);
 	end
+
+	-- imgui.SliderFloat("plop", 5, 0, 10)
+
+	
+	-- print("Is checked: " .. tostring(b))
+
+	-- print("hel" .. true)
+
+	-- imgui.SliderFloat("slider", 0, 0, 10)
+	-- imgui.InputText("text", "my text", 100)
+	
+	imgui.End()
 
 end

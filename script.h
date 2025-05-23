@@ -17,15 +17,16 @@ struct LuaScript {
 		// TODO load / bind symbols from C++ shared lib associated to the script
 
 		try {
-			lua.script_file(script);
+			// lua.script_file(script);
+			lua.safe_script_file(script);
 		} catch (const sol::error& e) {
 			std::cerr << "Error loading script: " << e.what() << std::endl;
 		}
 
 		// Get the function
-		init_func = lua.get<sol::function>("init");
-		key_event_func = lua.get<sol::function>("key_event");
-		draw_gui_func = lua.get<sol::function>("draw_gui");
+		init_func = lua.get<sol::protected_function>("init");
+		key_event_func = lua.get<sol::protected_function>("key_event");
+		draw_gui_func = lua.get<sol::protected_function>("draw_gui");
 
 		// Check if function exists
 		has_init = init_func.valid();
@@ -67,52 +68,34 @@ struct LuaScript {
 			return ImGui::InputText(label, buf, buf_size);
 		});
 
-		// auto pf = imgui.set_function("Checkbox", [](const char* label, bool v) {
-		// 	bool x = true;
-		// 	ImGui::Checkbox(label, &x);
-		// });
-
 		auto pf = imgui.set_function("Checkbox", [](const char* label, sol::object v_lua, sol::this_state s) {
 			sol::state_view lua(s);
+
 			if (v_lua.is<bool>()) {
-				bool v = v_lua.as<bool>();
-				bool res = ImGui::Checkbox(label, &v);
-				return sol::make_object(lua, std::make_tuple(v, res));
+				bool val = v_lua.as<bool>();
+				bool sel = ImGui::Checkbox(label, &val);
+				return sol::make_object(lua, std::make_tuple(sel, val));
+			} else {
+				return sol::make_object(lua, sol::lua_nil);
+			}
+
+		});
+
+		imgui.set_function("SliderFloat", [](const char* label, sol::object v_lua, float v_min, float v_max, sol::this_state s) {
+
+			sol::state_view lua(s);
+
+			if (v_lua.is<bool>()) {
+				float val = v_lua.as<float>();
+				bool sel = ImGui::SliderFloat(label, &val, v_min, v_max);
+				return sol::make_object(lua, std::make_tuple(sel, val));
 			} else {
 				return sol::make_object(lua, sol::lua_nil);
 			}
 		});
 
-
-		
-		// auto pf = lua.set_function("Checkbox", [](const char* label, bool* v) -> bool {
-		// 	if (v == nullptr) {
-		// 		throw std::invalid_argument("Null pointer passed");
-		// 	}
-		// 	return ImGui::Checkbox(label, v);
-		// });
-		
-		// pf.set_exception_handler([](lua_State* L, sol::optional<const std::exception&> maybe_exception, sol::string_view description) -> int {
-		// 	return sol::stack::push(L, "Error: " + std::string(maybe_exception.value().what()));
-
-		// });
-
-		imgui.set_function("SliderFloat", [](const char* label, float* v, float v_min, float v_max) {
-			return ImGui::SliderFloat(label, v, v_min, v_max);
-		});
-
 		lua["imgui"] = imgui;
 
-		// imgui.set_function("Checkbox", ImGui::Checkbox);
-
-		// App bindings
-		// auto app_tbl = lua.create_table();
-		// lua["app"] = app_tbl;
-		
-		// app_tbl["test"] = sol::property(
-		// 	[&app = app]() { return app.getTest(); },
-		// 	[&app = app](int v) { app.setTest(v); }
-		// );
 
 		lua["app"] = &app;
 		sol::usertype<IApp> app_tbl = lua.new_usertype<IApp>("IApp");
@@ -131,6 +114,10 @@ struct LuaScript {
 
 		app_tbl.set_function("look_at_center", [&app = app]() {
 			app.look_at_center();
+		});
+
+		app_tbl.set_function("setLight", [&app = app](bool b) {
+			app.setLight(b);
 		});
 
 		// Camera bindings
@@ -155,18 +142,43 @@ struct LuaScript {
 			key_event_func(key, scancode, action, mods);
 	}
 
-	inline void draw_gui() {
-		if (has_draw_gui) {
-			auto call = draw_gui_func();
+	inline bool draw_gui() {
+		if (!has_draw_gui)
+			return true;
+
+
+		try {
+			auto result = draw_gui_func();
+
+			if (!result.valid()) {
+				sol::error err = result;
+				std::cerr << "Error:" << err.what() << ". Note that this may cause the app to crash." << std::endl;
+				status = SCRIPT_STATUS_FAILED;
+				return false;
+			}
+		} catch (const sol::error &err) {
+			std::cerr << "Error: " << err.what() << std::endl;
+			return false;
 		}
+		
+		return true;
 	}
+
+	enum Status {
+		SCRIPT_STATUS_OK,
+		SCRIPT_STATUS_FAILED
+	};
+
+	Status status = SCRIPT_STATUS_OK;
 
 	private:
 
 	sol::state lua;
-	sol::function init_func;
-	sol::function key_event_func;
-	sol::function draw_gui_func;
+	sol::protected_function init_func;
+	sol::protected_function key_event_func;
+	sol::protected_function draw_gui_func;
 
 	bool has_init, has_key_event, has_draw_gui;
+
+
 };

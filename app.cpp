@@ -617,6 +617,13 @@ void App::run()
 	return;
 }
 
+int App::getWidth() {
+	return SCR_WIDTH;
+}
+
+int App::getHeight() {
+	return SCR_HEIGHT;
+}
 
 long App::pick_cell() {
 	pickMode = Element::CELLS;
@@ -772,6 +779,11 @@ void App::reset_zoom() {
 void App::look_at_center() {
 	// TODO add lua cmd
 	camera->LookAt(glm::vec3(0.f, 0.f, 0.f));
+}
+
+    
+void App::setLight(bool enabled) {
+	hex_renderer->setLight(enabled);
 }
 
 void App::processInput(GLFWwindow *window) {

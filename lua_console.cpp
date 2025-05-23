@@ -1,21 +1,15 @@
 #include "lua_console.h"
 #include "lua_engine.h"
 #include <imgui/imgui.h>
-// #include <imgui/imgui_stdlib.h>
 
 void LuaConsole::init() {}
 void LuaConsole::setup() {}
 void LuaConsole::cleanup() {}
 
 void LuaConsole::draw_gui() {
-	ImVec2 parent_size = ImGui::GetWindowSize();
-	ImGui::SetNextWindowSize(ImVec2(1024, 50), ImGuiCond_Always);
-	ImGui::SetNextWindowPos(ImVec2(0, 768 - 50), ImGuiCond_Always);
-
-    // Save current style
-    ImGuiStyle& style = ImGui::GetStyle();
-    // Push new window padding (0 on all sides)
-    style.WindowPadding = ImVec2(0, 0);
+	ImVec2 parent_size = ImVec2(app.getWidth(), app.getHeight());
+	ImGui::SetNextWindowSize(ImVec2(parent_size.x, app.getHeight() * .2f), ImGuiCond_Always);
+	ImGui::SetNextWindowPos(ImVec2(0, parent_size.y - app.getHeight() * .2f), ImGuiCond_Always);
 
 	ImGui::Begin(
 		"Lua console", 
@@ -26,16 +20,9 @@ void LuaConsole::draw_gui() {
 		ImGuiWindowFlags_AlwaysAutoResize
 	);
 
-	// ImVec2 windowSize = ImVec2(ImGui::GetContentRegionMax().x, 25);
+	ImGui::InputTextMultiline("##script_history", script_history, IM_ARRAYSIZE(script_history), ImVec2(app.getWidth() * .8f, app.getHeight() * .2f * .75f));
 
-	// ImVec2 windowPos = ImVec2(0, ImGui::GetContentRegionMax().y - 25);
-	// ImGui::SetWindowPos(windowPos);
-	// ImGui::SetWindowSize(windowSize);
-
-	// ImGui::InputText("##lua_input", lua_script, 512, ImGuiInputTextFlags_EnterReturnsTrue);
-
-
-	if (ImGui::InputText("##lua_input", lua_script, 1024, ImGuiInputTextFlags_EnterReturnsTrue)) {
+	if (ImGui::InputText("##script_input", lua_script, 1024, ImGuiInputTextFlags_EnterReturnsTrue)) {
 		// Check for key events
 		auto &io = ImGui::GetIO();
 	}
@@ -49,6 +36,4 @@ void LuaConsole::draw_gui() {
 	}
 
 	ImGui::End();
-
-	style.WindowPadding = ImVec2(12, 12);
 }

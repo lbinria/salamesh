@@ -5,7 +5,7 @@
 struct LuaConsole : public Tool {
 
 	// Engine injection, a component can use many engines
-	LuaConsole(LuaEngine &lua_engine) : Tool(), lua_engine(lua_engine) {
+	LuaConsole(IApp &app, LuaEngine &lua_engine) : Tool(), app(app), lua_engine(lua_engine) {
 		history.reserve(100);
 	}
 
@@ -16,7 +16,9 @@ struct LuaConsole : public Tool {
 	void draw_gui() override;
 
 	private:
+	IApp &app;
 	LuaEngine &lua_engine;
 	std::vector<std::string> history;
 	char lua_script[1024] = "";
+	char script_history[5000] = "";
 };
