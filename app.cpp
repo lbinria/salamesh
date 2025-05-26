@@ -783,7 +783,13 @@ void App::look_at_center() {
 
     
 void App::setLight(bool enabled) {
+	isLightEnabled = enabled;
 	hex_renderer->setLight(enabled);
+}
+
+void App::setClipping(bool enabled) {
+	isClippingEnabled = enabled;
+	hex_renderer->setClipping(enabled);
 }
 
 void App::processInput(GLFWwindow *window) {

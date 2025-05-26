@@ -100,6 +100,7 @@ struct App : public IApp {
     int cursor_radius = 1;
     glm::vec2 scrollDelta;
     int cull_mode = GL_BACK;
+    // TODO make private
     bool isLightEnabled = true;
     bool isClippingEnabled = false;
     float meshSize = 0.01f;
@@ -146,6 +147,8 @@ struct App : public IApp {
 
     // Rendering functions
     void setLight(bool enabled) final override;
+    void setClipping(bool enabled) final override;
+    void setCullMode(int mode) final override { cull_mode = mode; }
 
     int getTest() final override {
         std::cout << "getTest: " << test << std::endl;
@@ -159,6 +162,9 @@ struct App : public IApp {
     void printTest() final override {
         std::cout << test << std::endl;
     }
+
+    HexRenderer& getRenderer() final override { return *hex_renderer; }
+    ArcBallCamera& getCamera() final override { return *camera; }
 
     // To override lifecycle functions
     virtual void init() = 0;

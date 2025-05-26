@@ -1,10 +1,13 @@
 #pragma once 
 #define SOL_ALL_SAFETIES_ON 1
 #include <sol/sol.hpp>
+#include <optional>
+
 #include "states.h"
 // #include "app.h"
 #include "app_interface.h"
 #include <imgui.h>
+
 
 // Declare app
 
@@ -68,65 +71,120 @@ struct LuaScript {
 			return ImGui::InputText(label, buf, buf_size);
 		});
 
-		auto pf = imgui.set_function("Checkbox", [](const char* label, sol::object v_lua, sol::this_state s) {
+		auto pf = imgui.set_function("Checkbox", [](const char* label, sol::object v, sol::this_state s) -> std::optional<std::tuple<bool, bool>> {
 			sol::state_view lua(s);
 
-			if (v_lua.is<bool>()) {
-				bool val = v_lua.as<bool>();
+			if (v.is<bool>()) {
+				bool val = v.as<bool>();
 				bool sel = ImGui::Checkbox(label, &val);
-				return sol::make_object(lua, std::make_tuple(sel, val));
+				return std::make_optional(std::make_tuple(sel, val));
+
 			} else {
-				return sol::make_object(lua, sol::lua_nil);
+				return std::nullopt;
 			}
 
 		});
 
-		imgui.set_function("SliderFloat", [](const char* label, sol::object v_lua, float v_min, float v_max, sol::this_state s) {
-
+		imgui.set_function("SliderFloat", [](const char* label, sol::object v, float v_min, float v_max, sol::this_state s) -> std::optional<std::tuple<bool, float>> {
 			sol::state_view lua(s);
 
-			if (v_lua.is<bool>()) {
-				float val = v_lua.as<float>();
+			if (v.is<float>()) {
+				float val = v.as<float>();
 				bool sel = ImGui::SliderFloat(label, &val, v_min, v_max);
-				return sol::make_object(lua, std::make_tuple(sel, val));
+				return std::make_optional(std::make_tuple(sel, val));
 			} else {
-				return sol::make_object(lua, sol::lua_nil);
+				return std::nullopt;
 			}
 		});
 
 		lua["imgui"] = imgui;
 
 
+		// App bindings
 		lua["app"] = &app;
-		sol::usertype<IApp> app_tbl = lua.new_usertype<IApp>("IApp");
-		app_tbl["test"] = sol::property(
-			[&app = app]() { return app.getTest(); },
-			[&app = app](float v) { app.setTest(v); }
-		);
+		sol::usertype<IApp> app_type = lua.new_usertype<IApp>("IApp");
+		// Camera bindings
+		auto camera_tbl = lua.create_table();
+		app_type["camera"] = camera_tbl;
+		// Renderer bindings
+		auto renderer_tbl = lua.create_table();
+		app_type["renderer"] = renderer_tbl;
 
-		app_tbl.set_function("print_test", [&app = app]() {
+		camera_tbl.set_function("LookAt", [&app = app](float x, float y, float z) {
+			app.getCamera().LookAt(glm::vec3(x, y, z));
+		});
+
+		camera_tbl.set_function("SetFov", [&app = app](float fov) {
+			app.getCamera().SetFov(fov);
+		});
+
+		camera_tbl.set_function("MoveRight", [&app = app](float speed) {
+			app.getCamera().MoveRight(speed);
+		});
+
+		camera_tbl.set_function("MoveUp", [&app = app](float speed) {
+			app.getCamera().MoveUp(speed);
+		});
+
+		camera_tbl.set_function("MoveForward", [&app = app](float speed) {
+			app.getCamera().MoveForward(speed);
+		});
+
+		renderer_tbl.set_function("setLight", [&app = app](bool enabled) {
+			app.getRenderer().setLight(enabled);
+		});
+
+		renderer_tbl.set_function("setClipping", [&app = app](bool enabled) {
+			app.getRenderer().setClipping(enabled);
+		});
+
+		renderer_tbl.set_function("setMeshSize", [&app = app](float val) {
+			app.getRenderer().setMeshSize(val);
+		});
+
+		renderer_tbl.set_function("setMeshShrink", [&app = app](float val) {
+			app.getRenderer().setMeshShrink(val);
+		});
+
+		// app_type["test"] = sol::property(
+		// 	[&app = app]() { return app.getTest(); },
+		// 	[&app = app](float v) { app.setTest(v); }
+		// );
+
+		// app_type["renderer"] = sol::readonly_property(
+		// 	[&app = app]() { return app.getRenderer2(); }
+		// );
+
+
+		// renderer_tbl.set_function("print_test", [&app = app]() {
+		// });
+
+		app_type.set_function("print_test", [&app = app]() {
 			app.printTest();
 		});
 
-		app_tbl.set_function("reset_zoom", [&app = app]() {
+		app_type.set_function("reset_zoom", [&app = app]() {
 			app.reset_zoom();
 		});
 
-		app_tbl.set_function("look_at_center", [&app = app]() {
+		app_type.set_function("look_at_center", [&app = app]() {
 			app.look_at_center();
 		});
 
-		app_tbl.set_function("setLight", [&app = app](bool b) {
+		app_type.set_function("setLight", [&app = app](bool b) {
 			app.setLight(b);
 		});
 
-		// Camera bindings
-		auto camera_tbl = lua.create_table();
-		app_tbl["camera"] = camera_tbl;
+		app_type.set_function("setClipping", [&app = app](bool b) {
+			app.setClipping(b);
+		});
 
-		// camera_tbl.set_function("look_at", [&app = app](float x, float y, float z) {
-		// 	app.camera->LookAt(glm::vec3(x, y, z));
-		// });
+		app_type.set_function("setCullMode", [&app = app](int mode) {
+			app.setCullMode(mode);
+		});
+
+
+
 
 
 

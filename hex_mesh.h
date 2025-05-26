@@ -134,14 +134,14 @@ struct HexRenderer {
         shader.setInt("is_clipping_enabled", enabled);
     }
 
-    void setMeshSize(float size) {
+    void setMeshSize(float val) {
         shader.use();
-        shader.setFloat("meshSize", size);
+        shader.setFloat("meshSize", val);
     }
 
-    void setMeshShrink(float shrink) {
+    void setMeshShrink(float val) {
         shader.use();
-        shader.setFloat("meshShrink", shrink);
+        shader.setFloat("meshShrink", val);
     }
 
     void setFragRenderMode(RenderMode mode) {
