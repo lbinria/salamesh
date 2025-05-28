@@ -628,10 +628,11 @@ int App::getHeight() {
 }
 
 long App::pick_cell() {
+	auto last_pick_mode = pickMode;
 	pickMode = Element::CELLS;
-	// return pick(mousePos.x, mousePos.y);
-	// TODO should I check that here ?
 	long id = pick(mousePos.x, mousePos.y);
+	pickMode = last_pick_mode;
+	// TODO should I check that here ?
 	return id >= 0 && id < hex.ncells() ? id : -1;
 }
 

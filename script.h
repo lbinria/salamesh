@@ -3,6 +3,7 @@
 #include <sol/sol.hpp>
 #include <optional>
 
+#include "component.h"
 #include "states.h"
 // #include "app.h"
 #include "app_interface.h"
@@ -11,7 +12,7 @@
 
 // Declare app
 
-struct LuaScript {
+struct LuaScript : public Component {
 
 	LuaScript(IApp &app, const std::string& script) {
 
@@ -215,17 +216,17 @@ struct LuaScript {
 
 	}
 
-	inline void init() {
+	inline void init() final override {
 		if (has_init)
 			init_func();
 	}
 
-	inline void key_event(int key, int scancode, int action, int mods)	{
+	inline void key_event(int key, int scancode, int action, int mods) final override {
 		if (has_key_event)
 			key_event_func(key, scancode, action, mods);
 	}
 
-	inline bool draw_gui() {
+	inline bool draw_gui() final override {
 		if (!has_draw_gui)
 			return true;
 

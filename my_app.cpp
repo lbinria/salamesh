@@ -15,9 +15,6 @@ void MyApp::init() {
 	// Engines loading...
 	lua_engine.init();
 
-	// lua_script.init();
-
-
 	// Components loading...
 	// hex_collapse_tool = std::make_unique<HexCollapseTool>(hex, *hex_renderer, st);
 	lua_console = std::make_unique<LuaConsole>(*this, lua_engine);
@@ -265,7 +262,7 @@ void MyApp::draw_gui() {
 	}
 
 	for (auto &script : scripts) {
-		if (script->status == LuaScript::SCRIPT_STATUS_OK) {
+		// if (script->status == LuaScript::SCRIPT_STATUS_OK) {
 			bool success = script->draw_gui();
 			if (!success) {
 
@@ -285,11 +282,10 @@ void MyApp::draw_gui() {
 				// 	draw_data->Clear();
 
 			}
-		}
+		// }
 	}
 
 	// hex_collapse_tool->draw_gui();
-	// lua_script.draw_gui();
 
 	lua_console->draw_gui();
 
@@ -339,7 +335,6 @@ void MyApp::key_event(int key, int scancode, int action, int mods) {
 	}
 
 	// hex_collapse_tool->key_event(key, scancode, action, mods);
-	// lua_script.key_event(key, scancode, action, mods);
 }
 
 void MyApp::mouse_scroll(double xoffset, double yoffset) {

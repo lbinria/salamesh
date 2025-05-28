@@ -7,7 +7,7 @@
 
 struct MyApp : App {
 
-	MyApp() : App(), lua_engine(*this, st), lua_script(*this, "../module_a_test/script.lua") {}
+	MyApp() : App(), lua_engine(*this, st) {}
 
 	int pick_edge(Volume &m, glm::vec3 p0, int c) {
 		// Search nearest edge
@@ -75,6 +75,5 @@ struct MyApp : App {
 
 	// TODO move to app and abstract std::vector<Engine>, std::vector<Script>
 	LuaEngine lua_engine;
-	LuaScript lua_script;
 
 };

@@ -73,6 +73,7 @@ add_executable(salamesh
   tool.h hex_collapse_tool.h hex_collapse_tool.cpp debug_tool.h debug_tool.cpp
   lua_console.h lua_console.cpp
   lua_engine.h lua_engine.cpp
+  component.h
   settings_manager.h
   stb_include.cpp 
   glad.c 
