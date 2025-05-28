@@ -264,6 +264,8 @@ void App::run()
 	// OpenGL
 	glEnable(GL_MULTISAMPLE);  
 
+	auto gl_version = glGetString(GL_VERSION);
+	std::cout << "OpenGL: " << gl_version << std::endl;
 
 	GLint64 maxUnits;
 	glGetInteger64i_v(GL_MAX_COMBINED_TEXTURE_IMAGE_UNITS, 0, &maxUnits);
@@ -345,8 +347,8 @@ void App::run()
 	glViewport(0, 0, SCR_WIDTH, SCR_HEIGHT);
 	glfwSetFramebufferSizeCallback(window, framebuffer_size_callback);  
 
-	// load_model("/home/me/catorus_hex.geogram");
-	load_model("/home/tex/Documents/Models/catorus_hex_attr.geogram");
+	load_model("/home/me/catorus_hex.geogram");
+	// load_model("/home/tex/Documents/Models/catorus_hex_attr.geogram");
 	// load_model("/home/tex/Documents/Models/joint.geogram");
 
 	std::chrono::steady_clock::time_point end = std::chrono::steady_clock::now();
