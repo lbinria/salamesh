@@ -347,13 +347,21 @@ void MyApp::mouse_scroll(double xoffset, double yoffset) {
 	}
 	else 
 		cursor_radius = std::clamp(cursor_radius + static_cast<int>(yoffset), 1, 50);
+
+	for (auto &script : scripts) {
+		script->mouse_scroll(xoffset, yoffset);
+	}
 }
 
 void MyApp::mouse_button(int button, int action, int mods) {
-	// std::cout << "mouse button: " << button << ", action: " << action << ", mods: " << mods << std::endl;
+	std::cout << "mouse button: " << button << ", action: " << action << ", mods: " << mods << std::endl;
 
 	for (auto &tool : tools) {
 		tool->mouse_button(button, action, mods);
+	}
+
+	for (auto &script : scripts) {
+		script->mouse_button(button, action, mods);
 	}
 	// hex_collapse_tool->mouse_button(button, action, mods);
 }
@@ -379,6 +387,10 @@ void MyApp::mouse_move(double x, double y) {
 
 	for (auto &tool : tools) {
 		tool->mouse_move(x, y);
+	}
+
+	for (auto &script : scripts) {
+		script->mouse_move(x, y);
 	}
 
 	// hex_collapse_tool->mouse_move(x, y);

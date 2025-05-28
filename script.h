@@ -29,14 +29,21 @@ struct LuaScript : public Component {
 
 		// Get the function
 		init_func = lua.get<sol::protected_function>("init");
-		key_event_func = lua.get<sol::protected_function>("key_event");
 		draw_gui_func = lua.get<sol::protected_function>("draw_gui");
+
+		mouse_move_func = lua.get<sol::protected_function>("mouse_move");
+		mouse_button_func = lua.get<sol::protected_function>("mouse_button");
+		mouse_scroll_func = lua.get<sol::protected_function>("mouse_scroll");
+		key_event_func = lua.get<sol::protected_function>("key_event");
 
 		// Check if function exists
 		has_init = init_func.valid();
-		has_key_event = key_event_func.valid();
 		has_draw_gui = draw_gui_func.valid();
 
+		has_mouse_button = mouse_button_func.valid();
+		has_mouse_move = mouse_move_func.valid();
+		has_mouse_scroll = mouse_scroll_func.valid();
+		has_key_event = key_event_func.valid();
 	}
 
 
@@ -221,6 +228,21 @@ struct LuaScript : public Component {
 			init_func();
 	}
 
+	void mouse_move(double x, double y) {
+		if (has_mouse_move)
+			mouse_move_func(x, y);
+	}
+
+	void mouse_button(int button, int action, int mods) {
+		if (has_mouse_button)
+			mouse_button_func(button, action, mods);
+	}
+
+	void mouse_scroll(double xoffset, double yoffset) {
+		if (has_mouse_scroll)
+			mouse_scroll_func(xoffset, yoffset);
+	}
+
 	inline void key_event(int key, int scancode, int action, int mods) final override {
 		if (has_key_event)
 			key_event_func(key, scancode, action, mods);
@@ -259,10 +281,13 @@ struct LuaScript : public Component {
 
 	sol::state lua;
 	sol::protected_function init_func;
+	sol::protected_function mouse_move_func;
+	sol::protected_function mouse_button_func;
+	sol::protected_function mouse_scroll_func;
 	sol::protected_function key_event_func;
 	sol::protected_function draw_gui_func;
 
-	bool has_init, has_key_event, has_draw_gui;
+	bool has_init, has_mouse_move, has_mouse_button, has_mouse_scroll, has_key_event, has_draw_gui;
 
 
 };

@@ -6,10 +6,26 @@ end
 -- 	print("Key event: " .. key .. ", " .. scancode .. ", " .. action .. ", " .. mods)
 -- end
 
+local mx = 0
+local my = 0
+function mouse_move(x, y)
+	mx = x 
+	my = y
+end
+
+-- function mouse_button(button, action, mods)
+-- 	print("mouse button: " .. button .. "," .. action .. "," .. mods)
+-- end
+
+-- function mouse_scroll(xoffset, yoffset)
+-- 	print("Scroll: " .. xoffset .. "," .. yoffset)
+-- end
+
 function draw_gui()
 	imgui.Begin("My window's script")
 
 	imgui.Text("Hello lua !")
+	imgui.Text("Mouse pos: (" .. tostring(mx) .. "," .. tostring(my) .. ")")
 
 	imgui.End()
 end
