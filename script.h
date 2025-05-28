@@ -223,10 +223,13 @@ struct LuaScript : public Component {
 
 	}
 
-	inline void init() final override {
+	void init() final override {
 		if (has_init)
 			init_func();
 	}
+
+	void setup() final override {}
+	void cleanup() final override {}
 
 	void mouse_move(double x, double y) {
 		if (has_mouse_move)

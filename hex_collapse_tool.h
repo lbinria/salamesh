@@ -1,34 +1,35 @@
 #pragma once
 
 #include <ultimaille/all.h>
-#include "tool.h"
+#include "component.h"
 
 #include "boundaries.h"
 #include "model.h"
 #include "states.h"
 #include "hex_mesh.h"
 
-struct HexCollapseTool : public Tool {
+struct HexCollapseTool : public Component {
 
-	HexCollapseTool(Hexahedra &hex, HexRenderer &hex_renderer, InputState &st) : Tool(), 
+	HexCollapseTool(Hexahedra &hex, HexRenderer &hex_renderer, InputState &st) :
 		hex(hex), 
 		// cell_highlights_attr(hex, 0.f),
 		hex_renderer(hex_renderer), 
 		st(st) {}
 
-	void init() override;
-	void setup() override;
-	void cleanup() override;
+	void init() final override;
+	void setup() final override;
+	void cleanup() final override;
 
-	void draw_gui() override;
+	bool draw_gui() final override;
 
 	void hover_callback(double x, double y, int source);
 
 	// void edge_hover(std::vector<int> ids) override;
 
-	void mouse_move(double x, double y) override;
-	void mouse_button(int button, int action, int mods) override;
-	void key_event(int key, int scancode, int action, int mods) override;
+	void mouse_move(double x, double y) final override;
+	void mouse_button(int button, int action, int mods) final override;
+	void mouse_scroll(double xoffset, double yoffset) final override {}
+	void key_event(int key, int scancode, int action, int mods) final override;
 	void validate_callback(); // TODO map validate to a key, enable user to configure the key
 
 	private:

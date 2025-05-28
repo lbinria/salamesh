@@ -16,10 +16,9 @@ void MyApp::init() {
 	lua_engine.init();
 
 	// Components loading...
-	// hex_collapse_tool = std::make_unique<HexCollapseTool>(hex, *hex_renderer, st);
 	lua_console = std::make_unique<LuaConsole>(*this, lua_engine);
 
-	tools.push_back(std::make_unique<HexCollapseTool>(hex, *hex_renderer, st));
+	scripts.push_back(std::make_unique<HexCollapseTool>(hex, *hex_renderer, st));
 
 	// Load modules
 	Settings settings;
@@ -256,10 +255,6 @@ void MyApp::draw_gui() {
 	
 	ImGui::GetBackgroundDrawList()->AddCircle(ImGui::GetMousePos(), cursor_radius, IM_COL32(225, 225, 255, 200), 0, 2);
 
-	// Draw tools gui
-	for (auto &tool : tools) {
-		tool->draw_gui();
-	}
 
 	for (auto &script : scripts) {
 		// if (script->status == LuaScript::SCRIPT_STATUS_OK) {
@@ -284,8 +279,6 @@ void MyApp::draw_gui() {
 			}
 		// }
 	}
-
-	// hex_collapse_tool->draw_gui();
 
 	lua_console->draw_gui();
 
@@ -326,15 +319,10 @@ void MyApp::key_event(int key, int scancode, int action, int mods) {
 	// 	camera->MoveUp(-0.01f);
 	// }
 
-	for (auto &tool : tools) {
-		tool->key_event(key, scancode, action, mods);
-	}
-
 	for (auto &script : scripts) {
 		script->key_event(key, scancode, action, mods);
 	}
 
-	// hex_collapse_tool->key_event(key, scancode, action, mods);
 }
 
 void MyApp::mouse_scroll(double xoffset, double yoffset) {
@@ -356,14 +344,9 @@ void MyApp::mouse_scroll(double xoffset, double yoffset) {
 void MyApp::mouse_button(int button, int action, int mods) {
 	std::cout << "mouse button: " << button << ", action: " << action << ", mods: " << mods << std::endl;
 
-	for (auto &tool : tools) {
-		tool->mouse_button(button, action, mods);
-	}
-
 	for (auto &script : scripts) {
 		script->mouse_button(button, action, mods);
 	}
-	// hex_collapse_tool->mouse_button(button, action, mods);
 }
 
 void MyApp::mouse_move(double x, double y) {
@@ -385,16 +368,10 @@ void MyApp::mouse_move(double x, double y) {
 		st.hovered_edge = -1;
 	}
 
-	for (auto &tool : tools) {
-		tool->mouse_move(x, y);
-	}
 
 	for (auto &script : scripts) {
 		script->mouse_move(x, y);
 	}
-
-	// hex_collapse_tool->mouse_move(x, y);
-
 
 }
 

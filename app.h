@@ -185,8 +185,6 @@ struct App : public IApp {
     int _dbl_click_interval = 300 /*ms*/;
     GLFWwindow* window;
     
-    // TODO must merge tools and scripts
-    std::vector<std::unique_ptr<Tool>> tools;
     std::vector<std::unique_ptr<Component>> scripts;
 
     private:

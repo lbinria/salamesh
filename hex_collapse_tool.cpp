@@ -50,7 +50,7 @@ void HexCollapseTool::cleanup() {
 
 }
 
-void HexCollapseTool::draw_gui() {
+bool HexCollapseTool::draw_gui() {
 
 	if (ImGui::Button("Select hex layer to collapse")) {
 		init();
@@ -58,6 +58,8 @@ void HexCollapseTool::draw_gui() {
 	}
 
 	ImGui::Checkbox("Auto smooth##chk_auto_smooth_collapse_tool", &auto_smooth);
+	
+	return true;
 }
 
 void HexCollapseTool::mouse_move(double x, double y) {
