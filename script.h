@@ -47,6 +47,7 @@ struct LuaScript {
 	void load_bindings(IApp &app) {
 
 		lua.open_libraries(sol::lib::base);
+		lua.open_libraries(sol::lib::string);
 
 		// Imgui bindings
 		auto imgui = lua.create_table();
@@ -97,6 +98,18 @@ struct LuaScript {
 			}
 		});
 
+		imgui.set_function("BeginCombo", [](const char* label, const char* preview_value) {
+			return ImGui::BeginCombo(label, preview_value);
+		});
+
+		imgui.set_function("EndCombo", []() {
+			ImGui::EndCombo();
+		});
+
+		imgui.set_function("Selectable", [](const char* label, bool selected) {
+			return ImGui::Selectable(label, selected);
+		});
+
 		lua["imgui"] = imgui;
 
 
@@ -104,64 +117,76 @@ struct LuaScript {
 		lua["app"] = &app;
 		sol::usertype<IApp> app_type = lua.new_usertype<IApp>("IApp");
 		// Camera bindings
-		auto camera_tbl = lua.create_table();
-		app_type["camera"] = camera_tbl;
+		sol::usertype<ArcBallCamera> camera_tbl = lua.new_usertype<ArcBallCamera>("ArcBallCamera");
+		app_type["camera"] = sol::readonly_property(&IApp::getCamera);
 		// Renderer bindings
-		auto renderer_tbl = lua.create_table();
-		app_type["renderer"] = renderer_tbl;
+		sol::usertype<HexRenderer> renderer_tbl = lua.new_usertype<HexRenderer>("HexRenderer");
+		app_type["renderer"] = sol::readonly_property(&IApp::getRenderer);
 
-		camera_tbl.set_function("LookAt", [&app = app](float x, float y, float z) {
+		camera_tbl.set_function("LookAt", [&app = app](ArcBallCamera &camera, float x, float y, float z) {
 			app.getCamera().LookAt(glm::vec3(x, y, z));
 		});
 
-		camera_tbl.set_function("SetFov", [&app = app](float fov) {
-			app.getCamera().SetFov(fov);
+		camera_tbl.set_function("GetFovAndScreen", [&app = app]() {
+			auto fov_and_screen = app.getCamera().GetFovAndScreen();
+			return std::make_tuple(fov_and_screen.x, fov_and_screen.y, fov_and_screen.z);
 		});
 
-		camera_tbl.set_function("MoveRight", [&app = app](float speed) {
-			app.getCamera().MoveRight(speed);
-		});
-
-		camera_tbl.set_function("MoveUp", [&app = app](float speed) {
-			app.getCamera().MoveUp(speed);
-		});
-
-		camera_tbl.set_function("MoveForward", [&app = app](float speed) {
-			app.getCamera().MoveForward(speed);
-		});
-
-		renderer_tbl.set_function("setLight", [&app = app](bool enabled) {
-			app.getRenderer().setLight(enabled);
-		});
-
-		renderer_tbl.set_function("setClipping", [&app = app](bool enabled) {
-			app.getRenderer().setClipping(enabled);
-		});
-
-		renderer_tbl.set_function("setMeshSize", [&app = app](float val) {
-			app.getRenderer().setMeshSize(val);
-		});
-
-		renderer_tbl.set_function("setMeshShrink", [&app = app](float val) {
-			app.getRenderer().setMeshShrink(val);
-		});
-
-		// app_type["test"] = sol::property(
-		// 	[&app = app]() { return app.getTest(); },
-		// 	[&app = app](float v) { app.setTest(v); }
-		// );
-
-		// app_type["renderer"] = sol::readonly_property(
-		// 	[&app = app]() { return app.getRenderer2(); }
-		// );
+		camera_tbl.set_function("SetFov", &ArcBallCamera::SetFov);
+		camera_tbl.set_function("MoveRight", &ArcBallCamera::MoveRight);
+		camera_tbl.set_function("MoveUp", &ArcBallCamera::MoveUp);
+		camera_tbl.set_function("MoveForward", &ArcBallCamera::MoveForward);
 
 
-		// renderer_tbl.set_function("print_test", [&app = app]() {
-		// });
+		renderer_tbl["light"] = sol::property(
+			&HexRenderer::getLight,
+			&HexRenderer::setLight
+		);
 
-		app_type.set_function("print_test", [&app = app]() {
-			app.printTest();
-		});
+		renderer_tbl.set_function("getLight", &HexRenderer::getLight);
+		renderer_tbl.set_function("setLight", &HexRenderer::setLight);
+
+		renderer_tbl["clipping"] = sol::property(
+			&HexRenderer::getClipping,
+			&HexRenderer::setClipping
+		);
+
+		renderer_tbl.set_function("getClipping", &HexRenderer::getClipping);
+		renderer_tbl.set_function("setClipping", &HexRenderer::setClipping);
+
+		renderer_tbl["meshSize"] = sol::property(
+			&HexRenderer::getMeshSize,
+			&HexRenderer::setMeshSize
+		);
+
+		renderer_tbl.set_function("getMeshSize", &HexRenderer::getMeshSize);
+		renderer_tbl.set_function("setMeshSize", &HexRenderer::setMeshSize);
+
+		renderer_tbl["meshShrink"] = sol::property(
+			&HexRenderer::getMeshShrink,
+			&HexRenderer::setMeshShrink
+		);
+
+		renderer_tbl.set_function("getMeshShrink", &HexRenderer::getMeshShrink);
+		renderer_tbl.set_function("setMeshShrink", &HexRenderer::setMeshShrink);
+
+		app_type["pick_mode_strings"] = sol::readonly_property(
+			&IApp::getPickModeStrings
+		);
+
+		app_type["pick_mode"] = sol::property(
+			&IApp::getPickMode,
+			&IApp::setPickMode
+		);
+
+		// std::vector<std::string> v = {"a", "b", "c"};
+		// lua["pick_mode_strings"] = sol::as_table(v);
+		// app_type["pp"] = sol::readonly_property([]() {sol::as_table(v); });
+		// // Copy values
+		// for (size_t i = 0; i < app.getPickModeStrings().size(); ++i) {
+		// 	pick_mode_strings_tbl[i + 1] = app.getPickModeStrings()[i];
+		// }
+
 
 		app_type.set_function("reset_zoom", [&app = app]() {
 			app.reset_zoom();

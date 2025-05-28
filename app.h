@@ -44,13 +44,6 @@ using namespace UM;
 
 struct App : public IApp {
 
-    enum Element {
-        CORNERS = -1,
-        POINTS = 0,
-        EDGES = 1,
-        FACETS = 2,
-        CELLS = 3
-    };
 
     enum ColorMode {
         COLOR,
@@ -146,25 +139,17 @@ struct App : public IApp {
     void look_at_center() final override;
 
     // Rendering functions
+    bool getLight() final override { return isLightEnabled; }
     void setLight(bool enabled) final override;
     void setClipping(bool enabled) final override;
     void setCullMode(int mode) final override { cull_mode = mode; }
 
-    int getTest() final override {
-        std::cout << "getTest: " << test << std::endl;
-        return test;
-    }
-    void setTest(int value) final override {
-        std::cout << "setTest: " << value << std::endl;
-        test = value;
-    }
-
-    void printTest() final override {
-        std::cout << test << std::endl;
-    }
-
     HexRenderer& getRenderer() final override { return *hex_renderer; }
     ArcBallCamera& getCamera() final override { return *camera; }
+
+    std::vector<std::string> getPickModeStrings() const { return std::vector<std::string>(pickModeStrings, pickModeStrings + 4); }
+    int getPickMode() { return pickMode; }
+    void setPickMode(Element mode) { pickMode = mode; }
 
     // To override lifecycle functions
     virtual void init() = 0;
@@ -205,6 +190,5 @@ struct App : public IApp {
     std::vector<std::unique_ptr<LuaScript>> scripts;
 
     private:
-    int test = 0;
 
 };

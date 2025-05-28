@@ -124,24 +124,44 @@ struct HexRenderer {
         shader.setInt("colorMode", colorMode);
     }
 
+    bool getLight() {
+        return isLightEnabled;
+    }
+
     void setLight(bool enabled) {
         shader.use();
-        shader.setFloat("is_light_enabled", enabled);			
+        shader.setFloat("is_light_enabled", enabled);
+        isLightEnabled = enabled;
+    }
+
+    bool getClipping() {
+        return isClipping;
     }
 
     void setClipping(bool enabled) {
         shader.use();
         shader.setInt("is_clipping_enabled", enabled);
+        isClipping = enabled;
+    }
+
+    float getMeshSize() {
+        return meshSize;
     }
 
     void setMeshSize(float val) {
         shader.use();
         shader.setFloat("meshSize", val);
+        meshSize = val;
+    }
+
+    float getMeshShrink() {
+        return meshShrink;
     }
 
     void setMeshShrink(float val) {
         shader.use();
         shader.setFloat("meshShrink", val);
+        meshShrink = val;
     }
 
     void setFragRenderMode(RenderMode mode) {
@@ -171,5 +191,10 @@ struct HexRenderer {
 
     void *highlightsPtr;
     void *filtersPtr;
+
+    bool isLightEnabled = true;
+    bool isClipping = false;
+    float meshSize = 0.01f;
+    float meshShrink = 0.f;
 
 };

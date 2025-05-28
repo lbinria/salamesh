@@ -11,13 +11,5 @@ function draw_gui()
 
 	imgui.Text("Hello lua !")
 
-	if (imgui.Button("Look at center")) then 
-		app.look_at_center()
-	end
-
-	if (imgui.Button("Reset zoom")) then
-		app.reset_zoom()
-	end
-
 	imgui.End()
 end
