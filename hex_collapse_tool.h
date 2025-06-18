@@ -1,12 +1,12 @@
 #pragma once
 
 #include <ultimaille/all.h>
-#include "component.h"
+#include "core/component.h"
 
 #include "boundaries.h"
 #include "model.h"
 #include "states.h"
-#include "hex_mesh.h"
+#include "hex_renderer.h"
 
 struct HexCollapseTool : public Component {
 

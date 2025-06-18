@@ -59,6 +59,8 @@ set(JSON_SOURCES
     include/json.hpp
 )
 
+add_subdirectory(core)
+
 # Add the executable
 add_executable(salamesh 
   main.cpp 
@@ -66,14 +68,15 @@ add_executable(salamesh
   my_app.cpp my_app.h
   shader.cpp shader.h 
   tri_mesh.cpp tri_mesh.h 
-  hex_mesh.cpp hex_mesh.h 
+  hex_renderer.cpp hex_renderer.h 
   points_cloud.cpp points_cloud.h
   wireframe.cpp wireframe.h
   arcball_camera.h 
   tool.h hex_collapse_tool.h hex_collapse_tool.cpp debug_tool.h debug_tool.cpp
   lua_console.h lua_console.cpp
   lua_engine.h lua_engine.cpp
-  component.h
+  # core/component.h
+  states.h
   settings_manager.h
   stb_include.cpp 
   glad.c 
@@ -81,7 +84,6 @@ add_executable(salamesh
   ${IMGUI_SOURCES}
   ${JSON_SOURCES}
 )
-# add_executable(salamesh main.cpp glad.c)
 
 target_include_directories(salamesh PRIVATE include)
 target_include_directories(salamesh PRIVATE include/imgui)
@@ -89,6 +91,7 @@ target_include_directories(salamesh PRIVATE include/imgui)
 target_include_directories(salamesh PRIVATE ${LUA_INCLUDE_DIR})
 
 # Link the libraries
+target_link_libraries(salamesh PRIVATE salamesh_core)
 target_link_libraries(salamesh PRIVATE glfw)
 target_link_libraries(salamesh PRIVATE ImGuiFileDialog ${CMAKE_DL_LIBS} ultimaille m $<$<BOOL:${OpenMP_CXX_FOUND}>:OpenMP::OpenMP_CXX>)
 target_link_libraries(salamesh PRIVATE ${LUA_LIBRARIES})

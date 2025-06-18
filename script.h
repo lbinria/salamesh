@@ -3,7 +3,7 @@
 #include <sol/sol.hpp>
 #include <optional>
 
-#include "component.h"
+#include "core/component.h"
 #include "states.h"
 // #include "app.h"
 #include "app_interface.h"
