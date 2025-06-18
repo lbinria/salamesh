@@ -1,6 +1,6 @@
 {
 	"modules": [
 		"../module_a_test",
-		"../module_b_test"
+		"../module_b_test",
 	]
 }

@@ -76,6 +76,7 @@ add_executable(salamesh
   lua_console.h lua_console.cpp
   lua_engine.h lua_engine.cpp
   # core/component.h
+  component_loader.h
   states.h
   settings_manager.h
   stb_include.cpp 
