@@ -1,6 +1,5 @@
 #include "app.h"
 #include "debug_tool.h"
-#include "hex_collapse_tool.h"
 #include "lua_engine.h"
 #include "script.h"
 #include "lua_console.h"

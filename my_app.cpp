@@ -21,8 +21,6 @@ void MyApp::init() {
 	// Components loading...
 	lua_console = std::make_unique<LuaConsole>(*this, lua_engine);
 
-	// scripts.push_back(std::make_unique<HexCollapseTool>(hex, *hex_renderer, st));
-
 	// Load modules
 	Settings settings;
 	settings.load("../settings.json");
