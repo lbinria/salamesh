@@ -36,7 +36,7 @@ void MyApp::init() {
                 std::cout << "Found .so file: " << entry.path().filename().string() << std::endl;
 				// Load the shared library
 				ComponentLoader loader;
-				auto component = loader.load(entry.path().string());
+				auto component = loader.load(entry.path().string(), hex, st);
 				if (component) {
 					component->init();
 					scripts.push_back(std::move(component));
