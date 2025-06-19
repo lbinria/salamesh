@@ -251,7 +251,7 @@ struct LuaScript : public Component {
 			key_event_func(key, scancode, action, mods);
 	}
 
-	inline bool draw_gui() final override {
+	inline bool draw_gui(ImGuiContext *ctx) final override {
 		if (!has_draw_gui)
 			return true;
 

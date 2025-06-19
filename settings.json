@@ -2,5 +2,6 @@
 	"modules": [
 		"../module_a_test",
 		"../module_b_test",
+		"/home/tex/Projects/hex_collapse_plugin/build"
 	]
 }

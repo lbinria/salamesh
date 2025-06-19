@@ -11,7 +11,9 @@ struct ComponentLoader {
 		void *handle = dlopen(path.c_str(), RTLD_NOW);
 
 		if (!handle) {
-			std::cout << "fail to open." << std::endl;
+            const char* error = dlerror();
+            throw std::runtime_error(std::string("Failed to load library '") + path + "': " + 
+                                   (error ? error : "Unknown error"));
 			return nullptr;
 		}
 

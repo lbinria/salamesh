@@ -20,7 +20,7 @@ struct HexCollapseTool : public Component {
 	void setup() final override;
 	void cleanup() final override;
 
-	bool draw_gui() final override;
+	bool draw_gui(ImGuiContext *ctx) final override;
 
 	void hover_callback(double x, double y, int source);
 

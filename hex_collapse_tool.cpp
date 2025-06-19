@@ -50,7 +50,7 @@ void HexCollapseTool::cleanup() {
 
 }
 
-bool HexCollapseTool::draw_gui() {
+bool HexCollapseTool::draw_gui(ImGuiContext *ctx) {
 
 	if (ImGui::Button("Select hex layer to collapse")) {
 		init();

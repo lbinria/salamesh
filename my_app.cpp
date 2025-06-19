@@ -28,6 +28,8 @@ void MyApp::init() {
 	settings.load("../settings.json");
 	for (auto m : settings.modules) {
 
+		// TODO check if m path exists !
+
 		// Check for .so files
         for (const auto& entry : fs::directory_iterator(m)) {
             if (entry.is_regular_file() && (entry.path().extension() == ".so" || entry.path().extension() == ".dll")) {
@@ -280,7 +282,7 @@ void MyApp::draw_gui() {
 
 	for (auto &script : scripts) {
 		// if (script->status == LuaScript::SCRIPT_STATUS_OK) {
-			bool success = script->draw_gui();
+			bool success = script->draw_gui(ImGui::GetCurrentContext());
 			if (!success) {
 
 				// Clear properly ImGui
