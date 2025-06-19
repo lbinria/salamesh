@@ -25,7 +25,6 @@
 
 #include "shader.h"
 
-#include "tri_mesh.h"
 #include "hex_renderer.h"
 #include "points_cloud.h"
 #include "wireframe.h"

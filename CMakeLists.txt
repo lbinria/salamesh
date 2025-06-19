@@ -67,7 +67,6 @@ add_executable(salamesh
   app.cpp app.h
   my_app.cpp my_app.h
   shader.cpp shader.h 
-  tri_mesh.cpp tri_mesh.h 
   hex_renderer.cpp hex_renderer.h 
   points_cloud.cpp points_cloud.h
   wireframe.cpp wireframe.h
