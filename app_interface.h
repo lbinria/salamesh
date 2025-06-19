@@ -1,6 +1,6 @@
 #pragma once
 
-#include "hex_renderer.h"
+#include "core/renderer.h"
 #include "arcball_camera.h"
 // #include <memory>
 
@@ -27,7 +27,7 @@ struct IApp {
     virtual void setCullMode(int mode) = 0;
 
     virtual ArcBallCamera& getCamera() = 0;
-    virtual HexRenderer& getRenderer() = 0;
+    virtual Renderer& getRenderer() = 0;
 
     virtual std::vector<std::string> getPickModeStrings() const = 0;
 

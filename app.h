@@ -144,7 +144,7 @@ struct App : public IApp {
     void setClipping(bool enabled) final override;
     void setCullMode(int mode) final override { cull_mode = mode; }
 
-    HexRenderer& getRenderer() final override { return *hex_renderer; }
+    Renderer& getRenderer() final override { return *hex_renderer; }
     ArcBallCamera& getCamera() final override { return *camera; }
 
     std::vector<std::string> getPickModeStrings() const { return std::vector<std::string>(pickModeStrings, pickModeStrings + 4); }

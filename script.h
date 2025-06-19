@@ -128,7 +128,7 @@ struct LuaScript : public Component {
 		sol::usertype<ArcBallCamera> camera_tbl = lua.new_usertype<ArcBallCamera>("ArcBallCamera");
 		app_type["camera"] = sol::readonly_property(&IApp::getCamera);
 		// Renderer bindings
-		sol::usertype<HexRenderer> renderer_tbl = lua.new_usertype<HexRenderer>("HexRenderer");
+		sol::usertype<Renderer> renderer_tbl = lua.new_usertype<Renderer>("Renderer");
 		app_type["renderer"] = sol::readonly_property(&IApp::getRenderer);
 
 		camera_tbl.set_function("LookAt", [&app = app](ArcBallCamera &camera, float x, float y, float z) {
@@ -147,36 +147,36 @@ struct LuaScript : public Component {
 
 
 		renderer_tbl["light"] = sol::property(
-			&HexRenderer::getLight,
-			&HexRenderer::setLight
+			&Renderer::getLight,
+			&Renderer::setLight
 		);
 
-		renderer_tbl.set_function("getLight", &HexRenderer::getLight);
-		renderer_tbl.set_function("setLight", &HexRenderer::setLight);
+		renderer_tbl.set_function("getLight", &Renderer::getLight);
+		renderer_tbl.set_function("setLight", &Renderer::setLight);
 
 		renderer_tbl["clipping"] = sol::property(
-			&HexRenderer::getClipping,
-			&HexRenderer::setClipping
+			&Renderer::getClipping,
+			&Renderer::setClipping
 		);
 
-		renderer_tbl.set_function("getClipping", &HexRenderer::getClipping);
-		renderer_tbl.set_function("setClipping", &HexRenderer::setClipping);
+		renderer_tbl.set_function("getClipping", &Renderer::getClipping);
+		renderer_tbl.set_function("setClipping", &Renderer::setClipping);
 
 		renderer_tbl["meshSize"] = sol::property(
-			&HexRenderer::getMeshSize,
-			&HexRenderer::setMeshSize
+			&Renderer::getMeshSize,
+			&Renderer::setMeshSize
 		);
 
-		renderer_tbl.set_function("getMeshSize", &HexRenderer::getMeshSize);
-		renderer_tbl.set_function("setMeshSize", &HexRenderer::setMeshSize);
+		renderer_tbl.set_function("getMeshSize", &Renderer::getMeshSize);
+		renderer_tbl.set_function("setMeshSize", &Renderer::setMeshSize);
 
 		renderer_tbl["meshShrink"] = sol::property(
-			&HexRenderer::getMeshShrink,
-			&HexRenderer::setMeshShrink
+			&Renderer::getMeshShrink,
+			&Renderer::setMeshShrink
 		);
 
-		renderer_tbl.set_function("getMeshShrink", &HexRenderer::getMeshShrink);
-		renderer_tbl.set_function("setMeshShrink", &HexRenderer::setMeshShrink);
+		renderer_tbl.set_function("getMeshShrink", &Renderer::getMeshShrink);
+		renderer_tbl.set_function("setMeshShrink", &Renderer::setMeshShrink);
 
 		app_type["pick_mode_strings"] = sol::readonly_property(
 			&IApp::getPickModeStrings
