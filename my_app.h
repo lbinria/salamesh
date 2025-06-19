@@ -2,10 +2,11 @@
 #include "lua_engine.h"
 #include "script.h"
 #include "lua_console.h"
+#include "args_manager.h"
 
 struct MyApp : App {
 
-	MyApp() : App(), lua_engine(*this, st) {}
+	MyApp(Args args) : App(args), lua_engine(*this, st) {}
 
 	int pick_edge(Volume &m, glm::vec3 p0, int c) {
 		// Search nearest edge
@@ -63,10 +64,6 @@ struct MyApp : App {
 	void mouse_drag(int button, double x, double y) override;
 
 	private:
-
-	// std::unique_ptr<Model> model;
-
-	// std::unique_ptr<HexCollapseTool> hex_collapse_tool;
 
 	std::unique_ptr<LuaConsole> lua_console;
 

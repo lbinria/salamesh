@@ -23,7 +23,7 @@ void MyApp::init() {
 
 	// Load modules
 	Settings settings;
-	settings.load("../settings.json");
+	settings.load(args.settings_path);
 	for (auto m : settings.modules) {
 
 		// TODO check if m path exists !

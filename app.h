@@ -4,6 +4,7 @@
 #include <GLFW/glfw3.h>
 
 #include "core/app_interface.h"
+#include "args_manager.h"
 
 #include "imgui.h"
 #include "backends/imgui_impl_glfw.h"
@@ -40,6 +41,9 @@
 
 using namespace UM;
 
+#include <filesystem>
+namespace fs = std::filesystem;
+
 // void mouse_callback(GLFWwindow* window, double xpos, double ypos);
 
 struct App : public IApp {
@@ -53,7 +57,8 @@ struct App : public IApp {
     const float FAR_PLANE = 100.f;
     const float NEAR_PLANE = 0.1f;
 
-    App() : 
+    App(Args args) : 
+        args(args),
         SCR_WIDTH(1024), 
         SCR_HEIGHT(768), 
         leftMouse(false), 
@@ -61,7 +66,15 @@ struct App : public IApp {
         mousePos(0,0), 
         lastMousePos(0,0), 
         scrollDelta(0,0)
-    {}
+    {
+        // // Check args
+        // if (!args.empty()) {
+        //     fs::path p(args);
+
+        // } else {
+            
+        // }
+    }
 
 
     std::unique_ptr<ArcBallCamera> camera;
@@ -185,12 +198,16 @@ struct App : public IApp {
     int _cur_button = -1;
 
     protected:
-    int _dbl_click_interval = 300 /*ms*/;
+    Args args;
+
     GLFWwindow* window;
     
     std::vector<std::unique_ptr<Component>> scripts;
 	InputState st;
 
+    int _dbl_click_interval = 300 /*ms*/;
+
     private:
+
 
 };

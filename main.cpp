@@ -1,7 +1,15 @@
 #include "my_app.h"
+#include "args_manager.h"
 
-int main() {
-	MyApp app;
+int main(int argc, char** argv) {
+	
+	Args args;
+	if (argc >= 2) {
+		// TODO check if file access or raw json
+		args.parse(argv[1]);
+	}
+	
+	MyApp app(args);
 	app.run();
 
 	return 0;
