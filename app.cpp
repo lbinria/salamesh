@@ -347,7 +347,9 @@ void App::run()
 	glViewport(0, 0, SCR_WIDTH, SCR_HEIGHT);
 	glfwSetFramebufferSizeCallback(window, framebuffer_size_callback);  
 
-	load_model("assets/catorus_hex_attr.geogram");
+	// TODO Only load first for the moment
+	load_model(*args.models.begin());
+	// load_model("assets/catorus_hex_attr.geogram");
 	// load_model("assets/joint.geogram");
 
 	std::chrono::steady_clock::time_point end = std::chrono::steady_clock::now();

@@ -8,7 +8,7 @@ using json = nlohmann::json;
 
 struct Args {
 	std::string settings_path = "../settings.json";
-	std::vector<std::string> models;
+	std::vector<std::string> models = {"assets/catorus_hex_attr.geogram"};
 
 	bool parse(std::string content) {
 
