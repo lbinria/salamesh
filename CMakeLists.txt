@@ -77,7 +77,8 @@ add_executable(salamesh
   lua_engine.h lua_engine.cpp
   # core/component.h
   component_loader.h
-  core/states.h
+  # core/states.h
+  # core/renderer.h
   settings_manager.h
   stb_include.cpp 
   glad.c 

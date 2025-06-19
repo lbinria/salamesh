@@ -4,6 +4,8 @@ project(salamesh_core)
 
 set(SOURCES
     component.h component.cpp
+    states.h 
+    renderer.h
 )
 
 # Add the library

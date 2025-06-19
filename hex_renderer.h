@@ -8,6 +8,7 @@
 #include "include/glm/gtc/matrix_transform.hpp"
 #include "include/glm/gtc/type_ptr.hpp"
 
+#include "core/renderer.h"
 #include "shader.h"
 
 // TODO IMPORTANT see to bind mesh directly to the shader via buffermap and pointers
@@ -30,7 +31,7 @@ enum RenderMode {
     Pick_cell = 3
 };
 
-struct HexRenderer {
+struct HexRenderer : public Renderer {
 
     HexRenderer(Shader &shader) : 
         shader(std::move(shader)),
