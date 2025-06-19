@@ -185,7 +185,7 @@ void App::load_model(const std::string& filename) {
 	}
 
     // mesh = std::make_unique<HexRenderer>(hex, attributes);
-    Shader shader("../shaders/hex.vert", "../shaders/hex.frag");
+    Shader shader("shaders/hex.vert", "shaders/hex.frag");
     hex_renderer = std::make_unique<HexRenderer>(shader);
     // mesh = std::make_shared<HexRenderer>(shader);
 	// mesh->setAttributes(attributes);
@@ -273,10 +273,10 @@ void App::run()
 
 	// Load colormap texture
 	int width, height, nrChannels;
-	load_texture_1d("../CET-R41px.png", colormaps[0], width, height, nrChannels);
-	load_texture_2d("../CET-R41px.png", colormaps2D[0], width, height, nrChannels);
-	load_texture_1d("../CET-L08px.png", colormaps[1], width, height, nrChannels);
-	load_texture_2d("../CET-L08px.png", colormaps2D[1], width, height, nrChannels);
+	load_texture_1d("assets/CET-R41px.png", colormaps[0], width, height, nrChannels);
+	load_texture_2d("assets/CET-R41px.png", colormaps2D[0], width, height, nrChannels);
+	load_texture_1d("assets/CET-L08px.png", colormaps[1], width, height, nrChannels);
+	load_texture_2d("assets/CET-L08px.png", colormaps2D[1], width, height, nrChannels);
 
 	// Framebuffer !
 	glGenFramebuffers(1, &fbo);
@@ -369,7 +369,7 @@ void App::run()
 	// Model init
 	hex_renderer->init(hex);
 
-	Shader screenShader("../shaders/screen.vert", "../shaders/screen.frag");
+	Shader screenShader("shaders/screen.vert", "shaders/screen.frag");
 
 	// vertex attributes for a quad that fills the entire screen in Normalized Device Coordinates.
     float quadVerts[] = { 

@@ -97,3 +97,9 @@ target_link_libraries(salamesh PRIVATE salamesh_core)
 target_link_libraries(salamesh PRIVATE glfw)
 target_link_libraries(salamesh PRIVATE ImGuiFileDialog ${CMAKE_DL_LIBS} ultimaille m $<$<BOOL:${OpenMP_CXX_FOUND}>:OpenMP::OpenMP_CXX>)
 target_link_libraries(salamesh PRIVATE ${LUA_LIBRARIES})
+
+# Copy assets to the build directory
+message("Copying assets from ${PROJECT_SOURCE_DIR}/assets to ${CMAKE_BINARY_DIR}/assets")
+file(COPY ${PROJECT_SOURCE_DIR}/assets DESTINATION ${CMAKE_BINARY_DIR})
+message("Copying shaders from ${PROJECT_SOURCE_DIR}/shaders to ${CMAKE_BINARY_DIR}/shaders")
+file(COPY ${PROJECT_SOURCE_DIR}/shaders DESTINATION ${CMAKE_BINARY_DIR})

@@ -14,8 +14,8 @@ using namespace UM;
 
 struct TriMesh {
 
-    // TriMesh() : shader("../shaders/simple.vert", "../shaders/simple.frag", "../shaders/simple.geom"), position(0,0,0) {}
-    TriMesh() : shader("../shaders/simple.vert", "../shaders/simple.frag"), position(0,0,0) {}
+    // TriMesh() : shader("shaders/simple.vert", "shaders/simple.frag", "shaders/simple.geom"), position(0,0,0) {}
+    TriMesh() : shader("shaders/simple.vert", "shaders/simple.frag"), position(0,0,0) {}
 
     void init();
     void to_gl(Triangles &m);

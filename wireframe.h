@@ -26,7 +26,7 @@ struct Wireframe {
     };
 
     Wireframe(Hexahedra &m, VolumeAttributes &attributes) : 
-        shader("../shaders/hex.vert", "../shaders/hex.frag"), 
+        shader("shaders/hex.vert", "shaders/hex.frag"), 
         position(0,0,0),
         attributes{attributes},
         m(m) {}

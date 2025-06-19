@@ -35,9 +35,9 @@ struct HexRenderer : public Renderer {
 
     HexRenderer(Shader &shader) : 
         shader(std::move(shader)),
-        // shader("../shaders/hex.vert", "../shaders/hex.frag"), 
-        // shader("../shaders/point.vert", "../shaders/point.frag"), 
-        // shader("../shaders/point2.vert", "../shaders/point2.frag"), 
+        // shader("shaders/hex.vert", "shaders/hex.frag"), 
+        // shader("shaders/point.vert", "shaders/point.frag"), 
+        // shader("shaders/point2.vert", "shaders/point2.frag"), 
         position(0,0,0)/*,*/
         {
         }
