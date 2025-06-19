@@ -31,7 +31,6 @@
 
 #include "core/arcball_camera.h"
 
-#include "tool.h"
 #include "script.h"
 
 #include <ultimaille/all.h>

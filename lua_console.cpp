@@ -6,7 +6,7 @@ void LuaConsole::init() {}
 void LuaConsole::setup() {}
 void LuaConsole::cleanup() {}
 
-void LuaConsole::draw_gui() {
+bool LuaConsole::draw_gui(ImGuiContext *ctx) {
 	ImVec2 parent_size = ImVec2(app.getWidth(), app.getHeight());
 	ImGui::SetNextWindowSize(ImVec2(parent_size.x, app.getHeight() * .2f), ImGuiCond_Always);
 	ImGui::SetNextWindowPos(ImVec2(0, parent_size.y - app.getHeight() * .2f), ImGuiCond_Always);
@@ -36,4 +36,5 @@ void LuaConsole::draw_gui() {
 	}
 
 	ImGui::End();
+	return true;
 }

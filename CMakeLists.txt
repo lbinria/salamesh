@@ -70,14 +70,9 @@ add_executable(salamesh
   hex_renderer.cpp hex_renderer.h 
   points_cloud.cpp points_cloud.h
   wireframe.cpp wireframe.h
-  # arcball_camera.h 
-  tool.h
   lua_console.h lua_console.cpp
   lua_engine.h lua_engine.cpp
-  # core/component.h
   component_loader.h
-  # core/states.h
-  # core/renderer.h
   settings_manager.h
   stb_include.cpp 
   glad.c 
