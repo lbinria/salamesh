@@ -21,7 +21,7 @@ void MyApp::init() {
 	// Components loading...
 	lua_console = std::make_unique<LuaConsole>(*this, lua_engine);
 
-	scripts.push_back(std::make_unique<HexCollapseTool>(hex, *hex_renderer, st));
+	// scripts.push_back(std::make_unique<HexCollapseTool>(hex, *hex_renderer, st));
 
 	// Load modules
 	Settings settings;
@@ -36,9 +36,10 @@ void MyApp::init() {
                 std::cout << "Found .so file: " << entry.path().filename().string() << std::endl;
 				// Load the shared library
 				ComponentLoader loader;
-				auto component = loader.load(entry.path().string(), hex, st);
+				auto component = loader.load(entry.path().string(), hex, *hex_renderer, st);
 				if (component) {
-					component->init();
+					// TODO see if init
+					// component->init();
 					scripts.push_back(std::move(component));
 				}
             }

@@ -2,11 +2,13 @@
 #include <memory>
 #include <dlfcn.h>
 
+#include "core/states.h"
 #include "core/component.h"
+#include "core/renderer.h"
 
 struct ComponentLoader {
 	
-	std::unique_ptr<Component> load(const std::string path, Hexahedra &hex, InputState &st) {
+	std::unique_ptr<Component> load(const std::string path, Hexahedra &hex, Renderer &renderer, InputState &st) {
 
 		void *handle = dlopen(path.c_str(), RTLD_NOW);
 
@@ -19,8 +21,8 @@ struct ComponentLoader {
 
 		std::cout << "opened." << std::endl;
 
-		Component* (*allocator)(Hexahedra&, InputState&);
-		allocator = (Component*(*)(Hexahedra&, InputState&))dlsym(handle, "allocator");
+		Component* (*allocator)(Hexahedra&, Renderer&, InputState&);
+		allocator = (Component*(*)(Hexahedra&, Renderer&, InputState&))dlsym(handle, "allocator");
 		
 		if (!allocator) {
 			std::cout << "fail to allocator func." << std::endl;
@@ -29,7 +31,7 @@ struct ComponentLoader {
 		
 		std::cout << "func allocator created." << std::endl;
 
-		Component* component = (Component*)allocator(hex, st);
+		Component* component = (Component*)allocator(hex, renderer, st);
 
 		std::cout << "allocated." << std::endl;
 
