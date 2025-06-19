@@ -5,7 +5,7 @@
 
 #include "boundaries.h"
 #include "model.h"
-#include "states.h"
+#include "core/states.h"
 #include "hex_renderer.h"
 
 struct HexCollapseTool : public Component {

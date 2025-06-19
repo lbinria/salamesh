@@ -84,68 +84,68 @@ void MyApp::update(float dt) {
 void MyApp::draw_gui() {
 
 	// Render your ImGui elements here
-	ImGui::Begin("Mesh view options", nullptr, ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_AlwaysAutoResize);
-	ImVec2 windowSize = ImVec2(200, ImGui::GetWindowHeight());
-	ImVec2 windowPos = ImVec2(0, 25);
-	ImGui::SetWindowPos(windowPos);
-	ImGui::SetWindowSize(windowSize);
+	// ImGui::Begin("Mesh view options", nullptr, ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_AlwaysAutoResize);
+	// ImVec2 windowSize = ImVec2(200, ImGui::GetWindowHeight());
+	// ImVec2 windowPos = ImVec2(0, 25);
+	// ImGui::SetWindowPos(windowPos);
+	// ImGui::SetWindowSize(windowSize);
 
-	// ImGui::Text("Zoom: %f", (1. - (camera->GetFovAndScreen().x - 0.25f) / 60.f) * 100.f);
-	// ImGui::Text("Zoom: %.2f%%", -(camera->GetFovAndScreen().x - 45.f));
-	ImGui::Text("Zoom: %.0f%%", -(camera->GetFovAndScreen().x - 45.f) / (45.f - 0.25f) * 100.f);
+	// // ImGui::Text("Zoom: %f", (1. - (camera->GetFovAndScreen().x - 0.25f) / 60.f) * 100.f);
+	// // ImGui::Text("Zoom: %.2f%%", -(camera->GetFovAndScreen().x - 45.f));
+	// ImGui::Text("Zoom: %.0f%%", -(camera->GetFovAndScreen().x - 45.f) / (45.f - 0.25f) * 100.f);
 
-	if (ImGui::Button("Click here")) {
-		std::cout << "window pos: " << ImGui::GetMainViewport()->Pos.x << ", " << ImGui::GetMainViewport()->Pos.y << std::endl;
-		std::cout << "window size: " << ImGui::GetMainViewport()->Size.x << ", " << ImGui::GetMainViewport()->Size.y << std::endl;
-	}
+	// if (ImGui::Button("Click here")) {
+	// 	std::cout << "window pos: " << ImGui::GetMainViewport()->Pos.x << ", " << ImGui::GetMainViewport()->Pos.y << std::endl;
+	// 	std::cout << "window size: " << ImGui::GetMainViewport()->Size.x << ", " << ImGui::GetMainViewport()->Size.y << std::endl;
+	// }
 
-	if (ImGui::Button("Reset zoom")) {
-		reset_zoom();
-		// camera->SetFov(45.f);
-		// camera->UpdateViewMatrix();
-	}
+	// if (ImGui::Button("Reset zoom")) {
+	// 	reset_zoom();
+	// 	// camera->SetFov(45.f);
+	// 	// camera->UpdateViewMatrix();
+	// }
 
-	if (ImGui::Button("Look at center")) {
-		look_at_center();
-		// camera->LookAt(glm::vec3(0.f, 0.f, 0.f));
-	}
+	// if (ImGui::Button("Look at center")) {
+	// 	look_at_center();
+	// 	// camera->LookAt(glm::vec3(0.f, 0.f, 0.f));
+	// }
 
-	if (ImGui::Button("Cull back")) {
-		cull_mode = GL_BACK;
-	}
-	if (ImGui::Button("Cull front")) {
-		cull_mode = GL_FRONT;
-	}
+	// if (ImGui::Button("Cull back")) {
+	// 	cull_mode = GL_BACK;
+	// }
+	// if (ImGui::Button("Cull front")) {
+	// 	cull_mode = GL_FRONT;
+	// }
 
-	if (ImGui::Checkbox("Enable clipping", &isClippingEnabled)) {
-		hex_renderer->setClipping(isClippingEnabled);
-	}
+	// if (ImGui::Checkbox("Enable clipping", &isClippingEnabled)) {
+	// 	hex_renderer->setClipping(isClippingEnabled);
+	// }
 
-	if (ImGui::Checkbox("Enable light", &isLightEnabled)) {
-		hex_renderer->setLight(isLightEnabled);
-	}
+	// if (ImGui::Checkbox("Enable light", &isLightEnabled)) {
+	// 	hex_renderer->setLight(isLightEnabled);
+	// }
 
-	if (ImGui::SliderFloat("Mesh size", &meshSize, 0., 1.)) {
-		hex_renderer->setMeshSize(meshSize);
-	}
-	if (ImGui::SliderFloat("Mesh shrink", &meshShrink, 0., 1.)) {
-		hex_renderer->setMeshShrink(meshShrink);
-	}
+	// if (ImGui::SliderFloat("Mesh size", &meshSize, 0., 1.)) {
+	// 	hex_renderer->setMeshSize(meshSize);
+	// }
+	// if (ImGui::SliderFloat("Mesh shrink", &meshShrink, 0., 1.)) {
+	// 	hex_renderer->setMeshShrink(meshShrink);
+	// }
 
-	if (ImGui::BeginCombo("Pick Mode", pickModeStrings[pickMode])) {
-		// Populate the combo box with options
-		for (int n = 0; n < IM_ARRAYSIZE(pickModeStrings); n++) {
-			bool isSelected = (Element)n == pickMode;
-			if (ImGui::Selectable(pickModeStrings[n], isSelected)) {
-				pickMode = (Element)n;
-			}
-		}
-		ImGui::EndCombo();
-	}
+	// if (ImGui::BeginCombo("Pick Mode", pickModeStrings[pickMode])) {
+	// 	// Populate the combo box with options
+	// 	for (int n = 0; n < IM_ARRAYSIZE(pickModeStrings); n++) {
+	// 		bool isSelected = (Element)n == pickMode;
+	// 		if (ImGui::Selectable(pickModeStrings[n], isSelected)) {
+	// 			pickMode = (Element)n;
+	// 		}
+	// 	}
+	// 	ImGui::EndCombo();
+	// }
 
 
 
-	ImGui::End();
+	// ImGui::End();
 
 	ImGui::Begin("Attributes", nullptr, ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_AlwaysAutoResize);
 

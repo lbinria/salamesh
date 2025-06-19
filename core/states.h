@@ -1,9 +1,5 @@
 #pragma once
 
-#include <ultimaille/all.h>
-
-using namespace UM;
-
 struct InputState {
 
 	int last_hovered_edge;

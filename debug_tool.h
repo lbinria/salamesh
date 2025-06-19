@@ -4,7 +4,7 @@
 #include "tool.h"
 
 #include "model.h"
-#include "states.h"
+#include "core/states.h"
 
 struct DebugTool : public Tool {
 
