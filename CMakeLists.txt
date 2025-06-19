@@ -71,7 +71,7 @@ add_executable(salamesh
   hex_renderer.cpp hex_renderer.h 
   points_cloud.cpp points_cloud.h
   wireframe.cpp wireframe.h
-  arcball_camera.h 
+  # arcball_camera.h 
   tool.h
   lua_console.h lua_console.cpp
   lua_engine.h lua_engine.cpp

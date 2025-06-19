@@ -3,7 +3,7 @@
 #include <sol/sol.hpp>
 #include "core/states.h"
 // #include "app.h"
-#include "app_interface.h"
+#include "core/app_interface.h"
 #include <imgui.h>
 
 // TODO complete bindings

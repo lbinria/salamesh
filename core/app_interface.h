@@ -1,8 +1,7 @@
 #pragma once
 
-#include "core/renderer.h"
+#include "renderer.h"
 #include "arcball_camera.h"
-// #include <memory>
 
 struct IApp {
 

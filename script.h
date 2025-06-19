@@ -6,7 +6,7 @@
 #include "core/component.h"
 #include "core/states.h"
 // #include "app.h"
-#include "app_interface.h"
+#include "core/app_interface.h"
 #include <imgui.h>
 
 

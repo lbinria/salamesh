@@ -3,7 +3,7 @@
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
 
-#include "app_interface.h"
+#include "core/app_interface.h"
 
 #include "imgui.h"
 #include "backends/imgui_impl_glfw.h"
@@ -29,7 +29,7 @@
 #include "points_cloud.h"
 #include "wireframe.h"
 
-#include "arcball_camera.h"
+#include "core/arcball_camera.h"
 
 #include "tool.h"
 #include "script.h"

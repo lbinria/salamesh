@@ -4,8 +4,8 @@
 
 #pragma once
 
-#include "include/glm/glm.hpp"
-#include "include/glm/gtc/matrix_transform.hpp"
+#include "../include/glm/glm.hpp"
+#include "../include/glm/gtc/matrix_transform.hpp"
 
 const float FAR_PLANE = 100.f;
 const float NEAR_PLANE = 0.1f;
