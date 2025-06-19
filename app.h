@@ -144,8 +144,11 @@ struct App : public IApp {
     void setClipping(bool enabled) final override;
     void setCullMode(int mode) final override { cull_mode = mode; }
 
+
     Renderer& getRenderer() final override { return *hex_renderer; }
     ArcBallCamera& getCamera() final override { return *camera; }
+    InputState& getInputState() final override { return st; }
+    Hexahedra& getHexahedra() final override { return hex; }
 
     std::vector<std::string> getPickModeStrings() const { return std::vector<std::string>(pickModeStrings, pickModeStrings + 4); }
     int getPickMode() { return pickMode; }
@@ -186,6 +189,7 @@ struct App : public IApp {
     GLFWwindow* window;
     
     std::vector<std::unique_ptr<Component>> scripts;
+	InputState st;
 
     private:
 

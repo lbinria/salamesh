@@ -65,7 +65,6 @@ struct MyApp : App {
 	private:
 
 	// std::unique_ptr<Model> model;
-	InputState st;
 
 	// std::unique_ptr<HexCollapseTool> hex_collapse_tool;
 
