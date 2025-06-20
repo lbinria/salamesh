@@ -93,7 +93,7 @@ target_link_libraries(salamesh PRIVATE ImGuiFileDialog ${CMAKE_DL_LIBS} ultimail
 target_link_libraries(salamesh PRIVATE ${LUA_LIBRARIES})
 
 # Copy assets to the build directory
-message("Copying assets from ${PROJECT_SOURCE_DIR}/assets to ${CMAKE_BINARY_DIR}/assets")
+message("Copying assets from ${PROJECT_SOURCE_DIR}/assets to ${CMAKE_CURRENT_BINARY_DIR}/assets")
 file(COPY ${PROJECT_SOURCE_DIR}/assets DESTINATION ${CMAKE_BINARY_DIR})
-message("Copying shaders from ${PROJECT_SOURCE_DIR}/shaders to ${CMAKE_BINARY_DIR}/shaders")
+message("Copying shaders from ${PROJECT_SOURCE_DIR}/shaders to ${CMAKE_CURRENT_BINARY_DIR}/shaders")
 file(COPY ${PROJECT_SOURCE_DIR}/shaders DESTINATION ${CMAKE_BINARY_DIR})
