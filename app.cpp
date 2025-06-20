@@ -348,7 +348,8 @@ void App::run()
 	glfwSetFramebufferSizeCallback(window, framebuffer_size_callback);  
 
 	// TODO Only load first for the moment
-	load_model(*args.models.begin());
+	if (!args.models.empty())
+		load_model(*args.models.begin());
 	// load_model("assets/catorus_hex_attr.geogram");
 	// load_model("assets/joint.geogram");
 
