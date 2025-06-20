@@ -120,9 +120,14 @@ struct HexRenderer : public Renderer {
         setAttribute(converted_attribute_data);
     }
 
-    void setColorMode(int colorMode) {
+    int getColorMode() final override {
+        return colorMode;
+    }
+
+    void setColorMode(ColorMode mode) final override {
         shader.use();
-        shader.setInt("colorMode", colorMode);
+        shader.setInt("colorMode", mode);
+        colorMode = mode;
     }
 
     bool getLight() {
@@ -197,5 +202,6 @@ struct HexRenderer : public Renderer {
     bool isClipping = false;
     float meshSize = 0.01f;
     float meshShrink = 0.f;
+    ColorMode colorMode = ColorMode::COLOR;
 
 };

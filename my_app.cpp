@@ -87,15 +87,14 @@ void MyApp::draw_gui() {
 	ImGui::SetWindowSize(ImVec2(200, ImGui::GetWindowHeight()));
 
 
-	if (ImGui::BeginCombo("##combo_colormode_selection", colorModeStrings[colorMode])) {
+	if (ImGui::BeginCombo("##combo_colormode_selection", Renderer::colorModeStrings[hex_renderer->getColorMode()])) {
 		
-		for (int n = 0; n < IM_ARRAYSIZE(colorModeStrings); n++) {
-			bool isSelected = (ColorMode)n == colorMode;
-			if (ImGui::Selectable(colorModeStrings[n], isSelected)) {
-				colorMode = (ColorMode)n;
-				hex_renderer->setColorMode(colorMode);
+		for (int n = 0; n < IM_ARRAYSIZE(Renderer::colorModeStrings); n++) {
+			bool isSelected = (Renderer::ColorMode)n == hex_renderer->getColorMode();
+			if (ImGui::Selectable(Renderer::colorModeStrings[n], isSelected)) {
+				hex_renderer->setColorMode((Renderer::ColorMode)n);
 
-				if (colorMode == ColorMode::ATTRIBUTE) {
+				if (hex_renderer->getColorMode() == Renderer::ColorMode::ATTRIBUTE) {
 					CellAttribute<double> a(attrs[selectedAttr].second, attributes, hex, -1);
 					hex_renderer->changeAttribute(a, attrs[selectedAttr].first);
 				}
@@ -106,7 +105,7 @@ void MyApp::draw_gui() {
 	}
 
 
-	if (colorMode == 1) {
+	if (hex_renderer->getColorMode() == 1) {
 
 
 		const char * items[] = {"Item1", "Item2"};

@@ -47,10 +47,6 @@ namespace fs = std::filesystem;
 struct App : public IApp {
 
 
-    enum ColorMode {
-        COLOR,
-        ATTRIBUTE,
-    };
 
     const float FAR_PLANE = 100.f;
     const float NEAR_PLANE = 0.1f;
@@ -64,15 +60,7 @@ struct App : public IApp {
         mousePos(0,0), 
         lastMousePos(0,0), 
         scrollDelta(0,0)
-    {
-        // // Check args
-        // if (!args.empty()) {
-        //     fs::path p(args);
-
-        // } else {
-            
-        // }
-    }
+    {}
 
 
     std::unique_ptr<ArcBallCamera> camera;
@@ -155,6 +143,7 @@ struct App : public IApp {
     void setClipping(bool enabled) final override;
     void setCullMode(int mode) final override { cull_mode = mode; }
 
+    // Accessors
 
     Renderer& getRenderer() final override { return *hex_renderer; }
     ArcBallCamera& getCamera() final override { return *camera; }
@@ -164,6 +153,13 @@ struct App : public IApp {
     std::vector<std::string> getPickModeStrings() const { return std::vector<std::string>(pickModeStrings, pickModeStrings + 4); }
     int getPickMode() { return pickMode; }
     void setPickMode(Element mode) { pickMode = mode; }
+
+    int getSelectedAttr() const { return selectedAttr; }
+    void setSelectedAttr(int attr) { 
+        selectedAttr = attr; 
+        CellAttribute<double> a(attrs[selectedAttr].second, attributes, hex, -1);
+        hex_renderer->changeAttribute(a, attrs[selectedAttr].first);
+    }
 
     // To override lifecycle functions
     virtual void init() = 0;
@@ -180,14 +176,12 @@ struct App : public IApp {
     virtual void key_event(int key, int scancode, int action, int mods) = 0;
     
     const char* pickModeStrings[4] = {"Points", "Edges", "Facets", "Cells"};
-    const char* colorModeStrings[2] = {"Color", "Attribute"};
 
 
     Hexahedra hex;
     VolumeAttributes attributes;
 
     Element pickMode = Element::CELLS;
-    ColorMode colorMode = COLOR;
 
     std::vector<int> _lastHovered;
 

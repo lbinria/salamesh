@@ -180,6 +180,15 @@ struct LuaScript : public Component {
 		renderer_tbl.set_function("getMeshShrink", &Renderer::getMeshShrink);
 		renderer_tbl.set_function("setMeshShrink", &Renderer::setMeshShrink);
 
+		renderer_tbl["color_mode_strings"] = sol::readonly_property(
+			&Renderer::getColorModeStrings
+		);
+
+		renderer_tbl["color_mode"] = sol::property(
+			&Renderer::getColorMode,
+			&Renderer::setColorMode
+		);
+
 		app_type["pick_mode_strings"] = sol::readonly_property(
 			&IApp::getPickModeStrings
 		);
@@ -187,6 +196,11 @@ struct LuaScript : public Component {
 		app_type["pick_mode"] = sol::property(
 			&IApp::getPickMode,
 			&IApp::setPickMode
+		);
+
+		app_type["selected_attr"] = sol::property(
+			&IApp::getSelectedAttr,
+			&IApp::setSelectedAttr
 		);
 
 		// std::vector<std::string> v = {"a", "b", "c"};

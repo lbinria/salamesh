@@ -40,4 +40,8 @@ struct IApp {
 
     virtual int getPickMode() = 0;
     virtual void setPickMode(Element mode) = 0;
+
+    virtual int getSelectedAttr() const = 0;
+    virtual void setSelectedAttr(int attr) = 0;
+
 };

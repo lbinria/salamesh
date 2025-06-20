@@ -366,7 +366,7 @@ void App::run()
 	hex_renderer->setLight(isLightEnabled);
 	hex_renderer->setMeshShrink(meshShrink);
 	hex_renderer->setMeshSize(meshSize);
-	hex_renderer->setColorMode(ColorMode::COLOR);
+	hex_renderer->setColorMode(Renderer::ColorMode::COLOR);
 
 	// Model init
 	hex_renderer->init(hex);
