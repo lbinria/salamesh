@@ -27,5 +27,9 @@ function draw_gui()
 	imgui.Text("Hello lua !")
 	imgui.Text("Mouse pos: (" .. tostring(mx) .. "," .. tostring(my) .. ")")
 
+	-- if (imgui.Button("Screenshot !")) then
+	-- 	app.screenshot("screenshot_" .. os.date("%Y%m%d_%H%M%S") .. ".png")
+	-- end
+
 	imgui.End()
 end

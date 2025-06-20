@@ -130,8 +130,8 @@ struct App : public IApp {
     int getHeight() final override;
 
     // Utils functions
-    void load_model(const std::string& filename);
-    void screenshot(const std::string& filename);
+    void load_model(const std::string& filename) final override;
+    void screenshot(const std::string& filename) final override;
     void quit();
     float get_depth(double x, double y);
     unsigned char get_depth2(double x, double y);

@@ -194,6 +194,7 @@ struct LuaScript : public Component {
 		// for (size_t i = 0; i < app.getPickModeStrings().size(); ++i) {
 		// 	pick_mode_strings_tbl[i + 1] = app.getPickModeStrings()[i];
 		// }
+		// app_type.set_function("screenshot", &IApp::screenshot);
 
 
 		app_type.set_function("reset_zoom", [&app = app]() {

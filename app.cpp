@@ -608,13 +608,6 @@ void App::run()
 	hex_renderer->clean();
 	mesh_ps->clean();
 
-	// // Free callback
-	// // Setup inputs
-	// glfwSetKeyCallback(window, NULL);
-	// glfwSetScrollCallback(window, NULL);
-	// glfwSetMouseButtonCallback(window, NULL);
-	// glfwSetCursorPosCallback(window, NULL);  
-
 	// Terminate & quit
 	glfwTerminate();
 	return;
@@ -637,10 +630,6 @@ long App::pick_cell() {
 	return id >= 0 && id < hex.ncells() ? id : -1;
 }
 
-
-// float getLinearDepth(float depth, float near, float far) {
-//     return (2.0f * near * far) / (far + near - depth * (far - near));
-// }
 float getLinearDepth(float depth, float near, float far) {
 	return near * far / (far + depth * (near - far));
 }
@@ -651,13 +640,6 @@ float App::get_depth(double x, double y) {
     glReadPixels(x, SCR_HEIGHT - y, 1, 1, GL_DEPTH_COMPONENT, GL_FLOAT, &depth);
     return depth;
 }
-
-// unsigned char App::get_depth2(double x, double y) {
-// 	glBindFramebuffer(GL_READ_FRAMEBUFFER, fbo);
-//     unsigned char depth;
-//     glReadPixels(x, SCR_HEIGHT - y, 1, 1, GL_RED, GL_UNSIGNED_BYTE, &depth);
-//     return depth;
-// }
 
 void getNDC(int x, int y, int w, int h, float &ndcX, float &ndcY) {
 	ndcX = (2.f*x) / w - 1.0f;
@@ -687,8 +669,6 @@ glm::vec3 App::pick_point(double x, double y) {
 	// Read depth value
     float depth = get_depth(x, y);
 	depth = depth * 2.f - 1.f; // Convert to NDC range [-1, 1]
-    // float zCoordinate = getLinearDepth(depth, NEAR_PLANE, FAR_PLANE);
-	// std::cout << "z: " << zCoordinate << std::endl;
 
 	glm::vec3 p;
 	unproject(x, y, depth, p);

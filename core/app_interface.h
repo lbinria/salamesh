@@ -14,6 +14,9 @@ struct IApp {
         CELLS = 3
     };
 
+    virtual void screenshot(const std::string& filename) = 0;
+    virtual void load_model(const std::string& filename) = 0;
+
 
     virtual int getWidth() = 0;
     virtual int getHeight() = 0;
