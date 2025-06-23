@@ -2,17 +2,10 @@
 
 #include "renderer.h"
 #include "states.h"
+#include "element.h"
 #include "arcball_camera.h"
 
 struct IApp {
-
-    enum Element {
-        CORNERS = -1,
-        POINTS = 0,
-        EDGES = 1,
-        FACETS = 2,
-        CELLS = 3
-    };
 
     virtual void screenshot(const std::string& filename) = 0;
     virtual void load_model(const std::string& filename) = 0;

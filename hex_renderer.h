@@ -1,6 +1,8 @@
 #pragma once
 
 #include <vector>
+#include <tuple>
+#include <memory>
 
 #include <ultimaille/all.h>
 
@@ -9,6 +11,7 @@
 #include "include/glm/gtc/type_ptr.hpp"
 
 #include "core/renderer.h"
+#include "core/element.h"
 #include "shader.h"
 
 // TODO IMPORTANT see to bind mesh directly to the shader via buffermap and pointers
@@ -120,6 +123,37 @@ struct HexRenderer : public Renderer {
         setAttribute(converted_attribute_data);
     }
 
+    // template<typename T>
+    // void changeAttribute(AttributeContainer<T> &a, int element) {
+    //     // Set attribute element to shader
+    //     shader.use();
+    //     shader.setInt("attr_element", element);
+    //     // Transform data
+    //     std::vector<float> converted_attribute_data(a.data.size());
+    //     std::transform(a.data.begin(), a.data.end(), converted_attribute_data.begin(), [](T x) { return static_cast<float>(x);});
+    //     // Set attribute data to shader
+    //     setAttribute(converted_attribute_data);
+    // }
+
+    void changeAttribute(GenericAttributeContainer *ga, int element) {
+        // Set attribute element to shader
+        shader.use();
+        shader.setInt("attr_element", element);
+        // Transform data
+        if (auto a = dynamic_cast<AttributeContainer<double>*>(ga)) {
+
+            std::vector<float> converted_attribute_data(a->data.size());
+            std::transform(a->data.begin(), a->data.end(), converted_attribute_data.begin(), [](double x) { return static_cast<float>(x);});
+
+            // Set attribute data to shader
+            setAttribute(converted_attribute_data);
+        } else if (auto a = dynamic_cast<AttributeContainer<float>*>(ga)) {
+
+        } else if (auto a = dynamic_cast<AttributeContainer<int>*>(ga)) {
+
+        }
+    }
+
     int getColorMode() final override {
         return colorMode;
     }
@@ -180,6 +214,19 @@ struct HexRenderer : public Renderer {
         shader.setFloat3("point", p);
     }
 
+    void setSelectedAttr(int idx) {
+        selectedAttr = idx;
+        int attr_element = std::get<1>(attrs[idx]);
+        changeAttribute(std::get<2>(attrs[idx]).get(), attr_element);
+    }
+
+    int getSelectedAttr() const {
+        return selectedAttr;
+    }
+
+
+    std::vector<std::tuple<std::string, Element, std::shared_ptr<GenericAttributeContainer>>> attrs;
+
     private:
 
     int ncells;
@@ -203,5 +250,7 @@ struct HexRenderer : public Renderer {
     float meshSize = 0.01f;
     float meshShrink = 0.f;
     ColorMode colorMode = ColorMode::COLOR;
+    
+    int selectedAttr = 0;
 
 };

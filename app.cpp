@@ -184,12 +184,13 @@ void App::load_model(const std::string& filename) {
 		attrs.push_back({Element::CELLS, a.first});
 	}
 
-    // mesh = std::make_unique<HexRenderer>(hex, attributes);
     Shader shader("shaders/hex.vert", "shaders/hex.frag");
     hex_renderer = std::make_unique<HexRenderer>(shader);
-    // mesh = std::make_shared<HexRenderer>(shader);
-	// mesh->setAttributes(attributes);
 	hex_renderer->to_gl(hex);
+
+	for (auto a : attributes.cells) {
+		hex_renderer->attrs.push_back(std::make_tuple(a.first, Element::CELLS, a.second));
+	}
 
 
 	#ifdef _DEBUG

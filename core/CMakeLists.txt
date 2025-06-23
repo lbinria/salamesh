@@ -5,6 +5,7 @@ project(salamesh_core)
 set(SOURCES
     app_interface.h
     component.h component.cpp
+    element.h
     states.h 
     renderer.h
     arcball_camera.h arcball_camera.cpp

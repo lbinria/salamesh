@@ -148,15 +148,29 @@ void MyApp::draw_gui() {
 
 		ImGui::Text("Attribute");
 
+		// if (attrs.size() > 0) {
+		// 	if (ImGui::BeginCombo("##combo_attribute_selection", attrs[selectedAttr].second.c_str())) {
+				
+		// 		for (int n = 0; n < attrs.size(); n++) {
+		// 			bool isSelected = n == selectedAttr;
+		// 			if (ImGui::Selectable(attrs[n].second.c_str(), isSelected)) {
+		// 				selectedAttr = n;
+		// 				CellAttribute<double> a(attrs[selectedAttr].second, attributes, hex, -1);
+		// 				hex_renderer->changeAttribute(a, attrs[n].first);
+		// 				std::cout << "set attr" << attrs[n].first << ":" << attrs[n].second << std::endl;
+						
+		// 			}
+		// 		}
+		// 		ImGui::EndCombo();
+		// 	}
+		// }
 		if (attrs.size() > 0) {
-			if (ImGui::BeginCombo("##combo_attribute_selection", attrs[selectedAttr].second.c_str())) {
+			if (ImGui::BeginCombo("##combo_attribute_selection", attrs[hex_renderer->getSelectedAttr()].second.c_str())) {
 				
 				for (int n = 0; n < attrs.size(); n++) {
-					bool isSelected = n == selectedAttr;
+					bool isSelected = n == hex_renderer->getSelectedAttr();
 					if (ImGui::Selectable(attrs[n].second.c_str(), isSelected)) {
-						selectedAttr = n;
-						CellAttribute<double> a(attrs[selectedAttr].second, attributes, hex, -1);
-						hex_renderer->changeAttribute(a, attrs[n].first);
+						hex_renderer->setSelectedAttr(n);
 						std::cout << "set attr" << attrs[n].first << ":" << attrs[n].second << std::endl;
 						
 					}
