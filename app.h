@@ -102,8 +102,8 @@ struct App : public IApp {
     unsigned int colormaps[2];
     unsigned int colormaps2D[2];
 
-    std::vector<std::pair<Element, std::string>> attrs;
-    int selectedAttr = 0;
+    // std::vector<std::pair<Element, std::string>> attrs;
+    // int selectedAttr = 0;
 
     glm::mat4 projection;
 
@@ -153,13 +153,6 @@ struct App : public IApp {
     std::vector<std::string> getPickModeStrings() const { return std::vector<std::string>(pickModeStrings, pickModeStrings + 4); }
     int getPickMode() { return pickMode; }
     void setPickMode(Element mode) { pickMode = mode; }
-
-    int getSelectedAttr() const { return selectedAttr; }
-    void setSelectedAttr(int attr) { 
-        selectedAttr = attr; 
-        CellAttribute<double> a(attrs[selectedAttr].second, attributes, hex, -1);
-        hex_renderer->changeAttribute(a, attrs[selectedAttr].first);
-    }
 
     // To override lifecycle functions
     virtual void init() = 0;

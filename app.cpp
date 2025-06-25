@@ -169,29 +169,26 @@ void App::load_model(const std::string& filename) {
 	std::cout << "nverts = " << hex.nverts() << std::endl;
 	std::cout << "nfacets = " << hex.nfacets() << std::endl;
 	std::cout << "model read." << std::endl;
-	attrs.clear();
-
-	for (auto a : attributes.points) {
-		attrs.push_back({Element::POINTS, a.first});
-	}
-	for (auto a : attributes.cell_corners) {
-		attrs.push_back({Element::CORNERS, a.first});
-	}
-	for (auto a : attributes.cell_facets) {
-		attrs.push_back({Element::FACETS, a.first});
-	}
-	for (auto a : attributes.cells) {
-		attrs.push_back({Element::CELLS, a.first});
-	}
 
     Shader shader("shaders/hex.vert", "shaders/hex.frag");
     hex_renderer = std::make_unique<HexRenderer>(shader);
 	hex_renderer->to_gl(hex);
 
+	// Add attribute to renderer
+	hex_renderer->attrs.clear();
+
+	for (auto a : attributes.points) {
+		hex_renderer->attrs.push_back(std::make_tuple(a.first, Element::POINTS, a.second));
+	}
+	for (auto a : attributes.cell_corners) {
+		hex_renderer->attrs.push_back(std::make_tuple(a.first, Element::CORNERS, a.second));
+	}
+	for (auto a : attributes.cell_facets) {
+		hex_renderer->attrs.push_back(std::make_tuple(a.first, Element::FACETS, a.second));
+	}
 	for (auto a : attributes.cells) {
 		hex_renderer->attrs.push_back(std::make_tuple(a.first, Element::CELLS, a.second));
 	}
-
 
 	#ifdef _DEBUG
 	std::chrono::steady_clock::time_point end_read_model = std::chrono::steady_clock::now();

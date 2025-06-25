@@ -87,6 +87,23 @@ void MyApp::draw_gui() {
 	ImGui::SetWindowSize(ImVec2(200, ImGui::GetWindowHeight()));
 
 
+	// if (ImGui::BeginCombo("##combo_colormode_selection", Renderer::colorModeStrings[hex_renderer->getColorMode()])) {
+		
+	// 	for (int n = 0; n < IM_ARRAYSIZE(Renderer::colorModeStrings); n++) {
+	// 		bool isSelected = (Renderer::ColorMode)n == hex_renderer->getColorMode();
+	// 		if (ImGui::Selectable(Renderer::colorModeStrings[n], isSelected)) {
+	// 			hex_renderer->setColorMode((Renderer::ColorMode)n);
+
+	// 			if (hex_renderer->getColorMode() == Renderer::ColorMode::ATTRIBUTE) {
+	// 				CellAttribute<double> a(attrs[selectedAttr].second, attributes, hex, -1);
+	// 				hex_renderer->changeAttribute(a, attrs[selectedAttr].first);
+	// 			}
+
+	// 		}
+	// 	}
+	// 	ImGui::EndCombo();
+	// }
+
 	if (ImGui::BeginCombo("##combo_colormode_selection", Renderer::colorModeStrings[hex_renderer->getColorMode()])) {
 		
 		for (int n = 0; n < IM_ARRAYSIZE(Renderer::colorModeStrings); n++) {
@@ -95,8 +112,8 @@ void MyApp::draw_gui() {
 				hex_renderer->setColorMode((Renderer::ColorMode)n);
 
 				if (hex_renderer->getColorMode() == Renderer::ColorMode::ATTRIBUTE) {
-					CellAttribute<double> a(attrs[selectedAttr].second, attributes, hex, -1);
-					hex_renderer->changeAttribute(a, attrs[selectedAttr].first);
+					// Update selected attribute to current (refresh shader)
+					hex_renderer->setSelectedAttr(hex_renderer->getSelectedAttr());
 				}
 
 			}
@@ -164,14 +181,20 @@ void MyApp::draw_gui() {
 		// 		ImGui::EndCombo();
 		// 	}
 		// }
-		if (attrs.size() > 0) {
-			if (ImGui::BeginCombo("##combo_attribute_selection", attrs[hex_renderer->getSelectedAttr()].second.c_str())) {
+		if (hex_renderer->attrs.size() > 0) {
+			if (ImGui::BeginCombo("##combo_attribute_selection", std::get<0>(hex_renderer->attrs[hex_renderer->getSelectedAttr()]).c_str())) {
 				
-				for (int n = 0; n < attrs.size(); n++) {
+				for (int n = 0; n < hex_renderer->attrs.size(); n++) {
 					bool isSelected = n == hex_renderer->getSelectedAttr();
-					if (ImGui::Selectable(attrs[n].second.c_str(), isSelected)) {
+					if (ImGui::Selectable(std::get<0>(hex_renderer->attrs[n]).c_str(), isSelected)) {
 						hex_renderer->setSelectedAttr(n);
-						std::cout << "set attr" << attrs[n].first << ":" << attrs[n].second << std::endl;
+						
+						std::cout 
+							<< "set attr" 
+							<< std::get<0>(hex_renderer->attrs[n]) 
+							<< ":" << std::get<1>(hex_renderer->attrs[n]) 
+							<< ":" << std::get<2>(hex_renderer->attrs[n]) 
+						<< std::endl;
 						
 					}
 				}

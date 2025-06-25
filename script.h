@@ -198,11 +198,6 @@ struct LuaScript : public Component {
 			&IApp::setPickMode
 		);
 
-		app_type["selected_attr"] = sol::property(
-			&IApp::getSelectedAttr,
-			&IApp::setSelectedAttr
-		);
-
 		// std::vector<std::string> v = {"a", "b", "c"};
 		// lua["pick_mode_strings"] = sol::as_table(v);
 		// app_type["pp"] = sol::readonly_property([]() {sol::as_table(v); });
