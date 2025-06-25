@@ -522,14 +522,15 @@ void App::run()
 		glEnable(GL_DEPTH_TEST);
 		glClearColor(0.05, 0.1, 0.15, 1.);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-		glBindTexture(GL_TEXTURE_1D, colormaps[selectedColormap]);
 		glCullFace(cull_mode);
 
-		// Render surface
+		// Render model
         hex_renderer->bind();
 		hex_renderer->setFragRenderMode(RenderMode::Color);
 		hex_renderer->shader.setMat4("view", view);
 		hex_renderer->shader.setMat4("projection", projection);
+		// TODO maybe move to render ?
+		glBindTexture(GL_TEXTURE_1D, colormaps[hex_renderer->getSelectedColormap()]);
         hex_renderer->render();
 
 		// Render points

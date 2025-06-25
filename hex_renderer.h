@@ -214,16 +214,25 @@ struct HexRenderer : public Renderer {
         shader.setFloat3("point", p);
     }
 
+    int getSelectedAttr() const {
+        return selectedAttr;
+    }
+
     void setSelectedAttr(int idx) {
         selectedAttr = idx;
         int attr_element = std::get<1>(attrs[idx]);
         changeAttribute(std::get<2>(attrs[idx]).get(), attr_element);
     }
 
-    int getSelectedAttr() const {
-        return selectedAttr;
+    int getSelectedColormap() const {
+        return selectedColormap;
     }
 
+    void setSelectedColormap(int idx) {
+        selectedColormap = idx;
+        shader.use();
+        shader.setInt("colormap", selectedColormap);
+    }
 
     std::vector<std::tuple<std::string, Element, std::shared_ptr<GenericAttributeContainer>>> attrs;
 
@@ -252,5 +261,6 @@ struct HexRenderer : public Renderer {
     ColorMode colorMode = ColorMode::COLOR;
     
     int selectedAttr = 0;
+    int selectedColormap = 0;
 
 };

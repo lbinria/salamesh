@@ -120,6 +120,10 @@ struct LuaScript : public Component {
 			return ImGui::Selectable(label, selected);
 		});
 
+		imgui.set_function("ImVec2", [](float x, float y) {
+			return ImVec2(x, y);
+		});
+
 		lua["imgui"] = imgui;
 
 

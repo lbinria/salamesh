@@ -87,23 +87,6 @@ void MyApp::draw_gui() {
 	ImGui::SetWindowSize(ImVec2(200, ImGui::GetWindowHeight()));
 
 
-	// if (ImGui::BeginCombo("##combo_colormode_selection", Renderer::colorModeStrings[hex_renderer->getColorMode()])) {
-		
-	// 	for (int n = 0; n < IM_ARRAYSIZE(Renderer::colorModeStrings); n++) {
-	// 		bool isSelected = (Renderer::ColorMode)n == hex_renderer->getColorMode();
-	// 		if (ImGui::Selectable(Renderer::colorModeStrings[n], isSelected)) {
-	// 			hex_renderer->setColorMode((Renderer::ColorMode)n);
-
-	// 			if (hex_renderer->getColorMode() == Renderer::ColorMode::ATTRIBUTE) {
-	// 				CellAttribute<double> a(attrs[selectedAttr].second, attributes, hex, -1);
-	// 				hex_renderer->changeAttribute(a, attrs[selectedAttr].first);
-	// 			}
-
-	// 		}
-	// 	}
-	// 	ImGui::EndCombo();
-	// }
-
 	if (ImGui::BeginCombo("##combo_colormode_selection", Renderer::colorModeStrings[hex_renderer->getColorMode()])) {
 		
 		for (int n = 0; n < IM_ARRAYSIZE(Renderer::colorModeStrings); n++) {
@@ -128,11 +111,11 @@ void MyApp::draw_gui() {
 		const char * items[] = {"Item1", "Item2"};
 
 		ImVec2 colormapSize(320, 35);
-		if (ImGui::BeginCombo("##combo_colormaps_selection", items[selectedColormap])) {
+		if (ImGui::BeginCombo("##combo_colormaps_selection", items[hex_renderer->getSelectedColormap()])) {
 
 			// Display items in the popup
 			for (int i = 0; i < IM_ARRAYSIZE(items); i++) {
-				const bool isSelected = (selectedColormap == i);
+				const bool isSelected = (hex_renderer->getSelectedColormap() == i);
 				
 				// Create a unique ID for each item to prevent conflicts
 				ImGui::PushID(i);
@@ -142,7 +125,7 @@ void MyApp::draw_gui() {
 				
 				// Display the item with both text and image
 				if (ImGui::Selectable(items[i], isSelected)) {
-					selectedColormap = i;
+					hex_renderer->setSelectedColormap(i);
 				}
 				
 				// Display the image after the text
@@ -158,29 +141,14 @@ void MyApp::draw_gui() {
 		}
 
 		ImGui::Image(
-			(ImTextureID)(intptr_t)colormaps2D[selectedColormap], 
+			(ImTextureID)(intptr_t)colormaps2D[hex_renderer->getSelectedColormap()], 
 			colormapSize
 		);
 
 
 		ImGui::Text("Attribute");
 
-		// if (attrs.size() > 0) {
-		// 	if (ImGui::BeginCombo("##combo_attribute_selection", attrs[selectedAttr].second.c_str())) {
-				
-		// 		for (int n = 0; n < attrs.size(); n++) {
-		// 			bool isSelected = n == selectedAttr;
-		// 			if (ImGui::Selectable(attrs[n].second.c_str(), isSelected)) {
-		// 				selectedAttr = n;
-		// 				CellAttribute<double> a(attrs[selectedAttr].second, attributes, hex, -1);
-		// 				hex_renderer->changeAttribute(a, attrs[n].first);
-		// 				std::cout << "set attr" << attrs[n].first << ":" << attrs[n].second << std::endl;
-						
-		// 			}
-		// 		}
-		// 		ImGui::EndCombo();
-		// 	}
-		// }
+
 		if (hex_renderer->attrs.size() > 0) {
 			if (ImGui::BeginCombo("##combo_attribute_selection", std::get<0>(hex_renderer->attrs[hex_renderer->getSelectedAttr()]).c_str())) {
 				

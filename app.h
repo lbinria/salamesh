@@ -98,7 +98,6 @@ struct App : public IApp {
     float meshSize = 0.01f;
     float meshShrink = 0.f;
 
-    int selectedColormap = 0;
     unsigned int colormaps[2];
     unsigned int colormaps2D[2];
 
