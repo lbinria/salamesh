@@ -120,8 +120,20 @@ struct LuaScript : public Component {
 			return ImGui::Selectable(label, selected);
 		});
 
+		imgui.set_function("Image", [](ImTextureID user_texture_id, ImVec2 size) {
+			ImGui::Image(user_texture_id, size);
+		});
+
 		imgui.set_function("ImVec2", [](float x, float y) {
 			return ImVec2(x, y);
+		});
+
+		imgui.set_function("PushID", [](int id) {
+			ImGui::PushID(id);
+		});
+
+		imgui.set_function("PopID", []() {
+			ImGui::PopID();
 		});
 
 		lua["imgui"] = imgui;
@@ -198,6 +210,11 @@ struct LuaScript : public Component {
 			&Renderer::setSelectedAttr
 		);
 
+		renderer_tbl["selected_colormap"] = sol::property(
+			&Renderer::getSelectedColormap,
+			&Renderer::setSelectedColormap
+		);
+
 		app_type["pick_mode_strings"] = sol::readonly_property(
 			&IApp::getPickModeStrings
 		);
@@ -205,6 +222,10 @@ struct LuaScript : public Component {
 		app_type["pick_mode"] = sol::property(
 			&IApp::getPickMode,
 			&IApp::setPickMode
+		);
+
+		app_type["colormaps_2d"] = sol::readonly_property(
+			&IApp::getColorMaps2D
 		);
 
 		// std::vector<std::string> v = {"a", "b", "c"};

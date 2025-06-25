@@ -152,6 +152,10 @@ struct App : public IApp {
     std::vector<std::string> getPickModeStrings() const { return std::vector<std::string>(pickModeStrings, pickModeStrings + 4); }
     int getPickMode() { return pickMode; }
     void setPickMode(Element mode) { pickMode = mode; }
+    
+    std::vector<unsigned int> getColorMaps2D() final override {
+        return {colormaps2D[0], colormaps2D[1]};
+    }
 
     // To override lifecycle functions
     virtual void init() = 0;

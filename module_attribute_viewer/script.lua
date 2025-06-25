@@ -26,25 +26,25 @@ function draw_gui()
 		local items = {"Item1", "Item2"}
 		local colormap_size = imgui.ImVec2(320, 35)
 		imgui.Text("Colormap")
-		-- if (imgui.BeginCombo("##combo_colormaps_selection", items[app.renderer.selected_colormap + 1])) then
-		-- 	-- Display items in the popup
-		-- 	for i = 1, #items do
-		-- 		local is_selected = (app.renderer.selected_colormap + 1) == i
-		-- 		imgui.PushID(i)
+		if (imgui.BeginCombo("##combo_colormaps_selection", items[app.renderer.selected_colormap + 1])) then
+			-- Display items in the popup
+			for i = 1, #items do
+				local is_selected = (app.renderer.selected_colormap + 1) == i
+				imgui.PushID(i)
 
-		-- 		-- Display the item with both text and image
-		-- 		if (imgui.Selectable(items[i], is_selected)) then
-		-- 			app.renderer.selected_colormap = i - 1
-		-- 		end
+				-- Display the item with both text and image
+				if (imgui.Selectable(items[i], is_selected)) then
+					app.renderer.selected_colormap = i - 1
+				end
 
-		-- 		-- Display the image after the text
-		-- 		imgui.Image(app.renderer.colormaps2D[i - 1], colormap_size)
+				-- Display the image after the text
+				imgui.Image(app.colormaps_2d[i], colormap_size)
 
-		-- 		imgui.PopID()
-		-- 	end
+				imgui.PopID()
+			end
 
-		-- 	imgui.EndCombo()
-		-- end
+			imgui.EndCombo()
+		end
 
 	end 
 

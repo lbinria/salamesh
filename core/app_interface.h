@@ -33,6 +33,7 @@ struct IApp {
 
     virtual int getPickMode() = 0;
     virtual void setPickMode(Element mode) = 0;
+    virtual std::vector<unsigned int> getColorMaps2D() = 0;
 
 
 };

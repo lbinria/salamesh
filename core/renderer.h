@@ -34,5 +34,7 @@ struct Renderer {
     virtual void setMeshShrink(float val) = 0;
     virtual void setSelectedAttr(int idx) = 0;
     virtual int getSelectedAttr() const = 0;
-    
+    virtual int getSelectedColormap() const = 0;
+    virtual void setSelectedColormap(int idx) = 0;
+
 };
