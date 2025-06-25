@@ -14,10 +14,7 @@ function draw_gui()
 
 				if (app.renderer.color_mode == 1) then
 					print("Change to attribute color mode")
-					-- app.renderer.selected_attr = app.renderer.selected_attr
-					-- CellAttribute<double> a(attrs[selectedAttr].second, attributes, hex, -1);
-					-- hex_renderer->changeAttribute(a, attrs[selectedAttr].first);
-					-- app.renderer.changeAttribute(app.selected_attr)
+					app.renderer.selected_attr = app.renderer.selected_attr
 				end
 
 			end

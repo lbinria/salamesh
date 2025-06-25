@@ -189,6 +189,11 @@ struct LuaScript : public Component {
 			&Renderer::setColorMode
 		);
 
+		renderer_tbl["selected_attr"] = sol::property(
+			&Renderer::getSelectedAttr,
+			&Renderer::setSelectedAttr
+		);
+
 		app_type["pick_mode_strings"] = sol::readonly_property(
 			&IApp::getPickModeStrings
 		);

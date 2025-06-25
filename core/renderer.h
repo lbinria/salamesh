@@ -32,5 +32,7 @@ struct Renderer {
     virtual void setMeshSize(float val) = 0;
     virtual float getMeshShrink() = 0;
     virtual void setMeshShrink(float val) = 0;
-
+    virtual void setSelectedAttr(int idx) = 0;
+    virtual int getSelectedAttr() const = 0;
+    
 };
