@@ -214,6 +214,28 @@ struct HexRenderer : public Renderer {
         shader.setFloat3("point", p);
     }
 
+    // std::vector<std::tuple<std::string, Element>> getAttrs() {
+    //     std::vector<std::tuple<std::string, Element>> result;
+    //     for (const auto& attr : attrs) {
+    //         result.emplace_back(std::get<0>(attr), std::get<1>(attr));
+    //     }
+    //     return result;
+    // }
+
+    std::vector<std::tuple<std::string, int>> getAttrs() final override {
+        std::vector<std::tuple<std::string, int>> result;
+        // std::vector<std::pair<std::string, int>> result;
+        for (const auto& attr : attrs) {
+            result.emplace_back(std::get<0>(attr), std::get<1>(attr));
+            // result.push_back(std::make_tuple(std::get<0>(attr), std::get<1>(attr)));
+        }
+        return result;
+    }
+
+    std::tuple<std::string, int> getAttr(int idx) final override {
+        return std::make_tuple(std::get<0>(attrs[idx - 1]), std::get<1>(attrs[idx - 1]));
+    }
+
     int getSelectedAttr() const {
         return selectedAttr;
     }

@@ -13,7 +13,7 @@ function draw_gui()
 	local str_zoom_factor = string.format("%.0f", zoom_factor)
 	imgui.Text("Zoom: " .. str_zoom_factor .. "%")
 
-	if (imgui.Button("Reset zoom")) then
+	if (imgui.Button("Re²set zoom")) then
 		app.reset_zoom()
 	end
 

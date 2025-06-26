@@ -25,12 +25,16 @@ function draw_gui()
 	if (app.renderer.color_mode == 1) then
 		local items = {"Item1", "Item2"}
 		local colormap_size = imgui.ImVec2(320, 35)
-		imgui.Text("Colormap")
+
 		if (imgui.BeginCombo("##combo_colormaps_selection", items[app.renderer.selected_colormap + 1])) then
 			-- Display items in the popup
 			for i = 1, #items do
 				local is_selected = (app.renderer.selected_colormap + 1) == i
+				-- Create a unique ID for each item to prevent conflicts
 				imgui.PushID(i)
+
+				-- Calculate total width including spacing
+				-- local total_width = imgui.CalcTextSize(items[i]).x + colormap_size.x + 10.0
 
 				-- Display the item with both text and image
 				if (imgui.Selectable(items[i], is_selected)) then
@@ -46,76 +50,36 @@ function draw_gui()
 			imgui.EndCombo()
 		end
 
+		imgui.Image(
+			app.colormaps_2d[app.renderer.selected_colormap + 1], 
+			colormap_size
+		)
+
+		imgui.Text("Attribute")
+
+		if (#app.renderer.attrs > 0) then
+			-- local attr_name, attr_element = app.renderer.attrs[1]
+			local attr_name, attr_element = app.renderer.attrs[1][1]
+			local attr_element = app.renderer.attrs[1][2]
+			-- local attr_name, attr_element = app.renderer.get_attr(1);
+			-- print("first attr:" .. attr_name)
+			-- print("second attr:" .. attr_element)
+			-- print("selected atrt:" .. tostring(app.renderer.selected_attr))")
+			if (imgui.BeginCombo("##combo_attribute_selection", app.renderer.attrs[app.renderer.selected_attr + 1][1])) then
+				for n = 1, #app.renderer.attrs do
+					local is_selected = (n - 1) == app.renderer.selected_attr
+					if (imgui.Selectable(app.renderer.attrs[n][1], is_selected)) then
+						app.renderer.selected_attr = n - 1
+
+						-- print("set attr: " .. app.renderer.attrs[n][1] .. ":" .. app.renderer.attrs[n][2] .. ":" .. app.renderer.attrs[n][3])
+					end
+				end
+				imgui.EndCombo()
+			end
+		end
+
+
 	end 
 
 	imgui.End()
 end
-
-
--- if (hex_renderer->getColorMode() == 1) {
-
-
--- 	const char * items[] = {"Item1", "Item2"};
-
--- 	ImVec2 colormapSize(320, 35);
--- 	if (ImGui::BeginCombo("##combo_colormaps_selection", items[selectedColormap])) {
-
--- 		// Display items in the popup
--- 		for (int i = 0; i < IM_ARRAYSIZE(items); i++) {
--- 			const bool isSelected = (selectedColormap == i);
-			
--- 			// Create a unique ID for each item to prevent conflicts
--- 			ImGui::PushID(i);
-			
--- 			// Calculate total width including spacing
--- 			float totalWidth = ImGui::CalcTextSize(items[i]).x + 320.f /* image width */ + 10.0f;
-			
--- 			// Display the item with both text and image
--- 			if (ImGui::Selectable(items[i], isSelected)) {
--- 				selectedColormap = i;
--- 			}
-			
--- 			// Display the image after the text
--- 			ImGui::Image(colormaps2D[i], colormapSize);
-			
--- 			// Clean up the ID
--- 			ImGui::PopID();
--- 		}
-
-		
-		
--- 		ImGui::EndCombo();
--- 	}
-
--- 	ImGui::Image(
--- 		(ImTextureID)(intptr_t)colormaps2D[selectedColormap], 
--- 		colormapSize
--- 	);
-
-
--- 	ImGui::Text("Attribute");
-
-
--- 	if (hex_renderer->attrs.size() > 0) {
--- 		if (ImGui::BeginCombo("##combo_attribute_selection", std::get<0>(hex_renderer->attrs[hex_renderer->getSelectedAttr()]).c_str())) {
-			
--- 			for (int n = 0; n < hex_renderer->attrs.size(); n++) {
--- 				bool isSelected = n == hex_renderer->getSelectedAttr();
--- 				if (ImGui::Selectable(std::get<0>(hex_renderer->attrs[n]).c_str(), isSelected)) {
--- 					hex_renderer->setSelectedAttr(n);
-					
--- 					std::cout 
--- 						<< "set attr" 
--- 						<< std::get<0>(hex_renderer->attrs[n]) 
--- 						<< ":" << std::get<1>(hex_renderer->attrs[n]) 
--- 						<< ":" << std::get<2>(hex_renderer->attrs[n]) 
--- 					<< std::endl;
-					
--- 				}
--- 			}
--- 			ImGui::EndCombo();
--- 		}
--- 	}
-
-
--- }

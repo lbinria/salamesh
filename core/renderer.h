@@ -1,4 +1,7 @@
 #pragma once
+
+#include "element.h"
+
 #include <ultimaille/all.h>
 using namespace UM;
 
@@ -32,6 +35,8 @@ struct Renderer {
     virtual void setMeshSize(float val) = 0;
     virtual float getMeshShrink() = 0;
     virtual void setMeshShrink(float val) = 0;
+    virtual std::vector<std::tuple<std::string, int>> getAttrs() = 0;
+    virtual std::tuple<std::string, int> getAttr(int idx) = 0;
     virtual void setSelectedAttr(int idx) = 0;
     virtual int getSelectedAttr() const = 0;
     virtual int getSelectedColormap() const = 0;

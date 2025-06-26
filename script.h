@@ -205,6 +205,46 @@ struct LuaScript : public Component {
 			&Renderer::setColorMode
 		);
 
+		// renderer_tbl["attrs"] = sol::readonly_property(
+		// 	&Renderer::getAttrs
+		// );
+
+		// renderer_tbl["attrs"] = sol::readonly_property([&app = app, &lua = lua]() {
+		// 	sol::table result = lua.create_table();
+		// 	for (int i = 0; i < app.getRenderer().getAttrs().size(); ++i) {
+		// 		sol::table item = lua.create_table();
+		// 		item["first"] = std::get<0>(app.getRenderer().getAttrs()[i]);
+		// 		item["second"] = std::get<1>(app.getRenderer().getAttrs()[i]);
+		// 		result[i + 1] = item;
+
+		// 	}
+		// 	return result;
+		// });
+
+		// renderer_tbl["attrs"] = sol::readonly_property([&app = app]() {
+		// 	return app.getRenderer().getAttrs();
+		// });
+
+		// renderer_tbl["attrs"] = sol::readonly_property([&app = app]() {
+		// 	return sol::nested<std::vector<std::tuple<std::string, int>>>(app.getRenderer().getAttrs());
+		// });
+
+		auto attrs_tbl = lua.create_table();
+		for (auto &attr : app.getRenderer().getAttrs()) {
+			sol::table item = lua.create_table();
+			item.add(std::get<0>(attr)); // First element (name)
+			item.add(std::get<1>(attr)); // Second element (index)
+			// item[1] = std::get<0>(attr);
+			// item[2] = std::get<1>(attr);
+			attrs_tbl.add(item);
+			// attrs_tbl.add(sol::as_table(std::make_tuple(std::get<0>(attr), std::get<1>(attr))));
+		}
+		renderer_tbl["attrs"] = attrs_tbl;
+
+		renderer_tbl.set_function("get_attr", [&app = app](int idx) {
+			return app.getRenderer().getAttr(idx);
+		});
+
 		renderer_tbl["selected_attr"] = sol::property(
 			&Renderer::getSelectedAttr,
 			&Renderer::setSelectedAttr
