@@ -221,22 +221,13 @@ void MyApp::mouse_move(double x, double y) {
 
 	// std::cout << "mouse move: " << x << ", " << y << std::endl;
 
+	st.cell.set_hovered(pick_cell());
 
-	st.hovered_cell = pick_cell();
-
-	if (st.is_cell_hovered()) {
-		// std::cout << "cell hovered: " << st.h_cell << std::endl;
+	if (st.cell.is_hovered()) {
 		auto p = pick_point(mousePos.x, mousePos.y);
-		// // TODO Put in setHoveredEdge function in InputState
-		// st.last_hovered_edge = st.hovered_edge;
-		// st.hovered_edge = pick_edge(hex, p, st.hovered_cell);
-
-		st.setHoveredEdge(pick_edge(hex, p, st.hovered_cell));
-
-		// assert(st.h_edge >= 0 && st.h_edge < mesh->m.ncells() * 24);
-		// std::cout << "edge hovered: " << st.h_edge << std::endl;
+		st.edge.set_hovered(pick_edge(hex, p, st.cell.get_hovered()));
 	} else {
-		st.hovered_edge = -1;
+		st.edge.set_hovered(-1);
 	}
 
 
