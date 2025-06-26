@@ -78,6 +78,7 @@ void main()
         return;
     }
 
+    // Render mode color
     if (fragRenderMode == 0) {
 
 
@@ -118,8 +119,10 @@ void main()
             col = col * diffuse;
         }
 
+    // Render mode facet index
     } else if (fragRenderMode == 2) {
         col = encode_id(fragFacetIndex);
+    // Render mode cell index
     } else if (fragRenderMode == 3)
         col = encode_id(fragCellIndex);
 
