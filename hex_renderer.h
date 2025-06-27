@@ -182,6 +182,26 @@ struct HexRenderer : public Renderer {
         isClipping = enabled;
     }
 
+    glm::vec3 getClippingPlanePoint() {
+        return clippingPlanePoint;
+    }
+
+    void setClippingPlanePoint(glm::vec3 p) {
+        shader.use();
+        shader.setFloat3("clipping_plane_point", p);
+        clippingPlanePoint = p;
+    }
+
+    glm::vec3 getClippingPlaneNormal() {
+        return clippingPlaneNormal;
+    }
+
+    void setClippingPlaneNormal(glm::vec3 n) {
+        shader.use();
+        shader.setFloat3("clipping_plane_normal", n);
+        clippingPlaneNormal = n;
+    }
+
     float getMeshSize() {
         return meshSize;
     }
@@ -276,6 +296,8 @@ struct HexRenderer : public Renderer {
 
     bool isLightEnabled = true;
     bool isClipping = false;
+    glm::vec3 clippingPlanePoint;
+    glm::vec3 clippingPlaneNormal{0.f, 0.f, 1.f};
     float meshSize = 0.01f;
     float meshShrink = 0.f;
     ColorMode colorMode = ColorMode::COLOR;

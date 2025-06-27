@@ -2,6 +2,8 @@
 
 #include "element.h"
 
+#include "../include/glm/glm.hpp"
+
 #include <ultimaille/all.h>
 using namespace UM;
 
@@ -31,6 +33,10 @@ struct Renderer {
     virtual void setLight(bool enabled) = 0;
     virtual bool getClipping() = 0;
     virtual void setClipping(bool enabled) = 0;
+    virtual glm::vec3 getClippingPlanePoint() = 0;
+    virtual void setClippingPlanePoint(glm::vec3 p) = 0;
+    virtual glm::vec3 getClippingPlaneNormal() = 0;
+    virtual void setClippingPlaneNormal(glm::vec3 n) = 0;
     virtual float getMeshSize() = 0;
     virtual void setMeshSize(float val) = 0;
     virtual float getMeshShrink() = 0;

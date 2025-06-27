@@ -180,6 +180,48 @@ struct LuaScript : public Component {
 		renderer_tbl.set_function("getClipping", &Renderer::getClipping);
 		renderer_tbl.set_function("setClipping", &Renderer::setClipping);
 
+
+
+		// TODO see below for a better way to do this with sol::property
+		renderer_tbl.set_function(
+			"getClippingPlanePoint",
+			[&app = app]() { 
+				return std::make_tuple(
+					app.getRenderer().getClippingPlanePoint().x,
+					app.getRenderer().getClippingPlanePoint().y,
+					app.getRenderer().getClippingPlanePoint().z
+				); 
+			}
+		);
+		renderer_tbl.set_function(
+			"setClippingPlanePoint",
+			[&app = app](float x, float y, float z) { 
+				app.getRenderer().setClippingPlanePoint(glm::vec3(x, y, z)); 
+			}
+		);
+		renderer_tbl.set_function(
+			"getClippingPlaneNormal",
+			[&app = app]() { 
+				return std::make_tuple(
+					app.getRenderer().getClippingPlaneNormal().x,
+					app.getRenderer().getClippingPlaneNormal().y,
+					app.getRenderer().getClippingPlaneNormal().z
+				); 
+			}
+		);
+		renderer_tbl.set_function(
+			"setClippingPlaneNormal",
+			[&app = app](float x, float y, float z) { 
+				app.getRenderer().setClippingPlaneNormal(glm::vec3(x, y, z)); 
+			}
+		);
+
+
+		renderer_tbl["clipping_plane_normal"] = sol::property(
+			&Renderer::getClippingPlaneNormal,
+			&Renderer::setClippingPlaneNormal
+		);
+
 		renderer_tbl["meshSize"] = sol::property(
 			&Renderer::getMeshSize,
 			&Renderer::setMeshSize

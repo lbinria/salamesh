@@ -45,6 +45,13 @@ function draw_gui()
 		app.renderer.clipping = new_enable_clipping
 	end
 
+	local cpx, cpy, cpz = app.renderer.getClippingPlanePoint()
+	local sel_slider_clipping_plane_point, new_clipping_plane_point = imgui.SliderFloat("Clipping plane point", cpx, -1., 1.)
+	if (sel_slider_clipping_plane_point) then 
+		app.renderer.setClippingPlanePoint(new_clipping_plane_point, cpy, cpz)
+	end
+
+
 	local sel_slider_mesh_size, new_mesh_size = imgui.SliderFloat("Mesh size", app.renderer.meshSize, 0, 1)
 	if (sel_slider_mesh_size) then 
 		print("Change mesh size: " .. tostring(new_mesh_size))

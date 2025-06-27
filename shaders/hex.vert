@@ -9,6 +9,7 @@ layout (location = 4) in int facetIndex;
 layout (location = 5) in int cellIndex;
 layout (location = 7) in int vertexIndex;
 
+out vec3 fragBary;
 out vec3 fragNormal;
 out vec3 fragHeights;
 flat out int fragCellIndex;
@@ -16,6 +17,7 @@ flat out int fragFacetIndex;
 out float fragVertexIndex;
 
 flat out vec3 fragWorldPos;
+out vec3 fragWorldPos2;
 
 uniform mat4 model;
 uniform mat4 view;
@@ -50,10 +52,14 @@ void main()
    fragHighlight = texelFetch(highlight, cellIndex).x;
    fragFilter = texelFetch(_filter, cellIndex).x;
 
+
+   fragBary = bary;
    fragNormal = normal;
    fragHeights = aHeights;
    fragCellIndex = cellIndex;
    fragFacetIndex = facetIndex;
    fragVertexIndex = vertexIndex;
    fragWorldPos = pos;
+   fragWorldPos2 = pos;
+
 }

@@ -7,6 +7,7 @@ flat in int fragCellIndex;
 flat in int fragFacetIndex;
 in float fragVertexIndex;
 
+in vec3 fragBary;
 in vec3 fragNormal;
 in vec3 fragHeights;
 in float fragAttrVal;
@@ -14,16 +15,18 @@ in float fragHighlight;
 in float fragFilter;
 
 flat in vec3 fragWorldPos;
+in vec3 fragWorldPos2;
 
 uniform bool is_light_enabled;
-uniform bool is_clipping_enabled = false;
 
 uniform int fragRenderMode = 0;
 uniform int fragRenderMeshMode = 2;
 uniform float meshSize;
 
-uniform vec3 planeNormal = vec3(0.2f, 0.6f, 0.0f); // (a, b, c)
-uniform vec3 planePoint = vec3(0.0f, 0.3f, 0.60);  // A point on the plane
+uniform int clipping_mode = 0; // 0: cell, 1: std, 2: slice
+uniform bool is_clipping_enabled = false;
+uniform vec3 clipping_plane_normal = vec3(0.2f, 0.6f, 0.0f); // (a, b, c)
+uniform vec3 clipping_plane_point = vec3(0.0f, 0.0f, 0.0);  // A point on the plane
 
 uniform sampler1D fragColorMap;
 uniform vec2 attributeDataMinMax = vec2(0.f, 1.f);
@@ -43,7 +46,26 @@ void main()
 
     vec3 col = vec3(0.f, 0.f, 0.f);
 
-    if (fragFilter >= .5) {
+
+    bool is_filter = fragFilter >= .5f;
+   // Calculate the distance from the cell barycenter to the plane
+   if (is_clipping_enabled) {
+    vec3 ref_point;
+    if (clipping_mode == 0) {
+        ref_point = fragBary;
+    } else if (clipping_mode == 1) {
+        ref_point = fragWorldPos2;
+    }
+
+      float distance = dot(clipping_plane_normal, ref_point - clipping_plane_point) / length(clipping_plane_normal);
+      
+      if (distance < 0.0) {
+         is_filter = true;
+      }
+   }
+
+
+    if (is_filter) {
         discard;
         return;
     }
@@ -59,16 +81,16 @@ void main()
             col = vec3(texture(fragColorMap, clamp((fragAttrVal - attributeDataMinMax.x) / (attributeDataMinMax.y - attributeDataMinMax.x), 0., 1.)));
         }
         
-        // Clipping
+        // // Clipping
         
-        // Calculate the distance from the fragment to the plane
-        if (is_clipping_enabled) {
-            float distance = dot(planeNormal, fragWorldPos - planePoint) / length(planeNormal);
+        // // Calculate the distance from the fragment to the plane
+        // if (is_clipping_enabled) {
+        //     float distance = dot(planeNormal, fragWorldPos - planePoint) / length(planeNormal);
             
-            if (distance < 0.0) {
-                discard; // Discard the fragment if it's behind the clipping plane
-            }
-        }
+        //     if (distance < 0.0) {
+        //         discard; // Discard the fragment if it's behind the clipping plane
+        //     }
+        // }
 
 
         
@@ -102,10 +124,6 @@ void main()
         if (fragHeights.y < meshSize || fragHeights.z < meshSize) {
             col = vec3(0,0,0);
         }
-    }
-
-    if (distance(fragWorldPos, point) < 0.02) {
-        col = vec3(1.f, 1.f, 3.f);
     }
 
     FragColor = vec4(col, 1.f);
