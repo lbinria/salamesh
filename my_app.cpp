@@ -119,9 +119,9 @@ void MyApp::draw_gui() {
 
 
 
-	ImVec2 window_pos = ImGui::GetWindowPos();
-	ImVec2 window_size = ImGui::GetWindowSize(); 
-	ImVec2 window_center = ImVec2(window_pos.x + window_size.x * 0.5f, window_pos.y + window_size.y * 0.5f); 
+	// ImVec2 window_pos = ImGui::GetWindowPos();
+	// ImVec2 window_size = ImGui::GetWindowSize(); 
+	// ImVec2 window_center = ImVec2(window_pos.x + window_size.x * 0.5f, window_pos.y + window_size.y * 0.5f);
 	
 	ImGui::GetBackgroundDrawList()->AddCircle(ImGui::GetMousePos(), cursor_radius, IM_COL32(225, 225, 255, 200), 0, 2);
 
@@ -159,9 +159,14 @@ void MyApp::draw_gui() {
 
 void MyApp::key_event(int key, int scancode, int action, int mods) {
 	// std::cout << "key: " << key << ", scancode: " << scancode << ", action: " << action << ", mods: " << mods << std::endl;
-	if (key == GLFW_KEY_ESCAPE && action == GLFW_PRESS) {
+	// if (key == GLFW_KEY_ESCAPE && action == GLFW_PRESS) {
+	// 	quit();
+	// }
+	
+	bool ctrlPressed = (mods & GLFW_MOD_CONTROL) != 0;
+	if (ctrlPressed && key == GLFW_KEY_A && action == GLFW_PRESS) {
 		quit();
-	} 
+	}
 	
 	if (key == GLFW_KEY_P && action == GLFW_PRESS) {
 		screenshot("screenshot.png");

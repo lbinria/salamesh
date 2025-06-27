@@ -31,41 +31,11 @@ uniform int colorMode = 0;
 
 uniform vec3 point = vec3(0.0f, 0.0f, 0.0f); // Point to check distance from
 
-// // All components are in the range [0…1], including hue.
-// vec3 rgb2hsv(vec3 c)
-// {
-//     vec4 K = vec4(0.0, -1.0 / 3.0, 2.0 / 3.0, -1.0);
-//     vec4 p = mix(vec4(c.bg, K.wz), vec4(c.gb, K.xy), step(c.b, c.g));
-//     vec4 q = mix(vec4(p.xyw, c.r), vec4(c.r, p.yzx), step(p.x, c.r));
-
-//     float d = q.x - min(q.w, q.y);
-//     float e = 1.0e-10;
-//     return vec3(abs(q.z + (q.w - q.y) / (6.0 * d + e)), d / (q.x + e), q.x);
-// }
-
-// // All components are in the range [0…1], including hue.
-// vec3 hsv2rgb(vec3 c)
-// {
-//     vec4 K = vec4(1.0, 2.0 / 3.0, 1.0 / 3.0, 3.0);
-//     vec3 p = abs(fract(c.xxx + K.xyz) * 6.0 - K.www);
-//     return c.z * mix(K.xxx, clamp(p - K.xxx, 0.0, 1.0), c.y);
-// }
-
-
 vec3 encode_id(int id) {
     int r = id & 0x000000FF;
     int g = (id & 0x0000FF00) >> 8;
     int b = (id & 0x00FF0000) >> 16;
     return vec3(r / 255.f, g / 255.f, b / 255.f); 
-}
-
-float near = 0.1; 
-float far  = 100.0; 
-  
-float LinearizeDepth(float depth) 
-{
-    float z = depth * 2.0 - 1.0; // back to NDC 
-    return (2.0 * near * far) / (far + near - z * (far - near));	
 }
 
 void main()
@@ -134,13 +104,9 @@ void main()
         }
     }
 
-    // vec3 depth = vec3(LinearizeDepth(gl_FragCoord.z)); 
-
     if (distance(fragWorldPos, point) < 0.02) {
         col = vec3(1.f, 1.f, 3.f);
     }
-
-    // col = encode_id(int(floor(fragVertexIndex)));
 
     FragColor = vec4(col, 1.f);
 }
