@@ -160,6 +160,7 @@ void HexRenderer::init(Hexahedra &m) {
 	GLuint heightsLocation = glGetAttribLocation(shader.id, "aHeights");
 	GLuint facetIndexLocation = glGetAttribLocation(shader.id, "facetIndex");
 	GLuint cellIndexLocation = glGetAttribLocation(shader.id, "cellIndex");
+	GLuint vertexIndexLocation = glGetAttribLocation(shader.id, "vertexIndex");
 
 	glEnableVertexAttribArray(positionLocation);
 	glVertexAttribPointer(positionLocation, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)offsetof(Vertex, position));
@@ -178,6 +179,9 @@ void HexRenderer::init(Hexahedra &m) {
 
 	glEnableVertexAttribArray(cellIndexLocation);
 	glVertexAttribIPointer(cellIndexLocation, 1, GL_INT, sizeof(Vertex), (void*)offsetof(Vertex, cellIndex));
+
+	glEnableVertexAttribArray(vertexIndexLocation);
+	glVertexAttribIPointer(vertexIndexLocation, 1, GL_INT, sizeof(Vertex), (void*)offsetof(Vertex, vertexIndex));
 
 
 	std::chrono::steady_clock::time_point end = std::chrono::steady_clock::now();
@@ -243,6 +247,13 @@ void HexRenderer::to_gl(Hexahedra &m) {
 				m.points[m.cells[ci * 8 + ref.facets[lfi * 4 + 3]]]
 			};
 
+			const int vertices[4] = {
+				m.cells[ci * 8 + ref.facets[lfi * 4]],
+				m.cells[ci * 8 + ref.facets[lfi * 4 + 1]],
+				m.cells[ci * 8 + ref.facets[lfi * 4 + 2]],
+				m.cells[ci * 8 + ref.facets[lfi * 4 + 3]]
+			};
+
 			// vec3 n = UM::normal(points, 4);
 			
 			vec3 res{0, 0, 0};
@@ -265,6 +276,7 @@ void HexRenderer::to_gl(Hexahedra &m) {
 
 				for (int j = 0; j < 3; ++j) {
 					const auto v = points[verts[t][j]];
+					const auto vi = vertices[verts[t][j]];
 
 					// Compute height
 					const double h = area / (.5 * side_lengths[(j + 1) % 3]);
@@ -278,9 +290,9 @@ void HexRenderer::to_gl(Hexahedra &m) {
 						glm::vec3(n.x, n.y, n.z),
 						edge,
 						ci * 6 + lfi,
-						ci
+						ci,
+						vi
 					};
-
 
 					++i;
 				}

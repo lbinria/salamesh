@@ -25,9 +25,10 @@ struct Vertex {
     glm::vec3 heights;
     int facetIndex;
 	int cellIndex;
-    int edgeIndex;
+    int vertexIndex;
 };
 
+// TODO maybe useless (because using Element for picking)
 enum RenderMode {
     Color = 0,
     Pick_facet = 2,
@@ -38,10 +39,7 @@ struct HexRenderer : public Renderer {
 
     HexRenderer(Shader &shader) : 
         shader(std::move(shader)),
-        // shader("shaders/hex.vert", "shaders/hex.frag"), 
-        // shader("shaders/point.vert", "shaders/point.frag"), 
-        // shader("shaders/point2.vert", "shaders/point2.frag"), 
-        position(0,0,0)/*,*/
+        position(0,0,0)
         {
         }
 

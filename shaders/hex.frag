@@ -5,7 +5,7 @@ out vec4 FragColor;
 // Primitive indexation
 flat in int fragCellIndex;
 flat in int fragFacetIndex;
-flat in int fragEdgeIndex;
+in float fragVertexIndex;
 
 in vec3 fragNormal;
 in vec3 fragHeights;
@@ -139,6 +139,8 @@ void main()
     if (distance(fragWorldPos, point) < 0.02) {
         col = vec3(1.f, 1.f, 3.f);
     }
+
+    // col = encode_id(int(floor(fragVertexIndex)));
 
     FragColor = vec4(col, 1.f);
 }

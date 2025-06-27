@@ -7,13 +7,13 @@ layout (location = 3) in vec3 aHeights;
 // Indexes of the primitive this vertices belongs to
 layout (location = 4) in int facetIndex;
 layout (location = 5) in int cellIndex;
-layout (location = 7) in int edgeIndex;
+layout (location = 7) in int vertexIndex;
 
 out vec3 fragNormal;
 out vec3 fragHeights;
 flat out int fragCellIndex;
 flat out int fragFacetIndex;
-flat out int fragEdgeIndex;
+out float fragVertexIndex;
 
 flat out vec3 fragWorldPos;
 
@@ -54,6 +54,6 @@ void main()
    fragHeights = aHeights;
    fragCellIndex = cellIndex;
    fragFacetIndex = facetIndex;
-   fragEdgeIndex = edgeIndex;
+   fragVertexIndex = vertexIndex;
    fragWorldPos = pos;
 }

@@ -79,6 +79,8 @@ void MyApp::update(float dt) {
 
 }
 
+bool firstLoop = true;
+
 void MyApp::draw_gui() {
 
 	if (ImGui::BeginMainMenuBar()) {
@@ -222,14 +224,7 @@ void MyApp::mouse_move(double x, double y) {
 	// std::cout << "mouse move: " << x << ", " << y << std::endl;
 
 	st.cell.set_hovered(pick_cell());
-
-	if (st.cell.is_hovered()) {
-		auto p = pick_point(mousePos.x, mousePos.y);
-		st.edge.set_hovered(pick_edge(hex, p, st.cell.get_hovered()));
-	} else {
-		st.edge.set_hovered(-1);
-	}
-
+	st.edge.set_hovered(pick_edge());
 
 	for (auto &script : scripts) {
 		script->mouse_move(x, y);

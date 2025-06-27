@@ -244,7 +244,9 @@ void App::run()
 	// Comment below because it takes 50ms !
     // IMGUI_CHECKVERSION();
     ImGui::CreateContext();
-    // ImGuiIO &io = ImGui::GetIO();
+    ImGuiIO &io = ImGui::GetIO();
+	io.ConfigFlags |= ImGuiConfigFlags_DockingEnable;
+	// io.ConfigFlags |= ImGuiConfigFlags_ViewportsEnable;
     // Setup Platform/Renderer backends
     ImGui_ImplGlfw_InitForOpenGL(window, true);
     ImGui_ImplOpenGL3_Init("#version 330");
@@ -541,7 +543,7 @@ void App::run()
 		glm::mat4 mvp = projection * view * model;
 		mesh_ps->shader.setMat4("inverse_projection_view_model", inverse_projection_view_model);
 		mesh_ps->shader.setMat4("model_view_projection_matrix", mvp);
-		// mesh_ps->render();
+		mesh_ps->render();
 
         // Go to ID framebuffer
 		glBindFramebuffer(GL_FRAMEBUFFER, screenFbo);
@@ -621,12 +623,19 @@ int App::getHeight() {
 	return SCR_HEIGHT;
 }
 
+long App::pick_facet() {
+	auto last_pick_mode = pickMode;
+	pickMode = Element::FACETS;
+	long id = pick(mousePos.x, mousePos.y);
+	pickMode = last_pick_mode;
+	return id >= 0 && id < hex.nfacets() ? id : -1;
+}
+
 long App::pick_cell() {
 	auto last_pick_mode = pickMode;
 	pickMode = Element::CELLS;
 	long id = pick(mousePos.x, mousePos.y);
 	pickMode = last_pick_mode;
-	// TODO should I check that here ?
 	return id >= 0 && id < hex.ncells() ? id : -1;
 }
 

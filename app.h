@@ -7,6 +7,7 @@
 #include "args_manager.h"
 
 #include "imgui.h"
+#include "imgui_internal.h"
 #include "backends/imgui_impl_glfw.h"
 #include "backends/imgui_impl_opengl3.h"
 
@@ -127,7 +128,55 @@ struct App : public IApp {
     glm::vec3 pick_point(double x, double y);
 
     long pick(double xPos, double yPos);
-    long pick_cell();
+
+	long pick_edge(Volume &m, glm::vec3 p0, int c) final override {
+		// Search nearest edge
+		double min_d = std::numeric_limits<double>().max();
+		long found_e = -1;
+		
+		for (int le = 0; le < 24; ++le) {
+			long e = c * 24 + le;
+
+			// Get local points indices of edge extremities
+			int lv0 = reference_cells[1].facets[le % 4 + (le / 4 * 4)];
+			int lv1 = reference_cells[1].facets[(le + 1) % 4 + (le / 4 * 4)];
+
+			// Get global index of points
+			int v0 = m.vert(c, lv0);
+			int v1 = m.vert(c, lv1);
+
+			// Get points from current edge
+			vec3 p1 = m.points[v0];
+			vec3 p2 = m.points[v1];
+			vec3 b = (p1 + p2) * .5;
+			// Compute dist from picked point to bary of edge points
+			double d = (vec3(p0.x, p0.y, p0.z) - b).norm(); // TODO maybe use norm2 will give the same result
+
+			// Keep min dist
+			if (d < min_d) {
+				min_d = d;
+				found_e = e;
+			}
+		}
+
+		return found_e;
+	}
+
+    // Pick id of vertex of the current rendering
+    long pick_edge() final override {
+        if (st.cell.is_hovered()) {
+            auto p = pick_point(mousePos.x, mousePos.y);
+            // TODO get current model
+            return pick_edge(hex, p, st.cell.get_hovered());
+        } else {
+            return -1;
+        }
+    }
+
+    // Pick id of facet of the current rendering
+    long pick_facet() final override;
+    // Pick id of cell of the current rendering
+    long pick_cell() final override;
 
     std::vector<long> pick(GLFWwindow *window, double xPos, double yPos, int radius);
 
@@ -150,8 +199,8 @@ struct App : public IApp {
     Hexahedra& getHexahedra() final override { return hex; }
 
     std::vector<std::string> getPickModeStrings() const { return std::vector<std::string>(pickModeStrings, pickModeStrings + 4); }
-    int getPickMode() { return pickMode; }
-    void setPickMode(Element mode) { pickMode = mode; }
+    int getPickMode() final override { return pickMode; }
+    void setPickMode(Element mode) final override { pickMode = mode; }
     
     std::vector<unsigned int> getColorMaps2D() final override {
         return {colormaps2D[0], colormaps2D[1]};

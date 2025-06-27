@@ -23,7 +23,6 @@ struct PointsCloud {
         // shader("shaders/point.vert", "shaders/point.frag"), 
         shader("shaders/point2.vert", "shaders/point2.frag"), 
         position(0,0,0),
-        // attributes{attributes},
         ps(ps) {}
 
     void init();

@@ -2,7 +2,7 @@
 	"modules": [
 		"../module_a_test",
 		"../module_b_test",
-		"../module_attribute_viewer",
-		"/home/tex/Projects/hex_collapse_plugin/build"
+		"../module_attribute_viewer"
+		
 	]
 }

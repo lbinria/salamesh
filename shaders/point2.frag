@@ -24,7 +24,7 @@ void main()
     vec3 N = vec3(V.x, -V.y, sqrt(one_minus_r2));
     // gl_FragDepth = gl_FragCoord.z- 1.;
     // gl_FragDepth = gl_FragCoord.z - 0.00005 * N.z;
-    // gl_FragDepth = gl_FragCoord.z - 0.001 * N.z;
+    gl_FragDepth = gl_FragCoord.z - 0.001 * N.z;
 
 	col = vec3(0.8, 0.2, 0.2) * dot(N, vec3(0.0, 0.0, 1.0));
 	FragColor = vec4(col, 1.f);
