@@ -3,6 +3,10 @@ function init()
 	print("Hellow ! Script B loaded !")
 end
 
+local clipping_planes = {"x", "y", "z"}
+local sel_clipping_plane = 1
+local invert_clipping = false
+
 function draw_gui()
 
 	imgui.Begin("Mesh view options lua script")
@@ -45,10 +49,40 @@ function draw_gui()
 		app.renderer.clipping = new_enable_clipping
 	end
 
+
+	if (imgui.BeginCombo("##Clipping plane normal", clipping_planes[sel_clipping_plane])) then
+		for i = 1, #clipping_planes do
+			local is_selected = i == sel_clipping_plane
+			if (imgui.Selectable(clipping_planes[i], is_selected)) then
+				
+				sel_clipping_plane = i
+
+				if (i == 1) then
+					app.renderer.setClippingPlaneNormal(1,0,0)
+				elseif (i == 2) then
+					app.renderer.setClippingPlaneNormal(0,1,0)
+				elseif (i == 3) then
+					app.renderer.setClippingPlaneNormal(0,0,1)
+				end
+
+			end
+		end
+		imgui.EndCombo()
+	end
+
+
 	local cpx, cpy, cpz = app.renderer.getClippingPlanePoint()
+	local cnx, cny, cnz = app.renderer.getClippingPlaneNormal()
+
 	local sel_slider_clipping_plane_point, new_clipping_plane_point = imgui.SliderFloat("Clipping plane point", cpx, -1., 1.)
 	if (sel_slider_clipping_plane_point) then 
 		app.renderer.setClippingPlanePoint(new_clipping_plane_point, cpy, cpz)
+	end
+
+	local sel_invert_clipping, new_invert_clipping = imgui.Checkbox("Invert clipping", invert_clipping)
+	if (sel_invert_clipping) then 
+		invert_clipping = new_invert_clipping
+		app.renderer.invert_clipping = invert_clipping
 	end
 
 

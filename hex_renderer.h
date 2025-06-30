@@ -202,6 +202,16 @@ struct HexRenderer : public Renderer {
         clippingPlaneNormal = n;
     }
 
+    void setInvertClipping(bool invert) {
+        shader.use();
+        shader.setInt("invert_clipping", invert);
+        invertClipping = invert;
+    }
+
+    bool getInvertClipping() {
+        return invertClipping;
+    }
+
     float getMeshSize() {
         return meshSize;
     }
@@ -298,6 +308,7 @@ struct HexRenderer : public Renderer {
     bool isClipping = false;
     glm::vec3 clippingPlanePoint;
     glm::vec3 clippingPlaneNormal{0.f, 0.f, 1.f};
+    bool invertClipping = false;
     float meshSize = 0.01f;
     float meshShrink = 0.f;
     ColorMode colorMode = ColorMode::COLOR;

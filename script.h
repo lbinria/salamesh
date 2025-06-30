@@ -222,6 +222,11 @@ struct LuaScript : public Component {
 			&Renderer::setClippingPlaneNormal
 		);
 
+		renderer_tbl["invert_clipping"] = sol::property(
+			&Renderer::getInvertClipping,
+			&Renderer::setInvertClipping
+		);
+
 		renderer_tbl["meshSize"] = sol::property(
 			&Renderer::getMeshSize,
 			&Renderer::setMeshSize

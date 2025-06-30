@@ -27,6 +27,7 @@ uniform int clipping_mode = 0; // 0: cell, 1: std, 2: slice
 uniform bool is_clipping_enabled = false;
 uniform vec3 clipping_plane_normal = vec3(0.2f, 0.6f, 0.0f); // (a, b, c)
 uniform vec3 clipping_plane_point = vec3(0.0f, 0.0f, 0.0);  // A point on the plane
+uniform int invert_clipping = 0; // 0: normal, 1: inverted
 
 uniform sampler1D fragColorMap;
 uniform vec2 attributeDataMinMax = vec2(0.f, 1.f);
@@ -44,31 +45,45 @@ vec3 encode_id(int id) {
 void main()
 {
 
+    // Initialize color to black
     vec3 col = vec3(0.f, 0.f, 0.f);
 
-
+    // Check if cell is filtered
     bool is_filter = fragFilter >= .5f;
+
+    /* --- CLIPPING --- */
+
    // Calculate the distance from the cell barycenter to the plane
    if (is_clipping_enabled) {
     vec3 ref_point;
     if (clipping_mode == 0) {
+        // Use the barycenter of the cells to exclude cells
+        // that are behind the clipping plane
         ref_point = fragBary;
     } else if (clipping_mode == 1) {
+        // Use the fragment world position (interpolated) to exclude fragments
+        // that are behind the clipping plane
         ref_point = fragWorldPos2;
     }
 
       float distance = dot(clipping_plane_normal, ref_point - clipping_plane_point) / length(clipping_plane_normal);
       
-      if (distance < 0.0) {
+      if ((invert_clipping == 0 && distance < 0.0) || (invert_clipping == 1 && distance >= 0.0)) {
          is_filter = true;
       }
    }
 
+    /* --- CLIPPING END --- */
 
+    /* --- FILTER --- */
+
+    // If the fragment is filtered, discard it
     if (is_filter) {
         discard;
         return;
     }
+
+    /* --- FILTER END --- */
 
     // Render mode color
     if (fragRenderMode == 0) {
@@ -79,21 +94,7 @@ void main()
         } 
         else {
             col = vec3(texture(fragColorMap, clamp((fragAttrVal - attributeDataMinMax.x) / (attributeDataMinMax.y - attributeDataMinMax.x), 0., 1.)));
-        }
-        
-        // // Clipping
-        
-        // // Calculate the distance from the fragment to the plane
-        // if (is_clipping_enabled) {
-        //     float distance = dot(planeNormal, fragWorldPos - planePoint) / length(planeNormal);
-            
-        //     if (distance < 0.0) {
-        //         discard; // Discard the fragment if it's behind the clipping plane
-        //     }
-        // }
-
-
-        
+        }        
         
         if (fragHighlight >= 1.f && fragHighlight < 2.f) {
             col = mix(col, vec3(1.,1.,1.), 0.8);

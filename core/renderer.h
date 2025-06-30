@@ -37,6 +37,8 @@ struct Renderer {
     virtual void setClippingPlanePoint(glm::vec3 p) = 0;
     virtual glm::vec3 getClippingPlaneNormal() = 0;
     virtual void setClippingPlaneNormal(glm::vec3 n) = 0;
+    virtual void setInvertClipping(bool invert) = 0;
+    virtual bool getInvertClipping() = 0;
     virtual float getMeshSize() = 0;
     virtual void setMeshSize(float val) = 0;
     virtual float getMeshShrink() = 0;
