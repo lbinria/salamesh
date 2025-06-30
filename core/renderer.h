@@ -31,6 +31,8 @@ struct Renderer {
 
     virtual bool getLight() = 0;
     virtual void setLight(bool enabled) = 0;
+    virtual bool getLightFollowView() = 0;
+    virtual void setLightFollowView(bool follow) = 0;
     virtual bool getClipping() = 0;
     virtual void setClipping(bool enabled) = 0;
     virtual glm::vec3 getClippingPlanePoint() = 0;

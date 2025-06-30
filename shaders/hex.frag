@@ -13,11 +13,13 @@ in vec3 fragHeights;
 in float fragAttrVal;
 in float fragHighlight;
 in float fragFilter;
+flat in vec3 fragViewDir;
 
 flat in vec3 fragWorldPos;
 in vec3 fragWorldPos2;
 
 uniform bool is_light_enabled;
+uniform bool is_light_follow_view;
 
 uniform int fragRenderMode = 0;
 uniform int fragRenderMeshMode = 2;
@@ -107,8 +109,14 @@ void main()
 
         // Diffuse light
         if (is_light_enabled) {
-            vec3 dirLight = vec3(-0.5f, -0.8f, 0.2f);
-            float diffuse = (1.f - dot(dirLight, fragNormal)) * .5f + .5f;
+            vec3 dirLight;
+
+            if (is_light_follow_view)
+                dirLight = fragViewDir;
+            else
+                dirLight = vec3(-0.5f, -0.8f, 0.2f);
+            
+            float diffuse = max((1.f - dot(dirLight, fragNormal)) * .5f + .45f /* ambiant */, 0.f);
             col = col * diffuse;
         }
 

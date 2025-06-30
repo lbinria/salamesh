@@ -172,6 +172,16 @@ struct HexRenderer : public Renderer {
         isLightEnabled = enabled;
     }
 
+    bool getLightFollowView() {
+        return isLightFollowView;
+    }
+
+    void setLightFollowView(bool follow) {
+        shader.use();
+        shader.setInt("is_light_follow_view", follow);
+        isLightFollowView = follow;
+    }
+
     bool getClipping() {
         return isClipping;
     }
@@ -305,6 +315,8 @@ struct HexRenderer : public Renderer {
     void *filtersPtr;
 
     bool isLightEnabled = true;
+    bool isLightFollowView = false;
+
     bool isClipping = false;
     glm::vec3 clippingPlanePoint;
     glm::vec3 clippingPlaneNormal{0.f, 0.f, 1.f};

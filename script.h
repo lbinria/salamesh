@@ -221,6 +221,11 @@ struct LuaScript : public Component {
 		renderer_tbl.set_function("getLight", &Renderer::getLight);
 		renderer_tbl.set_function("setLight", &Renderer::setLight);
 
+		renderer_tbl["is_light_follow_view"] = sol::property(
+			&Renderer::getLightFollowView,
+			&Renderer::setLightFollowView
+		);
+
 		renderer_tbl["clipping"] = sol::property(
 			&Renderer::getClipping,
 			&Renderer::setClipping

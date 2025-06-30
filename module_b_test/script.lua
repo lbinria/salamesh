@@ -42,6 +42,13 @@ function draw_gui()
 		app.renderer.light = new_enable_light
 	end
 
+	local sel_chk_light_follow_view, new_light_follow_view = imgui.Checkbox("Light follow view", app.renderer.is_light_follow_view)
+
+	if (sel_chk_light_follow_view) then 
+		print("Enable light: " .. tostring(new_light_follow_view))
+		app.renderer.is_light_follow_view = new_light_follow_view
+	end
+
 	local sel_chk_enable_clipping, new_enable_clipping = imgui.Checkbox("Enable clipping", app.renderer.clipping)
 
 	if (sel_chk_enable_clipping) then 
