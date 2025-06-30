@@ -12,7 +12,7 @@ struct Settings {
 		std::ifstream ifs(path);
 
 		if (!ifs.is_open()) {
-			std::cout << "Error while opening json file." << std::endl;
+			std::cout << "Error while opening json file: " << path << std::endl;
 			return false;
 		}
 
