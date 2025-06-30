@@ -50,6 +50,25 @@ function draw_gui()
 	end
 
 
+	-- if (imgui.BeginCombo("##Clipping plane normal", clipping_planes[sel_clipping_plane])) then
+	-- 	for i = 1, #clipping_planes do
+	-- 		local is_selected = i == sel_clipping_plane
+	-- 		if (imgui.Selectable(clipping_planes[i], is_selected)) then
+				
+	-- 			sel_clipping_plane = i
+
+	-- 			if (i == 1) then
+	-- 				app.renderer.setClippingPlaneNormal(1,0,0)
+	-- 			elseif (i == 2) then
+	-- 				app.renderer.setClippingPlaneNormal(0,1,0)
+	-- 			elseif (i == 3) then
+	-- 				app.renderer.setClippingPlaneNormal(0,0,1)
+	-- 			end
+
+	-- 		end
+	-- 	end
+	-- 	imgui.EndCombo()
+	-- end
 	if (imgui.BeginCombo("##Clipping plane normal", clipping_planes[sel_clipping_plane])) then
 		for i = 1, #clipping_planes do
 			local is_selected = i == sel_clipping_plane
@@ -58,25 +77,39 @@ function draw_gui()
 				sel_clipping_plane = i
 
 				if (i == 1) then
-					app.renderer.setClippingPlaneNormal(1,0,0)
+					app.renderer.clipping_plane_normal = vec3.new(1,0,0)
 				elseif (i == 2) then
-					app.renderer.setClippingPlaneNormal(0,1,0)
+					app.renderer.clipping_plane_normal = vec3.new(0,1,0)
 				elseif (i == 3) then
-					app.renderer.setClippingPlaneNormal(0,0,1)
+					app.renderer.clipping_plane_normal = vec3.new(0,0,1)
 				end
 
+				print("Set clipping plane normal to: " .. app.renderer.clipping_plane_normal:to_string())
 			end
 		end
 		imgui.EndCombo()
 	end
 
+	local plane_pos = 0
+	if (sel_clipping_plane == 1) then
+		plane_pos = app.renderer.clipping_plane_point.x
+	elseif (sel_clipping_plane == 2) then
+		plane_pos = app.renderer.clipping_plane_point.y
+	elseif (sel_clipping_plane == 3) then
+		plane_pos = app.renderer.clipping_plane_point.z
+	end
 
-	local cpx, cpy, cpz = app.renderer.getClippingPlanePoint()
-	local cnx, cny, cnz = app.renderer.getClippingPlaneNormal()
-
-	local sel_slider_clipping_plane_point, new_clipping_plane_point = imgui.SliderFloat("Clipping plane point", cpx, -1., 1.)
+	local sel_slider_clipping_plane_point, new_clipping_plane_pos = imgui.SliderFloat("Clipping plane point", plane_pos, -1., 1.)
 	if (sel_slider_clipping_plane_point) then 
-		app.renderer.setClippingPlanePoint(new_clipping_plane_point, cpy, cpz)
+		local v 
+		if (sel_clipping_plane == 1) then
+			v = vec3.new(new_clipping_plane_pos, app.renderer.clipping_plane_point.y, app.renderer.clipping_plane_point.z)
+		elseif (sel_clipping_plane == 2) then
+			v = vec3.new(app.renderer.clipping_plane_point.x, new_clipping_plane_pos, app.renderer.clipping_plane_point.z)
+		elseif (sel_clipping_plane == 3) then
+			v = vec3.new(app.renderer.clipping_plane_point.x, app.renderer.clipping_plane_point.y, new_clipping_plane_pos)
+		end
+		app.renderer.clipping_plane_point = v
 	end
 
 	local sel_invert_clipping, new_invert_clipping = imgui.Checkbox("Invert clipping", invert_clipping)

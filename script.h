@@ -149,6 +149,55 @@ struct LuaScript : public Component {
 		sol::usertype<Renderer> renderer_tbl = lua.new_usertype<Renderer>("Renderer");
 		app_type["renderer"] = sol::readonly_property(&IApp::getRenderer);
 
+
+		sol::usertype<glm::vec3> vec3_type = lua.new_usertype<glm::vec3>("vec3",
+			// Constructor overloads
+			sol::constructors<glm::vec3(), 
+							glm::vec3(float, float, float),
+							glm::vec3(const glm::vec3&)>{},
+
+			sol::meta_function::addition, [](const glm::vec3 &a, const glm::vec3 &b) {
+				return a + b;
+			},
+
+			sol::meta_function::subtraction, [](const glm::vec3 &a, const glm::vec3 &b) {
+				return a - b;
+			},
+
+			sol::meta_function::multiplication, [](const glm::vec3 &a, const glm::vec3 &b) {
+				return a * b;
+			},
+
+			sol::meta_function::division, [](const glm::vec3 &a, const glm::vec3 &b) {
+				return a / b;
+			},
+			
+			
+			// // Property accessors
+			// "x", sol::property(&glm::vec3::x),
+			// "y", sol::property(&glm::vec3::y),
+			// "z", sol::property(&glm::vec3::z)
+			// Property accessors
+			"x", sol::readonly_property(&glm::vec3::x),
+			"y", sol::readonly_property(&glm::vec3::y),
+			"z", sol::readonly_property(&glm::vec3::z)
+		);
+
+		vec3_type.set_function("to_string", [](glm::vec3 &v) {
+			return std::string("vec3(") + std::to_string(v.x) + ", " + std::to_string(v.y) + ", " + std::to_string(v.z) + ")";
+		});
+
+		vec3_type.set_function("getX", [](glm::vec3 &v) {
+			return v.x;
+		});
+		// // WTF ?! I need to add this to be able to access the properties
+		// vec3_type["x"] = sol::readonly_property(&glm::vec3::x);
+		// vec3_type["y"] = sol::readonly_property(&glm::vec3::y);
+		// vec3_type["z"] = sol::readonly_property(&glm::vec3::z);
+		glm::vec3 v;
+		v.x = 0.0f;
+
+
 		camera_tbl.set_function("LookAt", [&app = app](ArcBallCamera &camera, float x, float y, float z) {
 			app.getCamera().LookAt(glm::vec3(x, y, z));
 		});
@@ -181,41 +230,51 @@ struct LuaScript : public Component {
 		renderer_tbl.set_function("setClipping", &Renderer::setClipping);
 
 
+		// renderer_tbl.set_function(
+		// 	"getClippingPlanePoint",
+		// 	[&app = app]() { 
+		// 		app.getRenderer().getClippingPlanePoint();
+		// 	}
+		// );
 
-		// TODO see below for a better way to do this with sol::property
-		renderer_tbl.set_function(
-			"getClippingPlanePoint",
-			[&app = app]() { 
-				return std::make_tuple(
-					app.getRenderer().getClippingPlanePoint().x,
-					app.getRenderer().getClippingPlanePoint().y,
-					app.getRenderer().getClippingPlanePoint().z
-				); 
-			}
-		);
-		renderer_tbl.set_function(
-			"setClippingPlanePoint",
-			[&app = app](float x, float y, float z) { 
-				app.getRenderer().setClippingPlanePoint(glm::vec3(x, y, z)); 
-			}
-		);
-		renderer_tbl.set_function(
-			"getClippingPlaneNormal",
-			[&app = app]() { 
-				return std::make_tuple(
-					app.getRenderer().getClippingPlaneNormal().x,
-					app.getRenderer().getClippingPlaneNormal().y,
-					app.getRenderer().getClippingPlaneNormal().z
-				); 
-			}
-		);
-		renderer_tbl.set_function(
-			"setClippingPlaneNormal",
-			[&app = app](float x, float y, float z) { 
-				app.getRenderer().setClippingPlaneNormal(glm::vec3(x, y, z)); 
-			}
-		);
 
+		// // TODO see below for a better way to do this with sol::property
+		// renderer_tbl.set_function(
+		// 	"getClippingPlanePoint",
+		// 	[&app = app]() { 
+		// 		return std::make_tuple(
+		// 			app.getRenderer().getClippingPlanePoint().x,
+		// 			app.getRenderer().getClippingPlanePoint().y,
+		// 			app.getRenderer().getClippingPlanePoint().z
+		// 		); 
+		// 	}
+		// );
+		// renderer_tbl.set_function(
+		// 	"setClippingPlanePoint",
+		// 	[&app = app](float x, float y, float z) { 
+		// 		app.getRenderer().setClippingPlanePoint(glm::vec3(x, y, z)); 
+		// 	}
+		// );
+		// renderer_tbl.set_function(
+		// 	"getClippingPlaneNormal",
+		// 	[&app = app]() { 
+		// 		return std::make_tuple(
+		// 			app.getRenderer().getClippingPlaneNormal().x,
+		// 			app.getRenderer().getClippingPlaneNormal().y,
+		// 			app.getRenderer().getClippingPlaneNormal().z
+		// 		); 
+		// 	}
+		// );
+		// renderer_tbl.set_function(
+		// 	"setClippingPlaneNormal",
+		// 	[&app = app](float x, float y, float z) { 
+		// 		app.getRenderer().setClippingPlaneNormal(glm::vec3(x, y, z)); 
+		// 	}
+		// );
+		renderer_tbl["clipping_plane_point"] = sol::property(
+			&Renderer::getClippingPlanePoint,
+			&Renderer::setClippingPlanePoint
+		);
 
 		renderer_tbl["clipping_plane_normal"] = sol::property(
 			&Renderer::getClippingPlaneNormal,
