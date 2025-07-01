@@ -30,10 +30,10 @@ struct Renderer {
     }
 
     // Lifecycle functions
-    virtual void init(Hexahedra &m) = 0; // TODO see as it is app function
+    virtual void init() = 0; // TODO see because it is an app function => it should be override by user but not used ! (public for override, private for use ?)
     virtual void update() = 0;
-    virtual void to_gl(Hexahedra &m) = 0;
-    virtual void bind() = 0; // TODO see as it is app function
+    virtual void to_gl() = 0;
+    virtual void bind() = 0; // TODO see because it is an app function => it should be override by user but not used ! (public for override, private for use ?)
     virtual void render() = 0;
     virtual void clean() = 0;
 

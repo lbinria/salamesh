@@ -12,14 +12,14 @@
 
 using namespace UM;
 
-struct PointsCloud {
+struct PointSetRenderer {
 
 	struct Vertex {
 		glm::vec3 position; 
 		float size;
 	};
 
-    PointsCloud(PointSet &ps) : 
+    PointSetRenderer(PointSet &ps) : 
         // shader("shaders/point.vert", "shaders/point.frag"), 
         shader("shaders/point2.vert", "shaders/point2.frag"), 
         position(0,0,0),

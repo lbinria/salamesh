@@ -68,7 +68,7 @@ add_executable(salamesh
   my_app.cpp my_app.h
   shader.cpp shader.h 
   hex_renderer.cpp hex_renderer.h 
-  points_cloud.cpp points_cloud.h
+  point_set_renderer.cpp point_set_renderer.h
   wireframe.cpp wireframe.h
   lua_console.h lua_console.cpp
   lua_engine.h lua_engine.cpp

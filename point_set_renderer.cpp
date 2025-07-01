@@ -1,6 +1,6 @@
-#include "points_cloud.h"
+#include "point_set_renderer.h"
 
-void PointsCloud::init() {
+void PointSetRenderer::init() {
 
 	std::chrono::steady_clock::time_point begin = std::chrono::steady_clock::now();
 
@@ -41,7 +41,7 @@ void PointsCloud::init() {
 
 }
 
-void PointsCloud::to_gl() {
+void PointSetRenderer::to_gl() {
     std::cout << "to_gl start." << std::endl;
 
 	std::chrono::steady_clock::time_point begin = std::chrono::steady_clock::now();
@@ -63,11 +63,11 @@ void PointsCloud::to_gl() {
 	std::cout << "point set has: " << ps.size() << " vertices." << std::endl;
 }
 
-void PointsCloud::bind() {
+void PointSetRenderer::bind() {
     glBindVertexArray(VAO);
 }
 
-void PointsCloud::render() {
+void PointSetRenderer::render() {
 
     shader.use();
 
@@ -79,7 +79,7 @@ void PointsCloud::render() {
 	glDrawArrays(GL_POINTS, 0, vertices.size());
 }
 
-void PointsCloud::clean() {
+void PointSetRenderer::clean() {
 	// Clean up
 	glDeleteVertexArrays(1, &VAO);
 	glDeleteBuffers(1, &VBO);

@@ -27,7 +27,7 @@
 #include "shader.h"
 
 #include "hex_renderer.h"
-#include "points_cloud.h"
+#include "point_set_renderer.h"
 #include "wireframe.h"
 
 #include "core/arcball_camera.h"
@@ -75,10 +75,9 @@ struct App : public IApp {
     unsigned int screenFbo;
 
     // settings
-    // std::unique_ptr<HexRenderer> hex_renderer;
     std::unique_ptr<Renderer> hex_renderer;
 
-    std::unique_ptr<PointsCloud> mesh_ps;
+    std::unique_ptr<PointSetRenderer> point_set_renderer;
     unsigned int SCR_WIDTH;
     unsigned int SCR_HEIGHT;
     bool leftMouse = false;

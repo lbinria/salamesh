@@ -48,7 +48,7 @@ void HexRenderer::update() {
 
 }
 
-void HexRenderer::init(Hexahedra &m) {
+void HexRenderer::init() {
 
 	std::chrono::steady_clock::time_point begin = std::chrono::steady_clock::now();
 
@@ -82,7 +82,7 @@ void HexRenderer::init(Hexahedra &m) {
 	// 
 	glGenBuffers(1, &cellAttributeBuffer);
 	glBindBuffer(GL_TEXTURE_BUFFER, cellAttributeBuffer);
-	_attributeData.resize(m.ncells(), 0.0f);
+	_attributeData.resize(hex.ncells(), 0.0f);
 	glBufferData(GL_TEXTURE_BUFFER, _attributeData.size() * sizeof(float), _attributeData.data(), GL_STATIC_DRAW);
 
 	glGenTextures(1, &cellAttributeTexture);
@@ -94,7 +94,7 @@ void HexRenderer::init(Hexahedra &m) {
 	// Highlight
 	glGenBuffers(1, &cellHighlightBuffer);
 	glBindBuffer(GL_TEXTURE_BUFFER, cellHighlightBuffer);
-	_highlights.resize(m.ncells(), 0.0f);
+	_highlights.resize(hex.ncells(), 0.0f);
 	glBufferData(GL_TEXTURE_BUFFER, _highlights.size() * sizeof(float), _highlights.data(), GL_DYNAMIC_DRAW);
 
 	// Allocate persistent storage
@@ -118,7 +118,7 @@ void HexRenderer::init(Hexahedra &m) {
 	// Filter
 	glGenBuffers(1, &cellFilterBuffer);
 	glBindBuffer(GL_TEXTURE_BUFFER, cellFilterBuffer);
-	_filters.resize(m.ncells(), 0.0f);
+	_filters.resize(hex.ncells(), 0.0f);
 	glBufferData(GL_TEXTURE_BUFFER, _filters.size() * sizeof(float), _filters.data(), GL_DYNAMIC_DRAW);
 
 	// Allocate persistent storage
@@ -151,7 +151,7 @@ void HexRenderer::init(Hexahedra &m) {
 	glBindBuffer(GL_TEXTURE_BUFFER, 0);
 
 
-    std::cout << "mesh setup..." << std::endl;
+    std::cout << "vertex attrib setup..." << std::endl;
 
 
 	GLuint positionLocation = glGetAttribLocation(shader.id, "aPos");
@@ -190,37 +190,37 @@ void HexRenderer::init(Hexahedra &m) {
 
 }
 
-void HexRenderer::to_gl(Hexahedra &m) {
+void HexRenderer::to_gl() {
     std::cout << "to_gl start." << std::endl;
 
 	std::chrono::steady_clock::time_point begin = std::chrono::steady_clock::now();
 
-	ncells = m.ncells();
+	ncells = hex.ncells();
 
-	v_vertices.resize(m.nfacets() * 2 /* 2 tri per facet */ * 3 /* 3 points per tri */);
+	v_vertices.resize(hex.nfacets() * 2 /* 2 tri per facet */ * 3 /* 3 points per tri */);
 
 	// Cell properties
 	std::chrono::steady_clock::time_point begin_barys = std::chrono::steady_clock::now();
 
-	_attributeData.resize(m.ncells());
+	_attributeData.resize(hex.ncells());
 	for (int i = 0; i < _attributeData.size(); i++)
 		_attributeData[i] = 0.f;
 
 
 	// (8ms -> 3ms)
-	_barys.resize(m.ncells() * 3);
-	const int size = m.cells.size() / 8;
+	_barys.resize(hex.ncells() * 3);
+	const int size = hex.cells.size() / 8;
 	for (int ci = 0; ci < size; ++ci) {
 		// Compute bary
 		const int off = ci * 8;
-		const vec3 &v0 = m.points[m.cells[off]];	
-		const vec3 &v1 = m.points[m.cells[off + 1]];
-		const vec3 &v2 = m.points[m.cells[off + 2]];
-		const vec3 &v3 = m.points[m.cells[off + 3]];
-		const vec3 &v4 = m.points[m.cells[off + 4]];
-		const vec3 &v5 = m.points[m.cells[off + 5]];
-		const vec3 &v6 = m.points[m.cells[off + 6]];
-		const vec3 &v7 = m.points[m.cells[off + 7]];
+		const vec3 &v0 = hex.points[hex.cells[off]];	
+		const vec3 &v1 = hex.points[hex.cells[off + 1]];
+		const vec3 &v2 = hex.points[hex.cells[off + 2]];
+		const vec3 &v3 = hex.points[hex.cells[off + 3]];
+		const vec3 &v4 = hex.points[hex.cells[off + 4]];
+		const vec3 &v5 = hex.points[hex.cells[off + 5]];
+		const vec3 &v6 = hex.points[hex.cells[off + 6]];
+		const vec3 &v7 = hex.points[hex.cells[off + 7]];
 
 		_barys[ci * 3] = (v0.x + v1.x + v2.x + v3.x + v4.x + v5.x + v6.x + v7.x) / 8;
 		_barys[ci * 3 + 1] = (v0.y + v1.y + v2.y + v3.y + v4.y + v5.y + v6.y + v7.y) / 8;
@@ -234,24 +234,24 @@ void HexRenderer::to_gl(Hexahedra &m) {
 
 
 	int i = 0;
-	const auto ref = reference_cells[m.cell_type];
+	const auto ref = reference_cells[hex.cell_type];
 	constexpr int verts[2][3] = {{0, 1, 3}, {2, 3, 1}};
 	
-	for (int ci = 0; ci < m.ncells(); ++ci) {
+	for (int ci = 0; ci < hex.ncells(); ++ci) {
 		for (int lfi = 0; lfi < 6; ++lfi) {
 			// Get 4 points of facet
 			const vec3 points[4] = {
-				m.points[m.cells[ci * 8 + ref.facets[lfi * 4]]],
-				m.points[m.cells[ci * 8 + ref.facets[lfi * 4 + 1]]],
-				m.points[m.cells[ci * 8 + ref.facets[lfi * 4 + 2]]],
-				m.points[m.cells[ci * 8 + ref.facets[lfi * 4 + 3]]]
+				hex.points[hex.cells[ci * 8 + ref.facets[lfi * 4]]],
+				hex.points[hex.cells[ci * 8 + ref.facets[lfi * 4 + 1]]],
+				hex.points[hex.cells[ci * 8 + ref.facets[lfi * 4 + 2]]],
+				hex.points[hex.cells[ci * 8 + ref.facets[lfi * 4 + 3]]]
 			};
 
 			const int vertices[4] = {
-				m.cells[ci * 8 + ref.facets[lfi * 4]],
-				m.cells[ci * 8 + ref.facets[lfi * 4 + 1]],
-				m.cells[ci * 8 + ref.facets[lfi * 4 + 2]],
-				m.cells[ci * 8 + ref.facets[lfi * 4 + 3]]
+				hex.cells[ci * 8 + ref.facets[lfi * 4]],
+				hex.cells[ci * 8 + ref.facets[lfi * 4 + 1]],
+				hex.cells[ci * 8 + ref.facets[lfi * 4 + 2]],
+				hex.cells[ci * 8 + ref.facets[lfi * 4 + 3]]
 			};
 
 			// vec3 n = UM::normal(points, 4);
@@ -309,9 +309,9 @@ void HexRenderer::to_gl(Hexahedra &m) {
     std::cout << "compute bary in: " << std::chrono::duration_cast<std::chrono::milliseconds>(end_barys - begin_barys).count() << "ms" << std::endl;
     std::cout << "compute facets in: " << std::chrono::duration_cast<std::chrono::milliseconds>(end_facets - begin_facets).count() << "ms" << std::endl;
 
-	std::cout << "mesh has: " << m.nverts() << " vertices." << std::endl;
-	std::cout << "mesh has: " << m.nfacets() << " facets." << std::endl;
-	std::cout << "mesh has: " << m.ncells() << " cells." << std::endl;
+	std::cout << "mesh has: " << hex.nverts() << " vertices." << std::endl;
+	std::cout << "mesh has: " << hex.nfacets() << " facets." << std::endl;
+	std::cout << "mesh has: " << hex.ncells() << " cells." << std::endl;
 	std::cout << "should draw: " << v_vertices.size() << " vertices." << std::endl;
 }
 

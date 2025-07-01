@@ -35,8 +35,6 @@ uniform sampler1D fragColorMap;
 uniform vec2 attributeDataMinMax = vec2(0.f, 1.f);
 uniform int colorMode = 0;
 
-uniform vec3 point = vec3(0.0f, 0.0f, 0.0f); // Point to check distance from
-
 vec3 encode_id(int id) {
     int r = id & 0x000000FF;
     int g = (id & 0x0000FF00) >> 8;

@@ -170,9 +170,8 @@ void App::load_model(const std::string& filename) {
 	std::cout << "nfacets = " << hex.nfacets() << std::endl;
 	std::cout << "model read." << std::endl;
 
-    Shader shader("shaders/hex.vert", "shaders/hex.frag");
-    hex_renderer = std::make_unique<HexRenderer>(shader);
-	hex_renderer->to_gl(hex);
+    hex_renderer = std::make_unique<HexRenderer>(hex);
+	hex_renderer->to_gl();
 
 	// Add attribute to renderer
 	hex_renderer->clearAttrs();
@@ -358,9 +357,9 @@ void App::run()
 
 	
 
-	mesh_ps = std::make_unique<PointsCloud>(hex.points);
-	mesh_ps->to_gl();
-	mesh_ps->init();
+	point_set_renderer = std::make_unique<PointSetRenderer>(hex.points);
+	point_set_renderer->to_gl();
+	point_set_renderer->init();
 
 
 	hex_renderer->setLight(isLightEnabled);
@@ -369,7 +368,7 @@ void App::run()
 	hex_renderer->setColorMode(Renderer::ColorMode::COLOR);
 
 	// Model init
-	hex_renderer->init(hex);
+	hex_renderer->init();
 
 	Shader screenShader("shaders/screen.vert", "shaders/screen.frag");
 
@@ -414,7 +413,6 @@ void App::run()
 	// }
 	// center /= hex.nverts();
 
-	// camera = std::make_unique<ArcBallCamera>(glm::vec3(0.f, 0.f, -3.f), mesh->position, glm::vec3(0.f, 1.f, 0.f), projection);
 	camera = std::make_unique<ArcBallCamera>(glm::vec3(0.f, 0.f, -3.f), hex_renderer->getPosition(), glm::vec3(0.f, 1.f, 0.f), glm::vec3(45.f, SCR_WIDTH, SCR_HEIGHT));
 
 	
@@ -447,7 +445,6 @@ void App::run()
 			double xPos, yPos;
 			glfwGetCursorPos(window, &xPos, &yPos);
 			camera->Move(glm::vec2(SCR_WIDTH, SCR_HEIGHT), glm::vec2(xPos, yPos), lastMousePos);
-			// camera.SmoothMove(glm::vec2(SCR_WIDTH, SCR_HEIGHT), glm::vec2(xPos, yPos), lastMousePos);
 			lastMousePos = glm::vec2(xPos, yPos);
 
 			auto pickIDs = pick(window, xPos, yPos, cursor_radius);
@@ -503,16 +500,10 @@ void App::run()
 					c.vertex(7).pos()) / 8.;
 
 				camera->LookAt(glm::vec3(p.x, p.y, p.z));
-				// dist
-				// float targetDist = glm::distance(camera->GetEye(), glm::vec3(p.x, p.y, p.z));
-				// camera->MoveForward(targetDist);
+
 				std::cout << "dblClick on cell: " << pickID << std::endl;
 			}
 		}
-		
-
-		// camera->NewZoom(scrollDelta.y);
-		// scrollDelta = glm::vec2(0, 0);
 		
 		view = camera->GetViewMatrix();
 		projection = camera->GetProjectionMatrix();
@@ -607,7 +598,7 @@ void App::run()
 		glDeleteTextures(1, &colormaps2D[i]);
 
 	hex_renderer->clean();
-	mesh_ps->clean();
+	point_set_renderer->clean();
 
 	// Terminate & quit
 	glfwTerminate();

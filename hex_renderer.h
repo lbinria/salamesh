@@ -30,8 +30,9 @@ struct Vertex {
 
 struct HexRenderer : public Renderer {
 
-    HexRenderer(Shader &shader) : 
-        shader(std::move(shader)),
+    HexRenderer(Hexahedra &hex) : 
+        hex(hex),
+        shader("shaders/hex.vert", "shaders/hex.frag"),
         position(0,0,0)
         {
         }
@@ -39,24 +40,24 @@ struct HexRenderer : public Renderer {
 
     // TODO eventually merge init / update
     void update();
-    void init(Hexahedra &m);
-    void to_gl(Hexahedra &m);
+    void init();
+    void to_gl();
     void render();
     
 
     void bind();
     void clean();
 
-    Shader shader;
+    
 
 
-    void test() {
-        // It works ! nice ! just have to point to attribute in mesh !
-        // Then when we set the attribute in the mesh, it will be set in the shader
-        auto x = static_cast<float*>(highlightsPtr);
-        for (int i = 0; i < _highlights.size(); ++i)
-            x[i] = 2.f;
-    }
+    // void test() {
+    //     // It works ! nice ! just have to point to attribute in mesh !
+    //     // Then when we set the attribute in the mesh, it will be set in the shader
+    //     auto x = static_cast<float*>(highlightsPtr);
+    //     for (int i = 0; i < _highlights.size(); ++i)
+    //         x[i] = 2.f;
+    // }
 
     void setHighlight(int idx, bool highlighted) {
         _highlights[idx] = highlighted ? 1.f : 0.f;
@@ -80,24 +81,6 @@ struct HexRenderer : public Renderer {
     	std::memcpy(filtersPtr, _filters.data(), _filters.size() * sizeof(float));
     }
 
-    // TODO not tested !
-    void setFilter(std::vector<bool> filter) {
-        // for (int i = 0; i < filter.size(); ++i)
-        //     _filters[i] = filter[i] ? 1.f : 0.f;
-
-    	// std::memcpy(filtersPtr, _filters.data(), _filters.size() * sizeof(float));
-        setRange(filter, _filters, filtersPtr);
-    }
-
-
-    // TODO make private
-    inline void setRange(std::vector<bool> data, std::vector<float> target, void* ptr) {
-        for (int i = 0; i < data.size(); ++i)
-            target[i] = data[i] ? 1.f : 0.f;
-
-    	std::memcpy(ptr, target.data(), target.size() * sizeof(float));
-    }
-
     void setAttribute(std::vector<float> attributeData);
 
     // Shader options
@@ -113,18 +96,6 @@ struct HexRenderer : public Renderer {
         // Set attribute data to shader
         setAttribute(converted_attribute_data);
     }
-
-    // template<typename T>
-    // void changeAttribute(AttributeContainer<T> &a, int element) {
-    //     // Set attribute element to shader
-    //     shader.use();
-    //     shader.setInt("attr_element", element);
-    //     // Transform data
-    //     std::vector<float> converted_attribute_data(a.data.size());
-    //     std::transform(a.data.begin(), a.data.end(), converted_attribute_data.begin(), [](T x) { return static_cast<float>(x);});
-    //     // Set attribute data to shader
-    //     setAttribute(converted_attribute_data);
-    // }
 
     void changeAttribute(GenericAttributeContainer *ga, int element) {
         // Set attribute element to shader
@@ -245,11 +216,6 @@ struct HexRenderer : public Renderer {
         fragRenderMode = mode;
     }
 
-    void setPoint(glm::vec3 p) {
-        shader.use();
-        shader.setFloat3("point", p);
-    }
-
     void setView(glm::mat4 &view) {
         shader.use();
         shader.setMat4("view", view);
@@ -317,6 +283,8 @@ struct HexRenderer : public Renderer {
 
     private:
 
+    Hexahedra &hex;
+    Shader shader;
     glm::vec3 position;
 
     int ncells;
