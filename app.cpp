@@ -175,19 +175,19 @@ void App::load_model(const std::string& filename) {
 	hex_renderer->to_gl(hex);
 
 	// Add attribute to renderer
-	hex_renderer->attrs.clear();
+	hex_renderer->clearAttrs();
 
-	for (auto a : attributes.points) {
-		hex_renderer->attrs.push_back(std::make_tuple(a.first, Element::POINTS, a.second));
+	for (auto &a : attributes.points) {
+		hex_renderer->addAttr(Element::POINTS, a);
 	}
 	for (auto a : attributes.cell_corners) {
-		hex_renderer->attrs.push_back(std::make_tuple(a.first, Element::CORNERS, a.second));
+		hex_renderer->addAttr(Element::CORNERS, a);
 	}
 	for (auto a : attributes.cell_facets) {
-		hex_renderer->attrs.push_back(std::make_tuple(a.first, Element::FACETS, a.second));
+		hex_renderer->addAttr(Element::FACETS, a);
 	}
 	for (auto a : attributes.cells) {
-		hex_renderer->attrs.push_back(std::make_tuple(a.first, Element::CELLS, a.second));
+		hex_renderer->addAttr(Element::CELLS, a);
 	}
 
 	#ifdef _DEBUG
@@ -415,7 +415,7 @@ void App::run()
 	// center /= hex.nverts();
 
 	// camera = std::make_unique<ArcBallCamera>(glm::vec3(0.f, 0.f, -3.f), mesh->position, glm::vec3(0.f, 1.f, 0.f), projection);
-	camera = std::make_unique<ArcBallCamera>(glm::vec3(0.f, 0.f, -3.f), hex_renderer->position, glm::vec3(0.f, 1.f, 0.f), glm::vec3(45.f, SCR_WIDTH, SCR_HEIGHT));
+	camera = std::make_unique<ArcBallCamera>(glm::vec3(0.f, 0.f, -3.f), hex_renderer->getPosition(), glm::vec3(0.f, 1.f, 0.f), glm::vec3(45.f, SCR_WIDTH, SCR_HEIGHT));
 
 	
 	glEnable(GL_DEPTH_TEST);
@@ -528,22 +528,22 @@ void App::run()
 
 		// Render model
         hex_renderer->bind();
-		hex_renderer->setFragRenderMode(RenderMode::Color);
-		hex_renderer->shader.setMat4("view", view);
-		hex_renderer->shader.setMat4("projection", projection);
+		hex_renderer->setFragRenderMode(Renderer::RenderMode::Color);
+		hex_renderer->setView(view);
+		hex_renderer->setProjection(projection);
 		// TODO maybe move to render ?
 		glBindTexture(GL_TEXTURE_1D, colormaps[hex_renderer->getSelectedColormap()]);
         hex_renderer->render();
 
 		// Render points
-		mesh_ps->bind();
-		mesh_ps->shader.setMat4("view", view);
-		mesh_ps->shader.setMat4("projection", projection);
-		glm::mat4 inverse_projection_view_model = glm::inverse(projection * view * model);
-		glm::mat4 mvp = projection * view * model;
-		mesh_ps->shader.setMat4("inverse_projection_view_model", inverse_projection_view_model);
-		mesh_ps->shader.setMat4("model_view_projection_matrix", mvp);
-		mesh_ps->render();
+		// mesh_ps->bind();
+		// mesh_ps->shader.setMat4("view", view);
+		// mesh_ps->shader.setMat4("projection", projection);
+		// glm::mat4 inverse_projection_view_model = glm::inverse(projection * view * model);
+		// glm::mat4 mvp = projection * view * model;
+		// mesh_ps->shader.setMat4("inverse_projection_view_model", inverse_projection_view_model);
+		// mesh_ps->shader.setMat4("model_view_projection_matrix", mvp);
+		// mesh_ps->render();
 
         // Go to ID framebuffer
 		glBindFramebuffer(GL_FRAMEBUFFER, screenFbo);
@@ -552,10 +552,9 @@ void App::run()
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 		glCullFace(cull_mode);
         hex_renderer->bind();
-		hex_renderer->shader.use();
-        hex_renderer->shader.setInt("fragRenderMode", pickMode);
+        hex_renderer->setFragRenderMode((Renderer::RenderMode)pickMode);
         hex_renderer->render();
-		hex_renderer->shader.setMat4("view", view);
+		hex_renderer->setView(view);
 
 
 		// DRAW SCREEN !

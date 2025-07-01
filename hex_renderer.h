@@ -28,13 +28,6 @@ struct Vertex {
     int vertexIndex;
 };
 
-// TODO maybe useless (because using Element for picking)
-enum RenderMode {
-    Color = 0,
-    Pick_facet = 2,
-    Pick_cell = 3
-};
-
 struct HexRenderer : public Renderer {
 
     HexRenderer(Shader &shader) : 
@@ -55,7 +48,7 @@ struct HexRenderer : public Renderer {
     void clean();
 
     Shader shader;
-    glm::vec3 position;
+
 
     void test() {
         // It works ! nice ! just have to point to attribute in mesh !
@@ -242,9 +235,14 @@ struct HexRenderer : public Renderer {
         meshShrink = val;
     }
 
+    int getFragRenderMode() {
+        return fragRenderMode;
+    }
+
     void setFragRenderMode(RenderMode mode) {
         shader.use();
         shader.setInt("fragRenderMode", mode);
+        fragRenderMode = mode;
     }
 
     void setPoint(glm::vec3 p) {
@@ -252,26 +250,41 @@ struct HexRenderer : public Renderer {
         shader.setFloat3("point", p);
     }
 
-    // std::vector<std::tuple<std::string, Element>> getAttrs() {
-    //     std::vector<std::tuple<std::string, Element>> result;
-    //     for (const auto& attr : attrs) {
-    //         result.emplace_back(std::get<0>(attr), std::get<1>(attr));
-    //     }
-    //     return result;
-    // }
+    void setView(glm::mat4 &view) {
+        shader.use();
+        shader.setMat4("view", view);
+    }
+
+    void setProjection(glm::mat4 &projection) {
+        shader.use();
+        shader.setMat4("projection", projection);
+    }
 
     std::vector<std::tuple<std::string, int>> getAttrs() final override {
         std::vector<std::tuple<std::string, int>> result;
-        // std::vector<std::pair<std::string, int>> result;
         for (const auto& attr : attrs) {
             result.emplace_back(std::get<0>(attr), std::get<1>(attr));
-            // result.push_back(std::make_tuple(std::get<0>(attr), std::get<1>(attr)));
         }
         return result;
     }
 
     std::tuple<std::string, int> getAttr(int idx) final override {
         return std::make_tuple(std::get<0>(attrs[idx - 1]), std::get<1>(attrs[idx - 1]));
+    }
+
+    void addAttr(Element element, NamedContainer &container) final override {
+        attrs.emplace_back(container.first, element, container.second);
+    }
+
+    void removeAttr(const std::string& name, Element element) final override {
+        attrs.erase(std::remove_if(attrs.begin(), attrs.end(),
+            [&name, &element](const auto& attr) {
+                return std::get<0>(attr) == name && std::get<1>(attr) == element;
+            }), attrs.end());
+    }
+
+    void clearAttrs() final override {
+        attrs.clear();
     }
 
     int getSelectedAttr() const {
@@ -294,9 +307,17 @@ struct HexRenderer : public Renderer {
         shader.setInt("colormap", selectedColormap);
     }
 
-    std::vector<std::tuple<std::string, Element, std::shared_ptr<GenericAttributeContainer>>> attrs;
+    glm::vec3 getPosition() {
+        return position;
+    }
+
+    void setPosition(glm::vec3 p) {
+        position = p;
+    }
 
     private:
+
+    glm::vec3 position;
 
     int ncells;
     // Buffers
@@ -323,9 +344,12 @@ struct HexRenderer : public Renderer {
     bool invertClipping = false;
     float meshSize = 0.01f;
     float meshShrink = 0.f;
+    RenderMode fragRenderMode;
     ColorMode colorMode = ColorMode::COLOR;
     
     int selectedAttr = 0;
     int selectedColormap = 0;
+
+    std::vector<std::tuple<std::string, Element, std::shared_ptr<GenericAttributeContainer>>> attrs;
 
 };

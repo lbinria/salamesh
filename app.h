@@ -75,9 +75,8 @@ struct App : public IApp {
     unsigned int screenFbo;
 
     // settings
-    std::unique_ptr<HexRenderer> hex_renderer;
-    // TODO 20250516 objective remove ptr above !
-    // HexRenderer mesh;
+    // std::unique_ptr<HexRenderer> hex_renderer;
+    std::unique_ptr<Renderer> hex_renderer;
 
     std::unique_ptr<PointsCloud> mesh_ps;
     unsigned int SCR_WIDTH;
