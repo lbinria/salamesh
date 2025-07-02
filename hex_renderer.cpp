@@ -173,25 +173,6 @@ void HexRenderer::init() {
 }
 
 void HexRenderer::push() {
-	glBindVertexArray(VAO);
-	glBindBuffer(GL_ARRAY_BUFFER, VBO);
-	glBufferData(GL_ARRAY_BUFFER, v_vertices.size() * sizeof(Vertex), v_vertices.data(), GL_STATIC_DRAW);
-
-	glBindBuffer(GL_TEXTURE_BUFFER, cellBaryBuffer);
-	glBufferData(GL_TEXTURE_BUFFER, _barys.size() * sizeof(float), _barys.data(), GL_STATIC_DRAW);
-	glActiveTexture(GL_TEXTURE0 + 1); 
-	glBindTexture(GL_TEXTURE_BUFFER, cellBaryTexture);
-	glTexBuffer(GL_TEXTURE_BUFFER, GL_RGB32F, cellBaryBuffer);
-
-	glBindBuffer(GL_TEXTURE_BUFFER, cellAttributeBuffer);
-	_attributeData.resize(hex.ncells(), 0.0f);
-	glBufferData(GL_TEXTURE_BUFFER, _attributeData.size() * sizeof(float), _attributeData.data(), GL_STATIC_DRAW);
-	glActiveTexture(GL_TEXTURE0 + 2); 
-	glBindTexture(GL_TEXTURE_BUFFER, cellAttributeTexture);
-	glTexBuffer(GL_TEXTURE_BUFFER, GL_R32F, cellAttributeBuffer);
-}
-
-void HexRenderer::to_gl() {
     std::cout << "to_gl start." << std::endl;
 
 	std::chrono::steady_clock::time_point begin = std::chrono::steady_clock::now();
@@ -312,6 +293,27 @@ void HexRenderer::to_gl() {
 	std::cout << "mesh has: " << hex.nfacets() << " facets." << std::endl;
 	std::cout << "mesh has: " << hex.ncells() << " cells." << std::endl;
 	std::cout << "should draw: " << v_vertices.size() << " vertices." << std::endl;
+
+	glBindVertexArray(VAO);
+	glBindBuffer(GL_ARRAY_BUFFER, VBO);
+	glBufferData(GL_ARRAY_BUFFER, v_vertices.size() * sizeof(Vertex), v_vertices.data(), GL_STATIC_DRAW);
+
+	glBindBuffer(GL_TEXTURE_BUFFER, cellBaryBuffer);
+	glBufferData(GL_TEXTURE_BUFFER, _barys.size() * sizeof(float), _barys.data(), GL_STATIC_DRAW);
+	glActiveTexture(GL_TEXTURE0 + 1); 
+	glBindTexture(GL_TEXTURE_BUFFER, cellBaryTexture);
+	glTexBuffer(GL_TEXTURE_BUFFER, GL_RGB32F, cellBaryBuffer);
+
+	glBindBuffer(GL_TEXTURE_BUFFER, cellAttributeBuffer);
+	_attributeData.resize(hex.ncells(), 0.0f);
+	glBufferData(GL_TEXTURE_BUFFER, _attributeData.size() * sizeof(float), _attributeData.data(), GL_STATIC_DRAW);
+	glActiveTexture(GL_TEXTURE0 + 2); 
+	glBindTexture(GL_TEXTURE_BUFFER, cellAttributeTexture);
+	glTexBuffer(GL_TEXTURE_BUFFER, GL_R32F, cellAttributeBuffer);
+}
+
+void HexRenderer::to_gl() {
+
 
 	// glBindVertexArray(VAO);
 	// glBindBuffer(GL_ARRAY_BUFFER, VBO);

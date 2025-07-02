@@ -173,7 +173,6 @@ void App::load_model(const std::string& filename) {
     hex_renderer = std::make_unique<HexRenderer>(hex);
 	// Model init
 	hex_renderer->init();
-	hex_renderer->to_gl();
 	hex_renderer->push();
 
 	// Add attribute to renderer
