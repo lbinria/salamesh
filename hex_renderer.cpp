@@ -24,30 +24,6 @@ void HexRenderer::setAttribute(std::vector<float> attributeData) {
 	glBufferData(GL_TEXTURE_BUFFER, _attributeData.size() * sizeof(float), _attributeData.data(), GL_STATIC_DRAW);
 }
 
-void HexRenderer::update() {
-	glBindVertexArray(VAO);
-	glBindBuffer(GL_ARRAY_BUFFER, VBO);
-
-	// Passing NULL to glBufferData tells the driver it can optimize the memory allocation since we don't care about preserving the old data (to check !)
-	glBufferData(GL_ARRAY_BUFFER, v_vertices.size() * sizeof(Vertex), nullptr, GL_STATIC_DRAW);
-	glBufferSubData(GL_ARRAY_BUFFER, 0, v_vertices.size() * sizeof(Vertex), v_vertices.data());
-
-	// Highlight
-	glBindBuffer(GL_TEXTURE_BUFFER, cellHighlightBuffer);
-	_highlights.resize(ncells, 0.0f);
-	glBufferData(GL_TEXTURE_BUFFER, _highlights.size() * sizeof(float), _highlights.data(), GL_DYNAMIC_DRAW);
-
-	glBindTexture(GL_TEXTURE_BUFFER, cellHighlightTexture); // Needed ?
-	glUnmapBuffer(GL_TEXTURE_BUFFER);
-
-	// Allocate persistent storage
-	GLbitfield flags = GL_MAP_WRITE_BIT | GL_MAP_PERSISTENT_BIT | GL_MAP_COHERENT_BIT;
-	glBufferStorage(GL_TEXTURE_BUFFER, _highlights.size() * sizeof(float), nullptr, flags);
-	// Map once and keep pointer (not compatible for MacOS... because need OpenGL >= 4.6 i think)
-	highlightsPtr = glMapBufferRange(GL_TEXTURE_BUFFER, 0, _highlights.size() * sizeof(float), flags);
-
-}
-
 void HexRenderer::init() {
 
 	shader.use();
@@ -173,7 +149,7 @@ void HexRenderer::init() {
 }
 
 void HexRenderer::push() {
-    std::cout << "to_gl start." << std::endl;
+    std::cout << "push start." << std::endl;
 
 	std::chrono::steady_clock::time_point begin = std::chrono::steady_clock::now();
 
@@ -184,8 +160,12 @@ void HexRenderer::push() {
 	// Cell properties
 	std::chrono::steady_clock::time_point begin_barys = std::chrono::steady_clock::now();
 
+	// Refresh attribute data if needed
 	_attributeData.resize(hex.ncells(), 0.0f);
-
+	
+	if (colorMode == Renderer::ColorMode::ATTRIBUTE) {
+		updateAttr();
+	}
 
 	// (8ms -> 3ms)
 	_barys.resize(hex.ncells() * 3);
@@ -285,7 +265,7 @@ void HexRenderer::push() {
 
 	std::chrono::steady_clock::time_point end = std::chrono::steady_clock::now();
 
-    std::cout << "to_gl end in: " << std::chrono::duration_cast<std::chrono::milliseconds>(end - begin).count() << "ms" << std::endl;
+    std::cout << "push end in: " << std::chrono::duration_cast<std::chrono::milliseconds>(end - begin).count() << "ms" << std::endl;
     std::cout << "compute bary in: " << std::chrono::duration_cast<std::chrono::milliseconds>(end_barys - begin_barys).count() << "ms" << std::endl;
     std::cout << "compute facets in: " << std::chrono::duration_cast<std::chrono::milliseconds>(end_facets - begin_facets).count() << "ms" << std::endl;
 
@@ -310,27 +290,6 @@ void HexRenderer::push() {
 	glActiveTexture(GL_TEXTURE0 + 2); 
 	glBindTexture(GL_TEXTURE_BUFFER, cellAttributeTexture);
 	glTexBuffer(GL_TEXTURE_BUFFER, GL_R32F, cellAttributeBuffer);
-}
-
-void HexRenderer::to_gl() {
-
-
-	// glBindVertexArray(VAO);
-	// glBindBuffer(GL_ARRAY_BUFFER, VBO);
-	// glBufferData(GL_ARRAY_BUFFER, v_vertices.size() * sizeof(Vertex), v_vertices.data(), GL_STATIC_DRAW);
-	
-	// glBindBuffer(GL_TEXTURE_BUFFER, cellBaryBuffer);
-	// glBufferData(GL_TEXTURE_BUFFER, _barys.size() * sizeof(float), _barys.data(), GL_STATIC_DRAW);
-	// glActiveTexture(GL_TEXTURE0 + 1); 
-	// glBindTexture(GL_TEXTURE_BUFFER, cellBaryTexture);
-	// glTexBuffer(GL_TEXTURE_BUFFER, GL_RGB32F, cellBaryBuffer);
-
-	// glBindBuffer(GL_TEXTURE_BUFFER, cellAttributeBuffer);
-	// _attributeData.resize(hex.ncells(), 0.0f);
-	// glBufferData(GL_TEXTURE_BUFFER, _attributeData.size() * sizeof(float), _attributeData.data(), GL_STATIC_DRAW);
-	// glActiveTexture(GL_TEXTURE0 + 2); 
-	// glBindTexture(GL_TEXTURE_BUFFER, cellAttributeTexture);
-	// glTexBuffer(GL_TEXTURE_BUFFER, GL_R32F, cellAttributeBuffer);
 }
 
 void HexRenderer::bind() {

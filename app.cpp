@@ -369,7 +369,7 @@ void App::run()
 
 	// point_set_renderer = std::make_unique<PointSetRenderer>(hex.points);
 	// point_set_renderer->init();
-	// point_set_renderer->to_gl();
+	// point_set_renderer->push();
 
 
 

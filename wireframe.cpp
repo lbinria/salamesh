@@ -182,8 +182,8 @@ void Wireframe::init() {
 
 }
 
-void Wireframe::to_gl() {
-    std::cout << "to_gl start." << std::endl;
+void Wireframe::push() {
+    std::cout << "push start." << std::endl;
 
 	std::chrono::steady_clock::time_point begin = std::chrono::steady_clock::now();
 
@@ -289,7 +289,7 @@ void Wireframe::to_gl() {
 
 	std::chrono::steady_clock::time_point end = std::chrono::steady_clock::now();
 
-    std::cout << "to_gl end in: " << std::chrono::duration_cast<std::chrono::milliseconds>(end - begin).count() << "ms" << std::endl;
+    std::cout << "push end in: " << std::chrono::duration_cast<std::chrono::milliseconds>(end - begin).count() << "ms" << std::endl;
     std::cout << "compute bary in: " << std::chrono::duration_cast<std::chrono::milliseconds>(end_barys - begin_barys).count() << "ms" << std::endl;
     std::cout << "compute facets in: " << std::chrono::duration_cast<std::chrono::milliseconds>(end_facets - begin_facets).count() << "ms" << std::endl;
 

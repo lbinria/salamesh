@@ -33,7 +33,7 @@ struct Wireframe {
 
 
     void init();
-    void to_gl();
+    void push();
     void render();
     void render2();
 

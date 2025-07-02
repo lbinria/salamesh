@@ -26,7 +26,7 @@ struct PointSetRenderer {
         ps(ps) {}
 
     void init();
-    void to_gl();
+    void push();
     void render();
 
     void bind();

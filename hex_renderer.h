@@ -41,7 +41,6 @@ struct HexRenderer : public Renderer {
     // TODO eventually merge init / update
     void update();
     void init();
-    void to_gl();
     void push();
     void render();
     
@@ -262,6 +261,10 @@ struct HexRenderer : public Renderer {
         selectedAttr = idx;
         int attr_element = std::get<1>(attrs[idx]);
         changeAttribute(std::get<2>(attrs[idx]).get(), attr_element);
+    }
+
+    void updateAttr() {
+        setSelectedAttr(selectedAttr);
     }
 
     int getSelectedColormap() const {
