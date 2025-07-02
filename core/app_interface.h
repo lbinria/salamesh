@@ -25,10 +25,12 @@ struct IApp {
     virtual void setCullMode(int mode) = 0;
 
     virtual ArcBallCamera& getCamera() = 0;
-    virtual Renderer& getRenderer(int idx) = 0;
+    
     virtual std::vector<std::unique_ptr<Renderer>>& getRenderers() = 0;
     virtual int countRenderers() = 0;
     virtual int getSelectedRenderer() = 0;
+    virtual Renderer& getCurrentRenderer() = 0;
+
     virtual InputState& getInputState() = 0;
     virtual Hexahedra& getHexahedra() = 0;
 

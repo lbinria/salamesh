@@ -151,6 +151,7 @@ struct LuaScript : public Component {
 
 
 		app_type["renderers"] = sol::readonly_property(&IApp::getRenderers);
+		app_type["current_renderer"] = sol::readonly_property(&IApp::getCurrentRenderer);
 		
 		app_type["selected_renderer"] = sol::readonly_property([](IApp &self) {
 			return self.getSelectedRenderer() + 1;

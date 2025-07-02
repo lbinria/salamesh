@@ -163,7 +163,7 @@ void App::load_model(const std::string& filename) {
 	std::chrono::steady_clock::time_point begin_read_model = std::chrono::steady_clock::now();
 	#endif
 
-	/*UM::VolumeAttributes*/ attributes = UM::read_by_extension(filename, hex);
+	VolumeAttributes attributes = UM::read_by_extension(filename, hex);
 
 	std::cout << "number of point attributes: " << attributes.points.size() << std::endl;
 	std::cout << "nverts = " << hex.nverts() << std::endl;
@@ -175,6 +175,7 @@ void App::load_model(const std::string& filename) {
 	renderer->init();
 	renderer->push();
 
+	// TODO maybe directly pass attributes to renderer and make function to get in format below
 	// Add attribute to renderer
 	renderer->clearAttrs();
 

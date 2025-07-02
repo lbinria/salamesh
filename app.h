@@ -196,16 +196,16 @@ struct App : public IApp {
         return renderers;
     }
 
-    Renderer& getRenderer(int idx) final override {
-        return *renderers[idx];
-    }
-
     int countRenderers() final override {
         return renderers.size();
     }
 
     int getSelectedRenderer() final override {
         return selected_renderer;
+    }
+
+    Renderer& getCurrentRenderer() final override {
+        return *renderers[selected_renderer];
     }
 
     ArcBallCamera& getCamera() final override { return *camera; }
@@ -238,7 +238,7 @@ struct App : public IApp {
 
 
     Hexahedra hex;
-    VolumeAttributes attributes;
+    // VolumeAttributes attributes;
 
     Element pickMode = Element::CELLS;
 

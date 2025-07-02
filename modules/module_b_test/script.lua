@@ -35,7 +35,7 @@ function draw_gui()
 		app.setCullMode(0x0404)
 	end
 
-	local cur_renderer = app.renderers[app.selected_renderer]
+	local cur_renderer = app.current_renderer
 
 	local sel_chk_enable_light, new_enable_light = imgui.Checkbox("Enable light", cur_renderer.light)
 
