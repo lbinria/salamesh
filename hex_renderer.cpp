@@ -50,52 +50,24 @@ void HexRenderer::update() {
 
 void HexRenderer::init() {
 
+	shader.use();
+
 	std::chrono::steady_clock::time_point begin = std::chrono::steady_clock::now();
 
-    std::cout << "gen VAO." << std::endl;
-
 	glGenVertexArrays(1, &VAO);
-	glBindVertexArray(VAO);
-
-    std::cout << "gen VBO." << std::endl;
-
-
 	glGenBuffers(1, &VBO);
-	glBindBuffer(GL_ARRAY_BUFFER, VBO);
 
-    std::cout << "Push data to buffer." << std::endl;
-
-	glBufferData(GL_ARRAY_BUFFER, v_vertices.size() * sizeof(Vertex), v_vertices.data(), GL_STATIC_DRAW);
-
-	std::cout << "gen cell buffer." << std::endl;
-
-	// 
 	glGenBuffers(1, &cellBaryBuffer);
-	glBindBuffer(GL_TEXTURE_BUFFER, cellBaryBuffer);
-	glBufferData(GL_TEXTURE_BUFFER, _barys.size() * sizeof(float), _barys.data(), GL_STATIC_DRAW);
-
 	glGenTextures(1, &cellBaryTexture);
-	glActiveTexture(GL_TEXTURE0 + 1); 
-	glBindTexture(GL_TEXTURE_BUFFER, cellBaryTexture);
-	glTexBuffer(GL_TEXTURE_BUFFER, GL_RGB32F, cellBaryBuffer);
-
-	// 
 	glGenBuffers(1, &cellAttributeBuffer);
-	glBindBuffer(GL_TEXTURE_BUFFER, cellAttributeBuffer);
-	_attributeData.resize(hex.ncells(), 0.0f);
-	glBufferData(GL_TEXTURE_BUFFER, _attributeData.size() * sizeof(float), _attributeData.data(), GL_STATIC_DRAW);
-
 	glGenTextures(1, &cellAttributeTexture);
-	glActiveTexture(GL_TEXTURE0 + 2); 
-	glBindTexture(GL_TEXTURE_BUFFER, cellAttributeTexture);
-	glTexBuffer(GL_TEXTURE_BUFFER, GL_R32F, cellAttributeBuffer);
-
-	// --------
-	// Highlight
+	
 	glGenBuffers(1, &cellHighlightBuffer);
-	glBindBuffer(GL_TEXTURE_BUFFER, cellHighlightBuffer);
+
+
 	_highlights.resize(hex.ncells(), 0.0f);
-	glBufferData(GL_TEXTURE_BUFFER, _highlights.size() * sizeof(float), _highlights.data(), GL_DYNAMIC_DRAW);
+	glBindBuffer(GL_TEXTURE_BUFFER, cellHighlightBuffer);
+	// glBufferData(GL_TEXTURE_BUFFER, _highlights.size() * sizeof(float), _highlights.data(), GL_DYNAMIC_DRAW);
 
 	// Allocate persistent storage
 	GLbitfield flags = GL_MAP_WRITE_BIT | GL_MAP_PERSISTENT_BIT | GL_MAP_COHERENT_BIT;
@@ -103,23 +75,16 @@ void HexRenderer::init() {
 	// Map once and keep pointer (not compatible for MacOS... because need OpenGL >= 4.6 i think)
 	highlightsPtr = glMapBufferRange(GL_TEXTURE_BUFFER, 0, _highlights.size() * sizeof(float), flags);
 
-	// void *ptr = glMapBuffer(GL_TEXTURE_BUFFER, GL_WRITE_ONLY);
-	// if (ptr) {
-	// 	std::memcpy(ptr, _highlights.data(), _highlights.size() * sizeof(float));
-	// 	glUnmapBuffer(GL_TEXTURE_BUFFER);
-	// }
-
 	glGenTextures(1, &cellHighlightTexture);
 	glActiveTexture(GL_TEXTURE0 + 3); 
 	glBindTexture(GL_TEXTURE_BUFFER, cellHighlightTexture);
 	glTexBuffer(GL_TEXTURE_BUFFER, GL_R32F, cellHighlightBuffer);
 
-	// --------
-	// Filter
+
 	glGenBuffers(1, &cellFilterBuffer);
 	glBindBuffer(GL_TEXTURE_BUFFER, cellFilterBuffer);
 	_filters.resize(hex.ncells(), 0.0f);
-	glBufferData(GL_TEXTURE_BUFFER, _filters.size() * sizeof(float), _filters.data(), GL_DYNAMIC_DRAW);
+	// glBufferData(GL_TEXTURE_BUFFER, _filters.size() * sizeof(float), _filters.data(), GL_DYNAMIC_DRAW);
 
 	// Allocate persistent storage
 	glBufferStorage(GL_TEXTURE_BUFFER, _filters.size() * sizeof(float), nullptr, flags);
@@ -130,6 +95,17 @@ void HexRenderer::init() {
 	glActiveTexture(GL_TEXTURE0 + 4); 
 	glBindTexture(GL_TEXTURE_BUFFER, cellFilterTexture);
 	glTexBuffer(GL_TEXTURE_BUFFER, GL_R32F, cellFilterBuffer);
+
+
+
+
+
+
+
+
+
+
+
 
 	// Set up texture units
 	glActiveTexture(GL_TEXTURE0 + 1);
@@ -162,6 +138,9 @@ void HexRenderer::init() {
 	GLuint cellIndexLocation = glGetAttribLocation(shader.id, "cellIndex");
 	GLuint vertexIndexLocation = glGetAttribLocation(shader.id, "vertexIndex");
 
+	glBindVertexArray(VAO);
+	glBindBuffer(GL_ARRAY_BUFFER, VBO);
+
 	glEnableVertexAttribArray(positionLocation);
 	glVertexAttribPointer(positionLocation, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)offsetof(Vertex, position));
 
@@ -188,6 +167,28 @@ void HexRenderer::init() {
 
     std::cout << "mesh setup in: " << std::chrono::duration_cast<std::chrono::milliseconds>(end - begin).count() << "ms" << std::endl;
 
+
+
+
+}
+
+void HexRenderer::push() {
+	glBindVertexArray(VAO);
+	glBindBuffer(GL_ARRAY_BUFFER, VBO);
+	glBufferData(GL_ARRAY_BUFFER, v_vertices.size() * sizeof(Vertex), v_vertices.data(), GL_STATIC_DRAW);
+
+	glBindBuffer(GL_TEXTURE_BUFFER, cellBaryBuffer);
+	glBufferData(GL_TEXTURE_BUFFER, _barys.size() * sizeof(float), _barys.data(), GL_STATIC_DRAW);
+	glActiveTexture(GL_TEXTURE0 + 1); 
+	glBindTexture(GL_TEXTURE_BUFFER, cellBaryTexture);
+	glTexBuffer(GL_TEXTURE_BUFFER, GL_RGB32F, cellBaryBuffer);
+
+	glBindBuffer(GL_TEXTURE_BUFFER, cellAttributeBuffer);
+	_attributeData.resize(hex.ncells(), 0.0f);
+	glBufferData(GL_TEXTURE_BUFFER, _attributeData.size() * sizeof(float), _attributeData.data(), GL_STATIC_DRAW);
+	glActiveTexture(GL_TEXTURE0 + 2); 
+	glBindTexture(GL_TEXTURE_BUFFER, cellAttributeTexture);
+	glTexBuffer(GL_TEXTURE_BUFFER, GL_R32F, cellAttributeBuffer);
 }
 
 void HexRenderer::to_gl() {
@@ -202,9 +203,7 @@ void HexRenderer::to_gl() {
 	// Cell properties
 	std::chrono::steady_clock::time_point begin_barys = std::chrono::steady_clock::now();
 
-	_attributeData.resize(hex.ncells());
-	for (int i = 0; i < _attributeData.size(); i++)
-		_attributeData[i] = 0.f;
+	_attributeData.resize(hex.ncells(), 0.0f);
 
 
 	// (8ms -> 3ms)
@@ -313,6 +312,23 @@ void HexRenderer::to_gl() {
 	std::cout << "mesh has: " << hex.nfacets() << " facets." << std::endl;
 	std::cout << "mesh has: " << hex.ncells() << " cells." << std::endl;
 	std::cout << "should draw: " << v_vertices.size() << " vertices." << std::endl;
+
+	// glBindVertexArray(VAO);
+	// glBindBuffer(GL_ARRAY_BUFFER, VBO);
+	// glBufferData(GL_ARRAY_BUFFER, v_vertices.size() * sizeof(Vertex), v_vertices.data(), GL_STATIC_DRAW);
+	
+	// glBindBuffer(GL_TEXTURE_BUFFER, cellBaryBuffer);
+	// glBufferData(GL_TEXTURE_BUFFER, _barys.size() * sizeof(float), _barys.data(), GL_STATIC_DRAW);
+	// glActiveTexture(GL_TEXTURE0 + 1); 
+	// glBindTexture(GL_TEXTURE_BUFFER, cellBaryTexture);
+	// glTexBuffer(GL_TEXTURE_BUFFER, GL_RGB32F, cellBaryBuffer);
+
+	// glBindBuffer(GL_TEXTURE_BUFFER, cellAttributeBuffer);
+	// _attributeData.resize(hex.ncells(), 0.0f);
+	// glBufferData(GL_TEXTURE_BUFFER, _attributeData.size() * sizeof(float), _attributeData.data(), GL_STATIC_DRAW);
+	// glActiveTexture(GL_TEXTURE0 + 2); 
+	// glBindTexture(GL_TEXTURE_BUFFER, cellAttributeTexture);
+	// glTexBuffer(GL_TEXTURE_BUFFER, GL_R32F, cellAttributeBuffer);
 }
 
 void HexRenderer::bind() {

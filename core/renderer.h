@@ -33,6 +33,7 @@ struct Renderer {
     virtual void init() = 0; // TODO see because it is an app function => it should be override by user but not used ! (public for override, private for use ?)
     virtual void update() = 0;
     virtual void to_gl() = 0;
+    virtual void push() = 0;
     virtual void bind() = 0; // TODO see because it is an app function => it should be override by user but not used ! (public for override, private for use ?)
     virtual void render() = 0;
     virtual void clean() = 0;

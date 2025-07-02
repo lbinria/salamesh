@@ -42,6 +42,7 @@ struct HexRenderer : public Renderer {
     void update();
     void init();
     void to_gl();
+    void push();
     void render();
     
 

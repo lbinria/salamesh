@@ -171,7 +171,10 @@ void App::load_model(const std::string& filename) {
 	std::cout << "model read." << std::endl;
 
     hex_renderer = std::make_unique<HexRenderer>(hex);
+	// Model init
+	hex_renderer->init();
 	hex_renderer->to_gl();
+	hex_renderer->push();
 
 	// Add attribute to renderer
 	hex_renderer->clearAttrs();
@@ -355,11 +358,8 @@ void App::run()
 	std::chrono::steady_clock::time_point end = std::chrono::steady_clock::now();
     std::cout << "preload in: " << std::chrono::duration_cast<std::chrono::milliseconds>(end - begin).count() << "ms" << std::endl;
 
-	
 
-	point_set_renderer = std::make_unique<PointSetRenderer>(hex.points);
-	point_set_renderer->to_gl();
-	point_set_renderer->init();
+
 
 
 	hex_renderer->setLight(isLightEnabled);
@@ -367,8 +367,13 @@ void App::run()
 	hex_renderer->setMeshSize(meshSize);
 	hex_renderer->setColorMode(Renderer::ColorMode::COLOR);
 
-	// Model init
-	hex_renderer->init();
+
+	// point_set_renderer = std::make_unique<PointSetRenderer>(hex.points);
+	// point_set_renderer->init();
+	// point_set_renderer->to_gl();
+
+
+
 
 	Shader screenShader("shaders/screen.vert", "shaders/screen.frag");
 
@@ -598,7 +603,7 @@ void App::run()
 		glDeleteTextures(1, &colormaps2D[i]);
 
 	hex_renderer->clean();
-	point_set_renderer->clean();
+	// point_set_renderer->clean();
 
 	// Terminate & quit
 	glfwTerminate();
