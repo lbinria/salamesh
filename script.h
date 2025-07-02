@@ -146,8 +146,22 @@ struct LuaScript : public Component {
 		sol::usertype<ArcBallCamera> camera_tbl = lua.new_usertype<ArcBallCamera>("ArcBallCamera");
 		app_type["camera"] = sol::readonly_property(&IApp::getCamera);
 		// Renderer bindings
-		sol::usertype<Renderer> renderer_tbl = lua.new_usertype<Renderer>("Renderer");
-		app_type["renderer"] = sol::readonly_property(&IApp::getRenderer);
+		sol::usertype<Renderer> renderer_t = lua.new_usertype<Renderer>("Renderer");
+
+
+
+		app_type["renderers"] = sol::readonly_property(&IApp::getRenderers);
+		
+		app_type["selected_renderer"] = sol::readonly_property([](IApp &self) {
+			return self.getSelectedRenderer() + 1;
+		});
+
+		// auto renderer_tbl = lua.create_table();
+		// for (int i = 0; i < app.countRenderers(); i++) {
+		// 	auto &renderer = app.getRenderer(i);
+		// 	renderer_tbl.set(i + 1, &renderer);
+		// }
+		// app_type["renderer"] = renderer_tbl;
 
 
 		sol::usertype<glm::vec3> vec3_type = lua.new_usertype<glm::vec3>("vec3",
@@ -213,155 +227,98 @@ struct LuaScript : public Component {
 		camera_tbl.set_function("MoveForward", &ArcBallCamera::MoveForward);
 
 
-		renderer_tbl["light"] = sol::property(
+		renderer_t["light"] = sol::property(
 			&Renderer::getLight,
 			&Renderer::setLight
 		);
 
-		renderer_tbl.set_function("getLight", &Renderer::getLight);
-		renderer_tbl.set_function("setLight", &Renderer::setLight);
+		renderer_t.set_function("getLight", &Renderer::getLight);
+		renderer_t.set_function("setLight", &Renderer::setLight);
 
-		renderer_tbl["is_light_follow_view"] = sol::property(
+		renderer_t["is_light_follow_view"] = sol::property(
 			&Renderer::getLightFollowView,
 			&Renderer::setLightFollowView
 		);
 
-		renderer_tbl["clipping"] = sol::property(
+		renderer_t["clipping"] = sol::property(
 			&Renderer::getClipping,
 			&Renderer::setClipping
 		);
 
-		renderer_tbl.set_function("getClipping", &Renderer::getClipping);
-		renderer_tbl.set_function("setClipping", &Renderer::setClipping);
+		renderer_t.set_function("getClipping", &Renderer::getClipping);
+		renderer_t.set_function("setClipping", &Renderer::setClipping);
 
-
-		// renderer_tbl.set_function(
-		// 	"getClippingPlanePoint",
-		// 	[&app = app]() { 
-		// 		app.getRenderer().getClippingPlanePoint();
-		// 	}
-		// );
-
-
-		// // TODO see below for a better way to do this with sol::property
-		// renderer_tbl.set_function(
-		// 	"getClippingPlanePoint",
-		// 	[&app = app]() { 
-		// 		return std::make_tuple(
-		// 			app.getRenderer().getClippingPlanePoint().x,
-		// 			app.getRenderer().getClippingPlanePoint().y,
-		// 			app.getRenderer().getClippingPlanePoint().z
-		// 		); 
-		// 	}
-		// );
-		// renderer_tbl.set_function(
-		// 	"setClippingPlanePoint",
-		// 	[&app = app](float x, float y, float z) { 
-		// 		app.getRenderer().setClippingPlanePoint(glm::vec3(x, y, z)); 
-		// 	}
-		// );
-		// renderer_tbl.set_function(
-		// 	"getClippingPlaneNormal",
-		// 	[&app = app]() { 
-		// 		return std::make_tuple(
-		// 			app.getRenderer().getClippingPlaneNormal().x,
-		// 			app.getRenderer().getClippingPlaneNormal().y,
-		// 			app.getRenderer().getClippingPlaneNormal().z
-		// 		); 
-		// 	}
-		// );
-		// renderer_tbl.set_function(
-		// 	"setClippingPlaneNormal",
-		// 	[&app = app](float x, float y, float z) { 
-		// 		app.getRenderer().setClippingPlaneNormal(glm::vec3(x, y, z)); 
-		// 	}
-		// );
-		renderer_tbl["clipping_plane_point"] = sol::property(
+		renderer_t["clipping_plane_point"] = sol::property(
 			&Renderer::getClippingPlanePoint,
 			&Renderer::setClippingPlanePoint
 		);
 
-		renderer_tbl["clipping_plane_normal"] = sol::property(
+		renderer_t["clipping_plane_normal"] = sol::property(
 			&Renderer::getClippingPlaneNormal,
 			&Renderer::setClippingPlaneNormal
 		);
 
-		renderer_tbl["invert_clipping"] = sol::property(
+		renderer_t["invert_clipping"] = sol::property(
 			&Renderer::getInvertClipping,
 			&Renderer::setInvertClipping
 		);
 
-		renderer_tbl["meshSize"] = sol::property(
+		renderer_t["meshSize"] = sol::property(
 			&Renderer::getMeshSize,
 			&Renderer::setMeshSize
 		);
 
-		renderer_tbl.set_function("getMeshSize", &Renderer::getMeshSize);
-		renderer_tbl.set_function("setMeshSize", &Renderer::setMeshSize);
+		renderer_t.set_function("getMeshSize", &Renderer::getMeshSize);
+		renderer_t.set_function("setMeshSize", &Renderer::setMeshSize);
 
-		renderer_tbl["meshShrink"] = sol::property(
+		renderer_t["meshShrink"] = sol::property(
 			&Renderer::getMeshShrink,
 			&Renderer::setMeshShrink
 		);
 
-		renderer_tbl.set_function("getMeshShrink", &Renderer::getMeshShrink);
-		renderer_tbl.set_function("setMeshShrink", &Renderer::setMeshShrink);
+		renderer_t.set_function("getMeshShrink", &Renderer::getMeshShrink);
+		renderer_t.set_function("setMeshShrink", &Renderer::setMeshShrink);
 
-		renderer_tbl["color_mode_strings"] = sol::readonly_property(
+		renderer_t["color_mode_strings"] = sol::readonly_property(
 			&Renderer::getColorModeStrings
 		);
 
-		renderer_tbl["color_mode"] = sol::property(
+		renderer_t["color_mode"] = sol::property(
 			&Renderer::getColorMode,
 			&Renderer::setColorMode
 		);
 
-		// renderer_tbl["attrs"] = sol::readonly_property(
-		// 	&Renderer::getAttrs
-		// );
 
-		// renderer_tbl["attrs"] = sol::readonly_property([&app = app, &lua = lua]() {
-		// 	sol::table result = lua.create_table();
-		// 	for (int i = 0; i < app.getRenderer().getAttrs().size(); ++i) {
-		// 		sol::table item = lua.create_table();
-		// 		item["first"] = std::get<0>(app.getRenderer().getAttrs()[i]);
-		// 		item["second"] = std::get<1>(app.getRenderer().getAttrs()[i]);
-		// 		result[i + 1] = item;
 
-		// 	}
-		// 	return result;
-		// });
+		// auto attrs_tbl = lua.create_table();
+		// for (auto &attr : app.getRenderer().getAttrs()) {
+		// 	sol::table item = lua.create_table();
+		// 	item.add(std::get<0>(attr)); // First element (name)
+		// 	item.add(std::get<1>(attr)); // Second element (element)
+		// 	attrs_tbl.add(item);
+		// }
+		// renderer_t["attrs"] = attrs_tbl;
 
-		// renderer_tbl["attrs"] = sol::readonly_property([&app = app]() {
-		// 	return app.getRenderer().getAttrs();
-		// });
 
-		// renderer_tbl["attrs"] = sol::readonly_property([&app = app]() {
-		// 	return sol::nested<std::vector<std::tuple<std::string, int>>>(app.getRenderer().getAttrs());
-		// });
 
-		auto attrs_tbl = lua.create_table();
-		for (auto &attr : app.getRenderer().getAttrs()) {
-			sol::table item = lua.create_table();
-			item.add(std::get<0>(attr)); // First element (name)
-			item.add(std::get<1>(attr)); // Second element (index)
-			// item[1] = std::get<0>(attr);
-			// item[2] = std::get<1>(attr);
-			attrs_tbl.add(item);
-			// attrs_tbl.add(sol::as_table(std::make_tuple(std::get<0>(attr), std::get<1>(attr))));
-		}
-		renderer_tbl["attrs"] = attrs_tbl;
-
-		renderer_tbl.set_function("get_attr", [&app = app](int idx) {
-			return app.getRenderer().getAttr(idx);
+		renderer_t["attrs"] = sol::readonly_property([&lua = lua](Renderer &self) {
+			sol::table attrs_tbl = lua.create_table();
+			for (auto &attr : self.getAttrs()) {
+				sol::table item = lua.create_table();
+				item.set(1, std::get<0>(attr)); // First element (name)
+				item.set(2, std::get<1>(attr)); // Second element (element)
+				attrs_tbl.add(item);
+			}
+			return attrs_tbl;
 		});
 
-		renderer_tbl["selected_attr"] = sol::property(
+
+		renderer_t["selected_attr"] = sol::property(
 			&Renderer::getSelectedAttr,
 			&Renderer::setSelectedAttr
 		);
 
-		renderer_tbl["selected_colormap"] = sol::property(
+		renderer_t["selected_colormap"] = sol::property(
 			&Renderer::getSelectedColormap,
 			&Renderer::setSelectedColormap
 		);

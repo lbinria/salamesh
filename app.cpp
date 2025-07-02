@@ -170,26 +170,33 @@ void App::load_model(const std::string& filename) {
 	std::cout << "nfacets = " << hex.nfacets() << std::endl;
 	std::cout << "model read." << std::endl;
 
-    hex_renderer = std::make_unique<HexRenderer>(hex);
+    auto renderer = std::make_unique<HexRenderer>(hex);
 	// Model init
-	hex_renderer->init();
-	hex_renderer->push();
+	renderer->init();
+	renderer->push();
 
 	// Add attribute to renderer
-	hex_renderer->clearAttrs();
+	renderer->clearAttrs();
 
 	for (auto &a : attributes.points) {
-		hex_renderer->addAttr(Element::POINTS, a);
+		renderer->addAttr(Element::POINTS, a);
 	}
 	for (auto a : attributes.cell_corners) {
-		hex_renderer->addAttr(Element::CORNERS, a);
+		renderer->addAttr(Element::CORNERS, a);
 	}
 	for (auto a : attributes.cell_facets) {
-		hex_renderer->addAttr(Element::FACETS, a);
+		renderer->addAttr(Element::FACETS, a);
 	}
 	for (auto a : attributes.cells) {
-		hex_renderer->addAttr(Element::CELLS, a);
+		renderer->addAttr(Element::CELLS, a);
 	}
+
+	renderer->setLight(isLightEnabled);
+	renderer->setMeshShrink(meshShrink);
+	renderer->setMeshSize(meshSize);
+	renderer->setColorMode(Renderer::ColorMode::COLOR);
+
+	renderers.push_back(std::move(renderer));
 
 	#ifdef _DEBUG
 	std::chrono::steady_clock::time_point end_read_model = std::chrono::steady_clock::now();
@@ -361,12 +368,6 @@ void App::run()
 
 
 
-	hex_renderer->setLight(isLightEnabled);
-	hex_renderer->setMeshShrink(meshShrink);
-	hex_renderer->setMeshSize(meshSize);
-	hex_renderer->setColorMode(Renderer::ColorMode::COLOR);
-
-
 	// point_set_renderer = std::make_unique<PointSetRenderer>(hex.points);
 	// point_set_renderer->init();
 	// point_set_renderer->push();
@@ -417,7 +418,7 @@ void App::run()
 	// }
 	// center /= hex.nverts();
 
-	camera = std::make_unique<ArcBallCamera>(glm::vec3(0.f, 0.f, -3.f), hex_renderer->getPosition(), glm::vec3(0.f, 1.f, 0.f), glm::vec3(45.f, SCR_WIDTH, SCR_HEIGHT));
+	camera = std::make_unique<ArcBallCamera>(glm::vec3(0.f, 0.f, -3.f), renderers[selected_renderer]->getPosition(), glm::vec3(0.f, 1.f, 0.f), glm::vec3(45.f, SCR_WIDTH, SCR_HEIGHT));
 
 	
 	glEnable(GL_DEPTH_TEST);
@@ -455,7 +456,7 @@ void App::run()
 			for (long pickID : pickIDs) {
 				if (camera->IsLocked() && pickID >= 0 && pickID < hex.ncells()) {
 					// mesh->setHighligth(pickID, 1.f);
-					hex_renderer->setFilter(pickID, true);
+					renderers[selected_renderer]->setFilter(pickID, true);
 				}
 			}
 		} else {
@@ -522,13 +523,13 @@ void App::run()
 		glCullFace(cull_mode);
 
 		// Render model
-        hex_renderer->bind();
-		hex_renderer->setFragRenderMode(Renderer::RenderMode::Color);
-		hex_renderer->setView(view);
-		hex_renderer->setProjection(projection);
+        renderers[selected_renderer]->bind();
+		renderers[selected_renderer]->setFragRenderMode(Renderer::RenderMode::Color);
+		renderers[selected_renderer]->setView(view);
+		renderers[selected_renderer]->setProjection(projection);
 		// TODO maybe move to render ?
-		glBindTexture(GL_TEXTURE_1D, colormaps[hex_renderer->getSelectedColormap()]);
-        hex_renderer->render();
+		glBindTexture(GL_TEXTURE_1D, colormaps[renderers[selected_renderer]->getSelectedColormap()]);
+        renderers[selected_renderer]->render();
 
 		// Render points
 		// mesh_ps->bind();
@@ -546,10 +547,10 @@ void App::run()
 		glClearColor(1.f, 1.f, 0.5f, 0.f);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 		glCullFace(cull_mode);
-        hex_renderer->bind();
-        hex_renderer->setFragRenderMode((Renderer::RenderMode)pickMode);
-        hex_renderer->render();
-		hex_renderer->setView(view);
+        renderers[selected_renderer]->bind();
+        renderers[selected_renderer]->setFragRenderMode((Renderer::RenderMode)pickMode);
+        renderers[selected_renderer]->render();
+		renderers[selected_renderer]->setView(view);
 
 
 		// DRAW SCREEN !
@@ -601,7 +602,10 @@ void App::run()
 	for (int i = 0; i < IM_ARRAYSIZE(colormaps2D); ++i)
 		glDeleteTextures(1, &colormaps2D[i]);
 
-	hex_renderer->clean();
+	for (auto &renderer : renderers) {
+		renderer->clean();
+	}
+
 	// point_set_renderer->clean();
 
 	// Terminate & quit
@@ -771,12 +775,14 @@ void App::look_at_center() {
     
 void App::setLight(bool enabled) {
 	isLightEnabled = enabled;
-	hex_renderer->setLight(enabled);
+	for (auto &renderer : renderers)
+		renderer->setLight(enabled);
 }
 
 void App::setClipping(bool enabled) {
 	isClippingEnabled = enabled;
-	hex_renderer->setClipping(enabled);
+	for (auto &renderer : renderers)
+		renderer->setClipping(enabled);
 }
 
 void App::processInput(GLFWwindow *window) {

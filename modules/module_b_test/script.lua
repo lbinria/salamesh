@@ -35,25 +35,27 @@ function draw_gui()
 		app.setCullMode(0x0404)
 	end
 
-	local sel_chk_enable_light, new_enable_light = imgui.Checkbox("Enable light", app.renderer.light)
+	local cur_renderer = app.renderers[app.selected_renderer]
+
+	local sel_chk_enable_light, new_enable_light = imgui.Checkbox("Enable light", cur_renderer.light)
 
 	if (sel_chk_enable_light) then 
 		print("Enable light: " .. tostring(new_enable_light))
-		app.renderer.light = new_enable_light
+		cur_renderer.light = new_enable_light
 	end
 
-	local sel_chk_light_follow_view, new_light_follow_view = imgui.Checkbox("Light follow view", app.renderer.is_light_follow_view)
+	local sel_chk_light_follow_view, new_light_follow_view = imgui.Checkbox("Light follow view", cur_renderer.is_light_follow_view)
 
 	if (sel_chk_light_follow_view) then 
 		print("Enable light: " .. tostring(new_light_follow_view))
-		app.renderer.is_light_follow_view = new_light_follow_view
+		cur_renderer.is_light_follow_view = new_light_follow_view
 	end
 
-	local sel_chk_enable_clipping, new_enable_clipping = imgui.Checkbox("Enable clipping", app.renderer.clipping)
+	local sel_chk_enable_clipping, new_enable_clipping = imgui.Checkbox("Enable clipping", cur_renderer.clipping)
 
 	if (sel_chk_enable_clipping) then 
 		print("Enable clipping: " .. tostring(new_enable_clipping))
-		app.renderer.clipping = new_enable_clipping
+		cur_renderer.clipping = new_enable_clipping
 	end
 
 
@@ -65,11 +67,11 @@ function draw_gui()
 	-- 			sel_clipping_plane = i
 
 	-- 			if (i == 1) then
-	-- 				app.renderer.setClippingPlaneNormal(1,0,0)
+	-- 				cur_renderer.setClippingPlaneNormal(1,0,0)
 	-- 			elseif (i == 2) then
-	-- 				app.renderer.setClippingPlaneNormal(0,1,0)
+	-- 				cur_renderer.setClippingPlaneNormal(0,1,0)
 	-- 			elseif (i == 3) then
-	-- 				app.renderer.setClippingPlaneNormal(0,0,1)
+	-- 				cur_renderer.setClippingPlaneNormal(0,0,1)
 	-- 			end
 
 	-- 		end
@@ -84,14 +86,14 @@ function draw_gui()
 				sel_clipping_plane = i
 
 				if (i == 1) then
-					app.renderer.clipping_plane_normal = vec3.new(1,0,0)
+					cur_renderer.clipping_plane_normal = vec3.new(1,0,0)
 				elseif (i == 2) then
-					app.renderer.clipping_plane_normal = vec3.new(0,1,0)
+					cur_renderer.clipping_plane_normal = vec3.new(0,1,0)
 				elseif (i == 3) then
-					app.renderer.clipping_plane_normal = vec3.new(0,0,1)
+					cur_renderer.clipping_plane_normal = vec3.new(0,0,1)
 				end
 
-				print("Set clipping plane normal to: " .. app.renderer.clipping_plane_normal:to_string())
+				print("Set clipping plane normal to: " .. cur_renderer.clipping_plane_normal:to_string())
 			end
 		end
 		imgui.EndCombo()
@@ -99,43 +101,43 @@ function draw_gui()
 
 	local plane_pos = 0
 	if (sel_clipping_plane == 1) then
-		plane_pos = app.renderer.clipping_plane_point.x
+		plane_pos = cur_renderer.clipping_plane_point.x
 	elseif (sel_clipping_plane == 2) then
-		plane_pos = app.renderer.clipping_plane_point.y
+		plane_pos = cur_renderer.clipping_plane_point.y
 	elseif (sel_clipping_plane == 3) then
-		plane_pos = app.renderer.clipping_plane_point.z
+		plane_pos = cur_renderer.clipping_plane_point.z
 	end
 
 	local sel_slider_clipping_plane_point, new_clipping_plane_pos = imgui.SliderFloat("Clipping plane point", plane_pos, -1., 1.)
 	if (sel_slider_clipping_plane_point) then 
 		local v 
 		if (sel_clipping_plane == 1) then
-			v = vec3.new(new_clipping_plane_pos, app.renderer.clipping_plane_point.y, app.renderer.clipping_plane_point.z)
+			v = vec3.new(new_clipping_plane_pos, cur_renderer.clipping_plane_point.y, cur_renderer.clipping_plane_point.z)
 		elseif (sel_clipping_plane == 2) then
-			v = vec3.new(app.renderer.clipping_plane_point.x, new_clipping_plane_pos, app.renderer.clipping_plane_point.z)
+			v = vec3.new(cur_renderer.clipping_plane_point.x, new_clipping_plane_pos, cur_renderer.clipping_plane_point.z)
 		elseif (sel_clipping_plane == 3) then
-			v = vec3.new(app.renderer.clipping_plane_point.x, app.renderer.clipping_plane_point.y, new_clipping_plane_pos)
+			v = vec3.new(cur_renderer.clipping_plane_point.x, cur_renderer.clipping_plane_point.y, new_clipping_plane_pos)
 		end
-		app.renderer.clipping_plane_point = v
+		cur_renderer.clipping_plane_point = v
 	end
 
 	local sel_invert_clipping, new_invert_clipping = imgui.Checkbox("Invert clipping", invert_clipping)
 	if (sel_invert_clipping) then 
 		invert_clipping = new_invert_clipping
-		app.renderer.invert_clipping = invert_clipping
+		cur_renderer.invert_clipping = invert_clipping
 	end
 
 
-	local sel_slider_mesh_size, new_mesh_size = imgui.SliderFloat("Mesh size", app.renderer.meshSize, 0, 1)
+	local sel_slider_mesh_size, new_mesh_size = imgui.SliderFloat("Mesh size", cur_renderer.meshSize, 0, 1)
 	if (sel_slider_mesh_size) then 
 		print("Change mesh size: " .. tostring(new_mesh_size))
-		app.renderer.meshSize = new_mesh_size
+		cur_renderer.meshSize = new_mesh_size
 	end
 
-	local sel_slider_mesh_shrink, new_mesh_shrink = imgui.SliderFloat("Mesh shrink", app.renderer.meshShrink, 0, 1)
+	local sel_slider_mesh_shrink, new_mesh_shrink = imgui.SliderFloat("Mesh shrink", cur_renderer.meshShrink, 0, 1)
 	if (sel_slider_mesh_shrink) then 
 		print("Change mesh shrink: " .. tostring(new_mesh_shrink))
-		app.renderer.meshShrink = new_mesh_shrink
+		cur_renderer.meshShrink = new_mesh_shrink
 	end
 
 	if (imgui.BeginCombo("Pick Mode", app.pick_mode_strings[app.pick_mode + 1])) then

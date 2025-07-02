@@ -75,7 +75,8 @@ struct App : public IApp {
     unsigned int screenFbo;
 
     // settings
-    std::unique_ptr<Renderer> hex_renderer;
+    std::vector<std::unique_ptr<Renderer>> renderers;
+    int selected_renderer = 0;
 
     std::unique_ptr<PointSetRenderer> point_set_renderer;
     unsigned int SCR_WIDTH;
@@ -191,7 +192,22 @@ struct App : public IApp {
 
     // Accessors
 
-    Renderer& getRenderer() final override { return *hex_renderer; }
+    std::vector<std::unique_ptr<Renderer>>& getRenderers() final override{
+        return renderers;
+    }
+
+    Renderer& getRenderer(int idx) final override {
+        return *renderers[idx];
+    }
+
+    int countRenderers() final override {
+        return renderers.size();
+    }
+
+    int getSelectedRenderer() final override {
+        return selected_renderer;
+    }
+
     ArcBallCamera& getCamera() final override { return *camera; }
     InputState& getInputState() final override { return st; }
     Hexahedra& getHexahedra() final override { return hex; }
