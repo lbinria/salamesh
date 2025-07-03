@@ -359,7 +359,9 @@ void App::run()
 	// TODO Only load first for the moment
 	if (!args.models.empty())
 		load_model(*args.models.begin());
-	// load_model("assets/catorus_hex_attr.geogram");
+	load_model("assets/catorus_hex_attr.geogram");
+	renderers[1]->setPosition(glm::vec3(2.f, 0.f, 0.f));
+	selected_renderer = 0;
 	// load_model("assets/joint.geogram");
 
 	std::chrono::steady_clock::time_point end = std::chrono::steady_clock::now();
@@ -419,7 +421,7 @@ void App::run()
 	// }
 	// center /= hex.nverts();
 
-	camera = std::make_unique<ArcBallCamera>(glm::vec3(0.f, 0.f, -3.f), renderers[selected_renderer]->getPosition(), glm::vec3(0.f, 1.f, 0.f), glm::vec3(45.f, SCR_WIDTH, SCR_HEIGHT));
+	camera = std::make_unique<ArcBallCamera>(glm::vec3(0.f, 0.f, -3.f), renderers[0]->getPosition(), glm::vec3(0.f, 1.f, 0.f), glm::vec3(45.f, SCR_WIDTH, SCR_HEIGHT));
 
 	
 	glEnable(GL_DEPTH_TEST);
@@ -456,7 +458,6 @@ void App::run()
 			auto pickIDs = pick(window, xPos, yPos, cursor_radius);
 			for (long pickID : pickIDs) {
 				if (camera->IsLocked() && pickID >= 0 && pickID < hex.ncells()) {
-					// mesh->setHighligth(pickID, 1.f);
 					renderers[selected_renderer]->setFilter(pickID, true);
 				}
 			}
@@ -524,14 +525,18 @@ void App::run()
 		glCullFace(cull_mode);
 
 		// Render model
-        renderers[selected_renderer]->bind();
-		renderers[selected_renderer]->setFragRenderMode(Renderer::RenderMode::Color);
-		renderers[selected_renderer]->setView(view);
-		renderers[selected_renderer]->setProjection(projection);
-		// TODO maybe move to render ?
-		glBindTexture(GL_TEXTURE_1D, colormaps[renderers[selected_renderer]->getSelectedColormap()]);
-        renderers[selected_renderer]->render();
+		for (auto &renderer : renderers) {
+			renderer->bind();
+			// TODO maybe move to bind ?
+			glActiveTexture(GL_TEXTURE0);
+			glBindTexture(GL_TEXTURE_1D, colormaps[renderer->getSelectedColormap()]);
 
+			renderer->setFragRenderMode(Renderer::RenderMode::Color);
+			renderer->setView(view);
+			renderer->setProjection(projection);
+
+			renderer->render();
+		}
 		// Render points
 		// mesh_ps->bind();
 		// mesh_ps->shader.setMat4("view", view);
@@ -548,11 +553,13 @@ void App::run()
 		glClearColor(1.f, 1.f, 0.5f, 0.f);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 		glCullFace(cull_mode);
-        renderers[selected_renderer]->bind();
-        renderers[selected_renderer]->setFragRenderMode((Renderer::RenderMode)pickMode);
-        renderers[selected_renderer]->render();
-		renderers[selected_renderer]->setView(view);
 
+		for (auto &renderer : renderers) {
+			renderer->bind();
+			renderer->setFragRenderMode((Renderer::RenderMode)pickMode);
+			renderer->render();
+			renderer->setView(view);
+		}
 
 		// DRAW SCREEN !
 		// Go back to default framebuffer

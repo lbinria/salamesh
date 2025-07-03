@@ -153,8 +153,6 @@ void HexRenderer::push() {
 
 	std::chrono::steady_clock::time_point begin = std::chrono::steady_clock::now();
 
-	ncells = hex.ncells();
-
 	v_vertices.resize(hex.nfacets() * 2 /* 2 tri per facet */ * 3 /* 3 points per tri */);
 
 	// Cell properties
@@ -285,7 +283,6 @@ void HexRenderer::push() {
 	glTexBuffer(GL_TEXTURE_BUFFER, GL_RGB32F, cellBaryBuffer);
 
 	glBindBuffer(GL_TEXTURE_BUFFER, cellAttributeBuffer);
-	_attributeData.resize(hex.ncells(), 0.0f);
 	glBufferData(GL_TEXTURE_BUFFER, _attributeData.size() * sizeof(float), _attributeData.data(), GL_STATIC_DRAW);
 	glActiveTexture(GL_TEXTURE0 + 2); 
 	glBindTexture(GL_TEXTURE_BUFFER, cellAttributeTexture);
@@ -294,12 +291,30 @@ void HexRenderer::push() {
 
 void HexRenderer::bind() {
     glBindVertexArray(VAO);
+
+	// Set up texture units
+	glActiveTexture(GL_TEXTURE0 + 1);
+	glBindTexture(GL_TEXTURE_BUFFER, cellBaryTexture);
+	// glUniform1i(glGetUniformLocation(shader.id, "bary"), 1);
+
+	glActiveTexture(GL_TEXTURE0 + 2);
+	glBindTexture(GL_TEXTURE_BUFFER, cellAttributeTexture);
+	// glUniform1i(glGetUniformLocation(shader.id, "attributeData"), 2);
+
+	glActiveTexture(GL_TEXTURE0 + 3);
+	glBindTexture(GL_TEXTURE_BUFFER, cellHighlightTexture);
+	// glUniform1i(glGetUniformLocation(shader.id, "highlight"), 3);
+
+	glActiveTexture(GL_TEXTURE0 + 4);
+	glBindTexture(GL_TEXTURE_BUFFER, cellFilterTexture);
+	// glUniform1i(glGetUniformLocation(shader.id, "_filter"), 4);
 }
 
 void HexRenderer::render() {
 
 
     shader.use();
+
 
     // Draw	
 	glm::mat4 model = glm::mat4(1.0f);
@@ -314,7 +329,6 @@ void HexRenderer::clean() {
 	// Clean up
 	glDeleteVertexArrays(1, &VAO);
 	glDeleteBuffers(1, &VBO);
-	glDeleteBuffers(1, &EBO);
 
 	shader.clean();
 }

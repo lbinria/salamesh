@@ -83,5 +83,10 @@ function draw_gui()
 
 	end 
 
+	local sel_selected, new_selected = imgui.InputInt("Selected", app.selected_renderer)
+	if (sel_selected) then 
+		app.selected_renderer = new_selected - 1
+	end
+
 	imgui.End()
 end

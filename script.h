@@ -108,6 +108,18 @@ struct LuaScript : public Component {
 			}
 		});
 
+		imgui.set_function("InputInt", [](const char* label, sol::object v, sol::this_state s) -> std::optional<std::tuple<bool, int>> {
+			sol::state_view lua(s);
+
+			if (v.is<int>()) {
+				int val = v.as<int>();
+				bool sel = ImGui::InputInt(label, &val);
+				return std::make_optional(std::make_tuple(sel, val));
+			} else {
+				return std::nullopt;
+			}
+		});
+
 		imgui.set_function("BeginCombo", [](const char* label, const char* preview_value) {
 			return ImGui::BeginCombo(label, preview_value);
 		});
@@ -153,9 +165,15 @@ struct LuaScript : public Component {
 		app_type["renderers"] = sol::readonly_property(&IApp::getRenderers);
 		app_type["current_renderer"] = sol::readonly_property(&IApp::getCurrentRenderer);
 		
-		app_type["selected_renderer"] = sol::readonly_property([](IApp &self) {
+		app_type["selected_renderer"] = sol::property([](IApp &self) {
 			return self.getSelectedRenderer() + 1;
+		}, [](IApp &self, int selected) {
+			self.setSelectedRenderer(selected);
 		});
+
+		// app_type["selected_renderer"] = sol::readonly_property([](IApp &self) {
+		// 	return self.getSelectedRenderer() + 1;
+		// });
 
 		// auto renderer_tbl = lua.create_table();
 		// for (int i = 0; i < app.countRenderers(); i++) {

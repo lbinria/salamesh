@@ -291,9 +291,8 @@ struct HexRenderer : public Renderer {
     Shader shader;
     glm::vec3 position;
 
-    int ncells;
     // Buffers
-    unsigned int VAO, VBO, EBO, cellBaryBuffer, cellHighlightBuffer, cellAttributeBuffer, cellFilterBuffer;
+    unsigned int VAO, VBO, cellBaryBuffer, cellHighlightBuffer, cellAttributeBuffer, cellFilterBuffer;
     // Textures
     unsigned int cellBaryTexture, cellHighlightTexture, cellAttributeTexture, cellFilterTexture;
 

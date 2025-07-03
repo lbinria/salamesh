@@ -200,6 +200,10 @@ struct App : public IApp {
         return renderers.size();
     }
 
+    void setSelectedRenderer(int selected) final override {
+        selected_renderer = selected;
+    }
+
     int getSelectedRenderer() final override {
         return selected_renderer;
     }
