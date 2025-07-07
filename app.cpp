@@ -175,44 +175,12 @@ void App::load_model(const std::string& filename) {
 	renderer->init();
 	renderer->push();
 
-    // auto renderer = std::make_unique<HexModel>(hex);
-	// // Model init
-	// renderer->init();
-	// renderer->push();
-
-	// // TODO maybe directly pass attributes to renderer and make function to get in format below
-	// // Add attribute to renderer
-	// renderer->clearAttrs();
-
-	// for (auto &a : attributes.points) {
-	// 	renderer->addAttr(Element::POINTS, a);
-	// }
-	// for (auto a : attributes.cell_corners) {
-	// 	renderer->addAttr(Element::CORNERS, a);
-	// }
-	// for (auto a : attributes.cell_facets) {
-	// 	renderer->addAttr(Element::FACETS, a);
-	// }
-	// for (auto a : attributes.cells) {
-	// 	renderer->addAttr(Element::CELLS, a);
-	// }
-
 	renderer->setLight(isLightEnabled);
 	renderer->setMeshShrink(meshShrink);
 	renderer->setMeshSize(meshSize);
 	renderer->setColorMode(Model::ColorMode::COLOR);
 
-	renderers.push_back(std::move(renderer));
-
-	// // Model
-	// auto model = std::make_unique<HexModel>();
-	// // model->load(filename);
-	// models.push_back(std::move(model));
-
-	// auto &m = models[0];
-	// auto &hm = m->as<HexModel>();
-	// hm.load(filename);
-	
+	renderers.push_back(std::move(renderer));	
 
 	#ifdef _DEBUG
 	std::chrono::steady_clock::time_point end_read_model = std::chrono::steady_clock::now();

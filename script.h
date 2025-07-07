@@ -157,15 +157,15 @@ struct LuaScript : public Component {
 		// Camera bindings
 		sol::usertype<ArcBallCamera> camera_tbl = lua.new_usertype<ArcBallCamera>("ArcBallCamera");
 		app_type["camera"] = sol::readonly_property(&IApp::getCamera);
-		// Renderer bindings
-		sol::usertype<Model> renderer_t = lua.new_usertype<Model>("Renderer");
+		// Model bindings
+		sol::usertype<Model> model_t = lua.new_usertype<Model>("Model");
 
 
 
-		app_type["renderers"] = sol::readonly_property(&IApp::getRenderers);
-		app_type["current_renderer"] = sol::readonly_property(&IApp::getCurrentRenderer);
+		app_type["models"] = sol::readonly_property(&IApp::getRenderers);
+		app_type["current_model"] = sol::readonly_property(&IApp::getCurrentRenderer);
 		
-		app_type["selected_renderer"] = sol::property([](IApp &self) {
+		app_type["selected_model"] = sol::property([](IApp &self) {
 			return self.getSelectedRenderer() + 1;
 		}, [](IApp &self, int selected) {
 			self.setSelectedRenderer(selected);
@@ -246,63 +246,63 @@ struct LuaScript : public Component {
 		camera_tbl.set_function("MoveForward", &ArcBallCamera::MoveForward);
 
 
-		renderer_t["light"] = sol::property(
+		model_t["light"] = sol::property(
 			&Model::getLight,
 			&Model::setLight
 		);
 
-		renderer_t.set_function("getLight", &Model::getLight);
-		renderer_t.set_function("setLight", &Model::setLight);
+		model_t.set_function("getLight", &Model::getLight);
+		model_t.set_function("setLight", &Model::setLight);
 
-		renderer_t["is_light_follow_view"] = sol::property(
+		model_t["is_light_follow_view"] = sol::property(
 			&Model::getLightFollowView,
 			&Model::setLightFollowView
 		);
 
-		renderer_t["clipping"] = sol::property(
+		model_t["clipping"] = sol::property(
 			&Model::getClipping,
 			&Model::setClipping
 		);
 
-		renderer_t.set_function("getClipping", &Model::getClipping);
-		renderer_t.set_function("setClipping", &Model::setClipping);
+		model_t.set_function("getClipping", &Model::getClipping);
+		model_t.set_function("setClipping", &Model::setClipping);
 
-		renderer_t["clipping_plane_point"] = sol::property(
+		model_t["clipping_plane_point"] = sol::property(
 			&Model::getClippingPlanePoint,
 			&Model::setClippingPlanePoint
 		);
 
-		renderer_t["clipping_plane_normal"] = sol::property(
+		model_t["clipping_plane_normal"] = sol::property(
 			&Model::getClippingPlaneNormal,
 			&Model::setClippingPlaneNormal
 		);
 
-		renderer_t["invert_clipping"] = sol::property(
+		model_t["invert_clipping"] = sol::property(
 			&Model::getInvertClipping,
 			&Model::setInvertClipping
 		);
 
-		renderer_t["meshSize"] = sol::property(
+		model_t["meshSize"] = sol::property(
 			&Model::getMeshSize,
 			&Model::setMeshSize
 		);
 
-		renderer_t.set_function("getMeshSize", &Model::getMeshSize);
-		renderer_t.set_function("setMeshSize", &Model::setMeshSize);
+		model_t.set_function("getMeshSize", &Model::getMeshSize);
+		model_t.set_function("setMeshSize", &Model::setMeshSize);
 
-		renderer_t["meshShrink"] = sol::property(
+		model_t["meshShrink"] = sol::property(
 			&Model::getMeshShrink,
 			&Model::setMeshShrink
 		);
 
-		renderer_t.set_function("getMeshShrink", &Model::getMeshShrink);
-		renderer_t.set_function("setMeshShrink", &Model::setMeshShrink);
+		model_t.set_function("getMeshShrink", &Model::getMeshShrink);
+		model_t.set_function("setMeshShrink", &Model::setMeshShrink);
 
-		renderer_t["color_mode_strings"] = sol::readonly_property(
+		model_t["color_mode_strings"] = sol::readonly_property(
 			&Model::getColorModeStrings
 		);
 
-		renderer_t["color_mode"] = sol::property(
+		model_t["color_mode"] = sol::property(
 			&Model::getColorMode,
 			&Model::setColorMode
 		);
@@ -320,7 +320,7 @@ struct LuaScript : public Component {
 
 
 
-		renderer_t["attrs"] = sol::readonly_property([&lua = lua](Model &self) {
+		model_t["attrs"] = sol::readonly_property([&lua = lua](Model &self) {
 			sol::table attrs_tbl = lua.create_table();
 			for (auto &attr : self.getAttrs()) {
 				sol::table item = lua.create_table();
@@ -332,12 +332,12 @@ struct LuaScript : public Component {
 		});
 
 
-		renderer_t["selected_attr"] = sol::property(
+		model_t["selected_attr"] = sol::property(
 			&Model::getSelectedAttr,
 			&Model::setSelectedAttr
 		);
 
-		renderer_t["selected_colormap"] = sol::property(
+		model_t["selected_colormap"] = sol::property(
 			&Model::getSelectedColormap,
 			&Model::setSelectedColormap
 		);
