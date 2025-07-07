@@ -33,7 +33,6 @@ struct IApp {
     virtual Renderer& getCurrentRenderer() = 0;
 
     virtual InputState& getInputState() = 0;
-    virtual Hexahedra& getHexahedra() = 0;
 
     virtual std::vector<std::string> getPickModeStrings() const = 0;
 
