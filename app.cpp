@@ -180,7 +180,7 @@ void App::load_model(const std::string& filename) {
 	renderer->setMeshSize(meshSize);
 	renderer->setColorMode(Model::ColorMode::COLOR);
 
-	renderers.push_back(std::move(renderer));	
+	models.push_back(std::move(renderer));	
 
 	#ifdef _DEBUG
 	std::chrono::steady_clock::time_point end_read_model = std::chrono::steady_clock::now();
@@ -343,7 +343,7 @@ void App::run()
 	if (!args.models.empty())
 		load_model(*args.models.begin());
 	load_model("assets/catorus_hex_attr.geogram");
-	renderers[1]->setPosition(glm::vec3(2.f, 0.f, 0.f));
+	models[1]->setPosition(glm::vec3(2.f, 0.f, 0.f));
 	selected_renderer = 0;
 	// load_model("assets/joint.geogram");
 
@@ -404,7 +404,7 @@ void App::run()
 	// }
 	// center /= hex.nverts();
 
-	camera = std::make_unique<ArcBallCamera>(glm::vec3(0.f, 0.f, -3.f), renderers[0]->getPosition(), glm::vec3(0.f, 1.f, 0.f), glm::vec3(45.f, SCR_WIDTH, SCR_HEIGHT));
+	camera = std::make_unique<ArcBallCamera>(glm::vec3(0.f, 0.f, -3.f), models[0]->getPosition(), glm::vec3(0.f, 1.f, 0.f), glm::vec3(45.f, SCR_WIDTH, SCR_HEIGHT));
 
 	
 	glEnable(GL_DEPTH_TEST);
@@ -441,7 +441,7 @@ void App::run()
 			auto pickIDs = pick(window, xPos, yPos, cursor_radius);
 			for (long pickID : pickIDs) {
 				if (camera->IsLocked() && pickID >= 0 && pickID < hex.ncells()) {
-					renderers[selected_renderer]->setFilter(pickID, true);
+					models[selected_renderer]->setFilter(pickID, true);
 				}
 			}
 		} else {
@@ -508,7 +508,7 @@ void App::run()
 		glCullFace(cull_mode);
 
 		// Render model
-		for (auto &renderer : renderers) {
+		for (auto &renderer : models) {
 			renderer->bind();
 			// TODO maybe move to bind ?
 			glActiveTexture(GL_TEXTURE0);
@@ -537,7 +537,7 @@ void App::run()
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 		glCullFace(cull_mode);
 
-		for (auto &renderer : renderers) {
+		for (auto &renderer : models) {
 			renderer->bind();
 			renderer->setFragRenderMode((Model::RenderMode)pickMode);
 			renderer->render();
@@ -593,7 +593,7 @@ void App::run()
 	for (int i = 0; i < IM_ARRAYSIZE(colormaps2D); ++i)
 		glDeleteTextures(1, &colormaps2D[i]);
 
-	for (auto &renderer : renderers) {
+	for (auto &renderer : models) {
 		renderer->clean();
 	}
 
@@ -766,13 +766,13 @@ void App::look_at_center() {
     
 void App::setLight(bool enabled) {
 	isLightEnabled = enabled;
-	for (auto &renderer : renderers)
+	for (auto &renderer : models)
 		renderer->setLight(enabled);
 }
 
 void App::setClipping(bool enabled) {
 	isClippingEnabled = enabled;
-	for (auto &renderer : renderers)
+	for (auto &renderer : models)
 		renderer->setClipping(enabled);
 }
 

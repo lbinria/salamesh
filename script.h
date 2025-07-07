@@ -162,17 +162,17 @@ struct LuaScript : public Component {
 
 
 
-		app_type["models"] = sol::readonly_property(&IApp::getRenderers);
-		app_type["current_model"] = sol::readonly_property(&IApp::getCurrentRenderer);
+		app_type["models"] = sol::readonly_property(&IApp::getModels);
+		app_type["current_model"] = sol::readonly_property(&IApp::getCurrentModel);
 		
 		app_type["selected_model"] = sol::property([](IApp &self) {
-			return self.getSelectedRenderer() + 1;
+			return self.getSelectedModel() + 1;
 		}, [](IApp &self, int selected) {
-			self.setSelectedRenderer(selected);
+			self.setSelectedModel(selected);
 		});
 
 		// app_type["selected_renderer"] = sol::readonly_property([](IApp &self) {
-		// 	return self.getSelectedRenderer() + 1;
+		// 	return self.getSelectedModel() + 1;
 		// });
 
 		// auto renderer_tbl = lua.create_table();

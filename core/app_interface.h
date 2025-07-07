@@ -26,11 +26,11 @@ struct IApp {
 
     virtual ArcBallCamera& getCamera() = 0;
     
-    virtual std::vector<std::unique_ptr<Model>>& getRenderers() = 0;
-    virtual int countRenderers() = 0;
-    virtual int getSelectedRenderer() = 0;
-    virtual void setSelectedRenderer(int selected) = 0;
-    virtual Model& getCurrentRenderer() = 0;
+    virtual std::vector<std::unique_ptr<Model>>& getModels() = 0;
+    virtual int countModels() = 0;
+    virtual int getSelectedModel() = 0;
+    virtual void setSelectedModel(int selected) = 0;
+    virtual Model& getCurrentModel() = 0;
 
     virtual InputState& getInputState() = 0;
 

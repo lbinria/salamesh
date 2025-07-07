@@ -77,7 +77,6 @@ struct App : public IApp {
 
     // settings
     std::vector<std::unique_ptr<Model>> models;
-    std::vector<std::unique_ptr<Model>> renderers;
     int selected_renderer = 0;
 
     std::unique_ptr<PointSetRenderer> point_set_renderer;
@@ -194,30 +193,25 @@ struct App : public IApp {
 
     // Accessors
 
-    std::vector<std::unique_ptr<Model>>& getRenderers() final override{
-        return renderers;
-    }
-
-    int countRenderers() final override {
-        return renderers.size();
-    }
-
-    void setSelectedRenderer(int selected) final override {
-        selected_renderer = selected;
-    }
-
-    int getSelectedRenderer() final override {
-        return selected_renderer;
-    }
-
-    Model& getCurrentRenderer() final override {
-        return *renderers[selected_renderer];
-    }
-
-    std::vector<std::unique_ptr<Model>>& getModels() {
+    std::vector<std::unique_ptr<Model>>& getModels() final override {
         return models;
     }
 
+    int countModels() final override {
+        return models.size();
+    }
+
+    void setSelectedModel(int selected) final override {
+        selected_renderer = selected;
+    }
+
+    int getSelectedModel() final override {
+        return selected_renderer;
+    }
+
+    Model& getCurrentModel() final override {
+        return *models[selected_renderer];
+    }
 
     ArcBallCamera& getCamera() final override { return *camera; }
     InputState& getInputState() final override { return st; }
