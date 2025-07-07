@@ -10,7 +10,7 @@
 #include "include/glm/gtc/matrix_transform.hpp"
 #include "include/glm/gtc/type_ptr.hpp"
 
-#include "core/renderer.h"
+#include "core/model.h"
 #include "core/element.h"
 #include "shader.h"
 
@@ -112,7 +112,7 @@ struct HexRenderer {
         }
     }
 
-    void setColorMode(Renderer::ColorMode mode) {
+    void setColorMode(Model::ColorMode mode) {
         shader.use();
         shader.setInt("colorMode", mode);
     }
@@ -157,7 +157,7 @@ struct HexRenderer {
         shader.setFloat("meshShrink", val);
     }
 
-    void setFragRenderMode(Renderer::RenderMode mode) {
+    void setFragRenderMode(Model::RenderMode mode) {
         shader.use();
         shader.setInt("fragRenderMode", mode);
     }

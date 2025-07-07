@@ -1,11 +1,11 @@
 #include <ultimaille/all.h>
 #include <string>
-#include "core/renderer.h"
+#include "core/model.h"
 #include "hex_renderer.h"
 
 using namespace UM;
 
-struct HexModel : public Renderer {
+struct HexModel : public Model {
 
 	// Mesh + Renderer
 
@@ -76,7 +76,7 @@ struct HexModel : public Renderer {
 		_hex_renderer.push();
 		// TODO _ps_renderer.push();
 
-		if (colorMode == Renderer::ColorMode::ATTRIBUTE) {
+		if (colorMode == Model::ColorMode::ATTRIBUTE) {
 			updateAttr();
 		}
 	}
@@ -107,7 +107,7 @@ struct HexModel : public Renderer {
         return colorMode;
     }
 
-    void setColorMode(Renderer::ColorMode mode) {
+    void setColorMode(Model::ColorMode mode) {
         _hex_renderer.setColorMode(mode);
         colorMode = mode;
     }
@@ -189,7 +189,7 @@ struct HexModel : public Renderer {
         return fragRenderMode;
     }
 
-    void setFragRenderMode(Renderer::RenderMode mode) {
+    void setFragRenderMode(Model::RenderMode mode) {
         _hex_renderer.setFragRenderMode(mode);
         fragRenderMode = mode;
     }
@@ -291,8 +291,8 @@ struct HexModel : public Renderer {
     bool invertClipping = false;
     float meshSize = 0.01f;
     float meshShrink = 0.f;
-    Renderer::RenderMode fragRenderMode;
-    Renderer::ColorMode colorMode = Renderer::ColorMode::COLOR;
+    Model::RenderMode fragRenderMode;
+    Model::ColorMode colorMode = Model::ColorMode::COLOR;
     
     int selectedAttr = 0;
     int selectedColormap = 0;

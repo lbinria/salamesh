@@ -200,7 +200,7 @@ void App::load_model(const std::string& filename) {
 	renderer->setLight(isLightEnabled);
 	renderer->setMeshShrink(meshShrink);
 	renderer->setMeshSize(meshSize);
-	renderer->setColorMode(Renderer::ColorMode::COLOR);
+	renderer->setColorMode(Model::ColorMode::COLOR);
 
 	renderers.push_back(std::move(renderer));
 
@@ -546,7 +546,7 @@ void App::run()
 			glActiveTexture(GL_TEXTURE0);
 			glBindTexture(GL_TEXTURE_1D, colormaps[renderer->getSelectedColormap()]);
 
-			renderer->setFragRenderMode(Renderer::RenderMode::Color);
+			renderer->setFragRenderMode(Model::RenderMode::Color);
 			renderer->setView(view);
 			renderer->setProjection(projection);
 
@@ -571,7 +571,7 @@ void App::run()
 
 		for (auto &renderer : renderers) {
 			renderer->bind();
-			renderer->setFragRenderMode((Renderer::RenderMode)pickMode);
+			renderer->setFragRenderMode((Model::RenderMode)pickMode);
 			renderer->render();
 			renderer->setView(view);
 		}

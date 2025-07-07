@@ -1,6 +1,6 @@
 #pragma once
 
-#include "renderer.h"
+#include "model.h"
 #include "states.h"
 #include "element.h"
 #include "arcball_camera.h"
@@ -26,11 +26,11 @@ struct IApp {
 
     virtual ArcBallCamera& getCamera() = 0;
     
-    virtual std::vector<std::unique_ptr<Renderer>>& getRenderers() = 0;
+    virtual std::vector<std::unique_ptr<Model>>& getRenderers() = 0;
     virtual int countRenderers() = 0;
     virtual int getSelectedRenderer() = 0;
     virtual void setSelectedRenderer(int selected) = 0;
-    virtual Renderer& getCurrentRenderer() = 0;
+    virtual Model& getCurrentRenderer() = 0;
 
     virtual InputState& getInputState() = 0;
 

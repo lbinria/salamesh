@@ -76,8 +76,8 @@ struct App : public IApp {
     unsigned int screenFbo;
 
     // settings
-    std::vector<std::unique_ptr<Renderer>> models;
-    std::vector<std::unique_ptr<Renderer>> renderers;
+    std::vector<std::unique_ptr<Model>> models;
+    std::vector<std::unique_ptr<Model>> renderers;
     int selected_renderer = 0;
 
     std::unique_ptr<PointSetRenderer> point_set_renderer;
@@ -194,7 +194,7 @@ struct App : public IApp {
 
     // Accessors
 
-    std::vector<std::unique_ptr<Renderer>>& getRenderers() final override{
+    std::vector<std::unique_ptr<Model>>& getRenderers() final override{
         return renderers;
     }
 
@@ -210,11 +210,11 @@ struct App : public IApp {
         return selected_renderer;
     }
 
-    Renderer& getCurrentRenderer() final override {
+    Model& getCurrentRenderer() final override {
         return *renderers[selected_renderer];
     }
 
-    std::vector<std::unique_ptr<Renderer>>& getModels() {
+    std::vector<std::unique_ptr<Model>>& getModels() {
         return models;
     }
 

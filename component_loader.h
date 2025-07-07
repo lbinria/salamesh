@@ -5,7 +5,7 @@
 #include "core/app_interface.h"
 #include "core/states.h"
 #include "core/component.h"
-#include "core/renderer.h"
+#include "core/model.h"
 
 struct ComponentLoader {
 	

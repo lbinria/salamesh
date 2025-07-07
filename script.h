@@ -158,7 +158,7 @@ struct LuaScript : public Component {
 		sol::usertype<ArcBallCamera> camera_tbl = lua.new_usertype<ArcBallCamera>("ArcBallCamera");
 		app_type["camera"] = sol::readonly_property(&IApp::getCamera);
 		// Renderer bindings
-		sol::usertype<Renderer> renderer_t = lua.new_usertype<Renderer>("Renderer");
+		sol::usertype<Model> renderer_t = lua.new_usertype<Model>("Renderer");
 
 
 
@@ -247,64 +247,64 @@ struct LuaScript : public Component {
 
 
 		renderer_t["light"] = sol::property(
-			&Renderer::getLight,
-			&Renderer::setLight
+			&Model::getLight,
+			&Model::setLight
 		);
 
-		renderer_t.set_function("getLight", &Renderer::getLight);
-		renderer_t.set_function("setLight", &Renderer::setLight);
+		renderer_t.set_function("getLight", &Model::getLight);
+		renderer_t.set_function("setLight", &Model::setLight);
 
 		renderer_t["is_light_follow_view"] = sol::property(
-			&Renderer::getLightFollowView,
-			&Renderer::setLightFollowView
+			&Model::getLightFollowView,
+			&Model::setLightFollowView
 		);
 
 		renderer_t["clipping"] = sol::property(
-			&Renderer::getClipping,
-			&Renderer::setClipping
+			&Model::getClipping,
+			&Model::setClipping
 		);
 
-		renderer_t.set_function("getClipping", &Renderer::getClipping);
-		renderer_t.set_function("setClipping", &Renderer::setClipping);
+		renderer_t.set_function("getClipping", &Model::getClipping);
+		renderer_t.set_function("setClipping", &Model::setClipping);
 
 		renderer_t["clipping_plane_point"] = sol::property(
-			&Renderer::getClippingPlanePoint,
-			&Renderer::setClippingPlanePoint
+			&Model::getClippingPlanePoint,
+			&Model::setClippingPlanePoint
 		);
 
 		renderer_t["clipping_plane_normal"] = sol::property(
-			&Renderer::getClippingPlaneNormal,
-			&Renderer::setClippingPlaneNormal
+			&Model::getClippingPlaneNormal,
+			&Model::setClippingPlaneNormal
 		);
 
 		renderer_t["invert_clipping"] = sol::property(
-			&Renderer::getInvertClipping,
-			&Renderer::setInvertClipping
+			&Model::getInvertClipping,
+			&Model::setInvertClipping
 		);
 
 		renderer_t["meshSize"] = sol::property(
-			&Renderer::getMeshSize,
-			&Renderer::setMeshSize
+			&Model::getMeshSize,
+			&Model::setMeshSize
 		);
 
-		renderer_t.set_function("getMeshSize", &Renderer::getMeshSize);
-		renderer_t.set_function("setMeshSize", &Renderer::setMeshSize);
+		renderer_t.set_function("getMeshSize", &Model::getMeshSize);
+		renderer_t.set_function("setMeshSize", &Model::setMeshSize);
 
 		renderer_t["meshShrink"] = sol::property(
-			&Renderer::getMeshShrink,
-			&Renderer::setMeshShrink
+			&Model::getMeshShrink,
+			&Model::setMeshShrink
 		);
 
-		renderer_t.set_function("getMeshShrink", &Renderer::getMeshShrink);
-		renderer_t.set_function("setMeshShrink", &Renderer::setMeshShrink);
+		renderer_t.set_function("getMeshShrink", &Model::getMeshShrink);
+		renderer_t.set_function("setMeshShrink", &Model::setMeshShrink);
 
 		renderer_t["color_mode_strings"] = sol::readonly_property(
-			&Renderer::getColorModeStrings
+			&Model::getColorModeStrings
 		);
 
 		renderer_t["color_mode"] = sol::property(
-			&Renderer::getColorMode,
-			&Renderer::setColorMode
+			&Model::getColorMode,
+			&Model::setColorMode
 		);
 
 
@@ -320,7 +320,7 @@ struct LuaScript : public Component {
 
 
 
-		renderer_t["attrs"] = sol::readonly_property([&lua = lua](Renderer &self) {
+		renderer_t["attrs"] = sol::readonly_property([&lua = lua](Model &self) {
 			sol::table attrs_tbl = lua.create_table();
 			for (auto &attr : self.getAttrs()) {
 				sol::table item = lua.create_table();
@@ -333,13 +333,13 @@ struct LuaScript : public Component {
 
 
 		renderer_t["selected_attr"] = sol::property(
-			&Renderer::getSelectedAttr,
-			&Renderer::setSelectedAttr
+			&Model::getSelectedAttr,
+			&Model::setSelectedAttr
 		);
 
 		renderer_t["selected_colormap"] = sol::property(
-			&Renderer::getSelectedColormap,
-			&Renderer::setSelectedColormap
+			&Model::getSelectedColormap,
+			&Model::setSelectedColormap
 		);
 
 		app_type["pick_mode_strings"] = sol::readonly_property(

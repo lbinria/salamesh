@@ -7,7 +7,7 @@
 #include <ultimaille/all.h>
 using namespace UM;
 
-struct Renderer {
+struct Model {
 
     // Color modes:
     // Solid color display, or attribute display

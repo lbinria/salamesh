@@ -7,7 +7,7 @@ set(SOURCES
     component.h component.cpp
     element.h
     states.h 
-    renderer.h
+    model.h
     arcball_camera.h arcball_camera.cpp
 )
 
