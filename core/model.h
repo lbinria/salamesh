@@ -30,6 +30,9 @@ struct Model {
 
 	virtual void load(const std::string path) = 0;
 
+    virtual std::string getName() = 0;
+    virtual void setName(std::string name) = 0;
+
     static constexpr const char* colorModeStrings[2] = {"Color", "Attribute"};
     constexpr std::array<std::string_view, 2> getColorModeStrings() {
         return {colorModeStrings[0], colorModeStrings[1]};

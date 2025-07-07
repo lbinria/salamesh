@@ -345,7 +345,6 @@ void App::run()
 	load_model("assets/catorus_hex_attr.geogram");
 	models[1]->setPosition(glm::vec3(2.f, 0.f, 0.f));
 	selected_renderer = 0;
-	// load_model("assets/joint.geogram");
 
 	std::chrono::steady_clock::time_point end = std::chrono::steady_clock::now();
     std::cout << "preload in: " << std::chrono::duration_cast<std::chrono::milliseconds>(end - begin).count() << "ms" << std::endl;

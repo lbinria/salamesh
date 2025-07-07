@@ -27,7 +27,8 @@ struct HexModel : public Model {
 		_path = path;
 		// Extract name
 		if (_name.empty()) {
-
+            std::filesystem::path p(path);
+            _name = p.stem().string();
 		}
 
 		// Add attribute to renderer
@@ -61,6 +62,9 @@ struct HexModel : public Model {
 		write_by_extension(path, _hex);
 		_path = path;
 	}
+
+    std::string getName() final override { return _name; }
+    void setName(std::string name) final override { _name = name; }
 
     void update() {
 		_hex_renderer.update();
