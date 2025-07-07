@@ -1,6 +1,7 @@
 {
 	"modules": [
 		"modules/module_b_test",
-		"modules/module_attribute_viewer"
+		"modules/module_attribute_viewer",
+		"/home/tex/Projects/hex_collapse_plugin/build"
 	]
 }

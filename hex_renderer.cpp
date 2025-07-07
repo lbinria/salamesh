@@ -158,13 +158,6 @@ void HexRenderer::push() {
 	// Cell properties
 	std::chrono::steady_clock::time_point begin_barys = std::chrono::steady_clock::now();
 
-	// Refresh attribute data if needed
-	_attributeData.resize(hex.ncells(), 0.0f);
-	
-	if (colorMode == Renderer::ColorMode::ATTRIBUTE) {
-		updateAttr();
-	}
-
 	// (8ms -> 3ms)
 	_barys.resize(hex.ncells() * 3);
 	const int size = hex.cells.size() / 8;
@@ -287,6 +280,13 @@ void HexRenderer::push() {
 	glActiveTexture(GL_TEXTURE0 + 2); 
 	glBindTexture(GL_TEXTURE_BUFFER, cellAttributeTexture);
 	glTexBuffer(GL_TEXTURE_BUFFER, GL_R32F, cellAttributeBuffer);
+
+	// Refresh attribute data if needed
+	_attributeData.resize(hex.ncells(), 0.0f);
+	
+	if (colorMode == Renderer::ColorMode::ATTRIBUTE) {
+		updateAttr();
+	}
 }
 
 void HexRenderer::bind() {

@@ -48,7 +48,9 @@ struct HexRenderer : public Renderer {
     void bind();
     void clean();
 
-    
+    void load(const std::string path) final override {
+        // Nothing
+    }
 
 
     // void test() {
@@ -283,6 +285,10 @@ struct HexRenderer : public Renderer {
 
     void setPosition(glm::vec3 p) {
         position = p;
+    }
+
+    Hexahedra &getHexahedra() {
+        return hex;
     }
 
     private:

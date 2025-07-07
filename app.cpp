@@ -199,6 +199,16 @@ void App::load_model(const std::string& filename) {
 
 	renderers.push_back(std::move(renderer));
 
+	// Model
+	auto model = std::make_unique<HexModel>();
+	// model->load(filename);
+	models.push_back(std::move(model));
+
+	auto &m = models[0];
+	auto &hm = m->as<HexModel>();
+	hm.load(filename);
+	
+
 	#ifdef _DEBUG
 	std::chrono::steady_clock::time_point end_read_model = std::chrono::steady_clock::now();
     std::cout << "read model in: " << std::chrono::duration_cast<std::chrono::milliseconds>(end_read_model - begin_read_model).count() << "ms" << std::endl;

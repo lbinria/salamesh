@@ -29,6 +29,7 @@
 #include "hex_renderer.h"
 #include "point_set_renderer.h"
 #include "wireframe.h"
+#include "hex_model.h"
 
 #include "core/arcball_camera.h"
 
@@ -75,6 +76,7 @@ struct App : public IApp {
     unsigned int screenFbo;
 
     // settings
+    std::vector<std::unique_ptr<Renderer>> models;
     std::vector<std::unique_ptr<Renderer>> renderers;
     int selected_renderer = 0;
 
@@ -212,6 +214,11 @@ struct App : public IApp {
         return *renderers[selected_renderer];
     }
 
+    std::vector<std::unique_ptr<Renderer>>& getModels() {
+        return models;
+    }
+
+
     ArcBallCamera& getCamera() final override { return *camera; }
     InputState& getInputState() final override { return st; }
     Hexahedra& getHexahedra() final override { return hex; }
@@ -242,7 +249,6 @@ struct App : public IApp {
 
 
     Hexahedra hex;
-    // VolumeAttributes attributes;
 
     Element pickMode = Element::CELLS;
 

@@ -23,6 +23,12 @@ struct Renderer {
         Pick_cell = 3
     };
 
+	template<typename T>
+	T& as() {
+		return static_cast<T&>(*this);
+	}
+
+	virtual void load(const std::string path) = 0;
 
     static constexpr const char* colorModeStrings[2] = {"Color", "Attribute"};
     constexpr std::array<std::string_view, 2> getColorModeStrings() {
