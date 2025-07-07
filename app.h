@@ -221,7 +221,8 @@ struct App : public IApp {
 
     ArcBallCamera& getCamera() final override { return *camera; }
     InputState& getInputState() final override { return st; }
-    Hexahedra& getHexahedra() final override { return hex; }
+    // Hexahedra& getHexahedra() final override { return hex; }
+    Hexahedra& getHexahedra() final override { return renderers[0]->getHexahedra(); }
 
     std::vector<std::string> getPickModeStrings() const { return std::vector<std::string>(pickModeStrings, pickModeStrings + 4); }
     int getPickMode() final override { return pickMode; }

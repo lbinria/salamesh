@@ -284,9 +284,6 @@ void HexRenderer::push() {
 	// Refresh attribute data if needed
 	_attributeData.resize(hex.ncells(), 0.0f);
 	
-	if (colorMode == Renderer::ColorMode::ATTRIBUTE) {
-		updateAttr();
-	}
 }
 
 void HexRenderer::bind() {
@@ -310,7 +307,7 @@ void HexRenderer::bind() {
 	// glUniform1i(glGetUniformLocation(shader.id, "_filter"), 4);
 }
 
-void HexRenderer::render() {
+void HexRenderer::render(glm::vec3 &position) {
 
 
     shader.use();

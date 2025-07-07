@@ -42,6 +42,8 @@ struct Renderer {
     virtual void render() = 0;
     virtual void clean() = 0;
 
+	// TODO temp for refactoring
+	virtual Hexahedra& getHexahedra() = 0;
 
     // General shader uniforms
 	virtual void setHighlight(int idx, bool highlighted) = 0;

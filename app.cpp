@@ -170,27 +170,32 @@ void App::load_model(const std::string& filename) {
 	std::cout << "nfacets = " << hex.nfacets() << std::endl;
 	std::cout << "model read." << std::endl;
 
-    auto renderer = std::make_unique<HexRenderer>(hex);
-	// Model init
+	auto renderer = std::make_unique<HexModel>();
+	renderer->load(filename);
 	renderer->init();
 	renderer->push();
 
-	// TODO maybe directly pass attributes to renderer and make function to get in format below
-	// Add attribute to renderer
-	renderer->clearAttrs();
+    // auto renderer = std::make_unique<HexModel>(hex);
+	// // Model init
+	// renderer->init();
+	// renderer->push();
 
-	for (auto &a : attributes.points) {
-		renderer->addAttr(Element::POINTS, a);
-	}
-	for (auto a : attributes.cell_corners) {
-		renderer->addAttr(Element::CORNERS, a);
-	}
-	for (auto a : attributes.cell_facets) {
-		renderer->addAttr(Element::FACETS, a);
-	}
-	for (auto a : attributes.cells) {
-		renderer->addAttr(Element::CELLS, a);
-	}
+	// // TODO maybe directly pass attributes to renderer and make function to get in format below
+	// // Add attribute to renderer
+	// renderer->clearAttrs();
+
+	// for (auto &a : attributes.points) {
+	// 	renderer->addAttr(Element::POINTS, a);
+	// }
+	// for (auto a : attributes.cell_corners) {
+	// 	renderer->addAttr(Element::CORNERS, a);
+	// }
+	// for (auto a : attributes.cell_facets) {
+	// 	renderer->addAttr(Element::FACETS, a);
+	// }
+	// for (auto a : attributes.cells) {
+	// 	renderer->addAttr(Element::CELLS, a);
+	// }
 
 	renderer->setLight(isLightEnabled);
 	renderer->setMeshShrink(meshShrink);
@@ -199,14 +204,14 @@ void App::load_model(const std::string& filename) {
 
 	renderers.push_back(std::move(renderer));
 
-	// Model
-	auto model = std::make_unique<HexModel>();
-	// model->load(filename);
-	models.push_back(std::move(model));
+	// // Model
+	// auto model = std::make_unique<HexModel>();
+	// // model->load(filename);
+	// models.push_back(std::move(model));
 
-	auto &m = models[0];
-	auto &hm = m->as<HexModel>();
-	hm.load(filename);
+	// auto &m = models[0];
+	// auto &hm = m->as<HexModel>();
+	// hm.load(filename);
 	
 
 	#ifdef _DEBUG

@@ -23,11 +23,27 @@ struct HexModel : public Renderer {
 
 	void load(const std::string path) {
 		// Load the mesh
-		read_by_extension(path, _hex);
+		VolumeAttributes attributes = read_by_extension(path, _hex);
 		_path = path;
 		// Extract name
 		if (_name.empty()) {
 
+		}
+
+		// Add attribute to renderer
+		clearAttrs();
+
+		for (auto &a : attributes.points) {
+			addAttr(Element::POINTS, a);
+		}
+		for (auto a : attributes.cell_corners) {
+			addAttr(Element::CORNERS, a);
+		}
+		for (auto a : attributes.cell_facets) {
+			addAttr(Element::FACETS, a);
+		}
+		for (auto a : attributes.cells) {
+			addAttr(Element::CELLS, a);
 		}
 	}
 
@@ -59,10 +75,14 @@ struct HexModel : public Renderer {
 	void push() final override {
 		_hex_renderer.push();
 		// TODO _ps_renderer.push();
+
+		if (colorMode == Renderer::ColorMode::ATTRIBUTE) {
+			updateAttr();
+		}
 	}
 
     void render() {
-		_hex_renderer.render();
+		_hex_renderer.render(position);
 		// TODO _ps_renderer.render();
 	}
     
@@ -242,6 +262,10 @@ struct HexModel : public Renderer {
         selectedAttr = idx;
         int attr_element = std::get<1>(attrs[idx]);
 		_hex_renderer.changeAttribute(std::get<2>(attrs[idx]).get(), attr_element);
+    }
+
+    void updateAttr() {
+        setSelectedAttr(selectedAttr);
     }
 
     void setView(glm::mat4 &view) {

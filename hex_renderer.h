@@ -28,12 +28,11 @@ struct Vertex {
     int vertexIndex;
 };
 
-struct HexRenderer : public Renderer {
+struct HexRenderer {
 
     HexRenderer(Hexahedra &hex) : 
         hex(hex),
-        shader("shaders/hex.vert", "shaders/hex.frag"),
-        position(0,0,0)
+        shader("shaders/hex.vert", "shaders/hex.frag")
         {
         }
 
@@ -42,16 +41,11 @@ struct HexRenderer : public Renderer {
     void update();
     void init();
     void push();
-    void render();
+    void render(glm::vec3 &position);
     
 
     void bind();
     void clean();
-
-    void load(const std::string path) final override {
-        // Nothing
-    }
-
 
     // void test() {
     //     // It works ! nice ! just have to point to attribute in mesh !
@@ -118,104 +112,54 @@ struct HexRenderer : public Renderer {
         }
     }
 
-    int getColorMode() final override {
-        return colorMode;
-    }
-
-    void setColorMode(ColorMode mode) final override {
+    void setColorMode(Renderer::ColorMode mode) {
         shader.use();
         shader.setInt("colorMode", mode);
-        colorMode = mode;
-    }
-
-    bool getLight() {
-        return isLightEnabled;
     }
 
     void setLight(bool enabled) {
         shader.use();
         shader.setFloat("is_light_enabled", enabled);
-        isLightEnabled = enabled;
-    }
-
-    bool getLightFollowView() {
-        return isLightFollowView;
     }
 
     void setLightFollowView(bool follow) {
         shader.use();
         shader.setInt("is_light_follow_view", follow);
-        isLightFollowView = follow;
-    }
-
-    bool getClipping() {
-        return isClipping;
     }
 
     void setClipping(bool enabled) {
         shader.use();
         shader.setInt("is_clipping_enabled", enabled);
-        isClipping = enabled;
-    }
-
-    glm::vec3 getClippingPlanePoint() {
-        return clippingPlanePoint;
     }
 
     void setClippingPlanePoint(glm::vec3 p) {
         shader.use();
         shader.setFloat3("clipping_plane_point", p);
-        clippingPlanePoint = p;
-    }
-
-    glm::vec3 getClippingPlaneNormal() {
-        return clippingPlaneNormal;
     }
 
     void setClippingPlaneNormal(glm::vec3 n) {
         shader.use();
         shader.setFloat3("clipping_plane_normal", n);
-        clippingPlaneNormal = n;
     }
 
     void setInvertClipping(bool invert) {
         shader.use();
         shader.setInt("invert_clipping", invert);
-        invertClipping = invert;
-    }
-
-    bool getInvertClipping() {
-        return invertClipping;
-    }
-
-    float getMeshSize() {
-        return meshSize;
     }
 
     void setMeshSize(float val) {
         shader.use();
         shader.setFloat("meshSize", val);
-        meshSize = val;
-    }
-
-    float getMeshShrink() {
-        return meshShrink;
     }
 
     void setMeshShrink(float val) {
         shader.use();
         shader.setFloat("meshShrink", val);
-        meshShrink = val;
     }
 
-    int getFragRenderMode() {
-        return fragRenderMode;
-    }
-
-    void setFragRenderMode(RenderMode mode) {
+    void setFragRenderMode(Renderer::RenderMode mode) {
         shader.use();
         shader.setInt("fragRenderMode", mode);
-        fragRenderMode = mode;
     }
 
     void setView(glm::mat4 &view) {
@@ -228,63 +172,9 @@ struct HexRenderer : public Renderer {
         shader.setMat4("projection", projection);
     }
 
-    std::vector<std::tuple<std::string, int>> getAttrs() final override {
-        std::vector<std::tuple<std::string, int>> result;
-        for (const auto& attr : attrs) {
-            result.emplace_back(std::get<0>(attr), std::get<1>(attr));
-        }
-        return result;
-    }
-
-    std::tuple<std::string, int> getAttr(int idx) final override {
-        return std::make_tuple(std::get<0>(attrs[idx - 1]), std::get<1>(attrs[idx - 1]));
-    }
-
-    void addAttr(Element element, NamedContainer &container) final override {
-        attrs.emplace_back(container.first, element, container.second);
-    }
-
-    void removeAttr(const std::string& name, Element element) final override {
-        attrs.erase(std::remove_if(attrs.begin(), attrs.end(),
-            [&name, &element](const auto& attr) {
-                return std::get<0>(attr) == name && std::get<1>(attr) == element;
-            }), attrs.end());
-    }
-
-    void clearAttrs() final override {
-        attrs.clear();
-    }
-
-    int getSelectedAttr() const {
-        return selectedAttr;
-    }
-
-    void setSelectedAttr(int idx) {
-        selectedAttr = idx;
-        int attr_element = std::get<1>(attrs[idx]);
-        changeAttribute(std::get<2>(attrs[idx]).get(), attr_element);
-    }
-
-    void updateAttr() {
-        setSelectedAttr(selectedAttr);
-    }
-
-    int getSelectedColormap() const {
-        return selectedColormap;
-    }
-
     void setSelectedColormap(int idx) {
-        selectedColormap = idx;
         shader.use();
-        shader.setInt("colormap", selectedColormap);
-    }
-
-    glm::vec3 getPosition() {
-        return position;
-    }
-
-    void setPosition(glm::vec3 p) {
-        position = p;
+        shader.setInt("colormap", idx);
     }
 
     Hexahedra &getHexahedra() {
@@ -295,7 +185,6 @@ struct HexRenderer : public Renderer {
 
     Hexahedra &hex;
     Shader shader;
-    glm::vec3 position;
 
     // Buffers
     unsigned int VAO, VBO, cellBaryBuffer, cellHighlightBuffer, cellAttributeBuffer, cellFilterBuffer;
@@ -311,22 +200,4 @@ struct HexRenderer : public Renderer {
 
     void *highlightsPtr;
     void *filtersPtr;
-
-    bool isLightEnabled = true;
-    bool isLightFollowView = false;
-
-    bool isClipping = false;
-    glm::vec3 clippingPlanePoint;
-    glm::vec3 clippingPlaneNormal{0.f, 0.f, 1.f};
-    bool invertClipping = false;
-    float meshSize = 0.01f;
-    float meshShrink = 0.f;
-    RenderMode fragRenderMode;
-    ColorMode colorMode = ColorMode::COLOR;
-    
-    int selectedAttr = 0;
-    int selectedColormap = 0;
-
-    std::vector<std::tuple<std::string, Element, std::shared_ptr<GenericAttributeContainer>>> attrs;
-
 };
