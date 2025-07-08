@@ -245,9 +245,24 @@ struct LuaScript : public Component {
 		camera_tbl.set_function("MoveUp", &ArcBallCamera::MoveUp);
 		camera_tbl.set_function("MoveForward", &ArcBallCamera::MoveForward);
 
+		camera_tbl["position"] = sol::property(
+			&ArcBallCamera::GetEye,
+			&ArcBallCamera::SetEye
+		);
+
+		camera_tbl["look_at"] = sol::property(
+			&ArcBallCamera::GetLookAt,
+			&ArcBallCamera::LookAt
+		);
+
 		model_t["name"] = sol::property(
 			&Model::getName,
 			&Model::setName
+		);
+
+		model_t["position"] = sol::property(
+			&Model::getPosition,
+			&Model::setPosition
 		);
 
 		model_t["light"] = sol::property(

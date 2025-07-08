@@ -239,6 +239,7 @@ struct ArcBallCamera {
     glm::mat4x4 GetViewMatrix() const { return m_viewMatrix; }
     glm::mat4x4 GetProjectionMatrix() const { return m_projectionMatrix; }
     glm::vec3 GetEye() const { return m_eye; }
+    void SetEye(glm::vec3 eye) { m_eye = std::move(eye); UpdateViewMatrix(); }
     glm::vec3 GetUpVector() const { return m_upVector; }
     glm::vec3 GetLookAt() const { return m_lookAt; }
     glm::vec3 GetFovAndScreen() const { return m_fovAndScreen; }
