@@ -27,7 +27,6 @@
 #include "shader.h"
 
 #include "hex_renderer.h"
-#include "point_set_renderer.h"
 #include "wireframe.h"
 #include "hex_model.h"
 
@@ -75,11 +74,10 @@ struct App : public IApp {
     unsigned int screenColorAttachmentTexture;
     unsigned int screenFbo;
 
-    // settings
-    std::vector<std::unique_ptr<Model>> models;
+    std::vector<std::shared_ptr<Model>> models;
     int selected_renderer = 0;
 
-    std::unique_ptr<PointSetRenderer> point_set_renderer;
+    // settings
     unsigned int SCR_WIDTH;
     unsigned int SCR_HEIGHT;
     bool leftMouse = false;
@@ -193,7 +191,7 @@ struct App : public IApp {
 
     // Accessors
 
-    std::vector<std::unique_ptr<Model>>& getModels() final override {
+    std::vector<std::shared_ptr<Model>>& getModels() final override {
         return models;
     }
 

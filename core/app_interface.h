@@ -26,7 +26,7 @@ struct IApp {
 
     virtual ArcBallCamera& getCamera() = 0;
     
-    virtual std::vector<std::unique_ptr<Model>>& getModels() = 0;
+    virtual std::vector<std::shared_ptr<Model>>& getModels() = 0;
     virtual int countModels() = 0;
     virtual int getSelectedModel() = 0;
     virtual void setSelectedModel(int selected) = 0;

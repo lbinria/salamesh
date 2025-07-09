@@ -86,7 +86,9 @@ struct HexModel : public Model {
 	}
 
     void render() {
-		_hex_renderer.render(position);
+        glm::vec3 pos = getGlobalPosition();
+		_hex_renderer.render(pos);
+		// _hex_renderer.render(position);
 		// TODO _ps_renderer.render();
 	}
     
@@ -207,6 +209,14 @@ struct HexModel : public Model {
         selectedColormap = idx;
     }
 
+    glm::vec3 getGlobalPosition() {
+        if (parent) {
+            return parent->getGlobalPosition() + position;
+        } else {
+            return position;
+        }
+    }
+
     glm::vec3 getPosition() {
         return position;
     }
@@ -280,6 +290,46 @@ struct HexModel : public Model {
         _hex_renderer.setProjection(projection);
     }
 
+    void addChildren(std::shared_ptr<Model> child) {
+        // Set parent
+        child->setParent(std::shared_ptr<Model>(this));
+        children.push_back(child);
+    }
+
+    // const std::vector<Model>& getChildren() const {
+    //     return children;
+    // }
+
+    void clearChildren() {
+        children.clear();
+    }
+
+    void setParent(std::shared_ptr<Model> parentModel) {
+            parent = parentModel;
+    }
+
+    // std::unique_ptr<Model>& getParent() {
+    //     return parent;
+    // }
+
+    // void removeChild(const std::string& name) {
+    //     children.erase(std::remove_if(children.begin(), children.end(),
+    //         [&name](const Model& child) {
+    //             return child.getName() == name;
+    //         }), children.end());
+    // }
+
+    // Model& getChild(const std::string& name) {
+    //     auto it = std::find_if(children.begin(), children.end(),
+    //         [&name](const Model& child) {
+    //             return child.getName() == name;
+    //         });
+    //     if (it != children.end()) {
+    //         return **it;
+    //     }
+    //     throw std::runtime_error("Child model not found: " + name);
+    // }
+
 	private:
 	std::string _name;
 	std::string _path;
@@ -309,5 +359,8 @@ struct HexModel : public Model {
 	// PointRenderer _point_renderer;
 
     std::vector<std::tuple<std::string, Element, std::shared_ptr<GenericAttributeContainer>>> attrs;
+
+    std::shared_ptr<Model> parent;
+    std::vector<std::shared_ptr<Model>> children;
 
 };

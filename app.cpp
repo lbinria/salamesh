@@ -170,17 +170,17 @@ void App::load_model(const std::string& filename) {
 	std::cout << "nfacets = " << hex.nfacets() << std::endl;
 	std::cout << "model read." << std::endl;
 
-	auto renderer = std::make_unique<HexModel>();
-	renderer->load(filename);
-	renderer->init();
-	renderer->push();
+	auto model = std::make_unique<HexModel>();
+	model->load(filename);
+	model->init();
+	model->push();
 
-	renderer->setLight(isLightEnabled);
-	renderer->setMeshShrink(meshShrink);
-	renderer->setMeshSize(meshSize);
-	renderer->setColorMode(Model::ColorMode::COLOR);
+	model->setLight(isLightEnabled);
+	model->setMeshShrink(meshShrink);
+	model->setMeshSize(meshSize);
+	model->setColorMode(Model::ColorMode::COLOR);
 
-	models.push_back(std::move(renderer));	
+	models.push_back(std::move(model));	
 
 	#ifdef _DEBUG
 	std::chrono::steady_clock::time_point end_read_model = std::chrono::steady_clock::now();
@@ -343,19 +343,17 @@ void App::run()
 	if (!args.models.empty())
 		load_model(*args.models.begin());
 	load_model("assets/catorus_hex_attr.geogram");
+	load_model("assets/catorus_hex_attr.geogram");
+
 	models[1]->setPosition(glm::vec3(2.f, 0.f, 0.f));
+	models[2]->setPosition(glm::vec3(2.5f, 0.f, 0.f));
 	selected_renderer = 0;
+
+	models[0]->addChildren(models[1]);
+	models[1]->addChildren(models[2]);
 
 	std::chrono::steady_clock::time_point end = std::chrono::steady_clock::now();
     std::cout << "preload in: " << std::chrono::duration_cast<std::chrono::milliseconds>(end - begin).count() << "ms" << std::endl;
-
-
-
-
-
-	// point_set_renderer = std::make_unique<PointSetRenderer>(hex.points);
-	// point_set_renderer->init();
-	// point_set_renderer->push();
 
 
 
@@ -595,8 +593,6 @@ void App::run()
 	for (auto &renderer : models) {
 		renderer->clean();
 	}
-
-	// point_set_renderer->clean();
 
 	// Terminate & quit
 	glfwTerminate();
