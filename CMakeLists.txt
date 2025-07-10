@@ -70,8 +70,6 @@ add_executable(salamesh
   hex_renderer.cpp hex_renderer.h 
   point_set_renderer.cpp point_set_renderer.h
   wireframe.cpp wireframe.h
-  lua_console.h lua_console.cpp
-  lua_engine.h lua_engine.cpp
   component_loader.h
   settings_manager.h
   stb_include.cpp 

@@ -16,10 +16,9 @@ void MyApp::init() {
 	CellFacetAttribute<float> cell_highlights(hex, 0.f);
 
 	// Engines loading...
-	lua_engine.init();
+	
 
 	// Components loading...
-	lua_console = std::make_unique<LuaConsole>(*this, lua_engine);
 
 	// Load modules
 	Settings settings;
@@ -149,11 +148,6 @@ void MyApp::draw_gui() {
 			}
 		// }
 	}
-
-
-	lua_console->draw_gui(ImGui::GetCurrentContext());
-
-
 
 
 }
