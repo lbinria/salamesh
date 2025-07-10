@@ -225,6 +225,15 @@ struct HexModel : public Model {
         position = p;
     }
 
+    bool getVisible() const {
+        return visible;
+    }
+
+    void setVisible(bool v) {
+        visible = v;
+        _hex_renderer.setVisible(v);
+    }
+
     void setHighlight(int idx, bool highlighted) {
         _hex_renderer.setHighlight(idx, highlighted);
     }
@@ -303,6 +312,8 @@ struct HexModel : public Model {
 	std::string _path;
 
     glm::vec3 position{0, 0, 0};
+
+    bool visible = true;
 
     bool isLightEnabled = true;
     bool isLightFollowView = false;

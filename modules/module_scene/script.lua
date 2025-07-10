@@ -13,8 +13,12 @@ function draw_gui()
 			for i = 1, #app.models do
 				local model = app.models[i]
 				imgui.PushID(i)
-				local b = true
-				imgui.Checkbox(model.name .. "##" .. i, b)
+
+				local sel_visible, new_visible = imgui.Checkbox(model.name .. "##" .. i, model.visible)
+				if (sel_visible) then 
+					model.visible = new_visible
+				end
+
 				imgui.SameLine()
 				if (imgui.Button("View")) then
 					app.selected_model = i - 1
@@ -46,8 +50,13 @@ function draw_gui()
 
 					if (imgui.TreeNode(model.name)) then 
 						local model_pos = model.world_position
-						local b = true
-						imgui.Checkbox("Visible", b)
+
+						local sel_visible, new_visible = imgui.Checkbox("Visible##" .. model.name .. "_visible", model.visible)
+						if (sel_visible) then 
+							model.visible = new_visible
+						end
+
+
 						imgui.SameLine()
 						if (imgui.SmallButton("View")) then 
 							app.selected_model = i - 1

@@ -315,7 +315,10 @@ void HexRenderer::bind() {
 }
 
 void HexRenderer::render(glm::vec3 &position) {
-	
+
+	if (!visible)
+		return;
+
     shader.use();
 
     // Draw	

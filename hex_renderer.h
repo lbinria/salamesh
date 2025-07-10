@@ -55,6 +55,14 @@ struct HexRenderer {
     //         x[i] = 2.f;
     // }
 
+    void setVisible(bool v) {
+        visible = v;
+    }
+
+    bool getVisible() const {
+        return visible;
+    }
+
     void setHighlight(int idx, bool highlighted) {
         _highlights[idx] = highlighted ? 1.f : 0.f;
     	std::memcpy(highlightsPtr, _highlights.data(), _highlights.size() * sizeof(float));
@@ -200,4 +208,6 @@ struct HexRenderer {
 
     void *highlightsPtr;
     void *filtersPtr;
+
+    bool visible = true;
 };

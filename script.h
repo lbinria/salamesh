@@ -330,6 +330,11 @@ struct LuaScript : public Component {
 			&Model::setParent
 		);
 
+		model_t["visible"] = sol::property(
+			&Model::getVisible,
+			&Model::setVisible
+		);
+
 		model_t["position"] = sol::property(
 			&Model::getPosition,
 			&Model::setPosition

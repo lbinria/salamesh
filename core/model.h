@@ -93,6 +93,9 @@ struct Model {
     virtual glm::vec3 getPosition() = 0;
     virtual void setPosition(glm::vec3 p) = 0;
 
+    virtual bool getVisible() const = 0;
+    virtual void setVisible(bool v) = 0;
+
     // virtual void addChildren(std::shared_ptr<Model> child) = 0;
     virtual void setParent(std::shared_ptr<Model> parentModel) = 0;
     virtual std::shared_ptr<Model> getParent() = 0;
