@@ -4,7 +4,7 @@
 #include <GLFW/glfw3.h>
 
 #include "core/app_interface.h"
-#include "args_manager.h"
+#include "helpers/args_manager.h"
 
 #include "imgui.h"
 #include "imgui_internal.h"
@@ -27,7 +27,6 @@
 #include "shader.h"
 
 #include "hex_renderer.h"
-#include "wireframe.h"
 #include "hex_model.h"
 
 #include "core/arcball_camera.h"

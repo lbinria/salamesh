@@ -2,12 +2,10 @@
 #include <memory>
 #include <dlfcn.h>
 
-#include "core/app_interface.h"
-#include "core/states.h"
-#include "core/component.h"
-#include "core/model.h"
+#include "../core/app_interface.h"
+#include "../core/component.h"
 
-struct ComponentLoader {
+struct ModuleLoader {
 	
 	std::unique_ptr<Component> load(const std::string path, IApp &app) {
 

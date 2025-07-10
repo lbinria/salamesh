@@ -1,6 +1,6 @@
 #include "my_app.h"
-#include "settings_manager.h"
-#include "component_loader.h"
+#include "helpers/settings_manager.h"
+#include "helpers/module_loader.h"
 
 #include <filesystem>
 namespace fs = std::filesystem;
@@ -32,7 +32,7 @@ void MyApp::init() {
             if (entry.is_regular_file() && (entry.path().extension() == ".so" || entry.path().extension() == ".dll")) {
                 std::cout << "Found .so file: " << entry.path().filename().string() << std::endl;
 				// Load the shared library
-				ComponentLoader loader;
+				ModuleLoader loader;
 				auto component = loader.load(entry.path().string(), *this);
 				if (component) {
 					// TODO see if init

@@ -69,11 +69,11 @@ add_executable(salamesh
   shader.cpp shader.h 
   hex_renderer.cpp hex_renderer.h 
   point_set_renderer.cpp point_set_renderer.h
-  wireframe.cpp wireframe.h
-  component_loader.h
-  settings_manager.h
-  stb_include.cpp 
-  glad.c 
+  helpers/module_loader.h
+  helpers/settings_manager.h
+  # some include files to build with the executable
+  include/stb_include.cpp 
+  include/glad.c 
   ${SOL_SOURCES}
   ${IMGUI_SOURCES}
   ${JSON_SOURCES}
