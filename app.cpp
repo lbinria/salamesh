@@ -342,15 +342,25 @@ void App::run()
 	// TODO Only load first for the moment
 	if (!args.models.empty())
 		load_model(*args.models.begin());
-	load_model("assets/catorus_hex_attr.geogram");
-	load_model("assets/catorus_hex_attr.geogram");
 
-	models[1]->setPosition(glm::vec3(2.f, 0.f, 0.f));
-	models[2]->setPosition(glm::vec3(2.5f, 0.f, 0.f));
-	selected_renderer = 0;
+	// Heavy load test (slow...)
+	for (int i = 0; i < 10; ++i) {
+		load_model("assets/catorus_hex_attr.geogram");
+		models[i+1]->setPosition(models[0]->getPosition() + glm::vec3(rand() % 10 / 10.f, rand() % 10 / 10.f, rand() % 10 / 10.f));
+	}
 
-	models[0]->addChildren(models[1]);
-	models[1]->addChildren(models[2]);
+	// load_model("assets/catorus_hex_attr.geogram");
+	// load_model("assets/catorus_hex_attr.geogram");
+
+	// models[1]->setPosition(glm::vec3(2.f, 0.f, 0.f));
+	// models[2]->setPosition(glm::vec3(2.5f, 0.f, 0.f));
+	// models[1]->setParent(models[0]);
+	// models[2]->setParent(models[0]);
+
+	// for (auto &m : getChildrenOf(models[0])) {
+	// 	std::cout << "child: " << m->getName() << std::endl;
+	// }
+
 
 	std::chrono::steady_clock::time_point end = std::chrono::steady_clock::now();
     std::cout << "preload in: " << std::chrono::duration_cast<std::chrono::milliseconds>(end - begin).count() << "ms" << std::endl;

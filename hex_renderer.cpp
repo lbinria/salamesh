@@ -102,9 +102,9 @@ void HexRenderer::init() {
 
 	glBindBuffer(GL_TEXTURE_BUFFER, 0);
 
-
+	#ifdef _DEBUG
     std::cout << "vertex attrib setup..." << std::endl;
-
+	#endif
 
 	GLuint positionLocation = glGetAttribLocation(shader.id, "aPos");
 	GLuint sizeLocation = glGetAttribLocation(shader.id, "size");
@@ -139,17 +139,21 @@ void HexRenderer::init() {
 	glVertexAttribIPointer(vertexIndexLocation, 1, GL_INT, sizeof(Vertex), (void*)offsetof(Vertex, vertexIndex));
 
 
+	
 	std::chrono::steady_clock::time_point end = std::chrono::steady_clock::now();
 
+	#ifdef _DEBUG
     std::cout << "mesh setup in: " << std::chrono::duration_cast<std::chrono::milliseconds>(end - begin).count() << "ms" << std::endl;
-
+	#endif
 
 
 
 }
 
 void HexRenderer::push() {
+	#ifdef _DEBUG
     std::cout << "push start." << std::endl;
+	#endif
 
 	std::chrono::steady_clock::time_point begin = std::chrono::steady_clock::now();
 
@@ -256,14 +260,17 @@ void HexRenderer::push() {
 
 	std::chrono::steady_clock::time_point end = std::chrono::steady_clock::now();
 
+	#ifdef _DEBUG
     std::cout << "push end in: " << std::chrono::duration_cast<std::chrono::milliseconds>(end - begin).count() << "ms" << std::endl;
     std::cout << "compute bary in: " << std::chrono::duration_cast<std::chrono::milliseconds>(end_barys - begin_barys).count() << "ms" << std::endl;
     std::cout << "compute facets in: " << std::chrono::duration_cast<std::chrono::milliseconds>(end_facets - begin_facets).count() << "ms" << std::endl;
 
+	
 	std::cout << "mesh has: " << hex.nverts() << " vertices." << std::endl;
 	std::cout << "mesh has: " << hex.nfacets() << " facets." << std::endl;
 	std::cout << "mesh has: " << hex.ncells() << " cells." << std::endl;
 	std::cout << "should draw: " << v_vertices.size() << " vertices." << std::endl;
+	#endif
 
 	glBindVertexArray(VAO);
 	glBindBuffer(GL_ARRAY_BUFFER, VBO);
@@ -308,10 +315,8 @@ void HexRenderer::bind() {
 }
 
 void HexRenderer::render(glm::vec3 &position) {
-
-
+	
     shader.use();
-
 
     // Draw	
 	glm::mat4 model = glm::mat4(1.0f);
@@ -319,7 +324,6 @@ void HexRenderer::render(glm::vec3 &position) {
 	shader.setMat4("model", model);
 
 	glDrawArrays(GL_TRIANGLES, 0, v_vertices.size());
-	// glDrawArrays(GL_POINTS, 0, v_vertices.size());
 }
 
 void HexRenderer::clean() {

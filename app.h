@@ -195,6 +195,17 @@ struct App : public IApp {
         return models;
     }
 
+    std::vector<std::shared_ptr<Model>> getChildrenOf(std::shared_ptr<Model> model) {
+        std::vector<std::shared_ptr<Model>> children;
+        for (auto &m : models) {
+            if (m->getParent() == model) {
+                children.push_back(m);
+            }
+        }
+
+        return children;
+    }
+
     int countModels() final override {
         return models.size();
     }

@@ -265,6 +265,10 @@ struct LuaScript : public Component {
 			&Model::setPosition
 		);
 
+		model_t["world_position"] = sol::readonly_property(
+			&Model::getWorldPosition
+		);
+
 		model_t["light"] = sol::property(
 			&Model::getLight,
 			&Model::setLight

@@ -12,8 +12,9 @@ function draw_gui()
 		if (imgui.Button("Model " .. i .. ": " .. model.name)) then
 			app.selected_model = i - 1
 			-- Set camera position !
-			app.camera.position = vec3.new(model.position.x, model.position.y, model.position.z - 3.);
-			app.camera.look_at = vec3.new(model.position.x, model.position.y, model.position.z);
+			local model_pos = model.world_position
+			app.camera.position = vec3.new(model_pos.x, model_pos.y, model_pos.z - 3.);
+			app.camera.look_at = vec3.new(model_pos.x, model_pos.y, model_pos.z);
 		end
 		imgui.PopID()
 	end
