@@ -172,6 +172,7 @@ void App::load_model(const std::string& filename) {
 
 	auto model = std::make_unique<HexModel>();
 	model->load(filename);
+	model->setName(std::filesystem::path(filename).stem().string() + std::to_string(models.size()));
 	model->init();
 	model->push();
 
@@ -343,23 +344,23 @@ void App::run()
 	if (!args.models.empty())
 		load_model(*args.models.begin());
 
-	// Heavy load test (slow...)
-	for (int i = 0; i < 10; ++i) {
-		load_model("assets/catorus_hex_attr.geogram");
-		models[i+1]->setPosition(models[0]->getPosition() + glm::vec3(rand() % 10 / 10.f, rand() % 10 / 10.f, rand() % 10 / 10.f));
-	}
-
-	// load_model("assets/catorus_hex_attr.geogram");
-	// load_model("assets/catorus_hex_attr.geogram");
-
-	// models[1]->setPosition(glm::vec3(2.f, 0.f, 0.f));
-	// models[2]->setPosition(glm::vec3(2.5f, 0.f, 0.f));
-	// models[1]->setParent(models[0]);
-	// models[2]->setParent(models[0]);
-
-	// for (auto &m : getChildrenOf(models[0])) {
-	// 	std::cout << "child: " << m->getName() << std::endl;
+	// // Heavy load test (slow...)
+	// for (int i = 0; i < 10; ++i) {
+	// 	load_model("assets/catorus_hex_attr.geogram");
+	// 	models[i+1]->setPosition(models[0]->getPosition() + glm::vec3(rand() % 10 / 10.f, rand() % 10 / 10.f, rand() % 10 / 10.f));
 	// }
+
+	load_model("assets/catorus_hex_attr.geogram");
+	load_model("assets/catorus_hex_attr.geogram");
+
+	models[1]->setPosition(glm::vec3(2.f, 0.f, 0.f));
+	models[2]->setPosition(glm::vec3(2.5f, 0.f, 0.f));
+	models[1]->setParent(models[0]);
+	models[2]->setParent(models[0]);
+
+	for (auto &m : getChildrenOf(models[0])) {
+		std::cout << "child: " << m->getName() << std::endl;
+	}
 
 
 	std::chrono::steady_clock::time_point end = std::chrono::steady_clock::now();

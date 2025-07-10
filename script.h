@@ -70,9 +70,18 @@ struct LuaScript : public Component {
 			ImGui::End();
 		});
 
-		imgui.set_function("Text", [](const char* text) {
-			ImGui::Text("%s", text);
-		});
+		// imgui.set_function("Text", [](const char* text) {
+		// 	ImGui::Text("%s", text);
+		// });
+
+		imgui.set_function("Text", sol::overload(
+			[](const char* text) {
+				ImGui::Text("%s", text);
+			},
+			[](const char* fmt, sol::variadic_args args) {
+				ImGui::Text(fmt, args);
+			}
+		));
 
 		imgui.set_function("Button", [](const char* label) {
 			return ImGui::Button(label);
@@ -146,6 +155,62 @@ struct LuaScript : public Component {
 
 		imgui.set_function("PopID", []() {
 			ImGui::PopID();
+		});
+
+		// Trees
+		imgui.set_function("TreeNode", [](const char* label) {
+			return ImGui::TreeNode(label);
+		});
+
+		imgui.set_function("TreePop", []() {
+			ImGui::TreePop();
+		});
+
+		// Tabs
+		// imgui.set_function("BeginTabBar", [](const char* str_id, const ImGuiTabBarFlags flags) {
+		// 	return ImGui::BeginTabBar(str_id, flags);
+		// });
+
+		imgui.set_function("BeginTabBar", sol::overload(
+			[](const char* str_id) {
+				return ImGui::BeginTabBar(str_id);
+			},
+			[](const char* str_id, const ImGuiTabBarFlags flags) {
+				return ImGui::BeginTabBar(str_id, flags);
+			}
+		));
+
+
+		imgui.set_function("EndTabBar", []() {
+			ImGui::EndTabBar();
+		});
+		// imgui.set_function("BeginTabItem", [](const char* label, bool* p_open, const ImGuiTabItemFlags flags) {
+		// 	return ImGui::BeginTabItem(label, p_open, flags);
+		// });
+		
+		imgui.set_function("BeginTabItem", sol::overload(
+			[](const char* label) {
+				return ImGui::BeginTabItem(label);
+			},
+			[](const char* label, bool* p_open, const ImGuiTabItemFlags flags) {
+				return ImGui::BeginTabItem(label, p_open, flags);
+			}
+		));
+
+		imgui.set_function("EndTabItem", []() {
+			ImGui::EndTabItem();
+		});
+
+		imgui.set_function("SameLine", []() {
+			ImGui::SameLine();
+		});
+
+		imgui.set_function("Separator", []() {
+			ImGui::Separator();
+		});
+
+		imgui.set_function("SmallButton", [](const char* label) {
+			return ImGui::SmallButton(label);
 		});
 
 		lua["imgui"] = imgui;
@@ -258,6 +323,11 @@ struct LuaScript : public Component {
 		model_t["name"] = sol::property(
 			&Model::getName,
 			&Model::setName
+		);
+
+		model_t["parent"] = sol::property(
+			&Model::getParent,
+			&Model::setParent
 		);
 
 		model_t["position"] = sol::property(
