@@ -353,6 +353,8 @@ void App::run()
 	load_model("assets/catorus_hex_attr.geogram");
 	load_model("assets/catorus_hex_attr.geogram");
 
+	// load_state("/home/tex/Desktop/state.json");
+
 	models[1]->setPosition(glm::vec3(2.f, 0.f, 0.f));
 	models[2]->setPosition(glm::vec3(2.5f, 0.f, 0.f));
 	models[1]->setParent(models[0]);
@@ -429,7 +431,6 @@ void App::run()
 
 	float lastTimeValue = glfwGetTime();
 
-	save_state("state.json");
 
 	while(!glfwWindowShouldClose(window)) {
 
@@ -610,6 +611,18 @@ void App::save_state(const std::string filename) {
 
 	json j;
 	j["cull_mode"] = cull_mode;
+	j["pick_mode"] = pickMode;
+	j["selected_renderer"] = selected_renderer;
+	j["models"] = json::array();
+
+	// Save model states
+	for (auto &m : models) {
+		std::string str_state = m->save_state();
+		j["models"].push_back(json::parse(str_state));
+	}
+
+	// TODO Save camera(s) states
+
 
 	std::ofstream ofs(filename);
 	if (!ofs.is_open()) {
@@ -619,6 +632,33 @@ void App::save_state(const std::string filename) {
 	ofs << j.dump(4); // Pretty print with 4 spaces indentation
 	ofs.close();
 	std::cout << "State saved to: " << filename << std::endl;
+}
+
+void App::load_state(const std::string filename) {
+	std::ifstream ifs(filename);
+	if (!ifs.is_open()) {
+		std::cerr << "Failed to open file for loading state: " << filename << std::endl;
+		return;
+	}
+	json j;
+	ifs >> j;
+	ifs.close();
+	std::cout << "State loaded from: " << filename << std::endl;
+	cull_mode = j["cull_mode"].get<int>();
+	pickMode = (Element)j["pick_mode"].get<int>();
+	selected_renderer = j["selected_renderer"].get<int>();
+	// Clear current models
+	models.clear();
+	// Load models from state
+	for (const auto& model_state : j["models"]) {
+		auto model = std::make_unique<HexModel>();
+		model->load_state(model_state);
+		model->init();
+		model->push();
+		models.push_back(std::move(model));
+	}
+	// TODO Load camera(s) states
+	std::cout << "State loaded successfully." << std::endl;
 }
 
 int App::getWidth() {

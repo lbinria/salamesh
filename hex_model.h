@@ -48,20 +48,82 @@ struct HexModel : public Model {
 		}
 	}
 
-	void save() {
+	void save() const {
 		// Save the mesh
 		if (_path.empty()) {
 			std::cerr << "Error: No path specified for saving the mesh." << std::endl;
 			return;
 		}
+        // TODO save attributes
 		write_by_extension(_path, _hex);
 	}
 
-	void save_as(const std::string &path) {
+	void save_as(const std::string path) {
 		// Save the mesh to a new path
+        // TODO save attributes
 		write_by_extension(path, _hex);
 		_path = path;
 	}
+
+    std::string save_state() final override {
+        json j;
+        j["name"] = _name;
+        j["path"] = _path;
+        j["position"] = { position.x, position.y, position.z };
+        j["color_mode"] = colorMode;
+        j["is_light_enabled"] = isLightEnabled;
+        j["is_light_follow_view"] = isLightFollowView;
+        j["is_clipping"] = isClipping;
+        j["clipping_plane_point"] = { clippingPlanePoint.x, clippingPlanePoint.y, clippingPlanePoint.z };
+        j["clipping_plane_normal"] = { clippingPlaneNormal.x, clippingPlaneNormal.y, clippingPlaneNormal.z };
+        j["invert_clipping"] = invertClipping;
+        j["mesh_size"] = meshSize;
+        j["mesh_shrink"] = meshShrink;
+        j["frag_render_mode"] = fragRenderMode;
+        j["selected_colormap"] = selectedColormap;
+        j["visible"] = visible;
+        return j.dump(4);
+    }
+
+    void load_state(json model_state) {
+        
+        _name = model_state["name"].get<std::string>();
+        _path = model_state["path"].get<std::string>();
+
+        position = glm::vec3(
+            model_state["position"][0].get<float>(),
+            model_state["position"][1].get<float>(),
+            model_state["position"][2].get<float>()
+        );
+        
+        setColorMode((Model::ColorMode)model_state["color_mode"].get<int>());
+
+        setLight(model_state["is_light_enabled"].get<bool>());
+        setLightFollowView(model_state["is_light_follow_view"].get<bool>());
+        setClipping(model_state["is_clipping"].get<bool>());
+
+        setClippingPlanePoint(glm::vec3(
+            model_state["clipping_plane_point"][0].get<float>(),
+            model_state["clipping_plane_point"][1].get<float>(),
+            model_state["clipping_plane_point"][2].get<float>()
+        ));
+
+        setClippingPlaneNormal(glm::vec3(
+            model_state["clipping_plane_normal"][0].get<float>(),
+            model_state["clipping_plane_normal"][1].get<float>(),
+            model_state["clipping_plane_normal"][2].get<float>()
+        ));
+
+        setInvertClipping(model_state["invert_clipping"].get<bool>());
+
+        setMeshSize(model_state["mesh_size"].get<float>());
+        setMeshShrink(model_state["mesh_shrink"].get<float>());
+        
+        setSelectedColormap(model_state["selected_colormap"].get<int>());
+        setVisible(model_state["visible"].get<bool>());
+
+        load(_path);
+    }
 
     std::string getName() final override { return _name; }
     void setName(std::string name) final override { _name = name; }
@@ -319,12 +381,12 @@ struct HexModel : public Model {
     bool isLightFollowView = false;
 
     bool isClipping = false;
-    glm::vec3 clippingPlanePoint;
+    glm::vec3 clippingPlanePoint{0.f, 0.f, 0.f};
     glm::vec3 clippingPlaneNormal{0.f, 0.f, 1.f};
     bool invertClipping = false;
     float meshSize = 0.01f;
     float meshShrink = 0.f;
-    Model::RenderMode fragRenderMode;
+    Model::RenderMode fragRenderMode = Model::RenderMode::Color;
     Model::ColorMode colorMode = Model::ColorMode::COLOR;
     
     int selectedAttr = 0;

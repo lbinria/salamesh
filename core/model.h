@@ -29,6 +29,9 @@ struct Model {
 	}
 
 	virtual void load(const std::string path) = 0;
+    virtual void save() const = 0;
+    virtual void save_as(const std::string path) = 0;
+    virtual std::string save_state() = 0;
 
     virtual std::string getName() = 0;
     virtual void setName(std::string name) = 0;

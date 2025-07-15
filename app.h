@@ -163,6 +163,7 @@ struct App : public IApp {
     // TODO save_state
     // TODO load_state
     void save_state(const std::string filename);
+    void load_state(const std::string filename);
 
 
     // Camera functions

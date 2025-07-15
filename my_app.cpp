@@ -85,6 +85,13 @@ void MyApp::draw_gui() {
 				config.path = ".";
 				ImGuiFileDialog::Instance()->OpenDialog("ChooseFileDlgKey", "Choose File", ".geogram,.mesh,.json,.jpg", config);
 			}
+
+			if (ImGui::MenuItem("Save state")) {
+				std::string filename = "state.json";
+				save_state(filename);
+				std::cout << "State saved to: " << filename << std::endl;
+			}
+
 			if (ImGui::MenuItem("Quit")) {
 				quit();
 			}
