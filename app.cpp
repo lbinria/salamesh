@@ -163,30 +163,30 @@ void App::load_model(const std::string& filename) {
 	std::chrono::steady_clock::time_point begin_read_model = std::chrono::steady_clock::now();
 	#endif
 
-	VolumeAttributes attributes = UM::read_by_extension(filename, hex);
-
-	std::cout << "number of point attributes: " << attributes.points.size() << std::endl;
-	std::cout << "nverts = " << hex.nverts() << std::endl;
-	std::cout << "nfacets = " << hex.nfacets() << std::endl;
-	std::cout << "model read." << std::endl;
-
 	auto model = std::make_unique<HexModel>();
 	model->load(filename);
 	model->setName(std::filesystem::path(filename).stem().string() + std::to_string(models.size()));
 	model->init();
 	model->push();
 
-	model->setLight(isLightEnabled);
-	model->setMeshShrink(meshShrink);
-	model->setMeshSize(meshSize);
+	model->setLight(true);
+	model->setMeshShrink(0.f);
+	model->setMeshSize(0.01f);
 	model->setColorMode(Model::ColorMode::COLOR);
 
 	models.push_back(std::move(model));	
 
 	#ifdef _DEBUG
+	Hexahedra &hex = model->getHexahedra();
+	std::cout << "nverts = " << hex.nverts() << std::endl;
+	std::cout << "nfacets = " << hex.nfacets() << std::endl;
+	std::cout << "model read." << std::endl;
+
 	std::chrono::steady_clock::time_point end_read_model = std::chrono::steady_clock::now();
     std::cout << "read model in: " << std::chrono::duration_cast<std::chrono::milliseconds>(end_read_model - begin_read_model).count() << "ms" << std::endl;
 	#endif
+
+	Commands::get().add_command("app.load_model(" + filename + ")");
 }
 
 void App::run()
@@ -429,6 +429,8 @@ void App::run()
 
 	float lastTimeValue = glfwGetTime();
 
+	save_state("state.json");
+
 	while(!glfwWindowShouldClose(window)) {
 
 		// Compute dela time
@@ -439,6 +441,7 @@ void App::run()
 
 		update(dt);
 
+		Hexahedra &hex = getCurrentModel().getHexahedra();
 
 		if (leftMouse) {
 			double xPos, yPos;
@@ -456,19 +459,12 @@ void App::run()
 			double xPos, yPos;
 			glfwGetCursorPos(window, &xPos, &yPos);
 
-			// std::vector<bool> h(hex.ncells(), false);
-			// for (auto lh : _lastHovered) {
-			// 	h[lh] = false;
-			// }
-			// mesh->setHighlight(h);
 
 			auto pickIDs = pick(window, xPos, yPos, cursor_radius);
 			for (long pickID : pickIDs) {
 
 				if (camera->IsLocked() && pickID >= 0 && pickID < hex.ncells()) {
-					_lastHovered.push_back(pickID);
-					// mesh->setHighlight(pickID, 0.2f);
-					// mesh->setFilter(pickID, true);
+					
 				}
 			}
 		}
@@ -610,6 +606,21 @@ void App::run()
 	return;
 }
 
+void App::save_state(const std::string filename) {
+
+	json j;
+	j["cull_mode"] = cull_mode;
+
+	std::ofstream ofs(filename);
+	if (!ofs.is_open()) {
+		std::cerr << "Failed to open file for saving state: " << filename << std::endl;
+		return;
+	}
+	ofs << j.dump(4); // Pretty print with 4 spaces indentation
+	ofs.close();
+	std::cout << "State saved to: " << filename << std::endl;
+}
+
 int App::getWidth() {
 	return SCR_WIDTH;
 }
@@ -623,7 +634,7 @@ long App::pick_facet() {
 	pickMode = Element::FACETS;
 	long id = pick(mousePos.x, mousePos.y);
 	pickMode = last_pick_mode;
-	return id >= 0 && id < hex.nfacets() ? id : -1;
+	return id >= 0 && id < getCurrentModel().getHexahedra().nfacets() ? id : -1;
 }
 
 long App::pick_cell() {
@@ -631,7 +642,7 @@ long App::pick_cell() {
 	pickMode = Element::CELLS;
 	long id = pick(mousePos.x, mousePos.y);
 	pickMode = last_pick_mode;
-	return id >= 0 && id < hex.ncells() ? id : -1;
+	return id >= 0 && id < getCurrentModel().getHexahedra().ncells() ? id : -1;
 }
 
 float getLinearDepth(float depth, float near, float far) {
@@ -769,17 +780,9 @@ void App::look_at_center() {
 	camera->LookAt(glm::vec3(0.f, 0.f, 0.f));
 }
 
-    
-void App::setLight(bool enabled) {
-	isLightEnabled = enabled;
-	for (auto &renderer : models)
-		renderer->setLight(enabled);
-}
-
 void App::setClipping(bool enabled) {
-	isClippingEnabled = enabled;
-	for (auto &renderer : models)
-		renderer->setClipping(enabled);
+	for (auto &model : models)
+		model->setClipping(enabled);
 }
 
 void App::processInput(GLFWwindow *window) {

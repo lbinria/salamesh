@@ -32,17 +32,14 @@
 #include "core/arcball_camera.h"
 
 #include "script.h"
+#include "commands.h"
 
 #include <ultimaille/all.h>
-
-
 
 using namespace UM;
 
 #include <filesystem>
 namespace fs = std::filesystem;
-
-// void mouse_callback(GLFWwindow* window, double xpos, double ypos);
 
 struct App : public IApp {
 
@@ -63,8 +60,8 @@ struct App : public IApp {
     {}
 
 
-    std::unique_ptr<ArcBallCamera> camera;
 
+    // OpenGL
     unsigned int fbo;
     unsigned int rbo;
     unsigned int screenRbo;
@@ -73,36 +70,20 @@ struct App : public IApp {
     unsigned int screenColorAttachmentTexture;
     unsigned int screenFbo;
 
-    std::vector<std::shared_ptr<Model>> models;
-    int selected_renderer = 0;
+
 
     // settings
     unsigned int SCR_WIDTH;
     unsigned int SCR_HEIGHT;
-    bool leftMouse = false;
-    bool rightMouse = false;
-    bool dblClick = false;
-    std::chrono::steady_clock::time_point lastClick;
+    
 
-    glm::vec2 mousePos;
-    glm::vec2 lastMousePos;
-    glm::vec2 lastMousePos2;
-    int cursor_radius = 1;
-    glm::vec2 scrollDelta;
-    int cull_mode = GL_BACK;
-    // TODO make private
-    bool isLightEnabled = true;
-    bool isClippingEnabled = false;
-    float meshSize = 0.01f;
-    float meshShrink = 0.f;
+
+
 
     unsigned int colormaps[2];
     unsigned int colormaps2D[2];
 
-    // std::vector<std::pair<Element, std::string>> attrs;
-    // int selectedAttr = 0;
 
-    glm::mat4 projection;
 
 
     void processInput(GLFWwindow *window);
@@ -164,7 +145,7 @@ struct App : public IApp {
         if (st.cell.is_hovered()) {
             auto p = pick_point(mousePos.x, mousePos.y);
             // TODO get current model
-            return pick_edge(hex, p, st.cell.get_hovered());
+            return pick_edge(getCurrentModel().getHexahedra(), p, st.cell.get_hovered());
         } else {
             return -1;
         }
@@ -181,6 +162,7 @@ struct App : public IApp {
     // TODO reset_state
     // TODO save_state
     // TODO load_state
+    void save_state(const std::string filename);
 
 
     // Camera functions
@@ -188,8 +170,6 @@ struct App : public IApp {
     void look_at_center() final override;
 
     // Rendering functions
-    bool getLight() final override { return isLightEnabled; }
-    void setLight(bool enabled) final override;
     void setClipping(bool enabled) final override;
     void setCullMode(int mode) final override { cull_mode = mode; }
 
@@ -254,12 +234,10 @@ struct App : public IApp {
     const char* pickModeStrings[4] = {"Points", "Edges", "Facets", "Cells"};
 
 
-    Hexahedra hex;
 
-    Element pickMode = Element::CELLS;
 
-    std::vector<int> _lastHovered;
 
+    std::unique_ptr<ArcBallCamera> camera;
 
     // Current pressed mouse button, -1 if none
     int _cur_button = -1;
@@ -269,10 +247,33 @@ struct App : public IApp {
 
     GLFWwindow* window;
     
+    std::vector<std::shared_ptr<Model>> models;
+    int selected_renderer = 0;
+
+    glm::mat4 projection;
+
     std::vector<std::unique_ptr<Component>> scripts;
 	InputState st;
 
     int _dbl_click_interval = 300 /*ms*/;
+
+    // Mouse data
+    bool leftMouse = false;
+    bool rightMouse = false;
+    bool dblClick = false;
+    std::chrono::steady_clock::time_point lastClick;
+
+    glm::vec2 mousePos;
+    glm::vec2 lastMousePos;
+    glm::vec2 lastMousePos2;
+    int cursor_radius = 1;
+    glm::vec2 scrollDelta;
+
+    Element pickMode = Element::CELLS;
+
+
+    // TODO make private
+    int cull_mode = GL_BACK;
 
     private:
 

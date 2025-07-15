@@ -9,12 +9,6 @@ namespace fs = std::filesystem;
 void MyApp::init() {
 	std::cout << "INIT" << std::endl;
 
-
-	
-
-
-	CellFacetAttribute<float> cell_highlights(hex, 0.f);
-
 	// Engines loading...
 	
 

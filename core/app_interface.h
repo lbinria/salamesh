@@ -18,8 +18,6 @@ struct IApp {
     virtual void look_at_center() = 0;
 
     // TODO maybe remove followings
-    virtual bool getLight() = 0;
-    virtual void setLight(bool enabled) = 0;
     virtual void setClipping(bool enabled) = 0;
 
     virtual void setCullMode(int mode) = 0;

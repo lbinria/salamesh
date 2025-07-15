@@ -116,10 +116,6 @@ struct LuaScript : public Component {
 			app.look_at_center();
 		});
 
-		app_type.set_function("setLight", [&app = app](bool b) {
-			app.setLight(b);
-		});
-
 		app_type.set_function("setClipping", [&app = app](bool b) {
 			app.setClipping(b);
 		});
