@@ -13,9 +13,9 @@ struct IApp {
     virtual int getWidth() = 0;
     virtual int getHeight() = 0;
 
-    // TODO move this to camera
-    virtual void reset_zoom() = 0;
-    virtual void look_at_center() = 0;
+    // // TODO move this to camera
+    // virtual void reset_zoom() = 0;
+    // virtual void look_at_center() = 0;
 
     // TODO maybe remove followings
     virtual void setClipping(bool enabled) = 0;

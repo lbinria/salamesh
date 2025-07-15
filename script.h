@@ -108,13 +108,13 @@ struct LuaScript : public Component {
 		});
 
 
-		app_type.set_function("reset_zoom", [&app = app]() {
-			app.reset_zoom();
-		});
+		// app_type.set_function("reset_zoom", [&app = app]() {
+		// 	app.reset_zoom();
+		// });
 
-		app_type.set_function("look_at_center", [&app = app]() {
-			app.look_at_center();
-		});
+		// app_type.set_function("look_at_center", [&app = app]() {
+		// 	app.look_at_center();
+		// });
 
 		app_type.set_function("setClipping", [&app = app](bool b) {
 			app.setClipping(b);

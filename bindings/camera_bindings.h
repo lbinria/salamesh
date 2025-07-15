@@ -26,6 +26,7 @@ namespace bindings {
 			camera_t.set_function("MoveRight", &ArcBallCamera::MoveRight);
 			camera_t.set_function("MoveUp", &ArcBallCamera::MoveUp);
 			camera_t.set_function("MoveForward", &ArcBallCamera::MoveForward);
+			camera_t.set_function("reset_zoom", &ArcBallCamera::reset_zoom);
 
 			camera_t["position"] = sol::property(
 				&ArcBallCamera::GetEye,

@@ -809,17 +809,6 @@ std::vector<long> App::pick(GLFWwindow *window, double xPos, double yPos, int ra
 	return pickIDs;
 }
 
-void App::reset_zoom() {
-	// TODO add lua cmd
-	camera->SetFov(45.f);
-	camera->UpdateViewMatrix();
-}
-
-void App::look_at_center() {
-	// TODO add lua cmd
-	camera->LookAt(glm::vec3(0.f, 0.f, 0.f));
-}
-
 void App::setClipping(bool enabled) {
 	for (auto &model : models)
 		model->setClipping(enabled);

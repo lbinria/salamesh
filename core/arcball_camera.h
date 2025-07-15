@@ -223,6 +223,10 @@ struct ArcBallCamera {
         return x * (1.f - t) + y * t;
     }
 
+    void reset_zoom() {
+        SetFov(45.f);
+        UpdateViewMatrix();
+    }
 
     void Update(float t) {
         m_eye = lerp(m_eye, m_target_eye, t);

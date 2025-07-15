@@ -165,11 +165,6 @@ struct App : public IApp {
     void save_state(const std::string filename);
     void load_state(const std::string filename);
 
-
-    // Camera functions
-    void reset_zoom() final override;
-    void look_at_center() final override;
-
     // Rendering functions
     void setClipping(bool enabled) final override;
     void setCullMode(int mode) final override { cull_mode = mode; }

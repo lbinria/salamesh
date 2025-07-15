@@ -18,11 +18,7 @@ function draw_gui()
 	imgui.Text("Zoom: " .. str_zoom_factor .. "%")
 
 	if (imgui.Button("Reset zoom")) then
-		app.reset_zoom()
-	end
-
-	if (imgui.Button("Look at center")) then 
-		app.look_at_center()
+		app.camera:reset_zoom()
 	end
 
 	if (imgui.Button("Cull back")) then 
@@ -58,26 +54,6 @@ function draw_gui()
 		cur_model.clipping = new_enable_clipping
 	end
 
-
-	-- if (imgui.BeginCombo("##Clipping plane normal", clipping_planes[sel_clipping_plane])) then
-	-- 	for i = 1, #clipping_planes do
-	-- 		local is_selected = i == sel_clipping_plane
-	-- 		if (imgui.Selectable(clipping_planes[i], is_selected)) then
-				
-	-- 			sel_clipping_plane = i
-
-	-- 			if (i == 1) then
-	-- 				cur_model.setClippingPlaneNormal(1,0,0)
-	-- 			elseif (i == 2) then
-	-- 				cur_model.setClippingPlaneNormal(0,1,0)
-	-- 			elseif (i == 3) then
-	-- 				cur_model.setClippingPlaneNormal(0,0,1)
-	-- 			end
-
-	-- 		end
-	-- 	end
-	-- 	imgui.EndCombo()
-	-- end
 	if (imgui.BeginCombo("##Clipping plane normal", clipping_planes[sel_clipping_plane])) then
 		for i = 1, #clipping_planes do
 			local is_selected = i == sel_clipping_plane
