@@ -177,6 +177,11 @@ struct App : public IApp {
 
     std::vector<long> pick(GLFWwindow *window, double xPos, double yPos, int radius);
 
+    // States functions
+    // TODO reset_state
+    // TODO save_state
+    // TODO load_state
+
 
     // Camera functions
     void reset_zoom() final override;
