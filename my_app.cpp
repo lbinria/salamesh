@@ -174,6 +174,19 @@ void MyApp::key_event(int key, int scancode, int action, int mods) {
 		getCamera().setLock(false);
 	}
 
+	// Switch cameras with 1 and 2 keys
+	if (key == GLFW_KEY_1 && action == GLFW_PRESS) {
+		auto pos = getCamera().getEye();
+		setSelectedCamera(0); 
+		getCamera().setEye(pos);
+	} else if (key == GLFW_KEY_2 && action == GLFW_PRESS) {
+		auto pos = getCamera().getEye();
+		auto lookAt = getCamera().getLookAt();
+		setSelectedCamera(1); 
+		getCamera().setEye(pos);
+		getCamera().lookAt(lookAt);
+	}
+
 	for (auto &script : scripts) {
 		script->key_event(key, scancode, action, mods);
 	}
