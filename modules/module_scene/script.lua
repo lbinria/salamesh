@@ -38,7 +38,7 @@ function draw_gui()
 
 			-- Scene graph
 			imgui.Separator()
-			if (imgui.TreeNode("Scene")) then 
+			if (imgui.TreeNode("Scene##tree_node_scene")) then 
 
 				-- for k, model in app.models do 
 				for i = 1, #app.models do
@@ -84,14 +84,52 @@ function draw_gui()
 		end
 
 		if (imgui.BeginTabItem("Cameras")) then
-			for i = 1, #app.cameras do
-				local camera = app.cameras[i]
-				local p = camera.position
-				imgui.Text("Camera: " .. camera.name)
-				-- imgui.Text("position: (%.4f, %.4f, %.4f)", p.x, p.y, p.z);
-				imgui.Text("position: " .. p:to_string());
 
+			imgui.Text("Cameras")
+			imgui.Separator()
+
+			if (imgui.BeginListBox("##list_box_cameras")) then
+				for i = 1, #app.cameras do
+
+					local camera = app.cameras[i]
+
+					local is_selected = i == app.selected_camera
+					-- Create a unique ID for each item to prevent conflicts
+					imgui.PushID(i)
+
+					if (imgui.Selectable(tostring(i) .. ". " .. camera.name, is_selected)) then
+						app.selected_camera = i
+					end
+
+
+					imgui.PopID()
+					
+				end
+				imgui.EndListBox()
 			end
+			
+			imgui.Text("Properties")
+			imgui.Separator()
+			local camera = app.camera
+			local p = camera.position
+
+			-- Compute zoom factor
+			local fov = app.camera.fov
+			local zoom_factor = -(fov - 45.) / (45. - 0.25) * 100.
+			-- Convert -0 value to 0
+			if (zoom_factor <= 0 and zoom_factor > -0.001) then zoom_factor = 0 end
+
+			local str_zoom_factor = string.format("%.0f", zoom_factor)
+
+			imgui.Text("Zoom: " .. str_zoom_factor .. "%")
+			imgui.SameLine()
+			if (imgui.SmallButton("Reset zoom")) then
+				app.camera:reset_zoom()
+			end
+
+			imgui.Text("Position: " .. p:to_string());
+			imgui.Text("Look at: " .. camera.look_at:to_string());
+
 			imgui.EndTabItem()
 		end
 

@@ -2,8 +2,6 @@
 #define SOL_ALL_SAFETIES_ON 1
 #include <sol/sol.hpp>
 #include "../core/app_interface.h"
-#include "../core/arcball_camera.h"
-#include "../core/descent_camera.h"
 #include "../core/camera.h"
 
 namespace bindings {

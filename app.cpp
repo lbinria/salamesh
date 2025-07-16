@@ -514,7 +514,8 @@ void App::run()
 		// Go to color framebuffer
 		glBindFramebuffer(GL_FRAMEBUFFER, fbo);
 		glEnable(GL_DEPTH_TEST);
-		glClearColor(0.05, 0.1, 0.15, 1.);
+		glClearColor(backgroundColor.r, backgroundColor.g, backgroundColor.b, 1.);
+
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 		glCullFace(cull_mode);
 

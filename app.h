@@ -269,6 +269,7 @@ struct App : public IApp {
     Args args;
 
     GLFWwindow* window;
+    glm::vec3 backgroundColor{0.05, 0.1, 0.15};
     
     std::vector<std::shared_ptr<Model>> models;
     int selected_renderer = 0;

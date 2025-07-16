@@ -73,14 +73,25 @@ struct LuaScript : public Component {
 
 		// TODO maybe move 2 lines to app bindings
 		app_type["models"] = sol::readonly_property(&IApp::getModels);
-		app_type["cameras"] = sol::readonly_property(&IApp::getCameras);
 		app_type["current_model"] = sol::readonly_property(&IApp::getCurrentModel);
+		app_type["cameras"] = sol::readonly_property(&IApp::getCameras);
+		app_type["camera"] = sol::readonly_property(&IApp::getCamera);
 		
 		app_type["selected_model"] = sol::property([](IApp &self) {
 			return self.getSelectedModel() + 1;
 		}, [](IApp &self, int selected) {
 			self.setSelectedModel(selected);
 		});
+
+		app_type["selected_camera"] = sol::property([](IApp &self) {
+			return self.getSelectedCamera() + 1;
+		}, [](IApp &self, int selected) {
+			self.setSelectedCamera(selected - 1);
+		});
+		// app_type["selected_camera"] = sol::property(
+		// 	&IApp::getSelectedCamera,
+		// 	&IApp::setSelectedCamera
+		// );
 
 
 		bindings::GlmBindings::load_bindings(lua, app);

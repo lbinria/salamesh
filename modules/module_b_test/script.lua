@@ -11,16 +11,6 @@ function draw_gui()
 
 	imgui.Begin("Mesh view options lua script")
 
-
-	local fov = app.camera.fov
-	local zoom_factor = -(fov - 45.) / (45. - 0.25) * 100.
-	local str_zoom_factor = string.format("%.0f", zoom_factor)
-	imgui.Text("Zoom: " .. str_zoom_factor .. "%")
-
-	if (imgui.Button("Reset zoom")) then
-		app.camera:reset_zoom()
-	end
-
 	if (imgui.Button("Cull back")) then 
 		print("Button cull back pressed")
 		app.setCullMode(0x0405)

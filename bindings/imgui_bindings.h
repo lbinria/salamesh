@@ -12,6 +12,7 @@ namespace bindings {
 			// Imgui bindings
 			auto imgui = lua.create_table();
 
+			// Window
 			imgui.set_function("Begin", [](const char* name) {
 				return ImGui::Begin(name);
 			});
@@ -29,13 +30,16 @@ namespace bindings {
 				}
 			));
 
+			// Inputs
+			imgui.set_function("InputText", [](const char* label, char* buf, size_t buf_size) {
+				return ImGui::InputText(label, buf, buf_size);
+			});
+
 			imgui.set_function("Button", [](const char* label) {
 				return ImGui::Button(label);
 			});
 
-			imgui.set_function("InputText", [](const char* label, char* buf, size_t buf_size) {
-				return ImGui::InputText(label, buf, buf_size);
-			});
+
 
 			auto pf = imgui.set_function("Checkbox", [](const char* label, sol::object v, sol::this_state s) -> std::optional<std::tuple<bool, bool>> {
 				sol::state_view lua(s);
@@ -75,12 +79,27 @@ namespace bindings {
 				}
 			});
 
+			// Combo
 			imgui.set_function("BeginCombo", [](const char* label, const char* preview_value) {
 				return ImGui::BeginCombo(label, preview_value);
 			});
 
 			imgui.set_function("EndCombo", []() {
 				ImGui::EndCombo();
+			});
+
+			// List 
+			imgui.set_function("BeginListBox", sol::overload(
+				[](const char* label) {
+					return ImGui::BeginListBox(label);
+				},
+				[](const char* label, const ImVec2& size) {
+					return ImGui::BeginListBox(label, size);
+				}
+			));
+
+			imgui.set_function("EndListBox", []() {
+				ImGui::EndListBox();
 			});
 
 			imgui.set_function("Selectable", [](const char* label, bool selected) {
