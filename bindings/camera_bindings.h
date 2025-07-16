@@ -3,6 +3,7 @@
 #include <sol/sol.hpp>
 #include "../core/app_interface.h"
 #include "../core/arcball_camera.h"
+#include "../core/descent_camera.h"
 
 namespace bindings {
 

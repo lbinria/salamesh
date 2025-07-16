@@ -30,6 +30,7 @@
 #include "hex_model.h"
 
 #include "core/arcball_camera.h"
+#include "core/descent_camera.h"
 
 #include "script.h"
 #include "commands.h"
