@@ -191,6 +191,11 @@ struct App : public IApp {
     }
 
     void setSelectedModel(int selected) final override {
+        if (selected < 0 || selected >= models.size()) {
+            std::cerr << "Invalid model index: " << selected << std::endl;
+            return;
+        }
+
         selected_renderer = selected;
     }
 
@@ -202,7 +207,29 @@ struct App : public IApp {
         return *models[selected_renderer];
     }
 
-    ArcBallCamera& getCamera() final override { return *camera; }
+    std::vector<std::unique_ptr<ArcBallCamera>>& getCameras() final override {
+        return cameras;
+    }
+
+    int countCameras() final override {
+        return cameras.size();
+    }
+
+    void setSelectedCamera(int selected) final override {
+        if (selected < 0 || selected >= cameras.size()) {
+            std::cerr << "Invalid camera index: " << selected << std::endl;
+            return;
+        }
+        selected_camera = selected;
+    }
+    
+    int getSelectedCamera() final override {
+        return selected_camera;
+    }
+
+    ArcBallCamera& getCamera() final override { return *cameras[selected_camera]; }
+
+
     InputState& getInputState() final override { return st; }
 
     std::vector<std::string> getPickModeStrings() const { return std::vector<std::string>(pickModeStrings, pickModeStrings + 4); }
@@ -232,8 +259,8 @@ struct App : public IApp {
 
 
 
-
-    std::unique_ptr<ArcBallCamera> camera;
+    std::vector<std::unique_ptr<ArcBallCamera>> cameras;
+    int selected_camera = 0;
 
     // Current pressed mouse button, -1 if none
     int _cur_button = -1;

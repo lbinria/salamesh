@@ -153,7 +153,8 @@ static void framebuffer_size_callback(GLFWwindow* window, int width, int height)
 
     glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
-	app->camera->setScreenSize(width, height);
+	for (auto &c : app->cameras)
+		c->setScreenSize(width, height);
 }
 
 // TODO be able to load tet, surf, etc
@@ -414,8 +415,10 @@ void App::run()
 	// }
 	// center /= hex.nverts();
 
-	camera = std::make_unique<ArcBallCamera>(glm::vec3(0.f, 0.f, -3.f), models[0]->getPosition(), glm::vec3(0.f, 1.f, 0.f), glm::vec3(45.f, SCR_WIDTH, SCR_HEIGHT));
-
+	{
+		auto camera = std::make_unique<ArcBallCamera>(glm::vec3(0.f, 0.f, -3.f), models[0]->getPosition(), glm::vec3(0.f, 1.f, 0.f), glm::vec3(45.f, SCR_WIDTH, SCR_HEIGHT));
+		cameras.push_back(std::move(camera));
+	}
 	
 	glEnable(GL_DEPTH_TEST);
 	glEnable(GL_CULL_FACE);
@@ -447,12 +450,12 @@ void App::run()
 		if (leftMouse) {
 			double xPos, yPos;
 			glfwGetCursorPos(window, &xPos, &yPos);
-			camera->move(glm::vec2(SCR_WIDTH, SCR_HEIGHT), glm::vec2(xPos, yPos), lastMousePos);
+			getCamera().move(glm::vec2(SCR_WIDTH, SCR_HEIGHT), glm::vec2(xPos, yPos), lastMousePos);
 			lastMousePos = glm::vec2(xPos, yPos);
 
 			auto pickIDs = pick(window, xPos, yPos, cursor_radius);
 			for (long pickID : pickIDs) {
-				if (camera->isLocked() && pickID >= 0 && pickID < hex.ncells()) {
+				if (getCamera().isLocked() && pickID >= 0 && pickID < hex.ncells()) {
 					models[selected_renderer]->setFilter(pickID, true);
 				}
 			}
@@ -464,7 +467,7 @@ void App::run()
 			auto pickIDs = pick(window, xPos, yPos, cursor_radius);
 			for (long pickID : pickIDs) {
 
-				if (camera->isLocked() && pickID >= 0 && pickID < hex.ncells()) {
+				if (getCamera().isLocked() && pickID >= 0 && pickID < hex.ncells()) {
 					
 				}
 			}
@@ -473,7 +476,7 @@ void App::run()
 		if (rightMouse) {
 			double xPos, yPos;
 			glfwGetCursorPos(window, &xPos, &yPos);
-			camera->movePlane(glm::vec2(xPos, yPos) - lastMousePos2);
+			getCamera().movePlane(glm::vec2(xPos, yPos) - lastMousePos2);
 			lastMousePos2 = glm::vec2(xPos, yPos);
 		}
 
@@ -494,14 +497,14 @@ void App::run()
 					c.vertex(6).pos() +
 					c.vertex(7).pos()) / 8.;
 
-				camera->lookAt(glm::vec3(p.x, p.y, p.z));
+				getCamera().lookAt(glm::vec3(p.x, p.y, p.z));
 
 				std::cout << "dblClick on cell: " << pickID << std::endl;
 			}
 		}
 		
-		view = camera->getViewMatrix();
-		projection = camera->getProjectionMatrix();
+		view = getCamera().getViewMatrix();
+		projection = getCamera().getProjectionMatrix();
 		
 
 
@@ -711,11 +714,11 @@ void App::unproject(int x, int y, float depth, glm::vec3 &p) {
 	glm::vec4 clipSpace(ndcX, ndcY, depth, 1.0f);
 
 	// Unproject clip space to view space
-	glm::mat4 invProj = glm::inverse(camera->getProjectionMatrix());
+	glm::mat4 invProj = glm::inverse(getCamera().getProjectionMatrix());
 	glm::vec4 viewSpace = invProj * clipSpace;
 
 	// Unproject view space to world space
-	glm::mat4 invView = glm::inverse(camera->getViewMatrix());
+	glm::mat4 invView = glm::inverse(getCamera().getViewMatrix());
 	glm::vec4 worldSpace = invView * (viewSpace / viewSpace.w);
 	p = glm::vec3(worldSpace);
 }

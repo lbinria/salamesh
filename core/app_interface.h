@@ -26,6 +26,15 @@ struct IApp {
     virtual void setSelectedModel(int selected) = 0;
     virtual Model& getCurrentModel() = 0;
 
+
+
+    virtual std::vector<std::unique_ptr<ArcBallCamera>>& getCameras() = 0;
+    virtual int countCameras() = 0;
+    virtual void setSelectedCamera(int selected)= 0;
+    virtual int getSelectedCamera() = 0;
+
+
+
     virtual InputState& getInputState() = 0;
 
     virtual std::vector<std::string> getPickModeStrings() const = 0;

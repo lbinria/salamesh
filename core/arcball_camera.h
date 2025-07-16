@@ -93,6 +93,15 @@ struct ArcBallCamera {
         setCameraView(m_eye, lookAt, m_upVector, m_projectionMatrix);
     }
 
+    void moveRight(float speed) {
+        if (m_lock)
+            return;
+
+        m_eye += getRightVector() * speed;
+        m_lookAt += getRightVector() * speed;
+        setCameraView(m_eye, m_lookAt, m_upVector, m_projectionMatrix);
+    }
+
     void moveForward(float speed) {
         if (m_lock)
             return;
@@ -110,15 +119,6 @@ struct ArcBallCamera {
         setCameraView(m_eye, m_lookAt, m_upVector, m_projectionMatrix);
     }
 
-    void moveRight(float speed) {
-        if (m_lock)
-            return;
-
-        m_eye += getRightVector() * speed;
-        m_lookAt += getRightVector() * speed;
-        setCameraView(m_eye, m_lookAt, m_upVector, m_projectionMatrix);
-    }
-
     void zoom(float delta) {
         float factor = sigmoid(m_fovAndScreen.x, 45.f, 30.f, 2.5f);
         m_fovAndScreen.x = std::clamp(m_fovAndScreen.x + delta * factor, 0.25f, 60.f);
@@ -126,41 +126,49 @@ struct ArcBallCamera {
         setCameraView(m_eye, m_lookAt, m_upVector, m_fovAndScreen);
     }
 
-    glm::vec3 lerp(glm::vec3 x, glm::vec3 y, float t) {
-        return x * (1.f - t) + y * t;
-    }
-    glm::vec3 lerp(glm::vec4 x, glm::vec4 y, float t) {
-        return x * (1.f - t) + y * t;
-    }
+    // glm::vec3 lerp(glm::vec3 x, glm::vec3 y, float t) {
+    //     return x * (1.f - t) + y * t;
+    // }
 
     void resetZoom() {
         setFov(45.f);
         updateViewMatrix();
     }
 
-    void update(float t) {
-        m_eye = lerp(m_eye, m_target_eye, t);
-        setCameraView(m_eye, m_lookAt, m_upVector, m_projectionMatrix);
-    }
+    // void update(float t) {
+    //     m_eye = lerp(m_eye, m_target_eye, t);
+    //     setCameraView(m_eye, m_lookAt, m_upVector, m_projectionMatrix);
+    // }
 
-    void setLock(bool lock) {
-        m_lock = lock;
-    }
-
+    // Property: lock
+    void setLock(bool lock) { m_lock = lock;}
     bool isLocked() { return m_lock; }
 
 
     glm::mat4x4 getViewMatrix() const { return m_viewMatrix; }
     glm::mat4x4 getProjectionMatrix() const { return m_projectionMatrix; }
-    glm::vec3 getEye() const { return m_eye; }
-    void setEye(glm::vec3 eye) { m_eye = std::move(eye); updateViewMatrix(); }
+
     glm::vec3 getUpVector() const { return m_upVector; }
     glm::vec3 getLookAt() const { return m_lookAt; }
+
+    // Property: position
+    glm::vec3 getEye() const { return m_eye; }
+    void setEye(glm::vec3 eye) { m_eye = std::move(eye); updateViewMatrix(); }
+
+    // Read-only property: fov_and_screen
     glm::vec3 getFovAndScreen() const { return m_fovAndScreen; }
+
+    // Property: fov
     float getFov() const { return m_fovAndScreen.x; }
     void setFov(float fov) { m_fovAndScreen.x = fov; zoom(0.f);/* TODO here update after set fov... not really smart */ }
+    
     void setScreenSize(float width, float height) { m_fovAndScreen.y = width; m_fovAndScreen.z = height; }
 
+    /**
+     * @brief Returns the view direction of the camera. 
+     * View direction is the negative z-axis of the view matrix.
+     * @note Exposed
+     */
     glm::vec3 getViewDir() const { return -glm::transpose(m_viewMatrix)[2]; }
     glm::vec3 getRightVector() const { return glm::transpose(m_viewMatrix)[0]; }
 
@@ -174,6 +182,9 @@ private:
     glm::vec3 m_target_eye;
     bool m_lock = false;
 
+    /**
+     * @brief Sigmoid function for smooth zooming.
+     */
     float sigmoid(float x, float center=45.f, float w = 90.f, float max_value = 1.f) {
         return (1.f / (1.f + std::exp(-(x - center) / w))) * max_value * 2.;
     }

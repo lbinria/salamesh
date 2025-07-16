@@ -13,10 +13,10 @@ namespace bindings {
 			sol::usertype<ArcBallCamera> camera_t = lua.new_usertype<ArcBallCamera>("ArcBallCamera");
 			app_type["camera"] = sol::readonly_property(&IApp::getCamera);
 
-			camera_t.set_function("set_fov", &ArcBallCamera::setFov);
 			camera_t.set_function("move_right", &ArcBallCamera::moveRight);
 			camera_t.set_function("move_up", &ArcBallCamera::moveUp);
 			camera_t.set_function("move_forward", &ArcBallCamera::moveForward);
+			camera_t.set_function("zoom", &ArcBallCamera::zoom);
 			camera_t.set_function("reset_zoom", &ArcBallCamera::resetZoom);
 
 			camera_t["position"] = sol::property(
@@ -36,6 +36,11 @@ namespace bindings {
 
 			camera_t["fov_and_screen"] = sol::readonly_property(
 				&ArcBallCamera::getFovAndScreen
+			);
+
+			camera_t["lock"] = sol::property(
+				&ArcBallCamera::isLocked,
+				&ArcBallCamera::setLock
 			);
 
 		}
