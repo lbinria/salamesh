@@ -54,51 +54,27 @@ struct DescentCamera {
         if (m_lock)
             return;
 
-
-
         // Compute delta angles from viewport dimensions
         glm::vec2 delta((2.f * M_PI) / viewportDims.x, M_PI / viewportDims.y);
         // Compute actual angles move
         float angleX = (lastMousePos.x - mousePos.x) * delta.x;
         float angleY = (lastMousePos.y - mousePos.y) * delta.y;
 
-		// 2) Build rotation matrix around 'right'
-		glm::mat4 R = glm::rotate(glm::mat4(1.0f), angleX, getRightVector());
+		// 2) YAW: rotate around up‐vector
+		glm::mat4 yawMat = glm::rotate(glm::mat4(1.0f), angleX, m_upVector);
+		glm::vec3 forwardY = glm::vec3(yawMat * glm::vec4(getViewDir(), 0.0f));
 
-		// 3) Rotate the offset from camera to lookAt
-		glm::vec4 offset = glm::vec4(m_lookAt - m_eye, 0.0f);
-		glm::vec4 rotatedOffset = R * offset;
+		// 3) Recompute right axis after yaw
+		glm::vec3 rightAxis = glm::normalize(glm::cross(forwardY, m_upVector));
 
-		// 4) Compute the new look-at point
-		glm::vec3 newLookAt = m_eye + glm::vec3(rotatedOffset);
+		// 4) PITCH: rotate the yawed‐forward around the camera’s right vector
+		glm::mat4 pitchMat = glm::rotate(glm::mat4(1.0f), angleY, rightAxis);
+		glm::vec3 forwardYP = glm::vec3(pitchMat * glm::vec4(forwardY, 0.0f));
 
-        // glm::mat4 rx(1.f);
-        // rx = glm::rotate(rx, angleX, m_upVector);
+		// 5) Build new lookAt and view‐matrix
+		glm::vec3 newLookAt = m_eye + forwardYP;
+		glm::mat4 view = glm::lookAt(m_eye, newLookAt, m_upVector);
 
-		// glm::vec4 lookAt(m_lookAt.x, m_lookAt.y, m_lookAt.z, 1);
-
-
-
-
-
-
-        // // 
-        // float cosAngle = glm::dot(this->getViewDir(), m_upVector);
-        // if (cosAngle * glm::sign(angleY) > 0.99f)
-        //     angleY = 0;
-
-
-        // glm::vec4 position(m_eye.x, m_eye.y, m_eye.z, 1);
-        // glm::vec4 pivot(m_lookAt.x, m_lookAt.y, m_lookAt.z, 1);
-
-        // // Rotate camera around pivot point
-        // glm::mat4 rx(1.f);
-        // rx = glm::rotate(rx, angleX, m_upVector);
-        // position = (rx * (position - pivot)) + pivot;
-
-        // glm::mat4 ry(1.f);
-        // ry = glm::rotate(ry, angleY, getRightVector());
-        // position = (ry * (position - pivot)) + pivot;
 
         // Update camera
         setCameraView(m_eye, newLookAt, m_upVector, m_projectionMatrix);

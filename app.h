@@ -208,7 +208,7 @@ struct App : public IApp {
         return *models[selected_renderer];
     }
 
-    std::vector<std::unique_ptr<ArcBallCamera>>& getCameras() final override {
+    std::vector<std::unique_ptr<DescentCamera>>& getCameras() final override {
         return cameras;
     }
 
@@ -228,7 +228,7 @@ struct App : public IApp {
         return selected_camera;
     }
 
-    ArcBallCamera& getCamera() final override { return *cameras[selected_camera]; }
+    DescentCamera& getCamera() final override { return *cameras[selected_camera]; }
 
 
     InputState& getInputState() final override { return st; }
@@ -260,7 +260,7 @@ struct App : public IApp {
 
 
 
-    std::vector<std::unique_ptr<ArcBallCamera>> cameras;
+    std::vector<std::unique_ptr<DescentCamera>> cameras;
     int selected_camera = 0;
 
     // Current pressed mouse button, -1 if none
