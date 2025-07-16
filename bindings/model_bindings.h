@@ -10,9 +10,7 @@ namespace bindings {
 		static void load_bindings(sol::state &lua, sol::usertype<IApp> app_type, IApp &app) {
 
 			sol::usertype<Model> model_t = lua.new_usertype<Model>("Model");
-			// TODO maybe move 2 lines to app bindings
-			app_type["models"] = sol::readonly_property(&IApp::getModels);
-			app_type["current_model"] = sol::readonly_property(&IApp::getCurrentModel);
+
 
 
 			model_t["name"] = sol::property(

@@ -71,6 +71,10 @@ struct LuaScript : public Component {
 		lua["app"] = &app;
 		sol::usertype<IApp> app_type = lua.new_usertype<IApp>("IApp");
 
+		// TODO maybe move 2 lines to app bindings
+		app_type["models"] = sol::readonly_property(&IApp::getModels);
+		app_type["cameras"] = sol::readonly_property(&IApp::getCameras);
+		app_type["current_model"] = sol::readonly_property(&IApp::getCurrentModel);
 		
 		app_type["selected_model"] = sol::property([](IApp &self) {
 			return self.getSelectedModel() + 1;

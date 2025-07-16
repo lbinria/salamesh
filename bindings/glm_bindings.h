@@ -41,9 +41,10 @@ namespace bindings {
 			);
 
 			vec3_type.set_function("to_string", [](glm::vec3 &v) {
-				return std::string("vec3(") + std::to_string(v.x) + ", " + std::to_string(v.y) + ", " + std::to_string(v.z) + ")";
+				return std::string("(") + std::to_string(v.x) + ", " + std::to_string(v.y) + ", " + std::to_string(v.z) + ")";
 			});
 
+			// TODO remove
 			vec3_type.set_function("getX", [](glm::vec3 &v) {
 				return v.x;
 			});

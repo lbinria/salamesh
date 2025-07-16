@@ -13,7 +13,8 @@ struct Camera {
 
     Camera() = default;
 
-    Camera(glm::vec3 eye, glm::vec3 lookAt, glm::vec3 up, glm::vec3 fovAndScreen) : 
+    Camera(std::string name, glm::vec3 eye, glm::vec3 lookAt, glm::vec3 up, glm::vec3 fovAndScreen) : 
+		m_name(name),
         m_eye(std::move(eye)),
         m_target_eye(m_eye),
         m_lookAt(std::move(lookAt)),
@@ -70,6 +71,9 @@ struct Camera {
     void setLock(bool lock) { m_lock = lock;}
     bool isLocked() { return m_lock; }
 
+	// Property: name
+	const std::string& getName() const { return m_name; }
+	void setName(const std::string& name) { m_name = name; }
 
     // Property: position
     glm::vec3 getEye() const { return m_eye; }
@@ -101,6 +105,7 @@ struct Camera {
     glm::vec3 getRightVector() const { return glm::transpose(m_viewMatrix)[0]; }
 
 protected:
+	std::string m_name;
     glm::vec3 m_fovAndScreen;
     glm::mat4x4 m_viewMatrix;
     glm::mat4x4 m_projectionMatrix;

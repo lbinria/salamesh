@@ -21,6 +21,11 @@ namespace bindings {
 			camera_t.set_function("zoom", &Camera::zoom);
 			camera_t.set_function("reset_zoom", &Camera::resetZoom);
 
+			camera_t["name"] = sol::property(
+				&Camera::getName,
+				&Camera::setName
+			);
+
 			camera_t["position"] = sol::property(
 				&Camera::getEye,
 				&Camera::setEye

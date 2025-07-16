@@ -154,10 +154,6 @@ void MyApp::draw_gui() {
 }
 
 void MyApp::key_event(int key, int scancode, int action, int mods) {
-	// std::cout << "key: " << key << ", scancode: " << scancode << ", action: " << action << ", mods: " << mods << std::endl;
-	// if (key == GLFW_KEY_ESCAPE && action == GLFW_PRESS) {
-	// 	quit();
-	// }
 	
 	bool ctrlPressed = (mods & GLFW_MOD_CONTROL) != 0;
 	if (ctrlPressed && key == GLFW_KEY_A && action == GLFW_PRESS) {

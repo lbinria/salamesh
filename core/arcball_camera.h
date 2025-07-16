@@ -56,8 +56,7 @@ struct ArcBallCamera : public Camera {
         if (m_lock)
             return;
 
-        m_eye += getRightVector() * speed;
-        m_lookAt += getRightVector() * speed;
+        m_eye += getRightVector() * speed * 2.f;
         setCameraView(m_eye, m_lookAt, m_upVector, m_projectionMatrix);
     }
 
@@ -65,16 +64,16 @@ struct ArcBallCamera : public Camera {
         if (m_lock)
             return;
 
-        m_eye += getViewDir() * speed;
+        m_eye += m_upVector * speed * 2.f;
         setCameraView(m_eye, m_lookAt, m_upVector, m_projectionMatrix);
+
     }
 
     void moveUp(float speed) override {
         if (m_lock)
             return;
 
-        m_eye += m_upVector * speed;
-        m_lookAt += m_upVector * speed;
+        m_eye += getViewDir() * speed;
         setCameraView(m_eye, m_lookAt, m_upVector, m_projectionMatrix);
     }
 

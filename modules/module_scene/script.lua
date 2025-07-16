@@ -66,8 +66,11 @@ function draw_gui()
 						end
 
 						local p = model.position
-						imgui.Text("world position: (%.4f, %.4f, %.4f)", model_pos.x, model_pos.y, model_pos.z);
-						imgui.Text("local position: (%.4f, %.4f, %.4f)", p.x, p.y, p.z);
+						-- imgui.Text("world position: (%.4f, %.4f, %.4f)", model_pos.x, model_pos.y, model_pos.z);
+						-- imgui.Text("local position: (%.4f, %.4f, %.4f)", p.x, p.y, p.z);
+						-- TODO using ':' instead of '.' for to_string call... for sending self...
+						imgui.Text("world position: " .. model_pos:to_string());
+						imgui.Text("local position: " .. p:to_string());
 
 						imgui.TreePop()
 					end
@@ -80,8 +83,22 @@ function draw_gui()
 			imgui.EndTabItem()
 		end
 
+		if (imgui.BeginTabItem("Cameras")) then
+			for i = 1, #app.cameras do
+				local camera = app.cameras[i]
+				local p = camera.position
+				imgui.Text("Camera: " .. camera.name)
+				-- imgui.Text("position: (%.4f, %.4f, %.4f)", p.x, p.y, p.z);
+				imgui.Text("position: " .. p:to_string());
+
+			end
+			imgui.EndTabItem()
+		end
+
 		imgui.EndTabBar()
 	end
+
+
 
 	imgui.End()
 end
