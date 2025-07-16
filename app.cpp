@@ -532,15 +532,6 @@ void App::run()
 
 			renderer->render();
 		}
-		// Render points
-		// mesh_ps->bind();
-		// mesh_ps->shader.setMat4("view", view);
-		// mesh_ps->shader.setMat4("projection", projection);
-		// glm::mat4 inverse_projection_view_model = glm::inverse(projection * view * model);
-		// glm::mat4 mvp = projection * view * model;
-		// mesh_ps->shader.setMat4("inverse_projection_view_model", inverse_projection_view_model);
-		// mesh_ps->shader.setMat4("model_view_projection_matrix", mvp);
-		// mesh_ps->render();
 
         // Go to ID framebuffer
 		glBindFramebuffer(GL_FRAMEBUFFER, screenFbo);
@@ -553,7 +544,7 @@ void App::run()
 			renderer->bind();
 			renderer->setFragRenderMode((Model::RenderMode)pickMode);
 			renderer->render();
-			renderer->setView(view);
+			// renderer->setView(view);
 		}
 
 		// DRAW SCREEN !
@@ -739,6 +730,7 @@ glm::vec3 App::pick_point(double x, double y) {
 
 
 long App::pick(double x, double y) {
+	// TODO this should be moved ! NOT HERE !
 	if (glm::length(lastMousePos) < 0.01)
 		lastMousePos = glm::vec2(x, y);
 
@@ -752,15 +744,6 @@ long App::pick(double x, double y) {
 		pixel[1] * 256 +
 		pixel[2] * 256 * 256;
 
-	// std::cout << 
-	// 	static_cast<int>(pixel[0]) << "," << 
-	// 	static_cast<int>(pixel[1]) << "," << 
-	// 	static_cast<int>(pixel[2]) << "," << 
-	// 	static_cast<int>(pixel[3]) << 
-	// std::endl;
-
-	// std::cout << "pick id: " << pickID << std::endl;
-	// std::cout << "---" << std::endl;
 	return pickID;
 }
 

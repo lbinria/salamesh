@@ -210,18 +210,16 @@ void MyApp::mouse_scroll(double xoffset, double yoffset) {
 }
 
 void MyApp::mouse_button(int button, int action, int mods) {
-	// std::cout << "mouse button: " << button << ", action: " << action << ", mods: " << mods << std::endl;
 
-	for (auto &script : scripts) {
+	for (auto &script : scripts)
 		script->mouse_button(button, action, mods);
-	}
 }
 
 void MyApp::mouse_move(double x, double y) {
 
-	// std::cout << "mouse move: " << x << ", " << y << std::endl;
-
+	// TODO maybe not everytimes to optimize
 	st.cell.set_hovered(pick_cell());
+	st.facet.set_hovered(pick_facet());
 	st.edge.set_hovered(pick_edge());
 
 	for (auto &script : scripts) {
