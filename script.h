@@ -2,26 +2,23 @@
 #define SOL_ALL_SAFETIES_ON 1
 #include <sol/sol.hpp>
 #include <optional>
-
-#include "core/component.h"
-#include "core/states.h"
-// #include "app.h"
-#include "core/app_interface.h"
 #include <imgui.h>
 
+#include "core/app_interface.h"
+#include "core/component.h"
+#include "core/states.h"
+
 #include "bindings/imgui_bindings.h"
+#include "bindings/app_bindings.h"
 #include "bindings/glm_bindings.h"
 #include "bindings/camera_bindings.h"
 #include "bindings/model_bindings.h"
-
-
-// Declare app
 
 struct LuaScript : public Component {
 
 	LuaScript(IApp &app, const std::string& script) {
 
-		load_bindings(app);
+		loadBindings(app);
 
 		// TODO load / bind symbols from C++ shared lib associated to the script
 
@@ -57,84 +54,18 @@ struct LuaScript : public Component {
 	// - I look at SWIG quickly and it seems to be a bit heavy for what we need
 	// - Don't want to create another tool to do that, that will parse code, etc. too heavy, too complicated
 	// After doing it simply, we'll could think about doing better automated mecanisms
-	void load_bindings(IApp &app) {
+	void loadBindings(IApp &app) {
 
 		lua.open_libraries(sol::lib::base);
 		lua.open_libraries(sol::lib::string);
 		lua.open_libraries(sol::lib::math);
 		lua.open_libraries(sol::lib::os);
 
-		bindings::ImGuiBindings::load_bindings(lua);
-
-
-		// App bindings
-		lua["app"] = &app;
-		sol::usertype<IApp> app_type = lua.new_usertype<IApp>("IApp");
-
-		// TODO maybe move 2 lines to app bindings
-		app_type["models"] = sol::readonly_property(&IApp::getModels);
-		app_type["current_model"] = sol::readonly_property(&IApp::getCurrentModel);
-		app_type["cameras"] = sol::readonly_property(&IApp::getCameras);
-		app_type["camera"] = sol::readonly_property(&IApp::getCamera);
-		
-		app_type["selected_model"] = sol::property([](IApp &self) {
-			return self.getSelectedModel() + 1;
-		}, [](IApp &self, int selected) {
-			self.setSelectedModel(selected);
-		});
-
-		app_type["selected_camera"] = sol::property([](IApp &self) {
-			return self.getSelectedCamera() + 1;
-		}, [](IApp &self, int selected) {
-			self.setSelectedCamera(selected - 1);
-		});
-		// app_type["selected_camera"] = sol::property(
-		// 	&IApp::getSelectedCamera,
-		// 	&IApp::setSelectedCamera
-		// );
-
-
-		bindings::GlmBindings::load_bindings(lua, app);
-		bindings::CameraBindings::load_bindings(lua, app_type, app);
-		bindings::ModelBindings::load_bindings(lua, app_type, app);
-
-
-		app_type["pick_mode_strings"] = sol::readonly_property(
-			&IApp::getPickModeStrings
-		);
-
-		app_type["pick_mode"] = sol::property(
-			&IApp::getPickMode,
-			&IApp::setPickMode
-		);
-
-		app_type["colormaps_2d"] = sol::readonly_property(
-			&IApp::getColorMaps2D
-		);
-
-		app_type.set_function("load_model", &IApp::load_model);
-		// app_type.set_function("screenshot", &IApp::screenshot);
-		// app_type.set_function("load_model", [&app = app](const std::string& filename) {
-		// 	app.load_model(filename);
-		// });
-		
-		app_type.set_function("screenshot", [&app = app](const std::string& filename) {
-			app.screenshot(filename);
-		});
-
-		app_type.set_function("setClipping", [&app = app](bool b) {
-			app.setClipping(b);
-		});
-
-		app_type.set_function("setCullMode", [&app = app](int mode) {
-			app.setCullMode(mode);
-		});
-
-
-
-
-
-
+		bindings::ImGuiBindings::loadBindings(lua);
+		auto app_type = bindings::AppBindings::loadBindings(lua, app);
+		bindings::GlmBindings::loadBindings(lua, app);
+		bindings::CameraBindings::loadBindings(lua, app_type, app);
+		bindings::ModelBindings::loadBindings(lua, app_type, app);
 	}
 
 	void init() final override {

@@ -7,7 +7,7 @@ namespace bindings {
 
 	struct GlmBindings {
 
-		static void load_bindings(sol::state &lua, IApp &app) {
+		static void loadBindings(sol::state &lua, IApp &app) {
 
 			// vec3 type
 			sol::usertype<glm::vec3> vec3_type = lua.new_usertype<glm::vec3>("vec3",

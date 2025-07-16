@@ -7,7 +7,7 @@ namespace bindings {
 
 	struct ImGuiBindings {
 
-		static void load_bindings(sol::state &lua) {
+		static void loadBindings(sol::state &lua) {
 
 			// Imgui bindings
 			auto imgui = lua.create_table();

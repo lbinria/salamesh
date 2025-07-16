@@ -8,7 +8,7 @@ namespace bindings {
 
 	struct CameraBindings {
 
-		static void load_bindings(sol::state &lua, sol::usertype<IApp> app_type, IApp &app) {
+		static void loadBindings(sol::state &lua, sol::usertype<IApp>& app_type, IApp &app) {
 
 			sol::usertype<Camera> camera_t = lua.new_usertype<Camera>("Camera");
 			app_type["camera"] = sol::readonly_property(&IApp::getCamera);

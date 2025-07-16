@@ -7,7 +7,7 @@ namespace bindings {
 
 	struct ModelBindings {
 
-		static void load_bindings(sol::state &lua, sol::usertype<IApp> app_type, IApp &app) {
+		static void loadBindings(sol::state &lua, sol::usertype<IApp>& app_type, IApp &app) {
 
 			sol::usertype<Model> model_t = lua.new_usertype<Model>("Model");
 
