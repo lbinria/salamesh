@@ -8,6 +8,9 @@
 
 struct Camera {
 
+	const float FAR_PLANE = 100.f;
+	const float NEAR_PLANE = 0.1f;
+
     Camera() = default;
 
     Camera(glm::vec3 eye, glm::vec3 lookAt, glm::vec3 up, glm::vec3 fovAndScreen) : 

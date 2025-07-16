@@ -416,8 +416,11 @@ void App::run()
 	// center /= hex.nverts();
 
 	{
-		auto camera = std::make_unique<DescentCamera>(glm::vec3(0.f, 0.f, -3.f), models[0]->getPosition(), glm::vec3(0.f, 1.f, 0.f), glm::vec3(45.f, SCR_WIDTH, SCR_HEIGHT));
-		cameras.push_back(std::move(camera));
+		// Create cameras
+		auto arcball_camera = std::make_unique<ArcBallCamera>(glm::vec3(0.f, 0.f, -3.f), models[0]->getPosition(), glm::vec3(0.f, 1.f, 0.f), glm::vec3(45.f, SCR_WIDTH, SCR_HEIGHT));
+		auto descent_camera = std::make_unique<DescentCamera>(glm::vec3(0.f, 0.f, -3.f), models[0]->getPosition(), glm::vec3(0.f, 1.f, 0.f), glm::vec3(45.f, SCR_WIDTH, SCR_HEIGHT));
+		cameras.push_back(std::move(arcball_camera));
+		cameras.push_back(std::move(descent_camera));
 	}
 	
 	glEnable(GL_DEPTH_TEST);
