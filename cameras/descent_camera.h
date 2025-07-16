@@ -1,6 +1,6 @@
 #pragma once
 
-#include "core/camera.h"
+#include "../core/camera.h"
 
 struct DescentCamera final : public Camera {
 

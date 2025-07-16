@@ -2,9 +2,7 @@
 #include "../include/glm/glm.hpp"
 #include "../include/glm/gtc/matrix_transform.hpp"
 
-#pragma once
-
-#include "camera.h"
+#include <string>
 
 struct Camera {
 

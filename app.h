@@ -30,8 +30,8 @@
 #include "hex_model.h"
 
 #include "core/camera.h"
-#include "arcball_camera.h"
-#include "descent_camera.h"
+#include "cameras/arcball_camera.h"
+#include "cameras/descent_camera.h"
 
 #include "script.h"
 #include "commands.h"
