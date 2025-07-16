@@ -97,24 +97,15 @@ struct LuaScript : public Component {
 			&IApp::getColorMaps2D
 		);
 
-		// app_type.set_function("load_model", &IApp::load_model);
+		app_type.set_function("load_model", &IApp::load_model);
 		// app_type.set_function("screenshot", &IApp::screenshot);
-		app_type.set_function("load_model", [&app = app](const std::string& filename) {
-			app.load_model(filename);
-		});
+		// app_type.set_function("load_model", [&app = app](const std::string& filename) {
+		// 	app.load_model(filename);
+		// });
 		
 		app_type.set_function("screenshot", [&app = app](const std::string& filename) {
 			app.screenshot(filename);
 		});
-
-
-		// app_type.set_function("reset_zoom", [&app = app]() {
-		// 	app.reset_zoom();
-		// });
-
-		// app_type.set_function("look_at_center", [&app = app]() {
-		// 	app.look_at_center();
-		// });
 
 		app_type.set_function("setClipping", [&app = app](bool b) {
 			app.setClipping(b);
