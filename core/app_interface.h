@@ -3,8 +3,7 @@
 #include "model.h"
 #include "states.h"
 #include "element.h"
-#include "arcball_camera.h"
-#include "descent_camera.h"
+#include "camera.h"
 
 struct IApp {
 

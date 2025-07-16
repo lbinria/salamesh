@@ -40,10 +40,6 @@ struct Camera {
         updateViewMatrix();
     }
 
-    void lookAt(glm::vec3 lookAt) {
-        setCameraView(m_eye, lookAt, m_upVector, m_projectionMatrix);
-    }
-
     void updateViewMatrix()
     {
         // Generate view matrix using the eye, lookAt and up vector
@@ -79,13 +75,16 @@ struct Camera {
     glm::vec3 getEye() const { return m_eye; }
     void setEye(glm::vec3 eye) { m_eye = std::move(eye); updateViewMatrix(); }
 
-    glm::mat4x4 getViewMatrix() const { return m_viewMatrix; }
-    glm::mat4x4 getProjectionMatrix() const { return m_projectionMatrix; }
-
-    glm::vec3 getUpVector() const { return m_upVector; }
+    // Property: look_at
     glm::vec3 getLookAt() const { return m_lookAt; }
 
+    void lookAt(glm::vec3 lookAt) {
+        setCameraView(m_eye, lookAt, m_upVector, m_projectionMatrix);
+    }
 
+    glm::mat4x4 getViewMatrix() const { return m_viewMatrix; }
+    glm::mat4x4 getProjectionMatrix() const { return m_projectionMatrix; }
+    glm::vec3 getUpVector() const { return m_upVector; }
 
     // Read-only property: fov_and_screen
     glm::vec3 getFovAndScreen() const { return m_fovAndScreen; }

@@ -30,6 +30,8 @@
 #include "hex_model.h"
 
 #include "core/camera.h"
+#include "arcball_camera.h"
+#include "descent_camera.h"
 
 #include "script.h"
 #include "commands.h"
@@ -92,12 +94,12 @@ struct App : public IApp {
     void run();
 
     // Frame functions
-    int getWidth() final override;
-    int getHeight() final override;
+    int getWidth() override;
+    int getHeight() override;
 
     // Utils functions
-    void load_model(const std::string& filename) final override;
-    void screenshot(const std::string& filename) final override;
+    void load_model(const std::string& filename) override;
+    void screenshot(const std::string& filename) override;
     void quit();
     float get_depth(double x, double y);
     unsigned char get_depth2(double x, double y);
@@ -107,7 +109,7 @@ struct App : public IApp {
 
     long pick(double xPos, double yPos);
 
-	long pick_edge(Volume &m, glm::vec3 p0, int c) final override {
+	long pick_edge(Volume &m, glm::vec3 p0, int c) override {
 		// Search nearest edge
 		double min_d = std::numeric_limits<double>().max();
 		long found_e = -1;
@@ -141,7 +143,7 @@ struct App : public IApp {
 	}
 
     // Pick id of vertex of the current rendering
-    long pick_edge() final override {
+    long pick_edge() override {
         if (st.cell.is_hovered()) {
             auto p = pick_point(mousePos.x, mousePos.y);
             // TODO get current model
@@ -152,9 +154,9 @@ struct App : public IApp {
     }
 
     // Pick id of facet of the current rendering
-    long pick_facet() final override;
+    long pick_facet() override;
     // Pick id of cell of the current rendering
-    long pick_cell() final override;
+    long pick_cell() override;
 
     std::vector<long> pick(GLFWwindow *window, double xPos, double yPos, int radius);
 
@@ -166,12 +168,12 @@ struct App : public IApp {
     void load_state(const std::string filename);
 
     // Rendering functions
-    void setClipping(bool enabled) final override;
-    void setCullMode(int mode) final override { cull_mode = mode; }
+    void setClipping(bool enabled) override;
+    void setCullMode(int mode) override { cull_mode = mode; }
 
     // Accessors
 
-    std::vector<std::shared_ptr<Model>>& getModels() final override {
+    std::vector<std::shared_ptr<Model>>& getModels() override {
         return models;
     }
 
@@ -186,11 +188,11 @@ struct App : public IApp {
         return children;
     }
 
-    int countModels() final override {
+    int countModels() override {
         return models.size();
     }
 
-    void setSelectedModel(int selected) final override {
+    void setSelectedModel(int selected) override {
         if (selected < 0 || selected >= models.size()) {
             std::cerr << "Invalid model index: " << selected << std::endl;
             return;
@@ -199,23 +201,23 @@ struct App : public IApp {
         selected_renderer = selected;
     }
 
-    int getSelectedModel() final override {
+    int getSelectedModel() override {
         return selected_renderer;
     }
 
-    Model& getCurrentModel() final override {
+    Model& getCurrentModel() override {
         return *models[selected_renderer];
     }
 
-    std::vector<std::unique_ptr<Camera>>& getCameras() final override {
+    std::vector<std::unique_ptr<Camera>>& getCameras() override {
         return cameras;
     }
 
-    int countCameras() final override {
+    int countCameras() override {
         return cameras.size();
     }
 
-    void setSelectedCamera(int selected) final override {
+    void setSelectedCamera(int selected) override {
         if (selected < 0 || selected >= cameras.size()) {
             std::cerr << "Invalid camera index: " << selected << std::endl;
             return;
@@ -223,20 +225,20 @@ struct App : public IApp {
         selected_camera = selected;
     }
     
-    int getSelectedCamera() final override {
+    int getSelectedCamera() override {
         return selected_camera;
     }
 
-    Camera& getCamera() final override { return *cameras[selected_camera]; }
+    Camera& getCamera() override { return *cameras[selected_camera]; }
 
 
-    InputState& getInputState() final override { return st; }
+    InputState& getInputState() override { return st; }
 
     std::vector<std::string> getPickModeStrings() const { return std::vector<std::string>(pickModeStrings, pickModeStrings + 4); }
-    int getPickMode() final override { return pickMode; }
-    void setPickMode(Element mode) final override { pickMode = mode; }
+    int getPickMode() override { return pickMode; }
+    void setPickMode(Element mode) override { pickMode = mode; }
     
-    std::vector<unsigned int> getColorMaps2D() final override {
+    std::vector<unsigned int> getColorMaps2D() override {
         return {colormaps2D[0], colormaps2D[1]};
     }
 

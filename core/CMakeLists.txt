@@ -8,7 +8,7 @@ set(SOURCES
     element.h
     states.h 
     model.h
-    arcball_camera.h arcball_camera.cpp
+    camera.h
 )
 
 # Add the library

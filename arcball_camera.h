@@ -3,7 +3,7 @@
 */
 
 #pragma once
-#include "camera.h"
+#include "core/camera.h"
 
 struct ArcBallCamera : public Camera {
 
@@ -48,7 +48,7 @@ struct ArcBallCamera : public Camera {
 
         glm::vec3 lookAt(m_lookAt.x, m_lookAt.y, m_lookAt.z);
         lookAt -= getRightVector() * deltaPos.x * .005f;
-        lookAt += getUpVector() * deltaPos.y * .005f;
+        lookAt += m_upVector * deltaPos.y * .005f;
         setCameraView(m_eye, lookAt, m_upVector, m_projectionMatrix);
     }
 
