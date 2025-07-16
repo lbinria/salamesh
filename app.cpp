@@ -153,7 +153,7 @@ static void framebuffer_size_callback(GLFWwindow* window, int width, int height)
 
     glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
-	app->camera->SetScreenSize(width, height);
+	app->camera->setScreenSize(width, height);
 }
 
 // TODO be able to load tet, surf, etc
@@ -447,12 +447,12 @@ void App::run()
 		if (leftMouse) {
 			double xPos, yPos;
 			glfwGetCursorPos(window, &xPos, &yPos);
-			camera->Move(glm::vec2(SCR_WIDTH, SCR_HEIGHT), glm::vec2(xPos, yPos), lastMousePos);
+			camera->move(glm::vec2(SCR_WIDTH, SCR_HEIGHT), glm::vec2(xPos, yPos), lastMousePos);
 			lastMousePos = glm::vec2(xPos, yPos);
 
 			auto pickIDs = pick(window, xPos, yPos, cursor_radius);
 			for (long pickID : pickIDs) {
-				if (camera->IsLocked() && pickID >= 0 && pickID < hex.ncells()) {
+				if (camera->isLocked() && pickID >= 0 && pickID < hex.ncells()) {
 					models[selected_renderer]->setFilter(pickID, true);
 				}
 			}
@@ -464,7 +464,7 @@ void App::run()
 			auto pickIDs = pick(window, xPos, yPos, cursor_radius);
 			for (long pickID : pickIDs) {
 
-				if (camera->IsLocked() && pickID >= 0 && pickID < hex.ncells()) {
+				if (camera->isLocked() && pickID >= 0 && pickID < hex.ncells()) {
 					
 				}
 			}
@@ -473,7 +473,7 @@ void App::run()
 		if (rightMouse) {
 			double xPos, yPos;
 			glfwGetCursorPos(window, &xPos, &yPos);
-			camera->MovePlane(glm::vec2(xPos, yPos) - lastMousePos2);
+			camera->movePlane(glm::vec2(xPos, yPos) - lastMousePos2);
 			lastMousePos2 = glm::vec2(xPos, yPos);
 		}
 
@@ -494,14 +494,14 @@ void App::run()
 					c.vertex(6).pos() +
 					c.vertex(7).pos()) / 8.;
 
-				camera->LookAt(glm::vec3(p.x, p.y, p.z));
+				camera->lookAt(glm::vec3(p.x, p.y, p.z));
 
 				std::cout << "dblClick on cell: " << pickID << std::endl;
 			}
 		}
 		
-		view = camera->GetViewMatrix();
-		projection = camera->GetProjectionMatrix();
+		view = camera->getViewMatrix();
+		projection = camera->getProjectionMatrix();
 		
 
 
@@ -711,11 +711,11 @@ void App::unproject(int x, int y, float depth, glm::vec3 &p) {
 	glm::vec4 clipSpace(ndcX, ndcY, depth, 1.0f);
 
 	// Unproject clip space to view space
-	glm::mat4 invProj = glm::inverse(camera->GetProjectionMatrix());
+	glm::mat4 invProj = glm::inverse(camera->getProjectionMatrix());
 	glm::vec4 viewSpace = invProj * clipSpace;
 
 	// Unproject view space to world space
-	glm::mat4 invView = glm::inverse(camera->GetViewMatrix());
+	glm::mat4 invView = glm::inverse(camera->getViewMatrix());
 	glm::vec4 worldSpace = invView * (viewSpace / viewSpace.w);
 	p = glm::vec3(worldSpace);
 }

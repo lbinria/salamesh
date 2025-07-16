@@ -55,19 +55,19 @@ void MyApp::update(float dt) {
 	// Continuous update
 
 	if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS) {
-		camera->MoveForward(0.01f);
+		camera->moveForward(0.01f);
 	} else if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS) {
-		camera->MoveForward(-0.01f);
+		camera->moveForward(-0.01f);
 	}
 	if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS) {
-		camera->MoveRight(-0.01f);
+		camera->moveRight(-0.01f);
 	} else if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS) {
-		camera->MoveRight(0.01f);
+		camera->moveRight(0.01f);
 	}
 	if (glfwGetKey(window, GLFW_KEY_Q) == GLFW_PRESS) {
-		camera->MoveUp(0.01f);
+		camera->moveUp(0.01f);
 	} else if (glfwGetKey(window, GLFW_KEY_E) == GLFW_PRESS) {
-		camera->MoveUp(-0.01f);
+		camera->moveUp(-0.01f);
 	}
 
 }
@@ -169,26 +169,10 @@ void MyApp::key_event(int key, int scancode, int action, int mods) {
 	}
 
 	if (key == GLFW_KEY_LEFT_CONTROL && action == GLFW_PRESS) {
-		camera->SetLock(true);
+		camera->setLock(true);
 	} else if (key == GLFW_KEY_LEFT_CONTROL && action == GLFW_RELEASE) {
-		camera->SetLock(false);
+		camera->setLock(false);
 	}
-
-	// if (key == GLFW_KEY_W && action == GLFW_PRESS) {
-	// 	camera->MoveForward(0.01f);
-	// } else if (key == GLFW_KEY_S && action == GLFW_PRESS) {
-	// 	camera->MoveForward(-0.01f);
-	// }
-	// if (key == GLFW_KEY_A && action == GLFW_PRESS) {
-	// 	camera->MoveRight(-0.01f);
-	// } else if (key == GLFW_KEY_D && action == GLFW_PRESS) {
-	// 	camera->MoveRight(0.01f);
-	// }
-	// if (key == GLFW_KEY_Q && action == GLFW_PRESS) {
-	// 	camera->MoveUp(0.01f);
-	// } else if (key == GLFW_KEY_E && action == GLFW_PRESS) {
-	// 	camera->MoveUp(-0.01f);
-	// }
 
 	for (auto &script : scripts) {
 		script->key_event(key, scancode, action, mods);
@@ -200,9 +184,9 @@ void MyApp::mouse_scroll(double xoffset, double yoffset) {
 	// std::cout << "scroll: " << xoffset << ", " << yoffset << std::endl;
 
 	// Maybe move to a cameracontroller class
-	if (!camera->IsLocked()) {
+	if (!camera->isLocked()) {
 		scrollDelta = glm::vec2(xoffset, yoffset);
-		camera->NewZoom(scrollDelta.y);
+		camera->zoom(scrollDelta.y);
 	}
 	else 
 		cursor_radius = std::clamp(cursor_radius + static_cast<int>(yoffset), 1, 50);
@@ -242,7 +226,7 @@ void MyApp::mouse_drag(int button, double x, double y) {
 
 	// 	auto pickIDs = pick(window, x, y, cursor_radius);
 	// 	for (long pickID : pickIDs) {
-	// 		if (camera->IsLocked() && pickID >= 0 && pickID < mesh->m.ncells()) {
+	// 		if (camera->isLocked() && pickID >= 0 && pickID < mesh->m.ncells()) {
 	// 			// mesh->setHighligth(pickID, 1.f);
 	// 			mesh->setFilter(pickID, true);
 	// 		}

@@ -12,7 +12,7 @@ function draw_gui()
 	imgui.Begin("Mesh view options lua script")
 
 
-	local fov, sw, sh = app.camera.GetFovAndScreen();
+	local fov = app.camera.fov
 	local zoom_factor = -(fov - 45.) / (45. - 0.25) * 100.
 	local str_zoom_factor = string.format("%.0f", zoom_factor)
 	imgui.Text("Zoom: " .. str_zoom_factor .. "%")

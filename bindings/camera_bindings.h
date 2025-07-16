@@ -13,29 +13,29 @@ namespace bindings {
 			sol::usertype<ArcBallCamera> camera_t = lua.new_usertype<ArcBallCamera>("ArcBallCamera");
 			app_type["camera"] = sol::readonly_property(&IApp::getCamera);
 
-			camera_t.set_function("LookAt", [&app = app](ArcBallCamera &camera, float x, float y, float z) {
-				app.getCamera().LookAt(glm::vec3(x, y, z));
-			});
-
-			camera_t.set_function("GetFovAndScreen", [&app = app]() {
-				auto fov_and_screen = app.getCamera().GetFovAndScreen();
-				return std::make_tuple(fov_and_screen.x, fov_and_screen.y, fov_and_screen.z);
-			});
-
-			camera_t.set_function("SetFov", &ArcBallCamera::SetFov);
-			camera_t.set_function("MoveRight", &ArcBallCamera::MoveRight);
-			camera_t.set_function("MoveUp", &ArcBallCamera::MoveUp);
-			camera_t.set_function("MoveForward", &ArcBallCamera::MoveForward);
-			camera_t.set_function("reset_zoom", &ArcBallCamera::reset_zoom);
+			camera_t.set_function("set_fov", &ArcBallCamera::setFov);
+			camera_t.set_function("move_right", &ArcBallCamera::moveRight);
+			camera_t.set_function("move_up", &ArcBallCamera::moveUp);
+			camera_t.set_function("move_forward", &ArcBallCamera::moveForward);
+			camera_t.set_function("reset_zoom", &ArcBallCamera::resetZoom);
 
 			camera_t["position"] = sol::property(
-				&ArcBallCamera::GetEye,
-				&ArcBallCamera::SetEye
+				&ArcBallCamera::getEye,
+				&ArcBallCamera::setEye
 			);
 
 			camera_t["look_at"] = sol::property(
-				&ArcBallCamera::GetLookAt,
-				&ArcBallCamera::LookAt
+				&ArcBallCamera::getLookAt,
+				&ArcBallCamera::lookAt
+			);
+
+			camera_t["fov"] = sol::property(
+				&ArcBallCamera::getFov,
+				&ArcBallCamera::setFov
+			);
+
+			camera_t["fov_and_screen"] = sol::readonly_property(
+				&ArcBallCamera::getFovAndScreen
 			);
 
 		}
