@@ -4,6 +4,7 @@
 #include "../core/app_interface.h"
 #include "../core/arcball_camera.h"
 #include "../core/descent_camera.h"
+#include "../core/camera.h"
 
 namespace bindings {
 
@@ -11,37 +12,37 @@ namespace bindings {
 
 		static void load_bindings(sol::state &lua, sol::usertype<IApp> app_type, IApp &app) {
 
-			sol::usertype<DescentCamera> camera_t = lua.new_usertype<DescentCamera>("DescentCamera");
+			sol::usertype<Camera> camera_t = lua.new_usertype<Camera>("Camera");
 			app_type["camera"] = sol::readonly_property(&IApp::getCamera);
 
-			camera_t.set_function("move_right", &DescentCamera::moveRight);
-			camera_t.set_function("move_up", &DescentCamera::moveUp);
-			camera_t.set_function("move_forward", &DescentCamera::moveForward);
-			camera_t.set_function("zoom", &DescentCamera::zoom);
-			camera_t.set_function("reset_zoom", &DescentCamera::resetZoom);
+			camera_t.set_function("move_right", &Camera::moveRight);
+			camera_t.set_function("move_up", &Camera::moveUp);
+			camera_t.set_function("move_forward", &Camera::moveForward);
+			camera_t.set_function("zoom", &Camera::zoom);
+			camera_t.set_function("reset_zoom", &Camera::resetZoom);
 
 			camera_t["position"] = sol::property(
-				&DescentCamera::getEye,
-				&DescentCamera::setEye
+				&Camera::getEye,
+				&Camera::setEye
 			);
 
 			camera_t["look_at"] = sol::property(
-				&DescentCamera::getLookAt,
-				&DescentCamera::lookAt
+				&Camera::getLookAt,
+				&Camera::lookAt
 			);
 
 			camera_t["fov"] = sol::property(
-				&DescentCamera::getFov,
-				&DescentCamera::setFov
+				&Camera::getFov,
+				&Camera::setFov
 			);
 
 			camera_t["fov_and_screen"] = sol::readonly_property(
-				&DescentCamera::getFovAndScreen
+				&Camera::getFovAndScreen
 			);
 
 			camera_t["lock"] = sol::property(
-				&DescentCamera::isLocked,
-				&DescentCamera::setLock
+				&Camera::isLocked,
+				&Camera::setLock
 			);
 
 		}

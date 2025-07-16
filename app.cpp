@@ -476,7 +476,7 @@ void App::run()
 		if (rightMouse) {
 			double xPos, yPos;
 			glfwGetCursorPos(window, &xPos, &yPos);
-			getCamera().movePlane(glm::vec2(xPos, yPos) - lastMousePos2);
+			// getCamera().movePlane(glm::vec2(xPos, yPos) - lastMousePos2);
 			lastMousePos2 = glm::vec2(xPos, yPos);
 		}
 

@@ -29,8 +29,7 @@
 #include "hex_renderer.h"
 #include "hex_model.h"
 
-#include "core/arcball_camera.h"
-#include "core/descent_camera.h"
+#include "core/camera.h"
 
 #include "script.h"
 #include "commands.h"
@@ -208,7 +207,7 @@ struct App : public IApp {
         return *models[selected_renderer];
     }
 
-    std::vector<std::unique_ptr<DescentCamera>>& getCameras() final override {
+    std::vector<std::unique_ptr<Camera>>& getCameras() final override {
         return cameras;
     }
 
@@ -228,7 +227,7 @@ struct App : public IApp {
         return selected_camera;
     }
 
-    DescentCamera& getCamera() final override { return *cameras[selected_camera]; }
+    Camera& getCamera() final override { return *cameras[selected_camera]; }
 
 
     InputState& getInputState() final override { return st; }
@@ -260,7 +259,7 @@ struct App : public IApp {
 
 
 
-    std::vector<std::unique_ptr<DescentCamera>> cameras;
+    std::vector<std::unique_ptr<Camera>> cameras;
     int selected_camera = 0;
 
     // Current pressed mouse button, -1 if none

@@ -19,7 +19,7 @@ struct IApp {
 
     virtual void setCullMode(int mode) = 0;
 
-    virtual DescentCamera& getCamera() = 0;
+    virtual Camera& getCamera() = 0;
     
     virtual std::vector<std::shared_ptr<Model>>& getModels() = 0;
     virtual int countModels() = 0;
@@ -29,7 +29,7 @@ struct IApp {
 
 
 
-    virtual std::vector<std::unique_ptr<DescentCamera>>& getCameras() = 0;
+    virtual std::vector<std::unique_ptr<Camera>>& getCameras() = 0;
     virtual int countCameras() = 0;
     virtual void setSelectedCamera(int selected)= 0;
     virtual int getSelectedCamera() = 0;
