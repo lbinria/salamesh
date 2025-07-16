@@ -1,6 +1,6 @@
 {
 	"modules": [
-		"modules/module_b_test",
+		"modules/module_mesh_view",
 		"modules/module_attribute_viewer",
 		"modules/module_scene"
 	]
