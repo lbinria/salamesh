@@ -295,6 +295,8 @@ struct App : public IApp {
     int cursor_radius = 1;
     glm::vec2 scrollDelta;
 
+    glm::vec4 pickRegion;
+
     Element pickMode = Element::CELLS;
 
 

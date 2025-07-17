@@ -417,8 +417,8 @@ void App::run()
 
 	{
 		// Create cameras
-		auto arcball_camera = std::make_unique<ArcBallCamera>("arcball", glm::vec3(0.f, 0.f, -3.f), models[0]->getPosition(), glm::vec3(0.f, 1.f, 0.f), glm::vec3(45.f, SCR_WIDTH, SCR_HEIGHT));
-		auto descent_camera = std::make_unique<DescentCamera>("descent", glm::vec3(0.f, 0.f, -3.f), models[0]->getPosition(), glm::vec3(0.f, 1.f, 0.f), glm::vec3(45.f, SCR_WIDTH, SCR_HEIGHT));
+		auto arcball_camera = std::make_unique<ArcBallCamera>("Arcball", glm::vec3(0.f, 0.f, -3.f), getCurrentModel().getPosition(), glm::vec3(0.f, 1.f, 0.f), glm::vec3(45.f, SCR_WIDTH, SCR_HEIGHT));
+		auto descent_camera = std::make_unique<DescentCamera>("Descent", glm::vec3(0.f, 0.f, -3.f), getCurrentModel().getPosition(), glm::vec3(0.f, 1.f, 0.f), glm::vec3(45.f, SCR_WIDTH, SCR_HEIGHT));
 		cameras.push_back(std::move(arcball_camera));
 		cameras.push_back(std::move(descent_camera));
 	}
@@ -536,6 +536,8 @@ void App::run()
         // Go to ID framebuffer
 		glBindFramebuffer(GL_FRAMEBUFFER, screenFbo);
 		glEnable(GL_DEPTH_TEST);
+		glEnable(GL_SCISSOR_TEST);
+		glScissor(pickRegion.x, SCR_HEIGHT - pickRegion.y, pickRegion.z, pickRegion.w);
 		glClearColor(1.f, 1.f, 0.5f, 0.f);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 		glCullFace(cull_mode);
@@ -546,6 +548,8 @@ void App::run()
 			renderer->render();
 			// renderer->setView(view);
 		}
+
+		glDisable(GL_SCISSOR_TEST);
 
 		// DRAW SCREEN !
 		// Go back to default framebuffer
@@ -734,6 +738,8 @@ long App::pick(double x, double y) {
 	if (glm::length(lastMousePos) < 0.01)
 		lastMousePos = glm::vec2(x, y);
 
+	pickRegion = {x, y, 1, 1};
+
 	glBindFramebuffer(GL_READ_FRAMEBUFFER, screenFbo);
 	
 	unsigned char pixel[4];
@@ -748,6 +754,8 @@ long App::pick(double x, double y) {
 }
 
 std::vector<long> App::pick(GLFWwindow *window, double xPos, double yPos, int radius) {
+
+	pickRegion = {xPos, yPos, radius, radius};
 
 	glBindFramebuffer(GL_READ_FRAMEBUFFER, screenFbo);
 	const int diameter = radius * 2 + 1;
