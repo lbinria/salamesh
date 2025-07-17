@@ -126,8 +126,8 @@ static void framebuffer_size_callback(GLFWwindow* window, int width, int height)
     if (!app)
 		return;
 
-	app->SCR_WIDTH = width;
-	app->SCR_HEIGHT = height;
+	app->screenWidth = width;
+	app->screenHeight = height;
 
 	glViewport(0, 0, width, height);
     
@@ -196,7 +196,7 @@ void App::run()
 
 	std::chrono::steady_clock::time_point begin = std::chrono::steady_clock::now();
 
-	// projection = glm::perspective(glm::radians(45.f), (float)SCR_WIDTH/(float)SCR_HEIGHT, NEAR_PLANE, FAR_PLANE);
+	// projection = glm::perspective(glm::radians(45.f), (float)screenWidth/(float)screenHeight, NEAR_PLANE, FAR_PLANE);
 
 	std::chrono::steady_clock::time_point begin_setup = std::chrono::steady_clock::now();
 
@@ -220,17 +220,17 @@ void App::run()
 	// 	{
 	// 		int screenW = mode->width;
 	// 		int screenH = mode->height;
-	// 		SCR_WIDTH = (int)(screenW * 0.98f); // 90% of the screen width
-	// 		SCR_HEIGHT = (int)(screenH * 0.98f); // 90% of the screen height
+	// 		screenWidth = (int)(screenW * 0.98f); // 90% of the screen width
+	// 		screenHeight = (int)(screenH * 0.98f); // 90% of the screen height
 	// 		std::cout << "Using primary monitor resolution: " << screenW << "x" << screenH << std::endl;
-	// 		std::cout << "Setting window size to: " << SCR_WIDTH << "x" << SCR_HEIGHT << std::endl;
-	// 		window = glfwCreateWindow(SCR_WIDTH, SCR_HEIGHT, "SalaMesh", NULL, NULL);
+	// 		std::cout << "Setting window size to: " << screenWidth << "x" << screenHeight << std::endl;
+	// 		window = glfwCreateWindow(screenWidth, screenHeight, "SalaMesh", NULL, NULL);
 	// 		glfwSetWindowPos(window, (screenW * 0.01f), (screenH * 0.01f)); // Position the window at 1% of the screen size
 	// 	}
 	// }
 
 
-	window = glfwCreateWindow(SCR_WIDTH, SCR_HEIGHT, "SalaMesh", NULL, NULL);
+	window = glfwCreateWindow(screenWidth, screenHeight, "SalaMesh", NULL, NULL);
 	
 	if (window == NULL)
 	{
@@ -274,14 +274,17 @@ void App::run()
 	{
 		// Switch to fullscreen on the primary monitor at its current video mode
 		glfwSetWindowMonitor(
-			window,        // your window
-			monitor,       // the monitor to go fullscreen on
-			0, 0,          // x/y position on the monitor’s virtual desktop (ignored in true fullscreen)
-			mode->width,   // video-mode width
-			mode->height,  // video-mode height
+			window,
+			monitor,
+			0, 0,
+			mode->width,
+			mode->height,
 			mode->refreshRate
 		);
 
+		// Set screen width and height to the monitor's resolution
+		screenWidth = mode->width;
+		screenHeight = mode->height;
 	}
 
 	
@@ -347,7 +350,7 @@ void App::run()
 	// Framebuffer texture
 	glGenTextures(1, &colorAttachmentTexture);
 	glBindTexture(GL_TEXTURE_2D, colorAttachmentTexture);
-	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, SCR_WIDTH, SCR_HEIGHT, 0, GL_RGBA, GL_UNSIGNED_BYTE, NULL);
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, screenWidth, screenHeight, 0, GL_RGBA, GL_UNSIGNED_BYTE, NULL);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR); 
 	glBindTexture(GL_TEXTURE_2D, 0);
@@ -357,7 +360,7 @@ void App::run()
 	// Create depth texture
 	glGenTextures(1, &depthAttachmentTexture);
 	glBindTexture(GL_TEXTURE_2D, depthAttachmentTexture);
-	glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT, SCR_WIDTH, SCR_HEIGHT, 0, GL_DEPTH_COMPONENT, GL_FLOAT, NULL);
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT, screenWidth, screenHeight, 0, GL_DEPTH_COMPONENT, GL_FLOAT, NULL);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 	glBindTexture(GL_TEXTURE_2D, 0);
@@ -367,7 +370,7 @@ void App::run()
 	// unsigned int rbo;
 	glGenRenderbuffers(1, &rbo);
 	glBindRenderbuffer(GL_RENDERBUFFER, rbo);
-	glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH24_STENCIL8, SCR_WIDTH, SCR_HEIGHT);
+	glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH24_STENCIL8, screenWidth, screenHeight);
 	glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_STENCIL_ATTACHMENT, GL_RENDERBUFFER, rbo);
 
 	if(glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
@@ -385,7 +388,7 @@ void App::run()
 	// Framebuffer texture
 	glGenTextures(1, &screenColorAttachmentTexture);
 	glBindTexture(GL_TEXTURE_2D, screenColorAttachmentTexture);
-	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, SCR_WIDTH, SCR_HEIGHT, 0, GL_RGBA, GL_UNSIGNED_BYTE, NULL);
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, screenWidth, screenHeight, 0, GL_RGBA, GL_UNSIGNED_BYTE, NULL);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR); 
 	glBindTexture(GL_TEXTURE_2D, 0);
@@ -395,7 +398,7 @@ void App::run()
 	// colorRbo;
 	glGenRenderbuffers(1, &screenRbo);
 	glBindRenderbuffer(GL_RENDERBUFFER, screenRbo);
-	glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH24_STENCIL8, SCR_WIDTH, SCR_HEIGHT);
+	glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH24_STENCIL8, screenWidth, screenHeight);
 	glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_STENCIL_ATTACHMENT, GL_RENDERBUFFER, screenRbo);
 
 	if(glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
@@ -405,7 +408,7 @@ void App::run()
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
 
-	glViewport(0, 0, SCR_WIDTH, SCR_HEIGHT);
+	glViewport(0, 0, screenWidth, screenHeight);
 	glfwSetFramebufferSizeCallback(window, framebuffer_size_callback);  
 
 	// TODO Only load first for the moment
@@ -484,8 +487,8 @@ void App::run()
 
 	{
 		// Create cameras
-		auto arcball_camera = std::make_unique<ArcBallCamera>("Arcball", glm::vec3(0.f, 0.f, -3.f), getCurrentModel().getPosition(), glm::vec3(0.f, 1.f, 0.f), glm::vec3(45.f, SCR_WIDTH, SCR_HEIGHT));
-		auto descent_camera = std::make_unique<DescentCamera>("Descent", glm::vec3(0.f, 0.f, -3.f), getCurrentModel().getPosition(), glm::vec3(0.f, 1.f, 0.f), glm::vec3(45.f, SCR_WIDTH, SCR_HEIGHT));
+		auto arcball_camera = std::make_unique<ArcBallCamera>("Arcball", glm::vec3(0.f, 0.f, -3.f), getCurrentModel().getPosition(), glm::vec3(0.f, 1.f, 0.f), glm::vec3(45.f, screenWidth, screenHeight));
+		auto descent_camera = std::make_unique<DescentCamera>("Descent", glm::vec3(0.f, 0.f, -3.f), getCurrentModel().getPosition(), glm::vec3(0.f, 1.f, 0.f), glm::vec3(45.f, screenWidth, screenHeight));
 		cameras.push_back(std::move(arcball_camera));
 		cameras.push_back(std::move(descent_camera));
 	}
@@ -518,9 +521,10 @@ void App::run()
 		Hexahedra &hex = getCurrentModel().getHexahedra();
 
 		if (leftMouse) {
+			
 			double xPos, yPos;
 			glfwGetCursorPos(window, &xPos, &yPos);
-			getCamera().move(glm::vec2(SCR_WIDTH, SCR_HEIGHT), glm::vec2(xPos, yPos), lastMousePos);
+			getCamera().move(glm::vec2(screenWidth, screenHeight), glm::vec2(xPos, yPos), lastMousePos);
 			lastMousePos = glm::vec2(xPos, yPos);
 
 			auto pickIDs = pick(window, xPos, yPos, cursor_radius);
@@ -529,18 +533,7 @@ void App::run()
 					models[selected_renderer]->setFilter(pickID, true);
 				}
 			}
-		} else {
-			double xPos, yPos;
-			glfwGetCursorPos(window, &xPos, &yPos);
 
-
-			auto pickIDs = pick(window, xPos, yPos, cursor_radius);
-			for (long pickID : pickIDs) {
-
-				if (getCamera().isLocked() && pickID >= 0 && pickID < hex.ncells()) {
-					
-				}
-			}
 		}
 
 		if (rightMouse) {
@@ -582,23 +575,23 @@ void App::run()
 		glBindFramebuffer(GL_FRAMEBUFFER, fbo);
 		glEnable(GL_DEPTH_TEST);
 		// glEnable(GL_SCISSOR_TEST);
-		// glScissor(pickRegion.x - pickRegion.z, SCR_HEIGHT - pickRegion.y - pickRegion.w, pickRegion.z * 2, pickRegion.w * 2);
+		// glScissor(pickRegion.x - pickRegion.z, screenHeight - pickRegion.y - pickRegion.w, pickRegion.z * 2, pickRegion.w * 2);
 		glClearColor(backgroundColor.r, backgroundColor.g, backgroundColor.b, 1.);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 		glCullFace(cull_mode);
 
 		// Render model
-		for (auto &renderer : models) {
-			renderer->bind();
+		for (auto &model : models) {
+			model->bind();
 			// TODO maybe move to bind ?
 			glActiveTexture(GL_TEXTURE0);
-			glBindTexture(GL_TEXTURE_1D, colormaps[renderer->getSelectedColormap()]);
+			glBindTexture(GL_TEXTURE_1D, colormaps[model->getSelectedColormap()]);
 
-			renderer->setFragRenderMode(Model::RenderMode::Color);
-			renderer->setView(view);
-			renderer->setProjection(projection);
+			model->setFragRenderMode(Model::RenderMode::Color);
+			model->setView(view);
+			model->setProjection(projection);
 
-			renderer->render();
+			model->render();
 		}
 		// glDisable(GL_SCISSOR_TEST);
 
@@ -606,15 +599,17 @@ void App::run()
 		glBindFramebuffer(GL_FRAMEBUFFER, screenFbo);
 		glEnable(GL_DEPTH_TEST);
 		glEnable(GL_SCISSOR_TEST);
-		glScissor(pickRegion.x - pickRegion.z, SCR_HEIGHT - pickRegion.y - pickRegion.w, pickRegion.z * 2, pickRegion.w * 2);
+		glScissor(pickRegion.x - pickRegion.z, screenHeight - pickRegion.y - pickRegion.w, pickRegion.z * 2, pickRegion.w * 2);
 		glClearColor(1.f, 1.f, 0.5f, 0.f);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 		glCullFace(cull_mode);
 
-		for (auto &renderer : models) {
-			renderer->bind();
-			renderer->setFragRenderMode((Model::RenderMode)pickMode);
-			renderer->render();
+		for (auto &model : models) {
+			model->bind();
+			model->setFragRenderMode((Model::RenderMode)pickMode);
+			model->setView(view);
+			model->setProjection(projection);
+			model->render();
 		}
 
 		glDisable(GL_SCISSOR_TEST);
@@ -733,11 +728,11 @@ void App::load_state(const std::string filename) {
 }
 
 int App::getWidth() {
-	return SCR_WIDTH;
+	return screenWidth;
 }
 
 int App::getHeight() {
-	return SCR_HEIGHT;
+	return screenHeight;
 }
 
 long App::pick_facet() {
@@ -763,7 +758,7 @@ float getLinearDepth(float depth, float near, float far) {
 float App::get_depth(double x, double y) {
 	glBindFramebuffer(GL_READ_FRAMEBUFFER, fbo);
     float depth;
-    glReadPixels(x, SCR_HEIGHT - y, 1, 1, GL_DEPTH_COMPONENT, GL_FLOAT, &depth);
+    glReadPixels(x, screenHeight - y, 1, 1, GL_DEPTH_COMPONENT, GL_FLOAT, &depth);
     return depth;
 }
 
@@ -776,7 +771,7 @@ void App::unproject(int x, int y, float depth, glm::vec3 &p) {
 	
 	// Screen coordinates to NDC
 	float ndcX, ndcY;
-	getNDC(x, y, SCR_WIDTH, SCR_HEIGHT, ndcX, ndcY);
+	getNDC(x, y, screenWidth, screenHeight, ndcX, ndcY);
 
 	// Clip space coordinates
 	glm::vec4 clipSpace(ndcX, ndcY, depth, 1.0f);
@@ -812,7 +807,7 @@ long App::pick(double x, double y) {
 	glBindFramebuffer(GL_READ_FRAMEBUFFER, screenFbo);
 	
 	unsigned char pixel[4];
-	glReadPixels(x, SCR_HEIGHT - y, 1, 1, GL_RGBA, GL_UNSIGNED_BYTE, pixel);
+	glReadPixels(x, screenHeight - y, 1, 1, GL_RGBA, GL_UNSIGNED_BYTE, pixel);
 
 	long pickID = pixel[3] == 0 ? -1 :
 		pixel[0] +
@@ -836,7 +831,7 @@ std::vector<long> App::pick(GLFWwindow *window, double xPos, double yPos, int ra
 	// Read pixels in square that bounds our circle
 	glReadPixels(
 		xPos - radius,
-		SCR_HEIGHT - yPos - radius,
+		screenHeight - yPos - radius,
 		diameter,
 		diameter,
 		GL_RGBA,

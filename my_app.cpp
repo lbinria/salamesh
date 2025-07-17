@@ -219,7 +219,7 @@ void MyApp::mouse_move(double x, double y) {
 
 	// TODO maybe not everytimes to optimize
 	st.cell.set_hovered(pick_cell());
-	st.facet.set_hovered(pick_facet());
+	// st.facet.set_hovered(pick_facet());
 	st.edge.set_hovered(pick_edge());
 
 	for (auto &script : scripts) {
@@ -232,7 +232,7 @@ void MyApp::mouse_drag(int button, double x, double y) {
 
 
 	// if (button == GLFW_MOUSE_BUTTON_LEFT) {
-	// 	getCamera().Move(glm::vec2(SCR_WIDTH, SCR_HEIGHT), glm::vec2(x, y), lastMousePos);
+	// 	getCamera().Move(glm::vec2(screenWidth, screenHeight), glm::vec2(x, y), lastMousePos);
 	// 	lastMousePos = glm::vec2(x, y);
 
 	// 	auto pickIDs = pick(window, x, y, cursor_radius);

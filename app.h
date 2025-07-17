@@ -52,8 +52,8 @@ struct App : public IApp {
 
     App(Args args) : 
         args(args),
-        SCR_WIDTH(1024), 
-        SCR_HEIGHT(768), 
+        screenWidth(1024), 
+        screenHeight(768), 
         leftMouse(false), 
         rightMouse(false), 
         mousePos(0,0), 
@@ -75,8 +75,8 @@ struct App : public IApp {
 
 
     // settings
-    unsigned int SCR_WIDTH;
-    unsigned int SCR_HEIGHT;
+    unsigned int screenWidth;
+    unsigned int screenHeight;
     
 
 
@@ -274,6 +274,7 @@ struct App : public IApp {
     glm::vec3 backgroundColor{0.05, 0.1, 0.15};
     
     std::vector<std::shared_ptr<Model>> models;
+    // TODO rename! selected_model
     int selected_renderer = 0;
 
     glm::mat4 projection;
