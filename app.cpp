@@ -514,8 +514,9 @@ void App::run()
 		// Go to color framebuffer
 		glBindFramebuffer(GL_FRAMEBUFFER, fbo);
 		glEnable(GL_DEPTH_TEST);
+		// glEnable(GL_SCISSOR_TEST);
+		// glScissor(pickRegion.x - pickRegion.z, SCR_HEIGHT - pickRegion.y - pickRegion.w, pickRegion.z * 2, pickRegion.w * 2);
 		glClearColor(backgroundColor.r, backgroundColor.g, backgroundColor.b, 1.);
-
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 		glCullFace(cull_mode);
 
@@ -532,12 +533,13 @@ void App::run()
 
 			renderer->render();
 		}
+		// glDisable(GL_SCISSOR_TEST);
 
         // Go to ID framebuffer
 		glBindFramebuffer(GL_FRAMEBUFFER, screenFbo);
 		glEnable(GL_DEPTH_TEST);
 		glEnable(GL_SCISSOR_TEST);
-		glScissor(pickRegion.x, SCR_HEIGHT - pickRegion.y, pickRegion.z, pickRegion.w);
+		glScissor(pickRegion.x - pickRegion.z, SCR_HEIGHT - pickRegion.y - pickRegion.w, pickRegion.z * 2, pickRegion.w * 2);
 		glClearColor(1.f, 1.f, 0.5f, 0.f);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 		glCullFace(cull_mode);
@@ -594,14 +596,15 @@ void App::run()
 
 	glDeleteRenderbuffers(1, &rbo);
 	glDeleteFramebuffers(1, &fbo);
+	glDeleteFramebuffers(1, &screenFbo);
 
 	for (int i = 0; i < IM_ARRAYSIZE(colormaps); ++i)
 		glDeleteTextures(1, &colormaps[i]);
 	for (int i = 0; i < IM_ARRAYSIZE(colormaps2D); ++i)
 		glDeleteTextures(1, &colormaps2D[i]);
 
-	for (auto &renderer : models) {
-		renderer->clean();
+	for (auto &model : models) {
+		model->clean();
 	}
 
 	// Terminate & quit
