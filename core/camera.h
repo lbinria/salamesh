@@ -91,7 +91,11 @@ struct Camera {
     float getFov() const { return m_fovAndScreen.x; }
     void setFov(float fov) { m_fovAndScreen.x = fov; zoom(0.f);/* TODO here update after set fov... not really smart */ }
     
-    void setScreenSize(float width, float height) { m_fovAndScreen.y = width; m_fovAndScreen.z = height; }
+    void setScreenSize(float width, float height) { 
+        m_fovAndScreen.y = width; 
+        m_fovAndScreen.z = height; 
+        setCameraView(m_eye, m_lookAt, m_upVector, m_fovAndScreen);
+    }
 
     /**
      * @brief Returns the view direction of the camera. 

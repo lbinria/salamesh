@@ -210,7 +210,28 @@ void App::run()
 	// MSAA
 	glfwWindowHint(GLFW_SAMPLES, 8);
 
-	window = glfwCreateWindow(SCR_WIDTH, SCR_HEIGHT, "Mesh", NULL, NULL);
+	// // Get the primary monitor
+	// GLFWmonitor* primary = glfwGetPrimaryMonitor();
+	// if (primary)
+	// {
+	// 	// query its current video mode
+	// 	const GLFWvidmode* mode = glfwGetVideoMode(primary);
+	// 	if (mode)
+	// 	{
+	// 		int screenW = mode->width;
+	// 		int screenH = mode->height;
+	// 		SCR_WIDTH = (int)(screenW * 0.98f); // 90% of the screen width
+	// 		SCR_HEIGHT = (int)(screenH * 0.98f); // 90% of the screen height
+	// 		std::cout << "Using primary monitor resolution: " << screenW << "x" << screenH << std::endl;
+	// 		std::cout << "Setting window size to: " << SCR_WIDTH << "x" << SCR_HEIGHT << std::endl;
+	// 		window = glfwCreateWindow(SCR_WIDTH, SCR_HEIGHT, "SalaMesh", NULL, NULL);
+	// 		glfwSetWindowPos(window, (screenW * 0.01f), (screenH * 0.01f)); // Position the window at 1% of the screen size
+	// 	}
+	// }
+
+
+	window = glfwCreateWindow(SCR_WIDTH, SCR_HEIGHT, "SalaMesh", NULL, NULL);
+	
 	if (window == NULL)
 	{
 		std::cout << "Failed to create GLFW window" << std::endl;
@@ -218,6 +239,53 @@ void App::run()
 		return;
 	}
 	std::cout << "GLFW window created !" << std::endl;
+
+	// Switch to fullscreen
+
+	// 1) Get window center in desktop coords
+	int wx, wy, ww, wh;
+	glfwGetWindowPos(window, &wx, &wy);
+	glfwGetWindowSize(window, &ww, &wh);
+	int cx = wx + ww/2;
+	int cy = wy + wh/2;
+
+	int monitorCount = 0;
+	GLFWmonitor** monitors = glfwGetMonitors(&monitorCount);
+	
+	// Choose best monitor
+	GLFWmonitor* monitor = nullptr;
+	for (int i = 0; i < monitorCount; ++i) {
+		GLFWmonitor* m = monitors[i];
+		int mx, my;
+		glfwGetMonitorPos(m, &mx, &my);
+		int mw, mh;
+		glfwGetMonitorWorkarea(m, &mx, &my, &mw, &mh);
+
+		if (cx >= mx && cx <= mx + mw &&
+			cy >= my && cy <= my + mh) {
+			// The window center is within the monitor's work area
+			monitor = m;
+			break;
+		}
+	}
+
+	const GLFWvidmode* mode = glfwGetVideoMode(monitor);
+	if (monitor)
+	{
+		// Switch to fullscreen on the primary monitor at its current video mode
+		glfwSetWindowMonitor(
+			window,        // your window
+			monitor,       // the monitor to go fullscreen on
+			0, 0,          // x/y position on the monitor’s virtual desktop (ignored in true fullscreen)
+			mode->width,   // video-mode width
+			mode->height,  // video-mode height
+			mode->refreshRate
+		);
+
+	}
+
+	
+
 
 
 	glfwMakeContextCurrent(window);
@@ -315,7 +383,6 @@ void App::run()
 	glBindFramebuffer(GL_FRAMEBUFFER, screenFbo);
 
 	// Framebuffer texture
-	// unsigned int colorTextureColorBuffer;
 	glGenTextures(1, &screenColorAttachmentTexture);
 	glBindTexture(GL_TEXTURE_2D, screenColorAttachmentTexture);
 	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, SCR_WIDTH, SCR_HEIGHT, 0, GL_RGBA, GL_UNSIGNED_BYTE, NULL);
@@ -548,7 +615,6 @@ void App::run()
 			renderer->bind();
 			renderer->setFragRenderMode((Model::RenderMode)pickMode);
 			renderer->render();
-			// renderer->setView(view);
 		}
 
 		glDisable(GL_SCISSOR_TEST);
@@ -738,8 +804,8 @@ glm::vec3 App::pick_point(double x, double y) {
 
 long App::pick(double x, double y) {
 	// TODO this should be moved ! NOT HERE !
-	if (glm::length(lastMousePos) < 0.01)
-		lastMousePos = glm::vec2(x, y);
+	// if (glm::length(lastMousePos) < 0.01)
+	// 	lastMousePos = glm::vec2(x, y);
 
 	pickRegion = {x, y, 1, 1};
 
