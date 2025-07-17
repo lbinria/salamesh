@@ -13,9 +13,6 @@ struct IApp {
     virtual int getWidth() = 0;
     virtual int getHeight() = 0;
 
-    // TODO maybe remove followings
-    virtual void setClipping(bool enabled) = 0;
-
     virtual void setCullMode(int mode) = 0;
 
     virtual Camera& getCamera() = 0;

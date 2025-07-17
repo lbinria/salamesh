@@ -67,10 +67,6 @@ namespace bindings {
 				app.screenshot(filename);
 			});
 
-			app_type.set_function("setClipping", [&app = app](bool b) {
-				app.setClipping(b);
-			});
-
 			app_type.set_function("setCullMode", [&app = app](int mode) {
 				app.setCullMode(mode);
 			});

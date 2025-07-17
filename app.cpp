@@ -190,13 +190,9 @@ void App::load_model(const std::string& filename) {
 	Commands::get().add_command("app.load_model(" + filename + ")");
 }
 
-void App::run()
-{
-	std::cout << "App run !" << std::endl;
+void App::setup() {
 
-	std::chrono::steady_clock::time_point begin = std::chrono::steady_clock::now();
-
-	// projection = glm::perspective(glm::radians(45.f), (float)screenWidth/(float)screenHeight, NEAR_PLANE, FAR_PLANE);
+	std::cout << "App setup..." << std::endl;
 
 	std::chrono::steady_clock::time_point begin_setup = std::chrono::steady_clock::now();
 
@@ -210,26 +206,7 @@ void App::run()
 	// MSAA
 	glfwWindowHint(GLFW_SAMPLES, 8);
 
-	// // Get the primary monitor
-	// GLFWmonitor* primary = glfwGetPrimaryMonitor();
-	// if (primary)
-	// {
-	// 	// query its current video mode
-	// 	const GLFWvidmode* mode = glfwGetVideoMode(primary);
-	// 	if (mode)
-	// 	{
-	// 		int screenW = mode->width;
-	// 		int screenH = mode->height;
-	// 		screenWidth = (int)(screenW * 0.98f); // 90% of the screen width
-	// 		screenHeight = (int)(screenH * 0.98f); // 90% of the screen height
-	// 		std::cout << "Using primary monitor resolution: " << screenW << "x" << screenH << std::endl;
-	// 		std::cout << "Setting window size to: " << screenWidth << "x" << screenHeight << std::endl;
-	// 		window = glfwCreateWindow(screenWidth, screenHeight, "SalaMesh", NULL, NULL);
-	// 		glfwSetWindowPos(window, (screenW * 0.01f), (screenH * 0.01f)); // Position the window at 1% of the screen size
-	// 	}
-	// }
-
-
+	// Create a GLFW window
 	window = glfwCreateWindow(screenWidth, screenHeight, "SalaMesh", NULL, NULL);
 	
 	if (window == NULL)
@@ -286,9 +263,6 @@ void App::run()
 		screenWidth = mode->width;
 		screenHeight = mode->height;
 	}
-
-	
-
 
 
 	glfwMakeContextCurrent(window);
@@ -409,7 +383,43 @@ void App::run()
 
 
 	glViewport(0, 0, screenWidth, screenHeight);
-	glfwSetFramebufferSizeCallback(window, framebuffer_size_callback);  
+	glfwSetFramebufferSizeCallback(window, framebuffer_size_callback);
+
+
+	// vertex attributes for a quad that fills the entire screen in Normalized Device Coordinates.
+    float quadVerts[] = { 
+        // positions   // texCoords
+        -1.0f,  1.0f,  0.0f, 1.0f,
+        -1.0f, -1.0f,  0.0f, 0.0f,
+         1.0f, -1.0f,  1.0f, 0.0f,
+
+        -1.0f,  1.0f,  0.0f, 1.0f,
+         1.0f, -1.0f,  1.0f, 0.0f,
+         1.0f,  1.0f,  1.0f, 1.0f
+    };
+
+	// Screen init
+	glGenVertexArrays(1, &quadVAO);
+	glBindVertexArray(quadVAO);
+	
+	glGenBuffers(1, &quadVBO);
+	glBindBuffer(GL_ARRAY_BUFFER, quadVBO);
+	glBufferData(GL_ARRAY_BUFFER, sizeof(quadVerts), quadVerts, GL_STATIC_DRAW);
+
+	glEnableVertexAttribArray(0);
+	glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 4 * sizeof(float), (void*)0);
+	glEnableVertexAttribArray(1);
+	glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 4 * sizeof(float), (void*)(2 * sizeof(float)));
+
+	glBindVertexArray(0);
+
+	glEnable(GL_VERTEX_PROGRAM_POINT_SIZE);
+	glEnable(GL_CULL_FACE);
+
+}
+
+void App::run()
+{
 
 	// TODO Only load first for the moment
 	if (!args.models.empty())
@@ -436,54 +446,10 @@ void App::run()
 	}
 
 
-	std::chrono::steady_clock::time_point end = std::chrono::steady_clock::now();
-    std::cout << "preload in: " << std::chrono::duration_cast<std::chrono::milliseconds>(end - begin).count() << "ms" << std::endl;
-
-
-
-
 	Shader screenShader("shaders/screen.vert", "shaders/screen.frag");
+	screenShader.use();
+	screenShader.setInt("screenTexture", 0);
 
-	// vertex attributes for a quad that fills the entire screen in Normalized Device Coordinates.
-    float quadVerts[] = { 
-        // positions   // texCoords
-        -1.0f,  1.0f,  0.0f, 1.0f,
-        -1.0f, -1.0f,  0.0f, 0.0f,
-         1.0f, -1.0f,  1.0f, 0.0f,
-
-        -1.0f,  1.0f,  0.0f, 1.0f,
-         1.0f, -1.0f,  1.0f, 0.0f,
-         1.0f,  1.0f,  1.0f, 1.0f
-    };
-
-	// Screen init
-	unsigned int quadVAO;
-	glGenVertexArrays(1, &quadVAO);
-	glBindVertexArray(quadVAO);
-	
-	unsigned int quadVBO;
-	glGenBuffers(1, &quadVBO);
-	glBindBuffer(GL_ARRAY_BUFFER, quadVBO);
-	glBufferData(GL_ARRAY_BUFFER, sizeof(quadVerts), quadVerts, GL_STATIC_DRAW);
-
-	glEnableVertexAttribArray(0);
-	glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 4 * sizeof(float), (void*)0);
-	glEnableVertexAttribArray(1);
-	glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 4 * sizeof(float), (void*)(2 * sizeof(float)));
-
-	glBindVertexArray(0);
-
-	glEnable(GL_VERTEX_PROGRAM_POINT_SIZE);
-
-    screenShader.use();
-    screenShader.setInt("screenTexture", 0);
-
-
-	// vec3 center;
-	// for (auto v : hex.iter_vertices()) {
-	// 	center += v.pos();
-	// }
-	// center /= hex.nverts();
 
 	{
 		// Create cameras
@@ -493,8 +459,6 @@ void App::run()
 		cameras.push_back(std::move(descent_camera));
 	}
 	
-	glEnable(GL_DEPTH_TEST);
-	glEnable(GL_CULL_FACE);
 
 	// Init inherited class 
 	init();
@@ -515,87 +479,16 @@ void App::run()
 		float dt = timeValue - lastTimeValue;
 
 		processInput(window);
-
 		update(dt);
 
-		Hexahedra &hex = getCurrentModel().getHexahedra();
-
-
-		// if (leftMouse) {
-			
-		// 	double xPos, yPos;
-		// 	glfwGetCursorPos(window, &xPos, &yPos);
-		// 	getCamera().move(glm::vec2(screenWidth, screenHeight), glm::vec2(xPos, yPos), lastMousePos);
-		// 	lastMousePos = glm::vec2(xPos, yPos);
-
-		// 	auto pickIDs = pick(xPos, yPos, cursor_radius);
-		// 	for (long pickID : pickIDs) {
-		// 		if (getCamera().isLocked() && pickID >= 0 && pickID < hex.ncells()) {
-		// 			models[selected_renderer]->setFilter(pickID, true);
-		// 		}
-		// 	}
-
-		// }
-		if (leftMouse) {
-			
-			double xPos, yPos;
-			glfwGetCursorPos(window, &xPos, &yPos);
-			getCamera().move(glm::vec2(screenWidth, screenHeight), glm::vec2(xPos, yPos), lastMousePos);
-			lastMousePos = glm::vec2(xPos, yPos);
-
-			if (getCamera().isLocked()) {
-				picking_request(Element::CELLS, glm::ivec4(xPos, yPos, cursor_radius, 0), [&](const std::vector<long> &pickIDs) {
-					for (long pickID : pickIDs) {
-						if (pickID >= 0 && pickID < hex.ncells()) {
-							models[selected_renderer]->setFilter(pickID, true);
-						}
-					}
-				});
-			}
-
-
-		}
-
-		if (rightMouse) {
-			double xPos, yPos;
-			glfwGetCursorPos(window, &xPos, &yPos);
-			// getCamera().movePlane(glm::vec2(xPos, yPos) - lastMousePos2);
-			lastMousePos2 = glm::vec2(xPos, yPos);
-		}
-
-		if (dblClick) {
-			double xPos, yPos;
-			glfwGetCursorPos(window, &xPos, &yPos);
-			long pickID = pick(xPos, yPos);
-
-			if (pickID > 0 && pickID < hex.ncells()) {
-				Volume::Cell c(hex, pickID);
-				auto p = 
-					(c.vertex(0).pos() + 
-					c.vertex(1).pos() +
-					c.vertex(2).pos() +
-					c.vertex(3).pos() +
-					c.vertex(4).pos() +
-					c.vertex(5).pos() +
-					c.vertex(6).pos() +
-					c.vertex(7).pos()) / 8.;
-
-				getCamera().lookAt(glm::vec3(p.x, p.y, p.z));
-
-				std::cout << "dblClick on cell: " << pickID << std::endl;
-			}
-		}
-		
+		// Set view / projection from current camera
 		view = getCamera().getViewMatrix();
 		projection = getCamera().getProjectionMatrix();
-		
 
-
+		// --- Draw models color mode ---
 		// Go to color framebuffer
 		glBindFramebuffer(GL_FRAMEBUFFER, fbo);
 		glEnable(GL_DEPTH_TEST);
-		// glEnable(GL_SCISSOR_TEST);
-		// glScissor(pickRegion.x - pickRegion.z, screenHeight - pickRegion.y - pickRegion.w, pickRegion.z * 2, pickRegion.w * 2);
 		glClearColor(backgroundColor.r, backgroundColor.g, backgroundColor.b, 1.);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 		glCullFace(cull_mode);
@@ -613,18 +506,13 @@ void App::run()
 
 			model->render();
 		}
-		// glDisable(GL_SCISSOR_TEST);
+		// -------------------
 
-
-
-
-
+		// --- Draw models ID mode ---
         // Go to ID framebuffer
 		glBindFramebuffer(GL_FRAMEBUFFER, screenFbo);
 		glEnable(GL_DEPTH_TEST);
-		// glEnable(GL_SCISSOR_TEST);
-		// glScissor(pickRegion.x - pickRegion.z, screenHeight - pickRegion.y - pickRegion.w, pickRegion.z * 2 + 1, pickRegion.w * 2 + 1);
-		glClearColor(1.f, 1.f, 0.5f, 0.f);
+		glClearColor(0.f, 0.f, 0.f, 0.f);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 		glCullFace(cull_mode);
 
@@ -635,48 +523,9 @@ void App::run()
 			model->setProjection(projection);
 			model->render();
 		}
+		// -------------------
 
-		// glDisable(GL_SCISSOR_TEST);
-
-
-		// TEST PICKING REQUEST
-        // Go to ID framebuffer
-		while (!picking_requests.empty()) {
-
-			auto picking_request = picking_requests.front();
-			picking_requests.pop();
-			auto pickMode = std::get<0>(picking_request);
-			auto &pickRegion = std::get<1>(picking_request);
-			auto &result_fn = std::get<2>(picking_request);
-
-			glBindFramebuffer(GL_FRAMEBUFFER, screenFbo);
-			glEnable(GL_DEPTH_TEST);
-			glEnable(GL_SCISSOR_TEST);
-			glScissor(pickRegion.x, screenHeight - pickRegion.y, pickRegion.z, pickRegion.w);
-			glClearColor(1.f, 1.f, 0.5f, 0.f);
-			glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-			glCullFace(cull_mode);
-
-			for (auto &model : models) {
-				model->bind();
-				model->setFragRenderMode((Model::RenderMode)pickMode);
-				model->setView(view);
-				model->setProjection(projection);
-				model->render();
-			}
-
-			// Extract
-			auto ids = extract(pickRegion);
-			// Call result function
-			if (result_fn) {
-				result_fn(ids);
-			}
-
-			glDisable(GL_SCISSOR_TEST);
-		}
-
-
-		// DRAW SCREEN !
+		// --- Draw Screen ---
 		// Go back to default framebuffer
 		glBindFramebuffer(GL_FRAMEBUFFER, 0);
 		glDisable(GL_DEPTH_TEST);
@@ -685,14 +534,13 @@ void App::run()
 		glBindVertexArray(quadVAO);
 		glActiveTexture(GL_TEXTURE0);
 		glBindTexture(GL_TEXTURE_2D, colorAttachmentTexture);
-		// glBindTexture(GL_TEXTURE_2D, depthTexture);
 
 		glCullFace(GL_BACK);
-
 		screenShader.use();
 		glDrawArrays(GL_TRIANGLES, 0, 6);
+		// -------------------
 
-		// Draw UI
+		// --- Draw UI ---
 		// Start the ImGui frame
 		ImGui_ImplOpenGL3_NewFrame();
 		ImGui_ImplGlfw_NewFrame();
@@ -705,6 +553,7 @@ void App::run()
 		ImGui::Render();
 
 		ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
+		// -------------------
 
 		// Swap buffers and get IO
 		glfwSwapBuffers(window);
@@ -714,6 +563,15 @@ void App::run()
 	}
 
 	// Clean up
+	clean();
+	// Terminate & quit
+	glfwTerminate();
+
+	return;
+}
+
+void App::clean() {
+	std::cout << "App clean..." << std::endl;
 	glDeleteVertexArrays(1, &quadVAO);
 	glDeleteBuffers(1, &quadVBO);
 
@@ -729,10 +587,6 @@ void App::run()
 	for (auto &model : models) {
 		model->clean();
 	}
-
-	// Terminate & quit
-	glfwTerminate();
-	return;
 }
 
 void App::save_state(const std::string filename) {
@@ -979,11 +833,6 @@ std::vector<long> App::extract(glm::ivec4 region) {
 
 	delete[] pixelData;
 	return pickIDs;
-}
-
-void App::setClipping(bool enabled) {
-	for (auto &model : models)
-		model->setClipping(enabled);
 }
 
 void App::processInput(GLFWwindow *window) {

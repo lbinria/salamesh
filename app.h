@@ -58,7 +58,7 @@ struct App : public IApp {
         rightMouse(false), 
         mousePos(0,0), 
         lastMousePos(0,0), 
-        scrollDelta(0,0)
+        scrollDelta(0,0)    
     {}
 
 
@@ -72,6 +72,7 @@ struct App : public IApp {
     unsigned int screenColorAttachmentTexture;
     unsigned int screenFbo;
 
+    unsigned int quadVAO, quadVBO;
 
 
     // settings
@@ -87,11 +88,12 @@ struct App : public IApp {
 
 
 
-
     void processInput(GLFWwindow *window);
 
 
+    void setup();
     void run();
+    void clean();
 
     // Frame functions
     int getWidth() override;
@@ -176,7 +178,6 @@ struct App : public IApp {
     void load_state(const std::string filename);
 
     // Rendering functions
-    void setClipping(bool enabled) override;
     void setCullMode(int mode) override { cull_mode = mode; }
 
     // Accessors

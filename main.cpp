@@ -10,6 +10,7 @@ int main(int argc, char** argv) {
 	}
 	
 	MyApp app(args);
+	app.setup();
 	app.run();
 
 	return 0;
