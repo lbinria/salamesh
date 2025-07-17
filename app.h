@@ -158,7 +158,15 @@ struct App : public IApp {
     // Pick id of cell of the current rendering
     long pick_cell() override;
 
-    std::vector<long> pick(GLFWwindow *window, double xPos, double yPos, int radius);
+    std::vector<long> pick(double xPos, double yPos, int radius);
+    
+    void picking_request(Element element, glm::ivec4 region, std::function<void(std::vector<long> ids)> result_fn) {
+        picking_requests.push({element, region, result_fn});
+    }
+
+    std::vector<long> extract(glm::ivec4 region);
+
+    std::queue<std::tuple<Element, glm::ivec4, std::function<void(std::vector<long> ids)>>> picking_requests;
 
     // States functions
     // TODO reset_state
@@ -296,7 +304,7 @@ struct App : public IApp {
     int cursor_radius = 1;
     glm::vec2 scrollDelta;
 
-    glm::vec4 pickRegion;
+    glm::ivec4 pickRegion;
 
     Element pickMode = Element::CELLS;
 

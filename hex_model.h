@@ -148,10 +148,12 @@ struct HexModel : public Model {
 	}
 
     void render() {
+        if (!visible)
+            return;
         glm::vec3 pos = getWorldPosition();
-		_hex_renderer.render(pos);
-		// _hex_renderer.render(position);
-		// TODO _ps_renderer.render();
+
+        _hex_renderer.render(pos);
+        // _hex_renderer.render(position);
 	}
     
 

@@ -520,6 +520,22 @@ void App::run()
 
 		Hexahedra &hex = getCurrentModel().getHexahedra();
 
+
+		// if (leftMouse) {
+			
+		// 	double xPos, yPos;
+		// 	glfwGetCursorPos(window, &xPos, &yPos);
+		// 	getCamera().move(glm::vec2(screenWidth, screenHeight), glm::vec2(xPos, yPos), lastMousePos);
+		// 	lastMousePos = glm::vec2(xPos, yPos);
+
+		// 	auto pickIDs = pick(xPos, yPos, cursor_radius);
+		// 	for (long pickID : pickIDs) {
+		// 		if (getCamera().isLocked() && pickID >= 0 && pickID < hex.ncells()) {
+		// 			models[selected_renderer]->setFilter(pickID, true);
+		// 		}
+		// 	}
+
+		// }
 		if (leftMouse) {
 			
 			double xPos, yPos;
@@ -527,12 +543,16 @@ void App::run()
 			getCamera().move(glm::vec2(screenWidth, screenHeight), glm::vec2(xPos, yPos), lastMousePos);
 			lastMousePos = glm::vec2(xPos, yPos);
 
-			auto pickIDs = pick(window, xPos, yPos, cursor_radius);
-			for (long pickID : pickIDs) {
-				if (getCamera().isLocked() && pickID >= 0 && pickID < hex.ncells()) {
-					models[selected_renderer]->setFilter(pickID, true);
-				}
+			if (getCamera().isLocked()) {
+				picking_request(Element::CELLS, glm::ivec4(xPos, yPos, cursor_radius, 0), [&](const std::vector<long> &pickIDs) {
+					for (long pickID : pickIDs) {
+						if (pickID >= 0 && pickID < hex.ncells()) {
+							models[selected_renderer]->setFilter(pickID, true);
+						}
+					}
+				});
 			}
+
 
 		}
 
@@ -595,11 +615,15 @@ void App::run()
 		}
 		// glDisable(GL_SCISSOR_TEST);
 
+
+
+
+
         // Go to ID framebuffer
 		glBindFramebuffer(GL_FRAMEBUFFER, screenFbo);
 		glEnable(GL_DEPTH_TEST);
-		glEnable(GL_SCISSOR_TEST);
-		glScissor(pickRegion.x - pickRegion.z, screenHeight - pickRegion.y - pickRegion.w, pickRegion.z * 2, pickRegion.w * 2);
+		// glEnable(GL_SCISSOR_TEST);
+		// glScissor(pickRegion.x - pickRegion.z, screenHeight - pickRegion.y - pickRegion.w, pickRegion.z * 2 + 1, pickRegion.w * 2 + 1);
 		glClearColor(1.f, 1.f, 0.5f, 0.f);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 		glCullFace(cull_mode);
@@ -612,7 +636,45 @@ void App::run()
 			model->render();
 		}
 
-		glDisable(GL_SCISSOR_TEST);
+		// glDisable(GL_SCISSOR_TEST);
+
+
+		// TEST PICKING REQUEST
+        // Go to ID framebuffer
+		while (!picking_requests.empty()) {
+
+			auto picking_request = picking_requests.front();
+			picking_requests.pop();
+			auto pickMode = std::get<0>(picking_request);
+			auto &pickRegion = std::get<1>(picking_request);
+			auto &result_fn = std::get<2>(picking_request);
+
+			glBindFramebuffer(GL_FRAMEBUFFER, screenFbo);
+			glEnable(GL_DEPTH_TEST);
+			glEnable(GL_SCISSOR_TEST);
+			glScissor(pickRegion.x, screenHeight - pickRegion.y, pickRegion.z, pickRegion.w);
+			glClearColor(1.f, 1.f, 0.5f, 0.f);
+			glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+			glCullFace(cull_mode);
+
+			for (auto &model : models) {
+				model->bind();
+				model->setFragRenderMode((Model::RenderMode)pickMode);
+				model->setView(view);
+				model->setProjection(projection);
+				model->render();
+			}
+
+			// Extract
+			auto ids = extract(pickRegion);
+			// Call result function
+			if (result_fn) {
+				result_fn(ids);
+			}
+
+			glDisable(GL_SCISSOR_TEST);
+		}
+
 
 		// DRAW SCREEN !
 		// Go back to default framebuffer
@@ -798,10 +860,6 @@ glm::vec3 App::pick_point(double x, double y) {
 
 
 long App::pick(double x, double y) {
-	// TODO this should be moved ! NOT HERE !
-	// if (glm::length(lastMousePos) < 0.01)
-	// 	lastMousePos = glm::vec2(x, y);
-
 	pickRegion = {x, y, 1, 1};
 
 	glBindFramebuffer(GL_READ_FRAMEBUFFER, screenFbo);
@@ -817,7 +875,7 @@ long App::pick(double x, double y) {
 	return pickID;
 }
 
-std::vector<long> App::pick(GLFWwindow *window, double xPos, double yPos, int radius) {
+std::vector<long> App::pick(double xPos, double yPos, int radius) {
 
 	pickRegion = {xPos, yPos, radius, radius};
 
@@ -832,6 +890,58 @@ std::vector<long> App::pick(GLFWwindow *window, double xPos, double yPos, int ra
 	glReadPixels(
 		xPos - radius,
 		screenHeight - yPos - radius,
+		diameter,
+		diameter,
+		GL_RGBA,
+		GL_UNSIGNED_BYTE,
+		pixelData
+	);
+
+	// Process each pixel in the bounding square
+	for(int y = 0; y < diameter; ++y) {
+		for(int x = 0; x < diameter; ++x) {
+			// Calculate distance from center
+			int dx = x - radius;
+			int dy = y - radius;
+			float distSq = dx * dx + dy * dy;
+
+			// Only process pixels within circle
+			if(distSq <= radius * radius) {
+				int offset = (y * diameter + x) * 4;
+				unsigned char r = pixelData[offset];
+				unsigned char g = pixelData[offset + 1];
+				unsigned char b = pixelData[offset + 2];
+				unsigned char a = pixelData[offset + 3];
+				
+				long pickID = a == 0 ? -1 :
+							r +
+							g * 256 +
+							b * 256 * 256;
+
+				if(pickID != -1) {
+					pickIDs.push_back(pickID);
+				}
+			}
+		}
+	}
+
+	delete[] pixelData;
+	return pickIDs;
+}
+
+std::vector<long> App::extract(glm::ivec4 region) {
+	glBindFramebuffer(GL_READ_FRAMEBUFFER, screenFbo);
+	const int radius = region.z;
+	const int diameter = radius * 2 + 1;
+	std::vector<long> pickIDs;
+
+	// Allocate buffer for square that bounds our circle
+	unsigned char* pixelData = new unsigned char[diameter * diameter * 4];
+
+	// Read pixels in square that bounds our circle
+	glReadPixels(
+		region.x - radius,
+		screenHeight - region.y - radius,
 		diameter,
 		diameter,
 		GL_RGBA,

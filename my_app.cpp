@@ -124,6 +124,12 @@ void MyApp::draw_gui() {
 	// ImVec2 window_center = ImVec2(window_pos.x + window_size.x * 0.5f, window_pos.y + window_size.y * 0.5f);
 	
 	ImGui::GetBackgroundDrawList()->AddCircle(ImGui::GetMousePos(), cursor_radius, IM_COL32(225, 225, 255, 200), 0, 2);
+	// ImGui::GetBackgroundDrawList()->AddRect(
+	// 	ImVec2(pickRegion.x - pickRegion.z, pickRegion.y - pickRegion.w), 
+	// 	ImVec2(pickRegion.x + pickRegion.z, pickRegion.y + pickRegion.w), 
+	// 	IM_COL32(225, 225, 255, 200), 0, 2
+	// );
+
 
 
 	for (auto &script : scripts) {
