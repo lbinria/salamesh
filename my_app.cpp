@@ -262,9 +262,14 @@ void MyApp::mouse_button(int button, int action, int mods) {
 
 void MyApp::mouse_move(double x, double y) {
 
-	st.cell.set_hovered(pick_cell());
-	st.facet.set_hovered(pick_facet());
-	st.edge.set_hovered(pick_edge());
+	auto edge = pick_edge(x, y);
+	if (edge >= 0) 
+		st.edge.set_hovered({edge});
+	else
+		st.edge.set_hovered({});
+
+	st.facet.set_hovered(pick_facets(x, y, st.mouse.cursor_radius));
+	st.cell.set_hovered(pick_cells(x, y, st.mouse.cursor_radius));
 
 	for (auto &script : scripts) {
 		script->mouse_move(x, y);
@@ -274,19 +279,7 @@ void MyApp::mouse_move(double x, double y) {
 
 void MyApp::mouse_drag(int button, double x, double y) {
 
-
-	// if (button == GLFW_MOUSE_BUTTON_LEFT) {
-	// 	getCamera().Move(glm::vec2(screenWidth, screenHeight), glm::vec2(x, y), lastMousePos);
-	// 	lastMousePos = glm::vec2(x, y);
-
-	// 	auto pickIDs = pick(window, x, y, cursor_radius);
-	// 	for (long pickID : pickIDs) {
-	// 		if (getCamera().isLocked() && pickID >= 0 && pickID < mesh->m.ncells()) {
-	// 			// mesh->setHighligth(pickID, 1.f);
-	// 			mesh->setFilter(pickID, true);
-	// 		}
-	// 	}
-	// }
+	// TODO call script mouse_drag
 
 
 }

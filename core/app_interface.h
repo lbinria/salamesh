@@ -43,11 +43,9 @@ struct IApp {
 
     // virtual glm::vec3 pick_point(long x, long y) = 0;
     // virtual long pick_vertex() = 0;
-    // TODO see if necessary here ! maybe pick_edge() is sufficient
-    virtual long pick_edge(Volume &m, glm::vec3 p0, int c) = 0;
-    virtual long pick_edge() = 0;
-    virtual long pick_facet() = 0;
-    virtual long pick_cell() = 0;
+    virtual long pick_edge(double x, double y) = 0;
+    virtual long pick_facet(double x, double y) = 0;
+    virtual long pick_cell(double x, double y) = 0;
 
     virtual std::vector<unsigned int> getColorMaps2D() = 0;
 

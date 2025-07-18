@@ -659,18 +659,28 @@ int App::getHeight() {
 	return screenHeight;
 }
 
-long App::pick_facet() {
+
+long App::pick_edge(double x, double y) {
+	if (st.cell.is_hovered()) {
+		auto p = pick_point(x, y);
+		return pick_edge(getCurrentModel().getHexahedra(), p, st.cell.get_hovered());
+	} else {
+		return -1;
+	}
+}
+
+long App::pick_facet(double x, double y) {
 	glBindFramebuffer(GL_READ_FRAMEBUFFER, fbo);
 	glReadBuffer(GL_COLOR_ATTACHMENT1);
-	long id = pick(st.mouse.pos.x, st.mouse.pos.y);
+	long id = pick(x, y);
 	glBindFramebuffer(GL_READ_FRAMEBUFFER, 0);
 	return id >= 0 && id < getCurrentModel().getHexahedra().nfacets() ? id : -1;
 }
 
-long App::pick_cell() {
+long App::pick_cell(double x, double y) {
 	glBindFramebuffer(GL_READ_FRAMEBUFFER, fbo);
 	glReadBuffer(GL_COLOR_ATTACHMENT2);
-	long id = pick(st.mouse.pos.x, st.mouse.pos.y);
+	long id = pick(x, y);
 	glBindFramebuffer(GL_READ_FRAMEBUFFER, 0);
 	return id >= 0 && id < getCurrentModel().getHexahedra().ncells() ? id : -1;
 }
@@ -760,10 +770,10 @@ long App::pick(double x, double y) {
 		pixel[2] * 256 * 256;
 }
 
-std::vector<long> App::pick(double xPos, double yPos, int radius) {
+std::set<long> App::pick(double xPos, double yPos, int radius) {
 
 	const int diameter = radius * 2 + 1;
-	std::vector<long> pickIDs;
+	std::set<long> pickIDs;
 
 	// Allocate buffer for square that bounds our circle
 	unsigned char* pixelData = new unsigned char[diameter * diameter * 4];
@@ -801,7 +811,7 @@ std::vector<long> App::pick(double xPos, double yPos, int radius) {
 							b * 256 * 256;
 
 				if (pickID != -1) {
-					pickIDs.push_back(pickID);
+					pickIDs.insert(pickID);
 				}
 			}
 		}

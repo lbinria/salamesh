@@ -16,18 +16,9 @@ namespace bindings {
 					&InputState::PrimitiveState::get_hovered,
 					&InputState::PrimitiveState::set_hovered
 				),
+				"all_hovered", sol::readonly_property(&InputState::PrimitiveState::get_all_hovered),
 				"is_hovered", sol::readonly_property(&InputState::PrimitiveState::is_hovered),
-				"is_changed", sol::readonly_property(&InputState::PrimitiveState::is_changed)
-			);
-			sol::usertype<InputState::PrimitiveState2> primitive_state2_t = lua.new_usertype<InputState::PrimitiveState2>("PrimitiveState2", 
-				sol::constructors<InputState::PrimitiveState2()>(),
-				"hovered", sol::property(
-					&InputState::PrimitiveState2::get_hovered,
-					&InputState::PrimitiveState2::set_hovered
-				),
-				"all_hovered", sol::readonly_property(&InputState::PrimitiveState2::get_all_hovered),
-				"is_hovered", sol::readonly_property(&InputState::PrimitiveState2::is_hovered),
-				"has_changed", sol::readonly_property(&InputState::PrimitiveState2::has_changed)
+				"has_changed", sol::readonly_property(&InputState::PrimitiveState::has_changed)
 			);
 
 			sol::usertype<InputState> input_state_t = lua.new_usertype<InputState>("InputState", 
@@ -35,9 +26,7 @@ namespace bindings {
 				"vertex", sol::readonly_property(&InputState::vertex),
 				"edge", sol::readonly_property(&InputState::edge),
 				"facet", sol::readonly_property(&InputState::facet),
-				"cell", sol::readonly_property(&InputState::cell),
-				"facets", sol::readonly_property(&InputState::facets),
-				"cells", sol::readonly_property(&InputState::cells)
+				"cell", sol::readonly_property(&InputState::cell)
 			);
 
 			// App bindings

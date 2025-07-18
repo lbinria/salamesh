@@ -103,56 +103,15 @@ struct App : public IApp {
     glm::vec3 pick_point(double x, double y);
 
     long pick(double xPos, double yPos);
-    std::vector<long> pick(double xPos, double yPos, int radius);
+    std::set<long> pick(double xPos, double yPos, int radius);
 
-    long pick_facet() override;
-    long pick_cell() override;
+    long pick_edge(double x, double y) override;
+    long pick_facet(double x, double y) override;
+    long pick_cell(double x, double y) override;
     std::vector<long> pick_facets(double x, double y, int radius);
     std::vector<long> pick_cells(double x, double y, int radius);
 
-	long pick_edge(Volume &m, glm::vec3 p0, int c) override {
-		// Search nearest edge
-		double min_d = std::numeric_limits<double>().max();
-		long found_e = -1;
-		
-		for (int le = 0; le < 24; ++le) {
-			long e = c * 24 + le;
 
-			// Get local points indices of edge extremities
-			int lv0 = reference_cells[1].facets[le % 4 + (le / 4 * 4)];
-			int lv1 = reference_cells[1].facets[(le + 1) % 4 + (le / 4 * 4)];
-
-			// Get global index of points
-			int v0 = m.vert(c, lv0);
-			int v1 = m.vert(c, lv1);
-
-			// Get points from current edge
-			vec3 p1 = m.points[v0];
-			vec3 p2 = m.points[v1];
-			vec3 b = (p1 + p2) * .5;
-			// Compute dist from picked point to bary of edge points
-			double d = (vec3(p0.x, p0.y, p0.z) - b).norm(); // TODO maybe use norm2 will give the same result
-
-			// Keep min dist
-			if (d < min_d) {
-				min_d = d;
-				found_e = e;
-			}
-		}
-
-		return found_e;
-	}
-
-    // Pick id of vertex of the current rendering
-    long pick_edge() override {
-        if (st.cell.is_hovered()) {
-            auto p = pick_point(mousePos.x, mousePos.y);
-            // TODO get current model
-            return pick_edge(getCurrentModel().getHexahedra(), p, st.cell.get_hovered());
-        } else {
-            return -1;
-        }
-    }
 
 
     
@@ -299,5 +258,38 @@ struct App : public IApp {
 
     private:
 
+
+	long pick_edge(Volume &m, glm::vec3 p0, int c) {
+		// Search nearest edge
+		double min_d = std::numeric_limits<double>().max();
+		long found_e = -1;
+		
+		for (int le = 0; le < 24; ++le) {
+			long e = c * 24 + le;
+
+			// Get local points indices of edge extremities
+			int lv0 = reference_cells[1].facets[le % 4 + (le / 4 * 4)];
+			int lv1 = reference_cells[1].facets[(le + 1) % 4 + (le / 4 * 4)];
+
+			// Get global index of points
+			int v0 = m.vert(c, lv0);
+			int v1 = m.vert(c, lv1);
+
+			// Get points from current edge
+			vec3 p1 = m.points[v0];
+			vec3 p2 = m.points[v1];
+			vec3 b = (p1 + p2) * .5;
+			// Compute dist from picked point to bary of edge points
+			double d = (vec3(p0.x, p0.y, p0.z) - b).norm(); // TODO maybe use norm2 will give the same result
+
+			// Keep min dist
+			if (d < min_d) {
+				min_d = d;
+				found_e = e;
+			}
+		}
+
+		return found_e;
+	}
 
 };

@@ -5,30 +5,6 @@ struct InputState {
 
 	struct PrimitiveState {
 
-		long get_hovered() {
-			return hovered;
-		}
-
-		void set_hovered(long idx) {
-			last_hovered = hovered;
-			hovered = idx;
-		}
-
-		bool is_hovered() {
-			return hovered >= 0;
-		}
-
-		bool is_changed() {
-			return last_hovered != hovered;
-		}
-
-		private:
-		long last_hovered;
-		long hovered;
-	};
-
-	struct PrimitiveState2 {
-
 		std::vector<long> get_all_hovered() {
 			return hovered;
 		}
@@ -88,8 +64,6 @@ struct InputState {
 	PrimitiveState edge;
 	PrimitiveState facet;
 	PrimitiveState cell;
-	PrimitiveState2 facets;
-	PrimitiveState2 cells;
 
 	MouseState mouse;
 
