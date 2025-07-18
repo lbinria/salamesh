@@ -73,14 +73,11 @@ void MyApp::update(float dt) {
 
 	Hexahedra &hex = getCurrentModel().getHexahedra();
 
-	if (leftMouse) {
+	if (st.mouse.isLeftButton()) {
 		
-		double xPos, yPos;
-		glfwGetCursorPos(window, &xPos, &yPos);
-		getCamera().move(glm::vec2(screenWidth, screenHeight), glm::vec2(xPos, yPos), lastMousePos);
-		lastMousePos = glm::ivec2(xPos, yPos);
+		getCamera().move(glm::vec2(screenWidth, screenHeight), st.mouse.pos, st.mouse.lastPos);
 
-		auto pickIDs = pick(xPos, yPos, cursor_radius);
+		auto pickIDs = pick(st.mouse.pos.x, st.mouse.pos.y, st.mouse.cursor_radius);
 		for (long pickID : pickIDs) {
 			if (getCamera().isLocked() && pickID >= 0 && pickID < hex.ncells()) {
 				models[selected_renderer]->setFilter(pickID, true);
@@ -89,35 +86,28 @@ void MyApp::update(float dt) {
 
 	}
 
-	if (rightMouse) {
-		double xPos, yPos;
-		glfwGetCursorPos(window, &xPos, &yPos);
-		// getCamera().movePlane(glm::vec2(xPos, yPos) - lastMousePos2);
-		lastMousePos2 = glm::ivec2(xPos, yPos);
-	}
+	// if (dblClick) {
+	// 	double xPos, yPos;
+	// 	glfwGetCursorPos(window, &xPos, &yPos);
+	// 	long pickID = pick(xPos, yPos);
 
-	if (dblClick) {
-		double xPos, yPos;
-		glfwGetCursorPos(window, &xPos, &yPos);
-		long pickID = pick(xPos, yPos);
+	// 	if (pickID > 0 && pickID < hex.ncells()) {
+	// 		Volume::Cell c(hex, pickID);
+	// 		auto p = 
+	// 			(c.vertex(0).pos() + 
+	// 			c.vertex(1).pos() +
+	// 			c.vertex(2).pos() +
+	// 			c.vertex(3).pos() +
+	// 			c.vertex(4).pos() +
+	// 			c.vertex(5).pos() +
+	// 			c.vertex(6).pos() +
+	// 			c.vertex(7).pos()) / 8.;
 
-		if (pickID > 0 && pickID < hex.ncells()) {
-			Volume::Cell c(hex, pickID);
-			auto p = 
-				(c.vertex(0).pos() + 
-				c.vertex(1).pos() +
-				c.vertex(2).pos() +
-				c.vertex(3).pos() +
-				c.vertex(4).pos() +
-				c.vertex(5).pos() +
-				c.vertex(6).pos() +
-				c.vertex(7).pos()) / 8.;
+	// 		getCamera().lookAt(glm::vec3(p.x, p.y, p.z));
 
-			getCamera().lookAt(glm::vec3(p.x, p.y, p.z));
-
-			std::cout << "dblClick on cell: " << pickID << std::endl;
-		}
-	}
+	// 		std::cout << "dblClick on cell: " << pickID << std::endl;
+	// 	}
+	// }
 
 }
 
@@ -172,7 +162,7 @@ void MyApp::draw_gui() {
 	// ImVec2 window_size = ImGui::GetWindowSize(); 
 	// ImVec2 window_center = ImVec2(window_pos.x + window_size.x * 0.5f, window_pos.y + window_size.y * 0.5f);
 	
-	ImGui::GetBackgroundDrawList()->AddCircle(ImGui::GetMousePos(), cursor_radius, IM_COL32(225, 225, 255, 200), 0, 2);
+	ImGui::GetBackgroundDrawList()->AddCircle(ImGui::GetMousePos(), st.mouse.cursor_radius, IM_COL32(225, 225, 255, 200), 0, 2);
 	// ImGui::GetBackgroundDrawList()->AddRect(
 	// 	ImVec2(pickRegion.x - pickRegion.z, pickRegion.y - pickRegion.w), 
 	// 	ImVec2(pickRegion.x + pickRegion.z, pickRegion.y + pickRegion.w), 
@@ -257,7 +247,7 @@ void MyApp::mouse_scroll(double xoffset, double yoffset) {
 		getCamera().zoom(scrollDelta.y);
 	}
 	else 
-		cursor_radius = std::clamp(cursor_radius + static_cast<int>(yoffset), 1, 50);
+		st.mouse.cursor_radius = std::clamp(st.mouse.cursor_radius + static_cast<int>(yoffset), 1, 50);
 
 	for (auto &script : scripts) {
 		script->mouse_scroll(xoffset, yoffset);

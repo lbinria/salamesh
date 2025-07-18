@@ -302,7 +302,6 @@ struct App : public IApp {
     glm::vec2 mousePos;
     glm::vec2 lastMousePos;
     glm::vec2 lastMousePos2;
-    int cursor_radius = 1;
     glm::vec2 scrollDelta;
 
     glm::ivec4 pickRegion;

@@ -835,50 +835,69 @@ std::vector<long> App::extract(glm::ivec4 region) {
 	return pickIDs;
 }
 
-void App::processInput(GLFWwindow *window) {
+// void App::processInput_(GLFWwindow *window) {
 
-	double xPos, yPos;
-	glfwGetCursorPos(window, &xPos, &yPos);
-	mousePos = glm::vec2(xPos, yPos);
+// 	double xPos, yPos;
+// 	glfwGetCursorPos(window, &xPos, &yPos);
+// 	mousePos = glm::vec2(xPos, yPos);
 
-	if (glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_LEFT) == GLFW_PRESS) {
+// 	if (glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_LEFT) == GLFW_PRESS) {
 
-		leftMouse = true;
-		double xPos, yPos;
-		glfwGetCursorPos(window, &xPos, &yPos);
+// 		leftMouse = true;
+// 		double xPos, yPos;
+// 		glfwGetCursorPos(window, &xPos, &yPos);
 		
 
-		// Check whether is the first occurrence
-		if (glm::length(lastMousePos) < 0.01)
-			lastMousePos = glm::vec2(xPos, yPos);
+// 		// Check whether is the first occurrence
+// 		if (glm::length(lastMousePos) < 0.01)
+// 			lastMousePos = glm::vec2(xPos, yPos);
 
 
-	} else if (glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_LEFT) == GLFW_RELEASE) {
-		// Was a click ?
-		if (leftMouse) {
-			auto now = std::chrono::steady_clock::now();
-			auto delta = std::chrono::duration_cast<std::chrono::milliseconds>(now - lastClick).count();
-			dblClick = delta < _dbl_click_interval;
-			if (!dblClick)
-				lastClick = now;
-		} else 
-			dblClick = false;
+// 	} else if (glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_LEFT) == GLFW_RELEASE) {
+// 		// Was a click ?
+// 		if (leftMouse) {
+// 			auto now = std::chrono::steady_clock::now();
+// 			auto delta = std::chrono::duration_cast<std::chrono::milliseconds>(now - lastClick).count();
+// 			dblClick = delta < _dbl_click_interval;
+// 			if (!dblClick)
+// 				lastClick = now;
+// 		} else 
+// 			dblClick = false;
 
 
-		leftMouse = false;
-		lastMousePos = glm::vec2(0, 0);
+// 		leftMouse = false;
+// 		lastMousePos = glm::vec2(0, 0);
+// 	}
+
+// 	if (glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_RIGHT) == GLFW_PRESS) {
+// 		rightMouse = true;
+// 		double xPos, yPos;
+// 		glfwGetCursorPos(window, &xPos, &yPos);
+// 		if (glm::length(lastMousePos2) < 0.01)
+// 			lastMousePos2 = glm::vec2(xPos, yPos);
+
+// 	} else if (glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_RIGHT) == GLFW_RELEASE) {
+// 		rightMouse = false;
+// 		lastMousePos2 = glm::vec2(0, 0);		
+// 	}
+
+// }
+
+void App::processInput(GLFWwindow *window) {
+
+	// Get mouse position
+	double x, y;
+	glfwGetCursorPos(window, &x, &y);
+	st.mouse.lastPos = st.mouse.pos;
+	st.mouse.pos = glm::vec2(x, y);
+
+	// Check mouse buttons pressed
+	for (int i = 0; i < 8; ++i) {
+		auto mouseButton = glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_1 + i);
+		if (mouseButton == GLFW_PRESS) {
+			st.mouse.buttons[i] = true;
+		} else if (mouseButton == GLFW_RELEASE) {
+			st.mouse.buttons[i] = false;
+		}
 	}
-
-	if (glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_RIGHT) == GLFW_PRESS) {
-		rightMouse = true;
-		double xPos, yPos;
-		glfwGetCursorPos(window, &xPos, &yPos);
-		if (glm::length(lastMousePos2) < 0.01)
-			lastMousePos2 = glm::vec2(xPos, yPos);
-
-	} else if (glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_RIGHT) == GLFW_RELEASE) {
-		rightMouse = false;
-		lastMousePos2 = glm::vec2(0, 0);		
-	}
-
 }
