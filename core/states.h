@@ -56,6 +56,9 @@ struct InputState {
 		}
 
 		bool dblLeft = false;
+		int _dbl_click_interval = 300 /*ms*/;
+		std::chrono::steady_clock::time_point lastClick;
+
 		glm::vec2 scrollDelta = {0, 0};
 		int cursor_radius = 1;
 	};

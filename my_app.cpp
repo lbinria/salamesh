@@ -243,8 +243,8 @@ void MyApp::mouse_scroll(double xoffset, double yoffset) {
 
 	// Maybe move to a cameracontroller class
 	if (!getCamera().isLocked()) {
-		scrollDelta = glm::vec2(xoffset, yoffset);
-		getCamera().zoom(scrollDelta.y);
+		st.mouse.scrollDelta = glm::vec2(xoffset, yoffset);
+		getCamera().zoom(st.mouse.scrollDelta.y);
 	}
 	else 
 		st.mouse.cursor_radius = std::clamp(st.mouse.cursor_radius + static_cast<int>(yoffset), 1, 50);

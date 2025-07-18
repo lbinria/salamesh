@@ -53,12 +53,7 @@ struct App : public IApp {
     App(Args args) : 
         args(args),
         screenWidth(1024), 
-        screenHeight(768), 
-        leftMouse(false), 
-        rightMouse(false), 
-        mousePos(0,0), 
-        lastMousePos(0,0), 
-        scrollDelta(0,0)    
+        screenHeight(768)
     {}
 
     // OpenGL
@@ -235,20 +230,6 @@ struct App : public IApp {
 
     std::vector<std::unique_ptr<Component>> scripts;
 	InputState st;
-
-    int _dbl_click_interval = 300 /*ms*/;
-
-    // Mouse data
-    // TODO REMOVE
-    bool leftMouse = false;
-    bool rightMouse = false;
-    bool dblClick = false;
-    std::chrono::steady_clock::time_point lastClick;
-
-    glm::vec2 mousePos;
-    glm::vec2 lastMousePos;
-    glm::vec2 lastMousePos2;
-    glm::vec2 scrollDelta;
 
     Element pickMode = Element::CELLS;
 
