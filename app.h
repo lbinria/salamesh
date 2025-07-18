@@ -61,29 +61,20 @@ struct App : public IApp {
         scrollDelta(0,0)    
     {}
 
-
-
     // OpenGL
     unsigned int fbo;
     unsigned int rbo;
     unsigned int depthPickingRbo;
     unsigned int depthAttachmentTexture;
-    unsigned int colorAttachmentTexture;
+    unsigned int texColor;
     unsigned int texCellID;
     unsigned int texFacetID;
-    unsigned int pickingFbo;
-    unsigned int screenFbo2;
 
     unsigned int quadVAO, quadVBO;
-
 
     // settings
     unsigned int screenWidth;
     unsigned int screenHeight;
-    
-
-
-
 
     unsigned int colormaps[2];
     unsigned int colormaps2D[2];
@@ -112,7 +103,12 @@ struct App : public IApp {
     glm::vec3 pick_point(double x, double y);
 
     long pick(double xPos, double yPos);
-    long pick2(double xPos, double yPos);
+    std::vector<long> pick(double xPos, double yPos, int radius);
+
+    long pick_facet() override;
+    long pick_cell() override;
+    std::vector<long> pick_facets(double x, double y, int radius);
+    std::vector<long> pick_cells(double x, double y, int radius);
 
 	long pick_edge(Volume &m, glm::vec3 p0, int c) override {
 		// Search nearest edge
@@ -158,21 +154,8 @@ struct App : public IApp {
         }
     }
 
-    // Pick id of facet of the current rendering
-    long pick_facet() override;
-    // Pick id of cell of the current rendering
-    long pick_cell() override;
 
-    std::vector<long> pick(double xPos, double yPos, int radius);
     
-    void picking_request(Element element, glm::ivec4 region, std::function<void(std::vector<long> ids)> result_fn) {
-        picking_requests.push({element, region, result_fn});
-    }
-
-    std::vector<long> extract(glm::ivec4 region);
-
-    std::queue<std::tuple<Element, glm::ivec4, std::function<void(std::vector<long> ids)>>> picking_requests;
-
     // States functions
     // TODO reset_state
     // TODO save_state
@@ -297,6 +280,7 @@ struct App : public IApp {
     int _dbl_click_interval = 300 /*ms*/;
 
     // Mouse data
+    // TODO REMOVE
     bool leftMouse = false;
     bool rightMouse = false;
     bool dblClick = false;
@@ -306,8 +290,6 @@ struct App : public IApp {
     glm::vec2 lastMousePos;
     glm::vec2 lastMousePos2;
     glm::vec2 scrollDelta;
-
-    glm::ivec4 pickRegion;
 
     Element pickMode = Element::CELLS;
 

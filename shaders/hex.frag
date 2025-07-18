@@ -89,40 +89,36 @@ void main()
 
     /* --- FILTER END --- */
 
-    // Render mode color
-    // if (fragRenderMode == 0) {
 
+    if (colorMode == 0) {
+        col = vec3(0.8f, 0.f, 0.2f);
+    } 
+    else {
+        col = vec3(texture(fragColorMap, clamp((fragAttrVal - attributeDataMinMax.x) / (attributeDataMinMax.y - attributeDataMinMax.x), 0., 1.)));
+    }        
+    
+    if (fragHighlight >= 1.f && fragHighlight < 2.f) {
+        col = mix(col, vec3(1.,1.,1.), 0.8);
+    }
+    else if (fragHighlight >= 2.f) {
+        // a between 0.5 and 0.75 - 0.25 range
+        // col = mix(col, vec3(0., 0.22, 1.), 0.5 + fragHighlight * 0.25);
+        col = mix(col, vec3(0., 0.22, 1.), 0.8);
+    }
 
-        if (colorMode == 0) {
-            col = vec3(0.8f, 0.f, 0.2f);
-        } 
-        else {
-            col = vec3(texture(fragColorMap, clamp((fragAttrVal - attributeDataMinMax.x) / (attributeDataMinMax.y - attributeDataMinMax.x), 0., 1.)));
-        }        
+    // Diffuse light
+    if (is_light_enabled) {
+        vec3 dirLight;
+
+        if (is_light_follow_view)
+            dirLight = fragViewDir;
+        else
+            dirLight = vec3(-0.5f, -0.8f, 0.2f);
         
-        if (fragHighlight >= 1.f && fragHighlight < 2.f) {
-            col = mix(col, vec3(1.,1.,1.), 0.8);
-        }
-        else if (fragHighlight >= 2.f) {
-            // a between 0.5 and 0.75 - 0.25 range
-            // col = mix(col, vec3(0., 0.22, 1.), 0.5 + fragHighlight * 0.25);
-            col = mix(col, vec3(0., 0.22, 1.), 0.8);
-        }
+        float diffuse = max((1.f - dot(dirLight, fragNormal)) * .5f + .45f /* ambiant */, 0.f);
+        col = col * diffuse;
+    }
 
-        // Diffuse light
-        if (is_light_enabled) {
-            vec3 dirLight;
-
-            if (is_light_follow_view)
-                dirLight = fragViewDir;
-            else
-                dirLight = vec3(-0.5f, -0.8f, 0.2f);
-            
-            float diffuse = max((1.f - dot(dirLight, fragNormal)) * .5f + .45f /* ambiant */, 0.f);
-            col = col * diffuse;
-        }
-
-    // }
 
 
     if (fragRenderMode == 0 && (fragRenderMeshMode & 2) == 2) {

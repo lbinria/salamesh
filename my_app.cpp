@@ -77,7 +77,7 @@ void MyApp::update(float dt) {
 		
 		getCamera().move(glm::vec2(screenWidth, screenHeight), st.mouse.pos, st.mouse.lastPos);
 
-		auto pickIDs = pick(st.mouse.pos.x, st.mouse.pos.y, st.mouse.cursor_radius);
+		auto pickIDs = pick_cells(st.mouse.pos.x, st.mouse.pos.y, st.mouse.cursor_radius);
 		for (long pickID : pickIDs) {
 			if (getCamera().isLocked() && pickID >= 0 && pickID < hex.ncells()) {
 				models[selected_renderer]->setFilter(pickID, true);

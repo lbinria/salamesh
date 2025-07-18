@@ -135,7 +135,7 @@ static void framebuffer_size_callback(GLFWwindow* window, int width, int height)
 
 	// TODO see if necessary ???!!!
 	// Update color attachment texture
-    glBindTexture(GL_TEXTURE_2D, app->colorAttachmentTexture);
+    glBindTexture(GL_TEXTURE_2D, app->texColor);
     glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, NULL);
 
     glBindTexture(GL_TEXTURE_2D, app->texFacetID);
@@ -328,8 +328,8 @@ void App::setup() {
 	glBindFramebuffer(GL_FRAMEBUFFER, fbo);
 
 	// Framebuffer texture
-	glGenTextures(1, &colorAttachmentTexture);
-	glBindTexture(GL_TEXTURE_2D, colorAttachmentTexture);
+	glGenTextures(1, &texColor);
+	glBindTexture(GL_TEXTURE_2D, texColor);
 	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, screenWidth, screenHeight, 0, GL_RGBA, GL_UNSIGNED_BYTE, NULL);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR); 
@@ -359,7 +359,7 @@ void App::setup() {
 	glBindTexture(GL_TEXTURE_2D, 0);
 
 	// Attach color attachments to FBO buffer
-	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, colorAttachmentTexture, 0);
+	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, texColor, 0);
 	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT1, GL_TEXTURE_2D, texFacetID, 0);
 	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT2, GL_TEXTURE_2D, texCellID, 0);
 	// Attach depth attachments to FBO buffer
@@ -490,17 +490,11 @@ void App::run()
 		view = getCamera().getViewMatrix();
 		projection = getCamera().getProjectionMatrix();
 
-		// --- Draw models color mode ---
-		// Go to color framebuffer
+
+		// Bind framebuffer
 		glBindFramebuffer(GL_FRAMEBUFFER, fbo);
-		// glEnable(GL_DEPTH_TEST);
-		// glClearColor(backgroundColor.r, backgroundColor.g, backgroundColor.b, 1.);
-		// glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-		// glCullFace(cull_mode);
 
-
-
-		// 2) Enable all three color attachments at once
+		// Enable all three color attachments at once
 		GLenum drawBufs[3] = {
 			GL_COLOR_ATTACHMENT0,
 			GL_COLOR_ATTACHMENT1,
@@ -508,6 +502,7 @@ void App::run()
 		};
 		glDrawBuffers(3, drawBufs);
 
+		// Clear attachments
 		GLfloat zero[4] = { 0.f, 0.f, 0.f, 0.f };
 
 		glClearColor(backgroundColor.r, backgroundColor.g, backgroundColor.b, 1.);
@@ -519,8 +514,7 @@ void App::run()
 		glEnable(GL_DEPTH_TEST);
 		glCullFace(cull_mode);
 
-
-		// Render model
+		// Render scene
 		for (auto &model : models) {
 			model->bind();
 			// TODO maybe move to bind ?
@@ -535,15 +529,14 @@ void App::run()
 		}
 
 
-		// --- Draw Screen ---
-		// Go back to default framebuffer
+		// Go back to default framebuffer to draw the screen quad
 		glBindFramebuffer(GL_FRAMEBUFFER, 0);
 		glDisable(GL_DEPTH_TEST);
 		glClearColor(1.0f, 1.0f, 1.0f, 1.0f);
 		glClear(GL_COLOR_BUFFER_BIT);
 		glBindVertexArray(quadVAO);
 		glActiveTexture(GL_TEXTURE0);
-		glBindTexture(GL_TEXTURE_2D, colorAttachmentTexture);
+		glBindTexture(GL_TEXTURE_2D, texColor);
 
 		glCullFace(GL_BACK);
 		screenShader.use();
@@ -582,17 +575,22 @@ void App::run()
 
 void App::clean() {
 	std::cout << "App clean..." << std::endl;
+
 	glDeleteVertexArrays(1, &quadVAO);
 	glDeleteBuffers(1, &quadVBO);
 
 	glDeleteRenderbuffers(1, &rbo);
 	glDeleteFramebuffers(1, &fbo);
-	// glDeleteFramebuffers(1, &pickingFbo);
 
+	// Clear textures
 	for (int i = 0; i < IM_ARRAYSIZE(colormaps); ++i)
 		glDeleteTextures(1, &colormaps[i]);
 	for (int i = 0; i < IM_ARRAYSIZE(colormaps2D); ++i)
 		glDeleteTextures(1, &colormaps2D[i]);
+
+	glDeleteTextures(1, &texColor);
+	glDeleteTextures(1, &texCellID);
+	glDeleteTextures(1, &texFacetID);
 
 	for (auto &model : models) {
 		model->clean();
@@ -664,7 +662,7 @@ int App::getHeight() {
 long App::pick_facet() {
 	glBindFramebuffer(GL_READ_FRAMEBUFFER, fbo);
 	glReadBuffer(GL_COLOR_ATTACHMENT1);
-	long id = pick2(st.mouse.pos.x, st.mouse.pos.y);
+	long id = pick(st.mouse.pos.x, st.mouse.pos.y);
 	glBindFramebuffer(GL_READ_FRAMEBUFFER, 0);
 	return id >= 0 && id < getCurrentModel().getHexahedra().nfacets() ? id : -1;
 }
@@ -672,9 +670,39 @@ long App::pick_facet() {
 long App::pick_cell() {
 	glBindFramebuffer(GL_READ_FRAMEBUFFER, fbo);
 	glReadBuffer(GL_COLOR_ATTACHMENT2);
-	long id = pick2(st.mouse.pos.x, st.mouse.pos.y);
+	long id = pick(st.mouse.pos.x, st.mouse.pos.y);
 	glBindFramebuffer(GL_READ_FRAMEBUFFER, 0);
 	return id >= 0 && id < getCurrentModel().getHexahedra().ncells() ? id : -1;
+}
+
+std::vector<long> App::pick_facets(double x, double y, int radius) {
+	glBindFramebuffer(GL_READ_FRAMEBUFFER, fbo);
+	glReadBuffer(GL_COLOR_ATTACHMENT1);
+	auto ids = pick(x, y, radius);
+	glBindFramebuffer(GL_READ_FRAMEBUFFER, 0);
+
+	// Clean ids
+	std::vector<long> clean_ids;
+	std::copy_if(ids.begin(), ids.end(), std::back_inserter(clean_ids), [&](long id) {
+		return id >= 0 && id < getCurrentModel().getHexahedra().nfacets();
+	});
+
+	return clean_ids;
+}
+
+std::vector<long> App::pick_cells(double x, double y, int radius) {
+	glBindFramebuffer(GL_READ_FRAMEBUFFER, fbo);
+	glReadBuffer(GL_COLOR_ATTACHMENT2);
+	auto ids = pick(x, y, radius);
+	glBindFramebuffer(GL_READ_FRAMEBUFFER, 0);
+
+	// Clean ids
+	std::vector<long> clean_ids;
+	std::copy_if(ids.begin(), ids.end(), std::back_inserter(clean_ids), [&](long id) {
+		return id >= 0 && id < getCurrentModel().getHexahedra().ncells();
+	});
+
+	return clean_ids;
 }
 
 float getLinearDepth(float depth, float near, float far) {
@@ -722,41 +750,18 @@ glm::vec3 App::pick_point(double x, double y) {
 	return p;
 }
 
-
-long App::pick(double x, double y) {
-	pickRegion = {x, y, 1, 1};
-
-	glBindFramebuffer(GL_READ_FRAMEBUFFER, pickingFbo);
-	
+long App::pick(double x, double y) {	
 	unsigned char pixel[4];
 	glReadPixels(x, screenHeight - y, 1, 1, GL_RGBA, GL_UNSIGNED_BYTE, pixel);
-
-	long pickID = pixel[3] == 0 ? -1 :
-		pixel[0] +
-		pixel[1] * 256 +
-		pixel[2] * 256 * 256;
-
-	return pickID;
-}
-
-long decode_pixel(unsigned char pixel[4]) {
+	// Decode id from pixel
 	return pixel[3] == 0 ? -1 :
 		pixel[0] +
 		pixel[1] * 256 +
 		pixel[2] * 256 * 256;
 }
 
-long App::pick2(double x, double y) {	
-	unsigned char pixel[4];
-	glReadPixels(x, screenHeight - y, 1, 1, GL_RGBA, GL_UNSIGNED_BYTE, pixel);
-	return decode_pixel(pixel);
-}
-
 std::vector<long> App::pick(double xPos, double yPos, int radius) {
 
-	pickRegion = {xPos, yPos, radius, radius};
-
-	glBindFramebuffer(GL_READ_FRAMEBUFFER, pickingFbo);
 	const int diameter = radius * 2 + 1;
 	std::vector<long> pickIDs;
 
@@ -795,7 +800,7 @@ std::vector<long> App::pick(double xPos, double yPos, int radius) {
 							g * 256 +
 							b * 256 * 256;
 
-				if(pickID != -1) {
+				if (pickID != -1) {
 					pickIDs.push_back(pickID);
 				}
 			}
@@ -805,106 +810,6 @@ std::vector<long> App::pick(double xPos, double yPos, int radius) {
 	delete[] pixelData;
 	return pickIDs;
 }
-
-std::vector<long> App::extract(glm::ivec4 region) {
-	glBindFramebuffer(GL_READ_FRAMEBUFFER, pickingFbo);
-	const int radius = region.z;
-	const int diameter = radius * 2 + 1;
-	std::vector<long> pickIDs;
-
-	// Allocate buffer for square that bounds our circle
-	unsigned char* pixelData = new unsigned char[diameter * diameter * 4];
-
-	// Read pixels in square that bounds our circle
-	glReadPixels(
-		region.x - radius,
-		screenHeight - region.y - radius,
-		diameter,
-		diameter,
-		GL_RGBA,
-		GL_UNSIGNED_BYTE,
-		pixelData
-	);
-
-	// Process each pixel in the bounding square
-	for(int y = 0; y < diameter; ++y) {
-		for(int x = 0; x < diameter; ++x) {
-			// Calculate distance from center
-			int dx = x - radius;
-			int dy = y - radius;
-			float distSq = dx * dx + dy * dy;
-
-			// Only process pixels within circle
-			if(distSq <= radius * radius) {
-				int offset = (y * diameter + x) * 4;
-				unsigned char r = pixelData[offset];
-				unsigned char g = pixelData[offset + 1];
-				unsigned char b = pixelData[offset + 2];
-				unsigned char a = pixelData[offset + 3];
-				
-				long pickID = a == 0 ? -1 :
-							r +
-							g * 256 +
-							b * 256 * 256;
-
-				if(pickID != -1) {
-					pickIDs.push_back(pickID);
-				}
-			}
-		}
-	}
-
-	delete[] pixelData;
-	return pickIDs;
-}
-
-// void App::processInput_(GLFWwindow *window) {
-
-// 	double xPos, yPos;
-// 	glfwGetCursorPos(window, &xPos, &yPos);
-// 	mousePos = glm::vec2(xPos, yPos);
-
-// 	if (glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_LEFT) == GLFW_PRESS) {
-
-// 		leftMouse = true;
-// 		double xPos, yPos;
-// 		glfwGetCursorPos(window, &xPos, &yPos);
-		
-
-// 		// Check whether is the first occurrence
-// 		if (glm::length(lastMousePos) < 0.01)
-// 			lastMousePos = glm::vec2(xPos, yPos);
-
-
-// 	} else if (glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_LEFT) == GLFW_RELEASE) {
-// 		// Was a click ?
-// 		if (leftMouse) {
-// 			auto now = std::chrono::steady_clock::now();
-// 			auto delta = std::chrono::duration_cast<std::chrono::milliseconds>(now - lastClick).count();
-// 			dblClick = delta < _dbl_click_interval;
-// 			if (!dblClick)
-// 				lastClick = now;
-// 		} else 
-// 			dblClick = false;
-
-
-// 		leftMouse = false;
-// 		lastMousePos = glm::vec2(0, 0);
-// 	}
-
-// 	if (glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_RIGHT) == GLFW_PRESS) {
-// 		rightMouse = true;
-// 		double xPos, yPos;
-// 		glfwGetCursorPos(window, &xPos, &yPos);
-// 		if (glm::length(lastMousePos2) < 0.01)
-// 			lastMousePos2 = glm::vec2(xPos, yPos);
-
-// 	} else if (glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_RIGHT) == GLFW_RELEASE) {
-// 		rightMouse = false;
-// 		lastMousePos2 = glm::vec2(0, 0);		
-// 	}
-
-// }
 
 void App::processInput(GLFWwindow *window) {
 
