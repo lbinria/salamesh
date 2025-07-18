@@ -27,6 +27,41 @@ struct InputState {
 		long hovered;
 	};
 
+	struct PrimitiveState2 {
+
+		std::vector<long> get_all_hovered() {
+			return hovered;
+		}
+
+		long get_hovered() {
+			// Get the hovered element at the mouse pos
+			if (hovered.empty()) {
+				return -1;
+			}
+			// Get middle element
+			int idx = hovered.size() / 2;
+			return hovered[idx];
+		}
+
+		void set_hovered(const std::vector<long>& idxs) {
+			last_hovered = hovered;
+			hovered = idxs;
+		}
+
+		bool is_hovered() {
+			return !hovered.empty();
+		}
+
+		bool has_changed() {
+			return last_hovered != hovered;
+		}
+
+		private:
+		std::vector<long> last_hovered;
+		std::vector<long> hovered;
+
+	};
+
 	struct MouseState {
 		glm::vec2 pos;
 		glm::vec2 lastPos;
@@ -44,8 +79,6 @@ struct InputState {
 			return buttons[2];
 		}
 
-		// bool left = false;
-		// bool right = false;
 		bool dblLeft = false;
 		glm::vec2 scrollDelta = {0, 0};
 		int cursor_radius = 1;
@@ -55,6 +88,8 @@ struct InputState {
 	PrimitiveState edge;
 	PrimitiveState facet;
 	PrimitiveState cell;
+	PrimitiveState2 facets;
+	PrimitiveState2 cells;
 
 	MouseState mouse;
 

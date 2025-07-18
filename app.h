@@ -71,6 +71,7 @@ struct App : public IApp {
     unsigned int colorAttachmentTexture;
     unsigned int screenColorAttachmentTexture;
     unsigned int screenFbo;
+    unsigned int screenFbo2;
 
     unsigned int quadVAO, quadVBO;
 

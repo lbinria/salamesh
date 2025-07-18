@@ -341,21 +341,20 @@ void App::setup() {
 	// Attach to FBO
 	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_TEXTURE_2D, depthAttachmentTexture, 0);
 
-	// unsigned int rbo;
 	glGenRenderbuffers(1, &rbo);
 	glBindRenderbuffer(GL_RENDERBUFFER, rbo);
 	glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH24_STENCIL8, screenWidth, screenHeight);
+	// Attach to FBO
 	glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_STENCIL_ATTACHMENT, GL_RENDERBUFFER, rbo);
 
 	if(glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
 		std::cout << "ERROR::FRAMEBUFFER:: Main framebuffer is not complete!" << std::endl;
 
-	// glBindRenderbuffer(GL_RENDERBUFFER, 0);
+	// Unbind FBO
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
 
     // Framebuffer !
-	// colorFbo;
 	glGenFramebuffers(1, &screenFbo);
 	glBindFramebuffer(GL_FRAMEBUFFER, screenFbo);
 
@@ -366,19 +365,19 @@ void App::setup() {
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR); 
 	glBindTexture(GL_TEXTURE_2D, 0);
-
+	// Attach to screen FBO
 	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, screenColorAttachmentTexture, 0);
 
-	// colorRbo;
 	glGenRenderbuffers(1, &screenRbo);
 	glBindRenderbuffer(GL_RENDERBUFFER, screenRbo);
 	glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH24_STENCIL8, screenWidth, screenHeight);
+	// Attach to screen FBO
 	glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_STENCIL_ATTACHMENT, GL_RENDERBUFFER, screenRbo);
 
 	if(glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
 		std::cout << "ERROR::FRAMEBUFFER:: Screen framebuffer is not complete!" << std::endl;
 
-	// glBindRenderbuffer(GL_RENDERBUFFER, 0);
+	// Unbind screen FBO
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
 
@@ -516,13 +515,25 @@ void App::run()
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 		glCullFace(cull_mode);
 
-		for (auto &model : models) {
-			model->bind();
-			model->setFragRenderMode((Model::RenderMode)pickMode);
-			model->setView(view);
-			model->setProjection(projection);
-			model->render();
-		}
+		// glEnable(GL_SCISSOR_TEST);
+
+		// for (int pickMode = 2; pickMode < 4; ++pickMode) {
+			for (auto &model : models) {
+				model->bind();
+				model->setFragRenderMode((Model::RenderMode)pickMode);
+				model->setView(view);
+				model->setProjection(projection);
+				model->render();
+			}
+			// // Extract the IDs of element at mouse position from the framebuffer
+			// auto IDs = extract(glm::ivec4(st.mouse.pos.x - st.mouse.cursor_radius, screenHeight - st.mouse.pos.y - st.mouse.cursor_radius, st.mouse.cursor_radius, 0));
+			// if (pickMode == 2)
+			// 	st.facets.set_hovered(IDs);
+			// else if (pickMode == 3)
+			// 	st.cells.set_hovered(IDs);
+		// }
+
+		// glDisable(GL_SCISSOR_TEST);
 		// -------------------
 
 		// --- Draw Screen ---

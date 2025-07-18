@@ -262,7 +262,6 @@ void MyApp::mouse_button(int button, int action, int mods) {
 
 void MyApp::mouse_move(double x, double y) {
 
-	// TODO maybe not everytimes to optimize
 	st.cell.set_hovered(pick_cell());
 	// st.facet.set_hovered(pick_facet());
 	st.edge.set_hovered(pick_edge());
