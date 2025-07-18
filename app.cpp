@@ -131,8 +131,14 @@ static void framebuffer_size_callback(GLFWwindow* window, int width, int height)
 
 	glViewport(0, 0, width, height);
     
+	glBindFramebuffer(GL_FRAMEBUFFER, app->fbo);
+
+	// TODO see if necessary ???!!!
 	// Update color attachment texture
     glBindTexture(GL_TEXTURE_2D, app->colorAttachmentTexture);
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, NULL);
+
+    glBindTexture(GL_TEXTURE_2D, app->texFacetID);
     glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, NULL);
 
     glBindTexture(GL_TEXTURE_2D, app->texCellID);
@@ -142,11 +148,11 @@ static void framebuffer_size_callback(GLFWwindow* window, int width, int height)
 	glBindRenderbuffer(GL_RENDERBUFFER, app->rbo);
 	glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH24_STENCIL8, width, height);
 
-    glBindRenderbuffer(GL_RENDERBUFFER, app->depthPickingRbo);
-    glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH24_STENCIL8, width, height);
+    // glBindRenderbuffer(GL_RENDERBUFFER, app->depthPickingRbo);
+    // glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH24_STENCIL8, width, height);
     
     // Verify framebuffer completeness
-    glBindFramebuffer(GL_FRAMEBUFFER, app->pickingFbo);
+    glBindFramebuffer(GL_FRAMEBUFFER, app->fbo);
     if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE) {
         std::cout << "ERROR::FRAMEBUFFER:: Framebuffer is not complete!" << std::endl;
     }
@@ -328,8 +334,6 @@ void App::setup() {
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR); 
 	glBindTexture(GL_TEXTURE_2D, 0);
-	// Attach to FBO
-	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, colorAttachmentTexture, 0);
 
 	// Create depth texture
 	glGenTextures(1, &depthAttachmentTexture);
@@ -338,26 +342,8 @@ void App::setup() {
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 	glBindTexture(GL_TEXTURE_2D, 0);
-	// Attach to FBO
-	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_TEXTURE_2D, depthAttachmentTexture, 0);
 
-	glGenRenderbuffers(1, &rbo);
-	glBindRenderbuffer(GL_RENDERBUFFER, rbo);
-	glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH24_STENCIL8, screenWidth, screenHeight);
-	// Attach to FBO
-	glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_STENCIL_ATTACHMENT, GL_RENDERBUFFER, rbo);
-
-	if(glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
-		std::cout << "ERROR::FRAMEBUFFER:: Main framebuffer is not complete!" << std::endl;
-
-	// Unbind FBO
-	glBindFramebuffer(GL_FRAMEBUFFER, 0);
-
-
-    // Framebuffer !
-	glGenFramebuffers(1, &pickingFbo);
-	glBindFramebuffer(GL_FRAMEBUFFER, pickingFbo);
-
+	// Create picking textures
 	glGenTextures(1, &texCellID);
 	glBindTexture(GL_TEXTURE_2D, texCellID);
 	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, screenWidth, screenHeight, 0, GL_RGBA, GL_UNSIGNED_BYTE, NULL);
@@ -372,23 +358,32 @@ void App::setup() {
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR); 
 	glBindTexture(GL_TEXTURE_2D, 0);
 
-	// Attach color attachment to picking FBO buffer
+	// Attach color attachments to FBO buffer
+	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, colorAttachmentTexture, 0);
 	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT1, GL_TEXTURE_2D, texFacetID, 0);
 	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT2, GL_TEXTURE_2D, texCellID, 0);
+	// Attach depth attachments to FBO buffer
+	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_TEXTURE_2D, depthAttachmentTexture, 0);
 
-	glGenRenderbuffers(1, &depthPickingRbo);
-	glBindRenderbuffer(GL_RENDERBUFFER, depthPickingRbo);
+	GLenum drawBuffers[3] = {GL_COLOR_ATTACHMENT0, GL_COLOR_ATTACHMENT1, GL_COLOR_ATTACHMENT2};
+	glDrawBuffers(3, drawBuffers);
+
+	glGenRenderbuffers(1, &rbo);
+	glBindRenderbuffer(GL_RENDERBUFFER, rbo);
 	glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH24_STENCIL8, screenWidth, screenHeight);
-	// Attach depth RBO to picking FBO buffer
-	glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_STENCIL_ATTACHMENT, GL_RENDERBUFFER, depthPickingRbo);
+	// Attach to FBO
+	glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_STENCIL_ATTACHMENT, GL_RENDERBUFFER, rbo);
 
-	GLenum drawBuffers[2] = {GL_COLOR_ATTACHMENT1, GL_COLOR_ATTACHMENT2};
-	glDrawBuffers(2, drawBuffers);
+	// glGenRenderbuffers(1, &depthPickingRbo);
+	// glBindRenderbuffer(GL_RENDERBUFFER, depthPickingRbo);
+	// glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH24_STENCIL8, screenWidth, screenHeight);
+	// // Attach depth RBO to picking FBO buffer
+	// glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_STENCIL_ATTACHMENT, GL_RENDERBUFFER, depthPickingRbo);
 
 	if(glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
 		std::cout << "ERROR::FRAMEBUFFER:: Picking framebuffer is not complete!" << std::endl;
 
-	// Unbind picking FBO
+	// Unbind FBO
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
 
@@ -498,10 +493,32 @@ void App::run()
 		// --- Draw models color mode ---
 		// Go to color framebuffer
 		glBindFramebuffer(GL_FRAMEBUFFER, fbo);
-		glEnable(GL_DEPTH_TEST);
+		// glEnable(GL_DEPTH_TEST);
+		// glClearColor(backgroundColor.r, backgroundColor.g, backgroundColor.b, 1.);
+		// glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+		// glCullFace(cull_mode);
+
+
+
+		// 2) Enable all three color attachments at once
+		GLenum drawBufs[3] = {
+			GL_COLOR_ATTACHMENT0,
+			GL_COLOR_ATTACHMENT1,
+			GL_COLOR_ATTACHMENT2
+		};
+		glDrawBuffers(3, drawBufs);
+
+		GLfloat zero[4] = { 0.f, 0.f, 0.f, 0.f };
+
 		glClearColor(backgroundColor.r, backgroundColor.g, backgroundColor.b, 1.);
+		glClearBufferfv(GL_COLOR, 0, zero); // clear each float RT to 0
+		glClearBufferfv(GL_COLOR, 1, zero); // clear each float RT to 0
+		glClearBufferfv(GL_COLOR, 2, zero); // clear each float RT to 0
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+		glEnable(GL_DEPTH_TEST);
 		glCullFace(cull_mode);
+
 
 		// Render model
 		for (auto &model : models) {
@@ -516,53 +533,7 @@ void App::run()
 
 			model->render();
 		}
-		// -------------------
 
-		// --- Draw models ID mode ---
-        // Go to ID framebuffer
-		glBindFramebuffer(GL_FRAMEBUFFER, pickingFbo);
-
-		// 2) Enable all three color attachments at once
-		GLenum drawBufs[2] = {
-			GL_COLOR_ATTACHMENT1,
-			GL_COLOR_ATTACHMENT2
-		};
-		glDrawBuffers(2, drawBufs);
-
-		GLfloat zero[4] = { 0.f, 0.f, 0.f, 0.f };
-
-		glEnable(GL_DEPTH_TEST);
-		glClearColor(0.f, 0.f, 0.f, 0.f);
-		glClearBufferfv(GL_COLOR, 1, zero); // clear each float RT to 0
-		glClearBufferfv(GL_COLOR, 2, zero); // clear each float RT to 0
-		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-		glCullFace(cull_mode);
-
-
-
-
-
-
-		// glEnable(GL_SCISSOR_TEST);
-
-		// for (int pickMode = 2; pickMode < 4; ++pickMode) {
-			for (auto &model : models) {
-				model->bind();
-				model->setFragRenderMode((Model::RenderMode)pickMode);
-				model->setView(view);
-				model->setProjection(projection);
-				model->render();
-			}
-			// // Extract the IDs of element at mouse position from the framebuffer
-			// auto IDs = extract(glm::ivec4(st.mouse.pos.x - st.mouse.cursor_radius, screenHeight - st.mouse.pos.y - st.mouse.cursor_radius, st.mouse.cursor_radius, 0));
-			// if (pickMode == 2)
-			// 	st.facets.set_hovered(IDs);
-			// else if (pickMode == 3)
-			// 	st.cells.set_hovered(IDs);
-		// }
-
-		// glDisable(GL_SCISSOR_TEST);
-		// -------------------
 
 		// --- Draw Screen ---
 		// Go back to default framebuffer
@@ -616,7 +587,7 @@ void App::clean() {
 
 	glDeleteRenderbuffers(1, &rbo);
 	glDeleteFramebuffers(1, &fbo);
-	glDeleteFramebuffers(1, &pickingFbo);
+	// glDeleteFramebuffers(1, &pickingFbo);
 
 	for (int i = 0; i < IM_ARRAYSIZE(colormaps); ++i)
 		glDeleteTextures(1, &colormaps[i]);
@@ -691,7 +662,7 @@ int App::getHeight() {
 }
 
 long App::pick_facet() {
-	glBindFramebuffer(GL_READ_FRAMEBUFFER, pickingFbo);
+	glBindFramebuffer(GL_READ_FRAMEBUFFER, fbo);
 	glReadBuffer(GL_COLOR_ATTACHMENT1);
 	long id = pick2(st.mouse.pos.x, st.mouse.pos.y);
 	glBindFramebuffer(GL_READ_FRAMEBUFFER, 0);
@@ -699,7 +670,7 @@ long App::pick_facet() {
 }
 
 long App::pick_cell() {
-	glBindFramebuffer(GL_READ_FRAMEBUFFER, pickingFbo);
+	glBindFramebuffer(GL_READ_FRAMEBUFFER, fbo);
 	glReadBuffer(GL_COLOR_ATTACHMENT2);
 	long id = pick2(st.mouse.pos.x, st.mouse.pos.y);
 	glBindFramebuffer(GL_READ_FRAMEBUFFER, 0);

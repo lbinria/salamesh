@@ -1,14 +1,15 @@
 #version 440 core
 
 // Color output
-out vec4 FragColor;
+// out vec4 FragColor;
 // Primitive indexation
 flat in int fragCellIndex;
 flat in int fragFacetIndex;
 in float fragVertexIndex;
 
-layout(location = 0) out vec4 fragFacetIndexOut;
-layout(location = 1) out vec4 fragCellIndexOut;
+layout(location = 0) out vec4 FragColor;
+layout(location = 1) out vec4 fragFacetIndexOut;
+layout(location = 2) out vec4 fragCellIndexOut;
 
 in vec3 fragBary;
 in vec3 fragNormal;
