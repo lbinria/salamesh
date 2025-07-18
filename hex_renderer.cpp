@@ -245,6 +245,7 @@ void HexRenderer::push() {
 						glm::vec3(n.x, n.y, n.z),
 						edge,
 						ci * 6 + lfi,
+						// 16646654,
 						ci,
 						vi
 					};

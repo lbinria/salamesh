@@ -7,6 +7,9 @@ flat in int fragCellIndex;
 flat in int fragFacetIndex;
 in float fragVertexIndex;
 
+layout(location = 0) out vec4 fragFacetIndexOut;
+layout(location = 1) out vec4 fragCellIndexOut;
+
 in vec3 fragBary;
 in vec3 fragNormal;
 in vec3 fragHeights;
@@ -86,7 +89,7 @@ void main()
     /* --- FILTER END --- */
 
     // Render mode color
-    if (fragRenderMode == 0) {
+    // if (fragRenderMode == 0) {
 
 
         if (colorMode == 0) {
@@ -118,12 +121,7 @@ void main()
             col = col * diffuse;
         }
 
-    // Render mode facet index
-    } else if (fragRenderMode == 2) {
-        col = encode_id(fragFacetIndex);
-    // Render mode cell index
-    } else if (fragRenderMode == 3)
-        col = encode_id(fragCellIndex);
+    // }
 
 
     if (fragRenderMode == 0 && (fragRenderMeshMode & 2) == 2) {
@@ -133,5 +131,8 @@ void main()
         }
     }
 
+    // Outputs
+    fragFacetIndexOut = vec4(encode_id(fragFacetIndex), 1.f);
+    fragCellIndexOut = vec4(encode_id(fragCellIndex), 1.f);
     FragColor = vec4(col, 1.f);
 }

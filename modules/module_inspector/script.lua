@@ -2,13 +2,13 @@ function draw_gui()
 	imgui.Begin("Inspector")
 
 	local str_hovered_cell = "X"
-	if app.input_state.cells.is_hovered then 
-		str_hovered_cell = tostring(app.input_state.cells.hovered)
+	if app.input_state.cell.is_hovered then 
+		str_hovered_cell = tostring(app.input_state.cell.hovered)
 	end
 
 	local str_hovered_facet = "X"
-	if app.input_state.facets.is_hovered then 
-		str_hovered_facet = tostring(app.input_state.facets.hovered)
+	if app.input_state.facet.is_hovered then 
+		str_hovered_facet = tostring(app.input_state.facet.hovered)
 	end
 
 	local str_hovered_edge = "X"

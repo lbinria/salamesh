@@ -135,18 +135,18 @@ static void framebuffer_size_callback(GLFWwindow* window, int width, int height)
     glBindTexture(GL_TEXTURE_2D, app->colorAttachmentTexture);
     glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, NULL);
 
-    glBindTexture(GL_TEXTURE_2D, app->screenColorAttachmentTexture);
+    glBindTexture(GL_TEXTURE_2D, app->texCellID);
     glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, NULL);
     
     // Update depth/stencil renderbuffer
 	glBindRenderbuffer(GL_RENDERBUFFER, app->rbo);
 	glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH24_STENCIL8, width, height);
 
-    glBindRenderbuffer(GL_RENDERBUFFER, app->screenRbo);
+    glBindRenderbuffer(GL_RENDERBUFFER, app->depthPickingRbo);
     glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH24_STENCIL8, width, height);
     
     // Verify framebuffer completeness
-    glBindFramebuffer(GL_FRAMEBUFFER, app->screenFbo);
+    glBindFramebuffer(GL_FRAMEBUFFER, app->pickingFbo);
     if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE) {
         std::cout << "ERROR::FRAMEBUFFER:: Framebuffer is not complete!" << std::endl;
     }
@@ -355,29 +355,40 @@ void App::setup() {
 
 
     // Framebuffer !
-	glGenFramebuffers(1, &screenFbo);
-	glBindFramebuffer(GL_FRAMEBUFFER, screenFbo);
+	glGenFramebuffers(1, &pickingFbo);
+	glBindFramebuffer(GL_FRAMEBUFFER, pickingFbo);
 
-	// Framebuffer texture
-	glGenTextures(1, &screenColorAttachmentTexture);
-	glBindTexture(GL_TEXTURE_2D, screenColorAttachmentTexture);
+	glGenTextures(1, &texCellID);
+	glBindTexture(GL_TEXTURE_2D, texCellID);
 	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, screenWidth, screenHeight, 0, GL_RGBA, GL_UNSIGNED_BYTE, NULL);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR); 
 	glBindTexture(GL_TEXTURE_2D, 0);
-	// Attach to screen FBO
-	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, screenColorAttachmentTexture, 0);
 
-	glGenRenderbuffers(1, &screenRbo);
-	glBindRenderbuffer(GL_RENDERBUFFER, screenRbo);
+	glGenTextures(1, &texFacetID);
+	glBindTexture(GL_TEXTURE_2D, texFacetID);
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, screenWidth, screenHeight, 0, GL_RGBA, GL_UNSIGNED_BYTE, NULL);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR); 
+	glBindTexture(GL_TEXTURE_2D, 0);
+
+	// Attach color attachment to picking FBO buffer
+	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT1, GL_TEXTURE_2D, texFacetID, 0);
+	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT2, GL_TEXTURE_2D, texCellID, 0);
+
+	glGenRenderbuffers(1, &depthPickingRbo);
+	glBindRenderbuffer(GL_RENDERBUFFER, depthPickingRbo);
 	glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH24_STENCIL8, screenWidth, screenHeight);
-	// Attach to screen FBO
-	glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_STENCIL_ATTACHMENT, GL_RENDERBUFFER, screenRbo);
+	// Attach depth RBO to picking FBO buffer
+	glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_STENCIL_ATTACHMENT, GL_RENDERBUFFER, depthPickingRbo);
+
+	GLenum drawBuffers[2] = {GL_COLOR_ATTACHMENT1, GL_COLOR_ATTACHMENT2};
+	glDrawBuffers(2, drawBuffers);
 
 	if(glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
-		std::cout << "ERROR::FRAMEBUFFER:: Screen framebuffer is not complete!" << std::endl;
+		std::cout << "ERROR::FRAMEBUFFER:: Picking framebuffer is not complete!" << std::endl;
 
-	// Unbind screen FBO
+	// Unbind picking FBO
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
 
@@ -509,11 +520,28 @@ void App::run()
 
 		// --- Draw models ID mode ---
         // Go to ID framebuffer
-		glBindFramebuffer(GL_FRAMEBUFFER, screenFbo);
+		glBindFramebuffer(GL_FRAMEBUFFER, pickingFbo);
+
+		// 2) Enable all three color attachments at once
+		GLenum drawBufs[2] = {
+			GL_COLOR_ATTACHMENT1,
+			GL_COLOR_ATTACHMENT2
+		};
+		glDrawBuffers(2, drawBufs);
+
+		GLfloat zero[4] = { 0.f, 0.f, 0.f, 0.f };
+
 		glEnable(GL_DEPTH_TEST);
 		glClearColor(0.f, 0.f, 0.f, 0.f);
+		glClearBufferfv(GL_COLOR, 1, zero); // clear each float RT to 0
+		glClearBufferfv(GL_COLOR, 2, zero); // clear each float RT to 0
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 		glCullFace(cull_mode);
+
+
+
+
+
 
 		// glEnable(GL_SCISSOR_TEST);
 
@@ -588,7 +616,7 @@ void App::clean() {
 
 	glDeleteRenderbuffers(1, &rbo);
 	glDeleteFramebuffers(1, &fbo);
-	glDeleteFramebuffers(1, &screenFbo);
+	glDeleteFramebuffers(1, &pickingFbo);
 
 	for (int i = 0; i < IM_ARRAYSIZE(colormaps); ++i)
 		glDeleteTextures(1, &colormaps[i]);
@@ -663,18 +691,18 @@ int App::getHeight() {
 }
 
 long App::pick_facet() {
-	auto last_pick_mode = pickMode;
-	pickMode = Element::FACETS;
-	long id = pick(mousePos.x, mousePos.y);
-	pickMode = last_pick_mode;
+	glBindFramebuffer(GL_READ_FRAMEBUFFER, pickingFbo);
+	glReadBuffer(GL_COLOR_ATTACHMENT1);
+	long id = pick2(st.mouse.pos.x, st.mouse.pos.y);
+	glBindFramebuffer(GL_READ_FRAMEBUFFER, 0);
 	return id >= 0 && id < getCurrentModel().getHexahedra().nfacets() ? id : -1;
 }
 
 long App::pick_cell() {
-	auto last_pick_mode = pickMode;
-	pickMode = Element::CELLS;
-	long id = pick(mousePos.x, mousePos.y);
-	pickMode = last_pick_mode;
+	glBindFramebuffer(GL_READ_FRAMEBUFFER, pickingFbo);
+	glReadBuffer(GL_COLOR_ATTACHMENT2);
+	long id = pick2(st.mouse.pos.x, st.mouse.pos.y);
+	glBindFramebuffer(GL_READ_FRAMEBUFFER, 0);
 	return id >= 0 && id < getCurrentModel().getHexahedra().ncells() ? id : -1;
 }
 
@@ -727,7 +755,7 @@ glm::vec3 App::pick_point(double x, double y) {
 long App::pick(double x, double y) {
 	pickRegion = {x, y, 1, 1};
 
-	glBindFramebuffer(GL_READ_FRAMEBUFFER, screenFbo);
+	glBindFramebuffer(GL_READ_FRAMEBUFFER, pickingFbo);
 	
 	unsigned char pixel[4];
 	glReadPixels(x, screenHeight - y, 1, 1, GL_RGBA, GL_UNSIGNED_BYTE, pixel);
@@ -740,11 +768,24 @@ long App::pick(double x, double y) {
 	return pickID;
 }
 
+long decode_pixel(unsigned char pixel[4]) {
+	return pixel[3] == 0 ? -1 :
+		pixel[0] +
+		pixel[1] * 256 +
+		pixel[2] * 256 * 256;
+}
+
+long App::pick2(double x, double y) {	
+	unsigned char pixel[4];
+	glReadPixels(x, screenHeight - y, 1, 1, GL_RGBA, GL_UNSIGNED_BYTE, pixel);
+	return decode_pixel(pixel);
+}
+
 std::vector<long> App::pick(double xPos, double yPos, int radius) {
 
 	pickRegion = {xPos, yPos, radius, radius};
 
-	glBindFramebuffer(GL_READ_FRAMEBUFFER, screenFbo);
+	glBindFramebuffer(GL_READ_FRAMEBUFFER, pickingFbo);
 	const int diameter = radius * 2 + 1;
 	std::vector<long> pickIDs;
 
@@ -795,7 +836,7 @@ std::vector<long> App::pick(double xPos, double yPos, int radius) {
 }
 
 std::vector<long> App::extract(glm::ivec4 region) {
-	glBindFramebuffer(GL_READ_FRAMEBUFFER, screenFbo);
+	glBindFramebuffer(GL_READ_FRAMEBUFFER, pickingFbo);
 	const int radius = region.z;
 	const int diameter = radius * 2 + 1;
 	std::vector<long> pickIDs;

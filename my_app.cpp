@@ -263,7 +263,7 @@ void MyApp::mouse_button(int button, int action, int mods) {
 void MyApp::mouse_move(double x, double y) {
 
 	st.cell.set_hovered(pick_cell());
-	// st.facet.set_hovered(pick_facet());
+	st.facet.set_hovered(pick_facet());
 	st.edge.set_hovered(pick_edge());
 
 	for (auto &script : scripts) {

@@ -66,11 +66,12 @@ struct App : public IApp {
     // OpenGL
     unsigned int fbo;
     unsigned int rbo;
-    unsigned int screenRbo;
+    unsigned int depthPickingRbo;
     unsigned int depthAttachmentTexture;
     unsigned int colorAttachmentTexture;
-    unsigned int screenColorAttachmentTexture;
-    unsigned int screenFbo;
+    unsigned int texCellID;
+    unsigned int texFacetID;
+    unsigned int pickingFbo;
     unsigned int screenFbo2;
 
     unsigned int quadVAO, quadVBO;
@@ -111,6 +112,7 @@ struct App : public IApp {
     glm::vec3 pick_point(double x, double y);
 
     long pick(double xPos, double yPos);
+    long pick2(double xPos, double yPos);
 
 	long pick_edge(Volume &m, glm::vec3 p0, int c) override {
 		// Search nearest edge
