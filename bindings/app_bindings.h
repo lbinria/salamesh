@@ -13,12 +13,12 @@ namespace bindings {
 			sol::usertype<InputState::PrimitiveState> primitive_state_t = lua.new_usertype<InputState::PrimitiveState>("PrimitiveState", 
 				sol::constructors<InputState::PrimitiveState()>(),
 				"hovered", sol::property(
-					&InputState::PrimitiveState::get_hovered,
-					&InputState::PrimitiveState::set_hovered
+					&InputState::PrimitiveState::getHovered,
+					&InputState::PrimitiveState::setHovered
 				),
-				"all_hovered", sol::readonly_property(&InputState::PrimitiveState::get_all_hovered),
+				"all_hovered", sol::readonly_property(&InputState::PrimitiveState::getAllHovered),
 				"is_hovered", sol::readonly_property(&InputState::PrimitiveState::is_hovered),
-				"has_changed", sol::readonly_property(&InputState::PrimitiveState::has_changed)
+				"hasChanged", sol::readonly_property(&InputState::PrimitiveState::hasChanged)
 			);
 
 			sol::usertype<InputState> input_state_t = lua.new_usertype<InputState>("InputState", 

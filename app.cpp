@@ -663,7 +663,7 @@ int App::getHeight() {
 long App::pick_edge(double x, double y) {
 	if (st.cell.is_hovered()) {
 		auto p = pick_point(x, y);
-		return pick_edge(getCurrentModel().getHexahedra(), p, st.cell.get_hovered());
+		return pick_edge(getCurrentModel().getHexahedra(), p, st.cell.getHovered());
 	} else {
 		return -1;
 	}

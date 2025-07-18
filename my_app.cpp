@@ -264,12 +264,12 @@ void MyApp::mouse_move(double x, double y) {
 
 	auto edge = pick_edge(x, y);
 	if (edge >= 0) 
-		st.edge.set_hovered({edge});
+		st.edge.setHovered({edge});
 	else
-		st.edge.set_hovered({});
+		st.edge.setHovered({});
 
-	st.facet.set_hovered(pick_facets(x, y, st.mouse.cursor_radius));
-	st.cell.set_hovered(pick_cells(x, y, st.mouse.cursor_radius));
+	st.facet.setHovered(pick_facets(x, y, st.mouse.cursor_radius));
+	st.cell.setHovered(pick_cells(x, y, st.mouse.cursor_radius));
 
 	for (auto &script : scripts) {
 		script->mouse_move(x, y);

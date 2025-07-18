@@ -66,6 +66,7 @@ add_executable(salamesh
   main.cpp 
   app.cpp app.h
   my_app.cpp my_app.h
+  script.cpp script.h
   shader.cpp shader.h 
   hex_renderer.cpp hex_renderer.h 
   point_set_renderer.cpp point_set_renderer.h

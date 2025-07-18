@@ -5,11 +5,11 @@ struct InputState {
 
 	struct PrimitiveState {
 
-		std::vector<long> get_all_hovered() {
+		std::vector<long> getAllHovered() {
 			return hovered;
 		}
 
-		long get_hovered() {
+		long getHovered() {
 			// Get the hovered element at the mouse pos
 			if (hovered.empty()) {
 				return -1;
@@ -19,8 +19,8 @@ struct InputState {
 			return hovered[idx];
 		}
 
-		void set_hovered(const std::vector<long>& idxs) {
-			last_hovered = hovered;
+		void setHovered(const std::vector<long>& idxs) {
+			lastHovered = hovered;
 			hovered = idxs;
 		}
 
@@ -28,12 +28,12 @@ struct InputState {
 			return !hovered.empty();
 		}
 
-		bool has_changed() {
-			return last_hovered != hovered;
+		bool hasChanged() {
+			return lastHovered != hovered;
 		}
 
 		private:
-		std::vector<long> last_hovered;
+		std::vector<long> lastHovered;
 		std::vector<long> hovered;
 
 	};
