@@ -254,7 +254,7 @@ struct HexModel : public Model {
 
     void setMeshShrink(float val) {
 		_hex_renderer.setMeshShrink(val);
-        // _pointSetRenderer.setMeshShrink(val);
+        _pointSetRenderer.setMeshShrink(val);
         meshShrink = val;
     }
 
@@ -274,6 +274,22 @@ struct HexModel : public Model {
     void setSelectedColormap(int idx) {
 		_hex_renderer.setSelectedColormap(idx);
         selectedColormap = idx;
+    }
+
+    glm::vec3 getPointColor() const {
+        return _pointSetRenderer.getPointColor();
+    }
+
+    void setPointColor(glm::vec3 color) {
+        _pointSetRenderer.setPointColor(color);
+    }
+
+    float getPointSize() const {
+        return _pointSetRenderer.getPointSize();
+    }
+
+    void setPointSize(float size) {
+        _pointSetRenderer.setPointSize(size);
     }
 
     glm::vec3 getWorldPosition() {

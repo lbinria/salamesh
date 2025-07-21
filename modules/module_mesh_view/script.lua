@@ -106,6 +106,18 @@ function draw_gui()
 		cur_model.meshShrink = new_mesh_shrink
 	end
 
+	local sel_point_size, new_point_size = imgui.SliderFloat("Point size", cur_model.point_size, 0, 10)
+	if (sel_point_size) then 
+		print("Change point size: " .. tostring(new_point_size))
+		cur_model.point_size = new_point_size
+	end
+
+	local sel_point_color, new_point_color = imgui.ColorEdit3("Point color", cur_model.point_color)
+	if (sel_point_color) then 
+		-- print("Change point color: " .. tostring(new_point_color))
+		cur_model.point_color = new_point_color
+	end
+
 	if (imgui.BeginCombo("Pick Mode", app.pick_mode_strings[app.pick_mode + 1])) then
 		for i = 1, #app.pick_mode_strings do
 			local is_selected = (i - 1) == app.pick_mode

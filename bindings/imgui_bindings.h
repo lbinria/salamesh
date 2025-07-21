@@ -110,6 +110,27 @@ namespace bindings {
 				ImGui::Image(user_texture_id, size);
 			});
 
+			imgui.set_function("ColorEdit3", [](const char* label, sol::object color, sol::this_state s) -> std::optional<std::tuple<bool, glm::vec3>> {
+				sol::state_view lua(s);
+
+				// if (color.is<ImVec4>()) {
+				// 	ImVec4 col = color.as<ImVec4>();
+				// 	bool changed = ImGui::ColorEdit3(label, &col.x);
+				// 	return std::make_optional(std::make_tuple(changed, col));
+				// } else {
+				// 	return std::nullopt;
+				// }
+
+				if (color.is<glm::vec3>()) {
+					auto col = color.as<glm::vec3>();
+					bool changed = ImGui::ColorEdit3(label, &col.x);
+					return std::make_optional(std::make_tuple(changed, col));
+				} else {
+					return std::nullopt;
+				}
+			});
+
+
 			imgui.set_function("ImVec2", [](float x, float y) {
 				return ImVec2(x, y);
 			});

@@ -78,16 +78,20 @@ namespace bindings {
 				&Model::setMeshSize
 			);
 
-			model_t.set_function("getMeshSize", &Model::getMeshSize);
-			model_t.set_function("setMeshSize", &Model::setMeshSize);
-
 			model_t["meshShrink"] = sol::property(
 				&Model::getMeshShrink,
 				&Model::setMeshShrink
 			);
 
-			model_t.set_function("getMeshShrink", &Model::getMeshShrink);
-			model_t.set_function("setMeshShrink", &Model::setMeshShrink);
+			model_t["point_color"] = sol::property(
+				&Model::getPointColor,
+				&Model::setPointColor
+			);
+
+			model_t["point_size"] = sol::property(
+				&Model::getPointSize,
+				&Model::setPointSize
+			);
 
 			model_t["color_mode_strings"] = sol::readonly_property(
 				&Model::getColorModeStrings

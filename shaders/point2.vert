@@ -1,7 +1,7 @@
 #version 440 core
 
 layout (location = 0) in vec3 aPos;
-layout (location = 1) in float size;
+layout (location = 1) in float sizeScale;
 
 layout (location = 5) in int cellIndex;
 
@@ -9,14 +9,12 @@ layout (location = 5) in int cellIndex;
 uniform mat4 model;
 uniform mat4 view;
 uniform mat4 projection;
+uniform float pointSize;
 
 uniform samplerBuffer bary;
 uniform samplerBuffer attributeData;
 
 uniform float meshShrink;
-
-// Point
-flat out float fragSize;
 
 
 void main()
@@ -26,11 +24,8 @@ void main()
 	// Shrink
 	vec3 pos = aPos - (aPos - bary) * meshShrink;
 
-	// Pass to fragment shader
-	fragSize = size;
-
 	// Transform to clip space
 	gl_Position = projection * view * model * vec4(pos, 1.0);
-	gl_PointSize = size;
+	gl_PointSize = pointSize * sizeScale;
     
 }

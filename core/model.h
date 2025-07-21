@@ -79,6 +79,11 @@ struct Model {
     virtual int getFragRenderMode() = 0;
     virtual void setFragRenderMode(RenderMode mode) = 0;
 
+    virtual glm::vec3 getPointColor() const = 0;
+    virtual void setPointColor(glm::vec3 color) = 0;
+    virtual float getPointSize() const = 0;
+    virtual void setPointSize(float size) = 0;
+
     // Model attributes
     virtual std::vector<std::tuple<std::string, int>> getAttrs() = 0;
     virtual std::tuple<std::string, int> getAttr(int idx) = 0;
