@@ -551,7 +551,7 @@ void App::run()
 		glClear(GL_COLOR_BUFFER_BIT);
 		glBindVertexArray(quadVAO);
 		glActiveTexture(GL_TEXTURE0);
-		glBindTexture(GL_TEXTURE_2D, texVertexID);
+		glBindTexture(GL_TEXTURE_2D, texColor);
 
 		glCullFace(GL_BACK);
 		screenShader.use();
