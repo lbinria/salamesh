@@ -2,6 +2,7 @@
 #include <string>
 #include "core/model.h"
 #include "hex_renderer.h"
+#include "point_set_renderer.h"
 
 using namespace UM;
 
@@ -9,7 +10,7 @@ struct HexModel : public Model {
 
 	// Mesh + Renderer
 
-	HexModel() : _name(""), _path(""), _hex(), _hex_renderer(_hex) {
+	HexModel() : _name(""), _path(""), _hex(), _hex_renderer(_hex), _pointSetRenderer(_hex.points) {
 		
 	}
 
@@ -17,7 +18,8 @@ struct HexModel : public Model {
 		_name(name), 
 		_path(""), 
 		_hex(),
-		_hex_renderer(_hex) {}
+		_hex_renderer(_hex),
+        _pointSetRenderer(_hex.points) {}
 
 
 
@@ -128,19 +130,19 @@ struct HexModel : public Model {
     std::string getName() final override { return _name; }
     void setName(std::string name) final override { _name = name; }
 
-    void update() {
-		_hex_renderer.update();
-		// TODO _ps_renderer.update();
-	}
+    // void update() {
+	// 	_hex_renderer.update();
+	// 	// TODO _ps_renderer.update();
+	// }
     
 	void init() final override {
 		_hex_renderer.init();
-		// TODO _ps_renderer.init();
+		_pointSetRenderer.init();
 	}
     
 	void push() final override {
 		_hex_renderer.push();
-		// TODO _ps_renderer.push();
+		_pointSetRenderer.push();
 
 		if (colorMode == Model::ColorMode::ATTRIBUTE) {
 			updateAttr();
@@ -150,16 +152,13 @@ struct HexModel : public Model {
     void render() {
         if (!visible)
             return;
+        
         glm::vec3 pos = getWorldPosition();
 
         _hex_renderer.render(pos);
-        // _hex_renderer.render(position);
+        _pointSetRenderer.render(pos);
 	}
     
-
-    void bind() {
-		_hex_renderer.bind();
-	}
     void clean() {
 		_hex_renderer.clean();
 	}
@@ -171,6 +170,9 @@ struct HexModel : public Model {
 	Hexahedra& getHexahedra() { return _hex; }
 	HexRenderer& getRenderer() { return _hex_renderer; }
 
+    void setTexture(unsigned int tex) {
+        _hex_renderer.setTexture(tex);
+    }
 
 	// Just call underlying renderer methods
     int getColorMode() {
@@ -252,6 +254,7 @@ struct HexModel : public Model {
 
     void setMeshShrink(float val) {
 		_hex_renderer.setMeshShrink(val);
+        // _pointSetRenderer.setMeshShrink(val);
         meshShrink = val;
     }
 
@@ -357,10 +360,12 @@ struct HexModel : public Model {
 
     void setView(glm::mat4 &view) {
         _hex_renderer.setView(view);
+        _pointSetRenderer.setView(view);
     }
 
     void setProjection(glm::mat4 &projection) {
         _hex_renderer.setProjection(projection);
+        _pointSetRenderer.setProjection(projection);
     }
 
     std::shared_ptr<Model> getParent() {
@@ -399,7 +404,7 @@ struct HexModel : public Model {
 
 	// Renderers
 	HexRenderer _hex_renderer;
-	// PointRenderer _point_renderer;
+	PointSetRenderer _pointSetRenderer;
 
     std::vector<std::tuple<std::string, Element, std::shared_ptr<GenericAttributeContainer>>> attrs;
     // Pointer to parent model, if there is one

@@ -418,7 +418,7 @@ void App::setup() {
 
 	glBindVertexArray(0);
 
-	glEnable(GL_VERTEX_PROGRAM_POINT_SIZE);
+	glEnable(GL_PROGRAM_POINT_SIZE);
 	glEnable(GL_CULL_FACE);
 
 }
@@ -516,15 +516,17 @@ void App::run()
 
 		// Render scene
 		for (auto &model : models) {
-			model->bind();
-			// TODO maybe move to bind ?
-			glActiveTexture(GL_TEXTURE0);
-			glBindTexture(GL_TEXTURE_1D, colormaps[model->getSelectedColormap()]);
+
 
 			model->setFragRenderMode(Model::RenderMode::Color);
 			model->setView(view);
 			model->setProjection(projection);
 
+			model->setTexture(colormaps[model->getSelectedColormap()]);
+			// glActiveTexture(GL_TEXTURE0);
+			// glBindTexture(GL_TEXTURE_1D, colormaps[model->getSelectedColormap()]);
+
+			// model->bind();
 			model->render();
 		}
 

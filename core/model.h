@@ -44,7 +44,6 @@ struct Model {
     // Lifecycle functions
     virtual void init() = 0; // TODO see because it is an app function => it should be override by user but not used ! (public for override, private for use ?)
     virtual void push() = 0;
-    virtual void bind() = 0; // TODO see because it is an app function => it should be override by user but not used ! (public for override, private for use ?)
     virtual void render() = 0;
     virtual void clean() = 0;
 
@@ -52,6 +51,7 @@ struct Model {
 	virtual Hexahedra& getHexahedra() = 0;
 
     // General shader uniforms
+    virtual void setTexture(unsigned int tex) = 0;
 	virtual void setHighlight(int idx, bool highlighted) = 0;
 	virtual void setHighlight(int idx, float highlight) = 0;
 	virtual void setHighlight(std::vector<float> highlights) = 0;

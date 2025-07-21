@@ -315,10 +315,18 @@ void HexRenderer::bind() {
 	// glUniform1i(glGetUniformLocation(shader.id, "_filter"), 4);
 }
 
+void HexRenderer::setTexture(unsigned int tex) {
+	glActiveTexture(GL_TEXTURE0);
+	glBindTexture(GL_TEXTURE_1D, tex);
+}
+
 void HexRenderer::render(glm::vec3 &position) {
 
 	if (!visible)
 		return;
+
+	bind();
+
 
     shader.use();
 

@@ -38,7 +38,6 @@ struct HexRenderer {
 
 
     // TODO eventually merge init / update
-    void update();
     void init();
     void push();
     void render(glm::vec3 &position);
@@ -54,6 +53,8 @@ struct HexRenderer {
     //     for (int i = 0; i < _highlights.size(); ++i)
     //         x[i] = 2.f;
     // }
+
+    void setTexture(unsigned int tex);
 
     void setVisible(bool v) {
         visible = v;
