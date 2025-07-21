@@ -60,7 +60,7 @@ struct InputState {
 		std::chrono::steady_clock::time_point lastClick;
 
 		glm::vec2 scrollDelta = {0, 0};
-		int cursor_radius = 1;
+		int cursor_radius = 1; // TODO rename
 	};
 
 	PrimitiveState vertex;

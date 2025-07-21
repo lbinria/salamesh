@@ -1,11 +1,21 @@
 #version 440 core
 
 // Color output
-out vec4 FragColor;
+layout(location = 0) out vec4 FragColor;
+layout(location = 3) out vec4 FragVertexIndexOut;
+
+flat in int FragVertexIndex;
 
 uniform bool is_light_enabled;
 
 uniform vec3 pointColor;
+
+vec3 encode_id(int id) {
+    int r = id & 0x000000FF;
+    int g = (id & 0x0000FF00) >> 8;
+    int b = (id & 0x00FF0000) >> 16;
+    return vec3(r / 255.f, g / 255.f, b / 255.f); 
+}
 
 void main()
 {
@@ -29,4 +39,5 @@ void main()
     // Light
     col = col * dot(N, vec3(0.0, 0.0, 1.0));
     FragColor = vec4(col, 1.f);
+    FragVertexIndexOut = vec4(encode_id(FragVertexIndex), 1.f);
 }

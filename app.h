@@ -64,6 +64,7 @@ struct App : public IApp {
     unsigned int texColor;
     unsigned int texCellID;
     unsigned int texFacetID;
+    unsigned int texVertexID;
 
     unsigned int quadVAO, quadVBO;
 
@@ -100,9 +101,11 @@ struct App : public IApp {
     long pick(double xPos, double yPos);
     std::set<long> pick(double xPos, double yPos, int radius);
 
+    long pick_vertex(double x, double y) override;
     long pick_edge(double x, double y) override;
     long pick_facet(double x, double y) override;
     long pick_cell(double x, double y) override;
+    std::vector<long> pick_vertices(double x, double y, int radius);
     std::vector<long> pick_facets(double x, double y, int radius);
     std::vector<long> pick_cells(double x, double y, int radius);
 

@@ -15,7 +15,8 @@ using namespace UM;
 struct PointSetRenderer {
 
 	struct Vertex {
-		glm::vec3 position; 
+		int index;
+        glm::vec3 position; 
 		float size;
 	};
 

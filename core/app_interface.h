@@ -42,7 +42,7 @@ struct IApp {
 
 
     // virtual glm::vec3 pick_point(long x, long y) = 0;
-    // virtual long pick_vertex() = 0;
+    virtual long pick_vertex(double x, double y) = 0;
     virtual long pick_edge(double x, double y) = 0;
     virtual long pick_facet(double x, double y) = 0;
     virtual long pick_cell(double x, double y) = 0;

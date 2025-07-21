@@ -8,8 +8,12 @@ void PointSetRenderer::init() {
 	glGenBuffers(1, &VBO);
 	glBindBuffer(GL_ARRAY_BUFFER, VBO);
 
+	GLuint vertexIndexLocation = glGetAttribLocation(shader.id, "vertexIndex");
 	GLuint positionLocation = glGetAttribLocation(shader.id, "aPos");
 	GLuint sizeLocation = glGetAttribLocation(shader.id, "sizeScale");
+
+	glEnableVertexAttribArray(vertexIndexLocation);
+	glVertexAttribIPointer(vertexIndexLocation, 1, GL_INT, sizeof(Vertex), (void*)offsetof(Vertex, index));
 
 	glEnableVertexAttribArray(positionLocation);
 	glVertexAttribPointer(positionLocation, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)offsetof(Vertex, position));
@@ -32,6 +36,7 @@ void PointSetRenderer::push() {
 	for (int i = 0; i < ps.size(); ++i) {
 		auto p = ps[i];
 		vertices[i] = { 
+			i,
 			glm::vec3(p.x, p.y, p.z),
 			1.f
 		};

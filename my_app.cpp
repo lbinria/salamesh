@@ -268,6 +268,7 @@ void MyApp::mouse_move(double x, double y) {
 	else
 		st.edge.setHovered({});
 
+	st.vertex.setHovered(pick_vertices(x, y, st.mouse.cursor_radius));
 	st.facet.setHovered(pick_facets(x, y, st.mouse.cursor_radius));
 	st.cell.setHovered(pick_cells(x, y, st.mouse.cursor_radius));
 

@@ -27,6 +27,19 @@ function draw_gui()
 		end
 	end
 
+	local str_hovered_vertex = "X"
+	local str_hovered_vertices = "X"
+	if app.input_state.vertex.any_hovered then 
+		str_hovered_vertex = tostring(app.input_state.vertex.hovered)
+		for i = 1, #app.input_state.vertex.all_hovered do 
+			if i == 1 then
+				str_hovered_vertices = tostring(app.input_state.vertex.all_hovered[i])
+			else
+				str_hovered_vertices = str_hovered_vertices .. ", " .. tostring(app.input_state.vertex.all_hovered[i])
+			end
+		end
+	end
+
 	local str_hovered_edge = "X"
 	if app.input_state.edge.any_hovered then 
 		str_hovered_edge = tostring(app.input_state.edge.hovered)
@@ -35,10 +48,12 @@ function draw_gui()
 	imgui.Text("Hovered cell: " .. str_hovered_cell)
 	imgui.Text("Hovered facet: " .. str_hovered_facet)
 	imgui.Text("Hovered edge: " .. str_hovered_edge)
+	imgui.Text("Hovered vertex: " .. str_hovered_vertex)
 
 	imgui.Separator()
 	imgui.Text("Hovered cells: " .. "{" .. str_hovered_cells .. "}")
 	imgui.Text("Hovered facets: " .. "{" .. str_hovered_facets .. "}")
+	imgui.Text("Hovered vertices: " .. "{" .. str_hovered_vertices .. "}")
 
 
 	imgui.End()

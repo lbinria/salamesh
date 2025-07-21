@@ -138,6 +138,9 @@ static void framebuffer_size_callback(GLFWwindow* window, int width, int height)
     glBindTexture(GL_TEXTURE_2D, app->texColor);
     glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, NULL);
 
+    glBindTexture(GL_TEXTURE_2D, app->texVertexID);
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, NULL);
+
     glBindTexture(GL_TEXTURE_2D, app->texFacetID);
     glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, NULL);
 
@@ -358,15 +361,23 @@ void App::setup() {
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR); 
 	glBindTexture(GL_TEXTURE_2D, 0);
 
+	glGenTextures(1, &texVertexID);
+	glBindTexture(GL_TEXTURE_2D, texVertexID);
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, screenWidth, screenHeight, 0, GL_RGBA, GL_UNSIGNED_BYTE, NULL);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR); 
+	glBindTexture(GL_TEXTURE_2D, 0);
+
 	// Attach color attachments to FBO buffer
 	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, texColor, 0);
 	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT1, GL_TEXTURE_2D, texFacetID, 0);
 	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT2, GL_TEXTURE_2D, texCellID, 0);
+	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT3, GL_TEXTURE_2D, texVertexID, 0);
 	// Attach depth attachments to FBO buffer
 	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_TEXTURE_2D, depthAttachmentTexture, 0);
 
-	GLenum drawBuffers[3] = {GL_COLOR_ATTACHMENT0, GL_COLOR_ATTACHMENT1, GL_COLOR_ATTACHMENT2};
-	glDrawBuffers(3, drawBuffers);
+	GLenum drawBuffers[4] = {GL_COLOR_ATTACHMENT0, GL_COLOR_ATTACHMENT1, GL_COLOR_ATTACHMENT2, GL_COLOR_ATTACHMENT3};
+	glDrawBuffers(4, drawBuffers);
 
 	glGenRenderbuffers(1, &rbo);
 	glBindRenderbuffer(GL_RENDERBUFFER, rbo);
@@ -495,12 +506,13 @@ void App::run()
 		glBindFramebuffer(GL_FRAMEBUFFER, fbo);
 
 		// Enable all three color attachments at once
-		GLenum drawBufs[3] = {
+		GLenum drawBufs[4] = {
 			GL_COLOR_ATTACHMENT0,
 			GL_COLOR_ATTACHMENT1,
-			GL_COLOR_ATTACHMENT2
+			GL_COLOR_ATTACHMENT2,
+			GL_COLOR_ATTACHMENT3
 		};
-		glDrawBuffers(3, drawBufs);
+		glDrawBuffers(4, drawBufs);
 
 		// Clear attachments
 		GLfloat zero[4] = { 0.f, 0.f, 0.f, 0.f };
@@ -509,6 +521,7 @@ void App::run()
 		glClearBufferfv(GL_COLOR, 0, zero); // clear each float RT to 0
 		glClearBufferfv(GL_COLOR, 1, zero); // clear each float RT to 0
 		glClearBufferfv(GL_COLOR, 2, zero); // clear each float RT to 0
+		glClearBufferfv(GL_COLOR, 3, zero); // clear each float RT to 0
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 		glEnable(GL_DEPTH_TEST);
@@ -538,7 +551,7 @@ void App::run()
 		glClear(GL_COLOR_BUFFER_BIT);
 		glBindVertexArray(quadVAO);
 		glActiveTexture(GL_TEXTURE0);
-		glBindTexture(GL_TEXTURE_2D, texColor);
+		glBindTexture(GL_TEXTURE_2D, texVertexID);
 
 		glCullFace(GL_BACK);
 		screenShader.use();
@@ -593,6 +606,7 @@ void App::clean() {
 	glDeleteTextures(1, &texColor);
 	glDeleteTextures(1, &texCellID);
 	glDeleteTextures(1, &texFacetID);
+	glDeleteTextures(1, &texVertexID);
 
 	for (auto &model : models) {
 		model->clean();
@@ -671,6 +685,15 @@ long App::pick_edge(double x, double y) {
 	}
 }
 
+long App::pick_vertex(double x, double y) {
+	glBindFramebuffer(GL_READ_FRAMEBUFFER, fbo);
+	glReadBuffer(GL_COLOR_ATTACHMENT3);
+	long id = pick(x, y);
+	std::cout << "pick vertex id: " << id << std::endl;
+	glBindFramebuffer(GL_READ_FRAMEBUFFER, 0);
+	return id >= 0 && id < getCurrentModel().getHexahedra().nverts() ? id : -1;
+}
+
 long App::pick_facet(double x, double y) {
 	glBindFramebuffer(GL_READ_FRAMEBUFFER, fbo);
 	glReadBuffer(GL_COLOR_ATTACHMENT1);
@@ -685,6 +708,21 @@ long App::pick_cell(double x, double y) {
 	long id = pick(x, y);
 	glBindFramebuffer(GL_READ_FRAMEBUFFER, 0);
 	return id >= 0 && id < getCurrentModel().getHexahedra().ncells() ? id : -1;
+}
+
+std::vector<long> App::pick_vertices(double x, double y, int radius) {
+	glBindFramebuffer(GL_READ_FRAMEBUFFER, fbo);
+	glReadBuffer(GL_COLOR_ATTACHMENT3);
+	auto ids = pick(x, y, radius);
+	glBindFramebuffer(GL_READ_FRAMEBUFFER, 0);
+
+	// Clean ids
+	std::vector<long> clean_ids;
+	std::copy_if(ids.begin(), ids.end(), std::back_inserter(clean_ids), [&](long id) {
+		return id >= 0 && id < getCurrentModel().getHexahedra().nverts();
+	});
+
+	return clean_ids;
 }
 
 std::vector<long> App::pick_facets(double x, double y, int radius) {
