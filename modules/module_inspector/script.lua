@@ -3,7 +3,7 @@ function draw_gui()
 
 	local str_hovered_cell = "X"
 	local str_hovered_cells = "X"
-	if app.input_state.cell.is_hovered then 
+	if app.input_state.cell.any_hovered then 
 		str_hovered_cell = tostring(app.input_state.cell.hovered)
 		for i = 1, #app.input_state.cell.all_hovered do 
 			if i == 1 then
@@ -16,7 +16,7 @@ function draw_gui()
 
 	local str_hovered_facet = "X"
 	local str_hovered_facets = "X"
-	if app.input_state.facet.is_hovered then 
+	if app.input_state.facet.any_hovered then 
 		str_hovered_facet = tostring(app.input_state.facet.hovered)
 		for i = 1, #app.input_state.facet.all_hovered do 
 			if i == 1 then
@@ -28,7 +28,7 @@ function draw_gui()
 	end
 
 	local str_hovered_edge = "X"
-	if app.input_state.edge.is_hovered then 
+	if app.input_state.edge.any_hovered then 
 		str_hovered_edge = tostring(app.input_state.edge.hovered)
 	end
 

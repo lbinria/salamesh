@@ -23,8 +23,8 @@ struct InputState {
 			lastHovered = hovered;
 			hovered = idxs;
 		}
-
-		bool is_hovered() {
+		// TODO rename to anyHovered ?
+		bool anyHovered() {
 			return !hovered.empty();
 		}
 

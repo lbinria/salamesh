@@ -17,8 +17,8 @@ namespace bindings {
 					&InputState::PrimitiveState::setHovered
 				),
 				"all_hovered", sol::readonly_property(&InputState::PrimitiveState::getAllHovered),
-				"is_hovered", sol::readonly_property(&InputState::PrimitiveState::is_hovered),
-				"hasChanged", sol::readonly_property(&InputState::PrimitiveState::hasChanged)
+				"any_hovered", sol::readonly_property(&InputState::PrimitiveState::anyHovered),
+				"has_changed", sol::readonly_property(&InputState::PrimitiveState::hasChanged)
 			);
 
 			sol::usertype<InputState> input_state_t = lua.new_usertype<InputState>("InputState", 
