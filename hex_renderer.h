@@ -81,8 +81,7 @@ struct HexRenderer {
     }
 
     void setFilter(int idx, bool filter) {
-        _filters[idx] = filter ? 1.f : 0.f;
-    	std::memcpy(filtersPtr, _filters.data(), _filters.size() * sizeof(float));
+        ptrFilter[idx] = filter ? 1.f : 0.f;
     }
 
     void setAttribute(std::vector<float> attributeData);
@@ -161,10 +160,9 @@ struct HexRenderer {
     // Data
     std::vector<float> _barys;
     std::vector<float> _highlights;
-    std::vector<float> _filters;
 
     void *highlightsPtr;
-    void *filtersPtr;
+    float *ptrFilter;
 
     bool visible = true;
 };

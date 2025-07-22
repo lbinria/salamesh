@@ -78,11 +78,9 @@ void HexRenderer::init() {
 
 	
 	glGenBuffers(1, &bufHighlight);
+	glBindBuffer(GL_TEXTURE_BUFFER, bufHighlight);
 
 	_highlights.resize(hex.ncells(), 0.0f);
-	glBindBuffer(GL_TEXTURE_BUFFER, bufHighlight);
-	// glBufferData(GL_TEXTURE_BUFFER, _highlights.size() * sizeof(float), _highlights.data(), GL_DYNAMIC_DRAW);
-
 	// Allocate persistent storage
 	GLbitfield flags = GL_MAP_WRITE_BIT | GL_MAP_PERSISTENT_BIT | GL_MAP_COHERENT_BIT;
 	glBufferStorage(GL_TEXTURE_BUFFER, _highlights.size() * sizeof(float), nullptr, flags);
@@ -97,13 +95,9 @@ void HexRenderer::init() {
 
 	glGenBuffers(1, &bufFilter);
 	glBindBuffer(GL_TEXTURE_BUFFER, bufFilter);
-	_filters.resize(hex.ncells(), 0.0f);
-	// glBufferData(GL_TEXTURE_BUFFER, _filters.size() * sizeof(float), _filters.data(), GL_DYNAMIC_DRAW);
-
-	// Allocate persistent storage
-	glBufferStorage(GL_TEXTURE_BUFFER, _filters.size() * sizeof(float), nullptr, flags);
+	glBufferStorage(GL_TEXTURE_BUFFER, hex.ncells() * sizeof(float), nullptr, flags);
 	// Map once and keep pointer (not compatible for MacOS... because need OpenGL >= 4.6 i think)
-	filtersPtr = glMapBufferRange(GL_TEXTURE_BUFFER, 0, _filters.size() * sizeof(float), flags);
+	ptrFilter = (float*)glMapBufferRange(GL_TEXTURE_BUFFER, 0, hex.ncells() * sizeof(float), flags);
 
 	glGenTextures(1, &texFilter);
 	glActiveTexture(GL_TEXTURE0 + 4); 
@@ -357,6 +351,8 @@ void HexRenderer::clean() {
 	// Clean up
 	glDeleteVertexArrays(1, &VAO);
 	glDeleteBuffers(1, &VBO);
+
+	// TODO clean buffers, textures, unmap ptr...
 
 	shader.clean();
 }

@@ -119,6 +119,8 @@ void PointSetRenderer::push() {
 }
 
 void PointSetRenderer::render(glm::vec3 &position) {
+	// TODO remove test
+	return;
 
 	glBindVertexArray(VAO);
 
@@ -143,5 +145,8 @@ void PointSetRenderer::clean() {
 	// Clean up
 	glDeleteVertexArrays(1, &VAO);
 	glDeleteBuffers(1, &VBO);
+
+	// TODO clean buffers, textures, unmap ptr...
+	
 	shader.clean();
 }
