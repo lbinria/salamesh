@@ -31,10 +31,8 @@ out vec3 fragWorldPos2;
 uniform mat4 model;
 
 uniform int attr_element = -1;
-out float fragAttrVal;
 
 uniform samplerBuffer bary;
-uniform samplerBuffer attributeData;
 
 // Highlights
 uniform samplerBuffer highlight;
@@ -55,7 +53,6 @@ void main()
    // Transform to clip space
    gl_Position = projection * view * model * vec4(pos, 1.0);
 
-   fragAttrVal = texelFetch(attributeData, cellIndex).x;
    fragHighlight = texelFetch(highlight, cellIndex).x;
    fragFilter = texelFetch(_filter, cellIndex).x;
 

@@ -42,10 +42,8 @@ void HexRenderer::setAttribute(std::vector<float> attributeData) {
 	float min = std::numeric_limits<float>::max(); 
 	float max = std::numeric_limits<float>::min();
 	for (auto x : attributeData) {
-		if (x < min)
-			min = x;
-		if (x > max)
-			max = x;
+		min = std::min(min, x);
+		max = std::max(max, x);
 	}
 
 	// Update min/max
@@ -53,7 +51,7 @@ void HexRenderer::setAttribute(std::vector<float> attributeData) {
 	shader.setFloat2("attributeDataMinMax", glm::vec2(min, max));
 
 	// Update sample
-	glBindBuffer(GL_TEXTURE_BUFFER, cellAttributeBuffer);
+	glBindBuffer(GL_TEXTURE_BUFFER, bufAttr);
 	glBufferData(GL_TEXTURE_BUFFER, attributeData.size() * sizeof(float), attributeData.data(), GL_STATIC_DRAW);
 }
 
@@ -66,23 +64,23 @@ void HexRenderer::init() {
 	glGenVertexArrays(1, &VAO);
 	glGenBuffers(1, &VBO);
 
-	glGenBuffers(1, &cellBaryBuffer);
-	glGenTextures(1, &cellBaryTexture);
+	glGenBuffers(1, &bufBary);
+	glGenTextures(1, &texBary);
 
 
 
-	glGenBuffers(1, &cellAttributeBuffer);
-	glGenTextures(1, &cellAttributeTexture);
-	glBindBuffer(GL_TEXTURE_BUFFER, cellAttributeBuffer);
+	glGenBuffers(1, &bufAttr);
+	glGenTextures(1, &texAttr);
+	glBindBuffer(GL_TEXTURE_BUFFER, bufAttr);
 	glActiveTexture(GL_TEXTURE0 + 2); 
-	glBindTexture(GL_TEXTURE_BUFFER, cellAttributeTexture);
-	glTexBuffer(GL_TEXTURE_BUFFER, GL_R32F, cellAttributeBuffer);
+	glBindTexture(GL_TEXTURE_BUFFER, texAttr);
+	glTexBuffer(GL_TEXTURE_BUFFER, GL_R32F, bufAttr);
 
 	
-	glGenBuffers(1, &cellHighlightBuffer);
+	glGenBuffers(1, &bufHighlight);
 
 	_highlights.resize(hex.ncells(), 0.0f);
-	glBindBuffer(GL_TEXTURE_BUFFER, cellHighlightBuffer);
+	glBindBuffer(GL_TEXTURE_BUFFER, bufHighlight);
 	// glBufferData(GL_TEXTURE_BUFFER, _highlights.size() * sizeof(float), _highlights.data(), GL_DYNAMIC_DRAW);
 
 	// Allocate persistent storage
@@ -91,14 +89,14 @@ void HexRenderer::init() {
 	// Map once and keep pointer (not compatible for MacOS... because need OpenGL >= 4.6 i think)
 	highlightsPtr = glMapBufferRange(GL_TEXTURE_BUFFER, 0, _highlights.size() * sizeof(float), flags);
 
-	glGenTextures(1, &cellHighlightTexture);
+	glGenTextures(1, &texHighlight);
 	glActiveTexture(GL_TEXTURE0 + 3); 
-	glBindTexture(GL_TEXTURE_BUFFER, cellHighlightTexture);
-	glTexBuffer(GL_TEXTURE_BUFFER, GL_R32F, cellHighlightBuffer);
+	glBindTexture(GL_TEXTURE_BUFFER, texHighlight);
+	glTexBuffer(GL_TEXTURE_BUFFER, GL_R32F, bufHighlight);
 
 
-	glGenBuffers(1, &cellFilterBuffer);
-	glBindBuffer(GL_TEXTURE_BUFFER, cellFilterBuffer);
+	glGenBuffers(1, &bufFilter);
+	glBindBuffer(GL_TEXTURE_BUFFER, bufFilter);
 	_filters.resize(hex.ncells(), 0.0f);
 	// glBufferData(GL_TEXTURE_BUFFER, _filters.size() * sizeof(float), _filters.data(), GL_DYNAMIC_DRAW);
 
@@ -107,10 +105,10 @@ void HexRenderer::init() {
 	// Map once and keep pointer (not compatible for MacOS... because need OpenGL >= 4.6 i think)
 	filtersPtr = glMapBufferRange(GL_TEXTURE_BUFFER, 0, _filters.size() * sizeof(float), flags);
 
-	glGenTextures(1, &cellFilterTexture);
+	glGenTextures(1, &texFilter);
 	glActiveTexture(GL_TEXTURE0 + 4); 
-	glBindTexture(GL_TEXTURE_BUFFER, cellFilterTexture);
-	glTexBuffer(GL_TEXTURE_BUFFER, GL_R32F, cellFilterBuffer);
+	glBindTexture(GL_TEXTURE_BUFFER, texFilter);
+	glTexBuffer(GL_TEXTURE_BUFFER, GL_R32F, bufFilter);
 
 
 
@@ -124,19 +122,19 @@ void HexRenderer::init() {
 
 	// Set up texture units
 	glActiveTexture(GL_TEXTURE0 + 1);
-	glBindTexture(GL_TEXTURE_BUFFER, cellBaryTexture);
+	glBindTexture(GL_TEXTURE_BUFFER, texBary);
 	glUniform1i(glGetUniformLocation(shader.id, "bary"), 1);
 
 	glActiveTexture(GL_TEXTURE0 + 2);
-	glBindTexture(GL_TEXTURE_BUFFER, cellAttributeTexture);
+	glBindTexture(GL_TEXTURE_BUFFER, texAttr);
 	glUniform1i(glGetUniformLocation(shader.id, "attributeData"), 2);
 
 	glActiveTexture(GL_TEXTURE0 + 3);
-	glBindTexture(GL_TEXTURE_BUFFER, cellHighlightTexture);
+	glBindTexture(GL_TEXTURE_BUFFER, texHighlight);
 	glUniform1i(glGetUniformLocation(shader.id, "highlight"), 3);
 
 	glActiveTexture(GL_TEXTURE0 + 4);
-	glBindTexture(GL_TEXTURE_BUFFER, cellFilterTexture);
+	glBindTexture(GL_TEXTURE_BUFFER, texFilter);
 	glUniform1i(glGetUniformLocation(shader.id, "_filter"), 4);
 
 	glBindBuffer(GL_TEXTURE_BUFFER, 0);
@@ -195,7 +193,7 @@ void HexRenderer::push() {
 
 	std::chrono::steady_clock::time_point begin = std::chrono::steady_clock::now();
 
-	v_vertices.resize(hex.nfacets() * 2 /* 2 tri per facet */ * 3 /* 3 points per tri */);
+	vertices.resize(hex.nfacets() * 2 /* 2 tri per facet */ * 3 /* 3 points per tri */);
 
 	// Cell properties
 	std::chrono::steady_clock::time_point begin_barys = std::chrono::steady_clock::now();
@@ -240,7 +238,7 @@ void HexRenderer::push() {
 				hex.points[hex.cells[ci * 8 + ref.facets[lfi * 4 + 3]]]
 			};
 
-			const int vertices[4] = {
+			const int vertices_ref[4] = {
 				hex.cells[ci * 8 + ref.facets[lfi * 4]],
 				hex.cells[ci * 8 + ref.facets[lfi * 4 + 1]],
 				hex.cells[ci * 8 + ref.facets[lfi * 4 + 2]],
@@ -269,7 +267,7 @@ void HexRenderer::push() {
 
 				for (int j = 0; j < 3; ++j) {
 					const auto v = points[verts[t][j]];
-					const auto vi = vertices[verts[t][j]];
+					const auto vi = vertices_ref[verts[t][j]];
 
 					// Compute height
 					const double h = area / (.5 * side_lengths[(j + 1) % 3]);
@@ -277,7 +275,7 @@ void HexRenderer::push() {
 					glm::vec3 edge(0.f, 0.f, 0.f);
 					edge[j] = h;
 
-					v_vertices[i] = { 
+					vertices[i] = { 
 						glm::vec3(v.x, v.y, v.z),
 						0.002f,
 						glm::vec3(n.x, n.y, n.z),
@@ -308,25 +306,19 @@ void HexRenderer::push() {
 	std::cout << "mesh has: " << hex.nverts() << " vertices." << std::endl;
 	std::cout << "mesh has: " << hex.nfacets() << " facets." << std::endl;
 	std::cout << "mesh has: " << hex.ncells() << " cells." << std::endl;
-	std::cout << "should draw: " << v_vertices.size() << " vertices." << std::endl;
+	std::cout << "should draw: " << vertices.size() << " vertices." << std::endl;
 	#endif
 
 	glBindVertexArray(VAO);
 	glBindBuffer(GL_ARRAY_BUFFER, VBO);
-	glBufferData(GL_ARRAY_BUFFER, v_vertices.size() * sizeof(Vertex), v_vertices.data(), GL_STATIC_DRAW);
+	glBufferData(GL_ARRAY_BUFFER, vertices.size() * sizeof(Vertex), vertices.data(), GL_STATIC_DRAW);
 
-	glBindBuffer(GL_TEXTURE_BUFFER, cellBaryBuffer);
+	glBindBuffer(GL_TEXTURE_BUFFER, bufBary);
 	glBufferData(GL_TEXTURE_BUFFER, _barys.size() * sizeof(float), _barys.data(), GL_STATIC_DRAW);
 	glActiveTexture(GL_TEXTURE0 + 1); 
-	glBindTexture(GL_TEXTURE_BUFFER, cellBaryTexture);
-	glTexBuffer(GL_TEXTURE_BUFFER, GL_RGB32F, cellBaryBuffer);
+	glBindTexture(GL_TEXTURE_BUFFER, texBary);
+	glTexBuffer(GL_TEXTURE_BUFFER, GL_RGB32F, bufBary);
 	
-}
-
-// TODO move tex in member variable, setTexture should set member variable, and activate texture should be made in bind
-void HexRenderer::setTexture(unsigned int tex) {
-	glActiveTexture(GL_TEXTURE0);
-	glBindTexture(GL_TEXTURE_1D, tex);
 }
 
 void HexRenderer::render(glm::vec3 &position) {
@@ -336,17 +328,20 @@ void HexRenderer::render(glm::vec3 &position) {
 
     glBindVertexArray(VAO);
 
+	glActiveTexture(GL_TEXTURE0);
+	glBindTexture(GL_TEXTURE_1D, texColorMap);
+
 	glActiveTexture(GL_TEXTURE0 + 1);
-	glBindTexture(GL_TEXTURE_BUFFER, cellBaryTexture);
+	glBindTexture(GL_TEXTURE_BUFFER, texBary);
 
 	glActiveTexture(GL_TEXTURE0 + 2);
-	glBindTexture(GL_TEXTURE_BUFFER, cellAttributeTexture);
+	glBindTexture(GL_TEXTURE_BUFFER, texAttr);
 
 	glActiveTexture(GL_TEXTURE0 + 3);
-	glBindTexture(GL_TEXTURE_BUFFER, cellHighlightTexture);
+	glBindTexture(GL_TEXTURE_BUFFER, texHighlight);
 
 	glActiveTexture(GL_TEXTURE0 + 4);
-	glBindTexture(GL_TEXTURE_BUFFER, cellFilterTexture);
+	glBindTexture(GL_TEXTURE_BUFFER, texFilter);
 
     shader.use();
 
@@ -355,7 +350,7 @@ void HexRenderer::render(glm::vec3 &position) {
 	model = glm::translate(model, position);
 	shader.setMat4("model", model);
 
-	glDrawArrays(GL_TRIANGLES, 0, v_vertices.size());
+	glDrawArrays(GL_TRIANGLES, 0, vertices.size());
 }
 
 void HexRenderer::clean() {

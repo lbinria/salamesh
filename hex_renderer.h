@@ -53,7 +53,7 @@ struct HexRenderer {
     //         x[i] = 2.f;
     // }
 
-    void setTexture(unsigned int tex);
+    void setTexture(unsigned int tex) { texColorMap = tex; }
 
     void setVisible(bool v) {
         visible = v;
@@ -153,12 +153,11 @@ struct HexRenderer {
     Hexahedra &hex;
     Shader shader;
 
-    // Buffers
-    unsigned int VAO, VBO, cellBaryBuffer, cellHighlightBuffer, cellAttributeBuffer, cellFilterBuffer;
-    // Textures
-    unsigned int cellBaryTexture, cellHighlightTexture, cellAttributeTexture, cellFilterTexture;
+    unsigned int VAO, VBO; // Buffers
+    unsigned int bufBary, bufHighlight, bufAttr, bufFilter; // Sample buffers
+    unsigned int texColorMap, texBary, texHighlight, texAttr, texFilter; // Textures
 
-    std::vector<Vertex> v_vertices;
+    std::vector<Vertex> vertices;
     // Data
     std::vector<float> _barys;
     std::vector<float> _highlights;

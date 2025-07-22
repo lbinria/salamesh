@@ -26,8 +26,6 @@ void PointSetRenderer::changeAttribute(GenericAttributeContainer *ga) {
 }
 
 void PointSetRenderer::setAttribute(std::vector<float> attributeData) {
-	_attributeData = attributeData;
-
 	// Get bounds (min-max)
 	float min = std::numeric_limits<float>::max(); 
 	float max = std::numeric_limits<float>::min();
@@ -41,8 +39,8 @@ void PointSetRenderer::setAttribute(std::vector<float> attributeData) {
 	shader.setFloat2("attributeDataMinMax", glm::vec2(min, max));
 
 	// Update sample
-	glBindBuffer(GL_TEXTURE_BUFFER, pointAttributeBuffer);
-	glBufferData(GL_TEXTURE_BUFFER, _attributeData.size() * sizeof(float), _attributeData.data(), GL_STATIC_DRAW);
+	glBindBuffer(GL_TEXTURE_BUFFER, bufAttr);
+	glBufferData(GL_TEXTURE_BUFFER, attributeData.size() * sizeof(float), attributeData.data(), GL_STATIC_DRAW);
 }
 
 void PointSetRenderer::init() {
@@ -53,36 +51,34 @@ void PointSetRenderer::init() {
 	glGenBuffers(1, &VBO);
 	glBindBuffer(GL_ARRAY_BUFFER, VBO);
 
-	// Init buffers
-	glGenBuffers(1, &cellBaryBuffer);
-	glGenBuffers(1, &pointAttributeBuffer);
-
-
-	// Init textures
-	glGenTextures(1, &cellBaryTexture);
-	glGenTextures(1, &pointAttributeTexture);
-
+	// Init buffers / tex
+	glGenBuffers(1, &bufBary);
+	glGenTextures(1, &texBary);
 	// Set up texture units
 	glActiveTexture(GL_TEXTURE0 + 1);
-	glBindTexture(GL_TEXTURE_BUFFER, cellBaryTexture);
+	glBindTexture(GL_TEXTURE_BUFFER, texBary);
 	glUniform1i(glGetUniformLocation(shader.id, "bary"), 1);
 
+
+	glGenBuffers(1, &bufAttr);
+	glGenTextures(1, &texAttr);
+	glBindBuffer(GL_TEXTURE_BUFFER, bufAttr);
 	glActiveTexture(GL_TEXTURE0 + 2);
-	glBindTexture(GL_TEXTURE_BUFFER, pointAttributeTexture);
+	glBindTexture(GL_TEXTURE_BUFFER, texAttr);
+	glTexBuffer(GL_TEXTURE_BUFFER, GL_R32F, bufAttr);
 	glUniform1i(glGetUniformLocation(shader.id, "attributeData"), 2);
 
 
-	// Vertex attributes
+	// VBO
 	GLuint vertexIndexLocation = glGetAttribLocation(shader.id, "vertexIndex");
-	GLuint positionLocation = glGetAttribLocation(shader.id, "aPos");
-	GLuint sizeLocation = glGetAttribLocation(shader.id, "sizeScale");
-
 	glEnableVertexAttribArray(vertexIndexLocation);
 	glVertexAttribIPointer(vertexIndexLocation, 1, GL_INT, sizeof(Vertex), (void*)offsetof(Vertex, index));
 
+	GLuint positionLocation = glGetAttribLocation(shader.id, "aPos");
 	glEnableVertexAttribArray(positionLocation);
 	glVertexAttribPointer(positionLocation, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)offsetof(Vertex, position));
 
+	GLuint sizeLocation = glGetAttribLocation(shader.id, "sizeScale");
 	glEnableVertexAttribArray(sizeLocation);
 	glVertexAttribPointer(sizeLocation, 1, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)offsetof(Vertex, size));
 }
@@ -110,20 +106,11 @@ void PointSetRenderer::push() {
 	glBindBuffer(GL_ARRAY_BUFFER, VBO);
 	glBufferData(GL_ARRAY_BUFFER, vertices.size() * sizeof(Vertex), vertices.data(), GL_STATIC_DRAW);
 
-	glBindBuffer(GL_TEXTURE_BUFFER, cellBaryBuffer);
-	glBufferData(GL_TEXTURE_BUFFER, _barys.size() * sizeof(float), _barys.data(), GL_STATIC_DRAW);
-	glActiveTexture(GL_TEXTURE0 + 1); 
-	glBindTexture(GL_TEXTURE_BUFFER, cellBaryTexture);
-	glTexBuffer(GL_TEXTURE_BUFFER, GL_RGB32F, cellBaryBuffer);
-
-	glBindBuffer(GL_TEXTURE_BUFFER, pointAttributeBuffer);
-	glBufferData(GL_TEXTURE_BUFFER, _attributeData.size() * sizeof(float), _attributeData.data(), GL_STATIC_DRAW);
-	glActiveTexture(GL_TEXTURE0 + 2); 
-	glBindTexture(GL_TEXTURE_BUFFER, pointAttributeTexture);
-	glTexBuffer(GL_TEXTURE_BUFFER, GL_R32F, pointAttributeBuffer);
-
-	// Refresh attribute data if needed
-	_attributeData.resize(ps.size(), 0.0f);
+	// glBindBuffer(GL_TEXTURE_BUFFER, bufBary);
+	// glBufferData(GL_TEXTURE_BUFFER, _barys.size() * sizeof(float), _barys.data(), GL_STATIC_DRAW);
+	// glActiveTexture(GL_TEXTURE0 + 1); 
+	// glBindTexture(GL_TEXTURE_BUFFER, texBary);
+	// glTexBuffer(GL_TEXTURE_BUFFER, GL_RGB32F, bufBary);
 
 	std::chrono::steady_clock::time_point end = std::chrono::steady_clock::now();
 
@@ -135,11 +122,12 @@ void PointSetRenderer::render(glm::vec3 &position) {
 
 	glBindVertexArray(VAO);
 
-	// TODO is really necessary ????!!! see!!
+	glActiveTexture(GL_TEXTURE0);
+	glBindTexture(GL_TEXTURE_1D, texColorMap);
 	glActiveTexture(GL_TEXTURE0 + 1);
-	glBindTexture(GL_TEXTURE_BUFFER, cellBaryTexture);
+	glBindTexture(GL_TEXTURE_BUFFER, texBary);
 	glActiveTexture(GL_TEXTURE0 + 2);
-	glBindTexture(GL_TEXTURE_BUFFER, pointAttributeTexture);
+	glBindTexture(GL_TEXTURE_BUFFER, texAttr);
 
     shader.use();
 

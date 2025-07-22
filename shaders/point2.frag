@@ -50,10 +50,11 @@ void main()
     } else {
 
         float fragAttrVal = texelFetch(attributeData, FragVertexIndex).x;
-        // float c = clamp((fragAttrVal - attributeDataMinMax.x) / (attributeDataMinMax.y - attributeDataMinMax.x), 0., 1.);
-        // vec3 t = vec3(texture(fragColorMap, c));
-        // FragColor = vec4(vec3(c),1.);
         FragColor = vec4(vec3(fragAttrVal / 42482.), 1.);
+        
+        // FragColor = vec4(vec3(FragVertexIndex / 42482.), 1.f);
+
+
         // vec3 col = vec3(texture(fragColorMap, clamp((fragAttrVal - attributeDataMinMax.x) / (attributeDataMinMax.y - attributeDataMinMax.x), 0., 1.)));
         // FragColor = vec4(col, 1.f);
     }

@@ -34,7 +34,7 @@ struct PointSetRenderer {
 
     void changeAttribute(GenericAttributeContainer *ga);
     void setAttribute(std::vector<float> attributeData);
-    
+
     void init();
     void push();
     void render(glm::vec3 &position);
@@ -49,8 +49,7 @@ struct PointSetRenderer {
     }
 
     void setTexture(unsigned int tex) {
-        glActiveTexture(GL_TEXTURE0);
-        glBindTexture(GL_TEXTURE_1D, tex);
+        texColorMap = tex;
     }
 
     void setMeshShrink(float val) {
@@ -84,16 +83,15 @@ struct PointSetRenderer {
 	private:
 	
 	// Buffers
-    unsigned int VAO, VBO, uboMatrices, cellBaryBuffer, pointHighlightBuffer, pointAttributeBuffer, pointFilterBuffer;
+    unsigned int VAO, VBO, uboMatrices, bufBary, pointHighlightBuffer, bufAttr, pointFilterBuffer;
     // Textures
-    unsigned int cellBaryTexture, pointHighlightTexture, pointAttributeTexture, pointFilterTexture;
+    unsigned int texColorMap, texBary, pointHighlightTexture, texAttr, pointFilterTexture;
 
 	std::vector<Vertex> vertices; // TODO not necessary to keep it in memory, should replace by ptr
 
     // Data TODO maybe not necessary to keep it in memory, should replace by ptr
     std::vector<float> _barys;
     std::vector<float> _highlights;
-    std::vector<float> _attributeData;
 
     float pointSize;
     glm::vec3 pointColor;

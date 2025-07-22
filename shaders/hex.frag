@@ -14,7 +14,6 @@ layout(location = 2) out vec4 fragCellIndexOut;
 in vec3 fragBary;
 in vec3 fragNormal;
 in vec3 fragHeights;
-in float fragAttrVal;
 in float fragHighlight;
 in float fragFilter;
 flat in vec3 fragViewDir;
@@ -37,6 +36,8 @@ uniform int invert_clipping = 0; // 0: normal, 1: inverted
 
 uniform sampler1D fragColorMap;
 uniform vec2 attributeDataMinMax = vec2(0.f, 1.f);
+uniform samplerBuffer attributeData;
+
 uniform int colorMode = 0;
 
 vec3 encode_id(int id) {
@@ -94,6 +95,7 @@ void main()
         col = vec3(0.8f, 0.f, 0.2f);
     } 
     else {
+        float fragAttrVal = texelFetch(attributeData, fragCellIndex).x;
         col = vec3(texture(fragColorMap, clamp((fragAttrVal - attributeDataMinMax.x) / (attributeDataMinMax.y - attributeDataMinMax.x), 0., 1.)));
     }
     
