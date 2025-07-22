@@ -1,5 +1,30 @@
 #include "point_set_renderer.h"
 
+void PointSetRenderer::changeAttribute(GenericAttributeContainer *ga) {
+	// Set attribute element to shader
+	shader.use();
+
+	// Transform data
+	if (auto a = dynamic_cast<AttributeContainer<double>*>(ga)) {
+
+		std::vector<float> converted_attribute_data(a->data.size());
+		std::transform(a->data.begin(), a->data.end(), converted_attribute_data.begin(), [](double x) { return static_cast<float>(x);});
+
+		// Set attribute data to shader
+		setAttribute(converted_attribute_data);
+	} else if (auto a = dynamic_cast<AttributeContainer<float>*>(ga)) {
+		
+		setAttribute(a->data);
+
+	} else if (auto a = dynamic_cast<AttributeContainer<int>*>(ga)) {
+		
+		std::vector<float> converted_attribute_data(a->data.size());
+		std::transform(a->data.begin(), a->data.end(), converted_attribute_data.begin(), [](int x) { return static_cast<float>(x);});
+		setAttribute(converted_attribute_data);
+	}
+	// TODO vec2 / vec3
+}
+
 void PointSetRenderer::setAttribute(std::vector<float> attributeData) {
 	_attributeData = attributeData;
 
@@ -7,10 +32,8 @@ void PointSetRenderer::setAttribute(std::vector<float> attributeData) {
 	float min = std::numeric_limits<float>::max(); 
 	float max = std::numeric_limits<float>::min();
 	for (auto x : attributeData) {
-		if (x < min)
-			min = x;
-		if (x > max)
-			max = x;
+		min = std::min(min, x);
+		max = std::max(max, x);
 	}
 
 	// Update min/max

@@ -17,9 +17,6 @@ uniform mat4 model;
 uniform float pointSize;
 
 uniform samplerBuffer bary;
-uniform samplerBuffer attributeData;
-
-out float fragAttrVal;
 
 uniform float meshShrink;
 
@@ -27,7 +24,6 @@ uniform float meshShrink;
 void main()
 {
 	vec3 bary = texelFetch(bary, cellIndex).xyz;
-	fragAttrVal = texelFetch(attributeData, vertexIndex).x;
 
 
 	// Shrink

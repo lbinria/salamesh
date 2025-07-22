@@ -17,8 +17,7 @@ uniform int colorMode = 0;
 // TODO see if uniform can be global to all shaders
 uniform sampler1D fragColorMap;
 uniform vec2 attributeDataMinMax = vec2(0.f, 1.f);
-in float fragAttrVal;
-
+uniform samplerBuffer attributeData;
 
 vec3 encode_id(int id) {
     int r = id & 0x000000FF;
@@ -50,6 +49,7 @@ void main()
 
     } else {
 
+        float fragAttrVal = texelFetch(attributeData, FragVertexIndex).x;
         // float c = clamp((fragAttrVal - attributeDataMinMax.x) / (attributeDataMinMax.y - attributeDataMinMax.x), 0., 1.);
         // vec3 t = vec3(texture(fragColorMap, c));
         // FragColor = vec4(vec3(c),1.);
