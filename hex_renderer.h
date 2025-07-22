@@ -162,7 +162,6 @@ struct HexRenderer {
     // Data
     std::vector<float> _barys;
     std::vector<float> _highlights;
-    std::vector<float> _attributeData;
     std::vector<float> _filters;
 
     void *highlightsPtr;

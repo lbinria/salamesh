@@ -4,24 +4,39 @@ void HexRenderer::changeAttribute(GenericAttributeContainer *ga, int element) {
 	// Set attribute element to shader
 	shader.use();
 	shader.setInt("attr_element", element);
+
+	// Prepare data
+	std::vector<float> converted_attribute_data;
+
 	// Transform data
 	if (auto a = dynamic_cast<AttributeContainer<double>*>(ga)) {
 
-		std::vector<float> converted_attribute_data(a->data.size());
+		converted_attribute_data.resize(a->data.size());
 		std::transform(a->data.begin(), a->data.end(), converted_attribute_data.begin(), [](double x) { return static_cast<float>(x);});
 
-		// Set attribute data to shader
-		setAttribute(converted_attribute_data);
 	} else if (auto a = dynamic_cast<AttributeContainer<float>*>(ga)) {
-		// TODO complete here
+		
+		converted_attribute_data.resize(a->data.size());
+		std::transform(a->data.begin(), a->data.end(), converted_attribute_data.begin(), [](auto x) { return static_cast<float>(x);});
+
 	} else if (auto a = dynamic_cast<AttributeContainer<int>*>(ga)) {
-		// TODO complete here
+		
+		converted_attribute_data.resize(a->data.size());
+		std::transform(a->data.begin(), a->data.end(), converted_attribute_data.begin(), [](auto x) { return static_cast<float>(x);});
+
+	} else if (auto a = dynamic_cast<AttributeContainer<bool>*>(ga)) {
+
+		converted_attribute_data.resize(a->data.size());
+		std::transform(a->data.begin(), a->data.end(), converted_attribute_data.begin(), [](auto x) { return static_cast<float>(x);});
+
 	}
+
+	// Set attribute data to shader
+	setAttribute(converted_attribute_data);
 }
 
 
 void HexRenderer::setAttribute(std::vector<float> attributeData) {
-	_attributeData = attributeData;
 
 	// Get bounds (min-max)
 	float min = std::numeric_limits<float>::max(); 
@@ -39,7 +54,7 @@ void HexRenderer::setAttribute(std::vector<float> attributeData) {
 
 	// Update sample
 	glBindBuffer(GL_TEXTURE_BUFFER, cellAttributeBuffer);
-	glBufferData(GL_TEXTURE_BUFFER, _attributeData.size() * sizeof(float), _attributeData.data(), GL_STATIC_DRAW);
+	glBufferData(GL_TEXTURE_BUFFER, attributeData.size() * sizeof(float), attributeData.data(), GL_STATIC_DRAW);
 }
 
 void HexRenderer::init() {
@@ -53,11 +68,18 @@ void HexRenderer::init() {
 
 	glGenBuffers(1, &cellBaryBuffer);
 	glGenTextures(1, &cellBaryTexture);
+
+
+
 	glGenBuffers(1, &cellAttributeBuffer);
 	glGenTextures(1, &cellAttributeTexture);
+	glBindBuffer(GL_TEXTURE_BUFFER, cellAttributeBuffer);
+	glActiveTexture(GL_TEXTURE0 + 2); 
+	glBindTexture(GL_TEXTURE_BUFFER, cellAttributeTexture);
+	glTexBuffer(GL_TEXTURE_BUFFER, GL_R32F, cellAttributeBuffer);
+
 	
 	glGenBuffers(1, &cellHighlightBuffer);
-
 
 	_highlights.resize(hex.ncells(), 0.0f);
 	glBindBuffer(GL_TEXTURE_BUFFER, cellHighlightBuffer);
@@ -89,7 +111,6 @@ void HexRenderer::init() {
 	glActiveTexture(GL_TEXTURE0 + 4); 
 	glBindTexture(GL_TEXTURE_BUFFER, cellFilterTexture);
 	glTexBuffer(GL_TEXTURE_BUFFER, GL_R32F, cellFilterBuffer);
-
 
 
 
@@ -155,7 +176,6 @@ void HexRenderer::init() {
 
 	glEnableVertexAttribArray(vertexIndexLocation);
 	glVertexAttribIPointer(vertexIndexLocation, 1, GL_INT, sizeof(Vertex), (void*)offsetof(Vertex, vertexIndex));
-
 
 	
 	std::chrono::steady_clock::time_point end = std::chrono::steady_clock::now();
@@ -300,15 +320,6 @@ void HexRenderer::push() {
 	glActiveTexture(GL_TEXTURE0 + 1); 
 	glBindTexture(GL_TEXTURE_BUFFER, cellBaryTexture);
 	glTexBuffer(GL_TEXTURE_BUFFER, GL_RGB32F, cellBaryBuffer);
-
-	glBindBuffer(GL_TEXTURE_BUFFER, cellAttributeBuffer);
-	glBufferData(GL_TEXTURE_BUFFER, _attributeData.size() * sizeof(float), _attributeData.data(), GL_STATIC_DRAW);
-	glActiveTexture(GL_TEXTURE0 + 2); 
-	glBindTexture(GL_TEXTURE_BUFFER, cellAttributeTexture);
-	glTexBuffer(GL_TEXTURE_BUFFER, GL_R32F, cellAttributeBuffer);
-
-	// Refresh attribute data if needed
-	_attributeData.resize(hex.ncells(), 0.0f);
 	
 }
 
@@ -325,8 +336,6 @@ void HexRenderer::render(glm::vec3 &position) {
 
     glBindVertexArray(VAO);
 
-	// TODO I'm not sure is it necessary: should test, because i bind but i do nothing else
-	// Bind textures
 	glActiveTexture(GL_TEXTURE0 + 1);
 	glBindTexture(GL_TEXTURE_BUFFER, cellBaryTexture);
 
