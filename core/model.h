@@ -108,7 +108,5 @@ struct Model {
     virtual void setParent(std::shared_ptr<Model> parentModel) = 0;
     virtual std::shared_ptr<Model> getParent() = 0;
     virtual glm::vec3 getWorldPosition() = 0;
-    virtual void setView(glm::mat4 &view) = 0;
-    virtual void setProjection(glm::mat4 &projection) = 0;
 
 };

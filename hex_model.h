@@ -380,16 +380,6 @@ struct HexModel : public Model {
         setSelectedAttr(selectedAttr);
     }
 
-    void setView(glm::mat4 &view) {
-        _hex_renderer.setView(view);
-        _pointSetRenderer.setView(view);
-    }
-
-    void setProjection(glm::mat4 &projection) {
-        _hex_renderer.setProjection(projection);
-        _pointSetRenderer.setProjection(projection);
-    }
-
     std::shared_ptr<Model> getParent() {
         return parent;
     }

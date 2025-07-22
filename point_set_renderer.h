@@ -45,13 +45,16 @@ struct PointSetRenderer {
             // Set attribute data to shader
             setAttribute(converted_attribute_data);
         } else if (auto a = dynamic_cast<AttributeContainer<float>*>(ga)) {
-            // TODO complete here
+            
+            setAttribute(a->data);
+
         } else if (auto a = dynamic_cast<AttributeContainer<int>*>(ga)) {
             
             std::vector<float> converted_attribute_data(a->data.size());
-            std::transform(a->data.begin(), a->data.end(), converted_attribute_data.begin(), [](double x) { return static_cast<float>(x);});
+            std::transform(a->data.begin(), a->data.end(), converted_attribute_data.begin(), [](int x) { return static_cast<float>(x);});
             setAttribute(converted_attribute_data);
         }
+        // TODO vec2 / vec3
     }
 
     void setAttribute(std::vector<float> attributeData);
@@ -71,16 +74,6 @@ struct PointSetRenderer {
     void setTexture(unsigned int tex) {
         glActiveTexture(GL_TEXTURE0);
         glBindTexture(GL_TEXTURE_1D, tex);
-    }
-
-    void setView(glm::mat4 &view) {
-        shader.use();
-        shader.setMat4("view", view);
-    }
-
-    void setProjection(glm::mat4 &projection) {
-        shader.use();
-        shader.setMat4("projection", projection);
     }
 
     void setMeshShrink(float val) {

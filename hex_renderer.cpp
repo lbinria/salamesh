@@ -1,5 +1,23 @@
 #include "hex_renderer.h"
 
+void HexRenderer::changeAttribute(GenericAttributeContainer *ga, int element) {
+	// Set attribute element to shader
+	shader.use();
+	shader.setInt("attr_element", element);
+	// Transform data
+	if (auto a = dynamic_cast<AttributeContainer<double>*>(ga)) {
+
+		std::vector<float> converted_attribute_data(a->data.size());
+		std::transform(a->data.begin(), a->data.end(), converted_attribute_data.begin(), [](double x) { return static_cast<float>(x);});
+
+		// Set attribute data to shader
+		setAttribute(converted_attribute_data);
+	} else if (auto a = dynamic_cast<AttributeContainer<float>*>(ga)) {
+		// TODO complete here
+	} else if (auto a = dynamic_cast<AttributeContainer<int>*>(ga)) {
+		// TODO complete here
+	}
+}
 
 
 void HexRenderer::setAttribute(std::vector<float> attributeData) {
