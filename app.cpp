@@ -539,24 +539,15 @@ void App::run()
 		glCullFace(cull_mode);
 
 		// Update UBO
-		glm::mat4 mats[2] = { view, projection };
+		glm::mat4 mats[2] = { view, projection }; // Ensure view and projection matrices are contiguous in memory
 		glBindBuffer(GL_UNIFORM_BUFFER, uboMatrices);
 		glBufferData(GL_UNIFORM_BUFFER, sizeof(glm::mat4) * 2, glm::value_ptr(mats[0]), GL_DYNAMIC_DRAW);
 		glBindBuffer(GL_UNIFORM_BUFFER, 0);  
 
 		// Render scene
 		for (auto &model : models) {
-
-
 			model->setFragRenderMode(Model::RenderMode::Color);
-			// model->setView(view);
-			// model->setProjection(projection);
-
 			model->setTexture(colormaps[model->getSelectedColormap()]);
-			// glActiveTexture(GL_TEXTURE0);
-			// glBindTexture(GL_TEXTURE_1D, colormaps[model->getSelectedColormap()]);
-
-			// model->bind();
 			model->render();
 		}
 
