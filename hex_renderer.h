@@ -43,7 +43,6 @@ struct HexRenderer {
     void render(glm::vec3 &position);
     
 
-    void bind();
     void clean();
 
     // void test() {
@@ -90,17 +89,17 @@ struct HexRenderer {
 
     // Shader options
     // TODO can deduce element from type with overloading of function !
-    template<typename T>
-    void changeAttribute(CellAttribute<T> &a, int element) {
-        // Set attribute element to shader
-        shader.use();
-        shader.setInt("attr_element", element);
-        // Transform data
-        std::vector<float> converted_attribute_data(a.ptr->data.size());
-        std::transform(a.ptr->data.begin(), a.ptr->data.end(), converted_attribute_data.begin(), [](T x) { return static_cast<T>(x);});
-        // Set attribute data to shader
-        setAttribute(converted_attribute_data);
-    }
+    // template<typename T>
+    // void changeAttribute(CellAttribute<T> &a, int element) {
+    //     // Set attribute element to shader
+    //     shader.use();
+    //     shader.setInt("attr_element", element);
+    //     // Transform data
+    //     std::vector<float> converted_attribute_data(a.ptr->data.size());
+    //     std::transform(a.ptr->data.begin(), a.ptr->data.end(), converted_attribute_data.begin(), [](T x) { return static_cast<T>(x);});
+    //     // Set attribute data to shader
+    //     setAttribute(converted_attribute_data);
+    // }
 
     void changeAttribute(GenericAttributeContainer *ga, int element) {
         // Set attribute element to shader
@@ -115,9 +114,9 @@ struct HexRenderer {
             // Set attribute data to shader
             setAttribute(converted_attribute_data);
         } else if (auto a = dynamic_cast<AttributeContainer<float>*>(ga)) {
-
+            // TODO complete here
         } else if (auto a = dynamic_cast<AttributeContainer<int>*>(ga)) {
-
+            // TODO complete here
         }
     }
 

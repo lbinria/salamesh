@@ -66,6 +66,8 @@ struct App : public IApp {
     unsigned int texFacetID;
     unsigned int texVertexID;
 
+    unsigned int uboMatrices;
+
     unsigned int quadVAO, quadVBO;
 
     // settings
@@ -229,7 +231,7 @@ struct App : public IApp {
     // TODO rename! selected_model
     int selected_renderer = 0;
 
-    glm::mat4 projection;
+    // glm::mat4 projection;
 
     std::vector<std::unique_ptr<Component>> scripts;
 	InputState st;

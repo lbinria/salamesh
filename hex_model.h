@@ -172,6 +172,7 @@ struct HexModel : public Model {
 
     void setTexture(unsigned int tex) {
         _hex_renderer.setTexture(tex);
+        _pointSetRenderer.setTexture(tex);
     }
 
 	// Just call underlying renderer methods
@@ -181,6 +182,7 @@ struct HexModel : public Model {
 
     void setColorMode(Model::ColorMode mode) {
         _hex_renderer.setColorMode(mode);
+        _pointSetRenderer.setColorMode(mode);
         colorMode = mode;
     }
 
@@ -367,7 +369,11 @@ struct HexModel : public Model {
     void setSelectedAttr(int idx) {
         selectedAttr = idx;
         int attr_element = std::get<1>(attrs[idx]);
-		_hex_renderer.changeAttribute(std::get<2>(attrs[idx]).get(), attr_element);
+        // TODO see condition here not very smart maybe abstract renderers ?
+        if (attr_element == Element::POINTS) {
+            _pointSetRenderer.changeAttribute(std::get<2>(attrs[idx]).get());
+        } else 
+		    _hex_renderer.changeAttribute(std::get<2>(attrs[idx]).get(), attr_element);
     }
 
     void updateAttr() {

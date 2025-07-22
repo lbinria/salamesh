@@ -397,6 +397,15 @@ void App::setup() {
 	// Unbind FBO
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
+	// Init UBO
+	glGenBuffers(1, &uboMatrices);
+
+	// Setup UBO
+	glBindBuffer(GL_UNIFORM_BUFFER, uboMatrices);
+	glBufferData(GL_UNIFORM_BUFFER, sizeof(glm::mat4) * 2, nullptr, GL_DYNAMIC_DRAW);
+	glBindBuffer(GL_UNIFORM_BUFFER, 0);
+	glBindBufferRange(GL_UNIFORM_BUFFER, 0, uboMatrices, 0, sizeof(glm::mat4) * 2);
+
 
 	glViewport(0, 0, screenWidth, screenHeight);
 	glfwSetFramebufferSizeCallback(window, framebuffer_size_callback);
@@ -447,7 +456,7 @@ void App::run()
 	// 	models[i+1]->setPosition(models[0]->getPosition() + glm::vec3(rand() % 10 / 10.f, rand() % 10 / 10.f, rand() % 10 / 10.f));
 	// }
 
-	load_model("assets/catorus_hex_attr.geogram");
+	load_model("assets/catorus_hex_attr2.geogram");
 	load_model("assets/catorus_hex_attr.geogram");
 
 	// load_state("/home/tex/Desktop/state.json");
@@ -482,7 +491,9 @@ void App::run()
 	glm::mat4 model(1.f);
 	model = glm::rotate(model, glm::radians(-55.0f), glm::vec3(1.f, 0.f, 0.f));
 
+	glm::mat4 projection(1.f);
 	glm::mat4 view(1.f);
+
 	view = glm::translate(view, glm::vec3(0.f, 0.f, -3.f));
 
 	float lastTimeValue = glfwGetTime();
@@ -527,13 +538,19 @@ void App::run()
 		glEnable(GL_DEPTH_TEST);
 		glCullFace(cull_mode);
 
+		// Update UBO
+		glm::mat4 mats[2] = { view, projection };
+		glBindBuffer(GL_UNIFORM_BUFFER, uboMatrices);
+		glBufferData(GL_UNIFORM_BUFFER, sizeof(glm::mat4) * 2, glm::value_ptr(mats[0]), GL_DYNAMIC_DRAW);
+		glBindBuffer(GL_UNIFORM_BUFFER, 0);  
+
 		// Render scene
 		for (auto &model : models) {
 
 
 			model->setFragRenderMode(Model::RenderMode::Color);
-			model->setView(view);
-			model->setProjection(projection);
+			// model->setView(view);
+			// model->setProjection(projection);
 
 			model->setTexture(colormaps[model->getSelectedColormap()]);
 			// glActiveTexture(GL_TEXTURE0);

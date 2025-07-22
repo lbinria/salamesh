@@ -8,6 +8,10 @@
 #include "include/glm/gtc/matrix_transform.hpp"
 #include "include/glm/gtc/type_ptr.hpp"
 
+// TODO should not inlcude this, because of Model::ColorMode ! create a separate file for ColorMode
+#include "core/model.h"
+
+
 #include "shader.h"
 
 using namespace UM;
@@ -24,16 +28,50 @@ struct PointSetRenderer {
         // shader("shaders/point.vert", "shaders/point.frag"), 
         shader("shaders/point2.vert", "shaders/point2.frag"), 
         ps(ps) {
-            setPointSize(4.0f);
-            setPointColor({0.23, 0.85, 0.66});
+            setPointSize(4.0f); // TODO here use a setting default point size
+            setPointColor({0.23, 0.85, 0.66}); // TODO here use a setting default point color
         }
 
+    void changeAttribute(GenericAttributeContainer *ga) {
+        // Set attribute element to shader
+        shader.use();
+
+        // Transform data
+        if (auto a = dynamic_cast<AttributeContainer<double>*>(ga)) {
+
+            std::vector<float> converted_attribute_data(a->data.size());
+            std::transform(a->data.begin(), a->data.end(), converted_attribute_data.begin(), [](double x) { return static_cast<float>(x);});
+
+            // Set attribute data to shader
+            setAttribute(converted_attribute_data);
+        } else if (auto a = dynamic_cast<AttributeContainer<float>*>(ga)) {
+            // TODO complete here
+        } else if (auto a = dynamic_cast<AttributeContainer<int>*>(ga)) {
+            
+            std::vector<float> converted_attribute_data(a->data.size());
+            std::transform(a->data.begin(), a->data.end(), converted_attribute_data.begin(), [](double x) { return static_cast<float>(x);});
+            setAttribute(converted_attribute_data);
+        }
+    }
+
+    void setAttribute(std::vector<float> attributeData);
     void init();
     void push();
     void render(glm::vec3 &position);
 
+
     void bind();
     void clean();
+
+    void setColorMode(Model::ColorMode mode) {
+        shader.use();
+        shader.setInt("colorMode", mode);
+    }
+
+    void setTexture(unsigned int tex) {
+        glActiveTexture(GL_TEXTURE0);
+        glBindTexture(GL_TEXTURE_1D, tex);
+    }
 
     void setView(glm::mat4 &view) {
         shader.use();
@@ -76,14 +114,16 @@ struct PointSetRenderer {
 	private:
 	
 	// Buffers
-    unsigned int VAO, VBO, cellBaryBuffer, pointHighlightBuffer, pointAttributeBuffer, pointFilterBuffer;
+    unsigned int VAO, VBO, uboMatrices, cellBaryBuffer, pointHighlightBuffer, pointAttributeBuffer, pointFilterBuffer;
     // Textures
     unsigned int cellBaryTexture, pointHighlightTexture, pointAttributeTexture, pointFilterTexture;
 
 	std::vector<Vertex> vertices; // TODO not necessary to keep it in memory, should replace by ptr
 
-    // Data
+    // Data TODO maybe not necessary to keep it in memory, should replace by ptr
     std::vector<float> _barys;
+    std::vector<float> _highlights;
+    std::vector<float> _attributeData;
 
     float pointSize;
     glm::vec3 pointColor;

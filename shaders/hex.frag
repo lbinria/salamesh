@@ -95,7 +95,7 @@ void main()
     } 
     else {
         col = vec3(texture(fragColorMap, clamp((fragAttrVal - attributeDataMinMax.x) / (attributeDataMinMax.y - attributeDataMinMax.x), 0., 1.)));
-    }        
+    }
     
     if (fragHighlight >= 1.f && fragHighlight < 2.f) {
         col = mix(col, vec3(1.,1.,1.), 0.8);

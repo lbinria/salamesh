@@ -9,6 +9,13 @@ layout (location = 4) in int facetIndex;
 layout (location = 5) in int cellIndex;
 layout (location = 7) in int vertexIndex;
 
+layout (std140, binding = 0) uniform Matrices
+{
+	mat4 view;
+	mat4 projection;
+};
+
+
 out vec3 fragBary;
 out vec3 fragNormal;
 out vec3 fragHeights;
@@ -22,8 +29,6 @@ flat out vec3 fragWorldPos;
 out vec3 fragWorldPos2;
 
 uniform mat4 model;
-uniform mat4 view;
-uniform mat4 projection;
 
 uniform int attr_element = -1;
 out float fragAttrVal;

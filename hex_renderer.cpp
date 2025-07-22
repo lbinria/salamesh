@@ -294,27 +294,7 @@ void HexRenderer::push() {
 	
 }
 
-void HexRenderer::bind() {
-    glBindVertexArray(VAO);
-
-	// Set up texture units
-	glActiveTexture(GL_TEXTURE0 + 1);
-	glBindTexture(GL_TEXTURE_BUFFER, cellBaryTexture);
-	// glUniform1i(glGetUniformLocation(shader.id, "bary"), 1);
-
-	glActiveTexture(GL_TEXTURE0 + 2);
-	glBindTexture(GL_TEXTURE_BUFFER, cellAttributeTexture);
-	// glUniform1i(glGetUniformLocation(shader.id, "attributeData"), 2);
-
-	glActiveTexture(GL_TEXTURE0 + 3);
-	glBindTexture(GL_TEXTURE_BUFFER, cellHighlightTexture);
-	// glUniform1i(glGetUniformLocation(shader.id, "highlight"), 3);
-
-	glActiveTexture(GL_TEXTURE0 + 4);
-	glBindTexture(GL_TEXTURE_BUFFER, cellFilterTexture);
-	// glUniform1i(glGetUniformLocation(shader.id, "_filter"), 4);
-}
-
+// TODO move tex in member variable, setTexture should set member variable, and activate texture should be made in bind
 void HexRenderer::setTexture(unsigned int tex) {
 	glActiveTexture(GL_TEXTURE0);
 	glBindTexture(GL_TEXTURE_1D, tex);
@@ -325,8 +305,21 @@ void HexRenderer::render(glm::vec3 &position) {
 	if (!visible)
 		return;
 
-	bind();
+    glBindVertexArray(VAO);
 
+	// TODO I'm not sure is it necessary: should test, because i bind but i do nothing else
+	// Bind textures
+	glActiveTexture(GL_TEXTURE0 + 1);
+	glBindTexture(GL_TEXTURE_BUFFER, cellBaryTexture);
+
+	glActiveTexture(GL_TEXTURE0 + 2);
+	glBindTexture(GL_TEXTURE_BUFFER, cellAttributeTexture);
+
+	glActiveTexture(GL_TEXTURE0 + 3);
+	glBindTexture(GL_TEXTURE_BUFFER, cellHighlightTexture);
+
+	glActiveTexture(GL_TEXTURE0 + 4);
+	glBindTexture(GL_TEXTURE_BUFFER, cellFilterTexture);
 
     shader.use();
 

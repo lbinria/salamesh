@@ -106,7 +106,7 @@ function draw_gui()
 		cur_model.meshShrink = new_mesh_shrink
 	end
 
-	local sel_point_size, new_point_size = imgui.SliderFloat("Point size", cur_model.point_size, 0, 10)
+	local sel_point_size, new_point_size = imgui.SliderFloat("Point size", cur_model.point_size, 0, 50)
 	if (sel_point_size) then 
 		print("Change point size: " .. tostring(new_point_size))
 		cur_model.point_size = new_point_size
