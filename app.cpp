@@ -573,6 +573,11 @@ void App::run()
 		
 		ImGui::NewFrame();
 		
+		// ImGui::Begin("Render");
+		// ImVec2 size = ImGui::GetWindowSize();
+		// ImGui::Image((ImTextureID)texCellID, size, ImVec2(0.0f, 1.0f), ImVec2(1.0f, 0.0f));
+		// ImGui::End();
+
 		draw_gui();
 
 		// Render the ImGui frame

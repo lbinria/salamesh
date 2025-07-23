@@ -10,7 +10,7 @@ struct HexModel : public Model {
 
 	// Mesh + Renderer
 
-	HexModel() : _name(""), _path(""), _hex(), _hex_renderer(_hex), _pointSetRenderer(_hex.points) {
+	HexModel() : _name(""), _path(""), _hex(), _hexRenderer(_hex), _pointSetRenderer(_hex.points) {
 		
 	}
 
@@ -18,7 +18,7 @@ struct HexModel : public Model {
 		_name(name), 
 		_path(""), 
 		_hex(),
-		_hex_renderer(_hex),
+		_hexRenderer(_hex),
         _pointSetRenderer(_hex.points) {}
 
 
@@ -131,17 +131,17 @@ struct HexModel : public Model {
     void setName(std::string name) final override { _name = name; }
 
     // void update() {
-	// 	_hex_renderer.update();
+	// 	_hexRenderer.update();
 	// 	// TODO _ps_renderer.update();
 	// }
     
 	void init() final override {
-		_hex_renderer.init();
+		_hexRenderer.init();
 		_pointSetRenderer.init();
 	}
     
 	void push() final override {
-		_hex_renderer.push();
+		_hexRenderer.push();
 		_pointSetRenderer.push();
 
 		if (colorMode == Model::ColorMode::ATTRIBUTE) {
@@ -155,12 +155,12 @@ struct HexModel : public Model {
         
         glm::vec3 pos = getWorldPosition();
 
-        _hex_renderer.render(pos);
+        _hexRenderer.render(pos);
         _pointSetRenderer.render(pos);
 	}
     
     void clean() {
-		_hex_renderer.clean();
+		_hexRenderer.clean();
 	}
 
 	std::string getName() const { return _name; }
@@ -168,10 +168,10 @@ struct HexModel : public Model {
 
 
 	Hexahedra& getHexahedra() { return _hex; }
-	HexRenderer& getRenderer() { return _hex_renderer; }
+	HexRenderer& getRenderer() { return _hexRenderer; }
 
     void setTexture(unsigned int tex) {
-        _hex_renderer.setTexture(tex);
+        _hexRenderer.setTexture(tex);
         _pointSetRenderer.setTexture(tex);
     }
 
@@ -181,7 +181,7 @@ struct HexModel : public Model {
     }
 
     void setColorMode(Model::ColorMode mode) {
-        _hex_renderer.setColorMode(mode);
+        _hexRenderer.setColorMode(mode);
         _pointSetRenderer.setColorMode(mode);
         colorMode = mode;
     }
@@ -191,7 +191,7 @@ struct HexModel : public Model {
     }
 
     void setLight(bool enabled) {
-        _hex_renderer.setLight(enabled);
+        _hexRenderer.setLight(enabled);
         isLightEnabled = enabled;
     }
 
@@ -200,7 +200,7 @@ struct HexModel : public Model {
     }
 
     void setLightFollowView(bool follow) {
-		_hex_renderer.setLightFollowView(follow);
+		_hexRenderer.setLightFollowView(follow);
         isLightFollowView = follow;
     }
 
@@ -209,7 +209,7 @@ struct HexModel : public Model {
     }
 
     void setClipping(bool enabled) {
-        _hex_renderer.setClipping(enabled);
+        _hexRenderer.setClipping(enabled);
         isClipping = enabled;
     }
 
@@ -218,22 +218,22 @@ struct HexModel : public Model {
     }
 
     void setClippingPlanePoint(glm::vec3 p) {
-        _hex_renderer.setClippingPlanePoint(p);
+        _hexRenderer.setClippingPlanePoint(p);
         clippingPlanePoint = p;
     }
 
     glm::vec3 getClippingPlaneNormal() {
-		_hex_renderer.setClippingPlaneNormal(clippingPlaneNormal);
+		_hexRenderer.setClippingPlaneNormal(clippingPlaneNormal);
         return clippingPlaneNormal;
     }
 
     void setClippingPlaneNormal(glm::vec3 n) {
-		_hex_renderer.setClippingPlaneNormal(n);
+		_hexRenderer.setClippingPlaneNormal(n);
         clippingPlaneNormal = n;
     }
 
     void setInvertClipping(bool invert) {
-        _hex_renderer.setInvertClipping(invert);
+        _hexRenderer.setInvertClipping(invert);
         invertClipping = invert;
     }
 
@@ -246,7 +246,7 @@ struct HexModel : public Model {
     }
 
     void setMeshSize(float val) {
-        _hex_renderer.setMeshSize(val);
+        _hexRenderer.setMeshSize(val);
         meshSize = val;
     }
 
@@ -255,7 +255,7 @@ struct HexModel : public Model {
     }
 
     void setMeshShrink(float val) {
-		_hex_renderer.setMeshShrink(val);
+		_hexRenderer.setMeshShrink(val);
         _pointSetRenderer.setMeshShrink(val);
         meshShrink = val;
     }
@@ -265,7 +265,7 @@ struct HexModel : public Model {
     }
 
     void setFragRenderMode(Model::RenderMode mode) {
-        _hex_renderer.setFragRenderMode(mode);
+        _hexRenderer.setFragRenderMode(mode);
         fragRenderMode = mode;
     }
 
@@ -274,7 +274,7 @@ struct HexModel : public Model {
     }
 
     void setSelectedColormap(int idx) {
-		_hex_renderer.setSelectedColormap(idx);
+		_hexRenderer.setSelectedColormap(idx);
         selectedColormap = idx;
     }
 
@@ -316,23 +316,23 @@ struct HexModel : public Model {
 
     void setVisible(bool v) {
         visible = v;
-        _hex_renderer.setVisible(v);
+        _hexRenderer.setVisible(v);
     }
 
     void setHighlight(int idx, bool highlighted) {
-        _hex_renderer.setHighlight(idx, highlighted);
+        _hexRenderer.setHighlight(idx, highlighted);
     }
 
     void setHighlight(int idx, float highlight) {
-        _hex_renderer.setHighlight(idx, highlight);
+        _hexRenderer.setHighlight(idx, highlight);
     }
 
     void setHighlight(std::vector<float> highlights) {
-        _hex_renderer.setHighlight(highlights);
+        _hexRenderer.setHighlight(highlights);
     }
 
     void setFilter(int idx, bool filter) {
-        _hex_renderer.setFilter(idx, filter);
+        _hexRenderer.setFilter(idx, filter);
     }
 
     std::vector<std::tuple<std::string, int>> getAttrs() {
@@ -373,7 +373,7 @@ struct HexModel : public Model {
         if (attr_element == Element::POINTS) {
             _pointSetRenderer.changeAttribute(std::get<2>(attrs[idx]).get());
         } else 
-		    _hex_renderer.changeAttribute(std::get<2>(attrs[idx]).get(), attr_element);
+		    _hexRenderer.changeAttribute(std::get<2>(attrs[idx]).get(), attr_element);
     }
 
     void updateAttr() {
@@ -415,7 +415,7 @@ struct HexModel : public Model {
 	Hexahedra _hex;
 
 	// Renderers
-	HexRenderer _hex_renderer;
+	HexRenderer _hexRenderer;
 	PointSetRenderer _pointSetRenderer;
 
     std::vector<std::tuple<std::string, Element, std::shared_ptr<GenericAttributeContainer>>> attrs;
