@@ -1,8 +1,6 @@
 #include "point_set_renderer.h"
 
 void PointSetRenderer::changeAttribute(GenericAttributeContainer *ga) {
-	// Set attribute element to shader
-	shader.use();
 
 	// Transform data
 	if (auto a = dynamic_cast<AttributeContainer<double>*>(ga)) {
@@ -51,13 +49,12 @@ void PointSetRenderer::init() {
 	glGenBuffers(1, &VBO);
 	glBindBuffer(GL_ARRAY_BUFFER, VBO);
 
-	// Init buffers / tex
 	glGenBuffers(1, &bufBary);
 	glGenTextures(1, &texBary);
-	// Set up texture units
+	glBindBuffer(GL_TEXTURE_BUFFER, bufBary);
 	glActiveTexture(GL_TEXTURE0 + 1);
 	glBindTexture(GL_TEXTURE_BUFFER, texBary);
-	glUniform1i(glGetUniformLocation(shader.id, "bary"), 1);
+	glTexBuffer(GL_TEXTURE_BUFFER, GL_R32F, bufBary);
 
 
 	glGenBuffers(1, &bufAttr);
@@ -66,6 +63,9 @@ void PointSetRenderer::init() {
 	glActiveTexture(GL_TEXTURE0 + 2);
 	glBindTexture(GL_TEXTURE_BUFFER, texAttr);
 	glTexBuffer(GL_TEXTURE_BUFFER, GL_R32F, bufAttr);
+
+	shader.use();
+	glUniform1i(glGetUniformLocation(shader.id, "bary"), 1);
 	glUniform1i(glGetUniformLocation(shader.id, "attributeData"), 2);
 
 
@@ -120,7 +120,7 @@ void PointSetRenderer::push() {
 
 void PointSetRenderer::render(glm::vec3 &position) {
 	// TODO remove test
-	return;
+	// return;
 
 	glBindVertexArray(VAO);
 
@@ -147,6 +147,6 @@ void PointSetRenderer::clean() {
 	glDeleteBuffers(1, &VBO);
 
 	// TODO clean buffers, textures, unmap ptr...
-	
+
 	shader.clean();
 }

@@ -57,7 +57,7 @@ void HexRenderer::setAttribute(std::vector<float> attributeData) {
 
 void HexRenderer::init() {
 
-	shader.use();
+	// shader.use();
 
 	std::chrono::steady_clock::time_point begin = std::chrono::steady_clock::now();
 
@@ -66,6 +66,11 @@ void HexRenderer::init() {
 
 	glGenBuffers(1, &bufBary);
 	glGenTextures(1, &texBary);
+	glBindBuffer(GL_TEXTURE_BUFFER, bufBary);
+	glActiveTexture(GL_TEXTURE0 + 1); 
+	glBindTexture(GL_TEXTURE_BUFFER, texBary);
+	glTexBuffer(GL_TEXTURE_BUFFER, GL_RGB32F, bufBary);
+
 
 
 
@@ -115,21 +120,23 @@ void HexRenderer::init() {
 
 
 	// Set up texture units
+	shader.use();
+	
 	glActiveTexture(GL_TEXTURE0 + 1);
 	glBindTexture(GL_TEXTURE_BUFFER, texBary);
-	glUniform1i(glGetUniformLocation(shader.id, "bary"), 1);
-
+	shader.setInt("bary", 1);
+	
 	glActiveTexture(GL_TEXTURE0 + 2);
 	glBindTexture(GL_TEXTURE_BUFFER, texAttr);
-	glUniform1i(glGetUniformLocation(shader.id, "attributeData"), 2);
+	shader.setInt("attributeData", 2);
 
 	glActiveTexture(GL_TEXTURE0 + 3);
 	glBindTexture(GL_TEXTURE_BUFFER, texHighlight);
-	glUniform1i(glGetUniformLocation(shader.id, "highlight"), 3);
+	shader.setInt("highlight", 3);
 
 	glActiveTexture(GL_TEXTURE0 + 4);
 	glBindTexture(GL_TEXTURE_BUFFER, texFilter);
-	glUniform1i(glGetUniformLocation(shader.id, "_filter"), 4);
+	shader.setInt("_filter", 4);
 
 	glBindBuffer(GL_TEXTURE_BUFFER, 0);
 
@@ -309,9 +316,12 @@ void HexRenderer::push() {
 
 	glBindBuffer(GL_TEXTURE_BUFFER, bufBary);
 	glBufferData(GL_TEXTURE_BUFFER, _barys.size() * sizeof(float), _barys.data(), GL_STATIC_DRAW);
-	glActiveTexture(GL_TEXTURE0 + 1); 
-	glBindTexture(GL_TEXTURE_BUFFER, texBary);
-	glTexBuffer(GL_TEXTURE_BUFFER, GL_RGB32F, bufBary);
+
+	// glBindBuffer(GL_TEXTURE_BUFFER, bufBary);
+	// glBufferData(GL_TEXTURE_BUFFER, _barys.size() * sizeof(float), _barys.data(), GL_STATIC_DRAW);
+	// glActiveTexture(GL_TEXTURE0 + 1); 
+	// glBindTexture(GL_TEXTURE_BUFFER, texBary);
+	// glTexBuffer(GL_TEXTURE_BUFFER, GL_RGB32F, bufBary);
 	
 }
 
