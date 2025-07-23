@@ -83,7 +83,7 @@ struct PointSetRenderer {
 	private:
 	
 	// Buffers
-    unsigned int VAO, VBO, uboMatrices, bufBary, pointHighlightBuffer, bufAttr, pointFilterBuffer;
+    unsigned int VAO, VBO, bufBary, pointHighlightBuffer, bufAttr, pointFilterBuffer;
     // Textures
     unsigned int texColorMap, texBary, pointHighlightTexture, texAttr, pointFilterTexture;
 

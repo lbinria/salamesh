@@ -1,5 +1,6 @@
 #pragma once
-#include <glm/glm.hpp>
+// #include <glm/glm.hpp>
+#include "../include/glm/glm.hpp"
 
 struct InputState {
 
