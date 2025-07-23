@@ -120,25 +120,28 @@ void HexRenderer::init() {
 
 
 	// Set up texture units
-	shader.use();
 	
 	glActiveTexture(GL_TEXTURE0 + 1);
 	glBindTexture(GL_TEXTURE_BUFFER, texBary);
-	shader.setInt("bary", 1);
 	
 	glActiveTexture(GL_TEXTURE0 + 2);
 	glBindTexture(GL_TEXTURE_BUFFER, texAttr);
-	shader.setInt("attributeData", 2);
+
 
 	glActiveTexture(GL_TEXTURE0 + 3);
 	glBindTexture(GL_TEXTURE_BUFFER, texHighlight);
-	shader.setInt("highlight", 3);
+
 
 	glActiveTexture(GL_TEXTURE0 + 4);
 	glBindTexture(GL_TEXTURE_BUFFER, texFilter);
-	shader.setInt("_filter", 4);
 
 	glBindBuffer(GL_TEXTURE_BUFFER, 0);
+
+	shader.use();
+	shader.setInt("bary", 1);
+	shader.setInt("attributeData", 2);
+	shader.setInt("highlight", 3);
+	shader.setInt("_filter", 4);
 
 	#ifdef _DEBUG
     std::cout << "vertex attrib setup..." << std::endl;
@@ -200,7 +203,8 @@ void HexRenderer::push() {
 	std::chrono::steady_clock::time_point begin_barys = std::chrono::steady_clock::now();
 
 	// (8ms -> 3ms)
-	_barys.resize(hex.ncells() * 3);
+	std::vector<float> barys(hex.ncells() * 3);
+
 	const int size = hex.cells.size() / 8;
 	for (int ci = 0; ci < size; ++ci) {
 		// Compute bary
@@ -214,9 +218,9 @@ void HexRenderer::push() {
 		const vec3 &v6 = hex.points[hex.cells[off + 6]];
 		const vec3 &v7 = hex.points[hex.cells[off + 7]];
 
-		_barys[ci * 3] = (v0.x + v1.x + v2.x + v3.x + v4.x + v5.x + v6.x + v7.x) / 8;
-		_barys[ci * 3 + 1] = (v0.y + v1.y + v2.y + v3.y + v4.y + v5.y + v6.y + v7.y) / 8;
-		_barys[ci * 3 + 2] = (v0.z + v1.z + v2.z + v3.z + v4.z + v5.z + v6.z + v7.z) / 8;
+		barys[ci * 3] = (v0.x + v1.x + v2.x + v3.x + v4.x + v5.x + v6.x + v7.x) / 8;
+		barys[ci * 3 + 1] = (v0.y + v1.y + v2.y + v3.y + v4.y + v5.y + v6.y + v7.y) / 8;
+		barys[ci * 3 + 2] = (v0.z + v1.z + v2.z + v3.z + v4.z + v5.z + v6.z + v7.z) / 8;
 	}
 
 	std::chrono::steady_clock::time_point end_barys = std::chrono::steady_clock::now();
@@ -315,13 +319,7 @@ void HexRenderer::push() {
 	glBufferData(GL_ARRAY_BUFFER, vertices.size() * sizeof(Vertex), vertices.data(), GL_STATIC_DRAW);
 
 	glBindBuffer(GL_TEXTURE_BUFFER, bufBary);
-	glBufferData(GL_TEXTURE_BUFFER, _barys.size() * sizeof(float), _barys.data(), GL_STATIC_DRAW);
-
-	// glBindBuffer(GL_TEXTURE_BUFFER, bufBary);
-	// glBufferData(GL_TEXTURE_BUFFER, _barys.size() * sizeof(float), _barys.data(), GL_STATIC_DRAW);
-	// glActiveTexture(GL_TEXTURE0 + 1); 
-	// glBindTexture(GL_TEXTURE_BUFFER, texBary);
-	// glTexBuffer(GL_TEXTURE_BUFFER, GL_RGB32F, bufBary);
+	glBufferData(GL_TEXTURE_BUFFER, barys.size() * sizeof(float), barys.data(), GL_STATIC_DRAW);
 	
 }
 

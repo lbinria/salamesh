@@ -45,14 +45,6 @@ struct HexRenderer {
 
     void clean();
 
-    // void test() {
-    //     // It works ! nice ! just have to point to attribute in mesh !
-    //     // Then when we set the attribute in the mesh, it will be set in the shader
-    //     auto x = static_cast<float*>(highlightsPtr);
-    //     for (int i = 0; i < _highlights.size(); ++i)
-    //         x[i] = 2.f;
-    // }
-
     void setTexture(unsigned int tex) { texColorMap = tex; }
 
     void setVisible(bool v) {
@@ -158,7 +150,6 @@ struct HexRenderer {
 
     std::vector<Vertex> vertices;
     // Data
-    std::vector<float> _barys;
     std::vector<float> _highlights;
 
     void *highlightsPtr;
