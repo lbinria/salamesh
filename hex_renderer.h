@@ -128,6 +128,10 @@ struct HexRenderer {
         shader.setInt("colormap", idx);
     }
 
+    float* &getFilterPtr() {
+        return ptrFilter;
+    }
+
     private:
 
     Hexahedra &hex;

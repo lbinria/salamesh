@@ -19,6 +19,8 @@ uniform sampler1D fragColorMap;
 uniform vec2 attributeDataMinMax = vec2(0.f, 1.f);
 uniform samplerBuffer attributeData;
 
+uniform samplerBuffer filterBuf;
+
 vec3 encode_id(int id) {
     int r = id & 0x000000FF;
     int g = (id & 0x0000FF00) >> 8;
@@ -28,7 +30,10 @@ vec3 encode_id(int id) {
 
 void main()
 {
-
+    bool is_filtered = texelFetch(filterBuf, FragVertexIndex).x > 0;
+    if (is_filtered) {
+        discard;
+    }
     
     vec3 col = pointColor;
 
@@ -51,6 +56,7 @@ void main()
 
         float fragAttrVal = texelFetch(attributeData, FragVertexIndex).x;
         vec3 col = vec3(texture(fragColorMap, clamp((fragAttrVal - attributeDataMinMax.x) / (attributeDataMinMax.y - attributeDataMinMax.x), 0., 1.)));
+        col *= dot(N, vec3(0.0, 0.0, 1.0));
         FragColor = vec4(col, 1.f);
     }
 

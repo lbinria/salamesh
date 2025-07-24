@@ -320,8 +320,32 @@ struct HexModel final : public Model {
         _hexRenderer.setHighlight(highlights);
     }
 
+    // TODO filter anything else than cell !
     void setFilter(int idx, bool filter) override {
         _hexRenderer.setFilter(idx, filter);
+
+        // TODO it works but... not very efficient !
+        Volume::Cell c(_hex, idx);
+        for (int lc = 0; lc < 8; ++lc) {
+            auto corner = c.corner(lc);
+            auto v = corner.vertex();
+            // Retrieve all cells attached to this point to see whether filtered
+            bool allFiltered = true;
+            for (int i = 0; i < _hex.cells.size(); ++i) {
+                if (_hex.cells[i] != v)
+                    continue;
+                
+                int ci = i / 8;
+                if (_hexRenderer.getFilterPtr()[ci] <= 0) {
+                    allFiltered = false;
+                    break;
+                }
+            }
+
+            _pointSetRenderer.setFilter(v, allFiltered);
+        }
+
+        
     }
 
     std::vector<std::tuple<std::string, int>> getAttrs() const override {

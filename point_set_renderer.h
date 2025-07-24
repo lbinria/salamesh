@@ -61,18 +61,24 @@ struct PointSetRenderer {
         pointColor = color;
     }
 
+    void setFilter(int idx, bool filter) {
+        ptrFilter[idx] = filter ? 1.f : 0.f;
+    }
+
     PointSet &ps;
     Shader shader;
 
 	private:
 	
 	// Buffers
-    unsigned int VAO, VBO, pointHighlightBuffer, bufAttr, pointFilterBuffer;
+    unsigned int VAO, VBO, pointHighlightBuffer, bufAttr, bufFilter;
     // Textures
-    unsigned int texColorMap, pointHighlightTexture, texAttr, pointFilterTexture;
+    unsigned int texColorMap, pointHighlightTexture, texAttr, texFilter;
 
     // Data TODO maybe not necessary to keep it in memory, should replace by ptr
     std::vector<float> _highlights;
+
+    float* ptrFilter;
 
     float pointSize;
     glm::vec3 pointColor;

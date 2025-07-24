@@ -56,8 +56,32 @@ void PointSetRenderer::init() {
 	glBindTexture(GL_TEXTURE_BUFFER, texAttr);
 	glTexBuffer(GL_TEXTURE_BUFFER, GL_R32F, bufAttr);
 
+	// glGenBuffers(1, &bufFilter);
+	// glGenTextures(1, &texFilter);
+	// glBindBuffer(GL_TEXTURE_BUFFER, bufFilter);
+	// glActiveTexture(GL_TEXTURE0 + 3);
+	// glBindTexture(GL_TEXTURE_BUFFER, texFilter);
+	// glTexBuffer(GL_TEXTURE_BUFFER, GL_R32F, bufFilter);
+
+	GLbitfield flags = GL_MAP_WRITE_BIT | GL_MAP_PERSISTENT_BIT | GL_MAP_COHERENT_BIT;
+
+	glGenBuffers(1, &bufFilter);
+	glBindBuffer(GL_TEXTURE_BUFFER, bufFilter);
+
+	glBufferStorage(GL_TEXTURE_BUFFER, ps.size() * sizeof(float), nullptr, flags);
+	// Map once and keep pointer (not compatible for MacOS... because need OpenGL >= 4.6 i think)
+	ptrFilter = (float*)glMapBufferRange(GL_TEXTURE_BUFFER, 0, ps.size() * sizeof(float), flags);
+
+	glGenTextures(1, &texFilter);
+	glActiveTexture(GL_TEXTURE0 + 4); 
+	glBindTexture(GL_TEXTURE_BUFFER, texFilter);
+	glTexBuffer(GL_TEXTURE_BUFFER, GL_R32F, bufFilter);
+
+
+
 	shader.use();
 	shader.setInt("attributeData", 2);
+	shader.setInt("filterBuf", 4);
 
 	// VBO
 	GLuint vertexIndexLocation = glGetAttribLocation(shader.id, "vertexIndex");
@@ -103,6 +127,8 @@ void PointSetRenderer::render(glm::vec3 &position) {
 	glBindTexture(GL_TEXTURE_1D, texColorMap);
 	glActiveTexture(GL_TEXTURE0 + 2);
 	glBindTexture(GL_TEXTURE_BUFFER, texAttr);
+	glActiveTexture(GL_TEXTURE0 + 4);
+	glBindTexture(GL_TEXTURE_BUFFER, texFilter);
 
 
 	glm::mat4 model = glm::mat4(1.0f);
