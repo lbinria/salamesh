@@ -4,25 +4,16 @@
 
 #include <ultimaille/all.h>
 
-#include "include/glm/glm.hpp"
-#include "include/glm/gtc/matrix_transform.hpp"
-#include "include/glm/gtc/type_ptr.hpp"
-
 // TODO should not inlcude this, because of Model::ColorMode ! create a separate file for ColorMode
 #include "core/model.h"
 
 
 #include "shader.h"
+#include "vertex.h"
 
 using namespace UM;
 
 struct PointSetRenderer {
-
-	struct Vertex {
-		int index;
-        glm::vec3 position; 
-		float size;
-	};
 
     PointSetRenderer(PointSet &ps) : 
         // shader("shaders/point.vert", "shaders/point.frag"), 
@@ -38,9 +29,6 @@ struct PointSetRenderer {
     void init();
     void push();
     void render(glm::vec3 &position);
-
-
-    void bind();
     void clean();
 
     void setColorMode(Model::ColorMode mode) {
@@ -48,13 +36,9 @@ struct PointSetRenderer {
         shader.setInt("colorMode", mode);
     }
 
+    // TODO rename setColorMap
     void setTexture(unsigned int tex) {
         texColorMap = tex;
-    }
-
-    void setMeshShrink(float val) {
-        shader.use();
-        shader.setFloat("meshShrink", val);
     }
 
     float getPointSize() const {
@@ -83,16 +67,15 @@ struct PointSetRenderer {
 	private:
 	
 	// Buffers
-    unsigned int VAO, VBO, bufBary, pointHighlightBuffer, bufAttr, pointFilterBuffer;
+    unsigned int VAO, VBO, pointHighlightBuffer, bufAttr, pointFilterBuffer;
     // Textures
-    unsigned int texColorMap, texBary, pointHighlightTexture, texAttr, pointFilterTexture;
-
-	std::vector<Vertex> vertices; // TODO not necessary to keep it in memory, should replace by ptr
+    unsigned int texColorMap, pointHighlightTexture, texAttr, pointFilterTexture;
 
     // Data TODO maybe not necessary to keep it in memory, should replace by ptr
-    std::vector<float> _barys;
     std::vector<float> _highlights;
 
     float pointSize;
     glm::vec3 pointColor;
+
+    bool visible = true;
 };

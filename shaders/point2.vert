@@ -3,7 +3,6 @@
 layout (location = 0) in vec3 aPos;
 layout (location = 1) in float sizeScale;
 layout (location = 2) in int vertexIndex;
-layout (location = 3) in int cellIndex;
 
 layout (std140, binding = 0) uniform Matrices
 {
@@ -16,18 +15,10 @@ flat out int FragVertexIndex;
 uniform mat4 model;
 uniform float pointSize;
 
-uniform samplerBuffer bary;
-
-uniform float meshShrink;
-
-
 void main()
 {
-	vec3 bary = texelFetch(bary, cellIndex).xyz;
 
-
-	// Shrink
-	vec3 pos = aPos - (aPos - bary) * meshShrink;
+	vec3 pos = aPos;
 
 	// Transform to clip space
 	gl_Position = projection * view * model * vec4(pos, 1.0);

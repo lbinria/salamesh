@@ -44,18 +44,10 @@ void PointSetRenderer::setAttribute(std::vector<float> attributeData) {
 void PointSetRenderer::init() {
 
 	glGenVertexArrays(1, &VAO);
-	glBindVertexArray(VAO);
-
 	glGenBuffers(1, &VBO);
+
+	glBindVertexArray(VAO);
 	glBindBuffer(GL_ARRAY_BUFFER, VBO);
-
-	glGenBuffers(1, &bufBary);
-	glGenTextures(1, &texBary);
-	glBindBuffer(GL_TEXTURE_BUFFER, bufBary);
-	glActiveTexture(GL_TEXTURE0 + 1);
-	glBindTexture(GL_TEXTURE_BUFFER, texBary);
-	glTexBuffer(GL_TEXTURE_BUFFER, GL_R32F, bufBary);
-
 
 	glGenBuffers(1, &bufAttr);
 	glGenTextures(1, &texAttr);
@@ -65,14 +57,12 @@ void PointSetRenderer::init() {
 	glTexBuffer(GL_TEXTURE_BUFFER, GL_R32F, bufAttr);
 
 	shader.use();
-	glUniform1i(glGetUniformLocation(shader.id, "bary"), 1);
-	glUniform1i(glGetUniformLocation(shader.id, "attributeData"), 2);
-
+	shader.setInt("attributeData", 2);
 
 	// VBO
 	GLuint vertexIndexLocation = glGetAttribLocation(shader.id, "vertexIndex");
 	glEnableVertexAttribArray(vertexIndexLocation);
-	glVertexAttribIPointer(vertexIndexLocation, 1, GL_INT, sizeof(Vertex), (void*)offsetof(Vertex, index));
+	glVertexAttribIPointer(vertexIndexLocation, 1, GL_INT, sizeof(Vertex), (void*)offsetof(Vertex, vertexIndex));
 
 	GLuint positionLocation = glGetAttribLocation(shader.id, "aPos");
 	glEnableVertexAttribArray(positionLocation);
@@ -81,64 +71,47 @@ void PointSetRenderer::init() {
 	GLuint sizeLocation = glGetAttribLocation(shader.id, "sizeScale");
 	glEnableVertexAttribArray(sizeLocation);
 	glVertexAttribPointer(sizeLocation, 1, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)offsetof(Vertex, size));
+
 }
 
-void PointSetRenderer::push() {
-    std::cout << "push start." << std::endl;
+void PointSetRenderer::push() {	
 
-
-
-	std::chrono::steady_clock::time_point begin = std::chrono::steady_clock::now();
-
-	vertices.resize(ps.size());
-
+	std::vector<Vertex> vertices(ps.size());
 	for (int i = 0; i < ps.size(); ++i) {
-		auto p = ps[i];
+		auto &v = ps[i];
+
 		vertices[i] = { 
-			i,
-			glm::vec3(p.x, p.y, p.z),
-			1.f
+			vertexIndex: i,
+			position: glm::vec3(v.x, v.y, v.z),
+			size: 1.f
 		};
 	}
 
-	
 	glBindVertexArray(VAO);
 	glBindBuffer(GL_ARRAY_BUFFER, VBO);
 	glBufferData(GL_ARRAY_BUFFER, vertices.size() * sizeof(Vertex), vertices.data(), GL_STATIC_DRAW);
-
-	// glBindBuffer(GL_TEXTURE_BUFFER, bufBary);
-	// glBufferData(GL_TEXTURE_BUFFER, _barys.size() * sizeof(float), _barys.data(), GL_STATIC_DRAW);
-	// glActiveTexture(GL_TEXTURE0 + 1); 
-	// glBindTexture(GL_TEXTURE_BUFFER, texBary);
-	// glTexBuffer(GL_TEXTURE_BUFFER, GL_RGB32F, bufBary);
-
-	std::chrono::steady_clock::time_point end = std::chrono::steady_clock::now();
-
-    std::cout << "push end in: " << std::chrono::duration_cast<std::chrono::milliseconds>(end - begin).count() << "ms" << std::endl;
-	std::cout << "point set has: " << ps.size() << " vertices." << std::endl;
 }
 
 void PointSetRenderer::render(glm::vec3 &position) {
-	// TODO remove test
-	// return;
+
+	if (!visible)
+		return;
 
 	glBindVertexArray(VAO);
 
 	glActiveTexture(GL_TEXTURE0);
 	glBindTexture(GL_TEXTURE_1D, texColorMap);
-	glActiveTexture(GL_TEXTURE0 + 1);
-	glBindTexture(GL_TEXTURE_BUFFER, texBary);
 	glActiveTexture(GL_TEXTURE0 + 2);
 	glBindTexture(GL_TEXTURE_BUFFER, texAttr);
 
-    shader.use();
 
-    // Draw	
 	glm::mat4 model = glm::mat4(1.0f);
 	model = glm::translate(model, position);
+	// Draw	
+    shader.use();
 	shader.setMat4("model", model);
 
-	glDrawArrays(GL_POINTS, 0, vertices.size());
+	glDrawArrays(GL_POINTS, 0, ps.size());
 }
 
 void PointSetRenderer::clean() {

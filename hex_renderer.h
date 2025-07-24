@@ -13,32 +13,26 @@
 #include "core/model.h"
 #include "core/element.h"
 #include "shader.h"
+#include "vertex.h"
 
 // TODO IMPORTANT see to bind mesh directly to the shader via buffermap and pointers
 
 using namespace UM;
 
-struct Vertex {
-    glm::vec3 position; 
-    float size;
-    glm::vec3 normal; 
-    glm::vec3 heights;
-    int facetIndex;
-	int cellIndex;
-    int vertexIndex;
-};
+
 
 struct HexRenderer {
 
     HexRenderer(Hexahedra &hex) : 
+        hex(hex),
         shader("shaders/hex.vert", "shaders/hex.frag")
         {
         }
 
 
     // TODO eventually merge init / update
-    void init(int ncells);
-    void push(std::vector<Vertex> &vertices, std::vector<float> &barys);
+    void init();
+    void push();
     void render(glm::vec3 &position);
     
 
@@ -136,6 +130,7 @@ struct HexRenderer {
 
     private:
 
+    Hexahedra &hex;
     Shader shader;
 
     unsigned int VAO, VBO; // Buffers
@@ -147,7 +142,7 @@ struct HexRenderer {
 
     void *highlightsPtr;
     float *ptrFilter;
-    int nvertices = 0;
+    int nverts = 0;
 
     bool visible = true;
 };
