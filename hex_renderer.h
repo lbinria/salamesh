@@ -31,15 +31,14 @@ struct Vertex {
 struct HexRenderer {
 
     HexRenderer(Hexahedra &hex) : 
-        hex(hex),
         shader("shaders/hex.vert", "shaders/hex.frag")
         {
         }
 
 
     // TODO eventually merge init / update
-    void init();
-    void push();
+    void init(int ncells);
+    void push(std::vector<Vertex> &vertices, std::vector<float> &barys);
     void render(glm::vec3 &position);
     
 
@@ -135,25 +134,20 @@ struct HexRenderer {
         shader.setInt("colormap", idx);
     }
 
-    Hexahedra &getHexahedra() {
-        return hex;
-    }
-
     private:
 
-    Hexahedra &hex;
     Shader shader;
 
     unsigned int VAO, VBO; // Buffers
     unsigned int bufBary, bufHighlight, bufAttr, bufFilter; // Sample buffers
     unsigned int texColorMap, texBary, texHighlight, texAttr, texFilter; // Textures
 
-    std::vector<Vertex> vertices;
     // Data
     std::vector<float> _highlights;
 
     void *highlightsPtr;
     float *ptrFilter;
+    int nvertices = 0;
 
     bool visible = true;
 };
