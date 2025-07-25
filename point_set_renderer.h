@@ -71,9 +71,9 @@ struct PointSetRenderer {
 	private:
 	
 	// Buffers
-    unsigned int VAO, VBO, pointHighlightBuffer, bufAttr, bufFilter;
+    unsigned int VAO, VBO, pointHighlightBuffer, bufAttr, bufFilter, bufHighlight;
     // Textures
-    unsigned int texColorMap, pointHighlightTexture, texAttr, texFilter;
+    unsigned int texColorMap, pointHighlightTexture, texAttr, texFilter, texHighlight;
 
     // Data TODO maybe not necessary to keep it in memory, should replace by ptr
     std::vector<float> _highlights;

@@ -331,6 +331,7 @@ struct HexModel final : public Model {
             auto v = corner.vertex();
             // Retrieve all cells attached to this point to see whether filtered
             bool allFiltered = true;
+            // #pragma omp parallel for
             for (int i = 0; i < _hex.cells.size(); ++i) {
                 if (_hex.cells[i] != v)
                     continue;
