@@ -248,6 +248,8 @@ struct App : public IApp {
     // TODO make private
     int cull_mode = GL_BACK;
 
+    bool renderSurfaceWindowHovered = false;
+
     private:
 
 
