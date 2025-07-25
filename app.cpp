@@ -308,7 +308,6 @@ void App::setup() {
 	std::chrono::steady_clock::time_point end_setup = std::chrono::steady_clock::now();
     std::cout << "GLFW / ImGui setup in: " << std::chrono::duration_cast<std::chrono::milliseconds>(end_setup - begin_setup).count() << "ms" << std::endl;
 
-
 	// OpenGL
 	glEnable(GL_MULTISAMPLE);  
 
@@ -318,6 +317,16 @@ void App::setup() {
 	GLint64 maxUnits;
 	glGetInteger64i_v(GL_MAX_COMBINED_TEXTURE_IMAGE_UNITS, 0, &maxUnits);
 	std::cout << "Max texture units: " << maxUnits << std::endl;
+
+	GLint maxColorAttachments = 0;
+	GLint maxDrawBuffers     = 0;
+
+	glGetIntegerv(GL_MAX_COLOR_ATTACHMENTS, &maxColorAttachments);
+	glGetIntegerv(GL_MAX_DRAW_BUFFERS, &maxDrawBuffers);
+
+	std::cout 
+		<< "GL_MAX_COLOR_ATTACHMENTS = " << maxColorAttachments << std::endl
+		<< "GL_MAX_DRAW_BUFFERS     = " << maxDrawBuffers     << std::endl;
 
 	// Load colormap texture
 	int width, height, nrChannels;
@@ -572,7 +581,8 @@ void App::run()
 		ImGui_ImplGlfw_NewFrame();
 		
 		ImGui::NewFrame();
-		
+	
+
 		// ImGui::Begin("Render");
 		// ImVec2 size = ImGui::GetWindowSize();
 		// ImGui::Image((ImTextureID)texCellID, size, ImVec2(0.0f, 1.0f), ImVec2(1.0f, 0.0f));
@@ -875,6 +885,9 @@ std::set<long> App::pick(double xPos, double yPos, int radius) {
 }
 
 void App::processInput(GLFWwindow *window) {
+
+	if (ImGui::GetIO().WantCaptureMouse)
+		return;
 
 	// Get mouse position
 	double x, y;

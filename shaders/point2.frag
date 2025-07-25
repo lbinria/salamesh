@@ -1,4 +1,5 @@
 #version 440 core
+
 // Avoid the disable of earlier Depth-testing
 layout(depth_less) out float gl_FragDepth;
 
