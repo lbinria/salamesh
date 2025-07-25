@@ -1,5 +1,5 @@
 #version 440 core
-
+// Avoid the disable of earlier Depth-testing
 layout(depth_less) out float gl_FragDepth;
 
 // Color output
@@ -8,16 +8,13 @@ layout(location = 3) out vec4 FragVertexIndexOut;
 
 flat in int FragVertexIndex;
 
-uniform bool is_light_enabled;
-
 uniform vec3 pointColor;
 
 uniform int colorMode = 0;
 
-// TODO see if uniform can be global to all shaders
 uniform sampler1D fragColorMap;
-uniform vec2 attributeDataMinMax = vec2(0.f, 1.f);
-uniform samplerBuffer attributeData;
+uniform vec2 attrRange = vec2(0.f, 1.f);
+uniform samplerBuffer attrBuf;
 
 uniform samplerBuffer filterBuf;
 uniform samplerBuffer highlightBuf;
@@ -31,37 +28,43 @@ vec3 encode_id(int id) {
 
 void main()
 {
-    bool is_filtered = texelFetch(filterBuf, FragVertexIndex).x > 0;
-    if (is_filtered) {
+    // Check whether point is filtered
+    bool isFiltered = texelFetch(filterBuf, FragVertexIndex).x > 0;
+    if (isFiltered)
         discard;
-    }
     
     vec3 col = pointColor;
 
+    // Check circle distance function
     vec2 V = 2.0 * (gl_PointCoord - vec2(0.5, 0.5));
-    float one_minus_r2 = 1. - dot(V,V);
-    if (one_minus_r2 < 0.0) {
+    float oneMinusR2 = 1. - dot(V,V);
+    if (oneMinusR2 < 0.0) {
         discard;
     }
 
-    // Compute
-    vec3 N = vec3(V.x, -V.y, sqrt(one_minus_r2));
+    // Compute normal using point coordinates and radius as Z
+    vec3 N = vec3(V.x, -V.y, sqrt(oneMinusR2));
+    // Update depth according to radius
     gl_FragDepth = gl_FragCoord.z - 0.00005 * N.z;
     
+    // Attribute color mode !
     if (colorMode != 0) {
-        float fragAttrVal = texelFetch(attributeData, FragVertexIndex).x;
-        col = vec3(texture(fragColorMap, clamp((fragAttrVal - attributeDataMinMax.x) / (attributeDataMinMax.y - attributeDataMinMax.x), 0., 1.)));
+        float fragAttrVal = texelFetch(attrBuf, FragVertexIndex).x;
+        col = vec3(texture(fragColorMap, clamp((fragAttrVal - attrRange.x) / (attrRange.y - attrRange.x), 0., 1.)));
     }
 
     // Light
     col = col * dot(N, vec3(0.0, 0.0, 1.0));
 
     // Highlight
-    float highlight_val = texelFetch(highlightBuf, FragVertexIndex).x;
-    if (highlight_val >= 1.f && highlight_val < 2.f) {
-        col = mix(col, vec3(1.,1.,1.), 0.8);
-    } else if (highlight_val >= 2.f) {
-        col = mix(col, vec3(0., 0.22, 1.), 0.8);
+    float highlightVal = texelFetch(highlightBuf, FragVertexIndex).x;
+    if (highlightVal > 0) {
+        // Interpolate between hover / select colors according to highlight value
+        vec3 hovColor = vec3(1.,1.,1.);
+        vec3 selColor = vec3(0., 0.22, 1.);
+        vec3 hlColor = mix(hovColor, selColor, highlightVal);
+        // Mix with current point color (80%)
+        col = mix(col, hlColor, .8);
     }
 
     FragVertexIndexOut = vec4(encode_id(FragVertexIndex), 1.);

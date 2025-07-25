@@ -34,7 +34,7 @@ void PointSetRenderer::setAttribute(std::vector<float> attributeData) {
 
 	// Update min/max
 	shader.use();
-	shader.setFloat2("attributeDataMinMax", glm::vec2(min, max));
+	shader.setFloat2("attrRange", glm::vec2(min, max));
 
 	// Update sample
 	glBindBuffer(GL_TEXTURE_BUFFER, bufAttr);
@@ -87,7 +87,7 @@ void PointSetRenderer::init() {
 
 
 	shader.use();
-	shader.setInt("attributeData", 2);
+	shader.setInt("attrBuf", 2);
 	shader.setInt("highlightBuf", 3);
 	shader.setInt("filterBuf", 4);
 

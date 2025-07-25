@@ -344,7 +344,7 @@ struct HexModel final : public Model {
             }
 
             _pointSetRenderer.setFilter(v, allFiltered);
-            _pointSetRenderer.setHighlight(v, 1.5f);
+            _pointSetRenderer.setHighlight(v, 0.1f);
         }
 
         
