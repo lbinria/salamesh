@@ -620,16 +620,18 @@ void App::clean() {
 	glDeleteRenderbuffers(1, &rbo);
 	glDeleteFramebuffers(1, &fbo);
 
+	glDeleteTextures(1, &texColor);
+	glDeleteTextures(1, &texCellID);
+	glDeleteTextures(1, &texFacetID);
+	glDeleteTextures(1, &texVertexID);
+
 	// Clear textures
 	for (int i = 0; i < IM_ARRAYSIZE(colormaps); ++i)
 		glDeleteTextures(1, &colormaps[i]);
 	for (int i = 0; i < IM_ARRAYSIZE(colormaps2D); ++i)
 		glDeleteTextures(1, &colormaps2D[i]);
 
-	glDeleteTextures(1, &texColor);
-	glDeleteTextures(1, &texCellID);
-	glDeleteTextures(1, &texFacetID);
-	glDeleteTextures(1, &texVertexID);
+
 
 	for (auto &model : models) {
 		model->clean();

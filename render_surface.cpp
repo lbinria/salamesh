@@ -134,6 +134,17 @@ void RenderSurface::clear() {
 	glClearBufferfv(GL_COLOR, 3, zero); // clear each float RT to 0
 }
 
+void RenderSurface::render(unsigned int quadVAO) {
+	// Go back to default framebuffer to draw the screen quad
+	glBindFramebuffer(GL_FRAMEBUFFER, 0);
+	glDisable(GL_DEPTH_TEST);
+	glClearColor(1.0f, 1.0f, 1.0f, 1.0f);
+	glClear(GL_COLOR_BUFFER_BIT);
+	glBindVertexArray(quadVAO);
+	glActiveTexture(GL_TEXTURE0);
+	glBindTexture(GL_TEXTURE_2D, texColor);
+}
+
 void RenderSurface::clean() {
 	glDeleteRenderbuffers(1, &rbo);
 	glDeleteFramebuffers(1, &fbo);

@@ -8,6 +8,10 @@
 
 struct RenderSurface {
     
+    RenderSurface(std::shared_ptr<Camera> camera) : _camera(camera) {
+        _camera->setScreenSize(width, height);
+    }
+
 	unsigned int fbo;
     unsigned int rbo;
     
@@ -24,8 +28,11 @@ struct RenderSurface {
 	void setup();
     void bind();
     void clear();
+    void render(unsigned int quadVAO);
     void resize(int w, int h);
     void clean();
+
+    // Add picking functions
 
     void setCamera(std::shared_ptr<Camera> camera) {
         _camera = camera;
