@@ -25,7 +25,7 @@ struct IApp {
 
 
 
-    virtual std::vector<std::unique_ptr<Camera>>& getCameras() = 0;
+    virtual std::vector<std::shared_ptr<Camera>>& getCameras() = 0;
     virtual int countCameras() = 0;
     virtual void setSelectedCamera(int selected)= 0;
     virtual int getSelectedCamera() = 0;

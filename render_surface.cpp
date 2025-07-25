@@ -66,7 +66,7 @@ void RenderSurface::setup() {
 	glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_STENCIL_ATTACHMENT, GL_RENDERBUFFER, rbo);
 
 	if(glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
-		std::cout << "ERROR::FRAMEBUFFER:: Picking framebuffer is not complete!" << std::endl;
+		std::cout << "ERROR::FRAMEBUFFER:: Framebuffer is not complete at setup." << std::endl;
 
 	// Unbind FBO
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
@@ -75,6 +75,15 @@ void RenderSurface::setup() {
 void RenderSurface::bind() {
 	// Bind framebuffer
 	glBindFramebuffer(GL_FRAMEBUFFER, fbo);
+
+	// Enable all three color attachments at once
+	GLenum drawBufs[4] = {
+		GL_COLOR_ATTACHMENT0,
+		GL_COLOR_ATTACHMENT1,
+		GL_COLOR_ATTACHMENT2,
+		GL_COLOR_ATTACHMENT3
+	};
+	glDrawBuffers(4, drawBufs);
 }
 
 void RenderSurface::resize(int w, int h) {
@@ -106,7 +115,7 @@ void RenderSurface::resize(int w, int h) {
     // Verify framebuffer completeness
     glBindFramebuffer(GL_FRAMEBUFFER, fbo);
     if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE) {
-        std::cout << "ERROR::FRAMEBUFFER:: Framebuffer is not complete!" << std::endl;
+        std::cout << "ERROR::FRAMEBUFFER:: Framebuffer is not complete at resize." << std::endl;
     }
 
     glBindFramebuffer(GL_FRAMEBUFFER, 0);
@@ -115,15 +124,6 @@ void RenderSurface::resize(int w, int h) {
 }
 
 void RenderSurface::clear() {
-	// Enable all three color attachments at once
-	GLenum drawBufs[4] = {
-		GL_COLOR_ATTACHMENT0,
-		GL_COLOR_ATTACHMENT1,
-		GL_COLOR_ATTACHMENT2,
-		GL_COLOR_ATTACHMENT3
-	};
-	glDrawBuffers(4, drawBufs);
-
 	// Clear attachments
 	GLfloat zero[4] = { 0.f, 0.f, 0.f, 0.f };
 
@@ -134,15 +134,19 @@ void RenderSurface::clear() {
 	glClearBufferfv(GL_COLOR, 3, zero); // clear each float RT to 0
 }
 
-void RenderSurface::render(unsigned int quadVAO) {
-	// Go back to default framebuffer to draw the screen quad
-	glBindFramebuffer(GL_FRAMEBUFFER, 0);
+void RenderSurface::render(Shader &screenShader, unsigned int quadVAO) {
+	// // Go back to default framebuffer to draw the screen quad
+	// glBindFramebuffer(GL_FRAMEBUFFER, 0);
 	glDisable(GL_DEPTH_TEST);
 	glClearColor(1.0f, 1.0f, 1.0f, 1.0f);
 	glClear(GL_COLOR_BUFFER_BIT);
 	glBindVertexArray(quadVAO);
 	glActiveTexture(GL_TEXTURE0);
 	glBindTexture(GL_TEXTURE_2D, texColor);
+
+	glCullFace(GL_BACK);
+	screenShader.use();
+	glDrawArrays(GL_TRIANGLES, 0, 6);
 }
 
 void RenderSurface::clean() {

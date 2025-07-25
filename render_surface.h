@@ -1,5 +1,6 @@
 #pragma once
 #include "core/camera.h"
+#include "shader.h"
 
 #include "../include/glm/glm.hpp"
 #include "../include/glm/gtc/matrix_transform.hpp"
@@ -8,8 +9,9 @@
 
 struct RenderSurface {
     
-    RenderSurface(std::shared_ptr<Camera> camera) : _camera(camera) {
-        _camera->setScreenSize(width, height);
+    RenderSurface(int w, int h) : width(w), height(h) {
+
+        
     }
 
 	unsigned int fbo;
@@ -28,7 +30,7 @@ struct RenderSurface {
 	void setup();
     void bind();
     void clear();
-    void render(unsigned int quadVAO);
+    void render(Shader &screenShader, unsigned int quadVAO);
     void resize(int w, int h);
     void clean();
 
@@ -36,6 +38,10 @@ struct RenderSurface {
 
     void setCamera(std::shared_ptr<Camera> camera) {
         _camera = camera;
+    }
+
+    void setBackgroundColor(glm::vec3 color) {
+        backgroundColor = color;
     }
 
     Camera& getCamera() { return *_camera; }

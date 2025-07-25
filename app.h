@@ -28,6 +28,7 @@
 
 #include "hex_renderer.h"
 #include "hex_model.h"
+#include "render_surface.h"
 
 #include "core/camera.h"
 #include "cameras/arcball_camera.h"
@@ -55,6 +56,9 @@ struct App : public IApp {
         screenWidth(1024), 
         screenHeight(768)
     {}
+
+    // Another screenfbo
+    unsigned int screenFbo;
 
     // OpenGL
     unsigned int fbo;
@@ -163,7 +167,7 @@ struct App : public IApp {
         return *models[selected_renderer];
     }
 
-    std::vector<std::unique_ptr<Camera>>& getCameras() override {
+    std::vector<std::shared_ptr<Camera>>& getCameras() override {
         return cameras;
     }
 
@@ -185,6 +189,7 @@ struct App : public IApp {
 
     Camera& getCamera() override { return *cameras[selected_camera]; }
 
+    RenderSurface &getRenderSurface() { return *renderSurfaces[0]; }
 
     InputState& getInputState() override { return st; }
 
@@ -215,7 +220,7 @@ struct App : public IApp {
 
 
 
-    std::vector<std::unique_ptr<Camera>> cameras;
+    std::vector<std::shared_ptr<Camera>> cameras;
     int selected_camera = 0;
 
     // Current pressed mouse button, -1 if none
@@ -228,6 +233,7 @@ struct App : public IApp {
     glm::vec3 backgroundColor{0.05, 0.1, 0.15};
     
     std::vector<std::shared_ptr<Model>> models;
+    std::vector<std::unique_ptr<RenderSurface>> renderSurfaces;
     // TODO rename! selected_model
     int selected_renderer = 0;
 

@@ -129,41 +129,7 @@ static void framebuffer_size_callback(GLFWwindow* window, int width, int height)
 	app->screenWidth = width;
 	app->screenHeight = height;
 
-	glViewport(0, 0, width, height);
-    
-	glBindFramebuffer(GL_FRAMEBUFFER, app->fbo);
-
-	// TODO see if necessary ???!!!
-	// Update color attachment texture
-    glBindTexture(GL_TEXTURE_2D, app->texColor);
-    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, NULL);
-
-    glBindTexture(GL_TEXTURE_2D, app->texVertexID);
-    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, NULL);
-
-    glBindTexture(GL_TEXTURE_2D, app->texFacetID);
-    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, NULL);
-
-    glBindTexture(GL_TEXTURE_2D, app->texCellID);
-    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, NULL);
-    
-    // Update depth/stencil renderbuffer
-	glBindRenderbuffer(GL_RENDERBUFFER, app->rbo);
-	glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH24_STENCIL8, width, height);
-
-    // glBindRenderbuffer(GL_RENDERBUFFER, app->depthPickingRbo);
-    // glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH24_STENCIL8, width, height);
-    
-    // Verify framebuffer completeness
-    glBindFramebuffer(GL_FRAMEBUFFER, app->fbo);
-    if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE) {
-        std::cout << "ERROR::FRAMEBUFFER:: Framebuffer is not complete!" << std::endl;
-    }
-
-    glBindFramebuffer(GL_FRAMEBUFFER, 0);
-
-	for (auto &c : app->cameras)
-		c->setScreenSize(width, height);
+	app->getRenderSurface().resize(width, height);
 }
 
 // TODO be able to load tet, surf, etc
@@ -335,76 +301,16 @@ void App::setup() {
 	load_texture_1d("assets/CET-L08px.png", colormaps[1], width, height, nrChannels);
 	load_texture_2d("assets/CET-L08px.png", colormaps2D[1], width, height, nrChannels);
 
-	// Framebuffer !
-	glGenFramebuffers(1, &fbo);
-	glBindFramebuffer(GL_FRAMEBUFFER, fbo);
+	auto renderSurface = std::make_unique<RenderSurface>(screenWidth, screenHeight);
+	renderSurface->setBackgroundColor({0.05, 0.1, 0.15});
+	renderSurface->setup();
+	renderSurfaces.push_back(std::move(renderSurface));
 
-	// Framebuffer texture
-	glGenTextures(1, &texColor);
-	glBindTexture(GL_TEXTURE_2D, texColor);
-	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, screenWidth, screenHeight, 0, GL_RGBA, GL_UNSIGNED_BYTE, NULL);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR); 
-	glBindTexture(GL_TEXTURE_2D, 0);
-
-	// Create depth texture
-	glGenTextures(1, &depthAttachmentTexture);
-	glBindTexture(GL_TEXTURE_2D, depthAttachmentTexture);
-	glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT, screenWidth, screenHeight, 0, GL_DEPTH_COMPONENT, GL_FLOAT, NULL);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-	glBindTexture(GL_TEXTURE_2D, 0);
-
-	// Create picking textures
-	glGenTextures(1, &texCellID);
-	glBindTexture(GL_TEXTURE_2D, texCellID);
-	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, screenWidth, screenHeight, 0, GL_RGBA, GL_UNSIGNED_BYTE, NULL);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR); 
-	glBindTexture(GL_TEXTURE_2D, 0);
-
-	glGenTextures(1, &texFacetID);
-	glBindTexture(GL_TEXTURE_2D, texFacetID);
-	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, screenWidth, screenHeight, 0, GL_RGBA, GL_UNSIGNED_BYTE, NULL);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR); 
-	glBindTexture(GL_TEXTURE_2D, 0);
-
-	glGenTextures(1, &texVertexID);
-	glBindTexture(GL_TEXTURE_2D, texVertexID);
-	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, screenWidth, screenHeight, 0, GL_RGBA, GL_UNSIGNED_BYTE, NULL);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR); 
-	glBindTexture(GL_TEXTURE_2D, 0);
-
-	// Attach color attachments to FBO buffer
-	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, texColor, 0);
-	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT1, GL_TEXTURE_2D, texFacetID, 0);
-	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT2, GL_TEXTURE_2D, texCellID, 0);
-	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT3, GL_TEXTURE_2D, texVertexID, 0);
-	// Attach depth attachments to FBO buffer
-	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_TEXTURE_2D, depthAttachmentTexture, 0);
-
-	GLenum drawBuffers[4] = {GL_COLOR_ATTACHMENT0, GL_COLOR_ATTACHMENT1, GL_COLOR_ATTACHMENT2, GL_COLOR_ATTACHMENT3};
-	glDrawBuffers(4, drawBuffers);
-
-	glGenRenderbuffers(1, &rbo);
-	glBindRenderbuffer(GL_RENDERBUFFER, rbo);
-	glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH24_STENCIL8, screenWidth, screenHeight);
-	// Attach to FBO
-	glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_STENCIL_ATTACHMENT, GL_RENDERBUFFER, rbo);
-
-	// glGenRenderbuffers(1, &depthPickingRbo);
-	// glBindRenderbuffer(GL_RENDERBUFFER, depthPickingRbo);
-	// glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH24_STENCIL8, screenWidth, screenHeight);
-	// // Attach depth RBO to picking FBO buffer
-	// glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_STENCIL_ATTACHMENT, GL_RENDERBUFFER, depthPickingRbo);
-
-	if(glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
-		std::cout << "ERROR::FRAMEBUFFER:: Picking framebuffer is not complete!" << std::endl;
-
-	// Unbind FBO
-	glBindFramebuffer(GL_FRAMEBUFFER, 0);
+	auto renderSurface2 = std::make_unique<RenderSurface>(screenWidth, screenHeight);
+	renderSurface2->setBackgroundColor({0.16, 0.85, 0.35});
+	glGenFramebuffers(1, &screenFbo);
+	renderSurface2->setup();
+	renderSurfaces.push_back(std::move(renderSurface2));
 
 	// Init UBO
 	glGenBuffers(1, &uboMatrices);
@@ -487,12 +393,14 @@ void App::run()
 
 	{
 		// Create cameras
-		auto arcball_camera = std::make_unique<ArcBallCamera>("Arcball", glm::vec3(0.f, 0.f, -3.f), getCurrentModel().getPosition(), glm::vec3(0.f, 1.f, 0.f), glm::vec3(45.f, screenWidth, screenHeight));
-		auto descent_camera = std::make_unique<DescentCamera>("Descent", glm::vec3(0.f, 0.f, -3.f), getCurrentModel().getPosition(), glm::vec3(0.f, 1.f, 0.f), glm::vec3(45.f, screenWidth, screenHeight));
+		auto arcball_camera = std::make_shared<ArcBallCamera>("Arcball", glm::vec3(0.f, 0.f, -3.f), getCurrentModel().getPosition(), glm::vec3(0.f, 1.f, 0.f), glm::vec3(45.f, screenWidth, screenHeight));
+		auto descent_camera = std::make_shared<DescentCamera>("Descent", glm::vec3(0.f, 0.f, -3.f), getCurrentModel().getPosition(), glm::vec3(0.f, 1.f, 0.f), glm::vec3(45.f, screenWidth, screenHeight));
 		cameras.push_back(std::move(arcball_camera));
 		cameras.push_back(std::move(descent_camera));
 	}
 	
+	getRenderSurface().setCamera(cameras[0]);
+	renderSurfaces[1]->setCamera(cameras[1]);
 
 	// Init inherited class 
 	init();
@@ -522,36 +430,18 @@ void App::run()
 		projection = getCamera().getProjectionMatrix();
 
 
-		// Bind framebuffer
-		glBindFramebuffer(GL_FRAMEBUFFER, fbo);
-
-		// Enable all three color attachments at once
-		GLenum drawBufs[4] = {
-			GL_COLOR_ATTACHMENT0,
-			GL_COLOR_ATTACHMENT1,
-			GL_COLOR_ATTACHMENT2,
-			GL_COLOR_ATTACHMENT3
-		};
-		glDrawBuffers(4, drawBufs);
-
-		// Clear attachments
-		GLfloat zero[4] = { 0.f, 0.f, 0.f, 0.f };
-
-		glClearColor(backgroundColor.r, backgroundColor.g, backgroundColor.b, 1.);
-		glClearBufferfv(GL_COLOR, 0, zero); // clear each float RT to 0
-		glClearBufferfv(GL_COLOR, 1, zero); // clear each float RT to 0
-		glClearBufferfv(GL_COLOR, 2, zero); // clear each float RT to 0
-		glClearBufferfv(GL_COLOR, 3, zero); // clear each float RT to 0
-		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
-		glEnable(GL_DEPTH_TEST);
-		glCullFace(cull_mode);
 
 		// Update UBO
 		glm::mat4 mats[2] = { view, projection }; // Ensure view and projection matrices are contiguous in memory
 		glBindBuffer(GL_UNIFORM_BUFFER, uboMatrices);
 		glBufferData(GL_UNIFORM_BUFFER, sizeof(glm::mat4) * 2, glm::value_ptr(mats[0]), GL_DYNAMIC_DRAW);
-		glBindBuffer(GL_UNIFORM_BUFFER, 0);  
+		glBindBuffer(GL_UNIFORM_BUFFER, 0); 
+
+		getRenderSurface().bind();
+		getRenderSurface().clear();
+		glEnable(GL_DEPTH_TEST);
+		glCullFace(cull_mode);
+		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 		// Render scene
 		for (auto &model : models) {
@@ -560,21 +450,39 @@ void App::run()
 			model->render();
 		}
 
-
 		// Go back to default framebuffer to draw the screen quad
 		glBindFramebuffer(GL_FRAMEBUFFER, 0);
-		glDisable(GL_DEPTH_TEST);
-		glClearColor(1.0f, 1.0f, 1.0f, 1.0f);
-		glClear(GL_COLOR_BUFFER_BIT);
-		glBindVertexArray(quadVAO);
-		glActiveTexture(GL_TEXTURE0);
-		glBindTexture(GL_TEXTURE_2D, texColor);
+		getRenderSurface().render(screenShader, quadVAO);
 
-		glCullFace(GL_BACK);
-		screenShader.use();
-		glDrawArrays(GL_TRIANGLES, 0, 6);
+
+		renderSurfaces[1]->bind();
+		renderSurfaces[1]->clear();
+		glEnable(GL_DEPTH_TEST);
+		glCullFace(cull_mode);
+		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+		// // // Update UBO
+		// // glm::mat4 mats[2] = { view, projection }; // Ensure view and projection matrices are contiguous in memory
+		// // glBindBuffer(GL_UNIFORM_BUFFER, uboMatrices);
+		// // glBufferData(GL_UNIFORM_BUFFER, sizeof(glm::mat4) * 2, glm::value_ptr(mats[0]), GL_DYNAMIC_DRAW);
+		// // glBindBuffer(GL_UNIFORM_BUFFER, 0);  
+
+		// Render scene
+		for (auto &model : models) {
+			model->setFragRenderMode(Model::RenderMode::Color);
+			model->setTexture(colormaps[model->getSelectedColormap()]);
+			model->render();
+		}
+
+		glBindFramebuffer(GL_FRAMEBUFFER, screenFbo);
+		renderSurfaces[1]->render(screenShader, quadVAO);
+
+
+
+
 		// -------------------
-
+		// Go back to default framebuffer to draw UI
+		glBindFramebuffer(GL_FRAMEBUFFER, 0);
 		// --- Draw UI ---
 		// Start the ImGui frame
 		ImGui_ImplOpenGL3_NewFrame();
@@ -583,10 +491,10 @@ void App::run()
 		ImGui::NewFrame();
 	
 
-		// ImGui::Begin("Render");
-		// ImVec2 size = ImGui::GetWindowSize();
-		// ImGui::Image((ImTextureID)texCellID, size, ImVec2(0.0f, 1.0f), ImVec2(1.0f, 0.0f));
-		// ImGui::End();
+		ImGui::Begin("Render");
+		ImVec2 size = ImGui::GetWindowSize();
+		ImGui::Image((ImTextureID)renderSurfaces[1]->texColor, size, ImVec2(0.0f, 1.0f), ImVec2(1.0f, 0.0f));
+		ImGui::End();
 
 		draw_gui();
 
@@ -617,13 +525,8 @@ void App::clean() {
 	glDeleteVertexArrays(1, &quadVAO);
 	glDeleteBuffers(1, &quadVBO);
 
-	glDeleteRenderbuffers(1, &rbo);
-	glDeleteFramebuffers(1, &fbo);
-
-	glDeleteTextures(1, &texColor);
-	glDeleteTextures(1, &texCellID);
-	glDeleteTextures(1, &texFacetID);
-	glDeleteTextures(1, &texVertexID);
+	for (auto &rs : renderSurfaces)
+		rs->clean();
 
 	// Clear textures
 	for (int i = 0; i < IM_ARRAYSIZE(colormaps); ++i)
