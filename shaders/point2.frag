@@ -20,6 +20,7 @@ uniform vec2 attributeDataMinMax = vec2(0.f, 1.f);
 uniform samplerBuffer attributeData;
 
 uniform samplerBuffer filterBuf;
+uniform samplerBuffer highlightBuf;
 
 vec3 encode_id(int id) {
     int r = id & 0x000000FF;
@@ -47,18 +48,22 @@ void main()
     vec3 N = vec3(V.x, -V.y, sqrt(one_minus_r2));
     gl_FragDepth = gl_FragCoord.z - 0.00005 * N.z;
     
-    if (colorMode == 0) {
-        // Light
-        col = col * dot(N, vec3(0.0, 0.0, 1.0));
-        FragColor = vec4(col, 1.f);
-
-    } else {
-
+    if (colorMode != 0) {
         float fragAttrVal = texelFetch(attributeData, FragVertexIndex).x;
-        vec3 col = vec3(texture(fragColorMap, clamp((fragAttrVal - attributeDataMinMax.x) / (attributeDataMinMax.y - attributeDataMinMax.x), 0., 1.)));
-        col *= dot(N, vec3(0.0, 0.0, 1.0));
-        FragColor = vec4(col, 1.f);
+        col = vec3(texture(fragColorMap, clamp((fragAttrVal - attributeDataMinMax.x) / (attributeDataMinMax.y - attributeDataMinMax.x), 0., 1.)));
+    }
+
+    // Light
+    col = col * dot(N, vec3(0.0, 0.0, 1.0));
+
+    // Highlight
+    float highlight_val = texelFetch(highlightBuf, FragVertexIndex).x;
+    if (highlight_val >= 1.f && highlight_val < 2.f) {
+        col = mix(col, vec3(1.,1.,1.), 0.8);
+    } else if (highlight_val >= 2.f) {
+        col = mix(col, vec3(0., 0.22, 1.), 0.8);
     }
 
     FragVertexIndexOut = vec4(encode_id(FragVertexIndex), 1.);
+    FragColor = vec4(col, 1.f);
 }

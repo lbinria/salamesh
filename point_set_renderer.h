@@ -65,6 +65,10 @@ struct PointSetRenderer {
         ptrFilter[idx] = filter ? 1.f : 0.f;
     }
 
+    void setHighlight(int idx, float val) {
+        ptrHighlight[idx] = val;
+    }
+
     PointSet &ps;
     Shader shader;
 
@@ -75,10 +79,8 @@ struct PointSetRenderer {
     // Textures
     unsigned int texColorMap, pointHighlightTexture, texAttr, texFilter, texHighlight;
 
-    // Data TODO maybe not necessary to keep it in memory, should replace by ptr
-    std::vector<float> _highlights;
-
     float* ptrFilter;
+    float* ptrHighlight;
 
     float pointSize;
     glm::vec3 pointColor;

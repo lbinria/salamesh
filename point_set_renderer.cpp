@@ -72,24 +72,24 @@ void PointSetRenderer::init() {
 	glBindTexture(GL_TEXTURE_BUFFER, texFilter);
 	glTexBuffer(GL_TEXTURE_BUFFER, GL_R32F, bufFilter);
 
-	// // Highlight
-	// glGenBuffers(1, &bufHighlight);
-	// glBindBuffer(GL_TEXTURE_BUFFER, bufHighlight);
+	// Highlight
+	glGenBuffers(1, &bufHighlight);
+	glBindBuffer(GL_TEXTURE_BUFFER, bufHighlight);
 
-	// glBufferStorage(GL_TEXTURE_BUFFER, ps.size() * sizeof(float), nullptr, flags);
-	// // Map once and keep pointer (not compatible for MacOS... because need OpenGL >= 4.6 i think)
-	// ptrHighlight = (float*)glMapBufferRange(GL_TEXTURE_BUFFER, 0, ps.size() * sizeof(float), flags);
+	glBufferStorage(GL_TEXTURE_BUFFER, ps.size() * sizeof(float), nullptr, flags);
+	// Map once and keep pointer (not compatible for MacOS... because need OpenGL >= 4.6 i think)
+	ptrHighlight = (float*)glMapBufferRange(GL_TEXTURE_BUFFER, 0, ps.size() * sizeof(float), flags);
 
-	// glGenTextures(1, &texHighlight);
-	// glActiveTexture(GL_TEXTURE0 + 3); 
-	// glBindTexture(GL_TEXTURE_BUFFER, texHighlight);
-	// glTexBuffer(GL_TEXTURE_BUFFER, GL_R32F, bufHighlight);
+	glGenTextures(1, &texHighlight);
+	glActiveTexture(GL_TEXTURE0 + 3); 
+	glBindTexture(GL_TEXTURE_BUFFER, texHighlight);
+	glTexBuffer(GL_TEXTURE_BUFFER, GL_R32F, bufHighlight);
 
 
 	shader.use();
 	shader.setInt("attributeData", 2);
 	shader.setInt("highlightBuf", 3);
-	// shader.setInt("filterBuf", 4);
+	shader.setInt("filterBuf", 4);
 
 	// VBO
 	GLuint vertexIndexLocation = glGetAttribLocation(shader.id, "vertexIndex");
@@ -135,6 +135,8 @@ void PointSetRenderer::render(glm::vec3 &position) {
 	glBindTexture(GL_TEXTURE_1D, texColorMap);
 	glActiveTexture(GL_TEXTURE0 + 2);
 	glBindTexture(GL_TEXTURE_BUFFER, texAttr);
+	glActiveTexture(GL_TEXTURE0 + 3);
+	glBindTexture(GL_TEXTURE_BUFFER, texHighlight);
 	glActiveTexture(GL_TEXTURE0 + 4);
 	glBindTexture(GL_TEXTURE_BUFFER, texFilter);
 
