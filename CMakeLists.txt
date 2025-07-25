@@ -75,6 +75,7 @@ add_executable(salamesh
   helpers/settings_manager.h
   cameras/arcball_camera.h
   cameras/descent_camera.h
+  render_surface.cpp render_surface.h
   # some include files to build with the executable
   include/stb_include.cpp 
   include/glad.c 

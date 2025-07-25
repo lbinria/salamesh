@@ -59,7 +59,7 @@ struct App : public IApp {
     // OpenGL
     unsigned int fbo;
     unsigned int rbo;
-    unsigned int depthPickingRbo;
+    // unsigned int depthPickingRbo;
     unsigned int depthAttachmentTexture;
     unsigned int texColor;
     unsigned int texCellID;

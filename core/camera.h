@@ -3,6 +3,7 @@
 #include "../include/glm/gtc/matrix_transform.hpp"
 
 #include <string>
+#include <algorithm>
 
 struct Camera {
 
