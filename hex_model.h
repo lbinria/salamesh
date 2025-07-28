@@ -319,7 +319,7 @@ struct HexModel final : public Model {
     // TODO filter anything else than cell !
     void setFilter(int idx, bool filter) override {
         _hexRenderer.setFilter(idx, filter);
-        _hexRenderer.setFacetHighlight(rand() % _hex.nfacets(), 0.5f);
+        _hexRenderer.setFacetHighlight(rand() % _hex.nfacets(), 1.0f);
 
         // TODO it works but... not very efficient !
         Volume::Cell c(_hex, idx);

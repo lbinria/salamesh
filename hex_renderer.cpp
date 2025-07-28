@@ -48,7 +48,7 @@ void HexRenderer::setAttribute(std::vector<float> attributeData) {
 
 	// Update min/max
 	shader.use();
-	shader.setFloat2("attributeDataMinMax", glm::vec2(min, max));
+	shader.setFloat2("attrRange", glm::vec2(min, max));
 
 	// Update sample
 	glBindBuffer(GL_TEXTURE_BUFFER, bufAttr);
@@ -72,8 +72,6 @@ void HexRenderer::init() {
 	glTexBuffer(GL_TEXTURE_BUFFER, GL_RGB32F, bufBary);
 
 
-
-
 	glGenBuffers(1, &bufAttr);
 	glGenTextures(1, &texAttr);
 	glBindBuffer(GL_TEXTURE_BUFFER, bufAttr);
@@ -81,21 +79,19 @@ void HexRenderer::init() {
 	glBindTexture(GL_TEXTURE_BUFFER, texAttr);
 	glTexBuffer(GL_TEXTURE_BUFFER, GL_R32F, bufAttr);
 
+	GLbitfield flags = GL_MAP_WRITE_BIT | GL_MAP_PERSISTENT_BIT | GL_MAP_COHERENT_BIT;
 	
 	glGenBuffers(1, &bufHighlight);
 	glBindBuffer(GL_TEXTURE_BUFFER, bufHighlight);
-
-	_highlights.resize(hex.ncells(), 0.0f);
-	// Allocate persistent storage
-	GLbitfield flags = GL_MAP_WRITE_BIT | GL_MAP_PERSISTENT_BIT | GL_MAP_COHERENT_BIT;
-	glBufferStorage(GL_TEXTURE_BUFFER, _highlights.size() * sizeof(float), nullptr, flags);
+	glBufferStorage(GL_TEXTURE_BUFFER, hex.ncells() * sizeof(float), nullptr, flags);
 	// Map once and keep pointer (not compatible for MacOS... because need OpenGL >= 4.6 i think)
-	highlightsPtr = glMapBufferRange(GL_TEXTURE_BUFFER, 0, _highlights.size() * sizeof(float), flags);
+	ptrHighlight = (float*)glMapBufferRange(GL_TEXTURE_BUFFER, 0, hex.ncells() * sizeof(float), flags);
 
 	glGenTextures(1, &texHighlight);
 	glActiveTexture(GL_TEXTURE0 + 3); 
 	glBindTexture(GL_TEXTURE_BUFFER, texHighlight);
 	glTexBuffer(GL_TEXTURE_BUFFER, GL_R32F, bufHighlight);
+
 
 	glGenBuffers(1, &bufFacetHighlight);
 	glBindBuffer(GL_TEXTURE_BUFFER, bufFacetHighlight);
@@ -106,7 +102,7 @@ void HexRenderer::init() {
 	glGenTextures(1, &texFacetHighlight);
 	glActiveTexture(GL_TEXTURE0 + 4); 
 	glBindTexture(GL_TEXTURE_BUFFER, texFacetHighlight);
-	glTexBuffer(GL_TEXTURE_BUFFER, GL_R32F, texFacetHighlight);
+	glTexBuffer(GL_TEXTURE_BUFFER, GL_R32F, bufFacetHighlight);
 
 	glGenBuffers(1, &bufFilter);
 	glBindBuffer(GL_TEXTURE_BUFFER, bufFilter);
@@ -136,7 +132,6 @@ void HexRenderer::init() {
 	
 	glActiveTexture(GL_TEXTURE0 + 2);
 	glBindTexture(GL_TEXTURE_BUFFER, texAttr);
-
 
 	glActiveTexture(GL_TEXTURE0 + 3);
 	glBindTexture(GL_TEXTURE_BUFFER, texHighlight);
@@ -334,6 +329,27 @@ void HexRenderer::push() {
 
 	glBindBuffer(GL_TEXTURE_BUFFER, bufBary);
 	glBufferData(GL_TEXTURE_BUFFER, barys.size() * sizeof(float), barys.data(), GL_STATIC_DRAW);
+
+	// // Update pointers
+	// GLbitfield flags = GL_MAP_WRITE_BIT | GL_MAP_PERSISTENT_BIT | GL_MAP_COHERENT_BIT;
+
+	// // Remap highlight
+	// if(bufHighlight != 0) {
+	// 	glBindBuffer(GL_TEXTURE_BUFFER, bufHighlight);
+	// 	ptrHighlight = nullptr;            // forget old pointer
+	// 	glDeleteBuffers(1, &bufHighlight);
+	// }
+
+	// glGenBuffers(1, &bufHighlight);
+	// glBindBuffer(GL_TEXTURE_BUFFER, bufHighlight);
+	// glBufferStorage(GL_TEXTURE_BUFFER, hex.ncells() * sizeof(float), nullptr, flags);
+	// ptrHighlight = (float*)glMapBufferRange(GL_TEXTURE_BUFFER, 0, hex.ncells() * sizeof(float), flags);
+
+	// glActiveTexture(GL_TEXTURE0 + 3); 
+	// glBindTexture(GL_TEXTURE_BUFFER, texHighlight);
+	// glTexBuffer(GL_TEXTURE_BUFFER, GL_R32F, bufHighlight);
+	// TODO remap facet highlight, filter...
+
 }
 
 void HexRenderer::render(glm::vec3 &position) {

@@ -262,15 +262,17 @@ void MyApp::mouse_button(int button, int action, int mods) {
 
 void MyApp::mouse_move(double x, double y) {
 
-	auto edge = pick_edge(x, y);
-	if (edge >= 0) 
-		st.edge.setHovered({edge});
-	else
-		st.edge.setHovered({});
-
 	st.vertex.setHovered(pick_vertices(x, y, st.mouse.cursor_radius));
 	st.facet.setHovered(pick_facets(x, y, st.mouse.cursor_radius));
 	st.cell.setHovered(pick_cells(x, y, st.mouse.cursor_radius));
+
+	if (glm::dot(st.mouse.pos, st.mouse.lastPos) > 4) {
+		auto edge = pick_edge(x, y);
+		if (edge >= 0) 
+			st.edge.setHovered({edge});
+		else
+			st.edge.setHovered({});
+	}
 
 	for (auto &script : scripts) {
 		script->mouse_move(x, y);

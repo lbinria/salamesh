@@ -48,21 +48,12 @@ struct HexRenderer {
         return visible;
     }
 
-    void setHighlight(int idx, bool highlighted) {
-        _highlights[idx] = highlighted ? 1.f : 0.f;
-    	std::memcpy(highlightsPtr, _highlights.data(), _highlights.size() * sizeof(float));
-    }
-
     void setHighlight(int idx, float highlight) {
-        _highlights[idx] = highlight;
-    	std::memcpy(highlightsPtr, _highlights.data(), _highlights.size() * sizeof(float));
+        ptrHighlight[idx] = highlight;
     }
 
     void setHighlight(std::vector<float> highlights) {
-        for (int i = 0; i < highlights.size(); ++i)
-            _highlights[i] = highlights[i];
-
-    	std::memcpy(highlightsPtr, _highlights.data(), _highlights.size() * sizeof(float));
+    	std::memcpy(ptrHighlight, highlights.data(), highlights.size() * sizeof(float));
     }
 
     void setFilter(int idx, bool filter) {
@@ -145,12 +136,10 @@ struct HexRenderer {
     unsigned int bufBary, bufHighlight, bufFacetHighlight, bufAttr, bufFilter; // Sample buffers
     unsigned int texColorMap, texBary, texHighlight, texFacetHighlight, texAttr, texFilter; // Textures
 
-    // Data
-    std::vector<float> _highlights;
-
-    void *highlightsPtr;
-    float *ptrFilter;
+    float *ptrHighlight;
     float *ptrFacetHighlight;
+    float *ptrFilter;
+
     int nverts = 0;
 
     bool visible = true;

@@ -33,7 +33,7 @@ uniform vec3 clipping_plane_point = vec3(0.0f, 0.0f, 0.0);  // A point on the pl
 uniform int invert_clipping = 0; // 0: normal, 1: inverted
 
 uniform sampler1D fragColorMap;
-uniform vec2 attributeDataMinMax = vec2(0.f, 1.f);
+uniform vec2 attrRange = vec2(0.f, 1.f);
 uniform samplerBuffer attributeData;
 
 uniform samplerBuffer filterBuf;
@@ -94,7 +94,7 @@ void main()
     } 
     else {
         float fragAttrVal = texelFetch(attributeData, fragCellIndex).x;
-        col = vec3(texture(fragColorMap, clamp((fragAttrVal - attributeDataMinMax.x) / (attributeDataMinMax.y - attributeDataMinMax.x), 0., 1.)));
+        col = vec3(texture(fragColorMap, clamp((fragAttrVal - attrRange.x) / (attrRange.y - attrRange.x), 0., 1.)));
     }
     
 
@@ -103,7 +103,7 @@ void main()
     float cellHighlightVal = texelFetch(highlightBuf, fragCellIndex).x;
     float facetHighlightVal = texelFetch(facetHighlightBuf, fragFacetIndex).x;
     float highlightVal = max(cellHighlightVal, facetHighlightVal);
-    
+
     if (highlightVal > 0) {
         // Interpolate between hover / select colors according to highlight value
         vec3 hovColor = vec3(1.,1.,1.);
