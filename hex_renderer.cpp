@@ -97,6 +97,16 @@ void HexRenderer::init() {
 	glBindTexture(GL_TEXTURE_BUFFER, texHighlight);
 	glTexBuffer(GL_TEXTURE_BUFFER, GL_R32F, bufHighlight);
 
+	glGenBuffers(1, &bufFacetHighlight);
+	glBindBuffer(GL_TEXTURE_BUFFER, bufFacetHighlight);
+	glBufferStorage(GL_TEXTURE_BUFFER, hex.nfacets() * sizeof(float), nullptr, flags);
+	// Map once and keep pointer (not compatible for MacOS... because need OpenGL >= 4.6 i think)
+	ptrFacetHighlight = (float*)glMapBufferRange(GL_TEXTURE_BUFFER, 0, hex.nfacets() * sizeof(float), flags);
+
+	glGenTextures(1, &texFacetHighlight);
+	glActiveTexture(GL_TEXTURE0 + 4); 
+	glBindTexture(GL_TEXTURE_BUFFER, texFacetHighlight);
+	glTexBuffer(GL_TEXTURE_BUFFER, GL_R32F, texFacetHighlight);
 
 	glGenBuffers(1, &bufFilter);
 	glBindBuffer(GL_TEXTURE_BUFFER, bufFilter);
@@ -105,7 +115,7 @@ void HexRenderer::init() {
 	ptrFilter = (float*)glMapBufferRange(GL_TEXTURE_BUFFER, 0, hex.ncells() * sizeof(float), flags);
 
 	glGenTextures(1, &texFilter);
-	glActiveTexture(GL_TEXTURE0 + 4); 
+	glActiveTexture(GL_TEXTURE0 + 5); 
 	glBindTexture(GL_TEXTURE_BUFFER, texFilter);
 	glTexBuffer(GL_TEXTURE_BUFFER, GL_R32F, bufFilter);
 
@@ -131,8 +141,10 @@ void HexRenderer::init() {
 	glActiveTexture(GL_TEXTURE0 + 3);
 	glBindTexture(GL_TEXTURE_BUFFER, texHighlight);
 
-
 	glActiveTexture(GL_TEXTURE0 + 4);
+	glBindTexture(GL_TEXTURE_BUFFER, texFacetHighlight);
+
+	glActiveTexture(GL_TEXTURE0 + 5);
 	glBindTexture(GL_TEXTURE_BUFFER, texFilter);
 
 	glBindBuffer(GL_TEXTURE_BUFFER, 0);
@@ -140,8 +152,9 @@ void HexRenderer::init() {
 	shader.use();
 	shader.setInt("bary", 1);
 	shader.setInt("attributeData", 2);
-	shader.setInt("highlight", 3);
-	shader.setInt("_filter", 4);
+	shader.setInt("highlightBuf", 3);
+	shader.setInt("facetHighlightBuf", 4);
+	shader.setInt("filterBuf", 5);
 
 	#ifdef _DEBUG
     std::cout << "vertex attrib setup..." << std::endl;
@@ -343,6 +356,9 @@ void HexRenderer::render(glm::vec3 &position) {
 	glBindTexture(GL_TEXTURE_BUFFER, texHighlight);
 
 	glActiveTexture(GL_TEXTURE0 + 4);
+	glBindTexture(GL_TEXTURE_BUFFER, texFacetHighlight);
+
+	glActiveTexture(GL_TEXTURE0 + 5);
 	glBindTexture(GL_TEXTURE_BUFFER, texFilter);
 
 	glm::mat4 model = glm::mat4(1.0f);

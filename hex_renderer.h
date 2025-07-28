@@ -69,6 +69,10 @@ struct HexRenderer {
         ptrFilter[idx] = filter ? 1.f : 0.f;
     }
 
+    void setFacetHighlight(int idx, float highlight) {
+        ptrFacetHighlight[idx] = highlight;
+    }
+
     void setAttribute(std::vector<float> attributeData);
 
     void changeAttribute(GenericAttributeContainer *ga, int element);
@@ -138,14 +142,15 @@ struct HexRenderer {
     Shader shader;
 
     unsigned int VAO, VBO; // Buffers
-    unsigned int bufBary, bufHighlight, bufAttr, bufFilter; // Sample buffers
-    unsigned int texColorMap, texBary, texHighlight, texAttr, texFilter; // Textures
+    unsigned int bufBary, bufHighlight, bufFacetHighlight, bufAttr, bufFilter; // Sample buffers
+    unsigned int texColorMap, texBary, texHighlight, texFacetHighlight, texAttr, texFilter; // Textures
 
     // Data
     std::vector<float> _highlights;
 
     void *highlightsPtr;
     float *ptrFilter;
+    float *ptrFacetHighlight;
     int nverts = 0;
 
     bool visible = true;

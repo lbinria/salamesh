@@ -53,9 +53,10 @@ struct Model {
 
     // General shader uniforms
     virtual void setTexture(unsigned int tex) = 0;
-	virtual void setHighlight(int idx, bool highlighted) = 0;
+    
 	virtual void setHighlight(int idx, float highlight) = 0;
 	virtual void setHighlight(std::vector<float> highlights) = 0;
+    virtual void setFilter(int idx, bool filter) = 0;
 
     virtual int getColorMode() const = 0;
     virtual void setColorMode(Model::ColorMode mode) = 0;
@@ -66,7 +67,6 @@ struct Model {
     virtual void setLightFollowView(bool follow) = 0;
     virtual bool getClipping() const = 0;
     virtual void setClipping(bool enabled) = 0;
-    virtual void setFilter(int idx, bool filter) = 0;
     virtual glm::vec3 getClippingPlanePoint() const = 0;
     virtual void setClippingPlanePoint(glm::vec3 p) = 0;
     virtual glm::vec3 getClippingPlaneNormal() const = 0;

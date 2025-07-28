@@ -1,13 +1,15 @@
 #version 440 core
 
+// Vertex attributes
 layout (location = 0) in vec3 aPos;
 layout (location = 1) in float size;
-layout (location = 6) in vec3 normal;
+layout (location = 2) in vec3 normal;
 layout (location = 3) in vec3 aHeights;
+
 // Indexes of the primitive this vertices belongs to
-layout (location = 4) in int facetIndex;
-layout (location = 5) in int cellIndex;
-layout (location = 7) in int vertexIndex;
+layout (location = 4) in int vertexIndex;
+layout (location = 5) in int facetIndex;
+layout (location = 6) in int cellIndex;
 
 layout (std140, binding = 0) uniform Matrices
 {
@@ -19,27 +21,20 @@ layout (std140, binding = 0) uniform Matrices
 out vec3 fragBary;
 out vec3 fragNormal;
 out vec3 fragHeights;
-flat out int fragCellIndex;
-flat out int fragFacetIndex;
 out float fragVertexIndex;
+flat out int fragFacetIndex;
+flat out int fragCellIndex;
+
 flat out vec3 fragViewDir;
 
 
-flat out vec3 fragWorldPos;
-out vec3 fragWorldPos2;
+out vec3 fragWorldPos;
 
 uniform mat4 model;
 
 uniform int attr_element = -1;
 
 uniform samplerBuffer bary;
-
-// Highlights
-uniform samplerBuffer highlight;
-out float fragHighlight;
-// Filters
-uniform samplerBuffer _filter;
-out float fragFilter;
 
 uniform float meshShrink;
 
@@ -53,8 +48,6 @@ void main()
    // Transform to clip space
    gl_Position = projection * view * model * vec4(pos, 1.0);
 
-   fragHighlight = texelFetch(highlight, cellIndex).x;
-   fragFilter = texelFetch(_filter, cellIndex).x;
 
 
    fragBary = bary;
@@ -64,9 +57,6 @@ void main()
    fragFacetIndex = facetIndex;
    fragVertexIndex = vertexIndex;
    fragWorldPos = pos;
-   fragWorldPos2 = pos;
 
    fragViewDir = -vec3(view[0][2], view[1][2], view[2][2]);
-   // fragViewDir = vec3(view[2][0], view[2][1], view[2][2]);
-
 }

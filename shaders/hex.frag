@@ -14,12 +14,10 @@ layout(location = 2) out vec4 fragCellIndexOut;
 in vec3 fragBary;
 in vec3 fragNormal;
 in vec3 fragHeights;
-in float fragHighlight;
-in float fragFilter;
+
 flat in vec3 fragViewDir;
 
-flat in vec3 fragWorldPos;
-in vec3 fragWorldPos2;
+in vec3 fragWorldPos;
 
 uniform bool is_light_enabled;
 uniform bool is_light_follow_view;
@@ -38,6 +36,10 @@ uniform sampler1D fragColorMap;
 uniform vec2 attributeDataMinMax = vec2(0.f, 1.f);
 uniform samplerBuffer attributeData;
 
+uniform samplerBuffer filterBuf;
+uniform samplerBuffer highlightBuf;
+uniform samplerBuffer facetHighlightBuf;
+
 uniform int colorMode = 0;
 
 vec3 encode_id(int id) {
@@ -53,8 +55,12 @@ void main()
     // Initialize color to black
     vec3 col = vec3(0.f, 0.f, 0.f);
 
+
     // Check if cell is filtered
-    bool is_filter = fragFilter >= .5f;
+    bool isFiltered = texelFetch(filterBuf, fragCellIndex).x >= .5;
+    if (isFiltered) {
+        discard;
+    }
 
     /* --- CLIPPING --- */
 
@@ -68,25 +74,17 @@ void main()
     } else if (clipping_mode == 1) {
         // Use the fragment world position (interpolated) to exclude fragments
         // that are behind the clipping plane
-        ref_point = fragWorldPos2;
+        ref_point = fragWorldPos;
     }
 
       float distance = dot(clipping_plane_normal, ref_point - clipping_plane_point) / length(clipping_plane_normal);
       
       if ((invert_clipping == 0 && distance < 0.0) || (invert_clipping == 1 && distance >= 0.0)) {
-         is_filter = true;
+         discard;
       }
    }
 
     /* --- CLIPPING END --- */
-
-    /* --- FILTER --- */
-
-    // If the fragment is filtered, discard it
-    if (is_filter) {
-        discard;
-        return;
-    }
 
     /* --- FILTER END --- */
 
@@ -99,13 +97,20 @@ void main()
         col = vec3(texture(fragColorMap, clamp((fragAttrVal - attributeDataMinMax.x) / (attributeDataMinMax.y - attributeDataMinMax.x), 0., 1.)));
     }
     
-    if (fragHighlight >= 1.f && fragHighlight < 2.f) {
-        col = mix(col, vec3(1.,1.,1.), 0.8);
-    }
-    else if (fragHighlight >= 2.f) {
-        // a between 0.5 and 0.75 - 0.25 range
-        // col = mix(col, vec3(0., 0.22, 1.), 0.5 + fragHighlight * 0.25);
-        col = mix(col, vec3(0., 0.22, 1.), 0.8);
+
+
+    // Highlight
+    float cellHighlightVal = texelFetch(highlightBuf, fragCellIndex).x;
+    float facetHighlightVal = texelFetch(facetHighlightBuf, fragFacetIndex).x;
+    float highlightVal = max(cellHighlightVal, facetHighlightVal);
+    
+    if (highlightVal > 0) {
+        // Interpolate between hover / select colors according to highlight value
+        vec3 hovColor = vec3(1.,1.,1.);
+        vec3 selColor = vec3(0., 0.22, 1.);
+        vec3 hlColor = mix(hovColor, selColor, highlightVal);
+        // Mix with current point color (80%)
+        col = mix(col, hlColor, .8);
     }
 
     // Diffuse light

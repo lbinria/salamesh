@@ -308,10 +308,6 @@ struct HexModel final : public Model {
         _hexRenderer.setVisible(v);
     }
 
-    void setHighlight(int idx, bool highlighted) override {
-        _hexRenderer.setHighlight(idx, highlighted);
-    }
-
     void setHighlight(int idx, float highlight) override {
         _hexRenderer.setHighlight(idx, highlight);
     }
@@ -323,6 +319,7 @@ struct HexModel final : public Model {
     // TODO filter anything else than cell !
     void setFilter(int idx, bool filter) override {
         _hexRenderer.setFilter(idx, filter);
+        _hexRenderer.setFacetHighlight(rand() % _hex.nfacets(), 0.5f);
 
         // TODO it works but... not very efficient !
         Volume::Cell c(_hex, idx);
@@ -344,7 +341,7 @@ struct HexModel final : public Model {
             }
 
             _pointSetRenderer.setFilter(v, allFiltered);
-            _pointSetRenderer.setHighlight(v, 0.1f);
+            // _pointSetRenderer.setHighlight(v, 0.1f);
         }
 
         
