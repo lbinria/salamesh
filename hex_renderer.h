@@ -132,6 +132,8 @@ struct HexRenderer {
     Hexahedra &hex;
     Shader shader;
 
+    bool visible = true;
+
     unsigned int VAO, VBO; // Buffers
     unsigned int bufBary, bufHighlight, bufFacetHighlight, bufAttr, bufFilter; // Sample buffers
     unsigned int texColorMap, texBary, texHighlight, texFacetHighlight, texAttr, texFilter; // Textures
@@ -141,6 +143,4 @@ struct HexRenderer {
     float *ptrFilter;
 
     int nverts = 0;
-
-    bool visible = true;
 };
