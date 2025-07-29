@@ -85,7 +85,7 @@ function draw_gui()
 
 	local sel_selected, new_selected = imgui.InputInt("Selected", app.selected_model)
 	if (sel_selected) then 
-		app.selected_model = new_selected - 1
+		app.selected_model = new_selected
 	end
 
 	imgui.End()

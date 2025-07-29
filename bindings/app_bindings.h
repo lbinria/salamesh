@@ -43,7 +43,7 @@ namespace bindings {
 			app_type["selected_model"] = sol::property([](IApp &self) {
 				return self.getSelectedModel() + 1;
 			}, [](IApp &self, int selected) {
-				self.setSelectedModel(selected);
+				self.setSelectedModel(selected - 1);
 			});
 
 			app_type["selected_camera"] = sol::property([](IApp &self) {

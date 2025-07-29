@@ -6,7 +6,7 @@ end
 function draw_tree(model, i)
 	if (imgui.TreeNode(model.name)) then 
 
-		if (app.selected_model == i - 1) then
+		if (app.selected_model == i) then
 			imgui.TextColored(1, 1, 0, 1, "Selected")
 		end
 
@@ -20,13 +20,13 @@ function draw_tree(model, i)
 
 		imgui.SameLine()
 		if (imgui.SmallButton("View")) then 
-			app.selected_model = i - 1
+			app.selected_model = i
 			-- Set camera position !
 			app.camera.position = vec3.new(model_pos.x, model_pos.y, model_pos.z - 3.);
 			app.camera.look_at = vec3.new(model_pos.x, model_pos.y, model_pos.z);
 		end
 
-		draw_model_properties(model, 0)
+		-- draw_model_properties(model, 0)
 
 		imgui.Separator()
 
@@ -262,11 +262,6 @@ function draw_model_properties(model, view)
 
 			end 
 
-			local sel_selected, new_selected = imgui.InputInt("Selected", app.selected_model)
-			if (sel_selected) then 
-				app.selected_model = new_selected - 1
-			end
-
 		end
 	end
 end
@@ -289,7 +284,7 @@ function draw_gui()
 
 				imgui.SameLine()
 				if (imgui.Button("View")) then
-					app.selected_model = i - 1
+					app.selected_model = i
 					-- Set camera position !
 					local model_pos = model.world_position
 					app.camera.position = vec3.new(model_pos.x, model_pos.y, model_pos.z - 3.);
@@ -322,6 +317,10 @@ function draw_gui()
 
 				imgui.TreePop()
 			end
+
+			imgui.Separator()
+			draw_model_properties(app.current_model, 0)
+
 
 			imgui.EndTabItem()
 		end
