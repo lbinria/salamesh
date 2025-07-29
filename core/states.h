@@ -55,12 +55,22 @@ struct InputState {
 			return buttons[2];
 		}
 
-		bool dblLeft = false;
-		int _dbl_click_interval = 300 /*ms*/;
-		std::chrono::steady_clock::time_point lastClick;
+		int getCursorRadius() const {
+			return cursorRadius;
+		}
+
+		void setCursorRadius(int radius) {
+			cursorRadius = std::clamp(radius, 0, 50);
+		}
 
 		glm::vec2 scrollDelta = {0, 0};
-		int cursor_radius = 0; // TODO rename
+		
+		private:
+		int cursorRadius = 0;
+
+		std::chrono::steady_clock::time_point lastClick;
+		bool dblLeft = false;
+		int _dbl_click_interval = 300 /*ms*/;
 	};
 
 	PrimitiveState vertex;

@@ -77,7 +77,7 @@ void MyApp::update(float dt) {
 		
 		getCamera().move(glm::vec2(screenWidth, screenHeight), st.mouse.pos, st.mouse.lastPos);
 
-		auto pickIDs = pick_cells(st.mouse.pos.x, st.mouse.pos.y, st.mouse.cursor_radius);
+		auto pickIDs = pick_cells(st.mouse.pos.x, st.mouse.pos.y, st.mouse.getCursorRadius());
 		for (long pickID : pickIDs) {
 			if (getCamera().isLocked() && pickID >= 0 && pickID < hex.ncells()) {
 				models[selected_renderer]->setFilter(pickID, true);
@@ -162,7 +162,7 @@ void MyApp::draw_gui() {
 	// ImVec2 window_size = ImGui::GetWindowSize(); 
 	// ImVec2 window_center = ImVec2(window_pos.x + window_size.x * 0.5f, window_pos.y + window_size.y * 0.5f);
 	
-	ImGui::GetBackgroundDrawList()->AddCircle(ImGui::GetMousePos(), st.mouse.cursor_radius, IM_COL32(225, 225, 255, 200), 0, 2);
+	ImGui::GetBackgroundDrawList()->AddCircle(ImGui::GetMousePos(), st.mouse.getCursorRadius(), IM_COL32(225, 225, 255, 200), 0, 2);
 	// ImGui::GetBackgroundDrawList()->AddRect(
 	// 	ImVec2(pickRegion.x - pickRegion.z, pickRegion.y - pickRegion.w), 
 	// 	ImVec2(pickRegion.x + pickRegion.z, pickRegion.y + pickRegion.w), 
@@ -247,7 +247,7 @@ void MyApp::mouse_scroll(double xoffset, double yoffset) {
 		getCamera().zoom(st.mouse.scrollDelta.y);
 	}
 	else 
-		st.mouse.cursor_radius = std::clamp(st.mouse.cursor_radius + static_cast<int>(yoffset), 0, 50);
+		st.mouse.setCursorRadius(st.mouse.getCursorRadius() + static_cast<int>(yoffset));
 
 	for (auto &script : scripts) {
 		script->mouse_scroll(xoffset, yoffset);
@@ -262,9 +262,9 @@ void MyApp::mouse_button(int button, int action, int mods) {
 
 void MyApp::mouse_move(double x, double y) {
 
-	st.vertex.setHovered(pick_vertices(x, y, st.mouse.cursor_radius));
-	st.facet.setHovered(pick_facets(x, y, st.mouse.cursor_radius));
-	st.cell.setHovered(pick_cells(x, y, st.mouse.cursor_radius));
+	st.vertex.setHovered(pick_vertices(x, y, st.mouse.getCursorRadius()));
+	st.facet.setHovered(pick_facets(x, y, st.mouse.getCursorRadius()));
+	st.cell.setHovered(pick_cells(x, y, st.mouse.getCursorRadius()));
 
 	if (glm::dot(st.mouse.pos, st.mouse.lastPos) > 4) {
 		auto edge = pick_edge(x, y);
