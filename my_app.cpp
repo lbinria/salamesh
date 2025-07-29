@@ -247,7 +247,7 @@ void MyApp::mouse_scroll(double xoffset, double yoffset) {
 		getCamera().zoom(st.mouse.scrollDelta.y);
 	}
 	else 
-		st.mouse.cursor_radius = std::clamp(st.mouse.cursor_radius + static_cast<int>(yoffset), 1, 50);
+		st.mouse.cursor_radius = std::clamp(st.mouse.cursor_radius + static_cast<int>(yoffset), 0, 50);
 
 	for (auto &script : scripts) {
 		script->mouse_scroll(xoffset, yoffset);

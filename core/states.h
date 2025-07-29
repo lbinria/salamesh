@@ -15,9 +15,8 @@ struct InputState {
 			if (hovered.empty()) {
 				return -1;
 			}
-			// Get middle element
-			int idx = hovered.size() / 2;
-			return hovered[idx];
+			// Get first element
+			return hovered[0];
 		}
 
 		void setHovered(const std::vector<long>& idxs) {
@@ -61,7 +60,7 @@ struct InputState {
 		std::chrono::steady_clock::time_point lastClick;
 
 		glm::vec2 scrollDelta = {0, 0};
-		int cursor_radius = 1; // TODO rename
+		int cursor_radius = 0; // TODO rename
 	};
 
 	PrimitiveState vertex;
