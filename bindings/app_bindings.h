@@ -35,6 +35,7 @@ namespace bindings {
 
 			// TODO maybe move 2 lines to app bindings
 			app_type["models"] = sol::readonly_property(&IApp::getModels);
+			app_type.set_function("getChildrenOf", &IApp::getChildrenOf);
 			app_type["current_model"] = sol::readonly_property(&IApp::getCurrentModel);
 			app_type["cameras"] = sol::readonly_property(&IApp::getCameras);
 			app_type["camera"] = sol::readonly_property(&IApp::getCamera);
