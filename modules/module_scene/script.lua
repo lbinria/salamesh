@@ -3,8 +3,13 @@ function init()
 	print("Number of models: " .. tostring(#app.models))
 end
 
-function draw_tree(model)
+function draw_tree(model, i)
 	if (imgui.TreeNode(model.name)) then 
+
+		if (app.selected_model == i - 1) then
+			imgui.TextColored(1, 1, 0, 1, "Selected")
+		end
+
 		local model_pos = model.world_position
 
 		local sel_visible, new_visible = imgui.Checkbox("Visible##" .. model.name .. "_visible", model.visible)
@@ -21,22 +26,249 @@ function draw_tree(model)
 			app.camera.look_at = vec3.new(model_pos.x, model_pos.y, model_pos.z);
 		end
 
-		local p = model.position
-		-- imgui.Text("world position: (%.4f, %.4f, %.4f)", model_pos.x, model_pos.y, model_pos.z);
-		-- imgui.Text("local position: (%.4f, %.4f, %.4f)", p.x, p.y, p.z);
-		-- TODO using ':' instead of '.' for to_string call... for sending self...
-		imgui.Text("world position: " .. model_pos:to_string());
-		imgui.Text("local position: " .. p:to_string());
+		draw_model_properties(model, 0)
 
-		local children = app:getChildrenOf(model)
+		imgui.Separator()
 
-		for i = 1, #children do
-			local child = children[i]
-			draw_tree(child)
+		for i = 1, #app.models do
+			-- TODO ImGuiTreeNodeFlags_Selected if model selected
+			local child = app.models[i]
+			if (child.parent ~= model) then 
+				goto continue
+			end
+
+			draw_tree(child, i)
+			::continue::
 		end
 
 		imgui.TreePop()
 	end 
+end
+
+local clipping_planes = {"x", "y", "z"}
+local sel_clipping_plane = 1
+local invert_clipping = false
+
+function draw_model_properties(model, view)
+	local model_pos = model.world_position
+	local p = model.position
+	-- imgui.Text("world position: (%.4f, %.4f, %.4f)", model_pos.x, model_pos.y, model_pos.z);
+	-- imgui.Text("local position: (%.4f, %.4f, %.4f)", p.x, p.y, p.z);
+	-- TODO using ':' instead of '.' for to_string call... for sending self...
+	imgui.Text("World position: " .. model_pos:to_string());
+	imgui.Text("Local position: " .. p:to_string());
+
+
+	-- local cur_model = app.current_model
+	local cur_model = model
+
+	if (imgui.CollapsingHeader("Properties##" .. cur_model.name .. "_properties")) then 
+
+
+		if (imgui.CollapsingHeader("Light##" .. cur_model.name .. "_properties_light")) then 
+
+			local sel_chk_enable_light, new_enable_light = imgui.Checkbox("Enable light", cur_model.light)
+
+			if (sel_chk_enable_light) then 
+				print("Enable light: " .. tostring(new_enable_light))
+				cur_model.light = new_enable_light
+			end
+
+			local sel_chk_light_follow_view, new_light_follow_view = imgui.Checkbox("Light follow view", cur_model.is_light_follow_view)
+
+			if (sel_chk_light_follow_view) then 
+				print("Enable light: " .. tostring(new_light_follow_view))
+				cur_model.is_light_follow_view = new_light_follow_view
+			end
+
+		end
+
+		if (imgui.CollapsingHeader("Clipping##" .. cur_model.name .. "_properties_clipping")) then 
+
+
+			local sel_chk_enable_clipping, new_enable_clipping = imgui.Checkbox("Enable clipping", cur_model.clipping)
+
+			if (sel_chk_enable_clipping) then 
+				print("Enable clipping: " .. tostring(new_enable_clipping))
+				cur_model.clipping = new_enable_clipping
+			end
+
+			if (imgui.BeginCombo("##Clipping plane normal", clipping_planes[sel_clipping_plane])) then
+				for i = 1, #clipping_planes do
+					local is_selected = i == sel_clipping_plane
+					if (imgui.Selectable(clipping_planes[i], is_selected)) then
+						
+						sel_clipping_plane = i
+
+						if (i == 1) then
+							cur_model.clipping_plane_normal = vec3.new(1,0,0)
+						elseif (i == 2) then
+							cur_model.clipping_plane_normal = vec3.new(0,1,0)
+						elseif (i == 3) then
+							cur_model.clipping_plane_normal = vec3.new(0,0,1)
+						end
+
+						print("Set clipping plane normal to: " .. cur_model.clipping_plane_normal:to_string())
+					end
+				end
+				imgui.EndCombo()
+			end
+
+			local plane_pos = 0
+			if (sel_clipping_plane == 1) then
+				plane_pos = cur_model.clipping_plane_point.x
+			elseif (sel_clipping_plane == 2) then
+				plane_pos = cur_model.clipping_plane_point.y
+			elseif (sel_clipping_plane == 3) then
+				plane_pos = cur_model.clipping_plane_point.z
+			end
+
+			local sel_slider_clipping_plane_point, new_clipping_plane_pos = imgui.SliderFloat("Clipping plane point", plane_pos, -1., 1.)
+			if (sel_slider_clipping_plane_point) then 
+				local v 
+				if (sel_clipping_plane == 1) then
+					v = vec3.new(new_clipping_plane_pos, cur_model.clipping_plane_point.y, cur_model.clipping_plane_point.z)
+				elseif (sel_clipping_plane == 2) then
+					v = vec3.new(cur_model.clipping_plane_point.x, new_clipping_plane_pos, cur_model.clipping_plane_point.z)
+				elseif (sel_clipping_plane == 3) then
+					v = vec3.new(cur_model.clipping_plane_point.x, cur_model.clipping_plane_point.y, new_clipping_plane_pos)
+				end
+				cur_model.clipping_plane_point = v
+			end
+
+			local sel_invert_clipping, new_invert_clipping = imgui.Checkbox("Invert clipping", invert_clipping)
+			if (sel_invert_clipping) then 
+				invert_clipping = new_invert_clipping
+				cur_model.invert_clipping = invert_clipping
+			end
+
+		end
+
+		if (imgui.CollapsingHeader("Style##" .. cur_model.name .. "_properties_style")) then 
+
+
+			local sel_slider_mesh_size, new_mesh_size = imgui.SliderFloat("Mesh size", cur_model.meshSize, 0, 1)
+			if (sel_slider_mesh_size) then 
+				print("Change mesh size: " .. tostring(new_mesh_size))
+				cur_model.meshSize = new_mesh_size
+			end
+
+			local sel_slider_mesh_shrink, new_mesh_shrink = imgui.SliderFloat("Mesh shrink", cur_model.meshShrink, 0, 1)
+			if (sel_slider_mesh_shrink) then 
+				print("Change mesh shrink: " .. tostring(new_mesh_shrink))
+				cur_model.meshShrink = new_mesh_shrink
+			end
+
+			local sel_point_size, new_point_size = imgui.SliderFloat("Point size", cur_model.point_size, 0, 50)
+			if (sel_point_size) then 
+				print("Change point size: " .. tostring(new_point_size))
+				cur_model.point_size = new_point_size
+			end
+
+			local sel_point_color, new_point_color = imgui.ColorEdit3("Point color", cur_model.point_color)
+			if (sel_point_color) then 
+				-- print("Change point color: " .. tostring(new_point_color))
+				cur_model.point_color = new_point_color
+			end
+
+		end
+
+		-- if (imgui.BeginCombo("Pick Mode", app.pick_mode_strings[app.pick_mode + 1])) then
+		-- 	for i = 1, #app.pick_mode_strings do
+		-- 		local is_selected = (i - 1) == app.pick_mode
+		-- 		if (imgui.Selectable(app.pick_mode_strings[i], is_selected)) then
+		-- 			print("Change pick mode to: " .. app.pick_mode_strings[i])
+		-- 			app.pick_mode = i - 1
+		-- 		end
+		-- 	end
+		-- 	imgui.EndCombo()
+		-- end
+
+		if (imgui.CollapsingHeader("Attributes##" .. cur_model.name .. "_properties_attributes")) then 
+
+			if (imgui.BeginCombo("##Color Mode", cur_model.color_mode_strings[cur_model.color_mode + 1])) then
+				for i = 1, #cur_model.color_mode_strings do
+					local is_selected = (i - 1) == app.pick_mode
+					if (imgui.Selectable(cur_model.color_mode_strings[i], is_selected)) then
+						print("Change color mode to: " .. cur_model.color_mode_strings[i])
+						cur_model.color_mode = i - 1
+
+						if (cur_model.color_mode == 1) then
+							print("Change to attribute color mode")
+							cur_model.selected_attr = cur_model.selected_attr
+						end
+
+					end
+				end
+				imgui.EndCombo()
+			end
+
+			if (cur_model.color_mode == 1) then
+				local items = {"Item1", "Item2"}
+				local colormap_size = imgui.ImVec2(320, 35)
+
+				if (imgui.BeginCombo("##combo_colormaps_selection", items[cur_model.selected_colormap + 1])) then
+					-- Display items in the popup
+					for i = 1, #items do
+						local is_selected = (cur_model.selected_colormap + 1) == i
+						-- Create a unique ID for each item to prevent conflicts
+						imgui.PushID(i)
+
+						-- Calculate total width including spacing
+						-- local total_width = imgui.CalcTextSize(items[i]).x + colormap_size.x + 10.0
+
+						-- Display the item with both text and image
+						if (imgui.Selectable(items[i], is_selected)) then
+							cur_model.selected_colormap = i - 1
+						end
+
+						-- Display the image after the text
+						imgui.Image(app.colormaps_2d[i], colormap_size)
+
+						imgui.PopID()
+					end
+
+					imgui.EndCombo()
+				end
+
+				imgui.Image(
+					app.colormaps_2d[cur_model.selected_colormap + 1], 
+					colormap_size
+				)
+
+				imgui.Text("Attribute")
+
+				if (#cur_model.attrs > 0) then
+					-- local attr_name, attr_element = cur_model.attrs[1]
+					local attr_name, attr_element = cur_model.attrs[1][1]
+					local attr_element = cur_model.attrs[1][2]
+					-- local attr_name, attr_element = cur_model.get_attr(1);
+					-- print("first attr:" .. attr_name)
+					-- print("second attr:" .. attr_element)
+					-- print("selected atrt:" .. tostring(cur_model.selected_attr))")
+					if (imgui.BeginCombo("##combo_attribute_selection", cur_model.attrs[cur_model.selected_attr + 1][1])) then
+						for n = 1, #cur_model.attrs do
+							local is_selected = (n - 1) == cur_model.selected_attr
+							if (imgui.Selectable(cur_model.attrs[n][1], is_selected)) then
+								cur_model.selected_attr = n - 1
+
+								-- print("set attr: " .. cur_model.attrs[n][1] .. ":" .. cur_model.attrs[n][2] .. ":" .. cur_model.attrs[n][3])
+							end
+						end
+						imgui.EndCombo()
+					end
+				end
+
+
+			end 
+
+			local sel_selected, new_selected = imgui.InputInt("Selected", app.selected_model)
+			if (sel_selected) then 
+				app.selected_model = new_selected - 1
+			end
+
+		end
+	end
 end
 
 function draw_gui()
@@ -84,7 +316,7 @@ function draw_gui()
 						goto continue
 					end
 
-					draw_tree(model)
+					draw_tree(model, i)
 					::continue::
 				end
 

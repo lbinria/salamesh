@@ -1,7 +1,5 @@
 {
 	"modules": [
-		"modules/module_mesh_view",
-		"modules/module_attribute_viewer",
 		"modules/module_scene",
 		"modules/module_inspector"
 	]

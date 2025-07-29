@@ -29,6 +29,15 @@ namespace bindings {
 					ImGui::Text(fmt, args);
 				}
 			));
+			
+			imgui.set_function("TextColored", sol::overload(
+				[](const float r, const float g, const float b, const float a, const char* text) {
+					ImGui::TextColored(ImVec4(r, g, b, a), "%s", text);
+				},
+				[](const float r, const float g, const float b, const float a, const char* fmt, sol::variadic_args args) {
+					ImGui::TextColored(ImVec4(r, g, b, a), fmt, args);
+				}
+			));
 
 			// Inputs
 			imgui.set_function("InputText", [](const char* label, char* buf, size_t buf_size) {
@@ -186,6 +195,15 @@ namespace bindings {
 			imgui.set_function("EndTabItem", []() {
 				ImGui::EndTabItem();
 			});
+
+			imgui.set_function("CollapsingHeader", sol::overload(
+				[](const char* label) {
+					return ImGui::CollapsingHeader(label);
+				},
+				[](const char* label, ImGuiTreeNodeFlags flags) {
+					return ImGui::CollapsingHeader(label, flags);
+				}
+			));
 
 			imgui.set_function("SameLine", []() {
 				ImGui::SameLine();
