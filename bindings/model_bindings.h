@@ -28,6 +28,11 @@ namespace bindings {
 				&Model::setVisible
 			);
 
+			model_t["color"] = sol::property(
+				&Model::getColor,
+				&Model::setColor
+			);
+
 			model_t["point_visible"] = sol::property(
 				&Model::getPointVisible,
 				&Model::setPointVisible

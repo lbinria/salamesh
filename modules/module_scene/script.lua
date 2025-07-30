@@ -146,6 +146,11 @@ function draw_model_properties(model, view)
 
 		if (imgui.CollapsingHeader("Style##" .. cur_model.name .. "_properties_style")) then 
 
+			local sel_color, new_color = imgui.ColorEdit3("Color", cur_model.color)
+			if (sel_color) then 
+				print("Change color: " .. tostring(new_color))
+				cur_model.color = new_color
+			end
 
 			local sel_slider_mesh_size, new_mesh_size = imgui.SliderFloat("Mesh size", cur_model.meshSize, 0, 1)
 			if (sel_slider_mesh_size) then 

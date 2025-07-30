@@ -60,6 +60,8 @@ struct Model {
 
     virtual int getColorMode() const = 0;
     virtual void setColorMode(Model::ColorMode mode) = 0;
+    virtual glm::vec3 getColor() const = 0;
+    virtual void setColor(glm::vec3 c) = 0;
 
     virtual bool getLight() const = 0;
     virtual void setLight(bool enabled) = 0;

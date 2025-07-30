@@ -177,6 +177,15 @@ struct HexModel final : public Model {
         colorMode = mode;
     }
 
+    glm::vec3 getColor() const override {
+        return color;
+    }
+
+    void setColor(glm::vec3 c) override {
+        _hexRenderer.setColor(c);
+        color = c;
+    }
+
     bool getLight() const override {
         return isLightEnabled;
     }
@@ -430,6 +439,7 @@ struct HexModel final : public Model {
     float meshShrink = 0.f;
     Model::RenderMode fragRenderMode = Model::RenderMode::Color;
     Model::ColorMode colorMode = Model::ColorMode::COLOR;
+    glm::vec3 color{0.8f, 0.f, 0.2f};
     
     int selectedAttr = 0;
     int selectedColormap = 0;

@@ -27,6 +27,7 @@ struct HexRenderer {
         hex(hex),
         shader("shaders/hex.vert", "shaders/hex.frag")
         {
+            setColor({0.8f, 0.f, 0.2f}); // TODO here use a setting default point color
         }
 
 
@@ -71,6 +72,11 @@ struct HexRenderer {
     void setColorMode(Model::ColorMode mode) {
         shader.use();
         shader.setInt("colorMode", mode);
+    }
+
+    void setColor(glm::vec3 color) {
+        shader.use();
+        shader.setFloat3("color", color);
     }
 
     void setLight(bool enabled) {

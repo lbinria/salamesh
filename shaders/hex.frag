@@ -1,7 +1,5 @@
 #version 440 core
 
-// Color output
-// out vec4 FragColor;
 // Primitive indexation
 flat in int fragCellIndex;
 flat in int fragFacetIndex;
@@ -41,6 +39,7 @@ uniform samplerBuffer highlightBuf;
 uniform samplerBuffer facetHighlightBuf;
 
 uniform int colorMode = 0;
+uniform vec3 color;
 
 vec3 encode_id(int id) {
     int r = id & 0x000000FF;
@@ -53,7 +52,7 @@ void main()
 {
 
     // Initialize color to black
-    vec3 col = vec3(0.f, 0.f, 0.f);
+    vec3 col = color;
 
 
     // Check if cell is filtered
@@ -88,11 +87,7 @@ void main()
 
     /* --- FILTER END --- */
 
-
-    if (colorMode == 0) {
-        col = vec3(0.8f, 0.f, 0.2f);
-    } 
-    else {
+    if (colorMode == 1) {
         float fragAttrVal = texelFetch(attributeData, fragCellIndex).x;
         col = vec3(texture(fragColorMap, clamp((fragAttrVal - attrRange.x) / (attrRange.y - attrRange.x), 0., 1.)));
     }
