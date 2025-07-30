@@ -21,7 +21,7 @@ function draw_gui()
 		app.setCullMode(0x0404)
 	end
 
-	local cur_model = app.current_model
+	local cur_model = app.model
 
 	local sel_chk_enable_light, new_enable_light = imgui.Checkbox("Enable light", cur_model.light)
 

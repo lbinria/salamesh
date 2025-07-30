@@ -104,6 +104,8 @@ struct Model {
 
     virtual bool getVisible() const = 0;
     virtual void setVisible(bool v) = 0;
+    virtual bool getPointVisible() const = 0;
+    virtual void setPointVisible(bool v) = 0;
 
     // virtual void addChildren(std::shared_ptr<Model> child) = 0;
     virtual void setParent(std::shared_ptr<Model> parentModel) = 0;

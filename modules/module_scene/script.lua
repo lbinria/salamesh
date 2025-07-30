@@ -26,7 +26,7 @@ function draw_tree(model, i)
 			app.camera.look_at = vec3.new(model_pos.x, model_pos.y, model_pos.z);
 		end
 
-		-- draw_model_properties(model, 0)
+		draw_model_properties(model, 0)
 
 		imgui.Separator()
 
@@ -59,7 +59,7 @@ function draw_model_properties(model, view)
 	imgui.Text("Local position: " .. p:to_string());
 
 
-	-- local cur_model = app.current_model
+	-- local cur_model = app.model
 	local cur_model = model
 
 	if (imgui.CollapsingHeader("Properties##" .. cur_model.name .. "_properties")) then 
@@ -157,6 +157,12 @@ function draw_model_properties(model, view)
 			if (sel_slider_mesh_shrink) then 
 				print("Change mesh shrink: " .. tostring(new_mesh_shrink))
 				cur_model.meshShrink = new_mesh_shrink
+			end
+
+			local sel_point_visible, new_point_visible = imgui.Checkbox("Show points", cur_model.point_visible)
+			if (sel_point_visible) then 
+				print("Change point visibility: " .. tostring(new_point_visible))
+				cur_model.point_visible = new_point_visible
 			end
 
 			local sel_point_size, new_point_size = imgui.SliderFloat("Point size", cur_model.point_size, 0, 50)
@@ -318,10 +324,7 @@ function draw_gui()
 				imgui.TreePop()
 			end
 
-			imgui.Separator()
-			draw_model_properties(app.current_model, 0)
-
-
+			
 			imgui.EndTabItem()
 		end
 

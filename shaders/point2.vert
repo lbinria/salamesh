@@ -11,6 +11,8 @@ layout (std140, binding = 0) uniform Matrices
 };
 
 flat out int FragVertexIndex;
+out vec3 fragWorldPos;
+
 
 uniform mat4 model;
 uniform float pointSize;
@@ -24,5 +26,6 @@ void main()
 	gl_Position = projection * view * model * vec4(pos, 1.0);
 	gl_PointSize = pointSize * sizeScale;
 
+	fragWorldPos = pos;
 	FragVertexIndex = vertexIndex;
 }

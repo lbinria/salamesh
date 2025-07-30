@@ -5,7 +5,7 @@ end
 function draw_gui()
 	imgui.Begin("Attributes lua script")
 
-	local cur_model = app.current_model
+	local cur_model = app.model
 
 	if (imgui.BeginCombo("##Color Mode", cur_model.color_mode_strings[cur_model.color_mode + 1])) then
 		for i = 1, #cur_model.color_mode_strings do

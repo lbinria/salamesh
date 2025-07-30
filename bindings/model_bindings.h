@@ -28,6 +28,11 @@ namespace bindings {
 				&Model::setVisible
 			);
 
+			model_t["point_visible"] = sol::property(
+				&Model::getPointVisible,
+				&Model::setPointVisible
+			);
+
 			model_t["position"] = sol::property(
 				&Model::getPosition,
 				&Model::setPosition
@@ -42,8 +47,8 @@ namespace bindings {
 				&Model::setLight
 			);
 
-			model_t.set_function("getLight", &Model::getLight);
-			model_t.set_function("setLight", &Model::setLight);
+			// model_t.set_function("getLight", &Model::getLight);
+			// model_t.set_function("setLight", &Model::setLight);
 
 			model_t["is_light_follow_view"] = sol::property(
 				&Model::getLightFollowView,
@@ -55,8 +60,8 @@ namespace bindings {
 				&Model::setClipping
 			);
 
-			model_t.set_function("getClipping", &Model::getClipping);
-			model_t.set_function("setClipping", &Model::setClipping);
+			// model_t.set_function("getClipping", &Model::getClipping);
+			// model_t.set_function("setClipping", &Model::setClipping);
 
 			model_t["clipping_plane_point"] = sol::property(
 				&Model::getClippingPlanePoint,

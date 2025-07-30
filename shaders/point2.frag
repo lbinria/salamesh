@@ -9,7 +9,17 @@ layout(location = 3) out vec4 FragVertexIndexOut;
 
 flat in int FragVertexIndex;
 
+in vec3 fragWorldPos;
+
 uniform vec3 pointColor;
+
+
+uniform bool is_clipping_enabled = false;
+uniform vec3 clipping_plane_normal = vec3(0.2f, 0.6f, 0.0f); // (a, b, c)
+uniform vec3 clipping_plane_point = vec3(0.0f, 0.0f, 0.0);  // A point on the plane
+uniform int invert_clipping = 0; // 0: normal, 1: inverted
+
+
 
 uniform int colorMode = 0;
 
@@ -33,7 +43,22 @@ void main()
     bool isFiltered = texelFetch(filterBuf, FragVertexIndex).x > 0;
     if (isFiltered)
         discard;
-    
+
+
+    /* --- CLIPPING --- */
+
+   // Calculate the distance from the cell barycenter to the plane
+   if (is_clipping_enabled) {
+      float distance = dot(clipping_plane_normal, fragWorldPos - clipping_plane_point) / length(clipping_plane_normal);
+      
+      if ((invert_clipping == 0 && distance < 0.0) || (invert_clipping == 1 && distance >= 0.0)) {
+         discard;
+      }
+   }
+
+    /* --- CLIPPING END --- */
+
+
     vec3 col = pointColor;
 
     // Check circle distance function

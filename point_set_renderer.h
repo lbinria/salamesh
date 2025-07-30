@@ -41,6 +41,14 @@ struct PointSetRenderer {
         texColorMap = tex;
     }
 
+    void setVisible(bool v) {
+        visible = v;
+    }
+
+    bool getVisible() const {
+        return visible;
+    }
+
     float getPointSize() const {
         return pointSize;
     }

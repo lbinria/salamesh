@@ -306,6 +306,15 @@ struct HexModel final : public Model {
     void setVisible(bool v) override {
         visible = v;
         _hexRenderer.setVisible(v);
+        _pointSetRenderer.setVisible(v);
+    }
+
+    bool getPointVisible() const override {
+        return _pointSetRenderer.getVisible();
+    }
+
+    void setPointVisible(bool v) override {
+        _pointSetRenderer.setVisible(v);
     }
 
     void setHighlight(int idx, float highlight) override {
