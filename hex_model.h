@@ -201,6 +201,7 @@ struct HexModel final : public Model {
 
     void setClipping(bool enabled) override {
         _hexRenderer.setClipping(enabled);
+        _pointSetRenderer.setClipping(enabled);
         isClipping = enabled;
     }
 
@@ -210,6 +211,7 @@ struct HexModel final : public Model {
 
     void setClippingPlanePoint(glm::vec3 p) override {
         _hexRenderer.setClippingPlanePoint(p);
+        _pointSetRenderer.setClippingPlanePoint(p);
         clippingPlanePoint = p;
     }
 
@@ -219,6 +221,7 @@ struct HexModel final : public Model {
 
     void setClippingPlaneNormal(glm::vec3 n) override {
 		_hexRenderer.setClippingPlaneNormal(n);
+        _pointSetRenderer.setClippingPlaneNormal(n);
         clippingPlaneNormal = n;
     }
 
@@ -228,6 +231,7 @@ struct HexModel final : public Model {
 
     void setInvertClipping(bool invert) override {
         _hexRenderer.setInvertClipping(invert);
+        _pointSetRenderer.setInvertClipping(invert);
         invertClipping = invert;
     }
 
@@ -305,8 +309,6 @@ struct HexModel final : public Model {
 
     void setVisible(bool v) override {
         visible = v;
-        _hexRenderer.setVisible(v);
-        _pointSetRenderer.setVisible(v);
     }
 
     bool getPointVisible() const override {

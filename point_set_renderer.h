@@ -69,6 +69,26 @@ struct PointSetRenderer {
         pointColor = color;
     }
 
+    void setClipping(bool enabled) {
+        shader.use();
+        shader.setInt("is_clipping_enabled", enabled);
+    }
+
+    void setClippingPlanePoint(glm::vec3 p) {
+        shader.use();
+        shader.setFloat3("clipping_plane_point", p);
+    }
+
+    void setClippingPlaneNormal(glm::vec3 n) {
+        shader.use();
+        shader.setFloat3("clipping_plane_normal", n);
+    }
+
+    void setInvertClipping(bool invert) {
+        shader.use();
+        shader.setInt("invert_clipping", invert);
+    }
+
     void setFilter(int idx, bool filter) {
         ptrFilter[idx] = filter ? 1.f : 0.f;
     }
