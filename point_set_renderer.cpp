@@ -1,6 +1,6 @@
 #include "point_set_renderer.h"
 
-void PointSetRenderer::changeAttribute(GenericAttributeContainer *ga) {
+void PointSetRenderer::setAttribute(ContainerBase *ga) {
 
 	// Transform data
 	if (auto a = dynamic_cast<AttributeContainer<double>*>(ga)) {

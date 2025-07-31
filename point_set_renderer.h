@@ -23,7 +23,7 @@ struct PointSetRenderer {
             setPointColor({0.23, 0.85, 0.66}); // TODO here use a setting default point color
         }
 
-    void changeAttribute(GenericAttributeContainer *ga);
+    void setAttribute(ContainerBase *ga);
     void setAttribute(std::vector<float> attributeData);
 
     void init();

@@ -1,6 +1,7 @@
 #include "hex_renderer.h"
 
-void HexRenderer::changeAttribute(GenericAttributeContainer *ga, int element) {
+
+void HexRenderer::setAttribute(ContainerBase *ga, int element) {
 	// Set attribute element to shader
 	shader.use();
 	shader.setInt("attr_element", element);

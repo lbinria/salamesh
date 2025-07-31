@@ -376,6 +376,7 @@ struct HexModel final : public Model {
         
     }
 
+    // TODO rename to getAttrsInfo
     std::vector<std::tuple<std::string, int>> getAttrs() const override {
         std::vector<std::tuple<std::string, int>> result;
         for (const auto& attr : attrs) {
@@ -384,12 +385,13 @@ struct HexModel final : public Model {
         return result;
     }
 
+    // TODO maybe remove idx-1 !
     std::tuple<std::string, int> getAttr(int idx) const override {
         return std::make_tuple(std::get<0>(attrs[idx - 1]), std::get<1>(attrs[idx - 1]));
     }
 
     void addAttr(Element element, NamedContainer &container) override {
-        attrs.emplace_back(container.first, element, container.second);
+        attrs.emplace_back(container.name, element, container.ptr);
     }
 
     void removeAttr(const std::string& name, Element element) override {
@@ -412,9 +414,9 @@ struct HexModel final : public Model {
         int attr_element = std::get<1>(attrs[idx]);
         // TODO see condition here not very smart maybe abstract renderers ?
         if (attr_element == Element::POINTS) {
-            _pointSetRenderer.changeAttribute(std::get<2>(attrs[idx]).get());
+            _pointSetRenderer.setAttribute(std::get<2>(attrs[idx]).get());
         } else 
-		    _hexRenderer.changeAttribute(std::get<2>(attrs[idx]).get(), attr_element);
+		    _hexRenderer.setAttribute(std::get<2>(attrs[idx]).get(), attr_element);
     }
 
     void updateAttr() {
@@ -460,7 +462,7 @@ struct HexModel final : public Model {
 	HexRenderer _hexRenderer;
 	PointSetRenderer _pointSetRenderer;
 
-    std::vector<std::tuple<std::string, Element, std::shared_ptr<GenericAttributeContainer>>> attrs;
+    std::vector<std::tuple<std::string, Element, std::shared_ptr<ContainerBase>>> attrs;
     // Pointer to parent model, if there is one
     std::shared_ptr<Model> parent;
 

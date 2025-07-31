@@ -70,8 +70,7 @@ struct HexRenderer {
     }
 
     void setAttribute(std::vector<float> attributeData);
-
-    void changeAttribute(GenericAttributeContainer *ga, int element);
+    void setAttribute(ContainerBase *ga, int element);
 
     void setColorMode(Model::ColorMode mode) {
         shader.use();
@@ -148,6 +147,7 @@ struct HexRenderer {
     unsigned int bufBary, bufHighlight, bufFacetHighlight, bufAttr, bufFilter; // Sample buffers
     unsigned int texColorMap, texBary, texHighlight, texFacetHighlight, texAttr, texFilter; // Textures
 
+    float *ptrAttr;
     float *ptrHighlight;
     float *ptrFacetHighlight;
     float *ptrFilter;

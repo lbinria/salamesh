@@ -1,6 +1,9 @@
-cmake_minimum_required(VERSION 3.10)
+cmake_minimum_required(VERSION 3.12...3.26)
 
 project(salamesh)
+set(CMAKE_CXX_STANDARD 20)
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
+
 
 # Find the GLFW library
 find_package(glfw3 REQUIRED)
@@ -42,7 +45,7 @@ include(FetchContent)
 FetchContent_Declare(
   ultimaille
   GIT_REPOSITORY https://github.com/ssloy/ultimaille
-  GIT_TAG        v2.0.0
+  GIT_TAG        8fb23b7
 )
 FetchContent_MakeAvailable(ultimaille)
 
