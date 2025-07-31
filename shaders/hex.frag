@@ -33,6 +33,7 @@ uniform int invert_clipping = 0; // 0: normal, 1: inverted
 uniform sampler1D fragColorMap;
 uniform vec2 attrRange = vec2(0.f, 1.f);
 uniform samplerBuffer attributeData;
+uniform int attrElement;
 
 uniform samplerBuffer filterBuf;
 uniform samplerBuffer highlightBuf;
@@ -88,7 +89,16 @@ void main()
     /* --- FILTER END --- */
 
     if (colorMode == 1) {
-        float fragAttrVal = texelFetch(attributeData, fragCellIndex).x;
+
+        int primitiveIndex;
+        // Facet attribute
+        if (attrElement == 2)
+            primitiveIndex = fragFacetIndex;
+        // Cell attribute
+        else if (attrElement == 3)
+            primitiveIndex = fragCellIndex;
+
+        float fragAttrVal = texelFetch(attributeData, primitiveIndex).x;
         col = vec3(texture(fragColorMap, clamp((fragAttrVal - attrRange.x) / (attrRange.y - attrRange.x), 0., 1.)));
     }
     

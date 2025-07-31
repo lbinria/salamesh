@@ -30,6 +30,8 @@ struct HexModel final : public Model {
 
 
 	void load(const std::string path) override {
+        // TODO check if the model failed to read in ultimaille, else there is side effects ! 
+        
 		// Load the mesh
 		VolumeAttributes attributes = read_by_extension(path, _hex);
 		_path = path;

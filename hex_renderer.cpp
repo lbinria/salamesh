@@ -4,7 +4,7 @@
 void HexRenderer::setAttribute(ContainerBase *ga, int element) {
 	// Set attribute element to shader
 	shader.use();
-	shader.setInt("attr_element", element);
+	shader.setInt("attrElement", element);
 
 	// Prepare data
 	std::vector<float> converted_attribute_data;

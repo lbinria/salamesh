@@ -377,7 +377,7 @@ void App::run()
 	// 	models[i+1]->setPosition(models[0]->getPosition() + glm::vec3(rand() % 10 / 10.f, rand() % 10 / 10.f, rand() % 10 / 10.f));
 	// }
 
-	load_model("assets/catorus_hex_attr.geogram");
+	load_model("assets/catorus_hex_facet_attr.geogram");
 	load_model("assets/catorus_hex_attr.geogram");
 
 	// load_state("/home/tex/Desktop/state.json");

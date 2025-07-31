@@ -37,6 +37,13 @@ set(IMGUI_SOURCES
 )
 
 add_subdirectory(include/ImGuiFileDialog-0.6.7)
+get_target_property(_IFD_INCS ImGuiFileDialog INTERFACE_INCLUDE_DIRECTORIES)
+if(_IFD_INCS)
+  target_include_directories(ImGuiFileDialog
+    SYSTEM INTERFACE
+      ${_IFD_INCS}
+  )
+endif()
 
 # ULTIMAILLE
 

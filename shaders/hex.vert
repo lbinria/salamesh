@@ -32,8 +32,6 @@ out vec3 fragWorldPos;
 
 uniform mat4 model;
 
-uniform int attr_element = -1;
-
 uniform samplerBuffer bary;
 
 uniform float meshShrink;
