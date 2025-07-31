@@ -29,51 +29,9 @@ struct HexModel final : public Model {
         _pointSetRenderer(_hex.points) {}
 
 
-	void load(const std::string path) override {
-        // TODO check if the model failed to read in ultimaille, else there is side effects ! 
-        
-		// Load the mesh
-		VolumeAttributes attributes = read_by_extension(path, _hex);
-		_path = path;
-		// Extract name
-		if (_name.empty()) {
-            std::filesystem::path p(path);
-            _name = p.stem().string();
-		}
-
-		// Add attribute to renderer
-		clearAttrs();
-
-		for (auto &a : attributes.points) {
-			addAttr(Element::POINTS, a);
-		}
-		for (auto a : attributes.cell_corners) {
-			addAttr(Element::CORNERS, a);
-		}
-		for (auto a : attributes.cell_facets) {
-			addAttr(Element::FACETS, a);
-		}
-		for (auto a : attributes.cells) {
-			addAttr(Element::CELLS, a);
-		}
-	}
-
-	void save() const override {
-		// Save the mesh
-		if (_path.empty()) {
-			std::cerr << "Error: No path specified for saving the mesh." << std::endl;
-			return;
-		}
-        // TODO save attributes
-		write_by_extension(_path, _hex);
-	}
-
-	void save_as(const std::string path) override {
-		// Save the mesh to a new path
-        // TODO save attributes
-		write_by_extension(path, _hex);
-		_path = path;
-	}
+	void load(const std::string path);
+	void save() const override;
+	void save_as(const std::string path) const override;
 
     std::string save_state() override {
         json j;
@@ -392,6 +350,29 @@ struct HexModel final : public Model {
         return std::make_tuple(std::get<0>(attrs[idx - 1]), std::get<1>(attrs[idx - 1]));
     }
 
+    template<typename T>
+    void addAttr(std::string name, Element element) {
+        if (element == Element::POINTS) {
+            PointAttribute<T> attr(_hex.points);
+            attr.bind(name, _hex.points.attr, _hex);
+            addAttr(element, attr.ptr);
+        } else if (element == Element::CORNERS) {
+            CellCornerAttribute<T> attr(_hex);
+            attr.bind(name, _hex.attr_corners, _hex);
+            addAttr(element, attr.ptr);
+        } else if (element == Element::FACETS) {
+            CellFacetAttribute<T> attr(_hex);
+            attr.bind(name, _hex.attr_facets, _hex);
+            addAttr(element, attr.ptr);
+        } else if (element == Element::CELLS) {
+            CellAttribute<T> attr(_hex);
+            attr.bind(name, _hex.attr_cells, _hex);
+            addAttr(element, attr.ptr);
+        } else {
+            throw std::runtime_error("Unknown element type for attribute: " + std::to_string(static_cast<int>(element)));
+        }
+    }
+
     void addAttr(Element element, NamedContainer &container) override {
         attrs.emplace_back(container.name, element, container.ptr);
     }
@@ -411,15 +392,7 @@ struct HexModel final : public Model {
         return selectedAttr;
     }
 
-    void setSelectedAttr(int idx) override {
-        selectedAttr = idx;
-        int attr_element = std::get<1>(attrs[idx]);
-        // TODO see condition here not very smart maybe abstract renderers ?
-        if (attr_element == Element::POINTS) {
-            _pointSetRenderer.setAttribute(std::get<2>(attrs[idx]).get());
-        } else 
-		    _hexRenderer.setAttribute(std::get<2>(attrs[idx]).get(), attr_element);
-    }
+    void setSelectedAttr(int idx) override;
 
     void updateAttr() {
         setSelectedAttr(selectedAttr);

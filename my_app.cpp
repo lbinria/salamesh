@@ -117,12 +117,19 @@ void MyApp::draw_gui() {
 
 	if (ImGui::BeginMainMenuBar()) {
 		if (ImGui::BeginMenu("File")) {
-			if (ImGui::MenuItem("Open model", "Ctrl+O")) {
+			if (ImGui::MenuItem("Open model")) {
 
 				// open Dialog Simple
 				IGFD::FileDialogConfig config;
 				config.path = ".";
 				ImGuiFileDialog::Instance()->OpenDialog("ChooseFileDlgKey", "Choose File", ".geogram,.mesh,.json,.jpg", config);
+			}
+
+			if (ImGui::MenuItem("Save model as")) {
+				// open Dialog Simple
+				IGFD::FileDialogConfig config;
+				config.path = ".";
+				ImGuiFileDialog::Instance()->OpenDialog("SaveModelAs", "Save as", ".geogram,.mesh", config);
 			}
 
 			if (ImGui::MenuItem("Save state")) {
@@ -150,6 +157,21 @@ void MyApp::draw_gui() {
 			std::cout << "read model..." << std::endl;
 			load_model(filename);
 
+		}
+		
+		// close
+		ImGuiFileDialog::Instance()->Close();
+	}
+
+	// display save dialog
+	if (ImGuiFileDialog::Instance()->Display("SaveModelAs")) {
+		if (ImGuiFileDialog::Instance()->IsOk()) { // action if OK
+			std::string filename = ImGuiFileDialog::Instance()->GetFilePathName();
+			std::string directoryPath = ImGuiFileDialog::Instance()->GetCurrentPath();
+			// action
+			std::cout << "file path:" << directoryPath << ", file path name: " << filename << std::endl;
+			std::cout << "save model..." << std::endl;
+			getCurrentModel().save_as(filename);
 		}
 		
 		// close
