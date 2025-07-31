@@ -65,6 +65,10 @@ struct HexRenderer {
         ptrFacetHighlight[idx] = highlight;
     }
 
+    void setFacetHighlight(std::vector<float> highlights) {
+    	std::memcpy(ptrFacetHighlight, highlights.data(), highlights.size() * sizeof(float));
+    }
+
     void setAttribute(std::vector<float> attributeData);
 
     void changeAttribute(GenericAttributeContainer *ga, int element);

@@ -156,6 +156,7 @@ struct HexModel final : public Model {
     
     void clean() override {
 		_hexRenderer.clean();
+        _pointSetRenderer.clean();
 	}
 
 	Hexahedra& getHexahedra() override { return _hex; }
@@ -334,6 +335,14 @@ struct HexModel final : public Model {
 
     void setHighlight(std::vector<float> highlights) override {
         _hexRenderer.setHighlight(highlights);
+    }
+
+    void setFacetHighlight(int idx, float highlight) override {
+        _hexRenderer.setFacetHighlight(idx, highlight);
+    }
+
+    void setFacetHighlight(std::vector<float> highlights) override {
+        _hexRenderer.setFacetHighlight(highlights);
     }
 
     // TODO filter anything else than cell !

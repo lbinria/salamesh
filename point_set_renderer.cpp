@@ -155,7 +155,28 @@ void PointSetRenderer::clean() {
 	glDeleteVertexArrays(1, &VAO);
 	glDeleteBuffers(1, &VBO);
 
-	// TODO clean buffers, textures, unmap ptr...
+	// Unmap highlight
+	if (ptrHighlight) {
+		glBindBuffer(GL_TEXTURE_BUFFER, bufHighlight);
+		glUnmapBuffer(GL_TEXTURE_BUFFER);
+		ptrHighlight = nullptr;
+	}
 
+	// Unmap filter
+	if (ptrFilter) {
+		glBindBuffer(GL_TEXTURE_BUFFER, bufFilter);
+		glUnmapBuffer(GL_TEXTURE_BUFFER);
+		ptrFilter = nullptr;
+	}
+
+	glDeleteBuffers(1, &bufAttr);
+	glDeleteTextures(1, &texAttr);
+	glDeleteBuffers(1, &bufHighlight);
+	glDeleteTextures(1, &texHighlight);
+	glDeleteBuffers(1, &bufFilter);
+	glDeleteTextures(1, &texFilter);
+	glBindBuffer(GL_TEXTURE_BUFFER, 0);
+
+	// Clean shader
 	shader.clean();
 }

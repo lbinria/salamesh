@@ -124,7 +124,7 @@ namespace bindings {
 				return attrs_tbl;
 			});
 
-
+			// TODO add +1 / -1 
 			model_t["selected_attr"] = sol::property(
 				&Model::getSelectedAttr,
 				&Model::setSelectedAttr

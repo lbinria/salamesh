@@ -304,6 +304,10 @@ function draw_gui()
 				imgui.PopID()
 			end
 
+			imgui.Separator()
+
+			draw_model_properties(app.model, 0)
+
 			imgui.EndTabItem()
 
 		end 
