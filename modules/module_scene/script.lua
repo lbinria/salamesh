@@ -251,17 +251,16 @@ function draw_model_properties(model, view)
 
 				if (#cur_model.attrs > 0) then
 					-- local attr_name, attr_element = cur_model.attrs[1]
-					local attr_name, attr_element = cur_model.attrs[1][1]
-					local attr_element = cur_model.attrs[1][2]
+					local attr_name = cur_model.attrs[1].name
+					local attr_element = cur_model.attrs[1].kind
 					-- local attr_name, attr_element = cur_model.get_attr(1);
 					-- print("first attr:" .. attr_name)
 					-- print("second attr:" .. attr_element)
-					-- print("selected atrt:" .. tostring(cur_model.selected_attr))")
-					if (imgui.BeginCombo("##combo_attribute_selection", cur_model.attrs[cur_model.selected_attr + 1][1])) then
+					if (imgui.BeginCombo("##combo_attribute_selection", cur_model.attrs[cur_model.selected_attr].name)) then
 						for n = 1, #cur_model.attrs do
-							local is_selected = (n - 1) == cur_model.selected_attr
-							if (imgui.Selectable(cur_model.attrs[n][1], is_selected)) then
-								cur_model.selected_attr = n - 1
+							local is_selected = n == cur_model.selected_attr
+							if (imgui.Selectable(cur_model.attrs[n].name, is_selected)) then
+								cur_model.selected_attr = n
 
 								-- print("set attr: " .. cur_model.attrs[n][1] .. ":" .. cur_model.attrs[n][2] .. ":" .. cur_model.attrs[n][3])
 							end
@@ -393,4 +392,5 @@ function draw_gui()
 
 
 	imgui.End()
+
 end

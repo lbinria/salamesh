@@ -1,9 +1,9 @@
 #pragma once
 
 #include "element.h"
+#include "attribute.h"
 
 #include "../include/glm/glm.hpp"
-
 #include <ultimaille/all.h>
 using namespace UM;
 
@@ -90,10 +90,12 @@ struct Model {
     virtual void setPointSize(float size) = 0;
 
     // Model attributes
-    virtual std::vector<std::tuple<std::string, int>> getAttrs() const = 0;
-    virtual std::tuple<std::string, int> getAttr(int idx) const = 0;
+    virtual std::vector<Attribute> getAttrs() const = 0;
+    virtual Attribute getAttr(int idx) const = 0;
+    // virtual std::vector<std::tuple<std::string, int>> getAttrs() const = 0;
+    // virtual std::tuple<std::string, int> getAttr(int idx) const = 0;
     virtual void addAttr(Element element, NamedContainer &container) = 0;
-    virtual void removeAttr(const std::string& name, Element element) = 0;
+    // virtual void removeAttr(const std::string& name, Element element) = 0;
     virtual void clearAttrs() = 0;
 
     // Model attributes shader uniforms

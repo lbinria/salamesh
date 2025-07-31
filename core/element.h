@@ -7,3 +7,18 @@ enum Element {
 	FACETS = 2,
 	CELLS = 3
 };
+
+enum ElementType {
+	FLOAT,
+	DOUBLE,
+	INT,
+	FLOAT2,
+	DOUBLE2,
+	INT2,
+	FLOAT3,
+	DOUBLE3,
+	INT3,
+	FLOAT4,
+	DOUBLE4,
+	INT4
+};

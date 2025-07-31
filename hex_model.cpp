@@ -35,24 +35,26 @@ void HexModel::save_as(const std::string path) const {
 		std::cerr << "Error: No path specified for saving the mesh." << std::endl;
 		return;
 	}
+
+	// TODO check path validity
 	
 	// Save attributes ! Convert back from salamesh attributes to NamedContainer vectors
 	std::vector<NamedContainer> point_attrs;
 	std::vector<NamedContainer> cell_corner_attrs;
 	std::vector<NamedContainer> cell_facet_attrs;
 	std::vector<NamedContainer> cell_attrs;
-	for (auto &a : attrs) {
-		std::string name = std::get<0>(a);
-		Element element = std::get<1>(a);
-		auto &container = std::get<2>(a);
+	for (auto &a : attrs2) {
+		std::string name = a.name;
+		Element kind = a.kind;
+		auto &container = a.ptr;
 
-		if (element == Element::POINTS) {
+		if (kind == Element::POINTS) {
 			point_attrs.push_back(NamedContainer(name, container));
-		} else if (element == Element::CORNERS) {
+		} else if (kind == Element::CORNERS) {
 			cell_corner_attrs.push_back(NamedContainer(name, container));
-		} else if (element == Element::FACETS) {
+		} else if (kind == Element::FACETS) {
 			cell_facet_attrs.push_back(NamedContainer(name, container));
-		} else if (element == Element::CELLS) {
+		} else if (kind == Element::CELLS) {
 			cell_attrs.push_back(NamedContainer(name, container));
 		}
 	}
@@ -73,12 +75,12 @@ void HexModel::save() const {
 
 void HexModel::setSelectedAttr(int idx) {
 	selectedAttr = idx;
-	int attr_element = std::get<1>(attrs[idx]);
+	int kind = attrs2[idx].kind;
 	// TODO see condition here not very smart maybe abstract renderers ?
-	if (attr_element == Element::POINTS) {
-		_pointSetRenderer.setAttribute(std::get<2>(attrs[idx]).get());
+	if (kind == Element::POINTS) {
+		_pointSetRenderer.setAttribute(attrs2[idx].ptr.get());
 	} else 
-		_hexRenderer.setAttribute(std::get<2>(attrs[idx]).get(), attr_element);
+		_hexRenderer.setAttribute(attrs2[idx].ptr.get(), kind);
 }
 
 void HexModel::push() {

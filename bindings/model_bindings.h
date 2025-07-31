@@ -2,12 +2,21 @@
 #define SOL_ALL_SAFETIES_ON 1
 #include <sol/sol.hpp>
 #include "../core/app_interface.h"
+#include "../core/model.h"
+#include "../core/attribute.h"
 
 namespace bindings {
 
 	struct ModelBindings {
 
 		static void loadBindings(sol::state &lua, sol::usertype<IApp>& app_type, IApp &app) {
+
+			sol::usertype<Attribute> attr_t = lua.new_usertype<Attribute>("Attribute", 
+				sol::constructors<Attribute()>(),
+				"name", sol::property(&Attribute::getName),
+				"kind", sol::property(&Attribute::getKind),
+				"ptr", sol::property(&Attribute::getPtr)
+			);
 
 			sol::usertype<Model> model_t = lua.new_usertype<Model>("Model");
 
@@ -113,22 +122,30 @@ namespace bindings {
 			);
 
 
+			// model_t["attrs"] = sol::readonly_property([&lua = lua](Model &self) {
+			// 	sol::table attrs_tbl = lua.create_table();
+			// 	for (auto &attr : self.getAttrs()) {
+			// 		sol::table item = lua.create_table();
+			// 		item.set(1, attr.name);
+			// 		item.set(2, attr.kind);
+			// 		attrs_tbl.add(item);
+			// 	}
+			// 	return attrs_tbl;
+			// });
 			model_t["attrs"] = sol::readonly_property([&lua = lua](Model &self) {
 				sol::table attrs_tbl = lua.create_table();
 				for (auto &attr : self.getAttrs()) {
 					sol::table item = lua.create_table();
-					item.set(1, std::get<0>(attr)); // First element (name)
-					item.set(2, std::get<1>(attr)); // Second element (element)
-					attrs_tbl.add(item);
+					attrs_tbl.add(attr);
 				}
 				return attrs_tbl;
 			});
 
-			// TODO add +1 / -1 
-			model_t["selected_attr"] = sol::property(
-				&Model::getSelectedAttr,
-				&Model::setSelectedAttr
-			);
+			model_t["selected_attr"] = sol::property([](Model &self) {
+				return self.getSelectedAttr() + 1;
+			}, [](Model &self, int selected) {
+				self.setSelectedAttr(selected - 1);
+			});
 
 			model_t["selected_colormap"] = sol::property(
 				&Model::getSelectedColormap,

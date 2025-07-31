@@ -67,11 +67,11 @@ function draw_gui()
 			-- print("first attr:" .. attr_name)
 			-- print("second attr:" .. attr_element)
 			-- print("selected atrt:" .. tostring(cur_model.selected_attr))")
-			if (imgui.BeginCombo("##combo_attribute_selection", cur_model.attrs[cur_model.selected_attr + 1][1])) then
+			if (imgui.BeginCombo("##combo_attribute_selection", cur_model.attrs[cur_model.selected_attr][1])) then
 				for n = 1, #cur_model.attrs do
-					local is_selected = (n - 1) == cur_model.selected_attr
+					local is_selected = n == cur_model.selected_attr
 					if (imgui.Selectable(cur_model.attrs[n][1], is_selected)) then
-						cur_model.selected_attr = n - 1
+						cur_model.selected_attr = n
 
 						-- print("set attr: " .. cur_model.attrs[n][1] .. ":" .. cur_model.attrs[n][2] .. ":" .. cur_model.attrs[n][3])
 					end

@@ -337,55 +337,81 @@ struct HexModel final : public Model {
     }
 
     // TODO rename to getAttrsInfo
-    std::vector<std::tuple<std::string, int>> getAttrs() const override {
-        std::vector<std::tuple<std::string, int>> result;
-        for (const auto& attr : attrs) {
-            result.emplace_back(std::get<0>(attr), std::get<1>(attr));
-        }
-        return result;
+    // std::vector<std::tuple<std::string, int>> getAttrs() const override {
+    //     std::vector<std::tuple<std::string, int>> result;
+    //     for (const auto& attr : attrs2) {
+    //         result.emplace_back(std::get<0>(attr), std::get<1>(attr));
+    //     }
+    //     return result;
+    // }
+    std::vector<Attribute> getAttrs() const override {
+        return attrs2;
     }
 
     // TODO maybe remove idx-1 !
-    std::tuple<std::string, int> getAttr(int idx) const override {
-        return std::make_tuple(std::get<0>(attrs[idx - 1]), std::get<1>(attrs[idx - 1]));
+    // std::tuple<std::string, int> getAttr(int idx) const override {
+    //     return std::make_tuple(std::get<0>(attrs[idx - 1]), std::get<1>(attrs[idx - 1]));
+    // }
+
+    Attribute getAttr(int idx) const override {
+        return attrs2[idx];
     }
 
-    template<typename T>
-    void addAttr(std::string name, Element element) {
-        if (element == Element::POINTS) {
-            PointAttribute<T> attr(_hex.points);
-            attr.bind(name, _hex.points.attr, _hex);
-            addAttr(element, attr.ptr);
-        } else if (element == Element::CORNERS) {
-            CellCornerAttribute<T> attr(_hex);
-            attr.bind(name, _hex.attr_corners, _hex);
-            addAttr(element, attr.ptr);
-        } else if (element == Element::FACETS) {
-            CellFacetAttribute<T> attr(_hex);
-            attr.bind(name, _hex.attr_facets, _hex);
-            addAttr(element, attr.ptr);
-        } else if (element == Element::CELLS) {
-            CellAttribute<T> attr(_hex);
-            attr.bind(name, _hex.attr_cells, _hex);
-            addAttr(element, attr.ptr);
-        } else {
-            throw std::runtime_error("Unknown element type for attribute: " + std::to_string(static_cast<int>(element)));
-        }
-    }
+    // template<typename T>
+    // void addAttr(std::string name, Element element) {
+    //     if (element == Element::POINTS) {
+    //         PointAttribute<T> attr(_hex.points);
+    //         attr.bind(name, _hex.points.attr, _hex);
+    //         addAttr(element, attr.ptr);
+    //     } else if (element == Element::CORNERS) {
+    //         CellCornerAttribute<T> attr(_hex);
+    //         attr.bind(name, _hex.attr_corners, _hex);
+    //         addAttr(element, attr.ptr);
+    //     } else if (element == Element::FACETS) {
+    //         CellFacetAttribute<T> attr(_hex);
+    //         attr.bind(name, _hex.attr_facets, _hex);
+    //         addAttr(element, attr.ptr);
+    //     } else if (element == Element::CELLS) {
+    //         CellAttribute<T> attr(_hex);
+    //         attr.bind(name, _hex.attr_cells, _hex);
+    //         addAttr(element, attr.ptr);
+    //     } else {
+    //         throw std::runtime_error("Unknown element type for attribute: " + std::to_string(static_cast<int>(element)));
+    //     }
+    // }
+
+    // template<template<typename> class AttrTemplate, typename T>
+    // void getAttr(std::string name, AttrTemplate<T> &attribute) {
+    //     if (attribute.kind() == AttributeBase::POINTS) {
+    //         attribute.bind(name, _hex.points.attr, _hex);
+    //         addAttr(Element::POINTS, attribute.ptr);
+    //     } else if (attribute.kind() == AttributeBase::CELLCORNERS) {
+    //         attribute.bind(name, _hex.attr_corners, _hex);
+    //         addAttr(Element::CORNERS, attribute.ptr);
+    //     } else if (attribute.kind() == AttributeBase::CELLFACETS) {
+    //         attribute.bind(name, _hex.attr_facets, _hex);
+    //         addAttr(Element::FACETS, attribute.ptr);
+    //     } else if (attribute.kind() == AttributeBase::CELLS) {
+    //         attribute.bind(name, _hex.attr_cells, _hex);
+    //         addAttr(Element::CELLS, attribute.ptr);
+    //     } else {
+    //         throw std::runtime_error("Unknown element type for attribute: " + std::to_string(static_cast<int>(attribute.kind())));
+    //     }
+    // }
 
     void addAttr(Element element, NamedContainer &container) override {
-        attrs.emplace_back(container.name, element, container.ptr);
+        attrs2.emplace_back(container.name, element, container.ptr);
     }
 
-    void removeAttr(const std::string& name, Element element) override {
-        attrs.erase(std::remove_if(attrs.begin(), attrs.end(),
-            [&name, &element](const auto& attr) {
-                return std::get<0>(attr) == name && std::get<1>(attr) == element;
-            }), attrs.end());
-    }
+    // void removeAttr(const std::string& name, Element element) override {
+    //     attrs.erase(std::remove_if(attrs.begin(), attrs.end(),
+    //         [&name, &element](const auto& attr) {
+    //             return std::get<0>(attr) == name && std::get<1>(attr) == element;
+    //         }), attrs.end());
+    // }
 
     void clearAttrs() override {
-        attrs.clear();
+        attrs2.clear();
     }
 
     int getSelectedAttr() const override {
@@ -437,7 +463,13 @@ struct HexModel final : public Model {
 	HexRenderer _hexRenderer;
 	PointSetRenderer _pointSetRenderer;
 
-    std::vector<std::tuple<std::string, Element, std::shared_ptr<ContainerBase>>> attrs;
+    // std::vector<std::tuple<std::string, Element, std::shared_ptr<ContainerBase>>> attrs;
+    
+
+
+
+    std::vector<Attribute> attrs2;
+
     // Pointer to parent model, if there is one
     std::shared_ptr<Model> parent;
 
