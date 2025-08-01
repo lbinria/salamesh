@@ -1,6 +1,7 @@
 {
 	"modules": [
 		"modules/module_scene",
-		"modules/module_inspector"
+		"modules/module_inspector",
+		"modules/module_painting"
 	]
 }

@@ -43,7 +43,7 @@ void HexModel::save_as(const std::string path) const {
 	std::vector<NamedContainer> cell_corner_attrs;
 	std::vector<NamedContainer> cell_facet_attrs;
 	std::vector<NamedContainer> cell_attrs;
-	for (auto &a : attrs2) {
+	for (auto &a : attrs) {
 		std::string name = a.name;
 		Element kind = a.kind;
 		auto &container = a.ptr;
@@ -75,12 +75,12 @@ void HexModel::save() const {
 
 void HexModel::setSelectedAttr(int idx) {
 	selectedAttr = idx;
-	int kind = attrs2[idx].kind;
+	int kind = attrs[idx].kind;
 	// TODO see condition here not very smart maybe abstract renderers ?
 	if (kind == Element::POINTS) {
-		_pointSetRenderer.setAttribute(attrs2[idx].ptr.get());
+		_pointSetRenderer.setAttribute(attrs[idx].ptr.get());
 	} else 
-		_hexRenderer.setAttribute(attrs2[idx].ptr.get(), kind);
+		_hexRenderer.setAttribute(attrs[idx].ptr.get(), kind);
 }
 
 void HexModel::push() {

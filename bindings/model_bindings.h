@@ -15,6 +15,7 @@ namespace bindings {
 				sol::constructors<Attribute()>(),
 				"name", sol::property(&Attribute::getName),
 				"kind", sol::property(&Attribute::getKind),
+				"type", sol::property(&Attribute::getType),
 				"ptr", sol::property(&Attribute::getPtr)
 			);
 
@@ -121,17 +122,6 @@ namespace bindings {
 				&Model::setColorMode
 			);
 
-
-			// model_t["attrs"] = sol::readonly_property([&lua = lua](Model &self) {
-			// 	sol::table attrs_tbl = lua.create_table();
-			// 	for (auto &attr : self.getAttrs()) {
-			// 		sol::table item = lua.create_table();
-			// 		item.set(1, attr.name);
-			// 		item.set(2, attr.kind);
-			// 		attrs_tbl.add(item);
-			// 	}
-			// 	return attrs_tbl;
-			// });
 			model_t["attrs"] = sol::readonly_property([&lua = lua](Model &self) {
 				sol::table attrs_tbl = lua.create_table();
 				for (auto &attr : self.getAttrs()) {
@@ -151,6 +141,7 @@ namespace bindings {
 				&Model::getSelectedColormap,
 				&Model::setSelectedColormap
 			);
+
 
 		}
 

@@ -259,7 +259,8 @@ function draw_model_properties(model, view)
 					if (imgui.BeginCombo("##combo_attribute_selection", cur_model.attrs[cur_model.selected_attr].name)) then
 						for n = 1, #cur_model.attrs do
 							local is_selected = n == cur_model.selected_attr
-							if (imgui.Selectable(cur_model.attrs[n].name, is_selected)) then
+							local label = cur_model.attrs[n].name .. " (" .. elementKindToString(cur_model.attrs[n].kind) .. ")" .. " (" .. elementTypeToString(cur_model.attrs[n].type) .. ")"
+							if (imgui.Selectable(label, is_selected)) then
 								cur_model.selected_attr = n
 
 								-- print("set attr: " .. cur_model.attrs[n][1] .. ":" .. cur_model.attrs[n][2] .. ":" .. cur_model.attrs[n][3])

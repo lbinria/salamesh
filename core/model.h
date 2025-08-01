@@ -92,9 +92,6 @@ struct Model {
     // Model attributes
     virtual std::vector<Attribute> getAttrs() const = 0;
     virtual Attribute getAttr(int idx) const = 0;
-    // virtual std::vector<std::tuple<std::string, int>> getAttrs() const = 0;
-    // virtual std::tuple<std::string, int> getAttr(int idx) const = 0;
-    virtual void addAttr(Element element, NamedContainer &container) = 0;
     // virtual void removeAttr(const std::string& name, Element element) = 0;
     virtual void clearAttrs() = 0;
 

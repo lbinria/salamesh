@@ -2,6 +2,7 @@
 #define SOL_ALL_SAFETIES_ON 1
 #include <sol/sol.hpp>
 #include "../core/app_interface.h"
+#include "../core/element.h"
 
 namespace bindings {
 
@@ -28,6 +29,10 @@ namespace bindings {
 				"facet", sol::readonly_property(&InputState::facet),
 				"cell", sol::readonly_property(&InputState::cell)
 			);
+
+			// General functions 
+			lua.set_function("elementKindToString", &elementKindToString);
+			lua.set_function("elementTypeToString", &elementTypeToString);
 
 			// App bindings
 			lua["app"] = &app;
@@ -64,6 +69,7 @@ namespace bindings {
 			app_type["colormaps_2d"] = sol::readonly_property(&IApp::getColorMaps2D);
 
 			app_type.set_function("load_model", &IApp::load_model);
+			// TODO add save_model function
 			
 			app_type.set_function("screenshot", [&app = app](const std::string& filename) {
 				app.screenshot(filename);
