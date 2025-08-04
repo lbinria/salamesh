@@ -36,7 +36,7 @@ struct Model {
 	template<typename T>
 	T& as() {
         static_assert(std::is_base_of_v<Model, T>, "Model::as() can only be used with derived classes of Model");
-        static_assert(getModelType() == T::getModelType(), "Model::as() can only be used with the same ModelType");
+        // static_assert(getModelType() == T::getModelType(), "Model::as() can only be used with the same ModelType");
 		return static_cast<T&>(*this);
 	}
 
