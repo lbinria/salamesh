@@ -86,12 +86,12 @@ void HexModel::setSelectedAttr(int idx) {
 void HexModel::setSelectedAttr(std::string name, Element kind) {
 	// Search attribute by name
 	for (int i = 0; i < attrs.size(); ++i) {
-		const auto &attr = attrs[i];            
-		if (attr.getName() != name || attr.getKind() != kind)
-			continue;
+		const auto &attr = attrs[i];
 
-		setSelectedAttr(i);
-		return;
+		if (attr.getName() == name && attr.getKind() == kind) {
+			setSelectedAttr(i);
+			return;
+		}
 	}
 
 	throw std::runtime_error("Attribute not found: " + name);
