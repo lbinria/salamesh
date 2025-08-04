@@ -4,7 +4,8 @@ void HexModel::load(const std::string path) {
 	// TODO check if the model failed to read in ultimaille, else there is side effects ! 
 	
 	// Load the mesh
-	VolumeAttributes attributes = read_by_extension(path, _hex);
+	// VolumeAttributes attributes = read_by_extension(path, _hex);
+	_volumeAttributes = read_by_extension(path, _hex);
 	_path = path;
 	// Extract name
 	if (_name.empty()) {
@@ -14,16 +15,16 @@ void HexModel::load(const std::string path) {
 
 	clearAttrs();
 
-	for (auto &a : attributes.points) {
+	for (auto &a : _volumeAttributes.points) {
 		addAttr(Element::POINTS, a);
 	}
-	for (auto a : attributes.cell_corners) {
+	for (auto a : _volumeAttributes.cell_corners) {
 		addAttr(Element::CORNERS, a);
 	}
-	for (auto a : attributes.cell_facets) {
+	for (auto a : _volumeAttributes.cell_facets) {
 		addAttr(Element::FACETS, a);
 	}
-	for (auto a : attributes.cells) {
+	for (auto a : _volumeAttributes.cells) {
 		addAttr(Element::CELLS, a);
 	}
 }

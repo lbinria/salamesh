@@ -62,8 +62,9 @@ struct Model {
     virtual void render() = 0;
     virtual void clean() = 0;
 
-	// TODO temp for refactoring
+	// TODO temp for refactoring because model is not necessarily a hex model
 	virtual Hexahedra& getHexahedra() = 0;
+	virtual VolumeAttributes& getVolumeAttributes() = 0;
 
     // General shader uniforms
     virtual void setTexture(unsigned int tex) = 0;
@@ -139,7 +140,7 @@ struct Model {
         // Deduce type of element from T 
         ElementType type = deduceType(attr);
 
-        // Search if attribute already exists
+        // Search if salamesh attribute already exists
         for (const auto &a : attrs) {
             if (a.getName() == name && a.getKind() == kind) {
                 // Check if the kind & type match
@@ -148,7 +149,6 @@ struct Model {
                         elementKindToString(a.getKind()) + " / " + elementTypeToString(a.getType()) + 
                         " vs " + elementKindToString(kind) + " / " + elementTypeToString(type));
                 }
-                
                 return a;
             }
         }
@@ -156,10 +156,6 @@ struct Model {
         // Does not exist, create a new attribute
         Attribute a(name, kind, type, attr.get_ptr());
         attrs.push_back(a);
-        // Bind attribute to mesh
-
-        a.ptr.get()->resize(getHexahedra().ncells());
-        bindAttr2Mesh(a);
         return a;
     }
 
@@ -180,7 +176,5 @@ struct Model {
 
     protected:
     std::vector<Attribute> attrs;
-    virtual void bindAttr2Mesh(Attribute &attr) = 0;
-
 
 };

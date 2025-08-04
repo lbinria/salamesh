@@ -126,7 +126,7 @@ struct HexModel final : public HexModelInterface {
 	}
 
 	Hexahedra& getHexahedra() override { return _hex; }
-	// HexRenderer& getRenderer() { return _hexRenderer; }
+	VolumeAttributes& getVolumeAttributes() override { return _volumeAttributes; }
 
     void setTexture(unsigned int tex) override {
         _hexRenderer.setTexture(tex);
@@ -366,6 +366,7 @@ struct HexModel final : public HexModelInterface {
         setSelectedAttr(selectedAttr);
     }
 
+
     std::shared_ptr<Model> getParent() const override {
         return parent;
     }
@@ -373,6 +374,7 @@ struct HexModel final : public HexModelInterface {
     void setParent(std::shared_ptr<Model> parentModel) override {
             parent = parentModel;
     }
+
 
     private:
     std::string _name;
@@ -400,6 +402,7 @@ struct HexModel final : public HexModelInterface {
 
     // Mesh
     Hexahedra _hex;
+    VolumeAttributes _volumeAttributes;
 
     // Renderers
     HexRenderer _hexRenderer;
@@ -427,9 +430,4 @@ struct HexModel final : public HexModelInterface {
 
         attrs.emplace_back(container.name, kind, type, container.ptr);
     }
-
-    void bindAttr2Mesh(Attribute &attr) override {
-        getHexahedra().attr_cells.push_back(attr.getPtr());
-    }
-
 };
