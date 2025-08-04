@@ -7,6 +7,8 @@
 #include <ultimaille/all.h>
 using namespace UM;
 
+#include <optional>
+
 struct Model {
 
     enum ModelType {
@@ -132,25 +134,42 @@ struct Model {
         }
     }
 
+    std::optional<Attribute> findAttr(std::string name, Element kind) {
+        for (const auto &a : attrs) {
+            if (a.getName() == name && a.getKind() == kind) {
+                return a;
+            }
+        }
+        return std::nullopt;
+    }
+
     template<typename T>
-    Attribute bindAttr(std::string name, CellAttribute<T> &attr) {
+    Attribute bindAttr(std::string name, GenericAttribute<T> &attr) {
 
         // Deduce kind of element
-        Element kind = Element::CELLS;
+        Element kind;
+
+        if (attr.kind() == AttributeBase::POINTS) {
+            kind = Element::POINTS;
+        } else if (attr.kind() == AttributeBase::EDGES) {
+            kind = Element::EDGES;
+        } else if (attr.kind() == AttributeBase::FACETS) {
+            kind = Element::FACETS;
+        } else if (attr.kind() == AttributeBase::CORNERS) {
+            kind = Element::CORNERS;
+        } else if (attr.kind() == AttributeBase::CELLS) {
+            kind = Element::CELLS;
+        }
+
         // Deduce type of element from T 
         ElementType type = deduceType(attr);
 
         // Search if salamesh attribute already exists
-        for (const auto &a : attrs) {
-            if (a.getName() == name && a.getKind() == kind) {
-                // Check if the kind & type match
-                if (a.getType() != type || a.getKind() != kind) {
-                    throw std::runtime_error("Attribute already exists with different type / kind: " + name + ": " + 
-                        elementKindToString(a.getKind()) + " / " + elementTypeToString(a.getType()) + 
-                        " vs " + elementKindToString(kind) + " / " + elementTypeToString(type));
-                }
-                return a;
-            }
+        auto opt_attr = findAttr(name, kind);
+        if (opt_attr.has_value()) {
+            auto &a = opt_attr.value();
+            a.ptr = attr.get_ptr();
+            return a;
         }
 
         // Does not exist, create a new attribute
@@ -169,7 +188,6 @@ struct Model {
     virtual bool getPointVisible() const = 0;
     virtual void setPointVisible(bool v) = 0;
 
-    // virtual void addChildren(std::shared_ptr<Model> child) = 0;
     virtual void setParent(std::shared_ptr<Model> parentModel) = 0;
     virtual std::shared_ptr<Model> getParent() const = 0;
     virtual glm::vec3 getWorldPosition() const = 0;
