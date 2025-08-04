@@ -83,6 +83,20 @@ void HexModel::setSelectedAttr(int idx) {
 		_hexRenderer.setAttribute(attrs[idx].ptr.get(), kind);
 }
 
+void HexModel::setSelectedAttr(std::string name, Element kind) {
+	// Search attribute by name
+	for (int i = 0; i < attrs.size(); ++i) {
+		const auto &attr = attrs[i];            
+		if (attr.getName() != name || attr.getKind() != kind)
+			continue;
+
+		setSelectedAttr(i);
+		return;
+	}
+
+	throw std::runtime_error("Attribute not found: " + name);
+}
+
 void HexModel::push() {
 	_hexRenderer.push();
 	_pointSetRenderer.push();

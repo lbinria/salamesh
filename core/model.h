@@ -97,9 +97,73 @@ struct Model {
 
     // Model attributes shader uniforms
     virtual void setSelectedAttr(int idx) = 0;
+    virtual void setSelectedAttr(std::string name, Element kind) = 0;
     virtual int getSelectedAttr() const = 0;
     virtual int getSelectedColormap() const = 0;
     virtual void setSelectedColormap(int idx) = 0;
+
+    template<typename T>
+    Attribute bindAttr(std::string name, GenericAttribute<T> &attr) {
+
+        // Deduce kind of element
+        Element kind = Element::POINTS; // Default element type
+        switch (attr.kind()) {
+            case AttributeBase::TYPE::POINTS:
+                kind = Element::POINTS;
+                break;
+            case AttributeBase::TYPE::EDGES:
+                kind = Element::EDGES;
+                break;
+            case AttributeBase::TYPE::FACETS:
+                kind = Element::FACETS;
+                break;
+            case AttributeBase::TYPE::CORNERS:
+                kind = Element::CORNERS;
+                break;
+            case AttributeBase::TYPE::CELLS:
+                kind = Element::CELLS;
+                break;
+            case AttributeBase::TYPE::CELLFACETS:
+                kind = Element::FACETS;
+                break;
+            case AttributeBase::TYPE::CELLCORNERS:
+                kind = Element::CORNERS;
+                break;
+            default:
+                throw std::runtime_error("Unknown attribute type for container: " + name);
+        }
+
+        // Deduce type of element from T 
+        ElementType type = ElementType::FLOAT; // Default type
+        if constexpr (std::is_same_v<T, double>) {
+            type = ElementType::DOUBLE;
+        } else if constexpr (std::is_same_v<T, int>) {
+            type = ElementType::INT;
+        } else if constexpr (std::is_same_v<T, bool>) {
+            type = ElementType::BOOL;
+        } else if constexpr (std::is_same_v<T, float>) {
+            type = ElementType::FLOAT;
+        } else {
+            throw std::runtime_error("Unknown attribute type for container: " + name);
+        }
+
+        // Search if attribute already exists
+        for (const auto &attr : attrs) {
+            if (attr.getName() == name && attr.getKind() == kind) {
+                // Check if the kind & type match
+                if (attr.getType() != type || attr.getKind() != kind) {
+                    throw std::runtime_error("Attribute already exists with different type / kind: " + name + ": " + 
+                        elementKindToString(attr.getKind()) + " / " + elementTypeToString(attr.getType()) + 
+                        " vs " + elementKindToString(kind) + " / " + elementTypeToString(type));
+                }
+                return attr;
+            }
+        }
+
+        Attribute a(name, kind, type, attr.get_ptr());
+        attrs.push_back(a);
+        return a;
+    }
 
     // Model (maybe not virtual !)
     virtual glm::vec3 getPosition() const = 0;
@@ -114,5 +178,8 @@ struct Model {
     virtual void setParent(std::shared_ptr<Model> parentModel) = 0;
     virtual std::shared_ptr<Model> getParent() const = 0;
     virtual glm::vec3 getWorldPosition() const = 0;
+
+    protected:
+    std::vector<Attribute> attrs;
 
 };
