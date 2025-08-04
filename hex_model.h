@@ -29,6 +29,11 @@ struct HexModel final : public Model {
         _pointSetRenderer(_hex.points) {}
 
 
+    constexpr ModelType getModelType() const override {
+        return ModelType::HEX;
+    }
+
+
 	void load(const std::string path);
 	void save() const override;
 	void save_as(const std::string path) const override;
@@ -403,8 +408,8 @@ struct HexModel final : public Model {
     // Pointer to parent model, if there is one
     std::shared_ptr<Model> parent;
 
-    void addAttr(Element element, NamedContainer &container) {
-
+    void addAttr(Element kind, NamedContainer &container) {
+        
         // Get the type of the container
         ElementType type = ElementType::FLOAT; // Default type
         if (auto a = dynamic_cast<AttributeContainer<double>*>(container.ptr.get())) {
@@ -419,7 +424,11 @@ struct HexModel final : public Model {
             throw std::runtime_error("Unknown attribute type for container: " + container.name);
         }
 
-        attrs.emplace_back(container.name, element, type, container.ptr);
+        attrs.emplace_back(container.name, kind, type, container.ptr);
+    }
+
+    void bindAttr2Mesh(Attribute &attr) override {
+        getHexahedra().attr_cells.push_back(attr.getPtr());
     }
 
 };

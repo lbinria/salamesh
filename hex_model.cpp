@@ -12,7 +12,6 @@ void HexModel::load(const std::string path) {
 		_name = p.stem().string();
 	}
 
-	// Add attribute to renderer
 	clearAttrs();
 
 	for (auto &a : attributes.points) {

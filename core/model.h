@@ -9,6 +9,16 @@ using namespace UM;
 
 struct Model {
 
+    enum ModelType {
+        POINTSET = 0,
+        POLYLINE = 1,
+        TRI = 2,
+        QUAD = 3,
+        TET = 4,
+        HEX = 5,
+        HYBRID = 6 
+    };
+
     // Color modes:
     // Solid color display, or attribute display
     enum ColorMode {
@@ -25,8 +35,12 @@ struct Model {
 
 	template<typename T>
 	T& as() {
+        static_assert(std::is_base_of_v<Model, T>, "Model::as() can only be used with derived classes of Model");
+        static_assert(getModelType() == T::getModelType(), "Model::as() can only be used with the same ModelType");
 		return static_cast<T&>(*this);
 	}
+
+    virtual constexpr ModelType getModelType() const = 0;
 
 	virtual void load(const std::string path) = 0;
     virtual void save() const = 0;
@@ -103,67 +117,52 @@ struct Model {
     virtual void setSelectedColormap(int idx) = 0;
 
     template<typename T>
-    Attribute bindAttr(std::string name, GenericAttribute<T> &attr) {
+    ElementType deduceType(GenericAttribute<T> &attr) {
+        if constexpr (std::is_same_v<T, double>) {
+            return ElementType::DOUBLE;
+        } else if constexpr (std::is_same_v<T, int>) {
+            return ElementType::INT;
+        } else if constexpr (std::is_same_v<T, bool>) {
+            return ElementType::BOOL;
+        } else if constexpr (std::is_same_v<T, float>) {
+            return ElementType::FLOAT;
+        } else {
+            throw std::runtime_error("Unknown attribute type for container: " + attr.getName());
+        }
+    }
+
+    template<typename T>
+    Attribute bindAttr(std::string name, CellAttribute<T> &attr) {
 
         // Deduce kind of element
-        Element kind = Element::POINTS; // Default element type
-        switch (attr.kind()) {
-            case AttributeBase::TYPE::POINTS:
-                kind = Element::POINTS;
-                break;
-            case AttributeBase::TYPE::EDGES:
-                kind = Element::EDGES;
-                break;
-            case AttributeBase::TYPE::FACETS:
-                kind = Element::FACETS;
-                break;
-            case AttributeBase::TYPE::CORNERS:
-                kind = Element::CORNERS;
-                break;
-            case AttributeBase::TYPE::CELLS:
-                kind = Element::CELLS;
-                break;
-            case AttributeBase::TYPE::CELLFACETS:
-                kind = Element::FACETS;
-                break;
-            case AttributeBase::TYPE::CELLCORNERS:
-                kind = Element::CORNERS;
-                break;
-            default:
-                throw std::runtime_error("Unknown attribute type for container: " + name);
-        }
-
+        Element kind = Element::CELLS;
         // Deduce type of element from T 
-        ElementType type = ElementType::FLOAT; // Default type
-        if constexpr (std::is_same_v<T, double>) {
-            type = ElementType::DOUBLE;
-        } else if constexpr (std::is_same_v<T, int>) {
-            type = ElementType::INT;
-        } else if constexpr (std::is_same_v<T, bool>) {
-            type = ElementType::BOOL;
-        } else if constexpr (std::is_same_v<T, float>) {
-            type = ElementType::FLOAT;
-        } else {
-            throw std::runtime_error("Unknown attribute type for container: " + name);
-        }
+        ElementType type = deduceType(attr);
 
         // Search if attribute already exists
-        for (const auto &attr : attrs) {
-            if (attr.getName() == name && attr.getKind() == kind) {
+        for (const auto &a : attrs) {
+            if (a.getName() == name && a.getKind() == kind) {
                 // Check if the kind & type match
-                if (attr.getType() != type || attr.getKind() != kind) {
+                if (a.getType() != type || a.getKind() != kind) {
                     throw std::runtime_error("Attribute already exists with different type / kind: " + name + ": " + 
-                        elementKindToString(attr.getKind()) + " / " + elementTypeToString(attr.getType()) + 
+                        elementKindToString(a.getKind()) + " / " + elementTypeToString(a.getType()) + 
                         " vs " + elementKindToString(kind) + " / " + elementTypeToString(type));
                 }
-                return attr;
+                attr.ptr = a.getPtr();
+                return a;
             }
         }
 
+        // Does not exist, create a new attribute
         Attribute a(name, kind, type, attr.get_ptr());
         attrs.push_back(a);
+        // Bind attribute to mesh
+
+        a.ptr.get()->resize(getHexahedra().ncells());
+        bindAttr2Mesh(a);
         return a;
     }
+
 
     // Model (maybe not virtual !)
     virtual glm::vec3 getPosition() const = 0;
@@ -181,5 +180,7 @@ struct Model {
 
     protected:
     std::vector<Attribute> attrs;
+    virtual void bindAttr2Mesh(Attribute &attr) = 0;
+
 
 };
