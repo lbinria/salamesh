@@ -148,7 +148,7 @@ struct Model {
                         elementKindToString(a.getKind()) + " / " + elementTypeToString(a.getType()) + 
                         " vs " + elementKindToString(kind) + " / " + elementTypeToString(type));
                 }
-                attr.ptr = a.getPtr();
+                
                 return a;
             }
         }

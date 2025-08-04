@@ -6,6 +6,7 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 set(SOURCES
     app_interface.h
+    hex_model_interface.h
     component.h component.cpp
     attribute.h
     element.h

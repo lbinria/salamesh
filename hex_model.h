@@ -4,13 +4,14 @@
 #include <ultimaille/all.h>
 #include <string>
 #include "core/model.h"
+#include "core/hex_model_interface.h"
 #include "hex_renderer.h"
 #include "point_set_renderer.h"
 
 using namespace UM;
 using json = nlohmann::json;
 
-struct HexModel final : public Model {
+struct HexModel final : public HexModelInterface {
 
 	// Mesh + Renderer
 
