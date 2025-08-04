@@ -345,6 +345,89 @@ struct HexModel final : public Model {
         return attrs[idx];
     }
 
+    template<typename T>
+    Attribute addAttr(std::string name, GenericAttribute<T> &attr) {
+
+        // Deduce kind of element
+        Element kind = Element::POINTS; // Default element type
+        switch (attr.kind()) {
+            case AttributeBase::TYPE::POINTS:
+                kind = Element::POINTS;
+                break;
+            case AttributeBase::TYPE::EDGES:
+                kind = Element::EDGES;
+                break;
+            case AttributeBase::TYPE::FACETS:
+                kind = Element::FACETS;
+                break;
+            case AttributeBase::TYPE::CORNERS:
+                kind = Element::CORNERS;
+                break;
+            case AttributeBase::TYPE::CELLS:
+                kind = Element::CELLS;
+                break;
+            case AttributeBase::TYPE::CELLFACETS:
+                kind = Element::FACETS;
+                break;
+            case AttributeBase::TYPE::CELLCORNERS:
+                kind = Element::CORNERS;
+                break;
+            default:
+                throw std::runtime_error("Unknown attribute type for container: " + name);
+        }
+
+        // Deduce type of element from T 
+        ElementType type = ElementType::FLOAT; // Default type
+        if constexpr (std::is_same_v<T, double>) {
+            type = ElementType::DOUBLE;
+        } else if constexpr (std::is_same_v<T, int>) {
+            type = ElementType::INT;
+        } else if constexpr (std::is_same_v<T, bool>) {
+            type = ElementType::BOOL;
+        } else if constexpr (std::is_same_v<T, float>) {
+            type = ElementType::FLOAT;
+        } else {
+            throw std::runtime_error("Unknown attribute type for container: " + name);
+        }
+
+        // Search if attribute already exists
+        for (const auto &attr : attrs) {
+            if (attr.getName() == name && attr.getKind() == kind) {
+                // Check if the kind & type match
+                if (attr.getType() != type || attr.getKind() != kind) {
+                    throw std::runtime_error("Attribute already exists with different type / kind: " + name + ": " + 
+                        elementKindToString(attr.getKind()) + " / " + elementTypeToString(attr.getType()) + 
+                        " vs " + elementKindToString(kind) + " / " + elementTypeToString(type));
+                }
+                return attr;
+            }
+        }
+
+        Attribute a(name, kind, type, attr.get_ptr());
+        attrs.push_back(a);
+        return a;
+    }
+
+    void pushAttr(std::string name, Element kind) {
+        // Search attribute by name
+        bool found = false;
+        for (auto &attr : attrs) {
+            if (attr.getName() != name || attr.getKind() != kind)
+                continue;
+
+            if (kind == Element::POINTS)
+                _pointSetRenderer.setAttribute(attr.getPtr().get());
+            else
+                _hexRenderer.setAttribute(attr.getPtr().get(), attr.getKind());
+
+            found = true;
+        }
+
+        if (!found) {
+            throw std::runtime_error("Attribute not found: " + name);
+        }
+    }
+
     void clearAttrs() override {
         attrs.clear();
     }
