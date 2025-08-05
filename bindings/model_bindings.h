@@ -11,12 +11,46 @@ namespace bindings {
 
 		static void loadBindings(sol::state &lua, sol::usertype<IApp>& app_type, IApp &app) {
 
+			// Create container user types for different attribute types
+			sol::usertype<Attribute::Container<double>> attr_double_container_t = lua.new_usertype<Attribute::Container<double>>("AttributeContainerDouble");
+
+			attr_double_container_t[sol::meta_function::index] = [](Attribute::Container<double>& c, int i) {
+				return c[i];
+			};
+
+			attr_double_container_t[sol::meta_function::new_index] = [](Attribute::Container<double>& c, int i, double value) {
+				c[i] = value;
+			};
+
+			sol::usertype<Attribute::Container<int>> attr_int_container_t = lua.new_usertype<Attribute::Container<int>>("AttributeContainerInt");
+
+			attr_int_container_t[sol::meta_function::index] = [](Attribute::Container<int>& c, int i) {
+				return c[i];
+			};
+
+			attr_int_container_t[sol::meta_function::new_index] = [](Attribute::Container<int>& c, int i, int value) {
+				c[i] = value;
+			};
+
+			// sol::usertype<Attribute::Container<bool>> attr_bool_container_t = lua.new_usertype<Attribute::Container<bool>>("AttributeContainerBool");
+			
+			// attr_bool_container_t[sol::meta_function::index] = [](Attribute::Container<bool>& c, int i) {
+			// 	return c[i];
+			// };
+
+			// attr_bool_container_t[sol::meta_function::new_index] = [](Attribute::Container<bool>& c, int i, bool value) {
+			// 	c[i] = value;
+			// };
+
 			sol::usertype<Attribute> attr_t = lua.new_usertype<Attribute>("Attribute", 
 				sol::constructors<Attribute()>(),
-				"name", sol::property(&Attribute::getName),
-				"kind", sol::property(&Attribute::getKind),
-				"type", sol::property(&Attribute::getType),
-				"ptr", sol::property(&Attribute::getPtr)
+				"name", sol::readonly_property(&Attribute::getName),
+				"kind", sol::readonly_property(&Attribute::getKind),
+				"type", sol::readonly_property(&Attribute::getType),
+				"ptr", sol::readonly_property(&Attribute::getPtr),
+				"double_container", sol::readonly_property(&Attribute::getContainer<double>),
+				"int_container", sol::readonly_property(&Attribute::getContainer<int>),
+				"bool_container", sol::readonly_property(&Attribute::getContainer<bool>)
 			);
 
 			sol::usertype<Model> model_t = lua.new_usertype<Model>("Model");
