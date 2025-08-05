@@ -587,7 +587,7 @@ void App::load_state(const std::string filename) {
 	ifs.close();
 	std::cout << "State loaded from: " << filename << std::endl;
 	cull_mode = j["cull_mode"].get<int>();
-	pickMode = (Element)j["pick_mode"].get<int>();
+	pickMode = (ElementKind)j["pick_mode"].get<int>();
 	selected_renderer = j["selected_renderer"].get<int>();
 	// Clear current models
 	models.clear();

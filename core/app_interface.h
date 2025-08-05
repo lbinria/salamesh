@@ -39,7 +39,7 @@ struct IApp {
 
     // TODO maybe useless when picking functions below will be implemented
     virtual int getPickMode() = 0;
-    virtual void setPickMode(Element mode) = 0;
+    virtual void setPickMode(ElementKind mode) = 0;
 
 
     // virtual glm::vec3 pick_point(long x, long y) = 0;

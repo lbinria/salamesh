@@ -28,7 +28,7 @@ struct Model {
         ATTRIBUTE,
     };
 
-    // TODO maybe useless (because using Element for picking) maybe merge with color mode ?
+    // TODO maybe useless (because using ElementKind for picking) maybe merge with color mode ?
     enum RenderMode {
         Color = 0,
         Pick_facet = 2,
@@ -109,12 +109,12 @@ struct Model {
     // Model attributes
     virtual std::vector<Attribute> getAttrs() const = 0;
     virtual Attribute getAttr(int idx) const = 0;
-    // virtual void removeAttr(const std::string& name, Element element) = 0;
+    // virtual void removeAttr(const std::string& name, ElementKind element) = 0;
     virtual void clearAttrs() = 0;
 
     // Model attributes shader uniforms
     virtual void setSelectedAttr(int idx) = 0;
-    virtual void setSelectedAttr(std::string name, Element kind) = 0;
+    virtual void setSelectedAttr(std::string name, ElementKind kind) = 0;
     virtual int getSelectedAttr() const = 0;
     virtual int getSelectedColormap() const = 0;
     virtual void setSelectedColormap(int idx) = 0;
@@ -127,14 +127,12 @@ struct Model {
             return ElementType::INT;
         } else if constexpr (std::is_same_v<T, bool>) {
             return ElementType::BOOL;
-        } else if constexpr (std::is_same_v<T, float>) {
-            return ElementType::FLOAT;
         } else {
             throw std::runtime_error("Unknown attribute type for container: " + attr.getName());
         }
     }
 
-    std::optional<Attribute> findAttr(std::string name, Element kind) {
+    std::optional<Attribute> findAttr(std::string name, ElementKind kind) {
         for (const auto &a : attrs) {
             if (a.getName() == name && a.getKind() == kind) {
                 return a;
@@ -143,24 +141,48 @@ struct Model {
         return std::nullopt;
     }
 
+
+
+    ElementKind umAttributeKind2ElementKind(AttributeBase::TYPE kind) {
+        switch (kind) {
+            case AttributeBase::POINTS: return ElementKind::POINTS;
+            case AttributeBase::EDGES: return ElementKind::EDGES;
+            case AttributeBase::FACETS: return ElementKind::FACETS;
+            case AttributeBase::CORNERS: return ElementKind::CORNERS;
+            case AttributeBase::CELLS: return ElementKind::CELLS;
+            case AttributeBase::CELLFACETS: return ElementKind::CELL_FACETS;
+            case AttributeBase::CELLCORNERS: return ElementKind::CELL_CORNERS;
+            default: throw std::runtime_error("Unknown attribute kind for binding: " + std::to_string(kind));
+        }
+    }
+
+    template<typename T>
+    Attribute bindAttr(std::string name, ElementKind kind) {
+        switch (kind) {
+            case ElementKind::POINTS:
+                return bindAttr<T>(name, PointAttribute<T>());
+            case ElementKind::EDGES:
+                return bindAttr<T>(name, EdgeAttribute<T>());
+            case ElementKind::FACETS:
+                return bindAttr<T>(name, FacetAttribute<T>());
+            case ElementKind::CELL_FACETS:
+                return bindAttr<T>(name, CellFacetAttribute<T>());
+            case ElementKind::CORNERS:
+                return bindAttr<T>(name, CornerAttribute<T>());
+            case ElementKind::CELL_CORNERS:
+                return bindAttr<T>(name, CellCornerAttribute<T>());
+            case ElementKind::CELLS:
+                return bindAttr<T>(name, CellAttribute<T>());
+            default:
+                throw std::runtime_error("Unknown element kind for binding attribute: " + elementKindToString(kind));
+        }
+    }
+
     template<typename T>
     Attribute bindAttr(std::string name, GenericAttribute<T> &attr) {
 
         // Deduce kind of element
-        Element kind;
-
-        if (attr.kind() == AttributeBase::POINTS) {
-            kind = Element::POINTS;
-        } else if (attr.kind() == AttributeBase::EDGES) {
-            kind = Element::EDGES;
-        } else if (attr.kind() == AttributeBase::FACETS) {
-            kind = Element::FACETS;
-        } else if (attr.kind() == AttributeBase::CORNERS) {
-            kind = Element::CORNERS;
-        } else if (attr.kind() == AttributeBase::CELLS) {
-            kind = Element::CELLS;
-        }
-
+        ElementKind kind = umAttributeKind2ElementKind(attr.kind());
         // Deduce type of element from T 
         ElementType type = deduceType(attr);
 

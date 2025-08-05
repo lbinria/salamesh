@@ -91,8 +91,8 @@ void main()
     if (colorMode == 1) {
 
         int primitiveIndex;
-        // Facet attribute
-        if (attrElement == 2)
+        // Cell facet attribute
+        if (attrElement == 4)
             primitiveIndex = fragFacetIndex;
         // Cell attribute
         else if (attrElement == 3)

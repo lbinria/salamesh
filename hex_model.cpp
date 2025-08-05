@@ -16,16 +16,16 @@ void HexModel::load(const std::string path) {
 	clearAttrs();
 
 	for (auto &a : _volumeAttributes.points) {
-		addAttr(Element::POINTS, a);
+		addAttr(ElementKind::POINTS, a);
 	}
 	for (auto a : _volumeAttributes.cell_corners) {
-		addAttr(Element::CORNERS, a);
+		addAttr(ElementKind::CELL_CORNERS, a);
 	}
 	for (auto a : _volumeAttributes.cell_facets) {
-		addAttr(Element::FACETS, a);
+		addAttr(ElementKind::CELL_FACETS, a);
 	}
 	for (auto a : _volumeAttributes.cells) {
-		addAttr(Element::CELLS, a);
+		addAttr(ElementKind::CELLS, a);
 	}
 }
 
@@ -45,16 +45,16 @@ void HexModel::save_as(const std::string path) const {
 	std::vector<NamedContainer> cell_attrs;
 	for (auto &a : attrs) {
 		std::string name = a.name;
-		Element kind = a.kind;
+		ElementKind kind = a.kind;
 		auto &container = a.ptr;
 
-		if (kind == Element::POINTS) {
+		if (kind == ElementKind::POINTS) {
 			point_attrs.push_back(NamedContainer(name, container));
-		} else if (kind == Element::CORNERS) {
+		} else if (kind == ElementKind::CELL_CORNERS) {
 			cell_corner_attrs.push_back(NamedContainer(name, container));
-		} else if (kind == Element::FACETS) {
+		} else if (kind == ElementKind::CELL_FACETS) {
 			cell_facet_attrs.push_back(NamedContainer(name, container));
-		} else if (kind == Element::CELLS) {
+		} else if (kind == ElementKind::CELLS) {
 			cell_attrs.push_back(NamedContainer(name, container));
 		}
 	}
@@ -77,13 +77,13 @@ void HexModel::setSelectedAttr(int idx) {
 	selectedAttr = idx;
 	int kind = attrs[idx].kind;
 	// TODO see condition here not very smart maybe abstract renderers ?
-	if (kind == Element::POINTS) {
+	if (kind == ElementKind::POINTS) {
 		_pointSetRenderer.setAttribute(attrs[idx].ptr.get());
 	} else 
 		_hexRenderer.setAttribute(attrs[idx].ptr.get(), kind);
 }
 
-void HexModel::setSelectedAttr(std::string name, Element kind) {
+void HexModel::setSelectedAttr(std::string name, ElementKind kind) {
 	// Search attribute by name
 	for (int i = 0; i < attrs.size(); ++i) {
 		const auto &attr = attrs[i];
