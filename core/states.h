@@ -42,7 +42,6 @@ struct InputState {
 		glm::vec2 pos;
 		glm::vec2 lastPos;
 		bool buttons[8] = {false, false, false, false, false, false, false, false};
-		bool dragging[8] = {false, false, false, false, false, false, false, false};
 
 		bool isLeftButton() const {
 			return buttons[0];
@@ -66,23 +65,6 @@ struct InputState {
 				if (b) return true;
 			}
 			return false;
-		}
-
-		bool isDraggingLeft() const {
-			return dragging[0];
-		}
-
-		bool isDraggingRight() const {
-			return dragging[1];
-		}
-
-		bool isDraggingMiddle() const {
-			return dragging[2];
-		}
-
-		bool isDragging(int button) const {
-			if (button < 0 || button >= 8) return false;
-			return dragging[button];
 		}
 
 		int getCursorRadius() const {

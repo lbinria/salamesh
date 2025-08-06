@@ -112,10 +112,6 @@ static void set_cursor_pos_callback(GLFWwindow* window, double xpos, double ypos
     if (!app)
 		return;
 	
-	for (bool btnPressed : app->getInputState().mouse.buttons) {
-		app->getInputState().mouse.dragging[app->_cur_button] = btnPressed;
-	}
-
 	// Redirect to virtual
 	app->mouse_move(xpos, ypos);
 }
