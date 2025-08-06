@@ -36,7 +36,7 @@ struct HexModel final : public Model {
 
 	void load(const std::string path);
 	void save() const override;
-	void save_as(const std::string path) const override;
+	void saveAs(const std::string path) const override;
 
     std::string save_state() override {
         json j;

@@ -4,10 +4,86 @@
 
 #include <filesystem>
 namespace fs = std::filesystem;
-// TODO call load model here in init function
+
+// TODO be able to load tet, surf, etc
+void MyApp::loadModel(const std::string& filename) {
+	#ifdef _DEBUG
+	std::cout << "read model..." << std::endl;
+	std::chrono::steady_clock::time_point begin_read_model = std::chrono::steady_clock::now();
+	#endif
+
+	auto model = std::make_unique<HexModel>();
+	model->load(filename);
+	model->setName(std::filesystem::path(filename).stem().string() + std::to_string(models.size()));
+	model->init();
+	model->push();
+
+	model->setLight(true);
+	model->setMeshShrink(0.f);
+	model->setMeshSize(0.01f);
+	model->setColorMode(Model::ColorMode::COLOR);
+
+	models.push_back(std::move(model));	
+
+	#ifdef _DEBUG
+	Hexahedra &hex = model->getHexahedra();
+	std::cout << "nverts = " << hex.nverts() << std::endl;
+	std::cout << "nfacets = " << hex.nfacets() << std::endl;
+	std::cout << "model read." << std::endl;
+
+	std::chrono::steady_clock::time_point end_read_model = std::chrono::steady_clock::now();
+    std::cout << "read model in: " << std::chrono::duration_cast<std::chrono::milliseconds>(end_read_model - begin_read_model).count() << "ms" << std::endl;
+	#endif
+
+	Commands::get().add_command("app.loadModel(" + filename + ")");
+}
 
 void MyApp::init() {
+
+
 	std::cout << "INIT" << std::endl;
+
+	// TODO Only load first for the moment
+	if (!args.models.empty())
+		loadModel(*args.models.begin());
+
+	// // Heavy load test (slow...)
+	// for (int i = 0; i < 10; ++i) {
+	// 	loadModel("assets/catorus_hex_attr.geogram");
+	// 	models[i+1]->setPosition(models[0]->getPosition() + glm::vec3(rand() % 10 / 10.f, rand() % 10 / 10.f, rand() % 10 / 10.f));
+	// }
+
+	loadModel("assets/catorus_hex_facet_attr.geogram");
+	loadModel("assets/catorus_hex_attr.geogram");
+
+	// load_state("/home/tex/Desktop/state.json");
+
+	models[1]->setPosition(glm::vec3(2.f, 0.f, 0.f));
+	models[2]->setPosition(glm::vec3(2.5f, 0.f, 0.f));
+	models[1]->setParent(models[0]);
+	models[2]->setParent(models[0]);
+
+	for (auto &m : getChildrenOf(models[0])) {
+		std::cout << "child: " << m->getName() << std::endl;
+	}
+
+
+	Shader screenShader("shaders/screen.vert", "shaders/screen.frag");
+	screenShader.use();
+	screenShader.setInt("screenTexture", 0);
+
+
+	{
+		// Create cameras
+		auto arcball_camera = std::make_shared<ArcBallCamera>("Arcball", glm::vec3(0.f, 0.f, -3.f), getCurrentModel().getPosition(), glm::vec3(0.f, 1.f, 0.f), glm::vec3(45.f, screenWidth, screenHeight));
+		auto descent_camera = std::make_shared<DescentCamera>("Descent", glm::vec3(0.f, 0.f, -3.f), getCurrentModel().getPosition(), glm::vec3(0.f, 1.f, 0.f), glm::vec3(45.f, screenWidth, screenHeight));
+		cameras.push_back(std::move(arcball_camera));
+		cameras.push_back(std::move(descent_camera));
+	}
+	
+	getRenderSurface().setCamera(cameras[0]);
+	// renderSurfaces[1]->setCamera(cameras[1]);
+
 
 	// Engines loading...
 	
@@ -83,7 +159,7 @@ void MyApp::update(float dt) {
 		// auto pickIDs = pick_cells(st.mouse.pos.x, st.mouse.pos.y, st.mouse.getCursorRadius());
 		// for (long pickID : pickIDs) {
 		// 	if (getCamera().isLocked() && pickID >= 0 && pickID < hex.ncells()) {
-		// 		models[selected_renderer]->setFilter(pickID, true);
+		// 		models[selectedModel]->setFilter(pickID, true);
 		// 	}
 		// }
 
@@ -162,7 +238,7 @@ void MyApp::draw_gui() {
 			std::cout << "file path:" << directoryPath << ", file path name: " << filename << std::endl;
 
 			std::cout << "read model..." << std::endl;
-			load_model(filename);
+			loadModel(filename);
 
 		}
 		
@@ -178,7 +254,7 @@ void MyApp::draw_gui() {
 			// action
 			std::cout << "file path:" << directoryPath << ", file path name: " << filename << std::endl;
 			std::cout << "save model..." << std::endl;
-			getCurrentModel().save_as(filename);
+			getCurrentModel().saveAs(filename);
 		}
 		
 		// close
@@ -307,4 +383,59 @@ void MyApp::mouse_move(double x, double y) {
 		script->mouse_move(x, y);
 	}
 
+}
+
+
+void MyApp::save_state(const std::string filename) {
+
+	json j;
+	j["cull_mode"] = cull_mode;
+	j["pick_mode"] = pickMode;
+	j["selected_model"] = selectedModel;
+	j["models"] = json::array();
+
+	// Save model states
+	for (auto &m : models) {
+		std::string str_state = m->save_state();
+		j["models"].push_back(json::parse(str_state));
+	}
+
+	// TODO Save camera(s) states
+
+
+	std::ofstream ofs(filename);
+	if (!ofs.is_open()) {
+		std::cerr << "Failed to open file for saving state: " << filename << std::endl;
+		return;
+	}
+	ofs << j.dump(4); // Pretty print with 4 spaces indentation
+	ofs.close();
+	std::cout << "State saved to: " << filename << std::endl;
+}
+
+void MyApp::load_state(const std::string filename) {
+	std::ifstream ifs(filename);
+	if (!ifs.is_open()) {
+		std::cerr << "Failed to open file for loading state: " << filename << std::endl;
+		return;
+	}
+	json j;
+	ifs >> j;
+	ifs.close();
+	std::cout << "State loaded from: " << filename << std::endl;
+	cull_mode = j["cull_mode"].get<int>();
+	pickMode = (ElementKind)j["pick_mode"].get<int>();
+	selectedModel = j["selected_model"].get<int>();
+	// Clear current models
+	models.clear();
+	// Load models from state
+	for (const auto& model_state : j["models"]) {
+		auto model = std::make_unique<HexModel>();
+		model->load_state(model_state);
+		model->init();
+		model->push();
+		models.push_back(std::move(model));
+	}
+	// TODO Load camera(s) states
+	std::cout << "State loaded successfully." << std::endl;
 }

@@ -85,9 +85,8 @@ struct App : public IApp {
 
     void processInput(GLFWwindow *window);
 
-
     void setup();
-    void run();
+    void start();
     void clean();
 
     // Frame functions
@@ -95,14 +94,12 @@ struct App : public IApp {
     int getHeight() override;
 
     // Utils functions
-    void load_model(const std::string& filename) override;
     void screenshot(const std::string& filename) override;
     void quit();
-    float get_depth(double x, double y);
-    unsigned char get_depth2(double x, double y);
+    float getDepth(double x, double y);
 
     void unproject(int x, int y, float depth, glm::vec3 &p);
-    glm::vec3 pick_point(double x, double y);
+    glm::vec3 pickPoint(double x, double y);
 
     long pick(double xPos, double yPos);
     std::set<long> pick(double xPos, double yPos, int radius);
@@ -114,17 +111,6 @@ struct App : public IApp {
     std::vector<long> pick_vertices(double x, double y, int radius);
     std::vector<long> pick_facets(double x, double y, int radius);
     std::vector<long> pick_cells(double x, double y, int radius);
-
-
-
-
-    
-    // States functions
-    // TODO reset_state
-    // TODO save_state
-    // TODO load_state
-    void save_state(const std::string filename);
-    void load_state(const std::string filename);
 
     // Rendering functions
     void setCullMode(int mode) override { cull_mode = mode; }
@@ -156,15 +142,15 @@ struct App : public IApp {
             return;
         }
 
-        selected_renderer = selected;
+        selectedModel = selected;
     }
 
     int getSelectedModel() override {
-        return selected_renderer;
+        return selectedModel;
     }
 
     Model& getCurrentModel() override {
-        return *models[selected_renderer];
+        return *models[selectedModel];
     }
 
     std::vector<std::shared_ptr<Camera>>& getCameras() override {
@@ -242,7 +228,7 @@ struct App : public IApp {
     std::vector<std::shared_ptr<Model>> models;
     std::vector<std::unique_ptr<RenderSurface>> renderSurfaces;
     // TODO rename! selected_model
-    int selected_renderer = 0;
+    int selectedModel = 0;
 
     // glm::mat4 projection;
 

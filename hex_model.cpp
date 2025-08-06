@@ -29,7 +29,7 @@ void HexModel::load(const std::string path) {
 	}
 }
 
-void HexModel::save_as(const std::string path) const {
+void HexModel::saveAs(const std::string path) const {
 	// Save the mesh
 	if (path.empty()) {
 		std::cerr << "Error: No path specified for saving the mesh." << std::endl;
@@ -70,7 +70,7 @@ void HexModel::save_as(const std::string path) const {
 }
 
 void HexModel::save() const {
-	save_as(_path);
+	saveAs(_path);
 }
 
 void HexModel::setSelectedAttr(int idx) {

@@ -68,8 +68,7 @@ namespace bindings {
 
 			app_type["colormaps_2d"] = sol::readonly_property(&IApp::getColorMaps2D);
 
-			app_type.set_function("load_model", &IApp::load_model);
-			// TODO add save_model function
+			app_type.set_function("load_model", &IApp::loadModel);
 			
 			app_type.set_function("screenshot", [&app = app](const std::string& filename) {
 				app.screenshot(filename);

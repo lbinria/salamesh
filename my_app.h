@@ -6,6 +6,9 @@ struct MyApp : App {
 
 	MyApp(Args args) : App(args) {}
 
+    void loadModel(const std::string& filename) override;
+	// TODO addModel / removeModel functions
+
 	// Override lifecycle functions
 	void init() override;
 	void update(float dt) override;
@@ -16,6 +19,10 @@ struct MyApp : App {
 	void mouse_scroll(double xoffset, double yoffset) override;
 	void mouse_button(int button, int action, int mods) override;
 	void mouse_move(double x, double y) override;
+
+    // States functions
+    void save_state(const std::string filename);
+    void load_state(const std::string filename);
 
 	private:
 

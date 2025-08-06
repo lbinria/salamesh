@@ -8,7 +8,7 @@
 struct IApp {
 
     virtual void screenshot(const std::string& filename) = 0;
-    virtual void load_model(const std::string& filename) = 0;
+    virtual void loadModel(const std::string& filename) = 0;
 
     virtual int getWidth() = 0;
     virtual int getHeight() = 0;
@@ -42,7 +42,7 @@ struct IApp {
     virtual void setPickMode(ElementKind mode) = 0;
 
 
-    // virtual glm::vec3 pick_point(long x, long y) = 0;
+    // virtual glm::vec3 pickPoint(long x, long y) = 0;
     virtual long pick_vertex(double x, double y) = 0;
     virtual long pick_edge(double x, double y) = 0;
     virtual long pick_facet(double x, double y) = 0;

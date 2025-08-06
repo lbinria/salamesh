@@ -55,6 +55,9 @@ namespace bindings {
 
 			sol::usertype<Model> model_t = lua.new_usertype<Model>("Model");
 
+			model_t.set_function("load", &Model::load);
+			model_t.set_function("save", &Model::save);
+			model_t.set_function("save_as", &Model::saveAs);
 
 
 			model_t["name"] = sol::property(

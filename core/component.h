@@ -19,12 +19,13 @@ struct Component {
     virtual bool draw_gui(ImGuiContext* ctx) = 0;
     virtual void update(float dt) = 0;
 
-    // Events
+    // Input events
 	virtual void mouse_move(double x, double y) = 0;
 	virtual void mouse_button(int button, int action, int mods) = 0;
     virtual void mouse_scroll(double xoffset, double yoffset) = 0;
     virtual void key_event(int key, int scancode, int action, int mods) = 0;
+
+    // App events
     virtual void componentChanged(const std::string &id) = 0;
-    // TODO add dbl click is_dbl_click no to input state !
-    // TODO add virtual void mouse_drag is_dragging to input state
+    
 };

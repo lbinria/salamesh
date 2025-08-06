@@ -141,38 +141,7 @@ static void framebuffer_size_callback(GLFWwindow* window, int width, int height)
 	app->getRenderSurface().resize(width, height);
 }
 
-// TODO be able to load tet, surf, etc
-void App::load_model(const std::string& filename) {
-	#ifdef _DEBUG
-	std::cout << "read model..." << std::endl;
-	std::chrono::steady_clock::time_point begin_read_model = std::chrono::steady_clock::now();
-	#endif
 
-	auto model = std::make_unique<HexModel>();
-	model->load(filename);
-	model->setName(std::filesystem::path(filename).stem().string() + std::to_string(models.size()));
-	model->init();
-	model->push();
-
-	model->setLight(true);
-	model->setMeshShrink(0.f);
-	model->setMeshSize(0.01f);
-	model->setColorMode(Model::ColorMode::COLOR);
-
-	models.push_back(std::move(model));	
-
-	#ifdef _DEBUG
-	Hexahedra &hex = model->getHexahedra();
-	std::cout << "nverts = " << hex.nverts() << std::endl;
-	std::cout << "nfacets = " << hex.nfacets() << std::endl;
-	std::cout << "model read." << std::endl;
-
-	std::chrono::steady_clock::time_point end_read_model = std::chrono::steady_clock::now();
-    std::cout << "read model in: " << std::chrono::duration_cast<std::chrono::milliseconds>(end_read_model - begin_read_model).count() << "ms" << std::endl;
-	#endif
-
-	Commands::get().add_command("app.load_model(" + filename + ")");
-}
 
 void App::setup() {
 
@@ -373,49 +342,12 @@ void App::setup() {
 
 }
 
-void App::run()
+void App::start()
 {
-
-	// TODO Only load first for the moment
-	if (!args.models.empty())
-		load_model(*args.models.begin());
-
-	// // Heavy load test (slow...)
-	// for (int i = 0; i < 10; ++i) {
-	// 	load_model("assets/catorus_hex_attr.geogram");
-	// 	models[i+1]->setPosition(models[0]->getPosition() + glm::vec3(rand() % 10 / 10.f, rand() % 10 / 10.f, rand() % 10 / 10.f));
-	// }
-
-	load_model("assets/catorus_hex_facet_attr.geogram");
-	load_model("assets/catorus_hex_attr.geogram");
-
-	// load_state("/home/tex/Desktop/state.json");
-
-	models[1]->setPosition(glm::vec3(2.f, 0.f, 0.f));
-	models[2]->setPosition(glm::vec3(2.5f, 0.f, 0.f));
-	models[1]->setParent(models[0]);
-	models[2]->setParent(models[0]);
-
-	for (auto &m : getChildrenOf(models[0])) {
-		std::cout << "child: " << m->getName() << std::endl;
-	}
-
 
 	Shader screenShader("shaders/screen.vert", "shaders/screen.frag");
 	screenShader.use();
 	screenShader.setInt("screenTexture", 0);
-
-
-	{
-		// Create cameras
-		auto arcball_camera = std::make_shared<ArcBallCamera>("Arcball", glm::vec3(0.f, 0.f, -3.f), getCurrentModel().getPosition(), glm::vec3(0.f, 1.f, 0.f), glm::vec3(45.f, screenWidth, screenHeight));
-		auto descent_camera = std::make_shared<DescentCamera>("Descent", glm::vec3(0.f, 0.f, -3.f), getCurrentModel().getPosition(), glm::vec3(0.f, 1.f, 0.f), glm::vec3(45.f, screenWidth, screenHeight));
-		cameras.push_back(std::move(arcball_camera));
-		cameras.push_back(std::move(descent_camera));
-	}
-	
-	getRenderSurface().setCamera(cameras[0]);
-	// renderSurfaces[1]->setCamera(cameras[1]);
 
 	// Init inherited class 
 	init();
@@ -443,8 +375,6 @@ void App::run()
 		// Set view / projection from current camera
 		view = getCamera().getViewMatrix();
 		projection = getCamera().getProjectionMatrix();
-
-
 
 		// Update UBO
 		glm::mat4 mats[2] = { view, projection }; // Ensure view and projection matrices are contiguous in memory
@@ -539,6 +469,10 @@ void App::run()
 void App::clean() {
 	std::cout << "App clean..." << std::endl;
 
+	for (auto &model : models) {
+		model->clean();
+	}
+
 	glDeleteVertexArrays(1, &quadVAO);
 	glDeleteBuffers(1, &quadVBO);
 
@@ -550,67 +484,8 @@ void App::clean() {
 		glDeleteTextures(1, &colormaps[i]);
 	for (int i = 0; i < IM_ARRAYSIZE(colormaps2D); ++i)
 		glDeleteTextures(1, &colormaps2D[i]);
-
-
-
-	for (auto &model : models) {
-		model->clean();
-	}
 }
 
-void App::save_state(const std::string filename) {
-
-	json j;
-	j["cull_mode"] = cull_mode;
-	j["pick_mode"] = pickMode;
-	j["selected_renderer"] = selected_renderer;
-	j["models"] = json::array();
-
-	// Save model states
-	for (auto &m : models) {
-		std::string str_state = m->save_state();
-		j["models"].push_back(json::parse(str_state));
-	}
-
-	// TODO Save camera(s) states
-
-
-	std::ofstream ofs(filename);
-	if (!ofs.is_open()) {
-		std::cerr << "Failed to open file for saving state: " << filename << std::endl;
-		return;
-	}
-	ofs << j.dump(4); // Pretty print with 4 spaces indentation
-	ofs.close();
-	std::cout << "State saved to: " << filename << std::endl;
-}
-
-void App::load_state(const std::string filename) {
-	std::ifstream ifs(filename);
-	if (!ifs.is_open()) {
-		std::cerr << "Failed to open file for loading state: " << filename << std::endl;
-		return;
-	}
-	json j;
-	ifs >> j;
-	ifs.close();
-	std::cout << "State loaded from: " << filename << std::endl;
-	cull_mode = j["cull_mode"].get<int>();
-	pickMode = (ElementKind)j["pick_mode"].get<int>();
-	selected_renderer = j["selected_renderer"].get<int>();
-	// Clear current models
-	models.clear();
-	// Load models from state
-	for (const auto& model_state : j["models"]) {
-		auto model = std::make_unique<HexModel>();
-		model->load_state(model_state);
-		model->init();
-		model->push();
-		models.push_back(std::move(model));
-	}
-	// TODO Load camera(s) states
-	std::cout << "State loaded successfully." << std::endl;
-}
 
 int App::getWidth() {
 	return screenWidth;
@@ -623,7 +498,7 @@ int App::getHeight() {
 
 long App::pick_edge(double x, double y) {
 	if (st.cell.anyHovered()) {
-		auto p = pick_point(x, y);
+		auto p = pickPoint(x, y);
 		return pick_edge(getCurrentModel().getHexahedra(), p, st.cell.getHovered());
 	} else {
 		return -1;
@@ -634,7 +509,6 @@ long App::pick_vertex(double x, double y) {
 	glBindFramebuffer(GL_READ_FRAMEBUFFER, getRenderSurface().fbo);
 	glReadBuffer(GL_COLOR_ATTACHMENT3);
 	long id = pick(x, y);
-	std::cout << "pick vertex id: " << id << std::endl;
 	glBindFramebuffer(GL_READ_FRAMEBUFFER, 0);
 	return id >= 0 && id < getCurrentModel().getHexahedra().nverts() ? id : -1;
 }
@@ -704,7 +578,7 @@ float getLinearDepth(float depth, float near, float far) {
 	return near * far / (far + depth * (near - far));
 }
 
-float App::get_depth(double x, double y) {
+float App::getDepth(double x, double y) {
 	glBindFramebuffer(GL_READ_FRAMEBUFFER, getRenderSurface().fbo);
     float depth;
     glReadPixels(x, screenHeight - y, 1, 1, GL_DEPTH_COMPONENT, GL_FLOAT, &depth);
@@ -735,9 +609,9 @@ void App::unproject(int x, int y, float depth, glm::vec3 &p) {
 	p = glm::vec3(worldSpace);
 }
 
-glm::vec3 App::pick_point(double x, double y) {
+glm::vec3 App::pickPoint(double x, double y) {
 	// Read depth value
-    float depth = get_depth(x, y);
+    float depth = getDepth(x, y);
 	depth = depth * 2.f - 1.f; // Convert to NDC range [-1, 1]
 
 	glm::vec3 p;
@@ -808,7 +682,7 @@ std::set<long> App::pick(double xPos, double yPos, int radius) {
 
 void App::processInput(GLFWwindow *window) {
 
-	if (ImGui::GetIO().WantCaptureMouse && renderSurfaceWindowHovered) {
+	if (ImGui::GetIO().WantCaptureMouse /*&& renderSurfaceWindowHovered*/) {
 		return;
 	}
 
