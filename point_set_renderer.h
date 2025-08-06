@@ -113,5 +113,5 @@ struct PointSetRenderer {
     float pointSize;
     glm::vec3 pointColor;
 
-    bool visible = true;
+    bool visible = false;
 };

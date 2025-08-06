@@ -2,25 +2,34 @@
 
 void PointSetRenderer::setAttribute(ContainerBase *ga) {
 
+	// Prepare data
+	std::vector<float> converted_attribute_data;
+
 	// Transform data
 	if (auto a = dynamic_cast<AttributeContainer<double>*>(ga)) {
 
-		std::vector<float> converted_attribute_data(a->data.size());
+		converted_attribute_data.resize(a->data.size());
 		std::transform(a->data.begin(), a->data.end(), converted_attribute_data.begin(), [](double x) { return static_cast<float>(x);});
 
-		// Set attribute data to shader
-		setAttribute(converted_attribute_data);
 	} else if (auto a = dynamic_cast<AttributeContainer<float>*>(ga)) {
 		
-		setAttribute(a->data);
+		converted_attribute_data.resize(a->data.size());
+		std::transform(a->data.begin(), a->data.end(), converted_attribute_data.begin(), [](auto x) { return static_cast<float>(x);});
 
 	} else if (auto a = dynamic_cast<AttributeContainer<int>*>(ga)) {
 		
-		std::vector<float> converted_attribute_data(a->data.size());
-		std::transform(a->data.begin(), a->data.end(), converted_attribute_data.begin(), [](int x) { return static_cast<float>(x);});
-		setAttribute(converted_attribute_data);
+		converted_attribute_data.resize(a->data.size());
+		std::transform(a->data.begin(), a->data.end(), converted_attribute_data.begin(), [](auto x) { return static_cast<float>(x);});
+
+	} else if (auto a = dynamic_cast<AttributeContainer<bool>*>(ga)) {
+
+		converted_attribute_data.resize(a->data.size());
+		std::transform(a->data.begin(), a->data.end(), converted_attribute_data.begin(), [](auto x) { return static_cast<float>(x);});
+
 	}
-	// TODO vec2 / vec3
+
+	// Set attribute data to shader
+	setAttribute(converted_attribute_data);
 }
 
 void PointSetRenderer::setAttribute(std::vector<float> attributeData) {

@@ -217,6 +217,7 @@ void App::setup() {
 		screenHeight = mode->height;
 	}
 
+	std::cout << "Screen width: " << screenWidth << ", " << screenHeight << std::endl;
 
 	glfwMakeContextCurrent(window);
     glfwSetWindowUserPointer(window, this);

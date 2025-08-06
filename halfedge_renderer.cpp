@@ -1,26 +1,35 @@
 #include "halfedge_renderer.h"
 
-void HalfedgeRenderer::changeAttribute(GenericAttributeContainer *ga) {
+void HalfedgeRenderer::setAttribute(ContainerBase *ga) {
+
+	// Prepare data
+	std::vector<float> converted_attribute_data;
 
 	// Transform data
 	if (auto a = dynamic_cast<AttributeContainer<double>*>(ga)) {
 
-		std::vector<float> converted_attribute_data(a->data.size());
+		converted_attribute_data.resize(a->data.size());
 		std::transform(a->data.begin(), a->data.end(), converted_attribute_data.begin(), [](double x) { return static_cast<float>(x);});
 
-		// Set attribute data to shader
-		setAttribute(converted_attribute_data);
 	} else if (auto a = dynamic_cast<AttributeContainer<float>*>(ga)) {
 		
-		setAttribute(a->data);
+		converted_attribute_data.resize(a->data.size());
+		std::transform(a->data.begin(), a->data.end(), converted_attribute_data.begin(), [](auto x) { return static_cast<float>(x);});
 
 	} else if (auto a = dynamic_cast<AttributeContainer<int>*>(ga)) {
 		
-		std::vector<float> converted_attribute_data(a->data.size());
-		std::transform(a->data.begin(), a->data.end(), converted_attribute_data.begin(), [](int x) { return static_cast<float>(x);});
-		setAttribute(converted_attribute_data);
+		converted_attribute_data.resize(a->data.size());
+		std::transform(a->data.begin(), a->data.end(), converted_attribute_data.begin(), [](auto x) { return static_cast<float>(x);});
+
+	} else if (auto a = dynamic_cast<AttributeContainer<bool>*>(ga)) {
+
+		converted_attribute_data.resize(a->data.size());
+		std::transform(a->data.begin(), a->data.end(), converted_attribute_data.begin(), [](auto x) { return static_cast<float>(x);});
+
 	}
-	// TODO vec2 / vec3
+
+	// Set attribute data to shader
+	setAttribute(converted_attribute_data);
 }
 
 void HalfedgeRenderer::setAttribute(std::vector<float> attributeData) {
@@ -37,8 +46,8 @@ void HalfedgeRenderer::setAttribute(std::vector<float> attributeData) {
 	shader.setFloat2("attrRange", glm::vec2(min, max));
 
 	// Update sample
-	// glBindBuffer(GL_TEXTURE_BUFFER, bufAttr);
-	// glBufferData(GL_TEXTURE_BUFFER, attributeData.size() * sizeof(float), attributeData.data(), GL_STATIC_DRAW);
+	glBindBuffer(GL_TEXTURE_BUFFER, bufAttr);
+	glBufferData(GL_TEXTURE_BUFFER, attributeData.size() * sizeof(float), attributeData.data(), GL_STATIC_DRAW);
 }
 
 void HalfedgeRenderer::init() {
@@ -122,7 +131,8 @@ void HalfedgeRenderer::push() {
 
 	
 	npoints = 24 * v.ncells() * 6;
-	std::vector<LineVert> vertices(npoints);
+	// std::vector<LineVert> vertices(npoints);
+	std::vector<LineVert> vertices;
 
 	for (auto &c : v.iter_cells()) {
 		for (int f = 0; f < 6; ++f) {
@@ -145,43 +155,23 @@ void HalfedgeRenderer::push() {
 				vertices.push_back(lv2);
 				
 				vertices.push_back(lv2);
-				vertices.push_back(lv1);
 				vertices.push_back(lv3);
+				vertices.push_back(lv1);
+
 			}
 		}
 	}
 
+	// npoints = v.ncells();
+	// std::vector<LineVert> vertices;
 
-	// npoints = 24 /* number of edge by hex */ * 2 /* number of points by edge */ * v.ncells();
-
-
-	// int k = 0;
 	// for (auto &c : v.iter_cells()) {
-	// 	for (int f = 0; f < 6; ++f) {
-	// 		for (int i = 0; i < 4; ++i) {
-	// 			auto lc0 = reference_cells[1].facets[i % 4 + 4 * f];
-	// 			auto lc1 = reference_cells[1].facets[(i + 1) % 4 + 4 * f];
-	// 			auto v0 = c.corner(lc0).vertex();
-	// 			auto v1 = c.corner(lc1).vertex();
-	// 			auto p0 = v0.pos();
-	// 			auto p1 = v1.pos();
-				
-	// 			vertices[k] = {
-	// 				vertexIndex: v0,
-	// 				position: glm::vec3(p0.x, p0.y, p0.z),
-	// 				size: 1.f
-	// 			};
-
-	// 			vertices[k + 1] = {
-	// 				vertexIndex: v1,
-	// 				position: glm::vec3(p1.x, p1.y, p1.z),
-	// 				size: 1.f
-	// 			};
-
-	// 			++k;
-	// 		}
-	// 	}
+	// 	Hexahedron g = c;
+	// 	vec3 b = g.bary_verts();
+	// 	LineVert lv{glm::vec3(b.x, b.y, b.z), glm::vec3(0,0,0), 0.0f, 0.0f}; // TODO: use barycenter
+	// 	vertices.push_back(lv);
 	// }
+
 
 	glBindVertexArray(VAO);
 	glBindBuffer(GL_ARRAY_BUFFER, VBO);

@@ -13,8 +13,8 @@ layout (std140, binding = 0) uniform Matrices
 };
 
 uniform mat4 model;
-uniform vec2 uViewport = vec2(1024.0, 768.0); // viewport size in pixels
-uniform float uThickness = 2.0; // in pixels
+uniform vec2 uViewport = vec2(2500.0, 1440.0); // viewport size in pixels
+uniform float uThickness = 4.0; // in pixels
 
 
 
@@ -25,9 +25,20 @@ flat out int FragVertexIndex;
 
 void main()
 {
+    // vec3 a = aP0;
+    // vec3 b = aP1;
+    // vec3 d = vec3(normalize(b - a));
+    // vec3 aux = vec3(-d.y, d.x, 0.);
+    // vec3 perp = cross(d, aux);
+    // vec3 corner = mix(a, b, aEnd) + perp * aSide * 0.02;
+    // gl_Position = projection * view * model * vec4(corner, 1.);
+
+
+
+
     // 1) World→view→clip for both endpoints
-    vec4 c0 = projection * view * model * vec4(aP0,1.0);
-    vec4 c1 = projection * view * model * vec4(aP1,1.0);
+    vec4 c0 = projection * view * model * vec4(aP0, 1.0);
+    vec4 c1 = projection * view * model * vec4(aP1, 1.0);
 
     // 2) NDC
     vec2 ndc0 = c0.xy / c0.w;
@@ -57,7 +68,7 @@ void main()
 
     gl_Position = vec4(ndc * clipW, clipZ, clipW);
 
-    // 9) build local UV for shading:
-    //    u = side→ 0 at -1, 1 at +1  ;  v = along the segment
+    // // 9) build local UV for shading:
+    // //    u = side→ 0 at -1, 1 at +1  ;  v = along the segment
     vLocalUV = vec2( (aSide + 1.0)*0.5, aEnd );
 }

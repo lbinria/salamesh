@@ -100,6 +100,7 @@ void HexModel::setSelectedAttr(std::string name, ElementKind kind) {
 void HexModel::push() {
 	_hexRenderer.push();
 	_pointSetRenderer.push();
+	_halfedgeRenderer.push();
 
 	if (colorMode == Model::ColorMode::ATTRIBUTE) {
 		updateAttr();

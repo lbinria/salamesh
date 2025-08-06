@@ -4,8 +4,9 @@
 #include <ultimaille/all.h>
 #include <string>
 #include "core/model.h"
-#include "hex_renderer.h"
 #include "point_set_renderer.h"
+#include "halfedge_renderer.h"
+#include "hex_renderer.h"
 
 using namespace UM;
 using json = nlohmann::json;
@@ -19,14 +20,16 @@ struct HexModel final : public Model {
         _path(""), 
         _hex(), 
         _hexRenderer(_hex), 
-        _pointSetRenderer(_hex.points) {}
+        _pointSetRenderer(_hex.points),
+        _halfedgeRenderer(_hex) {}
 
 	HexModel(std::string name) : 
 		_name(name), 
 		_path(""), 
 		_hex(),
 		_hexRenderer(_hex),
-        _pointSetRenderer(_hex.points) {}
+        _pointSetRenderer(_hex.points),
+        _halfedgeRenderer(_hex) {}
 
 
     constexpr ModelType getModelType() const override {
@@ -105,6 +108,7 @@ struct HexModel final : public Model {
 	void init() override {
 		_hexRenderer.init();
 		_pointSetRenderer.init();
+        _halfedgeRenderer.init();
 	}
 
     void push() override;
@@ -117,11 +121,13 @@ struct HexModel final : public Model {
 
         _hexRenderer.render(pos);
         _pointSetRenderer.render(pos);
+        _halfedgeRenderer.render(pos);
 	}
     
     void clean() override {
 		_hexRenderer.clean();
         _pointSetRenderer.clean();
+        _halfedgeRenderer.clean();
 	}
 
 	Hexahedra& getHexahedra() override { return _hex; }
@@ -130,6 +136,7 @@ struct HexModel final : public Model {
     void setTexture(unsigned int tex) override {
         _hexRenderer.setTexture(tex);
         _pointSetRenderer.setTexture(tex);
+        _halfedgeRenderer.setTexture(tex);
     }
 
 	// Just call underlying renderer methods
@@ -140,6 +147,7 @@ struct HexModel final : public Model {
     void setColorMode(Model::ColorMode mode) override {
         _hexRenderer.setColorMode(mode);
         _pointSetRenderer.setColorMode(mode);
+        _halfedgeRenderer.setColorMode(mode);
         colorMode = mode;
     }
 
@@ -404,8 +412,9 @@ struct HexModel final : public Model {
     VolumeAttributes _volumeAttributes;
 
     // Renderers
-    HexRenderer _hexRenderer;
     PointSetRenderer _pointSetRenderer;
+    HalfedgeRenderer _halfedgeRenderer;
+    HexRenderer _hexRenderer;
 
 
     // Pointer to parent model, if there is one

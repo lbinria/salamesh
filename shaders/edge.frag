@@ -23,7 +23,9 @@ uniform samplerBuffer highlightBuf;
 in vec2 vLocalUV;  // u in [0..1] across thickness, v in [0..1] along length
 
 uniform vec4 uColorInside = vec4(0.0, 0.97, 0.73, 1.0);
-uniform vec4 uColorOutside = vec4(0.0, 0.84, 0.63, 1.0);
+uniform vec4 uColorOutside = vec4(0.0, 0.6, 0.45, 1.0);
+// uniform vec4 uColorInside = vec4(0.0, 0.97, 0.73, 1.0);
+// uniform vec4 uColorOutside = vec4(1.0, 0.0, 0.0, 1.0);
 
 vec3 encode_id(int id) {
     int r = id & 0x000000FF;
@@ -34,16 +36,16 @@ vec3 encode_id(int id) {
 
 void main()
 {
-    // // dist from center‐line: center is u=0.5
-    // float d = abs(vLocalUV.x - 0.5) - 0.5;  
-    // float e = fwidth(d);
-    // float t = smoothstep(e, -e, d);
+    // dist from center‐line: center is u=0.5
+    float d = abs(vLocalUV.x - 0.5) - 0.5;  
+    float e = fwidth(d);
+    float t = smoothstep(e, -e, d);
 
-    // // inside = uColorInside, outside = uColorOutside
-    // FragColor = mix(uColorOutside, uColorInside, t);
+    // inside = uColorInside, outside = uColorOutside
+    FragColor = mix(uColorOutside, uColorInside, t);
 
-    FragColor = vec4(1., 1., 1., 1.); // default white
+    // FragColor = vec4(0.75, 0.73, 1.0, 1.0); // default white
 
     // optional hard discard of outside
-    // if(t<0.01) discard;
+    if(t<0.01) discard;
 }
