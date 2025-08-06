@@ -101,7 +101,20 @@ static void mouse_button_callback(GLFWwindow* window, int button, int action, in
     if (!app)
 		return;
 
-	app->_cur_button = action == GLFW_PRESS ? button : -1;
+	// Dbl clicks detection
+	if (action == GLFW_PRESS) {
+		InputState &st = app->getInputState();
+		for (int i = 0; i < 8; ++i) {
+			// Get last click time for this button
+			auto lastClick = st.mouse.lastClicks[i];
+			// Compute the time since last click
+			auto dt = std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::steady_clock::now() - lastClick);
+			st.mouse.dblButtons[i] = (dt < std::chrono::milliseconds(st.mouse.getDblClickInterval()));
+		}
+
+		// Set the last click time for this button
+		st.mouse.lastClicks[button] = std::chrono::steady_clock::now();
+	}
 
 	// Redirect to virtual
 	app->mouse_button(button, action, mods);

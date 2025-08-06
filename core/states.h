@@ -42,7 +42,9 @@ struct InputState {
 		glm::vec2 pos;
 		glm::vec2 lastPos;
 		bool buttons[8] = {false, false, false, false, false, false, false, false};
-
+		bool dblButtons[8] = {false, false, false, false, false, false, false, false};
+		std::chrono::steady_clock::time_point lastClicks[8];
+		
 		bool isLeftButton() const {
 			return buttons[0];
 		}
@@ -75,13 +77,17 @@ struct InputState {
 			cursorRadius = std::clamp(radius, 0, 50);
 		}
 
+		int getDblClickInterval() const {
+			return dblClickInterval;
+		}
+
 		glm::vec2 scrollDelta = {0, 0};
 		
 		private:
 		int cursorRadius = 0;
 
-		std::chrono::steady_clock::time_point lastClick;
-		bool dblLeft = false;
+		// std::chrono::steady_clock::time_point lastClick;
+		// bool dblLeft = false;
 		int dblClickInterval = 300 /*ms*/;
 	};
 

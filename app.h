@@ -233,9 +233,6 @@ struct App : public IApp {
     std::vector<std::shared_ptr<Camera>> cameras;
     int selected_camera = 0;
 
-    // Current pressed mouse button, -1 if none
-    int _cur_button = -1;
-
     protected:
     Args args;
 
