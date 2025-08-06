@@ -88,7 +88,7 @@ struct InputState {
 
 		// std::chrono::steady_clock::time_point lastClick;
 		// bool dblLeft = false;
-		int dblClickInterval = 300 /*ms*/;
+		int dblClickInterval = 200 /*ms*/;
 	};
 
 	PrimitiveState vertex;
