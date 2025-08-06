@@ -19,7 +19,10 @@ void MyApp::init() {
 	settings.load(args.settings_path);
 	for (auto m : settings.modules) {
 
-		// TODO check if m path exists !
+		if (!fs::exists(m)) {
+			std::cerr << "Module path does not exist: " << m << std::endl;
+			continue;
+		}
 
 		// Check for .so files
         for (const auto& entry : fs::directory_iterator(m)) {
@@ -108,6 +111,10 @@ void MyApp::update(float dt) {
 	// 		std::cout << "dblClick on cell: " << pickID << std::endl;
 	// 	}
 	// }
+
+	for (auto &script : scripts) {
+		script->update(dt);
+	}
 
 }
 

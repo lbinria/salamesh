@@ -215,6 +215,17 @@ struct App : public IApp {
     virtual void mouse_dbl_click() {}
     virtual void key_event(int key, int scancode, int action, int mods) = 0;
     
+
+    void notifyComponentChanged(const std::string &id) {
+        for (auto &script : scripts) {
+            // Do not notify the component itself
+            if (script->id() == id)
+                continue;
+            // Notify other components
+            script->componentChanged(id);
+        }
+    }
+
     const char* pickModeStrings[4] = {"Points", "Edges", "Facets", "Cells"};
 
 

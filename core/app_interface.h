@@ -51,4 +51,5 @@ struct IApp {
     virtual std::vector<unsigned int> getColorMaps2D() = 0;
 
 
+    virtual void notifyComponentChanged(const std::string &id) = 0;
 };

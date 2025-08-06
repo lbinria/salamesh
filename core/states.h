@@ -42,6 +42,7 @@ struct InputState {
 		glm::vec2 pos;
 		glm::vec2 lastPos;
 		bool buttons[8] = {false, false, false, false, false, false, false, false};
+		bool _isDragging = false;
 		
 		bool isLeftButton() const {
 			return buttons[0];
@@ -63,6 +64,10 @@ struct InputState {
 			cursorRadius = std::clamp(radius, 0, 50);
 		}
 
+		bool isDragging() const {
+			return _isDragging;
+		}
+
 		glm::vec2 scrollDelta = {0, 0};
 		
 		private:
@@ -70,7 +75,7 @@ struct InputState {
 
 		std::chrono::steady_clock::time_point lastClick;
 		bool dblLeft = false;
-		int _dbl_click_interval = 300 /*ms*/;
+		int dblClickInterval = 300 /*ms*/;
 	};
 
 	PrimitiveState vertex;

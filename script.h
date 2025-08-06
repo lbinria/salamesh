@@ -14,7 +14,7 @@
 #include "bindings/camera_bindings.h"
 #include "bindings/model_bindings.h"
 
-struct LuaScript : public Component {
+struct LuaScript final : public Component {
 
 	LuaScript(IApp &app, const std::string& script) {
 
@@ -29,18 +29,22 @@ struct LuaScript : public Component {
 			std::cerr << "Error loading script: " << e.what() << std::endl;
 		}
 
-		// Get the function
+		// Get the functions
 		init_func = lua.get<sol::protected_function>("init");
 		draw_gui_func = lua.get<sol::protected_function>("draw_gui");
+		update_func = lua.get<sol::protected_function>("update");
+		cleanup_func = lua.get<sol::protected_function>("cleanup");
 
 		mouse_move_func = lua.get<sol::protected_function>("mouse_move");
 		mouse_button_func = lua.get<sol::protected_function>("mouse_button");
 		mouse_scroll_func = lua.get<sol::protected_function>("mouse_scroll");
 		key_event_func = lua.get<sol::protected_function>("key_event");
 
-		// Check if function exists
+		// Check whether functions exists
 		has_init = init_func.valid();
 		has_draw_gui = draw_gui_func.valid();
+		has_update = update_func.valid();
+		has_cleanup = cleanup_func.valid();
 
 		has_mouse_button = mouse_button_func.valid();
 		has_mouse_move = mouse_move_func.valid();
@@ -68,35 +72,14 @@ struct LuaScript : public Component {
 		bindings::ModelBindings::loadBindings(lua, app_type, app);
 	}
 
-	void init() final override {
+	// Lifecycle
+
+	void init() override {
 		if (has_init)
 			init_func();
 	}
 
-	void setup() final override {}
-	void cleanup() final override {}
-
-	void mouse_move(double x, double y) {
-		if (has_mouse_move)
-			mouse_move_func(x, y);
-	}
-
-	void mouse_button(int button, int action, int mods) {
-		if (has_mouse_button)
-			mouse_button_func(button, action, mods);
-	}
-
-	void mouse_scroll(double xoffset, double yoffset) {
-		if (has_mouse_scroll)
-			mouse_scroll_func(xoffset, yoffset);
-	}
-
-	inline void key_event(int key, int scancode, int action, int mods) final override {
-		if (has_key_event)
-			key_event_func(key, scancode, action, mods);
-	}
-
-	inline bool draw_gui(ImGuiContext *ctx) final override {
+	bool draw_gui(ImGuiContext *ctx) override {
 		if (!has_draw_gui)
 			return true;
 
@@ -118,6 +101,43 @@ struct LuaScript : public Component {
 		return true;
 	}
 
+	void update(float dt) override {
+		if (has_update)
+			update_func(dt);
+	}
+
+	void cleanup() override {
+		if (has_cleanup)
+			cleanup_func();
+	}
+
+	// Events
+
+	void mouse_move(double x, double y) override {
+		if (has_mouse_move)
+			mouse_move_func(x, y);
+	}
+
+	void mouse_button(int button, int action, int mods) override {
+		if (has_mouse_button)
+			mouse_button_func(button, action, mods);
+	}
+
+	void mouse_scroll(double xoffset, double yoffset) override {
+		if (has_mouse_scroll)
+			mouse_scroll_func(xoffset, yoffset);
+	}
+
+	void key_event(int key, int scancode, int action, int mods) override {
+		if (has_key_event)
+			key_event_func(key, scancode, action, mods);
+	}
+
+	void componentChanged(const std::string &id) override {
+		// Not implemented
+	}
+
+
 	enum Status {
 		SCRIPT_STATUS_OK,
 		SCRIPT_STATUS_FAILED
@@ -129,13 +149,16 @@ struct LuaScript : public Component {
 
 	sol::state lua;
 	sol::protected_function init_func;
+	sol::protected_function draw_gui_func;
+	sol::protected_function update_func;
+	sol::protected_function cleanup_func;
+
 	sol::protected_function mouse_move_func;
 	sol::protected_function mouse_button_func;
 	sol::protected_function mouse_scroll_func;
 	sol::protected_function key_event_func;
-	sol::protected_function draw_gui_func;
 
-	bool has_init, has_mouse_move, has_mouse_button, has_mouse_scroll, has_key_event, has_draw_gui;
 
+	bool has_init, has_mouse_move, has_mouse_button, has_mouse_scroll, has_key_event, has_draw_gui, has_update, has_cleanup;
 
 };
