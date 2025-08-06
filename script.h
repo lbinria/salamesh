@@ -39,6 +39,7 @@ struct LuaScript final : public Component {
 		mouse_button_func = lua.get<sol::protected_function>("mouse_button");
 		mouse_scroll_func = lua.get<sol::protected_function>("mouse_scroll");
 		key_event_func = lua.get<sol::protected_function>("key_event");
+		componentChanged_func = lua.get<sol::protected_function>("componentChanged");
 
 		// Check whether functions exists
 		has_init = init_func.valid();
@@ -50,6 +51,7 @@ struct LuaScript final : public Component {
 		has_mouse_move = mouse_move_func.valid();
 		has_mouse_scroll = mouse_scroll_func.valid();
 		has_key_event = key_event_func.valid();
+		has_componentChanged = componentChanged_func.valid();
 	}
 
 
@@ -134,7 +136,8 @@ struct LuaScript final : public Component {
 	}
 
 	void componentChanged(const std::string &id) override {
-		// Not implemented
+		if (has_componentChanged)
+			componentChanged_func(id);
 	}
 
 
@@ -157,8 +160,18 @@ struct LuaScript final : public Component {
 	sol::protected_function mouse_button_func;
 	sol::protected_function mouse_scroll_func;
 	sol::protected_function key_event_func;
+	sol::protected_function componentChanged_func;
 
 
-	bool has_init, has_mouse_move, has_mouse_button, has_mouse_scroll, has_key_event, has_draw_gui, has_update, has_cleanup;
+	bool 
+		has_init, 
+		has_mouse_move, 
+		has_mouse_button, 
+		has_mouse_scroll, 
+		has_key_event, 
+		has_draw_gui, 
+		has_update, 
+		has_cleanup, 
+		has_componentChanged;
 
 };
