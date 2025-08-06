@@ -308,10 +308,3 @@ void MyApp::mouse_move(double x, double y) {
 	}
 
 }
-
-void MyApp::mouse_drag(int button, double x, double y) {
-
-	// TODO call script mouse_drag
-
-
-}

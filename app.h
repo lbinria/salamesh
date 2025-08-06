@@ -211,7 +211,6 @@ struct App : public IApp {
     virtual void mouse_move(double x, double y) = 0;
     virtual void mouse_scroll(double xoffset, double yoffset) = 0;
     virtual void mouse_button(int button, int action, int mods) = 0;
-    virtual void mouse_drag(int button, double x, double y) = 0;
     virtual void mouse_dbl_click() {}
     virtual void key_event(int key, int scancode, int action, int mods) = 0;
     

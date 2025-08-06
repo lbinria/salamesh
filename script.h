@@ -113,7 +113,7 @@ struct LuaScript final : public Component {
 			cleanup_func();
 	}
 
-	// Events
+	// Input events
 
 	void mouse_move(double x, double y) override {
 		if (has_mouse_move)
@@ -134,6 +134,8 @@ struct LuaScript final : public Component {
 		if (has_key_event)
 			key_event_func(key, scancode, action, mods);
 	}
+
+	// App events
 
 	void componentChanged(const std::string &id) override {
 		if (has_componentChanged)

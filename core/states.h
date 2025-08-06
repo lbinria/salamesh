@@ -42,8 +42,8 @@ struct InputState {
 		glm::vec2 pos;
 		glm::vec2 lastPos;
 		bool buttons[8] = {false, false, false, false, false, false, false, false};
-		bool _isDragging = false;
-		
+		bool dragging[8] = {false, false, false, false, false, false, false, false};
+
 		bool isLeftButton() const {
 			return buttons[0];
 		}
@@ -56,16 +56,41 @@ struct InputState {
 			return buttons[2];
 		}
 
+		bool isButtonPressed(int button) const {
+			if (button < 0 || button >= 8) return false;
+			return buttons[button];
+		}
+
+		bool anyButtonPressed() const {
+			for (bool b : buttons) {
+				if (b) return true;
+			}
+			return false;
+		}
+
+		bool isDraggingLeft() const {
+			return dragging[0];
+		}
+
+		bool isDraggingRight() const {
+			return dragging[1];
+		}
+
+		bool isDraggingMiddle() const {
+			return dragging[2];
+		}
+
+		bool isDragging(int button) const {
+			if (button < 0 || button >= 8) return false;
+			return dragging[button];
+		}
+
 		int getCursorRadius() const {
 			return cursorRadius;
 		}
 
 		void setCursorRadius(int radius) {
 			cursorRadius = std::clamp(radius, 0, 50);
-		}
-
-		bool isDragging() const {
-			return _isDragging;
 		}
 
 		glm::vec2 scrollDelta = {0, 0};
