@@ -135,6 +135,11 @@ namespace bindings {
 				&Model::setMeshShrink
 			);
 
+			model_t["mesh_visible"] = sol::property(
+				&Model::getMeshVisible,
+				&Model::setMeshVisible
+			);
+
 			model_t["point_color"] = sol::property(
 				&Model::getPointColor,
 				&Model::setPointColor

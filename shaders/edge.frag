@@ -32,6 +32,15 @@ vec3 encode_id(int id) {
     return vec3(r / 255.f, g / 255.f, b / 255.f); 
 }
 
+float sdfEquilateralTriangle(vec2 p) {
+    float k = sqrt(3.);
+    p.x = abs(p.x) - 1.0;
+    p.y = p.y + 1.0 / k;
+    if (p.x+k*p.y > 0) p = vec2(p.x - k*p.y, -k*p.x-p.y) / 2.;
+    p.x -= clamp(p.x, -2., 0.);
+    return -length(p)*sign(p.y);
+}
+
 void main()
 {
     // dist from border: center is u=0.5
@@ -41,6 +50,12 @@ void main()
 
     // optional hard discard of outside
     if(t<0.01) discard;
+
+
+
+    vec2 uv = vLocalUV * 2. - vec2(1.);
+    if (length(uv) - 1. > 0)
+        discard;
 
     // Point coord from [0, 1] to [-1, 1]
     vec2 V = 2.0 * (gl_PointCoord - vec2(0.5, 0.5));

@@ -146,6 +146,12 @@ function draw_model_properties(model, view)
 
 		if (imgui.CollapsingHeader("Style##" .. cur_model.name .. "_properties_style")) then 
 
+			local sel_mesh_visible, new_mesh_visible = imgui.Checkbox("Show mesh", cur_model.mesh_visible)
+			if (sel_mesh_visible) then 
+				print("Change mesh visibility: " .. tostring(new_mesh_visible))
+				cur_model.mesh_visible = new_mesh_visible
+			end
+
 			local sel_color, new_color = imgui.ColorEdit3("Color", cur_model.color)
 			if (sel_color) then 
 				print("Change color: " .. tostring(new_color))

@@ -236,6 +236,14 @@ struct HexModel final : public Model {
         meshShrink = val;
     }
 
+    bool getMeshVisible() const override {
+        return _hexRenderer.getVisible();
+    }
+
+    void setMeshVisible(bool visible) override {
+        return _hexRenderer.setVisible(visible);
+    }
+
     int getFragRenderMode() const override {
         return fragRenderMode;
     }

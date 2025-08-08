@@ -162,17 +162,6 @@ void HalfedgeRenderer::push() {
 		}
 	}
 
-	// npoints = v.ncells();
-	// std::vector<LineVert> vertices;
-
-	// for (auto &c : v.iter_cells()) {
-	// 	Hexahedron g = c;
-	// 	vec3 b = g.bary_verts();
-	// 	LineVert lv{glm::vec3(b.x, b.y, b.z), glm::vec3(0,0,0), 0.0f, 0.0f}; // TODO: use barycenter
-	// 	vertices.push_back(lv);
-	// }
-
-
 	glBindVertexArray(VAO);
 	glBindBuffer(GL_ARRAY_BUFFER, VBO);
 	glBufferData(GL_ARRAY_BUFFER, npoints * sizeof(LineVert), vertices.data(), GL_STATIC_DRAW);

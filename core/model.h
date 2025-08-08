@@ -215,6 +215,8 @@ struct Model {
 
     virtual bool getVisible() const = 0;
     virtual void setVisible(bool v) = 0;
+    virtual bool getMeshVisible() const = 0;
+    virtual void setMeshVisible(bool v) = 0;    
     virtual bool getPointVisible() const = 0;
     virtual void setPointVisible(bool v) = 0;
     virtual bool getEdgeVisible() const = 0;
