@@ -217,6 +217,8 @@ struct Model {
     virtual void setVisible(bool v) = 0;
     virtual bool getPointVisible() const = 0;
     virtual void setPointVisible(bool v) = 0;
+    virtual bool getEdgeVisible() const = 0;
+    virtual void setEdgeVisible(bool v) = 0;
 
     virtual void setParent(std::shared_ptr<Model> parentModel) = 0;
     virtual std::shared_ptr<Model> getParent() const = 0;

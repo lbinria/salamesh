@@ -80,11 +80,6 @@ namespace bindings {
 				&Model::setColor
 			);
 
-			model_t["point_visible"] = sol::property(
-				&Model::getPointVisible,
-				&Model::setPointVisible
-			);
-
 			model_t["position"] = sol::property(
 				&Model::getPosition,
 				&Model::setPosition
@@ -150,6 +145,11 @@ namespace bindings {
 				&Model::setPointSize
 			);
 
+			model_t["point_visible"] = sol::property(
+				&Model::getPointVisible,
+				&Model::setPointVisible
+			);
+
 			model_t["edge_size"] = sol::property(
 				&Model::getEdgeSize,
 				&Model::setEdgeSize
@@ -163,6 +163,11 @@ namespace bindings {
 			model_t["edge_outside_color"] = sol::property(
 				&Model::getEdgeOutsideColor,
 				&Model::setEdgeOutsideColor
+			);
+
+			model_t["edge_visible"] = sol::property(
+				&Model::getEdgeVisible,
+				&Model::setEdgeVisible
 			);
 
 			model_t["color_mode_strings"] = sol::readonly_property(

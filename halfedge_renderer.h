@@ -47,6 +47,14 @@ struct HalfedgeRenderer {
         texColorMap = tex;
     }
 
+    void setVisible(bool v) {
+        visible = v;
+    }
+
+    bool getVisible() const {
+        return visible;
+    }
+
     float getEdgeSize() const {
         return edgeSize;
     }

@@ -182,6 +182,12 @@ function draw_model_properties(model, view)
 				cur_model.point_color = new_point_color
 			end
 
+			local sel_edge_visible, new_edge_visible = imgui.Checkbox("Show edge", cur_model.edge_visible)
+			if (sel_edge_visible) then 
+				print("Change edge visibility: " .. tostring(new_edge_visible))
+				cur_model.edge_visible = new_edge_visible
+			end
+
 			local sel_edge_size, new_edge_size = imgui.SliderFloat("Edge size", cur_model.edge_size, 0, 50)
 			if (sel_edge_size) then 
 				print("Change edge size: " .. tostring(new_edge_size))
@@ -190,13 +196,13 @@ function draw_model_properties(model, view)
 
 			local sel_edge_inside_color, new_edge_inside_color = imgui.ColorEdit3("Edge inside color", cur_model.edge_inside_color)
 			if (sel_edge_inside_color) then 
-				-- print("Change edge inside color: " .. tostring(new_edge_inside_color))
+				print("Change edge inside color: " .. tostring(new_edge_inside_color))
 				cur_model.edge_inside_color = new_edge_inside_color
 			end
 
 			local sel_edge_outside_color, new_edge_outside_color = imgui.ColorEdit3("Edge outside color", cur_model.edge_outside_color)
 			if (sel_edge_outside_color) then 
-				-- print("Change edge outside color: " .. tostring(new_edge_outside_color))
+				print("Change edge outside color: " .. tostring(new_edge_outside_color))
 				cur_model.edge_outside_color = new_edge_outside_color
 			end
 

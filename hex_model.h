@@ -326,6 +326,14 @@ struct HexModel final : public Model {
         _pointSetRenderer.setVisible(v);
     }
 
+    bool getEdgeVisible() const override {
+        return _halfedgeRenderer.getVisible();
+    }
+
+    void setEdgeVisible(bool v) override {
+        _halfedgeRenderer.setVisible(v);
+    }
+
     void setHighlight(int idx, float highlight) override {
         _hexRenderer.setHighlight(idx, highlight);
     }
