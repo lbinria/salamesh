@@ -270,6 +270,14 @@ struct HexModel final : public Model {
         _pointSetRenderer.setPointSize(size);
     }
 
+    float getEdgeSize() const override {
+        return _halfedgeRenderer.getEdgeSize();
+    }
+
+    void setEdgeSize(float size) override {
+        _halfedgeRenderer.setEdgeSize(size);
+    }
+
     glm::vec3 getWorldPosition() const override {
         if (parent) {
             return parent->getWorldPosition() + position;

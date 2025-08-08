@@ -182,6 +182,12 @@ function draw_model_properties(model, view)
 				cur_model.point_color = new_point_color
 			end
 
+			local sel_edge_size, new_edge_size = imgui.SliderFloat("Edge size", cur_model.edge_size, 0, 50)
+			if (sel_edge_size) then 
+				print("Change edge size: " .. tostring(new_edge_size))
+				cur_model.edge_size = new_edge_size
+			end
+
 		end
 
 		-- if (imgui.BeginCombo("Pick Mode", app.pick_mode_strings[app.pick_mode + 1])) then

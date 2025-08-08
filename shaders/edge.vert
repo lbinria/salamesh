@@ -14,7 +14,7 @@ layout (std140, binding = 0) uniform Matrices
 
 uniform mat4 model;
 uniform vec2 uViewport = vec2(2500.0, 1440.0); // viewport size in pixels
-uniform float uThickness = 4.0; // in pixels
+uniform float uThickness = 10.0; // in pixels
 
 
 

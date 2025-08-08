@@ -133,12 +133,12 @@ void main()
 
 
 
-    if (fragRenderMode == 0 && (fragRenderMeshMode & 2) == 2) {
-        // Render wireframe
-        if (fragHeights.y < meshSize || fragHeights.z < meshSize) {
-            col = vec3(0,0,0);
-        }
-    }
+    // if (fragRenderMode == 0 && (fragRenderMeshMode & 2) == 2) {
+    //     // Render wireframe
+    //     if (fragHeights.y < meshSize || fragHeights.z < meshSize) {
+    //         col = vec3(0,0,0);
+    //     }
+    // }
 
     // Outputs
     fragFacetIndexOut = vec4(encode_id(fragFacetIndex), 1.f);

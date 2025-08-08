@@ -150,6 +150,11 @@ namespace bindings {
 				&Model::setPointSize
 			);
 
+			model_t["edge_size"] = sol::property(
+				&Model::getEdgeSize,
+				&Model::setEdgeSize
+			);
+
 			model_t["color_mode_strings"] = sol::readonly_property(
 				&Model::getColorModeStrings
 			);

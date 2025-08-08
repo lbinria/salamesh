@@ -106,6 +106,10 @@ struct Model {
     virtual float getPointSize() const = 0;
     virtual void setPointSize(float size) = 0;
 
+
+    virtual float getEdgeSize() const = 0;
+    virtual void setEdgeSize(float size) = 0;
+
     // Model attributes
     virtual std::vector<Attribute> getAttrs() const = 0;
     virtual Attribute getAttr(int idx) const = 0;

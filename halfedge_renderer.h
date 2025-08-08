@@ -24,7 +24,7 @@ struct HalfedgeRenderer {
     HalfedgeRenderer(Volume &v) : 
         shader("shaders/edge.vert", "shaders/edge.frag"), 
         v(v) {
-            setPointSize(4.0f); // TODO here use a setting default point size
+            setEdgeSize(2.0f); // TODO here use a setting default edge size
             setPointColor({0.23, 0.85, 0.66}); // TODO here use a setting default point color
         }
 
@@ -46,14 +46,14 @@ struct HalfedgeRenderer {
         texColorMap = tex;
     }
 
-    float getPointSize() const {
-        return pointSize;
+    float getEdgeSize() const {
+        return edgeSize;
     }
 
-    void setPointSize(float size) {
+    void setEdgeSize(float size) {
         shader.use();
-        shader.setFloat("pointSize", size);
-        pointSize = size;
+        shader.setFloat("uThickness", size);
+        edgeSize = size;
     }
 
     glm::vec3 getPointColor() const {
@@ -87,7 +87,7 @@ struct HalfedgeRenderer {
     float* ptrFilter;
     float* ptrHighlight;
 
-    float pointSize;
+    float edgeSize;
     glm::vec3 pointColor;
 
     bool visible = true;
