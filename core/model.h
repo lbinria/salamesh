@@ -109,6 +109,10 @@ struct Model {
 
     virtual float getEdgeSize() const = 0;
     virtual void setEdgeSize(float size) = 0;
+    virtual glm::vec3 getEdgeInsideColor() const  = 0;
+    virtual void setEdgeInsideColor(glm::vec3 color)  = 0;
+    virtual glm::vec3 getEdgeOutsideColor() const  = 0;
+    virtual void setEdgeOutsideColor(glm::vec3 color) = 0;
 
     // Model attributes
     virtual std::vector<Attribute> getAttrs() const = 0;

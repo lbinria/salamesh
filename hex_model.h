@@ -278,6 +278,22 @@ struct HexModel final : public Model {
         _halfedgeRenderer.setEdgeSize(size);
     }
 
+    glm::vec3 getEdgeInsideColor() const override {
+        return _halfedgeRenderer.getEdgeInsideColor();
+    }
+
+    void setEdgeInsideColor(glm::vec3 color) override {
+        _halfedgeRenderer.setEdgeInsideColor(color);
+    }
+
+    glm::vec3 getEdgeOutsideColor() const override {
+        return _halfedgeRenderer.getEdgeOutsideColor();
+    }
+
+    void setEdgeOutsideColor(glm::vec3 color) override {
+        _halfedgeRenderer.setEdgeOutsideColor(color);
+    }
+
     glm::vec3 getWorldPosition() const override {
         if (parent) {
             return parent->getWorldPosition() + position;

@@ -25,7 +25,8 @@ struct HalfedgeRenderer {
         shader("shaders/edge.vert", "shaders/edge.frag"), 
         v(v) {
             setEdgeSize(2.0f); // TODO here use a setting default edge size
-            setPointColor({0.23, 0.85, 0.66}); // TODO here use a setting default point color
+            setEdgeInsideColor({0.0, 0.97, 0.73}); // TODO here use a setting default edge inside color
+            setEdgeOutsideColor({0.0, 0.6, 0.45}); // TODO here use a setting default edge outside color
         }
 
     void setAttribute(ContainerBase *ga);
@@ -56,14 +57,24 @@ struct HalfedgeRenderer {
         edgeSize = size;
     }
 
-    glm::vec3 getPointColor() const {
-        return pointColor;
+    glm::vec3 getEdgeInsideColor() const {
+        return edgeInsideColor;
     }
     
-    void setPointColor(glm::vec3 color) {
+    void setEdgeInsideColor(glm::vec3 color) {
         shader.use();
-        shader.setFloat3("pointColor", color);
-        pointColor = color;
+        shader.setFloat3("uColorInside", color);
+        edgeInsideColor = color;
+    }
+
+    glm::vec3 getEdgeOutsideColor() const {
+        return edgeOutsideColor;
+    }
+    
+    void setEdgeOutsideColor(glm::vec3 color) {
+        shader.use();
+        shader.setFloat3("uColorOutside", color);
+        edgeOutsideColor = color;
     }
 
     void setFilter(int idx, bool filter) {
@@ -88,7 +99,8 @@ struct HalfedgeRenderer {
     float* ptrHighlight;
 
     float edgeSize;
-    glm::vec3 pointColor;
+    glm::vec3 edgeInsideColor;
+    glm::vec3 edgeOutsideColor;
 
     bool visible = true;
 
