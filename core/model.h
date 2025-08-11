@@ -75,7 +75,14 @@ struct Model {
 	virtual void setHighlight(std::vector<float> highlights) = 0;
     virtual void setFacetHighlight(int idx, float highlight) = 0;
     virtual void setFacetHighlight(std::vector<float> highlights) = 0;
+    virtual void setPointHighlight(int idx, float highlight) = 0;
+    virtual void setPointHighlight(std::vector<float> highlights) = 0;
+    // TODO setEdgeHighlight
+
     virtual void setFilter(int idx, bool filter) = 0;
+    // TODO setFacetFilter
+    // TODO setPointFilter
+    // TODO setEdgeFilter
 
     virtual int getColorMode() const = 0;
     virtual void setColorMode(Model::ColorMode mode) = 0;
@@ -121,11 +128,12 @@ struct Model {
     virtual void clearAttrs() = 0;
 
     // Model attributes shader uniforms
+    virtual int getSelectedColormap() const = 0;
+    virtual void setSelectedColormap(int idx) = 0;
+
     virtual void setSelectedAttr(int idx) = 0;
     virtual void setSelectedAttr(std::string name, ElementKind kind) = 0;
     virtual int getSelectedAttr() const = 0;
-    virtual int getSelectedColormap() const = 0;
-    virtual void setSelectedColormap(int idx) = 0;
 
     template<typename T>
     ElementType deduceType(GenericAttribute<T> &attr) {
@@ -148,8 +156,6 @@ struct Model {
         }
         return std::nullopt;
     }
-
-
 
     ElementKind umAttributeKind2ElementKind(AttributeBase::TYPE kind) {
         switch (kind) {

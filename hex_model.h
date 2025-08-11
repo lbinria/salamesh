@@ -358,10 +358,17 @@ struct HexModel final : public Model {
         _hexRenderer.setFacetHighlight(highlights);
     }
 
+    void setPointHighlight(int idx, float highlight) override {
+        _pointSetRenderer.setHighlight(idx, highlight);
+    }
+
+    void setPointHighlight(std::vector<float> highlights) override {
+        _pointSetRenderer.setHighlight(highlights);
+    }
+
     // TODO filter anything else than cell !
     void setFilter(int idx, bool filter) override {
         _hexRenderer.setFilter(idx, filter);
-        _hexRenderer.setFacetHighlight(rand() % _hex.nfacets(), 1.0f);
 
         // TODO it works but... not very efficient !
         Volume::Cell c(_hex, idx);

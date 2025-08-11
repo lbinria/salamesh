@@ -97,12 +97,16 @@ struct PointSetRenderer {
         ptrHighlight[idx] = val;
     }
 
+    void setHighlight(std::vector<float> highlights) {
+        std::memcpy(ptrHighlight, highlights.data(), highlights.size() * sizeof(float));
+    }
+
     PointSet &ps;
     Shader shader;
 
-	private:
-	
-	// Buffers
+    private:
+
+    // Buffers
     unsigned int VAO, VBO, pointHighlightBuffer, bufAttr, bufFilter, bufHighlight;
     // Textures
     unsigned int texColorMap, pointHighlightTexture, texAttr, texFilter, texHighlight;

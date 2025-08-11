@@ -23,6 +23,7 @@ struct HalfedgeRenderer {
 
     HalfedgeRenderer(Volume &v) : 
         shader("shaders/edge.vert", "shaders/edge.frag"), 
+        // shader("shaders/edgebary.vert", "shaders/edgebary.frag"), 
         v(v) {
             setEdgeSize(2.0f); // TODO here use a setting default edge size
             setEdgeInsideColor({0.0, 0.97, 0.73}); // TODO here use a setting default edge inside color
