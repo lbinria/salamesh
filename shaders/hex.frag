@@ -8,7 +8,7 @@ in float fragVertexIndex;
 layout(location = 0) out vec4 FragColor;
 layout(location = 1) out vec4 fragFacetIndexOut;
 layout(location = 2) out vec4 fragCellIndexOut;
-layout(location = 3) out vec4 fragMeshIndexOut;
+layout(location = 4) out vec4 fragMeshIndexOut;
 
 in vec3 fragBary;
 in vec3 fragNormal;

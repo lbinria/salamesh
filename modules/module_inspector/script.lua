@@ -46,16 +46,19 @@ function draw_gui()
 	local n_hovered_cells, str_hovered_cells = get_str(app.input_state.cell)
 	local n_hovered_facets, str_hovered_facets = get_str(app.input_state.facet)
 	local n_hovered_vertices, str_hovered_vertices = get_str(app.input_state.vertex)
+	local _, str_hovered_mesh = get_str(app.input_state.mesh)
 
 	local str_hovered_edge = "X"
 	if app.input_state.edge.any_hovered then 
 		str_hovered_edge = tostring(app.input_state.edge.hovered)
 	end
 
+	imgui.Text("Hovered mesh: " .. str_hovered_mesh)
 	imgui.Text(tostring(n_hovered_cells) .. " hovered cells: " .. "{" .. str_hovered_cells .. "}")
 	imgui.Text(tostring(n_hovered_facets) .. " hovered facets: " .. "{" .. str_hovered_facets .. "}")
-	imgui.Text("Hovered edge: {" .. str_hovered_edge .. "}")
 	imgui.Text(tostring(n_hovered_vertices) .. " hovered vertices: " .. "{" .. str_hovered_vertices .. "}")
+	imgui.Text("Nearest edge: " .. str_hovered_edge)
+	
 
 
 	imgui.End()

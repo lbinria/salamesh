@@ -108,6 +108,7 @@ struct App : public IApp {
     long pick_edge(double x, double y) override;
     long pick_facet(double x, double y) override;
     long pick_cell(double x, double y) override;
+    long pick_mesh(double x, double y) override;
     std::vector<long> pick_vertices(double x, double y, int radius);
     std::vector<long> pick_facets(double x, double y, int radius);
     std::vector<long> pick_cells(double x, double y, int radius);

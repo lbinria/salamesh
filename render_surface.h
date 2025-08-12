@@ -22,6 +22,7 @@ struct RenderSurface {
     unsigned int texCellID;
     unsigned int texFacetID;
     unsigned int texVertexID;
+    unsigned int texMeshID;
 
 	int width, height;
     glm::vec3 backgroundColor;

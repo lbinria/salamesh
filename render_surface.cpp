@@ -48,16 +48,24 @@ void RenderSurface::setup() {
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR); 
 	glBindTexture(GL_TEXTURE_2D, 0);
 
+	glGenTextures(1, &texMeshID);
+	glBindTexture(GL_TEXTURE_2D, texMeshID);
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, NULL);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR); 
+	glBindTexture(GL_TEXTURE_2D, 0);
+
 	// Attach color attachments to FBO buffer
 	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, texColor, 0);
 	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT1, GL_TEXTURE_2D, texFacetID, 0);
 	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT2, GL_TEXTURE_2D, texCellID, 0);
 	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT3, GL_TEXTURE_2D, texVertexID, 0);
+	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT4, GL_TEXTURE_2D, texMeshID, 0);
 	// Attach depth attachments to FBO buffer
 	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_TEXTURE_2D, depthAttachmentTexture, 0);
 
-	GLenum drawBuffers[4] = {GL_COLOR_ATTACHMENT0, GL_COLOR_ATTACHMENT1, GL_COLOR_ATTACHMENT2, GL_COLOR_ATTACHMENT3};
-	glDrawBuffers(4, drawBuffers);
+	GLenum drawBuffers[5] = {GL_COLOR_ATTACHMENT0, GL_COLOR_ATTACHMENT1, GL_COLOR_ATTACHMENT2, GL_COLOR_ATTACHMENT3, GL_COLOR_ATTACHMENT4};
+	glDrawBuffers(5, drawBuffers);
 
 	glGenRenderbuffers(1, &rbo);
 	glBindRenderbuffer(GL_RENDERBUFFER, rbo);
@@ -77,13 +85,14 @@ void RenderSurface::bind() {
 	glBindFramebuffer(GL_FRAMEBUFFER, fbo);
 
 	// Enable all three color attachments at once
-	GLenum drawBufs[4] = {
+	GLenum drawBufs[5] = {
 		GL_COLOR_ATTACHMENT0,
 		GL_COLOR_ATTACHMENT1,
 		GL_COLOR_ATTACHMENT2,
-		GL_COLOR_ATTACHMENT3
+		GL_COLOR_ATTACHMENT3,
+		GL_COLOR_ATTACHMENT4
 	};
-	glDrawBuffers(4, drawBufs);
+	glDrawBuffers(5, drawBufs);
 }
 
 void RenderSurface::resize(int w, int h) {
@@ -91,47 +100,50 @@ void RenderSurface::resize(int w, int h) {
 	height = h;
 
 	glViewport(0, 0, width, height);
-    
+
 	glBindFramebuffer(GL_FRAMEBUFFER, fbo);
 
-	// TODO see if necessary ???!!!
 	// Update color attachment texture
-    glBindTexture(GL_TEXTURE_2D, texColor);
-    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, NULL);
+	glBindTexture(GL_TEXTURE_2D, texColor);
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, NULL);
 
-    glBindTexture(GL_TEXTURE_2D, texVertexID);
-    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, NULL);
+	glBindTexture(GL_TEXTURE_2D, texVertexID);
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, NULL);
 
-    glBindTexture(GL_TEXTURE_2D, texFacetID);
-    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, NULL);
+	glBindTexture(GL_TEXTURE_2D, texFacetID);
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, NULL);
 
-    glBindTexture(GL_TEXTURE_2D, texCellID);
-    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, NULL);
-    
-    // Update depth/stencil renderbuffer
+	glBindTexture(GL_TEXTURE_2D, texCellID);
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, NULL);
+
+	glBindTexture(GL_TEXTURE_2D, texMeshID);
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, NULL);
+
+	// Update depth/stencil renderbuffer
 	glBindRenderbuffer(GL_RENDERBUFFER, rbo);
 	glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH24_STENCIL8, width, height);
-    
-    // Verify framebuffer completeness
-    glBindFramebuffer(GL_FRAMEBUFFER, fbo);
-    if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE) {
-        std::cout << "ERROR::FRAMEBUFFER:: Framebuffer is not complete at resize." << std::endl;
-    }
 
-    glBindFramebuffer(GL_FRAMEBUFFER, 0);
+	// Verify framebuffer completeness
+	glBindFramebuffer(GL_FRAMEBUFFER, fbo);
+	if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE) {
+		std::cout << "ERROR::FRAMEBUFFER:: Framebuffer is not complete at resize." << std::endl;
+	}
+
+	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
 	_camera->setScreenSize(width, height);
 }
 
 void RenderSurface::clear() {
 	// Clear attachments
-	GLfloat zero[4] = { 0.f, 0.f, 0.f, 0.f };
+	GLfloat zero[5] = { 0.f, 0.f, 0.f, 0.f };
 
 	glClearColor(backgroundColor.r, backgroundColor.g, backgroundColor.b, 1.);
 	glClearBufferfv(GL_COLOR, 0, zero); // clear each float RT to 0
 	glClearBufferfv(GL_COLOR, 1, zero); // clear each float RT to 0
 	glClearBufferfv(GL_COLOR, 2, zero); // clear each float RT to 0
 	glClearBufferfv(GL_COLOR, 3, zero); // clear each float RT to 0
+	glClearBufferfv(GL_COLOR, 4, zero); // clear each float RT to 0
 }
 
 void RenderSurface::render(Shader &screenShader, unsigned int quadVAO) {
@@ -156,4 +168,5 @@ void RenderSurface::clean() {
 	glDeleteTextures(1, &texCellID);
 	glDeleteTextures(1, &texFacetID);
 	glDeleteTextures(1, &texVertexID);
+	glDeleteTextures(1, &texMeshID);
 }

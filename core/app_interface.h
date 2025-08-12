@@ -53,6 +53,7 @@ struct IApp {
     virtual long pick_edge(double x, double y) = 0;
     virtual long pick_facet(double x, double y) = 0;
     virtual long pick_cell(double x, double y) = 0;
+    virtual long pick_mesh(double x, double y) = 0;
 
     virtual std::vector<unsigned int> getColorMaps2D() = 0;
 

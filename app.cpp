@@ -530,6 +530,14 @@ long App::pick_cell(double x, double y) {
 	return id >= 0 && id < getCurrentModel().getHexahedra().ncells() ? id : -1;
 }
 
+long App::pick_mesh(double x, double y) {
+	glBindFramebuffer(GL_READ_FRAMEBUFFER, getRenderSurface().fbo);
+	glReadBuffer(GL_COLOR_ATTACHMENT4);
+	long id = pick(x, y);
+	glBindFramebuffer(GL_READ_FRAMEBUFFER, 0);
+	return id >= 0 && id < models.size() ? id : -1;
+}
+
 std::vector<long> App::pick_vertices(double x, double y, int radius) {
 	glBindFramebuffer(GL_READ_FRAMEBUFFER, getRenderSurface().fbo);
 	glReadBuffer(GL_COLOR_ATTACHMENT3);

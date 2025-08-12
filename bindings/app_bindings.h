@@ -27,7 +27,8 @@ namespace bindings {
 				"vertex", sol::readonly_property(&InputState::vertex),
 				"edge", sol::readonly_property(&InputState::edge),
 				"facet", sol::readonly_property(&InputState::facet),
-				"cell", sol::readonly_property(&InputState::cell)
+				"cell", sol::readonly_property(&InputState::cell),
+				"mesh", sol::readonly_property(&InputState::mesh)
 			);
 
 			// General functions 

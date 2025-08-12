@@ -95,6 +95,7 @@ struct InputState {
 	PrimitiveState edge;
 	PrimitiveState facet;
 	PrimitiveState cell;
+	PrimitiveState mesh;
 
 	MouseState mouse;
 

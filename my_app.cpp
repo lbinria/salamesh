@@ -422,6 +422,7 @@ void MyApp::mouse_move(double x, double y) {
 	st.vertex.setHovered(pick_vertices(x, y, st.mouse.getCursorRadius()));
 	st.facet.setHovered(pick_facets(x, y, st.mouse.getCursorRadius()));
 	st.cell.setHovered(pick_cells(x, y, st.mouse.getCursorRadius()));
+	st.mesh.setHovered({pick_mesh(x, y)});
 
 	if (glm::dot(st.mouse.pos, st.mouse.lastPos) > 4) {
 		auto edge = pick_edge(x, y);
