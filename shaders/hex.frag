@@ -8,6 +8,7 @@ in float fragVertexIndex;
 layout(location = 0) out vec4 FragColor;
 layout(location = 1) out vec4 fragFacetIndexOut;
 layout(location = 2) out vec4 fragCellIndexOut;
+layout(location = 3) out vec4 fragMeshIndexOut;
 
 in vec3 fragBary;
 in vec3 fragNormal;
@@ -41,6 +42,8 @@ uniform samplerBuffer facetHighlightBuf;
 
 uniform int colorMode = 0;
 uniform vec3 color;
+
+uniform int meshIndex;
 
 vec3 encode_id(int id) {
     int r = id & 0x000000FF;
@@ -141,7 +144,8 @@ void main()
     }
 
     // Outputs
-    fragFacetIndexOut = vec4(encode_id(fragFacetIndex), 1.f);
-    fragCellIndexOut = vec4(encode_id(fragCellIndex), 1.f);
+    fragFacetIndexOut = vec4(encode_id(fragFacetIndex), 1.);
+    fragCellIndexOut = vec4(encode_id(fragCellIndex), 1.);
+    fragMeshIndexOut = vec4(encode_id(meshIndex), 1.);
     FragColor = vec4(col, 1.f);
 }

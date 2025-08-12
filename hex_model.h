@@ -302,6 +302,10 @@ struct HexModel final : public Model {
         _halfedgeRenderer.setEdgeOutsideColor(color);
     }
 
+    void setMeshIndex(int index) override {
+        _hexRenderer.setMeshIndex(index);
+    }
+
     glm::vec3 getWorldPosition() const override {
         if (parent) {
             return parent->getWorldPosition() + position;

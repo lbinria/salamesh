@@ -216,6 +216,7 @@ struct Model {
 
 
     // Model (maybe not virtual !)
+    virtual void setMeshIndex(int index) = 0;
     virtual glm::vec3 getPosition() const = 0;
     virtual void setPosition(glm::vec3 p) = 0;
 

@@ -16,6 +16,7 @@ void MyApp::loadModel(const std::string& filename) {
 	model->load(filename);
 	model->setName(std::filesystem::path(filename).stem().string() + std::to_string(models.size()));
 
+	model->setMeshIndex(models.size());
 	model->setLight(true);
 	model->setMeshShrink(0.f);
 	model->setMeshSize(0.01f);
@@ -39,12 +40,19 @@ void MyApp::loadModel(const std::string& filename) {
 int MyApp::addModel(std::string name) {
 	auto model = std::make_unique<HexModel>();
 	model->setName(name);
+	model->setMeshIndex(models.size());
 	models.push_back(std::move(model));
 	return models.size() - 1;
 }
 
 void MyApp::removeModel(int idx) {
 	models.erase(models.begin() + idx);
+
+	// Update mesh indexes
+	for (int i = idx; i < models.size(); ++i) {
+		auto &m = models[i];
+		m->setMeshIndex(i);
+	}
 }
 
 bool MyApp::removeModel(std::string name) {

@@ -136,6 +136,11 @@ struct HexRenderer {
         return ptrFilter;
     }
 
+    void setMeshIndex(int index) {
+        shader.use();
+        shader.setInt("meshIndex", index);
+    }
+
     private:
 
     Hexahedra &hex;
