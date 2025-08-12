@@ -53,6 +53,8 @@ function draw_gui()
 		str_hovered_edge = tostring(app.input_state.edge.hovered)
 	end
 
+	if str_hovered_mesh == "-1" then str_hovered_mesh = "X" end
+
 	imgui.Text("Hovered mesh: " .. str_hovered_mesh)
 	imgui.Text(tostring(n_hovered_cells) .. " hovered cells: " .. "{" .. str_hovered_cells .. "}")
 	imgui.Text(tostring(n_hovered_facets) .. " hovered facets: " .. "{" .. str_hovered_facets .. "}")
