@@ -15,8 +15,6 @@ void MyApp::loadModel(const std::string& filename) {
 	auto model = std::make_unique<HexModel>();
 	model->load(filename);
 	model->setName(std::filesystem::path(filename).stem().string() + std::to_string(models.size()));
-	model->init();
-	model->push();
 
 	model->setLight(true);
 	model->setMeshShrink(0.f);
@@ -36,6 +34,29 @@ void MyApp::loadModel(const std::string& filename) {
 	#endif
 
 	Commands::get().add_command("app.loadModel(" + filename + ")");
+}
+
+int MyApp::addModel(std::string name) {
+	auto model = std::make_unique<HexModel>();
+	model->setName(name);
+	models.push_back(std::move(model));
+	return models.size() - 1;
+}
+
+void MyApp::removeModel(int idx) {
+	models.erase(models.begin() + idx);
+}
+
+bool MyApp::removeModel(std::string name) {
+	for (int i = 0; i < models.size(); ++i) {
+		auto &m = models[i];
+		if (m->getName() == name) {
+			models.erase(models.begin() + i);
+			return true;
+		}
+	}
+
+	return false;
 }
 
 void MyApp::init() {
@@ -66,6 +87,12 @@ void MyApp::init() {
 	for (auto &m : getChildrenOf(models[0])) {
 		std::cout << "child: " << m->getName() << std::endl;
 	}
+
+
+	// int hello_model_idx = addModel("hello_model");
+	// models[hello_model_idx]->load("assets/catorus_hex_facet_attr.geogram");
+	// models[hello_model_idx]->setPosition(glm::vec3(0.f, 2.f, 0.f));
+	// std::cout << "Remove model: " << removeModel("hello_model") << std::endl;;
 
 
 	Shader screenShader("shaders/screen.vert", "shaders/screen.frag");

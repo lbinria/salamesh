@@ -27,6 +27,9 @@ void HexModel::load(const std::string path) {
 	for (auto a : _volumeAttributes.cells) {
 		addAttr(ElementKind::CELLS, a);
 	}
+
+	init();
+	push();
 }
 
 void HexModel::saveAs(const std::string path) const {

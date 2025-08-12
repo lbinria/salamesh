@@ -6,6 +6,9 @@ struct MyApp : App {
 
 	MyApp(Args args) : App(args) {}
 
+    int addModel(std::string name) override;
+    void removeModel(int idx) override;
+    bool removeModel(std::string name) override;
     void loadModel(const std::string& filename) override;
 	// TODO addModel / removeModel functions
 

@@ -70,6 +70,19 @@ namespace bindings {
 
 			app_type.set_function("load_model", &IApp::loadModel);
 			
+			app_type.set_function("add_model", [](IApp &self, std::string name) {
+				return self.addModel(name) + 1;
+			});
+
+			app_type.set_function("remove_model", sol::overload(
+				[](IApp &self, int idx) {
+					self.removeModel(idx);
+				},
+				[](IApp &self, std::string name) -> bool {
+					return self.removeModel(name);
+				}
+			));
+			
 			app_type.set_function("screenshot", [&app = app](const std::string& filename) {
 				app.screenshot(filename);
 			});

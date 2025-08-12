@@ -2,7 +2,6 @@
 	"modules": [
 		"modules/module_scene",
 		"modules/module_inspector",
-		"modules/module_painting",
-		"/home/tex/Projects/paint_plugin/build"
+		"modules/module_painting"
 	]
 }

@@ -1,3 +1,12 @@
+function init()
+	print("INITUS")
+	local idx = app:add_model("my_model")
+	print("Model added: " .. idx)
+	app.models[idx]:load("assets/catorus_hex_facet_attr.geogram")
+	print("Model loaded: " .. idx)
+	app.models[idx].position = vec3.new(0, 2, 0)
+end
+
 function get_str(primitive_state)
 	local n_hovered = #primitive_state.all_hovered
 	local str_hovered_many = "X"
