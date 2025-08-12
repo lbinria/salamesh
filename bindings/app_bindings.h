@@ -82,6 +82,13 @@ namespace bindings {
 					return self.removeModel(name);
 				}
 			));
+
+			app_type.set_function("get_model_by_name", &IApp::getModelByName);
+
+			app_type.set_function("get_index_of_model", [](IApp &self, std::string name) {
+				int idx = self.getIndexOfModel(name);
+				return idx != -1 ? idx + 1 : -1;
+			});
 			
 			app_type.set_function("screenshot", [&app = app](const std::string& filename) {
 				app.screenshot(filename);

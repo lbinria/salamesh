@@ -6,11 +6,12 @@ struct MyApp : App {
 
 	MyApp(Args args) : App(args) {}
 
+    void loadModel(const std::string& filename) override;
     int addModel(std::string name) override;
     void removeModel(int idx) override;
     bool removeModel(std::string name) override;
-    void loadModel(const std::string& filename) override;
-	// TODO addModel / removeModel functions
+	std::shared_ptr<Model> getModelByName(std::string name) override;
+	int getIndexOfModel(std::string name) override;
 
 	// Override lifecycle functions
 	void init() override;

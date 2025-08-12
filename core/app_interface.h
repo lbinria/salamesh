@@ -22,6 +22,8 @@ struct IApp {
     virtual Camera& getCamera() = 0;
     
     virtual std::vector<std::shared_ptr<Model>>& getModels() = 0;
+    virtual std::shared_ptr<Model> getModelByName(std::string name) = 0;
+    virtual int getIndexOfModel(std::string name) = 0;
     virtual std::vector<std::shared_ptr<Model>> getChildrenOf(std::shared_ptr<Model> model) = 0;
     virtual int countModels() = 0;
     virtual int getSelectedModel() = 0;

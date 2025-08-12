@@ -59,6 +59,23 @@ bool MyApp::removeModel(std::string name) {
 	return false;
 }
 
+std::shared_ptr<Model> MyApp::getModelByName(std::string name) {
+	for (auto &m : models) {
+		if (m->getName() == name)
+			return m;
+	}
+	return nullptr;
+}
+
+int MyApp::getIndexOfModel(std::string name) {
+	for (int i = 0; i < models.size(); ++i) {
+		auto &m = models[i];
+		if (m->getName() == name)
+			return i;
+	}
+	return -1;
+}
+
 void MyApp::init() {
 
 
