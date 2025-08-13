@@ -500,7 +500,11 @@ int App::getHeight() {
 long App::pick_edge(double x, double y) {
 	if (st.cell.anyHovered()) {
 		auto p = pickPoint(x, y);
-		return pick_edge(getCurrentModel().getHexahedra(), p, st.cell.getHovered());
+		// TODO condition just for testing tri 
+		if (getCurrentModel().getModelType() == Model::ModelType::HEX)
+			return pick_edge(getCurrentModel().getHexahedra(), p, st.cell.getHovered());
+		else
+			return -1;
 	} else {
 		return -1;
 	}
@@ -511,7 +515,7 @@ long App::pick_vertex(double x, double y) {
 	glReadBuffer(GL_COLOR_ATTACHMENT3);
 	long id = pick(x, y);
 	glBindFramebuffer(GL_READ_FRAMEBUFFER, 0);
-	return id >= 0 && id < getCurrentModel().getHexahedra().nverts() ? id : -1;
+	return id >= 0 && id < getCurrentModel().nverts() ? id : -1;
 }
 
 long App::pick_facet(double x, double y) {
@@ -519,7 +523,7 @@ long App::pick_facet(double x, double y) {
 	glReadBuffer(GL_COLOR_ATTACHMENT1);
 	long id = pick(x, y);
 	glBindFramebuffer(GL_READ_FRAMEBUFFER, 0);
-	return id >= 0 && id < getCurrentModel().getHexahedra().nfacets() ? id : -1;
+	return id >= 0 && id < getCurrentModel().nfacets() ? id : -1;
 }
 
 long App::pick_cell(double x, double y) {
@@ -527,7 +531,7 @@ long App::pick_cell(double x, double y) {
 	glReadBuffer(GL_COLOR_ATTACHMENT2);
 	long id = pick(x, y);
 	glBindFramebuffer(GL_READ_FRAMEBUFFER, 0);
-	return id >= 0 && id < getCurrentModel().getHexahedra().ncells() ? id : -1;
+	return id >= 0 && id < getCurrentModel().ncells() ? id : -1;
 }
 
 long App::pick_mesh(double x, double y) {
@@ -547,7 +551,7 @@ std::vector<long> App::pick_vertices(double x, double y, int radius) {
 	// Clean ids
 	std::vector<long> clean_ids;
 	std::copy_if(ids.begin(), ids.end(), std::back_inserter(clean_ids), [&](long id) {
-		return id >= 0 && id < getCurrentModel().getHexahedra().nverts();
+		return id >= 0 && id < getCurrentModel().nverts();
 	});
 
 	return clean_ids;
@@ -562,7 +566,7 @@ std::vector<long> App::pick_facets(double x, double y, int radius) {
 	// Clean ids
 	std::vector<long> clean_ids;
 	std::copy_if(ids.begin(), ids.end(), std::back_inserter(clean_ids), [&](long id) {
-		return id >= 0 && id < getCurrentModel().getHexahedra().nfacets();
+		return id >= 0 && id < getCurrentModel().nfacets();
 	});
 
 	return clean_ids;
@@ -577,7 +581,7 @@ std::vector<long> App::pick_cells(double x, double y, int radius) {
 	// Clean ids
 	std::vector<long> clean_ids;
 	std::copy_if(ids.begin(), ids.end(), std::back_inserter(clean_ids), [&](long id) {
-		return id >= 0 && id < getCurrentModel().getHexahedra().ncells();
+		return id >= 0 && id < getCurrentModel().ncells();
 	});
 
 	return clean_ids;

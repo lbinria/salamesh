@@ -42,9 +42,9 @@ struct Model {
 		return static_cast<T&>(*this);
 	}
 
-    virtual constexpr ModelType getModelType() const = 0;
+    virtual ModelType getModelType() const = 0;
 
-	virtual void load(const std::string path) = 0;
+	virtual bool load(const std::string path) = 0;
     virtual void save() const = 0;
     virtual void saveAs(const std::string path) const = 0;
     virtual std::string save_state() = 0;
@@ -67,6 +67,13 @@ struct Model {
 	// TODO temp for refactoring because model is not necessarily a hex model
 	virtual Hexahedra& getHexahedra() = 0;
 	virtual VolumeAttributes& getVolumeAttributes() = 0;
+
+	virtual Triangles& getTriangles() = 0;
+	virtual SurfaceAttributes& getSurfaceAttributes() = 0;
+
+    virtual int nverts() const = 0; 
+    virtual int nfacets() const = 0; 
+    virtual int ncells() const = 0; 
 
     // General shader uniforms
     virtual void setTexture(unsigned int tex) = 0;

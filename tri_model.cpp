@@ -1,15 +1,14 @@
-#include "hex_model.h"
+#include "tri_model.h"
 
-bool HexModel::load(const std::string path) {
+bool TriModel::load(const std::string path) {
 	// TODO check if the model failed to read in ultimaille, else there is side effects ! 
 	
 	// Load the mesh
 	// VolumeAttributes attributes = read_by_extension(path, _hex);
-	_volumeAttributes = read_by_extension(path, _hex);
+	_surfaceAttributes= read_by_extension(path, _tri);
 	_path = path;
 
-
-	if (_hex.ncells() <= 0)
+	if (_tri.nfacets() <= 0)
 		return false;
 
 	// Extract name
@@ -20,17 +19,14 @@ bool HexModel::load(const std::string path) {
 
 	clearAttrs();
 
-	for (auto &a : _volumeAttributes.points) {
+	for (auto &a : _surfaceAttributes.points) {
 		addAttr(ElementKind::POINTS, a);
 	}
-	for (auto a : _volumeAttributes.cell_corners) {
-		addAttr(ElementKind::CELL_CORNERS, a);
+	for (auto &a : _surfaceAttributes.facets) {
+		addAttr(ElementKind::FACETS, a);
 	}
-	for (auto a : _volumeAttributes.cell_facets) {
-		addAttr(ElementKind::CELL_FACETS, a);
-	}
-	for (auto a : _volumeAttributes.cells) {
-		addAttr(ElementKind::CELLS, a);
+	for (auto &a : _surfaceAttributes.corners) {
+		addAttr(ElementKind::CORNERS, a);
 	}
 
 	init();
@@ -38,7 +34,7 @@ bool HexModel::load(const std::string path) {
 	return true;
 }
 
-void HexModel::saveAs(const std::string path) const {
+void TriModel::saveAs(const std::string path) const {
 	// Save the mesh
 	if (path.empty()) {
 		std::cerr << "Error: No path specified for saving the mesh." << std::endl;
@@ -49,9 +45,8 @@ void HexModel::saveAs(const std::string path) const {
 	
 	// Save attributes ! Convert back from salamesh attributes to NamedContainer vectors
 	std::vector<NamedContainer> point_attrs;
-	std::vector<NamedContainer> cell_corner_attrs;
-	std::vector<NamedContainer> cell_facet_attrs;
-	std::vector<NamedContainer> cell_attrs;
+	std::vector<NamedContainer> facet_attrs;
+	std::vector<NamedContainer> corner_attrs;
 	for (auto &a : attrs) {
 		std::string name = a.name;
 		ElementKind kind = a.kind;
@@ -59,40 +54,37 @@ void HexModel::saveAs(const std::string path) const {
 
 		if (kind == ElementKind::POINTS) {
 			point_attrs.push_back(NamedContainer(name, container));
-		} else if (kind == ElementKind::CELL_CORNERS) {
-			cell_corner_attrs.push_back(NamedContainer(name, container));
-		} else if (kind == ElementKind::CELL_FACETS) {
-			cell_facet_attrs.push_back(NamedContainer(name, container));
-		} else if (kind == ElementKind::CELLS) {
-			cell_attrs.push_back(NamedContainer(name, container));
+		} else if (kind == ElementKind::FACETS) {
+			facet_attrs.push_back(NamedContainer(name, container));
+		} else if (kind == ElementKind::CORNERS) {
+			corner_attrs.push_back(NamedContainer(name, container));
 		}
 	}
 
-	VolumeAttributes attributes(
+	SurfaceAttributes attributes(
 		point_attrs,
-		cell_attrs,
-		cell_facet_attrs,
-		cell_corner_attrs
+		facet_attrs,
+		corner_attrs
 	);
 
-	write_by_extension(path, _hex, attributes);
+	write_by_extension(path, _tri, attributes);
 }
 
-void HexModel::save() const {
+void TriModel::save() const {
 	saveAs(_path);
 }
 
-void HexModel::setSelectedAttr(int idx) {
+void TriModel::setSelectedAttr(int idx) {
 	selectedAttr = idx;
 	int kind = attrs[idx].kind;
 	// TODO see condition here not very smart maybe abstract renderers ?
 	if (kind == ElementKind::POINTS) {
 		_pointSetRenderer.setAttribute(attrs[idx].ptr.get());
 	} else 
-		_hexRenderer.setAttribute(attrs[idx].ptr.get(), kind);
+		_triRenderer.setAttribute(attrs[idx].ptr.get(), kind);
 }
 
-void HexModel::setSelectedAttr(std::string name, ElementKind kind) {
+void TriModel::setSelectedAttr(std::string name, ElementKind kind) {
 	// Search attribute by name
 	for (int i = 0; i < attrs.size(); ++i) {
 		const auto &attr = attrs[i];
@@ -106,10 +98,10 @@ void HexModel::setSelectedAttr(std::string name, ElementKind kind) {
 	throw std::runtime_error("Attribute not found: " + name);
 }
 
-void HexModel::push() {
-	_hexRenderer.push();
+void TriModel::push() {
+	_triRenderer.push();
 	_pointSetRenderer.push();
-	_halfedgeRenderer.push();
+	// _halfedgeRenderer.push();
 
 	if (colorMode == Model::ColorMode::ATTRIBUTE) {
 		updateAttr();

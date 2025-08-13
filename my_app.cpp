@@ -12,8 +12,17 @@ void MyApp::loadModel(const std::string& filename) {
 	std::chrono::steady_clock::time_point begin_read_model = std::chrono::steady_clock::now();
 	#endif
 
-	auto model = std::make_unique<HexModel>();
-	model->load(filename);
+	// TODO Should deduce type here
+	std::unique_ptr<Model> model;
+
+	model = std::make_unique<HexModel>();
+	bool hex_load_success = model->load(filename);
+	if (!hex_load_success) {
+		model = std::make_unique<TriModel>();
+		model->load(filename);
+	}
+
+
 	model->setName(std::filesystem::path(filename).stem().string() + std::to_string(models.size()));
 
 	model->setMeshIndex(models.size());
@@ -25,13 +34,7 @@ void MyApp::loadModel(const std::string& filename) {
 	models.push_back(std::move(model));	
 
 	#ifdef _DEBUG
-	Hexahedra &hex = model->getHexahedra();
-	std::cout << "nverts = " << hex.nverts() << std::endl;
-	std::cout << "nfacets = " << hex.nfacets() << std::endl;
-	std::cout << "model read." << std::endl;
-
-	std::chrono::steady_clock::time_point end_read_model = std::chrono::steady_clock::now();
-    std::cout << "read model in: " << std::chrono::duration_cast<std::chrono::milliseconds>(end_read_model - begin_read_model).count() << "ms" << std::endl;
+	// TODO display model info
 	#endif
 
 	Commands::get().add_command("app.loadModel(" + filename + ")");
@@ -101,6 +104,7 @@ void MyApp::init() {
 
 	loadModel("assets/catorus_hex_facet_attr.geogram");
 	loadModel("assets/catorus_hex_attr.geogram");
+	loadModel("assets/catorus_tri.geogram");
 
 	// load_state("/home/tex/Desktop/state.json");
 
@@ -201,8 +205,6 @@ void MyApp::update(float dt) {
 		getCamera().moveUp(-0.01f);
 	}
 
-
-	Hexahedra &hex = getCurrentModel().getHexahedra();
 
 	if (st.mouse.isLeftButton()) {
 		
