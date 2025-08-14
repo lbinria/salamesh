@@ -131,9 +131,6 @@ struct TriModel final : public Model {
 	}
 
 
-    Hexahedra& getHexahedra() override { throw std::runtime_error("No hex on tri"); }
-    VolumeAttributes& getVolumeAttributes() override { throw std::runtime_error("No volume attributes on tri"); }
-
 	Triangles& getTriangles() override { return _tri; }
 	SurfaceAttributes& getSurfaceAttributes() override { return _surfaceAttributes; }
 

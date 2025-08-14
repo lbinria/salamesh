@@ -11,6 +11,7 @@ set(SOURCES
     element.h
     states.h 
     model.h
+    hex_model_interface.h
     camera.h
 )
 

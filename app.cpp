@@ -501,8 +501,10 @@ long App::pick_edge(double x, double y) {
 	if (st.cell.anyHovered()) {
 		auto p = pickPoint(x, y);
 		// TODO condition just for testing tri 
-		if (getCurrentModel().getModelType() == Model::ModelType::HEX)
-			return pick_edge(getCurrentModel().getHexahedra(), p, st.cell.getHovered());
+		if (getCurrentModel().getModelType() == Model::ModelType::HEX) {
+			auto &hex_model = getCurrentModel().as<HexModel>();
+			return pick_edge(hex_model.getHexahedra(), p, st.cell.getHovered());
+		}
 		else
 			return -1;
 	} else {
