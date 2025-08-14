@@ -2,7 +2,8 @@
 	"modules": [
 		"modules/module_scene",
 		"modules/module_inspector",
-		"modules/module_painting"
+		"modules/module_painting",
+		"/home/tex/Projects/paint_plugin/build"
 	],
 	"scene": {
 		"background_color": "#ffffff"

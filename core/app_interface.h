@@ -18,6 +18,8 @@ struct IApp {
     virtual int getHeight() = 0;
 
     virtual void setCullMode(int mode) = 0;
+    virtual bool getCull() const = 0;
+    virtual void setCull(bool enabled) = 0;
 
     virtual Camera& getCamera() = 0;
     

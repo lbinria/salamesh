@@ -104,7 +104,7 @@ void MyApp::init() {
 
 	loadModel("assets/catorus_hex_facet_attr.geogram");
 	loadModel("assets/catorus_hex_attr.geogram");
-	loadModel("assets/catorus_tri.geogram");
+	// loadModel("assets/catorus_tri.geogram");
 
 	// load_state("/home/tex/Desktop/state.json");
 

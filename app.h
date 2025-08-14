@@ -116,6 +116,16 @@ struct App : public IApp {
 
     // Rendering functions
     void setCullMode(int mode) override { cull_mode = mode; }
+    bool getCull() const override { return cull; }
+    
+    void setCull(bool enabled) override {
+        if (cull)
+            glEnable(GL_CULL_FACE); 
+        else 
+            glDisable(GL_CULL_FACE);
+
+        cull = enabled; 
+    }
 
     // Accessors
 
@@ -242,6 +252,7 @@ struct App : public IApp {
 
     // TODO make private
     int cull_mode = GL_BACK;
+    bool cull = true;
 
     bool renderSurfaceWindowHovered = false;
 

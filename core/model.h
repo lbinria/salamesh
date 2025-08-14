@@ -71,6 +71,21 @@ struct Model {
 	virtual Triangles& getTriangles() = 0;
 	virtual SurfaceAttributes& getSurfaceAttributes() = 0;
 
+    template<typename TMesh>
+    TMesh& getMesh() {
+        switch (getModelType())
+        {
+        case ModelType::TRI:
+            return getTriangles();
+            break;
+        case ModelType::HEX:
+            return getHexahedra();
+            break;
+        default:
+            break;
+        }
+    }
+
     virtual int nverts() const = 0; 
     virtual int nfacets() const = 0; 
     virtual int ncells() const = 0; 

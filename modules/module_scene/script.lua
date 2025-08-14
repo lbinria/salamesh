@@ -91,6 +91,7 @@ function draw_model_properties(model, view)
 			if (sel_chk_enable_clipping) then 
 				print("Enable clipping: " .. tostring(new_enable_clipping))
 				cur_model.clipping = new_enable_clipping
+				app.cull = false
 			end
 
 			if (imgui.BeginCombo("##Clipping plane normal", clipping_planes[sel_clipping_plane])) then

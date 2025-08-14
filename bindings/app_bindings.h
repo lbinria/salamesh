@@ -99,6 +99,9 @@ namespace bindings {
 				app.setCullMode(mode);
 			});
 
+			app_type["cull_mode"] = sol::writeonly_property(&IApp::setCullMode);
+			app_type["cull"] = sol::property(&IApp::getCull, &IApp::setCull);
+
 			return app_type;
 		}
 
