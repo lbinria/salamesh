@@ -13,13 +13,18 @@ void MyApp::loadModel(const std::string& filename) {
 	#endif
 
 	// TODO Should deduce type here
+	// TODO please do something more intelligent here !
 	std::unique_ptr<Model> model;
 
 	model = std::make_unique<HexModel>();
 	bool hex_load_success = model->load(filename);
 	if (!hex_load_success) {
 		model = std::make_unique<TriModel>();
-		model->load(filename);
+		bool tri_load_success = model->load(filename);
+		if (!tri_load_success) {
+			model = std::make_unique<QuadModel>();
+			model->load(filename);
+		}
 	}
 
 
@@ -104,7 +109,7 @@ void MyApp::init() {
 	// }
 
 	loadModel("assets/catorus_hex_facet_attr.geogram");
-	loadModel("assets/catorus_hex_attr.geogram");
+	loadModel("assets/catorus_quad.geogram");
 	loadModel("assets/catorus_tri.geogram");
 
 	// load_state("/home/tex/Desktop/state.json");

@@ -75,9 +75,8 @@ struct Model {
 	// TODO temp for refactoring because model is not necessarily a hex model
 	// virtual Hexahedra& getHexahedra() = 0;
 	// virtual VolumeAttributes& getVolumeAttributes() = 0;
-
-	virtual Triangles& getTriangles() = 0;
-	virtual SurfaceAttributes& getSurfaceAttributes() = 0;
+	// virtual Triangles& getTriangles() = 0;
+	// virtual SurfaceAttributes& getSurfaceAttributes() = 0;
 
 
     virtual int nverts() const = 0; 

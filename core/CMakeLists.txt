@@ -14,6 +14,7 @@ set(SOURCES
     model.h
     hex_model_interface.h
     tri_model_interface.h
+    quad_model_interface.h
     camera.h
 )
 

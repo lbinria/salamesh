@@ -81,10 +81,12 @@ add_executable(salamesh
   shader.cpp shader.h 
   point_set_renderer.cpp point_set_renderer.h
   halfedge_renderer.cpp halfedge_renderer.h
-  hex_renderer.cpp hex_renderer.h
-  hex_model.cpp hex_model.h
   tri_renderer.cpp tri_renderer.h
+  quad_renderer.cpp quad_renderer.h
+  hex_renderer.cpp hex_renderer.h
   tri_model.cpp tri_model.h
+  quad_model.cpp quad_model.h
+  hex_model.cpp hex_model.h
   helpers/module_loader.h
   helpers/settings_manager.h
   cameras/arcball_camera.h
