@@ -10,8 +10,10 @@ set(SOURCES
     attribute.h
     element.h
     states.h 
+    renderer.h
     model.h
     hex_model_interface.h
+    tri_model_interface.h
     camera.h
 )
 

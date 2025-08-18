@@ -1,6 +1,6 @@
 #include "point_set_renderer.h"
 
-void PointSetRenderer::setAttribute(ContainerBase *ga) {
+void PointSetRenderer::setAttribute(ContainerBase *ga, int elementKind) {
 
 	// Prepare data
 	std::vector<float> converted_attribute_data;

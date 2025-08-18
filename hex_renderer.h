@@ -10,6 +10,7 @@
 #include "include/glm/gtc/matrix_transform.hpp"
 #include "include/glm/gtc/type_ptr.hpp"
 
+#include "core/renderer.h"
 #include "core/model.h"
 #include "core/element.h"
 #include "shader.h"
@@ -21,7 +22,7 @@ using namespace UM;
 
 
 
-struct HexRenderer {
+struct HexRenderer : IRenderer {
 
     HexRenderer(Hexahedra &hex) : 
         hex(hex),

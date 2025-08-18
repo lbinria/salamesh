@@ -3,7 +3,7 @@
 #include <json.hpp>
 #include <ultimaille/all.h>
 #include <string>
-#include "core/model.h"
+#include "core/tri_model_interface.h"
 #include "point_set_renderer.h"
 #include "halfedge_renderer.h"
 #include "tri_renderer.h"
@@ -11,23 +11,14 @@
 using namespace UM;
 using json = nlohmann::json;
 
-struct TriModel final : public Model {
+struct TriModel final : public ITriModel {
 
 	// Mesh + Renderer
+    using ITriModel::ITriModel;
 
 	TriModel() : 
-        _name(""), 
-        _path(""), 
         _tri(), 
         _triRenderer(_tri), 
-        _pointSetRenderer(_tri.points)
-        /* _halfedgeRenderer(_tri)*/ {}
-
-	TriModel(std::string name) : 
-		_name(name), 
-		_path(""), 
-		_tri(),
-		_triRenderer(_tri),
         _pointSetRenderer(_tri.points)
         /* _halfedgeRenderer(_tri)*/ {}
 
@@ -41,7 +32,8 @@ struct TriModel final : public Model {
 	void save() const override;
 	void saveAs(const std::string path) const override;
 
-    std::string save_state() override {
+
+    std::string save_state() const override {
         json j;
         j["name"] = _name;
         j["path"] = _path;
@@ -100,10 +92,6 @@ struct TriModel final : public Model {
 
         load(_path);
     }
-
-    std::string getName() const override { return _name; }
-    void setName(std::string name) override { _name = name; }
-    std::string getPath() const override { return _path; }
 
 	void init() override {
 		_triRenderer.init();
@@ -276,11 +264,11 @@ struct TriModel final : public Model {
     }
 
     glm::vec3 getPointColor() const override {
-        return _pointSetRenderer.getPointColor();
+        return _pointSetRenderer.getColor();
     }
 
     void setPointColor(glm::vec3 color) override {
-        _pointSetRenderer.setPointColor(color);
+        _pointSetRenderer.setColor(color);
     }
 
     float getPointSize() const override {
@@ -323,30 +311,6 @@ struct TriModel final : public Model {
         _triRenderer.setMeshIndex(index);
     }
 
-    glm::vec3 getWorldPosition() const override {
-        if (parent) {
-            return parent->getWorldPosition() + position;
-        } else {
-            return position;
-        }
-    }
-
-    glm::vec3 getPosition() const override {
-        return position;
-    }
-
-    void setPosition(glm::vec3 p) override {
-        position = p;
-    }
-
-    bool getVisible() const override {
-        return visible;
-    }
-
-    void setVisible(bool v) override {
-        visible = v;
-    }
-
     bool getPointVisible() const override {
         return _pointSetRenderer.getVisible();
     }
@@ -370,15 +334,6 @@ struct TriModel final : public Model {
 
     void setHighlight(std::vector<float> highlights) override {
         _triRenderer.setHighlight(highlights);
-    }
-
-    // TODO remove, make inherit from SurfaceModel
-    void setFacetHighlight(int idx, float highlight) override {
-        // _triRenderer.setFacetHighlight(idx, highlight);
-    }
-
-    void setFacetHighlight(std::vector<float> highlights) override {
-        // _triRenderer.setFacetHighlight(highlights);
     }
 
     void setPointHighlight(int idx, float highlight) override {
@@ -415,75 +370,14 @@ struct TriModel final : public Model {
             _pointSetRenderer.setFilter(v, allFiltered);
 
         }
-
-
-        // // TODO it works but... not very efficient !
-        // Volume::Cell c(_tri, idx);
-        // for (int lc = 0; lc < 8; ++lc) {
-        //     auto corner = c.corner(lc);
-        //     auto v = corner.vertex();
-        //     // Retrieve all cells attached to this point to see whether filtered
-        //     bool allFiltered = true;
-        //     // #pragma omp parallel for
-        //     for (int i = 0; i < _tri.cells.size(); ++i) {
-        //         if (_tri.cells[i] != v)
-        //             continue;
-                
-        //         int ci = i / 8;
-        //         if (_triRenderer.getFilterPtr()[ci] <= 0) {
-        //             allFiltered = false;
-        //             break;
-        //         }
-        //     }
-
-        //     _pointSetRenderer.setFilter(v, allFiltered);
-        //     // _pointSetRenderer.setHighlight(v, 0.1f);
-        // }
-
         
-    }
-
-
-    std::vector<Attribute> getAttrs() const override {
-        return attrs;
-    }
-
-    Attribute getAttr(int idx) const override {
-        return attrs[idx];
-    }
-
-    void clearAttrs() override {
-        attrs.clear();
-    }
-
-    int getSelectedAttr() const override {
-        return selectedAttr;
     }
 
     void setSelectedAttr(int idx) override;
     void setSelectedAttr(std::string name, ElementKind kind) override;
 
-    void updateAttr() {
-        setSelectedAttr(selectedAttr);
-    }
 
-
-    std::shared_ptr<Model> getParent() const override {
-        return parent;
-    }
-
-    void setParent(std::shared_ptr<Model> parentModel) override {
-            parent = parentModel;
-    }
-
-
-    private:
-    std::string _name;
-    std::string _path;
-
-    glm::vec3 position{0, 0, 0};
-
-    bool visible = true;
+    private: 
 
     bool isLightEnabled = true;
     bool isLightFollowView = false;
@@ -498,7 +392,6 @@ struct TriModel final : public Model {
     Model::ColorMode colorMode = Model::ColorMode::COLOR;
     glm::vec3 color{0.8f, 0.f, 0.2f};
     
-    int selectedAttr = 0;
     int selectedColormap = 0;
 
     // Mesh
@@ -511,8 +404,7 @@ struct TriModel final : public Model {
     TriRenderer _triRenderer;
 
 
-    // Pointer to parent model, if there is one
-    std::shared_ptr<Model> parent;
+
 
     void addAttr(ElementKind kind, NamedContainer &container) {
         

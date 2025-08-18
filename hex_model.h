@@ -15,22 +15,14 @@ struct HexModel final : public IHexModel {
 
 	// Mesh + Renderer
 
+    using IHexModel::IHexModel;
+
 	HexModel() : 
-        _name(""), 
-        _path(""), 
         _hex(), 
         _hexRenderer(_hex), 
         _pointSetRenderer(_hex.points),
-        _halfedgeRenderer(_hex) {}
-
-	HexModel(std::string name) : 
-		_name(name), 
-		_path(""), 
-		_hex(),
-		_hexRenderer(_hex),
-        _pointSetRenderer(_hex.points),
-        _halfedgeRenderer(_hex) {}
-
+        _halfedgeRenderer(_hex) {
+        }
 
     ModelType getModelType() const override {
         return ModelType::HEX;
@@ -41,7 +33,7 @@ struct HexModel final : public IHexModel {
 	void save() const override;
 	void saveAs(const std::string path) const override;
 
-    std::string save_state() override {
+    std::string save_state() const override {
         json j;
         j["name"] = _name;
         j["path"] = _path;
@@ -101,9 +93,7 @@ struct HexModel final : public IHexModel {
         load(_path);
     }
 
-    std::string getName() const override { return _name; }
-    void setName(std::string name) override { _name = name; }
-    std::string getPath() const override { return _path; }
+
 
 	void init() override {
 		_hexRenderer.init();
@@ -155,7 +145,6 @@ struct HexModel final : public IHexModel {
         _halfedgeRenderer.setTexture(tex);
     }
 
-	// Just call underlying renderer methods
     int getColorMode() const override {
         return colorMode;
     }
@@ -279,11 +268,11 @@ struct HexModel final : public IHexModel {
     }
 
     glm::vec3 getPointColor() const override {
-        return _pointSetRenderer.getPointColor();
+        return _pointSetRenderer.getColor();
     }
 
     void setPointColor(glm::vec3 color) override {
-        _pointSetRenderer.setPointColor(color);
+        _pointSetRenderer.setColor(color);
     }
 
     float getPointSize() const override {
@@ -320,30 +309,6 @@ struct HexModel final : public IHexModel {
 
     void setMeshIndex(int index) override {
         _hexRenderer.setMeshIndex(index);
-    }
-
-    glm::vec3 getWorldPosition() const override {
-        if (parent) {
-            return parent->getWorldPosition() + position;
-        } else {
-            return position;
-        }
-    }
-
-    glm::vec3 getPosition() const override {
-        return position;
-    }
-
-    void setPosition(glm::vec3 p) override {
-        position = p;
-    }
-
-    bool getVisible() const override {
-        return visible;
-    }
-
-    void setVisible(bool v) override {
-        visible = v;
     }
 
     bool getPointVisible() const override {
@@ -417,46 +382,10 @@ struct HexModel final : public IHexModel {
     }
 
 
-    std::vector<Attribute> getAttrs() const override {
-        return attrs;
-    }
-
-    Attribute getAttr(int idx) const override {
-        return attrs[idx];
-    }
-
-    void clearAttrs() override {
-        attrs.clear();
-    }
-
-    int getSelectedAttr() const override {
-        return selectedAttr;
-    }
-
     void setSelectedAttr(int idx) override;
     void setSelectedAttr(std::string name, ElementKind kind) override;
 
-    void updateAttr() {
-        setSelectedAttr(selectedAttr);
-    }
-
-
-    std::shared_ptr<Model> getParent() const override {
-        return parent;
-    }
-
-    void setParent(std::shared_ptr<Model> parentModel) override {
-            parent = parentModel;
-    }
-
-
     private:
-    std::string _name;
-    std::string _path;
-
-    glm::vec3 position{0, 0, 0};
-
-    bool visible = true;
 
     bool isLightEnabled = true;
     bool isLightFollowView = false;
@@ -471,7 +400,6 @@ struct HexModel final : public IHexModel {
     Model::ColorMode colorMode = Model::ColorMode::COLOR;
     glm::vec3 color{0.8f, 0.f, 0.2f};
     
-    int selectedAttr = 0;
     int selectedColormap = 0;
 
     // Mesh
@@ -482,10 +410,6 @@ struct HexModel final : public IHexModel {
     PointSetRenderer _pointSetRenderer;
     HalfedgeRenderer _halfedgeRenderer;
     HexRenderer _hexRenderer;
-
-
-    // Pointer to parent model, if there is one
-    std::shared_ptr<Model> parent;
 
     void addAttr(ElementKind kind, NamedContainer &container) {
         

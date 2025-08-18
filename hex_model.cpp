@@ -87,7 +87,7 @@ void HexModel::setSelectedAttr(int idx) {
 	int kind = attrs[idx].kind;
 	// TODO see condition here not very smart maybe abstract renderers ?
 	if (kind == ElementKind::POINTS) {
-		_pointSetRenderer.setAttribute(attrs[idx].ptr.get());
+		_pointSetRenderer.setAttribute(attrs[idx].ptr.get(), -1);
 	} else 
 		_hexRenderer.setAttribute(attrs[idx].ptr.get(), kind);
 }

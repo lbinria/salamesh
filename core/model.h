@@ -35,6 +35,14 @@ struct Model {
         Pick_cell = 3
     };
 
+    Model() :
+    _name(""),
+    _path("") {}
+
+    Model(std::string name) : 
+    _name(name), 
+    _path("") {}
+
 	template<typename T>
 	T& as() {
         static_assert(std::is_base_of_v<Model, T>, "Model::as() can only be used with derived classes of Model");
@@ -47,11 +55,11 @@ struct Model {
 	virtual bool load(const std::string path) = 0;
     virtual void save() const = 0;
     virtual void saveAs(const std::string path) const = 0;
-    virtual std::string save_state() = 0;
+    virtual std::string save_state() const = 0;
 
-    virtual std::string getName() const = 0;
-    virtual void setName(std::string name) = 0;
-    virtual std::string getPath() const = 0;
+    std::string getName() const { return _name; }
+    void setName(std::string name) { _name = name; }
+    std::string getPath() const { return _path; }
 
     static constexpr const char* colorModeStrings[2] = {"Color", "Attribute"};
     constexpr std::array<std::string_view, 2> getColorModeStrings() {
@@ -81,8 +89,6 @@ struct Model {
     
 	virtual void setHighlight(int idx, float highlight) = 0;
 	virtual void setHighlight(std::vector<float> highlights) = 0;
-    virtual void setFacetHighlight(int idx, float highlight) = 0;
-    virtual void setFacetHighlight(std::vector<float> highlights) = 0;
     virtual void setPointHighlight(int idx, float highlight) = 0;
     virtual void setPointHighlight(std::vector<float> highlights) = 0;
     // TODO setEdgeHighlight
@@ -130,18 +136,35 @@ struct Model {
     virtual void setEdgeOutsideColor(glm::vec3 color) = 0;
 
     // Model attributes
-    virtual std::vector<Attribute> getAttrs() const = 0;
-    virtual Attribute getAttr(int idx) const = 0;
+    std::vector<Attribute> getAttrs() const {
+        return attrs;
+    }
+
+    Attribute getAttr(int idx) const {
+        return attrs[idx];
+    }
+
+    void clearAttrs() {
+        attrs.clear();
+    }
+
+    int getSelectedAttr() const {
+        return selectedAttr;
+    }
+
+    virtual void setSelectedAttr(int idx) = 0;
+    virtual void setSelectedAttr(std::string name, ElementKind kind) = 0;
+
+    
+    void updateAttr() {
+        setSelectedAttr(selectedAttr);
+    }
+
     // virtual void removeAttr(const std::string& name, ElementKind element) = 0;
-    virtual void clearAttrs() = 0;
 
     // Model attributes shader uniforms
     virtual int getSelectedColormap() const = 0;
     virtual void setSelectedColormap(int idx) = 0;
-
-    virtual void setSelectedAttr(int idx) = 0;
-    virtual void setSelectedAttr(std::string name, ElementKind kind) = 0;
-    virtual int getSelectedAttr() const = 0;
 
     template<typename T>
     ElementType deduceType(GenericAttribute<T> &attr) {
@@ -225,11 +248,23 @@ struct Model {
 
     // Model (maybe not virtual !)
     virtual void setMeshIndex(int index) = 0;
-    virtual glm::vec3 getPosition() const = 0;
-    virtual void setPosition(glm::vec3 p) = 0;
 
-    virtual bool getVisible() const = 0;
-    virtual void setVisible(bool v) = 0;
+    glm::vec3 getPosition() const {
+        return position;
+    }
+
+    void setPosition(glm::vec3 p) {
+        position = p;
+    }
+
+    bool getVisible() const {
+        return visible;
+    }
+
+    void setVisible(bool v) {
+        visible = v;
+    }
+    
     virtual bool getMeshVisible() const = 0;
     virtual void setMeshVisible(bool v) = 0;    
     virtual bool getPointVisible() const = 0;
@@ -237,11 +272,34 @@ struct Model {
     virtual bool getEdgeVisible() const = 0;
     virtual void setEdgeVisible(bool v) = 0;
 
-    virtual void setParent(std::shared_ptr<Model> parentModel) = 0;
-    virtual std::shared_ptr<Model> getParent() const = 0;
-    virtual glm::vec3 getWorldPosition() const = 0;
+    std::shared_ptr<Model> getParent() const {
+        return parent;
+    }
+
+    void setParent(std::shared_ptr<Model> parentModel) {
+            parent = parentModel;
+    }
+
+    glm::vec3 getWorldPosition() const {
+        if (parent) {
+            return parent->getWorldPosition() + position;
+        } else {
+            return position;
+        }
+    }
 
     protected:
+    std::string _name;
+    std::string _path;
+
+    glm::vec3 position{0, 0, 0};
+    bool visible = true;
+
+    // Pointer to parent model, if there is one
+    std::shared_ptr<Model> parent;
+
     std::vector<Attribute> attrs;
+    int selectedAttr = 0;
+
 
 };
