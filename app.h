@@ -178,6 +178,8 @@ struct App : public IApp {
             std::cerr << "Invalid camera index: " << selected << std::endl;
             return;
         }
+        // TODO see this, quick-fix
+        getRenderSurface().setCamera(cameras[selected]);
         selected_camera = selected;
     }
     

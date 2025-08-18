@@ -39,6 +39,7 @@ struct RenderSurface {
 
     void setCamera(std::shared_ptr<Camera> camera) {
         _camera = camera;
+        _camera->setScreenSize(width, height);
     }
 
     void setBackgroundColor(glm::vec3 color) {
