@@ -339,7 +339,8 @@ void App::setup() {
 	glBindVertexArray(0);
 
 	glEnable(GL_PROGRAM_POINT_SIZE);
-	glEnable(GL_CULL_FACE);
+	// glEnable(GL_CULL_FACE);
+	glDisable(GL_CULL_FACE);
 
 }
 
@@ -498,18 +499,33 @@ int App::getHeight() {
 
 
 long App::pick_edge(double x, double y) {
+	if (!st.cell.anyHovered() && !st.facet.anyHovered())
+		return -1;
+
+	auto model = getHoveredModel();
+	if (!model)
+		return -1;
+
 	if (st.cell.anyHovered()) {
 		auto p = pickPoint(x, y);
-		// TODO condition just for testing tri 
-		if (getCurrentModel().getModelType() == Model::ModelType::HEX) {
-			auto &hex_model = getCurrentModel().as<HexModel>();
+		if (model->getModelType() == Model::ModelType::HEX) {
+			auto &hex_model = model->as<HexModel>();
 			return pick_edge(hex_model.getHexahedra(), p, st.cell.getHovered());
 		}
 		else
 			return -1;
-	} else {
-		return -1;
-	}
+	} else if (st.facet.anyHovered()) {
+
+		if (model->getModelType() == Model::ModelType::TRI) {
+			auto p = pickPoint(x, y);
+			auto &tri_model = model->as<TriModel>();
+			return pick_edge(tri_model.getTriangles(), p, st.facet.getHovered());
+		} else 
+			return -1;
+
+	} 
+
+	return -1;
 }
 
 long App::pick_vertex(double x, double y) {

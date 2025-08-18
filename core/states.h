@@ -99,4 +99,23 @@ struct InputState {
 
 	MouseState mouse;
 
+	// Get mouse state of a given primitive (VERTEX, EDGE, FACET, CELL...)
+	PrimitiveState& getPrimitiveState(ElementKind kind) {
+		switch (kind)
+		{
+		case POINTS:
+			return vertex;
+		case EDGES:
+			return edge;
+		case FACETS:
+			return facet;
+		case CELLS:
+			return cell;
+		case CELL_FACETS:
+			return facet;
+		default:
+			throw new std::runtime_error("Unsupported primitive state: " + elementKindToString(kind));
+		}
+	}
+
 };

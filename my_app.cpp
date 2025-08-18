@@ -105,7 +105,7 @@ void MyApp::init() {
 
 	loadModel("assets/catorus_hex_facet_attr.geogram");
 	loadModel("assets/catorus_hex_attr.geogram");
-	// loadModel("assets/catorus_tri.geogram");
+	loadModel("assets/catorus_tri.geogram");
 
 	// load_state("/home/tex/Desktop/state.json");
 
@@ -118,6 +118,9 @@ void MyApp::init() {
 		std::cout << "child: " << m->getName() << std::endl;
 	}
 
+
+	for (int i = 0; i < 1000; ++i)
+		models[3]->setFilter(rand() % 3000, true);
 
 	// int hello_model_idx = addModel("hello_model");
 	// models[hello_model_idx]->load("assets/catorus_hex_facet_attr.geogram");
@@ -422,10 +425,16 @@ void MyApp::mouse_button(int button, int action, int mods) {
 
 void MyApp::mouse_move(double x, double y) {
 
+	long pick_mesh_id = pick_mesh(x, y);
+	if (pick_mesh_id >= 0)
+		st.mesh.setHovered({pick_mesh_id});
+	else 
+		st.mesh.setHovered({});
+
 	st.vertex.setHovered(pick_vertices(x, y, st.mouse.getCursorRadius()));
 	st.facet.setHovered(pick_facets(x, y, st.mouse.getCursorRadius()));
 	st.cell.setHovered(pick_cells(x, y, st.mouse.getCursorRadius()));
-	st.mesh.setHovered({pick_mesh(x, y)});
+
 
 	if (glm::dot(st.mouse.pos, st.mouse.lastPos) > 4) {
 		auto edge = pick_edge(x, y);

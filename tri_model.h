@@ -292,6 +292,7 @@ struct TriModel final : public Model {
     }
 
     float getEdgeSize() const override {
+        return 0;
         // return _halfedgeRenderer.getEdgeSize();
     }
 
@@ -300,6 +301,7 @@ struct TriModel final : public Model {
     }
 
     glm::vec3 getEdgeInsideColor() const override {
+        return glm::vec3(0);
         // return _halfedgeRenderer.getEdgeInsideColor();
     }
 
@@ -308,6 +310,8 @@ struct TriModel final : public Model {
     }
 
     glm::vec3 getEdgeOutsideColor() const override {
+        return glm::vec3(0);
+
         // return _halfedgeRenderer.getEdgeOutsideColor();
     }
 
@@ -352,6 +356,7 @@ struct TriModel final : public Model {
     }
 
     bool getEdgeVisible() const override {
+        return false;
         // return _halfedgeRenderer.getVisible();
     }
 
@@ -384,9 +389,33 @@ struct TriModel final : public Model {
         _pointSetRenderer.setHighlight(highlights);
     }
 
-    // TODO filter anything else than cell !
     void setFilter(int idx, bool filter) override {
-        // _triRenderer.setFilter(idx, filter);
+
+        _triRenderer.setFilter(idx, filter);
+        Surface::Facet f(_tri, idx);
+        for (int lv = 0; lv < 3; ++lv) {
+            auto v = f.vertex(lv);
+
+            bool allFiltered = true;
+
+            // Iterate on corners
+            for (int c = 0; c < _tri.facets.size(); ++c) {
+                // If iterated corner is not current vertex, skip !
+                if (_tri.facets[c] != v)
+                    continue;
+
+                int fi = c / 3;
+                if (_triRenderer.getFilterPtr()[fi] <= 0) {
+                    allFiltered = false;
+                    break;
+                }
+            }
+
+            // Only filter point when all attached facets are filtered
+            _pointSetRenderer.setFilter(v, allFiltered);
+
+        }
+
 
         // // TODO it works but... not very efficient !
         // Volume::Cell c(_tri, idx);
