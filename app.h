@@ -30,6 +30,7 @@
 
 #include "tri_model.h"
 #include "quad_model.h"
+#include "tet_model.h"
 #include "hex_model.h"
 
 #include "render_surface.h"

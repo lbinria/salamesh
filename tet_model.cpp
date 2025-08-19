@@ -1,13 +1,14 @@
-#include "quad_model.h"
+#include "tet_model.h"
 
-bool QuadModel::load(const std::string path) {
+bool TetModel::load(const std::string path) {
 	// TODO check if the model failed to read in ultimaille, else there is side effects ! 
 	
 	// Load the mesh
-	_surfaceAttributes = read_by_extension(path, _quad);
+	_volumeAttributes = read_by_extension(path, _m);
 	_path = path;
 
-	if (_quad.nfacets() <= 0)
+
+	if (_m.ncells() <= 0)
 		return false;
 
 	// Extract name
@@ -18,14 +19,17 @@ bool QuadModel::load(const std::string path) {
 
 	clearAttrs();
 
-	for (auto &a : _surfaceAttributes.points) {
+	for (auto &a : _volumeAttributes.points) {
 		addAttr(ElementKind::POINTS, a);
 	}
-	for (auto &a : _surfaceAttributes.facets) {
-		addAttr(ElementKind::FACETS, a);
+	for (auto a : _volumeAttributes.cell_corners) {
+		addAttr(ElementKind::CELL_CORNERS, a);
 	}
-	for (auto &a : _surfaceAttributes.corners) {
-		addAttr(ElementKind::CORNERS, a);
+	for (auto a : _volumeAttributes.cell_facets) {
+		addAttr(ElementKind::CELL_FACETS, a);
+	}
+	for (auto a : _volumeAttributes.cells) {
+		addAttr(ElementKind::CELLS, a);
 	}
 
 	init();
@@ -33,7 +37,7 @@ bool QuadModel::load(const std::string path) {
 	return true;
 }
 
-void QuadModel::saveAs(const std::string path) const {
+void TetModel::saveAs(const std::string path) const {
 	// Save the mesh
 	if (path.empty()) {
 		std::cerr << "Error: No path specified for saving the mesh." << std::endl;
@@ -44,8 +48,9 @@ void QuadModel::saveAs(const std::string path) const {
 	
 	// Save attributes ! Convert back from salamesh attributes to NamedContainer vectors
 	std::vector<NamedContainer> point_attrs;
-	std::vector<NamedContainer> facet_attrs;
-	std::vector<NamedContainer> corner_attrs;
+	std::vector<NamedContainer> cell_corner_attrs;
+	std::vector<NamedContainer> cell_facet_attrs;
+	std::vector<NamedContainer> cell_attrs;
 	for (auto &a : attrs) {
 		std::string name = a.name;
 		ElementKind kind = a.kind;
@@ -53,49 +58,40 @@ void QuadModel::saveAs(const std::string path) const {
 
 		if (kind == ElementKind::POINTS) {
 			point_attrs.push_back(NamedContainer(name, container));
-		} else if (kind == ElementKind::FACETS) {
-			facet_attrs.push_back(NamedContainer(name, container));
-		} else if (kind == ElementKind::CORNERS) {
-			corner_attrs.push_back(NamedContainer(name, container));
+		} else if (kind == ElementKind::CELL_CORNERS) {
+			cell_corner_attrs.push_back(NamedContainer(name, container));
+		} else if (kind == ElementKind::CELL_FACETS) {
+			cell_facet_attrs.push_back(NamedContainer(name, container));
+		} else if (kind == ElementKind::CELLS) {
+			cell_attrs.push_back(NamedContainer(name, container));
 		}
 	}
 
-	SurfaceAttributes attributes(
+	VolumeAttributes attributes(
 		point_attrs,
-		facet_attrs,
-		corner_attrs
+		cell_attrs,
+		cell_facet_attrs,
+		cell_corner_attrs
 	);
 
-	write_by_extension(path, _quad, attributes);
+	write_by_extension(path, _m, attributes);
 }
 
-void QuadModel::save() const {
+void TetModel::save() const {
 	saveAs(_path);
 }
 
-void QuadModel::setSelectedAttr(int idx) {
-
-	//TODO see it seems doesn't work !
-	// Check attrs size
-	if (idx < 0 || idx > (attrs.size() - 1)) {
-		throw std::runtime_error(
-			"Selected attribute index out of bound: " + 
-			std::to_string(idx) + ", model has " + 
-			std::to_string(attrs.size()) + 
-			" attributes."
-		);
-	}
-
+void TetModel::setSelectedAttr(int idx) {
 	selectedAttr = idx;
 	int kind = attrs[idx].kind;
 	// TODO see condition here not very smart maybe abstract renderers ?
 	if (kind == ElementKind::POINTS) {
 		_pointSetRenderer.setAttribute(attrs[idx].ptr.get(), -1);
 	} else 
-		_quadRenderer.setAttribute(attrs[idx].ptr.get(), kind);
+		_tetRenderer.setAttribute(attrs[idx].ptr.get(), kind);
 }
 
-void QuadModel::setSelectedAttr(std::string name, ElementKind kind) {
+void TetModel::setSelectedAttr(std::string name, ElementKind kind) {
 	// Search attribute by name
 	for (int i = 0; i < attrs.size(); ++i) {
 		const auto &attr = attrs[i];
@@ -109,10 +105,10 @@ void QuadModel::setSelectedAttr(std::string name, ElementKind kind) {
 	throw std::runtime_error("Attribute not found: " + name);
 }
 
-void QuadModel::push() {
-	_quadRenderer.push();
+void TetModel::push() {
+	_tetRenderer.push();
 	_pointSetRenderer.push();
-	// _halfedgeRenderer.push();
+	//_halfedgeRenderer.push();
 
 	if (colorMode == Model::ColorMode::ATTRIBUTE) {
 		updateAttr();

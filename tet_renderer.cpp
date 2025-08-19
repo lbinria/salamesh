@@ -1,7 +1,7 @@
-#include "quad_renderer.h"
+#include "tet_renderer.h"
 
 
-void QuadRenderer::setAttribute(ContainerBase *ga, int element) {
+void TetRenderer::setAttribute(ContainerBase *ga, int element) {
 	// Set attribute element to shader
 	shader.use();
 	shader.setInt("attrElement", element);
@@ -37,7 +37,7 @@ void QuadRenderer::setAttribute(ContainerBase *ga, int element) {
 }
 
 
-void QuadRenderer::setAttribute(std::vector<float> attributeData) {
+void TetRenderer::setAttribute(std::vector<float> attributeData) {
 
 	// Get bounds (min-max)
 	float min = std::numeric_limits<float>::max(); 
@@ -56,7 +56,7 @@ void QuadRenderer::setAttribute(std::vector<float> attributeData) {
 	glBufferData(GL_TEXTURE_BUFFER, attributeData.size() * sizeof(float), attributeData.data(), GL_STATIC_DRAW);
 }
 
-void QuadRenderer::init() {
+void TetRenderer::init() {
 
 	// TODO maybe update buffer size of ptr on push ? move ncells somewher eelse
 
@@ -84,20 +84,32 @@ void QuadRenderer::init() {
 	
 	glGenBuffers(1, &bufHighlight);
 	glBindBuffer(GL_TEXTURE_BUFFER, bufHighlight);
-	glBufferStorage(GL_TEXTURE_BUFFER, _m.nfacets() * sizeof(float), nullptr, flags);
+	glBufferStorage(GL_TEXTURE_BUFFER, _m.ncells() * sizeof(float), nullptr, flags);
 	// Map once and keep pointer (not compatible for MacOS... because need OpenGL >= 4.6 i think)
-	ptrHighlight = (float*)glMapBufferRange(GL_TEXTURE_BUFFER, 0, _m.nfacets() * sizeof(float), flags);
+	ptrHighlight = (float*)glMapBufferRange(GL_TEXTURE_BUFFER, 0, _m.ncells() * sizeof(float), flags);
 
 	glGenTextures(1, &texHighlight);
 	glActiveTexture(GL_TEXTURE0 + 3); 
 	glBindTexture(GL_TEXTURE_BUFFER, texHighlight);
 	glTexBuffer(GL_TEXTURE_BUFFER, GL_R32F, bufHighlight);
 
-	glGenBuffers(1, &bufFilter);
-	glBindBuffer(GL_TEXTURE_BUFFER, bufFilter);
+
+	glGenBuffers(1, &bufFacetHighlight);
+	glBindBuffer(GL_TEXTURE_BUFFER, bufFacetHighlight);
 	glBufferStorage(GL_TEXTURE_BUFFER, _m.nfacets() * sizeof(float), nullptr, flags);
 	// Map once and keep pointer (not compatible for MacOS... because need OpenGL >= 4.6 i think)
-	ptrFilter = (float*)glMapBufferRange(GL_TEXTURE_BUFFER, 0, _m.nfacets() * sizeof(float), flags);
+	ptrFacetHighlight = (float*)glMapBufferRange(GL_TEXTURE_BUFFER, 0, _m.nfacets() * sizeof(float), flags);
+
+	glGenTextures(1, &texFacetHighlight);
+	glActiveTexture(GL_TEXTURE0 + 4); 
+	glBindTexture(GL_TEXTURE_BUFFER, texFacetHighlight);
+	glTexBuffer(GL_TEXTURE_BUFFER, GL_R32F, bufFacetHighlight);
+
+	glGenBuffers(1, &bufFilter);
+	glBindBuffer(GL_TEXTURE_BUFFER, bufFilter);
+	glBufferStorage(GL_TEXTURE_BUFFER, _m.ncells() * sizeof(float), nullptr, flags);
+	// Map once and keep pointer (not compatible for MacOS... because need OpenGL >= 4.6 i think)
+	ptrFilter = (float*)glMapBufferRange(GL_TEXTURE_BUFFER, 0, _m.ncells() * sizeof(float), flags);
 
 	glGenTextures(1, &texFilter);
 	glActiveTexture(GL_TEXTURE0 + 5); 
@@ -126,6 +138,9 @@ void QuadRenderer::init() {
 	glBindTexture(GL_TEXTURE_BUFFER, texHighlight);
 
 	glActiveTexture(GL_TEXTURE0 + 4);
+	glBindTexture(GL_TEXTURE_BUFFER, texFacetHighlight);
+
+	glActiveTexture(GL_TEXTURE0 + 5);
 	glBindTexture(GL_TEXTURE_BUFFER, texFilter);
 
 	glBindBuffer(GL_TEXTURE_BUFFER, 0);
@@ -134,7 +149,8 @@ void QuadRenderer::init() {
 	shader.setInt("bary", 1);
 	shader.setInt("attributeData", 2);
 	shader.setInt("highlightBuf", 3);
-	shader.setInt("filterBuf", 4);
+	shader.setInt("facetHighlightBuf", 4);
+	shader.setInt("filterBuf", 5);
 
 	#ifdef _DEBUG
     std::cout << "vertex attrib setup..." << std::endl;
@@ -183,7 +199,7 @@ void QuadRenderer::init() {
 
 }
 
-void QuadRenderer::push() {
+void TetRenderer::push() {
 
 	#ifdef _DEBUG
     std::cout << "push start." << std::endl;
@@ -191,86 +207,92 @@ void QuadRenderer::push() {
 
 	std::chrono::steady_clock::time_point begin = std::chrono::steady_clock::now();
 
-	nverts = _m.nfacets() * 6 /* 3 points per tri, 2 tri per facet */;
+	nverts = _m.nfacets() * 3 /* 3 points per tri */;
+	std::vector<Vertex> vertices(nverts);
+
+	// Cell properties
 
 	// (8ms -> 3ms)
-	std::vector<float> barys(_m.nfacets() * 3);
+	std::vector<float> barys(_m.ncells() * 3);
 
-	const int size = _m.nfacets();
-	for (int fi = 0; fi < size; ++fi) {
+	const int size = _m.cells.size() / 4;
+	for (int ci = 0; ci < size; ++ci) {
 		// Compute bary
-		const int off = fi * 4;
-		const vec3 &v0 = _m.points[_m.facets[off]];	
-		const vec3 &v1 = _m.points[_m.facets[off + 1]];
-		const vec3 &v2 = _m.points[_m.facets[off + 2]];
-		const vec3 &v3 = _m.points[_m.facets[off + 3]];
+		const int off = ci * 4;
+		const vec3 &v0 = _m.points[_m.cells[off]];	
+		const vec3 &v1 = _m.points[_m.cells[off + 1]];
+		const vec3 &v2 = _m.points[_m.cells[off + 2]];
+		const vec3 &v3 = _m.points[_m.cells[off + 3]];
 
-		barys[fi * 3] = (v0.x + v1.x + v2.x + v3.x) / 4;
-		barys[fi * 3 + 1] = (v0.y + v1.y + v2.y + v3.y) / 4;
-		barys[fi * 3 + 2] = (v0.z + v1.z + v2.z + v3.z) / 4;
+		barys[ci * 3] = (v0.x + v1.x + v2.x + v3.x) / 4;
+		barys[ci * 3 + 1] = (v0.y + v1.y + v2.y + v3.y) / 4;
+		barys[ci * 3 + 2] = (v0.z + v1.z + v2.z + v3.z) / 4;
 	}
 
-	constexpr int verts[2][3] = {{0, 1, 3}, {2, 3, 1}};
-
-	std::vector<Vertex> vertices;
-	for (auto &f : _m.iter_facets()) {
-
-		// Get 4 points of facet
-		const vec3 points[4] = {
-			f.vertex(0).pos(),
-			f.vertex(1).pos(),
-			f.vertex(2).pos(),
-			f.vertex(3).pos()
-		};
-
-		// Compute normal
-		Quad3 q = f;
-		auto n = q.normal();
+	std::chrono::steady_clock::time_point end_barys = std::chrono::steady_clock::now();
 
 
-		for (int t = 0; t < 2; ++t) {
+	std::chrono::steady_clock::time_point begin_facets = std::chrono::steady_clock::now();
 
-			const double a = (points[verts[t][1]] - points[verts[t][0]]).norm();
-			const double b = (points[verts[t][2]] - points[verts[t][1]]).norm();
-			const double c = (points[verts[t][2]] - points[verts[t][0]]).norm();
+
+	int i = 0;
+	
+	for (int ci = 0; ci < _m.ncells(); ++ci) {
+		for (int lfi = 0; lfi < 4; ++lfi) {
+
+
+			// Compute normal
+			Volume::Facet f(_m, _m.facet(ci, lfi));
+			Triangle3 t = f;
+			auto n = t.normal();
+
+			const double a = (f.vertex(1).pos() - f.vertex(0).pos()).norm();
+			const double b = (f.vertex(2).pos() - f.vertex(1).pos()).norm();
+			const double c = (f.vertex(2).pos() - f.vertex(0).pos()).norm();
 
 			const double side_lengths[] = {a, b, c};
 			const double s = a + b + c;
 			const double area = sqrt(s * (s - a) * (s - b) * (s - c));
 
-			for (int j = 0; j < 3; ++j) {
-
-				auto lv = verts[t][j];
-
+			for (int lv = 0; lv < 3; ++lv) {
 				auto v = f.vertex(lv);
-				auto p = v.pos();
+				auto &p = v.pos();
 
 				// Compute height
 				const double h = area / (.5 * side_lengths[(lv + 1) % 3]);
-
 				glm::vec3 edge(0.f, 0.f, 0.f);
-				if (j != 0)
-					edge[j] = h;
-				else 
-					// Exclude first tri height in order to not mesh one triangle side (the diagonal),
-					// It enable to obtain quad meshing
-					edge[j] = std::numeric_limits<float>::max();
+				edge[lv] = h;
 
-
-				vertices.push_back({ 
+				vertices[i] = { 
 					vertexIndex: v,
 					position: glm::vec3(p.x, p.y, p.z),
 					size: 1.f,
 					normal: glm::vec3(n.x, n.y, n.z),
 					heights: edge,
 					facetIndex: f,
-					cellIndex: 0
-				});
+					cellIndex: ci
+				};
+
+				++i;
 			}
 		}
 	}
 
+	std::chrono::steady_clock::time_point end_facets = std::chrono::steady_clock::now();
 
+	std::chrono::steady_clock::time_point end = std::chrono::steady_clock::now();
+
+	#ifdef _DEBUG
+    std::cout << "push end in: " << std::chrono::duration_cast<std::chrono::milliseconds>(end - begin).count() << "ms" << std::endl;
+    std::cout << "compute bary in: " << std::chrono::duration_cast<std::chrono::milliseconds>(end_barys - begin_barys).count() << "ms" << std::endl;
+    std::cout << "compute facets in: " << std::chrono::duration_cast<std::chrono::milliseconds>(end_facets - begin_facets).count() << "ms" << std::endl;
+
+	
+	std::cout << "mesh has: " << _m.nverts() << " vertices." << std::endl;
+	std::cout << "mesh has: " << _m.nfacets() << " facets." << std::endl;
+	std::cout << "mesh has: " << _m.ncells() << " cells." << std::endl;
+	std::cout << "should draw: " << vertices.size() << " vertices." << std::endl;
+	#endif
 
 	glBindVertexArray(VAO);
 	glBindBuffer(GL_ARRAY_BUFFER, VBO);
@@ -291,8 +313,8 @@ void QuadRenderer::push() {
 
 	// glGenBuffers(1, &bufHighlight);
 	// glBindBuffer(GL_TEXTURE_BUFFER, bufHighlight);
-	// glBufferStorage(GL_TEXTURE_BUFFER, hex.ncells() * sizeof(float), nullptr, flags);
-	// ptrHighlight = (float*)glMapBufferRange(GL_TEXTURE_BUFFER, 0, hex.ncells() * sizeof(float), flags);
+	// glBufferStorage(GL_TEXTURE_BUFFER, _m.ncells() * sizeof(float), nullptr, flags);
+	// ptrHighlight = (float*)glMapBufferRange(GL_TEXTURE_BUFFER, 0, _m.ncells() * sizeof(float), flags);
 
 	// glActiveTexture(GL_TEXTURE0 + 3); 
 	// glBindTexture(GL_TEXTURE_BUFFER, texHighlight);
@@ -301,7 +323,7 @@ void QuadRenderer::push() {
 
 }
 
-void QuadRenderer::render(glm::vec3 &position) {
+void TetRenderer::render(glm::vec3 &position) {
 
 	if (!visible)
 		return;
@@ -321,6 +343,9 @@ void QuadRenderer::render(glm::vec3 &position) {
 	glBindTexture(GL_TEXTURE_BUFFER, texHighlight);
 
 	glActiveTexture(GL_TEXTURE0 + 4);
+	glBindTexture(GL_TEXTURE_BUFFER, texFacetHighlight);
+
+	glActiveTexture(GL_TEXTURE0 + 5);
 	glBindTexture(GL_TEXTURE_BUFFER, texFilter);
 
 	glm::mat4 model = glm::mat4(1.0f);
@@ -333,7 +358,7 @@ void QuadRenderer::render(glm::vec3 &position) {
 	glDrawArrays(GL_TRIANGLES, 0, nverts);
 }
 
-void QuadRenderer::clean() {
+void TetRenderer::clean() {
 	// Clean up
 	glDeleteVertexArrays(1, &VAO);
 	glDeleteBuffers(1, &VBO);
@@ -343,6 +368,12 @@ void QuadRenderer::clean() {
 		glBindBuffer(GL_TEXTURE_BUFFER, bufHighlight);
 		glUnmapBuffer(GL_TEXTURE_BUFFER);
 		ptrHighlight = nullptr;
+	}
+	// Unmap facet highlight
+	if (ptrFacetHighlight) {
+		glBindBuffer(GL_TEXTURE_BUFFER, bufFacetHighlight);
+		glUnmapBuffer(GL_TEXTURE_BUFFER);
+		ptrFacetHighlight = nullptr;
 	}
 	// Unmap filter
 	if (ptrFilter) {
@@ -357,6 +388,8 @@ void QuadRenderer::clean() {
 	glDeleteTextures(1, &texAttr);
 	glDeleteBuffers(1, &bufHighlight);
 	glDeleteTextures(1, &texHighlight);
+	glDeleteBuffers(1, &bufFacetHighlight);
+	glDeleteTextures(1, &texFacetHighlight);
 	glDeleteBuffers(1, &bufFilter);
 	glDeleteTextures(1, &texFilter);
 	glBindBuffer(GL_TEXTURE_BUFFER, 0);

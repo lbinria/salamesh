@@ -23,7 +23,11 @@ void MyApp::loadModel(const std::string& filename) {
 		bool tri_load_success = model->load(filename);
 		if (!tri_load_success) {
 			model = std::make_unique<QuadModel>();
-			model->load(filename);
+			bool tri_load_success = model->load(filename);
+			if (!tri_load_success) {
+				model = std::make_unique<TetModel>();
+				model->load(filename);
+			}
 		}
 	}
 
@@ -111,11 +115,13 @@ void MyApp::init() {
 	loadModel("assets/catorus_hex_facet_attr.geogram");
 	loadModel("assets/catorus_quad.geogram");
 	loadModel("assets/catorus_tri.geogram");
+	loadModel("assets/catorus_tet.geogram");
 
 	// load_state("/home/tex/Desktop/state.json");
 
 	models[1]->setPosition(glm::vec3(2.f, 0.f, 0.f));
 	models[2]->setPosition(glm::vec3(2.5f, 0.f, 0.f));
+	models[4]->setPosition(glm::vec3(0.5f, 1.f, 2.f));
 	models[1]->setParent(models[0]);
 	models[2]->setParent(models[0]);
 
