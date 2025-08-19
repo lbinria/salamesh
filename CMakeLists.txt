@@ -81,6 +81,7 @@ add_executable(salamesh
   shader.cpp shader.h 
   point_set_renderer.cpp point_set_renderer.h
   halfedge_renderer.cpp halfedge_renderer.h
+  surface_renderer.cpp surface_renderer.h
   tri_renderer.cpp tri_renderer.h
   quad_renderer.cpp quad_renderer.h
   tet_renderer.cpp tet_renderer.h
