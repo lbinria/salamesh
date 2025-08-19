@@ -4,12 +4,12 @@ bool HexModel::load(const std::string path) {
 	// TODO check if the model failed to read in ultimaille, else there is side effects ! 
 	
 	// Load the mesh
-	// VolumeAttributes attributes = read_by_extension(path, _hex);
-	_volumeAttributes = read_by_extension(path, _hex);
+	// VolumeAttributes attributes = read_by_extension(path, _m);
+	_volumeAttributes = read_by_extension(path, _m);
 	_path = path;
 
 
-	if (_hex.ncells() <= 0)
+	if (_m.ncells() <= 0)
 		return false;
 
 	// Extract name
@@ -75,7 +75,7 @@ void HexModel::saveAs(const std::string path) const {
 		cell_corner_attrs
 	);
 
-	write_by_extension(path, _hex, attributes);
+	write_by_extension(path, _m, attributes);
 }
 
 void HexModel::save() const {

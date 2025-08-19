@@ -24,8 +24,8 @@ using namespace UM;
 
 struct HexRenderer : IRenderer {
 
-    HexRenderer(Hexahedra &hex) : 
-        hex(hex),
+    HexRenderer(Hexahedra &m) : 
+        _m(m),
         shader("shaders/hex.vert", "shaders/hex.frag")
         {
             setColor({0.8f, 0.f, 0.2f}); // TODO here use a setting default point color
@@ -144,7 +144,7 @@ struct HexRenderer : IRenderer {
 
     private:
 
-    Hexahedra &hex;
+    Hexahedra &_m;
     Shader shader;
 
     bool visible = true;

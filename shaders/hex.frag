@@ -138,7 +138,7 @@ void main()
 
     if (fragRenderMode == 0 && (fragRenderMeshMode & 2) == 2) {
         // Render wireframe
-        if (fragHeights.y < meshSize || fragHeights.z < meshSize) {
+        if (fragHeights.x < meshSize || fragHeights.y < meshSize || fragHeights.z < meshSize) {
             col = vec3(0,0,0);
         }
     }

@@ -251,12 +251,10 @@ void QuadRenderer::push() {
 				const double h = area / (.5 * side_lengths[(lv + 1) % 3]);
 
 				glm::vec3 edge(0.f, 0.f, 0.f);
-				if (j != 0)
-					edge[j] = h;
-				else 
-					// Exclude first tri height in order to not mesh one triangle side (the diagonal),
-					// It enable to obtain quad meshing
-					edge[j] = std::numeric_limits<float>::max();
+				edge[j] = h;
+				// Exclude first tri height in order unmesh one side of the triangle (the diagonal),
+				// It enable to obtain quad meshing
+				edge[0] = std::numeric_limits<float>::max();
 
 
 				vertices.push_back({ 

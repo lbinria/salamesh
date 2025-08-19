@@ -18,10 +18,10 @@ struct HexModel final : public IHexModel {
     using IHexModel::IHexModel;
 
 	HexModel() : 
-        _hex(), 
-        _hexRenderer(_hex), 
-        _pointSetRenderer(_hex.points),
-        _halfedgeRenderer(_hex) {
+        _m(), 
+        _hexRenderer(_m), 
+        _pointSetRenderer(_m.points),
+        _halfedgeRenderer(_m) {
         }
 
     ModelType getModelType() const override {
@@ -120,19 +120,19 @@ struct HexModel final : public IHexModel {
         _halfedgeRenderer.clean();
 	}
 
-	Hexahedra& getHexahedra() override { return _hex; }
+	Hexahedra& getHexahedra() override { return _m; }
 	VolumeAttributes& getVolumeAttributes() override { return _volumeAttributes; }
 
     int nverts() const override {
-        return _hex.nverts();
+        return _m.nverts();
     }
 
     int nfacets() const override {
-        return _hex.nfacets();
+        return _m.nfacets();
     } 
 
     int ncells() const override {
-        return _hex.ncells();
+        return _m.ncells();
     } 
 
 
@@ -353,15 +353,15 @@ struct HexModel final : public IHexModel {
         _hexRenderer.setFilter(idx, filter);
 
         // TODO it works but... not very efficient !
-        Volume::Cell c(_hex, idx);
+        Volume::Cell c(_m, idx);
         for (int lc = 0; lc < 8; ++lc) {
             auto corner = c.corner(lc);
             auto v = corner.vertex();
             // Retrieve all cells attached to this point to see whether filtered
             bool allFiltered = true;
             // #pragma omp parallel for
-            for (int i = 0; i < _hex.cells.size(); ++i) {
-                if (_hex.cells[i] != v)
+            for (int i = 0; i < _m.cells.size(); ++i) {
+                if (_m.cells[i] != v)
                     continue;
                 
                 int ci = i / 8;
@@ -400,7 +400,7 @@ struct HexModel final : public IHexModel {
     int selectedColormap = 0;
 
     // Mesh
-    Hexahedra _hex;
+    Hexahedra _m;
     VolumeAttributes _volumeAttributes;
 
     // Renderers
