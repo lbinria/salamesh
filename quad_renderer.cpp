@@ -1,5 +1,7 @@
 #include "quad_renderer.h"
 
+// TODO refactor exactly the same as TriRenderer except push
+
 
 void QuadRenderer::setAttribute(ContainerBase *ga, int element) {
 	// Set attribute element to shader

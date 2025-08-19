@@ -1,5 +1,7 @@
 #include "quad_model.h"
 
+// TODO refactor, exactly the same as TriModel
+
 bool QuadModel::load(const std::string path) {
 	// TODO check if the model failed to read in ultimaille, else there is side effects ! 
 	

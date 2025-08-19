@@ -1,5 +1,6 @@
 #include "tet_renderer.h"
 
+// TODO refactor exactly the same as HexRenderer except push
 
 void TetRenderer::setAttribute(ContainerBase *ga, int element) {
 	// Set attribute element to shader
