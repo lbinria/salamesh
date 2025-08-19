@@ -497,7 +497,7 @@ int App::getHeight() {
 	return screenHeight;
 }
 
-
+// TODO please refactor dirty code here !
 long App::pick_edge(double x, double y) {
 	if (!st.cell.anyHovered() && !st.facet.anyHovered())
 		return -1;
@@ -511,6 +511,10 @@ long App::pick_edge(double x, double y) {
 		if (model->getModelType() == Model::ModelType::HEX) {
 			auto &hex_model = model->as<HexModel>();
 			return pick_edge(hex_model.getHexahedra(), p, st.cell.getHovered());
+		}
+		else if (model->getModelType() == Model::ModelType::TET) {
+			auto &tet_model = model->as<TetModel>();
+			return pick_edge(tet_model.getTetrahedra(), p, st.cell.getHovered());
 		}
 		else
 			return -1;

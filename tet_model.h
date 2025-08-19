@@ -25,7 +25,7 @@ struct TetModel final : public ITetModel {
         }
 
     ModelType getModelType() const override {
-        return ModelType::HEX;
+        return ModelType::TET;
     }
 
 
