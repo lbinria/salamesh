@@ -2,8 +2,7 @@
 
 void SurfaceRenderer::setAttribute(ContainerBase *ga, int element) {
 	// Set attribute element to shader
-	shader.use();
-	shader.setInt("attrElement", element);
+	shader.setAttrElement(element);
 
 	// Prepare data
 	std::vector<float> converted_attribute_data;
@@ -47,8 +46,7 @@ void SurfaceRenderer::setAttribute(std::vector<float> attributeData) {
 	}
 
 	// Update min/max
-	shader.use();
-	shader.setFloat2("attrRange", glm::vec2(min, max));
+	shader.setAttrRange(glm::vec2(min, max));
 
 	// Update sample
 	glBindBuffer(GL_TEXTURE_BUFFER, bufAttr);
@@ -206,9 +204,7 @@ void SurfaceRenderer::render(glm::vec3 &position) {
 	model = glm::translate(model, position);
 	
 	// Draw	
-	shader.use();
-	shader.setMat4("model", model);
-
+	shader.setModel(model);
 	glDrawArrays(GL_TRIANGLES, 0, nverts);
 }
 

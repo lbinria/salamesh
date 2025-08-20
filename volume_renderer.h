@@ -13,7 +13,7 @@
 #include "core/renderer.h"
 #include "core/model.h"
 #include "core/element.h"
-#include "shader.h"
+#include "mesh_shader.h"
 #include "vertex.h"
 
 // TODO IMPORTANT see to bind mesh directly to the shader via buffermap and pointers
@@ -62,6 +62,10 @@ struct VolumeRenderer : public IRenderer {
 		ptrFilter[idx] = filter ? 1.f : 0.f;
 	}
 
+	float* &getFilterPtr() {
+		return ptrFilter;
+	}
+
 	void setFacetHighlight(int idx, float highlight) {
 		ptrFacetHighlight[idx] = highlight;
 	}
@@ -73,79 +77,30 @@ struct VolumeRenderer : public IRenderer {
 	void setAttribute(std::vector<float> attributeData);
 	void setAttribute(ContainerBase *ga, int element);
 
-	void setColorMode(Model::ColorMode mode) {
-		shader.use();
-		shader.setInt("colorMode", mode);
-	}
+	void setColorMode(Model::ColorMode mode) { shader.setColorMode(mode); }
+	void setColor(glm::vec3 color) { shader.setColor(color); }
+	void setLight(bool enabled) { shader.setLight(enabled); }
 
-	void setColor(glm::vec3 color) {
-		shader.use();
-		shader.setFloat3("color", color);
-	}
+	void setLightFollowView(bool follow) { shader.setLightFollowView(follow); }
 
-	void setLight(bool enabled) {
-		shader.use();
-		shader.setFloat("is_light_enabled", enabled);
-	}
+	void setClipping(bool enabled) { shader.setClipping(enabled); }
+	void setClippingPlanePoint(glm::vec3 p) { shader.setClippingPlanePoint(p); }
+	void setClippingPlaneNormal(glm::vec3 n) { shader.setClippingPlaneNormal(n); }
+	void setInvertClipping(bool invert) { shader.setInvertClipping(invert); }
 
-	void setLightFollowView(bool follow) {
-		shader.use();
-		shader.setInt("is_light_follow_view", follow);
-	}
+	void setMeshSize(float val) { shader.setMeshSize(val); }
+	void setMeshShrink(float val) { shader.setMeshShrink(val); }
 
-	void setClipping(bool enabled) {
-		shader.use();
-		shader.setInt("is_clipping_enabled", enabled);
-	}
+	void setFragRenderMode(Model::RenderMode mode) { shader.setFragRenderMode(mode); }
 
-	void setClippingPlanePoint(glm::vec3 p) {
-		shader.use();
-		shader.setFloat3("clipping_plane_point", p);
-	}
+	void setSelectedColormap(int idx) { shader.setSelectedColormap(idx); }
 
-	void setClippingPlaneNormal(glm::vec3 n) {
-		shader.use();
-		shader.setFloat3("clipping_plane_normal", n);
-	}
-
-	void setInvertClipping(bool invert) {
-		shader.use();
-		shader.setInt("invert_clipping", invert);
-	}
-
-	void setMeshSize(float val) {
-		shader.use();
-		shader.setFloat("meshSize", val);
-	}
-
-	void setMeshShrink(float val) {
-		shader.use();
-		shader.setFloat("meshShrink", val);
-	}
-
-	void setFragRenderMode(Model::RenderMode mode) {
-		shader.use();
-		shader.setInt("fragRenderMode", mode);
-	}
-
-	void setSelectedColormap(int idx) {
-		shader.use();
-		shader.setInt("colormap", idx);
-	}
-
-	float* &getFilterPtr() {
-		return ptrFilter;
-	}
-
-	void setMeshIndex(int index) {
-		shader.use();
-		shader.setInt("meshIndex", index);
-	}
+	void setMeshIndex(int index) { shader.setMeshIndex(index); }
 
 	protected:
 
 	Volume &_m;
-	Shader shader;
+	MeshShader shader;
 
 	bool visible = true;
 

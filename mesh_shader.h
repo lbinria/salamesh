@@ -1,15 +1,10 @@
 #pragma once
 
-// #include <vector>
-// #include <tuple>
-// #include <memory>
-
 #include "include/glm/glm.hpp"
 #include "include/glm/gtc/matrix_transform.hpp"
 #include "include/glm/gtc/type_ptr.hpp"
 
 #include "core/model.h"
-// #include "core/element.h"
 #include "shader.h"
 
 using namespace UM;
@@ -18,7 +13,6 @@ struct MeshShader : Shader {
 	
 	using Shader::Shader;
 
-	// void init();
 	using Shader::clean;
 
 	using Shader::use;
@@ -29,8 +23,20 @@ struct MeshShader : Shader {
 	using Shader::setInt;
 	using Shader::setMat4;
 
+	void setModel(glm::mat4 model) {
+		use();
+		setMat4("model", model);
+	}
 
+	void setAttrElement(int element) {
+		use();
+		setInt("attrElement", element);
+	}
 
+	void setAttrRange(glm::vec2 range) {
+		use();
+		setFloat2("attrRange", range);
+	}
 
 	void setColorMode(Model::ColorMode mode) {
 		use();
