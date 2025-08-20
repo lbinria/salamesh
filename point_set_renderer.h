@@ -109,6 +109,13 @@ struct PointSetRenderer : public IRenderer {
         ptrFilter[idx] = filter ? 1.f : 0.f;
     }
 
+	// TODO not tested !
+	void setFilter(std::vector<bool> filters) {
+		std::vector<float> f_filters(filters.size());
+		std::transform(filters.begin(), filters.end(), f_filters.begin(), [](bool filter) { return filter ? 1.f : 0.f; });
+		std::memcpy(ptrFilter, f_filters.data(), f_filters.size() * sizeof(float));
+	}
+
     void setHighlight(int idx, float val) {
         ptrHighlight[idx] = val;
     }
