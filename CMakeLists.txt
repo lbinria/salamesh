@@ -72,6 +72,7 @@ add_executable(salamesh
   point_set_renderer.cpp point_set_renderer.h
   halfedge_renderer.cpp halfedge_renderer.h
   mesh_shader.cpp mesh_shader.h
+  mesh_renderer.cpp mesh_renderer.h
   surface_renderer.cpp surface_renderer.h
   volume_renderer.cpp volume_renderer.h
   tri_renderer.cpp tri_renderer.h

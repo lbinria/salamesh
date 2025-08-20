@@ -146,7 +146,7 @@ struct QuadModel final : public IQuadModel {
     }
 
     void setColorMode(Model::ColorMode mode) override {
-        _quadRenderer.setColorMode(mode);
+        _quadRenderer.shader.setColorMode(mode);
         _pointSetRenderer.setColorMode(mode);
         // _halfedgeRenderer.setColorMode(mode);
         colorMode = mode;
@@ -157,7 +157,7 @@ struct QuadModel final : public IQuadModel {
     }
 
     void setColor(glm::vec3 c) override {
-        _quadRenderer.setColor(c);
+        _quadRenderer.shader.setColor(c);
         color = c;
     }
 
@@ -166,7 +166,7 @@ struct QuadModel final : public IQuadModel {
     }
 
     void setLight(bool enabled) override {
-        _quadRenderer.setLight(enabled);
+        _quadRenderer.shader.setLight(enabled);
         isLightEnabled = enabled;
     }
 
@@ -175,7 +175,7 @@ struct QuadModel final : public IQuadModel {
     }
 
     void setLightFollowView(bool follow) override {
-		_quadRenderer.setLightFollowView(follow);
+		_quadRenderer.shader.setLightFollowView(follow);
         isLightFollowView = follow;
     }
 
@@ -184,7 +184,7 @@ struct QuadModel final : public IQuadModel {
     }
 
     void setClipping(bool enabled) override {
-        _quadRenderer.setClipping(enabled);
+        _quadRenderer.shader.setClipping(enabled);
         _pointSetRenderer.setClipping(enabled);
         isClipping = enabled;
     }
@@ -194,7 +194,7 @@ struct QuadModel final : public IQuadModel {
     }
 
     void setClippingPlanePoint(glm::vec3 p) override {
-        _quadRenderer.setClippingPlanePoint(p);
+        _quadRenderer.shader.setClippingPlanePoint(p);
         _pointSetRenderer.setClippingPlanePoint(p);
         clippingPlanePoint = p;
     }
@@ -204,7 +204,7 @@ struct QuadModel final : public IQuadModel {
     }
 
     void setClippingPlaneNormal(glm::vec3 n) override {
-        _quadRenderer.setClippingPlaneNormal(n);
+        _quadRenderer.shader.setClippingPlaneNormal(n);
         _pointSetRenderer.setClippingPlaneNormal(n);
         clippingPlaneNormal = n;
     }
@@ -214,7 +214,7 @@ struct QuadModel final : public IQuadModel {
     }
 
     void setInvertClipping(bool invert) override {
-        _quadRenderer.setInvertClipping(invert);
+        _quadRenderer.shader.setInvertClipping(invert);
         _pointSetRenderer.setInvertClipping(invert);
         invertClipping = invert;
     }
@@ -224,7 +224,7 @@ struct QuadModel final : public IQuadModel {
     }
 
     void setMeshSize(float val) override {
-        _quadRenderer.setMeshSize(val);
+        _quadRenderer.shader.setMeshSize(val);
         meshSize = val;
     }
 
@@ -233,7 +233,7 @@ struct QuadModel final : public IQuadModel {
     }
 
     void setMeshShrink(float val) override {
-        _quadRenderer.setMeshShrink(val);
+        _quadRenderer.shader.setMeshShrink(val);
         meshShrink = val;
     }
 
@@ -250,7 +250,7 @@ struct QuadModel final : public IQuadModel {
     }
 
     void setFragRenderMode(Model::RenderMode mode) override {
-        _quadRenderer.setFragRenderMode(mode);
+        _quadRenderer.shader.setFragRenderMode(mode);
         fragRenderMode = mode;
     }
 
@@ -259,7 +259,7 @@ struct QuadModel final : public IQuadModel {
     }
 
     void setSelectedColormap(int idx) override {
-        _quadRenderer.setSelectedColormap(idx);
+        _quadRenderer.shader.setSelectedColormap(idx);
         selectedColormap = idx;
     }
 
@@ -308,7 +308,7 @@ struct QuadModel final : public IQuadModel {
     }
 
     void setMeshIndex(int index) override {
-        _quadRenderer.setMeshIndex(index);
+        _quadRenderer.shader.setMeshIndex(index);
     }
 
     bool getPointVisible() const override {

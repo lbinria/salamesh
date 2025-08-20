@@ -2,39 +2,8 @@
 
 void TetRenderer::push() {
 
-	#ifdef _DEBUG
-	std::cout << "push start." << std::endl;
-	#endif
-
-	std::chrono::steady_clock::time_point begin = std::chrono::steady_clock::now();
-
 	nverts = _m.nfacets() * 3 /* 3 points per tri */;
 	std::vector<Vertex> vertices(nverts);
-
-	// Cell properties
-
-	// (8ms -> 3ms)
-	std::vector<float> barys(_m.ncells() * 3);
-
-	const int size = _m.cells.size() / 4;
-	for (int ci = 0; ci < size; ++ci) {
-		// Compute bary
-		const int off = ci * 4;
-		const vec3 &v0 = _m.points[_m.cells[off]];	
-		const vec3 &v1 = _m.points[_m.cells[off + 1]];
-		const vec3 &v2 = _m.points[_m.cells[off + 2]];
-		const vec3 &v3 = _m.points[_m.cells[off + 3]];
-
-		barys[ci * 3] = (v0.x + v1.x + v2.x + v3.x) / 4;
-		barys[ci * 3 + 1] = (v0.y + v1.y + v2.y + v3.y) / 4;
-		barys[ci * 3 + 2] = (v0.z + v1.z + v2.z + v3.z) / 4;
-	}
-
-	std::chrono::steady_clock::time_point end_barys = std::chrono::steady_clock::now();
-
-
-	std::chrono::steady_clock::time_point begin_facets = std::chrono::steady_clock::now();
-
 
 	int i = 0;
 	
@@ -79,47 +48,6 @@ void TetRenderer::push() {
 		}
 	}
 
-	std::chrono::steady_clock::time_point end_facets = std::chrono::steady_clock::now();
-
-	std::chrono::steady_clock::time_point end = std::chrono::steady_clock::now();
-
-	#ifdef _DEBUG
-	std::cout << "push end in: " << std::chrono::duration_cast<std::chrono::milliseconds>(end - begin).count() << "ms" << std::endl;
-	std::cout << "compute bary in: " << std::chrono::duration_cast<std::chrono::milliseconds>(end_barys - begin_barys).count() << "ms" << std::endl;
-	std::cout << "compute facets in: " << std::chrono::duration_cast<std::chrono::milliseconds>(end_facets - begin_facets).count() << "ms" << std::endl;
-
-	
-	std::cout << "mesh has: " << _m.nverts() << " vertices." << std::endl;
-	std::cout << "mesh has: " << _m.nfacets() << " facets." << std::endl;
-	std::cout << "mesh has: " << _m.ncells() << " cells." << std::endl;
-	std::cout << "should draw: " << vertices.size() << " vertices." << std::endl;
-	#endif
-
-	glBindVertexArray(VAO);
-	glBindBuffer(GL_ARRAY_BUFFER, VBO);
-	glBufferData(GL_ARRAY_BUFFER, vertices.size() * sizeof(Vertex), vertices.data(), GL_STATIC_DRAW);
-
-	glBindBuffer(GL_TEXTURE_BUFFER, bufBary);
-	glBufferData(GL_TEXTURE_BUFFER, barys.size() * sizeof(float), barys.data(), GL_STATIC_DRAW);
-
-	// // Update pointers
-	// GLbitfield flags = GL_MAP_WRITE_BIT | GL_MAP_PERSISTENT_BIT | GL_MAP_COHERENT_BIT;
-
-	// // Remap highlight
-	// if(bufHighlight != 0) {
-	// 	glBindBuffer(GL_TEXTURE_BUFFER, bufHighlight);
-	// 	ptrHighlight = nullptr;            // forget old pointer
-	// 	glDeleteBuffers(1, &bufHighlight);
-	// }
-
-	// glGenBuffers(1, &bufHighlight);
-	// glBindBuffer(GL_TEXTURE_BUFFER, bufHighlight);
-	// glBufferStorage(GL_TEXTURE_BUFFER, _m.ncells() * sizeof(float), nullptr, flags);
-	// ptrHighlight = (float*)glMapBufferRange(GL_TEXTURE_BUFFER, 0, _m.ncells() * sizeof(float), flags);
-
-	// glActiveTexture(GL_TEXTURE0 + 3); 
-	// glBindTexture(GL_TEXTURE_BUFFER, texHighlight);
-	// glTexBuffer(GL_TEXTURE_BUFFER, GL_R32F, bufHighlight);
-	// TODO remap facet highlight, filter...
+	VolumeRenderer::push(vertices);
 
 }
