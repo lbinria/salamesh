@@ -13,7 +13,7 @@
 #include "core/renderer.h"
 #include "core/model.h"
 #include "core/element.h"
-#include "shader.h"
+#include "mesh_shader.h"
 #include "vertex.h"
 using namespace UM;
 
@@ -131,7 +131,8 @@ struct SurfaceRenderer : public IRenderer {
 	protected:
 
 	Surface &_m;
-	Shader shader;
+	// Shader shader;
+	MeshShader shader;
 
 	bool visible = true;
 

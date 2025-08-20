@@ -11,16 +11,6 @@ find_package(glfw3 REQUIRED)
 
 find_package(Lua REQUIRED)
 
-# # Clone ImGUI
-# include(FetchContent)
-# FetchContent_Declare(
-#   imgui
-#   GIT_REPOSITORY https://github.com/ocornut/imgui.git
-#   GIT_TAG        v1.91.5
-# )
-# FetchContent_MakeAvailable(imgui)
-# include_directories(${imgui_SOURCE_DIR})
-
 set(IMGUI_SOURCES
     include/imgui/imgui.cpp
     include/imgui/imgui.h
@@ -81,6 +71,7 @@ add_executable(salamesh
   shader.cpp shader.h 
   point_set_renderer.cpp point_set_renderer.h
   halfedge_renderer.cpp halfedge_renderer.h
+  mesh_shader.cpp mesh_shader.h
   surface_renderer.cpp surface_renderer.h
   volume_renderer.cpp volume_renderer.h
   tri_renderer.cpp tri_renderer.h
