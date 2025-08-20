@@ -23,6 +23,6 @@ using namespace UM;
 
 struct QuadRenderer : public SurfaceRenderer {
 
-    using SurfaceRenderer::SurfaceRenderer;
-    void push() override;
+	using SurfaceRenderer::SurfaceRenderer;
+	void push() override;
 };

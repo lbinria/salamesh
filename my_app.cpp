@@ -119,9 +119,11 @@ void MyApp::init() {
 
 	// load_state("/home/tex/Desktop/state.json");
 
-	models[1]->setPosition(glm::vec3(2.f, 0.f, 0.f));
-	models[2]->setPosition(glm::vec3(2.5f, 0.f, 0.f));
-	models[4]->setPosition(glm::vec3(0.5f, 1.f, 2.f));
+	models[1]->setPosition(glm::vec3(1.f, 0.f, 0.f));
+	models[2]->setPosition(glm::vec3(2.f, 0.f, 0.f));
+	models[3]->setPosition(glm::vec3(3.f, 0.f, 0.f));
+	models[4]->setPosition(glm::vec3(4.f, 0.f, 0.f));
+
 	models[1]->setParent(models[0]);
 	models[2]->setParent(models[0]);
 

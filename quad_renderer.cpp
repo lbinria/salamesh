@@ -4,7 +4,7 @@
 void QuadRenderer::push() {
 
 	#ifdef _DEBUG
-    std::cout << "push start." << std::endl;
+	std::cout << "push start." << std::endl;
 	#endif
 
 	std::chrono::steady_clock::time_point begin = std::chrono::steady_clock::now();

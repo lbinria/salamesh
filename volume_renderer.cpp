@@ -1,6 +1,7 @@
-#include "surface_renderer.h"
+#include "volume_renderer.h"
 
-void SurfaceRenderer::setAttribute(ContainerBase *ga, int element) {
+
+void VolumeRenderer::setAttribute(ContainerBase *ga, int element) {
 	// Set attribute element to shader
 	shader.use();
 	shader.setInt("attrElement", element);
@@ -36,7 +37,7 @@ void SurfaceRenderer::setAttribute(ContainerBase *ga, int element) {
 }
 
 
-void SurfaceRenderer::setAttribute(std::vector<float> attributeData) {
+void VolumeRenderer::setAttribute(std::vector<float> attributeData) {
 
 	// Get bounds (min-max)
 	float min = std::numeric_limits<float>::max(); 
@@ -55,7 +56,7 @@ void SurfaceRenderer::setAttribute(std::vector<float> attributeData) {
 	glBufferData(GL_TEXTURE_BUFFER, attributeData.size() * sizeof(float), attributeData.data(), GL_STATIC_DRAW);
 }
 
-void SurfaceRenderer::init() {
+void VolumeRenderer::init() {
 
 	// TODO maybe update buffer size of ptr on push ? move ncells somewher eelse
 
@@ -83,20 +84,32 @@ void SurfaceRenderer::init() {
 	
 	glGenBuffers(1, &bufHighlight);
 	glBindBuffer(GL_TEXTURE_BUFFER, bufHighlight);
-	glBufferStorage(GL_TEXTURE_BUFFER, _m.nfacets() * sizeof(float), nullptr, flags);
+	glBufferStorage(GL_TEXTURE_BUFFER, _m.ncells() * sizeof(float), nullptr, flags);
 	// Map once and keep pointer (not compatible for MacOS... because need OpenGL >= 4.6 i think)
-	ptrHighlight = (float*)glMapBufferRange(GL_TEXTURE_BUFFER, 0, _m.nfacets() * sizeof(float), flags);
+	ptrHighlight = (float*)glMapBufferRange(GL_TEXTURE_BUFFER, 0, _m.ncells() * sizeof(float), flags);
 
 	glGenTextures(1, &texHighlight);
 	glActiveTexture(GL_TEXTURE0 + 3); 
 	glBindTexture(GL_TEXTURE_BUFFER, texHighlight);
 	glTexBuffer(GL_TEXTURE_BUFFER, GL_R32F, bufHighlight);
 
-	glGenBuffers(1, &bufFilter);
-	glBindBuffer(GL_TEXTURE_BUFFER, bufFilter);
+
+	glGenBuffers(1, &bufFacetHighlight);
+	glBindBuffer(GL_TEXTURE_BUFFER, bufFacetHighlight);
 	glBufferStorage(GL_TEXTURE_BUFFER, _m.nfacets() * sizeof(float), nullptr, flags);
 	// Map once and keep pointer (not compatible for MacOS... because need OpenGL >= 4.6 i think)
-	ptrFilter = (float*)glMapBufferRange(GL_TEXTURE_BUFFER, 0, _m.nfacets() * sizeof(float), flags);
+	ptrFacetHighlight = (float*)glMapBufferRange(GL_TEXTURE_BUFFER, 0, _m.nfacets() * sizeof(float), flags);
+
+	glGenTextures(1, &texFacetHighlight);
+	glActiveTexture(GL_TEXTURE0 + 4); 
+	glBindTexture(GL_TEXTURE_BUFFER, texFacetHighlight);
+	glTexBuffer(GL_TEXTURE_BUFFER, GL_R32F, bufFacetHighlight);
+
+	glGenBuffers(1, &bufFilter);
+	glBindBuffer(GL_TEXTURE_BUFFER, bufFilter);
+	glBufferStorage(GL_TEXTURE_BUFFER, _m.ncells() * sizeof(float), nullptr, flags);
+	// Map once and keep pointer (not compatible for MacOS... because need OpenGL >= 4.6 i think)
+	ptrFilter = (float*)glMapBufferRange(GL_TEXTURE_BUFFER, 0, _m.ncells() * sizeof(float), flags);
 
 	glGenTextures(1, &texFilter);
 	glActiveTexture(GL_TEXTURE0 + 5); 
@@ -125,6 +138,9 @@ void SurfaceRenderer::init() {
 	glBindTexture(GL_TEXTURE_BUFFER, texHighlight);
 
 	glActiveTexture(GL_TEXTURE0 + 4);
+	glBindTexture(GL_TEXTURE_BUFFER, texFacetHighlight);
+
+	glActiveTexture(GL_TEXTURE0 + 5);
 	glBindTexture(GL_TEXTURE_BUFFER, texFilter);
 
 	glBindBuffer(GL_TEXTURE_BUFFER, 0);
@@ -133,7 +149,8 @@ void SurfaceRenderer::init() {
 	shader.setInt("bary", 1);
 	shader.setInt("attributeData", 2);
 	shader.setInt("highlightBuf", 3);
-	shader.setInt("filterBuf", 4);
+	shader.setInt("facetHighlightBuf", 4);
+	shader.setInt("filterBuf", 5);
 
 	#ifdef _DEBUG
 	std::cout << "vertex attrib setup..." << std::endl;
@@ -178,9 +195,11 @@ void SurfaceRenderer::init() {
 	std::cout << "mesh setup in: " << std::chrono::duration_cast<std::chrono::milliseconds>(end - begin).count() << "ms" << std::endl;
 	#endif
 
+
+
 }
 
-void SurfaceRenderer::render(glm::vec3 &position) {
+void VolumeRenderer::render(glm::vec3 &position) {
 
 	if (!visible)
 		return;
@@ -200,6 +219,9 @@ void SurfaceRenderer::render(glm::vec3 &position) {
 	glBindTexture(GL_TEXTURE_BUFFER, texHighlight);
 
 	glActiveTexture(GL_TEXTURE0 + 4);
+	glBindTexture(GL_TEXTURE_BUFFER, texFacetHighlight);
+
+	glActiveTexture(GL_TEXTURE0 + 5);
 	glBindTexture(GL_TEXTURE_BUFFER, texFilter);
 
 	glm::mat4 model = glm::mat4(1.0f);
@@ -212,7 +234,7 @@ void SurfaceRenderer::render(glm::vec3 &position) {
 	glDrawArrays(GL_TRIANGLES, 0, nverts);
 }
 
-void SurfaceRenderer::clean() {
+void VolumeRenderer::clean() {
 	// Clean up
 	glDeleteVertexArrays(1, &VAO);
 	glDeleteBuffers(1, &VBO);
@@ -222,6 +244,12 @@ void SurfaceRenderer::clean() {
 		glBindBuffer(GL_TEXTURE_BUFFER, bufHighlight);
 		glUnmapBuffer(GL_TEXTURE_BUFFER);
 		ptrHighlight = nullptr;
+	}
+	// Unmap facet highlight
+	if (ptrFacetHighlight) {
+		glBindBuffer(GL_TEXTURE_BUFFER, bufFacetHighlight);
+		glUnmapBuffer(GL_TEXTURE_BUFFER);
+		ptrFacetHighlight = nullptr;
 	}
 	// Unmap filter
 	if (ptrFilter) {
@@ -236,6 +264,8 @@ void SurfaceRenderer::clean() {
 	glDeleteTextures(1, &texAttr);
 	glDeleteBuffers(1, &bufHighlight);
 	glDeleteTextures(1, &texHighlight);
+	glDeleteBuffers(1, &bufFacetHighlight);
+	glDeleteTextures(1, &texFacetHighlight);
 	glDeleteBuffers(1, &bufFilter);
 	glDeleteTextures(1, &texFilter);
 	glBindBuffer(GL_TEXTURE_BUFFER, 0);

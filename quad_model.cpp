@@ -77,9 +77,8 @@ void QuadModel::save() const {
 
 void QuadModel::setSelectedAttr(int idx) {
 
-	//TODO see it seems doesn't work !
 	// Check attrs size
-	if (idx < 0 || idx > (attrs.size() - 1)) {
+	if (idx < 0 || idx >= attrs.size()) {
 		throw std::runtime_error(
 			"Selected attribute index out of bound: " + 
 			std::to_string(idx) + ", model has " + 

@@ -237,7 +237,10 @@ function draw_model_properties(model, view)
 
 						if (cur_model.color_mode == 1) then
 							print("Change to attribute color mode")
-							cur_model.selected_attr = cur_model.selected_attr
+							-- Select first attribute by default, if there is any
+							if (#cur_model.attrs > 0) then 
+								cur_model.selected_attr = cur_model.selected_attr
+							end
 						end
 
 					end

@@ -15,18 +15,24 @@
 #include "core/element.h"
 #include "shader.h"
 #include "vertex.h"
+
+// TODO IMPORTANT see to bind mesh directly to the shader via buffermap and pointers
+
 using namespace UM;
 
-struct SurfaceRenderer : public IRenderer {
-	
-	SurfaceRenderer(Surface &m) : 
+
+
+struct VolumeRenderer : public IRenderer {
+
+	VolumeRenderer(Volume &m) : 
 		_m(m),
-		shader("shaders/surface.vert", "shaders/surface.frag")
+		shader("shaders/volume.vert", "shaders/volume.frag")
 		{
-			setColor({0.8f, 0.f, 0.2f}); // TODO here use a setting default mesh color
+			setColor({0.8f, 0.f, 0.2f}); // TODO here use a setting default point color
 		}
 
 
+	// TODO eventually merge init / update
 	void init();
 	virtual void push() = 0;
 	void render(glm::vec3 &position);
@@ -54,6 +60,14 @@ struct SurfaceRenderer : public IRenderer {
 
 	void setFilter(int idx, bool filter) {
 		ptrFilter[idx] = filter ? 1.f : 0.f;
+	}
+
+	void setFacetHighlight(int idx, float highlight) {
+		ptrFacetHighlight[idx] = highlight;
+	}
+
+	void setFacetHighlight(std::vector<float> highlights) {
+		std::memcpy(ptrFacetHighlight, highlights.data(), highlights.size() * sizeof(float));
 	}
 
 	void setAttribute(std::vector<float> attributeData);
@@ -130,17 +144,18 @@ struct SurfaceRenderer : public IRenderer {
 
 	protected:
 
-	Surface &_m;
+	Volume &_m;
 	Shader shader;
 
 	bool visible = true;
 
 	unsigned int VAO, VBO; // Buffers
-	unsigned int bufBary, bufHighlight, bufAttr, bufFilter; // Sample buffers
-	unsigned int texColorMap, texBary, texHighlight, texAttr, texFilter; // Textures
+	unsigned int bufBary, bufHighlight, bufFacetHighlight, bufAttr, bufFilter; // Sample buffers
+	unsigned int texColorMap, texBary, texHighlight, texFacetHighlight, texAttr, texFilter; // Textures
 
 	float *ptrAttr;
 	float *ptrHighlight;
+	float *ptrFacetHighlight;
 	float *ptrFilter;
 
 	int nverts = 0;
