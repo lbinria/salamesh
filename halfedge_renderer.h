@@ -1,5 +1,6 @@
 #pragma once
 
+#include "core/renderer.h"
 // TODO should not inlcude this, because of Model::ColorMode ! create a separate file for ColorMode
 #include "core/model.h"
 
@@ -12,7 +13,7 @@
 
 using namespace UM;
 
-struct HalfedgeRenderer {
+struct HalfedgeRenderer : public IRenderer {
 
     struct LineVert {
         glm::vec3 P0;
@@ -30,7 +31,7 @@ struct HalfedgeRenderer {
             setEdgeOutsideColor({0.0, 0.6, 0.45}); // TODO here use a setting default edge outside color
         }
 
-    void setAttribute(ContainerBase *ga);
+    void setAttribute(ContainerBase *ga, int elementKind);
     void setAttribute(std::vector<float> attributeData);
 
     void init();
@@ -48,12 +49,12 @@ struct HalfedgeRenderer {
         texColorMap = tex;
     }
 
-    void setVisible(bool v) {
-        visible = v;
-    }
-
     bool getVisible() const {
         return visible;
+    }
+
+    void setVisible(bool v) {
+        visible = v;
     }
 
     float getEdgeSize() const {
@@ -90,6 +91,10 @@ struct HalfedgeRenderer {
         ptrFilter[idx] = filter ? 1.f : 0.f;
     }
 
+	float* &getFilterPtr() {
+		return ptrFilter;
+	}
+
 	// TODO not tested !
 	void setFilter(std::vector<bool> filters) {
 		std::vector<float> f_filters(filters.size());
@@ -100,6 +105,10 @@ struct HalfedgeRenderer {
     void setHighlight(int idx, float val) {
         ptrHighlight[idx] = val;
     }
+
+	void setHighlight(std::vector<float> highlights) {
+		std::memcpy(ptrHighlight, highlights.data(), highlights.size() * sizeof(float));
+	}
 
     Volume &v;
     Shader shader;

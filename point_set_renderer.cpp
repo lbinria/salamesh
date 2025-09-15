@@ -1,5 +1,6 @@
 #include "point_set_renderer.h"
 
+// TODO elementKind useless here
 void PointSetRenderer::setAttribute(ContainerBase *ga, int elementKind) {
 
 	// Prepare data

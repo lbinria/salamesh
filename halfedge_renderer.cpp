@@ -1,6 +1,7 @@
 #include "halfedge_renderer.h"
 
-void HalfedgeRenderer::setAttribute(ContainerBase *ga) {
+// TODO elementKind useless here
+void HalfedgeRenderer::setAttribute(ContainerBase *ga, int elementKind) {
 
 	// Prepare data
 	std::vector<float> converted_attribute_data;
