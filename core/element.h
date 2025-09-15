@@ -3,7 +3,7 @@
 
 enum ElementKind {
 	CORNERS = -1,
-	POINTS = 0, // TODO rename to VERTICES
+	POINTS = 0,
 	EDGES = 1,
 	FACETS = 2,
 	CELLS = 3,

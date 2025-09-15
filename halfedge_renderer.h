@@ -1,19 +1,19 @@
-	#pragma once
+#pragma once
 
-	#include "core/renderer.h"
-	// TODO should not inlcude this, because of Model::ColorMode ! create a separate file for ColorMode
-	#include "core/model.h"
+#include "core/renderer.h"
+// TODO should not inlcude this, because of Model::ColorMode ! create a separate file for ColorMode
+#include "core/model.h"
 
-	#include "shader.h"
-	#include "vertex.h"
+#include "shader.h"
+#include "vertex.h"
 
-	#include <vector>
-	#include <ultimaille/all.h>
-	#include "../include/glm/glm.hpp"
+#include <vector>
+#include <ultimaille/all.h>
+#include "../include/glm/glm.hpp"
 
-	using namespace UM;
+using namespace UM;
 
-	struct HalfedgeRenderer : public IRenderer {
+struct HalfedgeRenderer : public IRenderer {
 
 	struct LineVert {
 		glm::vec3 P0;
@@ -130,4 +130,4 @@
 	bool visible = true;
 
 	int npoints = 0;
-	};
+};

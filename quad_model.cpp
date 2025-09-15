@@ -1,7 +1,6 @@
 #include "quad_model.h"
 
 // TODO refactor, exactly the same as TriModel
-
 bool QuadModel::load(const std::string path) {
 	// TODO check if the model failed to read in ultimaille, else there is side effects ! 
 	
@@ -35,6 +34,7 @@ bool QuadModel::load(const std::string path) {
 	return true;
 }
 
+// TODO refactor, exactly the same as TriModel
 void QuadModel::saveAs(const std::string path) const {
 	// Save the mesh
 	if (path.empty()) {
@@ -71,6 +71,7 @@ void QuadModel::saveAs(const std::string path) const {
 	write_by_extension(path, _quad, attributes);
 }
 
+// TODO refactor, exactly the same for all models
 void QuadModel::save() const {
 	saveAs(_path);
 }
