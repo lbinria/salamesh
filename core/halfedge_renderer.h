@@ -115,19 +115,10 @@ struct HalfedgeRenderer : public IRenderer {
 
 	private:
 
-	// Buffers
-	unsigned int VAO, VBO, pointHighlightBuffer, bufAttr, bufFilter, bufHighlight;
-	// Textures
-	unsigned int texColorMap, pointHighlightTexture, texAttr, texFilter, texHighlight;
-
-	float* ptrFilter;
-	float* ptrHighlight;
-
 	float edgeSize;
 	glm::vec3 edgeInsideColor;
 	glm::vec3 edgeOutsideColor;
 
-	bool visible = true;
 
-	int npoints = 0;
+	
 };

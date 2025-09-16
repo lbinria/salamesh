@@ -129,16 +129,7 @@ struct PointSetRenderer : public IRenderer {
 
     private:
 
-    // Buffers
-    unsigned int VAO, VBO, pointHighlightBuffer, bufAttr, bufFilter, bufHighlight;
-    // Textures
-    unsigned int texColorMap, pointHighlightTexture, texAttr, texFilter, texHighlight;
-
-    float* ptrFilter;
-    float* ptrHighlight;
-
     float pointSize;
     glm::vec3 pointColor;
 
-    bool visible = false;
 };

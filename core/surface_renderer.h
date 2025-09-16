@@ -29,9 +29,9 @@ struct SurfaceRenderer : public IRenderer {
 
 	void init();
 	void render(glm::vec3 &position);
-	
-
 	void clean();
+
+	virtual void push() override = 0;
 
 	void push(std::vector<Vertex> &vertices) {
 
@@ -109,16 +109,4 @@ struct SurfaceRenderer : public IRenderer {
 	protected:
 
 	Surface &_m;
-
-	bool visible = true;
-
-	unsigned int VAO, VBO; // Buffers
-	unsigned int bufBary, bufHighlight, bufAttr, bufFilter; // Sample buffers
-	unsigned int texColorMap, texBary, texHighlight, texAttr, texFilter; // Textures
-
-	float *ptrAttr;
-	float *ptrHighlight;
-	float *ptrFilter;
-
-	int nverts = 0;
 };

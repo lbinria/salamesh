@@ -131,8 +131,8 @@ void HalfedgeRenderer::init() {
 void HalfedgeRenderer::push() {	
 
 	
-	npoints = 24 * v.ncells() * 6;
-	// std::vector<LineVert> vertices(npoints);
+	nverts = 24 * v.ncells() * 6;
+	// std::vector<LineVert> vertices(nverts);
 	std::vector<LineVert> vertices;
 
 	for (auto &c : v.iter_cells()) {
@@ -163,8 +163,8 @@ void HalfedgeRenderer::push() {
 		}
 	}
 
-	// npoints = 24 * v.ncells();
-	// // std::vector<LineVert> vertices(npoints);
+	// nverts = 24 * v.ncells();
+	// // std::vector<LineVert> vertices(nverts);
 	// std::vector<LineVert> vertices;
 
 	// for (auto &c : v.iter_cells()) {
@@ -186,7 +186,7 @@ void HalfedgeRenderer::push() {
 
 	glBindVertexArray(VAO);
 	glBindBuffer(GL_ARRAY_BUFFER, VBO);
-	glBufferData(GL_ARRAY_BUFFER, npoints * sizeof(LineVert), vertices.data(), GL_STATIC_DRAW);
+	glBufferData(GL_ARRAY_BUFFER, nverts * sizeof(LineVert), vertices.data(), GL_STATIC_DRAW);
 }
 
 void HalfedgeRenderer::render(glm::vec3 &position) {
@@ -212,8 +212,8 @@ void HalfedgeRenderer::render(glm::vec3 &position) {
     shader.use();
 	shader.setMat4("model", model);
 
-	glDrawArrays(GL_TRIANGLES, 0, npoints);
-	// glDrawArrays(GL_POINTS, 0, npoints);
+	glDrawArrays(GL_TRIANGLES, 0, nverts);
+	// glDrawArrays(GL_POINTS, 0, nverts);
 }
 
 void HalfedgeRenderer::clean() {

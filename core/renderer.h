@@ -26,4 +26,18 @@ struct IRenderer {
 	virtual void setFilter(std::vector<bool> filters) = 0;
 
 	virtual float* &getFilterPtr() = 0;
+
+	protected:
+	
+	bool visible = true;
+
+	unsigned int VAO, VBO; // Buffers
+	unsigned int bufBary, bufHighlight, bufAttr, bufFilter; // Sample buffers
+	unsigned int texColorMap, texBary, texHighlight, texAttr, texFilter; // Textures
+
+	float *ptrAttr;
+	float *ptrHighlight;
+	float *ptrFilter;
+
+	int nverts = 0;
 };

@@ -123,16 +123,8 @@ struct VolumeRenderer : public IRenderer {
 
 	Volume &_m;
 
-	bool visible = true;
-
-	unsigned int VAO, VBO; // Buffers
-	unsigned int bufBary, bufHighlight, bufFacetHighlight, bufAttr, bufFilter; // Sample buffers
-	unsigned int texColorMap, texBary, texHighlight, texFacetHighlight, texAttr, texFilter; // Textures
-
-	float *ptrAttr;
-	float *ptrHighlight;
+	unsigned int bufFacetHighlight; // Sample buffers
+	unsigned int texFacetHighlight; // Textures
 	float *ptrFacetHighlight;
-	float *ptrFilter;
 
-	int nverts = 0;
 };
