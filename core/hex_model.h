@@ -3,7 +3,7 @@
 #include <json.hpp>
 #include <ultimaille/all.h>
 #include <string>
-#include "hex_model_interface.h"
+#include "model.h"
 #include "point_set_renderer.h"
 #include "halfedge_renderer.h"
 #include "hex_renderer.h"
@@ -11,11 +11,11 @@
 using namespace UM;
 using json = nlohmann::json;
 
-struct HexModel final : public IHexModel {
+struct HexModel final : public Model {
 
 	// Mesh + Renderer
 
-    using IHexModel::IHexModel;
+    using Model::Model;
 
 	HexModel() : 
         _m(), 
@@ -120,8 +120,8 @@ struct HexModel final : public IHexModel {
         _halfedgeRenderer.clean();
 	}
 
-	Hexahedra& getHexahedra() override { return _m; }
-	VolumeAttributes& getVolumeAttributes() override { return _volumeAttributes; }
+	Hexahedra& getHexahedra() { return _m; }
+	VolumeAttributes& getVolumeAttributes() { return _volumeAttributes; }
 
     int nverts() const override {
         return _m.nverts();
@@ -332,11 +332,11 @@ struct HexModel final : public IHexModel {
         _hexRenderer.setHighlight(highlights);
     }
 
-    void setFacetHighlight(int idx, float highlight) override {
+    void setFacetHighlight(int idx, float highlight) {
         _hexRenderer.setFacetHighlight(idx, highlight);
     }
 
-    void setFacetHighlight(std::vector<float> highlights) override {
+    void setFacetHighlight(std::vector<float> highlights) {
         _hexRenderer.setFacetHighlight(highlights);
     }
 

@@ -3,7 +3,7 @@
 #include <json.hpp>
 #include <ultimaille/all.h>
 #include <string>
-#include "tri_model_interface.h"
+#include "model.h"
 #include "point_set_renderer.h"
 #include "halfedge_renderer.h"
 #include "tri_renderer.h"
@@ -11,10 +11,10 @@
 using namespace UM;
 using json = nlohmann::json;
 
-struct TriModel final : public ITriModel {
+struct TriModel final : public Model {
 
 	// Mesh + Renderer
-    using ITriModel::ITriModel;
+    using Model::Model;
 
 	TriModel() : 
         _tri(), 
@@ -119,8 +119,8 @@ struct TriModel final : public ITriModel {
 	}
 
 
-	Triangles& getTriangles() override { return _tri; }
-	SurfaceAttributes& getSurfaceAttributes() override { return _surfaceAttributes; }
+	Triangles& getTriangles() { return _tri; }
+	SurfaceAttributes& getSurfaceAttributes() { return _surfaceAttributes; }
 
     int nverts() const override {
         return _tri.nverts();

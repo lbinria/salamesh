@@ -3,7 +3,7 @@
 #include <json.hpp>
 #include <ultimaille/all.h>
 #include <string>
-#include "tet_model_interface.h"
+#include "model.h"
 #include "point_set_renderer.h"
 #include "halfedge_renderer.h"
 #include "tet_renderer.h"
@@ -11,11 +11,11 @@
 using namespace UM;
 using json = nlohmann::json;
 
-struct TetModel final : public ITetModel {
+struct TetModel final : public Model {
 
 	// Mesh + Renderer
 
-    using ITetModel::ITetModel;
+    using Model::Model;
 
 	TetModel() : 
         _m(), 
@@ -120,8 +120,8 @@ struct TetModel final : public ITetModel {
         // _halfedgeRenderer.clean();
 	}
 
-	Tetrahedra& getTetrahedra() override { return _m; }
-	VolumeAttributes& getVolumeAttributes() override { return _volumeAttributes; }
+	Tetrahedra& getTetrahedra() { return _m; }
+	VolumeAttributes& getVolumeAttributes() { return _volumeAttributes; }
 
     int nverts() const override {
         return _m.nverts();
@@ -336,11 +336,11 @@ struct TetModel final : public ITetModel {
         _tetRenderer.setHighlight(highlights);
     }
 
-    void setFacetHighlight(int idx, float highlight) override {
+    void setFacetHighlight(int idx, float highlight) {
         _tetRenderer.setFacetHighlight(idx, highlight);
     }
 
-    void setFacetHighlight(std::vector<float> highlights) override {
+    void setFacetHighlight(std::vector<float> highlights) {
         _tetRenderer.setFacetHighlight(highlights);
     }
 

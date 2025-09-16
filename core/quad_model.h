@@ -3,7 +3,7 @@
 #include <json.hpp>
 #include <ultimaille/all.h>
 #include <string>
-#include "quad_model_interface.h"
+#include "model.h"
 #include "point_set_renderer.h"
 #include "halfedge_renderer.h"
 #include "quad_renderer.h"
@@ -11,10 +11,10 @@
 using namespace UM;
 using json = nlohmann::json;
 
-struct QuadModel final : public IQuadModel {
+struct QuadModel final : public Model {
 
 	// Mesh + Renderer
-    using IQuadModel::IQuadModel;
+    using Model::Model;
 
 	QuadModel() : 
         _quad(), 
@@ -119,8 +119,8 @@ struct QuadModel final : public IQuadModel {
 	}
 
 
-	Quads& getQuads() override { return _quad; }
-	SurfaceAttributes& getSurfaceAttributes() override { return _surfaceAttributes; }
+	Quads& getQuads() { return _quad; }
+	SurfaceAttributes& getSurfaceAttributes() { return _surfaceAttributes; }
 
     int nverts() const override {
         return _quad.nverts();
