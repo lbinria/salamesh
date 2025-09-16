@@ -322,8 +322,9 @@ struct HexModel final : public Model {
     }
 
 
+    using Model::setSelectedAttr;
     void setSelectedAttr(int idx) override;
-
+    
     private:
 
 
