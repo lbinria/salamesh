@@ -1,4 +1,65 @@
 #include "tri_model.h"
+#include <json.hpp>
+
+std::string TriModel::save_state() const {
+	json j;
+	j["name"] = _name;
+	j["path"] = _path;
+	j["position"] = { position.x, position.y, position.z };
+	j["color_mode"] = colorMode;
+	j["is_light_enabled"] = isLightEnabled;
+	j["is_light_follow_view"] = isLightFollowView;
+	j["is_clipping"] = isClipping;
+	j["clipping_plane_point"] = { clippingPlanePoint.x, clippingPlanePoint.y, clippingPlanePoint.z };
+	j["clipping_plane_normal"] = { clippingPlaneNormal.x, clippingPlaneNormal.y, clippingPlaneNormal.z };
+	j["invert_clipping"] = invertClipping;
+	j["mesh_size"] = meshSize;
+	j["mesh_shrink"] = meshShrink;
+	j["frag_render_mode"] = fragRenderMode;
+	j["selected_colormap"] = selectedColormap;
+	j["visible"] = visible;
+	return j.dump(4);
+}
+
+void TriModel::load_state(json model_state) {
+	
+	_name = model_state["name"].get<std::string>();
+	_path = model_state["path"].get<std::string>();
+
+	position = glm::vec3(
+		model_state["position"][0].get<float>(),
+		model_state["position"][1].get<float>(),
+		model_state["position"][2].get<float>()
+	);
+	
+	setColorMode((Model::ColorMode)model_state["color_mode"].get<int>());
+
+	setLight(model_state["is_light_enabled"].get<bool>());
+	setLightFollowView(model_state["is_light_follow_view"].get<bool>());
+	setClipping(model_state["is_clipping"].get<bool>());
+
+	setClippingPlanePoint(glm::vec3(
+		model_state["clipping_plane_point"][0].get<float>(),
+		model_state["clipping_plane_point"][1].get<float>(),
+		model_state["clipping_plane_point"][2].get<float>()
+	));
+
+	setClippingPlaneNormal(glm::vec3(
+		model_state["clipping_plane_normal"][0].get<float>(),
+		model_state["clipping_plane_normal"][1].get<float>(),
+		model_state["clipping_plane_normal"][2].get<float>()
+	));
+
+	setInvertClipping(model_state["invert_clipping"].get<bool>());
+
+	setMeshSize(model_state["mesh_size"].get<float>());
+	setMeshShrink(model_state["mesh_shrink"].get<float>());
+	
+	setSelectedColormap(model_state["selected_colormap"].get<int>());
+	setVisible(model_state["visible"].get<bool>());
+
+	load(_path);
+}
 
 bool TriModel::load(const std::string path) {
 	// TODO check if the model failed to read in ultimaille, else there is side effects ! 
