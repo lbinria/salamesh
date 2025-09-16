@@ -1,5 +1,4 @@
 #include "hex_model.h"
-#include <json.hpp>
 
 std::string HexModel::save_state() const {
 	json j;

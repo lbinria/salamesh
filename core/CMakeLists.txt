@@ -16,10 +16,6 @@ set(SOURCES
     states.h 
     renderer.h
     model.h
-    tet_model_interface.h
-    hex_model_interface.h
-    tri_model_interface.h
-    quad_model_interface.h
     camera.h
 
     shader.cpp shader.h 

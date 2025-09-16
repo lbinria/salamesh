@@ -1,5 +1,4 @@
 #include "tri_model.h"
-#include <json.hpp>
 
 std::string TriModel::save_state() const {
 	json j;

@@ -1,5 +1,4 @@
 #include "tet_model.h"
-#include <json.hpp>
 
 
 // TODO refactor, exactly the same as HexModel

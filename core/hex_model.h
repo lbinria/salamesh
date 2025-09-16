@@ -1,6 +1,6 @@
 #pragma once
 
-#include <json.hpp>
+#include "../include/json.hpp"
 #include <ultimaille/all.h>
 #include <string>
 #include "model.h"
