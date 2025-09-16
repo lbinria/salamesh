@@ -5,8 +5,8 @@
 #include <ultimaille/all.h>
 
 // TODO should not inlcude this, because of Model::ColorMode ! create a separate file for ColorMode
-#include "core/model.h"
-#include "core/renderer.h"
+#include "model.h"
+#include "renderer.h"
 
 #include "shader.h"
 #include "vertex.h"

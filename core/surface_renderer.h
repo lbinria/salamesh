@@ -6,13 +6,13 @@
 
 #include <ultimaille/all.h>
 
-#include "include/glm/glm.hpp"
-#include "include/glm/gtc/matrix_transform.hpp"
-#include "include/glm/gtc/type_ptr.hpp"
+#include "../include/glm/glm.hpp"
+#include "../include/glm/gtc/matrix_transform.hpp"
+#include "../include/glm/gtc/type_ptr.hpp"
 
-#include "core/renderer.h"
-#include "core/model.h"
-#include "core/element.h"
+#include "renderer.h"
+#include "model.h"
+#include "element.h"
 #include "mesh_shader.h"
 #include "vertex.h"
 using namespace UM;

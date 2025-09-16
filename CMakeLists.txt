@@ -68,22 +68,11 @@ add_executable(salamesh
   app.cpp app.h
   my_app.cpp my_app.h
   script.cpp script.h
-  shader.cpp shader.h 
-  point_set_renderer.cpp point_set_renderer.h
-  halfedge_renderer.cpp halfedge_renderer.h
-  mesh_shader.cpp mesh_shader.h
-  surface_renderer.cpp surface_renderer.h
-  volume_renderer.cpp volume_renderer.h
-  tri_renderer.cpp tri_renderer.h
-  quad_renderer.cpp quad_renderer.h
-  tet_renderer.cpp tet_renderer.h
-  hex_renderer.cpp hex_renderer.h
-  tri_model.cpp tri_model.h
-  quad_model.cpp quad_model.h
-  tet_model.cpp tet_model.h
-  hex_model.cpp hex_model.h
-  helpers/module_loader.h
-  helpers/settings_manager.h
+
+
+
+  # helpers/module_loader.h
+  # helpers/settings_manager.h
   cameras/arcball_camera.h
   cameras/descent_camera.h
   render_surface.cpp render_surface.h

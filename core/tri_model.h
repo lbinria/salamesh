@@ -3,35 +3,35 @@
 #include <json.hpp>
 #include <ultimaille/all.h>
 #include <string>
-#include "core/tet_model_interface.h"
+#include "tri_model_interface.h"
 #include "point_set_renderer.h"
 #include "halfedge_renderer.h"
-#include "tet_renderer.h"
+#include "tri_renderer.h"
 
 using namespace UM;
 using json = nlohmann::json;
 
-struct TetModel final : public ITetModel {
+struct TriModel final : public ITriModel {
 
 	// Mesh + Renderer
+    using ITriModel::ITriModel;
 
-    using ITetModel::ITetModel;
+	TriModel() : 
+        _tri(), 
+        _triRenderer(_tri), 
+        _pointSetRenderer(_tri.points)
+        /* _halfedgeRenderer(_tri)*/ {}
 
-	TetModel() : 
-        _m(), 
-        _tetRenderer(_m), 
-        _pointSetRenderer(_m.points)
-        /*_halfedgeRenderer(_m)*/ {
-        }
 
     ModelType getModelType() const override {
-        return ModelType::TET;
+        return ModelType::TRI;
     }
 
 
 	bool load(const std::string path) override;
 	void save() const override;
 	void saveAs(const std::string path) const override;
+
 
     std::string save_state() const override {
         json j;
@@ -93,10 +93,8 @@ struct TetModel final : public ITetModel {
         load(_path);
     }
 
-
-
 	void init() override {
-		_tetRenderer.init();
+		_triRenderer.init();
 		_pointSetRenderer.init();
         // _halfedgeRenderer.init();
 	}
@@ -109,45 +107,46 @@ struct TetModel final : public ITetModel {
         
         glm::vec3 pos = getWorldPosition();
 
-        _tetRenderer.render(pos);
+        _triRenderer.render(pos);
         _pointSetRenderer.render(pos);
         // _halfedgeRenderer.render(pos);
 	}
     
     void clean() override {
-		_tetRenderer.clean();
+		_triRenderer.clean();
         _pointSetRenderer.clean();
         // _halfedgeRenderer.clean();
 	}
 
-	Tetrahedra& getTetrahedra() override { return _m; }
-	VolumeAttributes& getVolumeAttributes() override { return _volumeAttributes; }
+
+	Triangles& getTriangles() override { return _tri; }
+	SurfaceAttributes& getSurfaceAttributes() override { return _surfaceAttributes; }
 
     int nverts() const override {
-        return _m.nverts();
+        return _tri.nverts();
     }
 
     int nfacets() const override {
-        return _m.nfacets();
+        return _tri.nfacets();
     } 
 
     int ncells() const override {
-        return _m.ncells();
+        return 0;
     } 
 
-
     void setTexture(unsigned int tex) override {
-        _tetRenderer.setTexture(tex);
+        _triRenderer.setTexture(tex);
         _pointSetRenderer.setTexture(tex);
         // _halfedgeRenderer.setTexture(tex);
     }
 
+	// Just call underlying renderer methods
     int getColorMode() const override {
         return colorMode;
     }
 
     void setColorMode(Model::ColorMode mode) override {
-        _tetRenderer.shader.setColorMode(mode);
+        _triRenderer.shader.setColorMode(mode);
         _pointSetRenderer.setColorMode(mode);
         // _halfedgeRenderer.setColorMode(mode);
         colorMode = mode;
@@ -158,7 +157,7 @@ struct TetModel final : public ITetModel {
     }
 
     void setColor(glm::vec3 c) override {
-        _tetRenderer.shader.setColor(c);
+        _triRenderer.shader.setColor(c);
         color = c;
     }
 
@@ -167,7 +166,7 @@ struct TetModel final : public ITetModel {
     }
 
     void setLight(bool enabled) override {
-        _tetRenderer.shader.setLight(enabled);
+        _triRenderer.shader.setLight(enabled);
         isLightEnabled = enabled;
     }
 
@@ -176,7 +175,7 @@ struct TetModel final : public ITetModel {
     }
 
     void setLightFollowView(bool follow) override {
-		_tetRenderer.shader.setLightFollowView(follow);
+		_triRenderer.shader.setLightFollowView(follow);
         isLightFollowView = follow;
     }
 
@@ -185,7 +184,7 @@ struct TetModel final : public ITetModel {
     }
 
     void setClipping(bool enabled) override {
-        _tetRenderer.shader.setClipping(enabled);
+        _triRenderer.shader.setClipping(enabled);
         _pointSetRenderer.setClipping(enabled);
         isClipping = enabled;
     }
@@ -195,7 +194,7 @@ struct TetModel final : public ITetModel {
     }
 
     void setClippingPlanePoint(glm::vec3 p) override {
-        _tetRenderer.shader.setClippingPlanePoint(p);
+        _triRenderer.shader.setClippingPlanePoint(p);
         _pointSetRenderer.setClippingPlanePoint(p);
         clippingPlanePoint = p;
     }
@@ -205,7 +204,7 @@ struct TetModel final : public ITetModel {
     }
 
     void setClippingPlaneNormal(glm::vec3 n) override {
-        _tetRenderer.shader.setClippingPlaneNormal(n);
+        _triRenderer.shader.setClippingPlaneNormal(n);
         _pointSetRenderer.setClippingPlaneNormal(n);
         clippingPlaneNormal = n;
     }
@@ -215,7 +214,7 @@ struct TetModel final : public ITetModel {
     }
 
     void setInvertClipping(bool invert) override {
-        _tetRenderer.shader.setInvertClipping(invert);
+        _triRenderer.shader.setInvertClipping(invert);
         _pointSetRenderer.setInvertClipping(invert);
         invertClipping = invert;
     }
@@ -225,7 +224,7 @@ struct TetModel final : public ITetModel {
     }
 
     void setMeshSize(float val) override {
-        _tetRenderer.shader.setMeshSize(val);
+        _triRenderer.shader.setMeshSize(val);
         meshSize = val;
     }
 
@@ -234,16 +233,16 @@ struct TetModel final : public ITetModel {
     }
 
     void setMeshShrink(float val) override {
-        _tetRenderer.shader.setMeshShrink(val);
+        _triRenderer.shader.setMeshShrink(val);
         meshShrink = val;
     }
 
     bool getMeshVisible() const override {
-        return _tetRenderer.getVisible();
+        return _triRenderer.getVisible();
     }
 
     void setMeshVisible(bool visible) override {
-        return _tetRenderer.setVisible(visible);
+        return _triRenderer.setVisible(visible);
     }
 
     int getFragRenderMode() const override {
@@ -251,7 +250,7 @@ struct TetModel final : public ITetModel {
     }
 
     void setFragRenderMode(Model::RenderMode mode) override {
-        _tetRenderer.shader.setFragRenderMode(mode);
+        _triRenderer.shader.setFragRenderMode(mode);
         fragRenderMode = mode;
     }
 
@@ -260,7 +259,7 @@ struct TetModel final : public ITetModel {
     }
 
     void setSelectedColormap(int idx) override {
-        _tetRenderer.shader.setSelectedColormap(idx);
+        _triRenderer.shader.setSelectedColormap(idx);
         selectedColormap = idx;
     }
 
@@ -281,8 +280,8 @@ struct TetModel final : public ITetModel {
     }
 
     float getEdgeSize() const override {
+        return 0;
         // return _halfedgeRenderer.getEdgeSize();
-		return 0;
     }
 
     void setEdgeSize(float size) override {
@@ -290,7 +289,7 @@ struct TetModel final : public ITetModel {
     }
 
     glm::vec3 getEdgeInsideColor() const override {
-		return glm::vec3(0);
+        return glm::vec3(0);
         // return _halfedgeRenderer.getEdgeInsideColor();
     }
 
@@ -299,7 +298,8 @@ struct TetModel final : public ITetModel {
     }
 
     glm::vec3 getEdgeOutsideColor() const override {
-		return glm::vec3(0);
+        return glm::vec3(0);
+
         // return _halfedgeRenderer.getEdgeOutsideColor();
     }
 
@@ -308,7 +308,7 @@ struct TetModel final : public ITetModel {
     }
 
     void setMeshIndex(int index) override {
-        _tetRenderer.shader.setMeshIndex(index);
+        _triRenderer.shader.setMeshIndex(index);
     }
 
     bool getPointVisible() const override {
@@ -320,7 +320,7 @@ struct TetModel final : public ITetModel {
     }
 
     bool getEdgeVisible() const override {
-		return false;
+        return false;
         // return _halfedgeRenderer.getVisible();
     }
 
@@ -329,19 +329,11 @@ struct TetModel final : public ITetModel {
     }
 
     void setHighlight(int idx, float highlight) override {
-        _tetRenderer.setHighlight(idx, highlight);
+        _triRenderer.setHighlight(idx, highlight);
     }
 
     void setHighlight(std::vector<float> highlights) override {
-        _tetRenderer.setHighlight(highlights);
-    }
-
-    void setFacetHighlight(int idx, float highlight) override {
-        _tetRenderer.setFacetHighlight(idx, highlight);
-    }
-
-    void setFacetHighlight(std::vector<float> highlights) override {
-        _tetRenderer.setFacetHighlight(highlights);
+        _triRenderer.setHighlight(highlights);
     }
 
     void setPointHighlight(int idx, float highlight) override {
@@ -352,41 +344,40 @@ struct TetModel final : public ITetModel {
         _pointSetRenderer.setHighlight(highlights);
     }
 
-    // TODO filter anything else than cell !
     void setFilter(int idx, bool filter) override {
-        _tetRenderer.setFilter(idx, filter);
 
-        // TODO it works but... not very efficient !
-        Volume::Cell c(_m, idx);
-        for (int lc = 0; lc < 8; ++lc) {
-            auto corner = c.corner(lc);
-            auto v = corner.vertex();
-            // Retrieve all cells attached to this point to see whether filtered
+        _triRenderer.setFilter(idx, filter);
+        Surface::Facet f(_tri, idx);
+        for (int lv = 0; lv < 3; ++lv) {
+            auto v = f.vertex(lv);
+
             bool allFiltered = true;
-            // #pragma omp parallel for
-            for (int i = 0; i < _m.cells.size(); ++i) {
-                if (_m.cells[i] != v)
+
+            // Iterate on corners
+            for (int c = 0; c < _tri.facets.size(); ++c) {
+                // If iterated corner is not current vertex, skip !
+                if (_tri.facets[c] != v)
                     continue;
-                
-                int ci = i / 8;
-                if (_tetRenderer.getFilterPtr()[ci] <= 0) {
+
+                int fi = c / 3;
+                if (_triRenderer.getFilterPtr()[fi] <= 0) {
                     allFiltered = false;
                     break;
                 }
             }
 
+            // Only filter point when all attached facets are filtered
             _pointSetRenderer.setFilter(v, allFiltered);
-            // _pointSetRenderer.setHighlight(v, 0.1f);
-        }
 
+        }
         
     }
-
 
     void setSelectedAttr(int idx) override;
     void setSelectedAttr(std::string name, ElementKind kind) override;
 
-    private:
+
+    private: 
 
     bool isLightEnabled = true;
     bool isLightFollowView = false;
@@ -404,13 +395,16 @@ struct TetModel final : public ITetModel {
     int selectedColormap = 0;
 
     // Mesh
-    Tetrahedra _m;
-    VolumeAttributes _volumeAttributes;
+    Triangles _tri;
+    SurfaceAttributes _surfaceAttributes;
 
     // Renderers
     PointSetRenderer _pointSetRenderer;
-    // HalfedgeRenderer _halfedgeRenderer;
-    TetRenderer _tetRenderer;
+    //HalfedgeRenderer _halfedgeRenderer;
+    TriRenderer _triRenderer;
+
+
+
 
     void addAttr(ElementKind kind, NamedContainer &container) {
         

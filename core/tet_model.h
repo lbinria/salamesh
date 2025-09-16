@@ -3,35 +3,35 @@
 #include <json.hpp>
 #include <ultimaille/all.h>
 #include <string>
-#include "core/quad_model_interface.h"
+#include "tet_model_interface.h"
 #include "point_set_renderer.h"
 #include "halfedge_renderer.h"
-#include "quad_renderer.h"
+#include "tet_renderer.h"
 
 using namespace UM;
 using json = nlohmann::json;
 
-struct QuadModel final : public IQuadModel {
+struct TetModel final : public ITetModel {
 
 	// Mesh + Renderer
-    using IQuadModel::IQuadModel;
 
-	QuadModel() : 
-        _quad(), 
-        _quadRenderer(_quad), 
-        _pointSetRenderer(_quad.points)
-        /* _halfedgeRenderer(_quad)*/ {}
+    using ITetModel::ITetModel;
 
+	TetModel() : 
+        _m(), 
+        _tetRenderer(_m), 
+        _pointSetRenderer(_m.points)
+        /*_halfedgeRenderer(_m)*/ {
+        }
 
     ModelType getModelType() const override {
-        return ModelType::TRI;
+        return ModelType::TET;
     }
 
 
 	bool load(const std::string path) override;
 	void save() const override;
 	void saveAs(const std::string path) const override;
-
 
     std::string save_state() const override {
         json j;
@@ -93,8 +93,10 @@ struct QuadModel final : public IQuadModel {
         load(_path);
     }
 
+
+
 	void init() override {
-		_quadRenderer.init();
+		_tetRenderer.init();
 		_pointSetRenderer.init();
         // _halfedgeRenderer.init();
 	}
@@ -107,46 +109,45 @@ struct QuadModel final : public IQuadModel {
         
         glm::vec3 pos = getWorldPosition();
 
-        _quadRenderer.render(pos);
+        _tetRenderer.render(pos);
         _pointSetRenderer.render(pos);
         // _halfedgeRenderer.render(pos);
 	}
     
     void clean() override {
-		_quadRenderer.clean();
+		_tetRenderer.clean();
         _pointSetRenderer.clean();
         // _halfedgeRenderer.clean();
 	}
 
-
-	Quads& getQuads() override { return _quad; }
-	SurfaceAttributes& getSurfaceAttributes() override { return _surfaceAttributes; }
+	Tetrahedra& getTetrahedra() override { return _m; }
+	VolumeAttributes& getVolumeAttributes() override { return _volumeAttributes; }
 
     int nverts() const override {
-        return _quad.nverts();
+        return _m.nverts();
     }
 
     int nfacets() const override {
-        return _quad.nfacets();
+        return _m.nfacets();
     } 
 
     int ncells() const override {
-        return 0;
+        return _m.ncells();
     } 
 
+
     void setTexture(unsigned int tex) override {
-        _quadRenderer.setTexture(tex);
+        _tetRenderer.setTexture(tex);
         _pointSetRenderer.setTexture(tex);
         // _halfedgeRenderer.setTexture(tex);
     }
 
-	// Just call underlying renderer methods
     int getColorMode() const override {
         return colorMode;
     }
 
     void setColorMode(Model::ColorMode mode) override {
-        _quadRenderer.shader.setColorMode(mode);
+        _tetRenderer.shader.setColorMode(mode);
         _pointSetRenderer.setColorMode(mode);
         // _halfedgeRenderer.setColorMode(mode);
         colorMode = mode;
@@ -157,7 +158,7 @@ struct QuadModel final : public IQuadModel {
     }
 
     void setColor(glm::vec3 c) override {
-        _quadRenderer.shader.setColor(c);
+        _tetRenderer.shader.setColor(c);
         color = c;
     }
 
@@ -166,7 +167,7 @@ struct QuadModel final : public IQuadModel {
     }
 
     void setLight(bool enabled) override {
-        _quadRenderer.shader.setLight(enabled);
+        _tetRenderer.shader.setLight(enabled);
         isLightEnabled = enabled;
     }
 
@@ -175,7 +176,7 @@ struct QuadModel final : public IQuadModel {
     }
 
     void setLightFollowView(bool follow) override {
-		_quadRenderer.shader.setLightFollowView(follow);
+		_tetRenderer.shader.setLightFollowView(follow);
         isLightFollowView = follow;
     }
 
@@ -184,7 +185,7 @@ struct QuadModel final : public IQuadModel {
     }
 
     void setClipping(bool enabled) override {
-        _quadRenderer.shader.setClipping(enabled);
+        _tetRenderer.shader.setClipping(enabled);
         _pointSetRenderer.setClipping(enabled);
         isClipping = enabled;
     }
@@ -194,7 +195,7 @@ struct QuadModel final : public IQuadModel {
     }
 
     void setClippingPlanePoint(glm::vec3 p) override {
-        _quadRenderer.shader.setClippingPlanePoint(p);
+        _tetRenderer.shader.setClippingPlanePoint(p);
         _pointSetRenderer.setClippingPlanePoint(p);
         clippingPlanePoint = p;
     }
@@ -204,7 +205,7 @@ struct QuadModel final : public IQuadModel {
     }
 
     void setClippingPlaneNormal(glm::vec3 n) override {
-        _quadRenderer.shader.setClippingPlaneNormal(n);
+        _tetRenderer.shader.setClippingPlaneNormal(n);
         _pointSetRenderer.setClippingPlaneNormal(n);
         clippingPlaneNormal = n;
     }
@@ -214,7 +215,7 @@ struct QuadModel final : public IQuadModel {
     }
 
     void setInvertClipping(bool invert) override {
-        _quadRenderer.shader.setInvertClipping(invert);
+        _tetRenderer.shader.setInvertClipping(invert);
         _pointSetRenderer.setInvertClipping(invert);
         invertClipping = invert;
     }
@@ -224,7 +225,7 @@ struct QuadModel final : public IQuadModel {
     }
 
     void setMeshSize(float val) override {
-        _quadRenderer.shader.setMeshSize(val);
+        _tetRenderer.shader.setMeshSize(val);
         meshSize = val;
     }
 
@@ -233,16 +234,16 @@ struct QuadModel final : public IQuadModel {
     }
 
     void setMeshShrink(float val) override {
-        _quadRenderer.shader.setMeshShrink(val);
+        _tetRenderer.shader.setMeshShrink(val);
         meshShrink = val;
     }
 
     bool getMeshVisible() const override {
-        return _quadRenderer.getVisible();
+        return _tetRenderer.getVisible();
     }
 
     void setMeshVisible(bool visible) override {
-        return _quadRenderer.setVisible(visible);
+        return _tetRenderer.setVisible(visible);
     }
 
     int getFragRenderMode() const override {
@@ -250,7 +251,7 @@ struct QuadModel final : public IQuadModel {
     }
 
     void setFragRenderMode(Model::RenderMode mode) override {
-        _quadRenderer.shader.setFragRenderMode(mode);
+        _tetRenderer.shader.setFragRenderMode(mode);
         fragRenderMode = mode;
     }
 
@@ -259,7 +260,7 @@ struct QuadModel final : public IQuadModel {
     }
 
     void setSelectedColormap(int idx) override {
-        _quadRenderer.shader.setSelectedColormap(idx);
+        _tetRenderer.shader.setSelectedColormap(idx);
         selectedColormap = idx;
     }
 
@@ -280,8 +281,8 @@ struct QuadModel final : public IQuadModel {
     }
 
     float getEdgeSize() const override {
-        return 0;
         // return _halfedgeRenderer.getEdgeSize();
+		return 0;
     }
 
     void setEdgeSize(float size) override {
@@ -289,7 +290,7 @@ struct QuadModel final : public IQuadModel {
     }
 
     glm::vec3 getEdgeInsideColor() const override {
-        return glm::vec3(0);
+		return glm::vec3(0);
         // return _halfedgeRenderer.getEdgeInsideColor();
     }
 
@@ -298,8 +299,7 @@ struct QuadModel final : public IQuadModel {
     }
 
     glm::vec3 getEdgeOutsideColor() const override {
-        return glm::vec3(0);
-
+		return glm::vec3(0);
         // return _halfedgeRenderer.getEdgeOutsideColor();
     }
 
@@ -308,7 +308,7 @@ struct QuadModel final : public IQuadModel {
     }
 
     void setMeshIndex(int index) override {
-        _quadRenderer.shader.setMeshIndex(index);
+        _tetRenderer.shader.setMeshIndex(index);
     }
 
     bool getPointVisible() const override {
@@ -320,7 +320,7 @@ struct QuadModel final : public IQuadModel {
     }
 
     bool getEdgeVisible() const override {
-        return false;
+		return false;
         // return _halfedgeRenderer.getVisible();
     }
 
@@ -329,11 +329,19 @@ struct QuadModel final : public IQuadModel {
     }
 
     void setHighlight(int idx, float highlight) override {
-        _quadRenderer.setHighlight(idx, highlight);
+        _tetRenderer.setHighlight(idx, highlight);
     }
 
     void setHighlight(std::vector<float> highlights) override {
-        _quadRenderer.setHighlight(highlights);
+        _tetRenderer.setHighlight(highlights);
+    }
+
+    void setFacetHighlight(int idx, float highlight) override {
+        _tetRenderer.setFacetHighlight(idx, highlight);
+    }
+
+    void setFacetHighlight(std::vector<float> highlights) override {
+        _tetRenderer.setFacetHighlight(highlights);
     }
 
     void setPointHighlight(int idx, float highlight) override {
@@ -344,40 +352,41 @@ struct QuadModel final : public IQuadModel {
         _pointSetRenderer.setHighlight(highlights);
     }
 
+    // TODO filter anything else than cell !
     void setFilter(int idx, bool filter) override {
+        _tetRenderer.setFilter(idx, filter);
 
-        _quadRenderer.setFilter(idx, filter);
-        Surface::Facet f(_quad, idx);
-        for (int lv = 0; lv < 3; ++lv) {
-            auto v = f.vertex(lv);
-
+        // TODO it works but... not very efficient !
+        Volume::Cell c(_m, idx);
+        for (int lc = 0; lc < 8; ++lc) {
+            auto corner = c.corner(lc);
+            auto v = corner.vertex();
+            // Retrieve all cells attached to this point to see whether filtered
             bool allFiltered = true;
-
-            // Iterate on corners
-            for (int c = 0; c < _quad.facets.size(); ++c) {
-                // If iterated corner is not current vertex, skip !
-                if (_quad.facets[c] != v)
+            // #pragma omp parallel for
+            for (int i = 0; i < _m.cells.size(); ++i) {
+                if (_m.cells[i] != v)
                     continue;
-
-                int fi = c / 3;
-                if (_quadRenderer.getFilterPtr()[fi] <= 0) {
+                
+                int ci = i / 8;
+                if (_tetRenderer.getFilterPtr()[ci] <= 0) {
                     allFiltered = false;
                     break;
                 }
             }
 
-            // Only filter point when all attached facets are filtered
             _pointSetRenderer.setFilter(v, allFiltered);
-
+            // _pointSetRenderer.setHighlight(v, 0.1f);
         }
+
         
     }
+
 
     void setSelectedAttr(int idx) override;
     void setSelectedAttr(std::string name, ElementKind kind) override;
 
-
-    private: 
+    private:
 
     bool isLightEnabled = true;
     bool isLightFollowView = false;
@@ -395,16 +404,13 @@ struct QuadModel final : public IQuadModel {
     int selectedColormap = 0;
 
     // Mesh
-    Quads _quad;
-    SurfaceAttributes _surfaceAttributes;
+    Tetrahedra _m;
+    VolumeAttributes _volumeAttributes;
 
     // Renderers
     PointSetRenderer _pointSetRenderer;
-    //HalfedgeRenderer _halfedgeRenderer;
-    QuadRenderer _quadRenderer;
-
-
-
+    // HalfedgeRenderer _halfedgeRenderer;
+    TetRenderer _tetRenderer;
 
     void addAttr(ElementKind kind, NamedContainer &container) {
         

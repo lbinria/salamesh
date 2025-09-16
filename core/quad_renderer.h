@@ -1,4 +1,4 @@
-#pragma once
+#pragma once_quad
 
 #include <vector>
 #include <tuple>
@@ -6,13 +6,14 @@
 
 #include <ultimaille/all.h>
 
-#include "include/glm/glm.hpp"
-#include "include/glm/gtc/matrix_transform.hpp"
-#include "include/glm/gtc/type_ptr.hpp"
+#include "../include/glm/glm.hpp"
+#include "../include/glm/gtc/matrix_transform.hpp"
+#include "../include/glm/gtc/type_ptr.hpp"
 
-#include "core/model.h"
+
+#include "model.h"
+#include "element.h"
 #include "surface_renderer.h"
-#include "core/element.h"
 #include "shader.h"
 #include "vertex.h"
 
@@ -20,9 +21,8 @@
 
 using namespace UM;
 
-struct TriRenderer : public SurfaceRenderer {
+struct QuadRenderer : public SurfaceRenderer {
 
 	using SurfaceRenderer::SurfaceRenderer;
 	void push() override;
-
 };

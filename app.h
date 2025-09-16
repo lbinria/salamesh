@@ -24,14 +24,14 @@
 #include <iostream>
 #include <cmath>
 
-#include "shader.h"
+#include "core/shader.h"
 
-#include "hex_renderer.h"
+#include "core/hex_renderer.h"
 
-#include "tri_model.h"
-#include "quad_model.h"
-#include "tet_model.h"
-#include "hex_model.h"
+#include "core/tri_model.h"
+#include "core/quad_model.h"
+#include "core/tet_model.h"
+#include "core/hex_model.h"
 
 #include "render_surface.h"
 

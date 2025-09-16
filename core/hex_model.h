@@ -3,35 +3,35 @@
 #include <json.hpp>
 #include <ultimaille/all.h>
 #include <string>
-#include "core/tri_model_interface.h"
+#include "hex_model_interface.h"
 #include "point_set_renderer.h"
 #include "halfedge_renderer.h"
-#include "tri_renderer.h"
+#include "hex_renderer.h"
 
 using namespace UM;
 using json = nlohmann::json;
 
-struct TriModel final : public ITriModel {
+struct HexModel final : public IHexModel {
 
 	// Mesh + Renderer
-    using ITriModel::ITriModel;
 
-	TriModel() : 
-        _tri(), 
-        _triRenderer(_tri), 
-        _pointSetRenderer(_tri.points)
-        /* _halfedgeRenderer(_tri)*/ {}
+    using IHexModel::IHexModel;
 
+	HexModel() : 
+        _m(), 
+        _hexRenderer(_m), 
+        _pointSetRenderer(_m.points),
+        _halfedgeRenderer(_m) {
+        }
 
     ModelType getModelType() const override {
-        return ModelType::TRI;
+        return ModelType::HEX;
     }
 
 
 	bool load(const std::string path) override;
 	void save() const override;
 	void saveAs(const std::string path) const override;
-
 
     std::string save_state() const override {
         json j;
@@ -93,10 +93,12 @@ struct TriModel final : public ITriModel {
         load(_path);
     }
 
+
+
 	void init() override {
-		_triRenderer.init();
+		_hexRenderer.init();
 		_pointSetRenderer.init();
-        // _halfedgeRenderer.init();
+        _halfedgeRenderer.init();
 	}
 
     void push() override;
@@ -107,48 +109,47 @@ struct TriModel final : public ITriModel {
         
         glm::vec3 pos = getWorldPosition();
 
-        _triRenderer.render(pos);
+        _hexRenderer.render(pos);
         _pointSetRenderer.render(pos);
-        // _halfedgeRenderer.render(pos);
+        _halfedgeRenderer.render(pos);
 	}
     
     void clean() override {
-		_triRenderer.clean();
+		_hexRenderer.clean();
         _pointSetRenderer.clean();
-        // _halfedgeRenderer.clean();
+        _halfedgeRenderer.clean();
 	}
 
-
-	Triangles& getTriangles() override { return _tri; }
-	SurfaceAttributes& getSurfaceAttributes() override { return _surfaceAttributes; }
+	Hexahedra& getHexahedra() override { return _m; }
+	VolumeAttributes& getVolumeAttributes() override { return _volumeAttributes; }
 
     int nverts() const override {
-        return _tri.nverts();
+        return _m.nverts();
     }
 
     int nfacets() const override {
-        return _tri.nfacets();
+        return _m.nfacets();
     } 
 
     int ncells() const override {
-        return 0;
+        return _m.ncells();
     } 
 
+
     void setTexture(unsigned int tex) override {
-        _triRenderer.setTexture(tex);
+        _hexRenderer.setTexture(tex);
         _pointSetRenderer.setTexture(tex);
-        // _halfedgeRenderer.setTexture(tex);
+        _halfedgeRenderer.setTexture(tex);
     }
 
-	// Just call underlying renderer methods
     int getColorMode() const override {
         return colorMode;
     }
 
     void setColorMode(Model::ColorMode mode) override {
-        _triRenderer.shader.setColorMode(mode);
+        _hexRenderer.shader.setColorMode(mode);
         _pointSetRenderer.setColorMode(mode);
-        // _halfedgeRenderer.setColorMode(mode);
+        _halfedgeRenderer.setColorMode(mode);
         colorMode = mode;
     }
 
@@ -157,7 +158,7 @@ struct TriModel final : public ITriModel {
     }
 
     void setColor(glm::vec3 c) override {
-        _triRenderer.shader.setColor(c);
+        _hexRenderer.shader.setColor(c);
         color = c;
     }
 
@@ -166,7 +167,7 @@ struct TriModel final : public ITriModel {
     }
 
     void setLight(bool enabled) override {
-        _triRenderer.shader.setLight(enabled);
+        _hexRenderer.shader.setLight(enabled);
         isLightEnabled = enabled;
     }
 
@@ -175,7 +176,7 @@ struct TriModel final : public ITriModel {
     }
 
     void setLightFollowView(bool follow) override {
-		_triRenderer.shader.setLightFollowView(follow);
+		_hexRenderer.shader.setLightFollowView(follow);
         isLightFollowView = follow;
     }
 
@@ -184,7 +185,7 @@ struct TriModel final : public ITriModel {
     }
 
     void setClipping(bool enabled) override {
-        _triRenderer.shader.setClipping(enabled);
+        _hexRenderer.shader.setClipping(enabled);
         _pointSetRenderer.setClipping(enabled);
         isClipping = enabled;
     }
@@ -194,7 +195,7 @@ struct TriModel final : public ITriModel {
     }
 
     void setClippingPlanePoint(glm::vec3 p) override {
-        _triRenderer.shader.setClippingPlanePoint(p);
+        _hexRenderer.shader.setClippingPlanePoint(p);
         _pointSetRenderer.setClippingPlanePoint(p);
         clippingPlanePoint = p;
     }
@@ -204,7 +205,7 @@ struct TriModel final : public ITriModel {
     }
 
     void setClippingPlaneNormal(glm::vec3 n) override {
-        _triRenderer.shader.setClippingPlaneNormal(n);
+        _hexRenderer.shader.setClippingPlaneNormal(n);
         _pointSetRenderer.setClippingPlaneNormal(n);
         clippingPlaneNormal = n;
     }
@@ -214,7 +215,7 @@ struct TriModel final : public ITriModel {
     }
 
     void setInvertClipping(bool invert) override {
-        _triRenderer.shader.setInvertClipping(invert);
+        _hexRenderer.shader.setInvertClipping(invert);
         _pointSetRenderer.setInvertClipping(invert);
         invertClipping = invert;
     }
@@ -224,7 +225,7 @@ struct TriModel final : public ITriModel {
     }
 
     void setMeshSize(float val) override {
-        _triRenderer.shader.setMeshSize(val);
+        _hexRenderer.shader.setMeshSize(val);
         meshSize = val;
     }
 
@@ -233,16 +234,16 @@ struct TriModel final : public ITriModel {
     }
 
     void setMeshShrink(float val) override {
-        _triRenderer.shader.setMeshShrink(val);
+        _hexRenderer.shader.setMeshShrink(val);
         meshShrink = val;
     }
 
     bool getMeshVisible() const override {
-        return _triRenderer.getVisible();
+        return _hexRenderer.getVisible();
     }
 
     void setMeshVisible(bool visible) override {
-        return _triRenderer.setVisible(visible);
+        return _hexRenderer.setVisible(visible);
     }
 
     int getFragRenderMode() const override {
@@ -250,7 +251,7 @@ struct TriModel final : public ITriModel {
     }
 
     void setFragRenderMode(Model::RenderMode mode) override {
-        _triRenderer.shader.setFragRenderMode(mode);
+        _hexRenderer.shader.setFragRenderMode(mode);
         fragRenderMode = mode;
     }
 
@@ -259,7 +260,7 @@ struct TriModel final : public ITriModel {
     }
 
     void setSelectedColormap(int idx) override {
-        _triRenderer.shader.setSelectedColormap(idx);
+        _hexRenderer.shader.setSelectedColormap(idx);
         selectedColormap = idx;
     }
 
@@ -280,35 +281,31 @@ struct TriModel final : public ITriModel {
     }
 
     float getEdgeSize() const override {
-        return 0;
-        // return _halfedgeRenderer.getEdgeSize();
+        return _halfedgeRenderer.getEdgeSize();
     }
 
     void setEdgeSize(float size) override {
-        // _halfedgeRenderer.setEdgeSize(size);
+        _halfedgeRenderer.setEdgeSize(size);
     }
 
     glm::vec3 getEdgeInsideColor() const override {
-        return glm::vec3(0);
-        // return _halfedgeRenderer.getEdgeInsideColor();
+        return _halfedgeRenderer.getEdgeInsideColor();
     }
 
     void setEdgeInsideColor(glm::vec3 color) override {
-        // _halfedgeRenderer.setEdgeInsideColor(color);
+        _halfedgeRenderer.setEdgeInsideColor(color);
     }
 
     glm::vec3 getEdgeOutsideColor() const override {
-        return glm::vec3(0);
-
-        // return _halfedgeRenderer.getEdgeOutsideColor();
+        return _halfedgeRenderer.getEdgeOutsideColor();
     }
 
     void setEdgeOutsideColor(glm::vec3 color) override {
-        // _halfedgeRenderer.setEdgeOutsideColor(color);
+        _halfedgeRenderer.setEdgeOutsideColor(color);
     }
 
     void setMeshIndex(int index) override {
-        _triRenderer.shader.setMeshIndex(index);
+        _hexRenderer.shader.setMeshIndex(index);
     }
 
     bool getPointVisible() const override {
@@ -320,20 +317,27 @@ struct TriModel final : public ITriModel {
     }
 
     bool getEdgeVisible() const override {
-        return false;
-        // return _halfedgeRenderer.getVisible();
+        return _halfedgeRenderer.getVisible();
     }
 
     void setEdgeVisible(bool v) override {
-        // _halfedgeRenderer.setVisible(v);
+        _halfedgeRenderer.setVisible(v);
     }
 
     void setHighlight(int idx, float highlight) override {
-        _triRenderer.setHighlight(idx, highlight);
+        _hexRenderer.setHighlight(idx, highlight);
     }
 
     void setHighlight(std::vector<float> highlights) override {
-        _triRenderer.setHighlight(highlights);
+        _hexRenderer.setHighlight(highlights);
+    }
+
+    void setFacetHighlight(int idx, float highlight) override {
+        _hexRenderer.setFacetHighlight(idx, highlight);
+    }
+
+    void setFacetHighlight(std::vector<float> highlights) override {
+        _hexRenderer.setFacetHighlight(highlights);
     }
 
     void setPointHighlight(int idx, float highlight) override {
@@ -344,40 +348,41 @@ struct TriModel final : public ITriModel {
         _pointSetRenderer.setHighlight(highlights);
     }
 
+    // TODO filter anything else than cell !
     void setFilter(int idx, bool filter) override {
+        _hexRenderer.setFilter(idx, filter);
 
-        _triRenderer.setFilter(idx, filter);
-        Surface::Facet f(_tri, idx);
-        for (int lv = 0; lv < 3; ++lv) {
-            auto v = f.vertex(lv);
-
+        // TODO it works but... not very efficient !
+        Volume::Cell c(_m, idx);
+        for (int lc = 0; lc < 8; ++lc) {
+            auto corner = c.corner(lc);
+            auto v = corner.vertex();
+            // Retrieve all cells attached to this point to see whether filtered
             bool allFiltered = true;
-
-            // Iterate on corners
-            for (int c = 0; c < _tri.facets.size(); ++c) {
-                // If iterated corner is not current vertex, skip !
-                if (_tri.facets[c] != v)
+            // #pragma omp parallel for
+            for (int i = 0; i < _m.cells.size(); ++i) {
+                if (_m.cells[i] != v)
                     continue;
-
-                int fi = c / 3;
-                if (_triRenderer.getFilterPtr()[fi] <= 0) {
+                
+                int ci = i / 8;
+                if (_hexRenderer.getFilterPtr()[ci] <= 0) {
                     allFiltered = false;
                     break;
                 }
             }
 
-            // Only filter point when all attached facets are filtered
             _pointSetRenderer.setFilter(v, allFiltered);
-
+            // _pointSetRenderer.setHighlight(v, 0.1f);
         }
+
         
     }
+
 
     void setSelectedAttr(int idx) override;
     void setSelectedAttr(std::string name, ElementKind kind) override;
 
-
-    private: 
+    private:
 
     bool isLightEnabled = true;
     bool isLightFollowView = false;
@@ -395,16 +400,13 @@ struct TriModel final : public ITriModel {
     int selectedColormap = 0;
 
     // Mesh
-    Triangles _tri;
-    SurfaceAttributes _surfaceAttributes;
+    Hexahedra _m;
+    VolumeAttributes _volumeAttributes;
 
     // Renderers
     PointSetRenderer _pointSetRenderer;
-    //HalfedgeRenderer _halfedgeRenderer;
-    TriRenderer _triRenderer;
-
-
-
+    HalfedgeRenderer _halfedgeRenderer;
+    HexRenderer _hexRenderer;
 
     void addAttr(ElementKind kind, NamedContainer &container) {
         

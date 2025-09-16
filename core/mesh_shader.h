@@ -1,10 +1,10 @@
 #pragma once
 
-#include "include/glm/glm.hpp"
-#include "include/glm/gtc/matrix_transform.hpp"
-#include "include/glm/gtc/type_ptr.hpp"
+#include "../include/glm/glm.hpp"
+#include "../include/glm/gtc/matrix_transform.hpp"
+#include "../include/glm/gtc/type_ptr.hpp"
 
-#include "core/model.h"
+#include "model.h"
 #include "shader.h"
 
 using namespace UM;
