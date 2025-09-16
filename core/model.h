@@ -4,10 +4,14 @@
 #include "attribute.h"
 
 #include "../include/glm/glm.hpp"
+#include "../include/json.hpp"
+
 #include <ultimaille/all.h>
-using namespace UM;
 
 #include <optional>
+
+using namespace UM;
+using json = nlohmann::json;
 
 struct Model {
 
@@ -53,9 +57,72 @@ struct Model {
     virtual ModelType getModelType() const = 0;
 
 	virtual bool load(const std::string path) = 0;
-    virtual void save() const = 0;
     virtual void saveAs(const std::string path) const = 0;
-    virtual std::string save_state() const = 0;
+
+    void save() const {
+        saveAs(_path);
+    }
+
+
+    std::string save_state() const {
+        json j;
+        j["name"] = _name;
+        j["path"] = _path;
+        j["position"] = { position.x, position.y, position.z };
+        j["color_mode"] = colorMode;
+        j["is_light_enabled"] = isLightEnabled;
+        j["is_light_follow_view"] = isLightFollowView;
+        j["is_clipping"] = isClipping;
+        j["clipping_plane_point"] = { clippingPlanePoint.x, clippingPlanePoint.y, clippingPlanePoint.z };
+        j["clipping_plane_normal"] = { clippingPlaneNormal.x, clippingPlaneNormal.y, clippingPlaneNormal.z };
+        j["invert_clipping"] = invertClipping;
+        j["mesh_size"] = meshSize;
+        j["mesh_shrink"] = meshShrink;
+        j["frag_render_mode"] = fragRenderMode;
+        j["selected_colormap"] = selectedColormap;
+        j["visible"] = visible;
+        return j.dump(4);
+    }
+
+    void load_state(json model_state) {
+        
+        _name = model_state["name"].get<std::string>();
+        _path = model_state["path"].get<std::string>();
+
+        position = glm::vec3(
+            model_state["position"][0].get<float>(),
+            model_state["position"][1].get<float>(),
+            model_state["position"][2].get<float>()
+        );
+        
+        setColorMode((Model::ColorMode)model_state["color_mode"].get<int>());
+
+        setLight(model_state["is_light_enabled"].get<bool>());
+        setLightFollowView(model_state["is_light_follow_view"].get<bool>());
+        setClipping(model_state["is_clipping"].get<bool>());
+
+        setClippingPlanePoint(glm::vec3(
+            model_state["clipping_plane_point"][0].get<float>(),
+            model_state["clipping_plane_point"][1].get<float>(),
+            model_state["clipping_plane_point"][2].get<float>()
+        ));
+
+        setClippingPlaneNormal(glm::vec3(
+            model_state["clipping_plane_normal"][0].get<float>(),
+            model_state["clipping_plane_normal"][1].get<float>(),
+            model_state["clipping_plane_normal"][2].get<float>()
+        ));
+
+        setInvertClipping(model_state["invert_clipping"].get<bool>());
+
+        setMeshSize(model_state["mesh_size"].get<float>());
+        setMeshShrink(model_state["mesh_shrink"].get<float>());
+        
+        setSelectedColormap(model_state["selected_colormap"].get<int>());
+        setVisible(model_state["visible"].get<bool>());
+
+        load(_path);
+    }
 
     std::string getName() const { return _name; }
     void setName(std::string name) { _name = name; }
@@ -152,7 +219,21 @@ struct Model {
     }
 
     virtual void setSelectedAttr(int idx) = 0;
-    virtual void setSelectedAttr(std::string name, ElementKind kind) = 0;
+    // virtual void setSelectedAttr(std::string name, ElementKind kind) = 0;
+
+    void setSelectedAttr(std::string name, ElementKind kind) {
+        // Search attribute by name
+        for (int i = 0; i < attrs.size(); ++i) {
+            const auto &attr = attrs[i];
+
+            if (attr.getName() == name && attr.getKind() == kind) {
+                setSelectedAttr(i);
+                return;
+            }
+        }
+
+        throw std::runtime_error("Attribute not found: " + name);
+    }
 
     
     void updateAttr() {
@@ -299,6 +380,22 @@ struct Model {
 
     std::vector<Attribute> attrs;
     int selectedAttr = 0;
+
+
+    bool isLightEnabled = true;
+    bool isLightFollowView = false;
+
+    bool isClipping = false;
+    glm::vec3 clippingPlanePoint{0.f, 0.f, 0.f};
+    glm::vec3 clippingPlaneNormal{0.f, 0.f, 1.f};
+    bool invertClipping = false;
+    float meshSize = 0.01f;
+    float meshShrink = 0.f;
+    Model::RenderMode fragRenderMode = Model::RenderMode::Color;
+    Model::ColorMode colorMode = Model::ColorMode::COLOR;
+    glm::vec3 color{0.8f, 0.f, 0.2f};
+    
+    int selectedColormap = 0;
 
 
 };

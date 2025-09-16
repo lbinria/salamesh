@@ -29,12 +29,12 @@ struct QuadModel final : public Model {
 
 
 	bool load(const std::string path) override;
-	void save() const override;
+	// void save() const override;
 	void saveAs(const std::string path) const override;
 
 
-	std::string save_state() const override;
-	void load_state(json model_state);
+	// std::string save_state() const override;
+	// void load_state(json model_state);
 
 	void init() override {
 		_quadRenderer.init();
@@ -317,25 +317,9 @@ struct QuadModel final : public Model {
     }
 
     void setSelectedAttr(int idx) override;
-    void setSelectedAttr(std::string name, ElementKind kind) override;
 
 
     private: 
-
-    bool isLightEnabled = true;
-    bool isLightFollowView = false;
-
-    bool isClipping = false;
-    glm::vec3 clippingPlanePoint{0.f, 0.f, 0.f};
-    glm::vec3 clippingPlaneNormal{0.f, 0.f, 1.f};
-    bool invertClipping = false;
-    float meshSize = 0.01f;
-    float meshShrink = 0.f;
-    Model::RenderMode fragRenderMode = Model::RenderMode::Color;
-    Model::ColorMode colorMode = Model::ColorMode::COLOR;
-    glm::vec3 color{0.8f, 0.f, 0.2f};
-    
-    int selectedColormap = 0;
 
     // Mesh
     Quads _quad;
