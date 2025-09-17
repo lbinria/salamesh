@@ -201,6 +201,24 @@ struct Model {
     virtual glm::vec3 getEdgeOutsideColor() const  = 0;
     virtual void setEdgeOutsideColor(glm::vec3 color) = 0;
 
+    void addAttr(ElementKind kind, NamedContainer &container) {
+        
+        // Get the type of the container
+        ElementType type = ElementType::DOUBLE; // Default type
+        if (auto a = dynamic_cast<AttributeContainer<double>*>(container.ptr.get())) {
+            type = ElementType::DOUBLE;
+        } else if (auto a = dynamic_cast<AttributeContainer<int>*>(container.ptr.get())) {
+            type = ElementType::INT;
+        } else if (auto a = dynamic_cast<AttributeContainer<bool>*>(container.ptr.get())) {
+            type = ElementType::BOOL;
+        } else {
+            throw std::runtime_error("Unknown attribute type for container: " + container.name);
+        }
+
+        attrs.emplace_back(container.name, kind, type, container.ptr);
+    }
+
+
     // Model attributes
     std::vector<Attribute> getAttrs() const {
         return attrs;
@@ -281,31 +299,32 @@ struct Model {
         }
     }
 
-    template<typename T>
-    Attribute bindAttr(std::string name, ElementKind kind) {
-        switch (kind) {
-            case ElementKind::POINTS:
-                return bindAttr<T>(name, PointAttribute<T>());
-            case ElementKind::EDGES:
-                return bindAttr<T>(name, EdgeAttribute<T>());
-            case ElementKind::FACETS:
-                return bindAttr<T>(name, FacetAttribute<T>());
-            case ElementKind::CELL_FACETS:
-                return bindAttr<T>(name, CellFacetAttribute<T>());
-            case ElementKind::CORNERS:
-                return bindAttr<T>(name, CornerAttribute<T>());
-            case ElementKind::CELL_CORNERS:
-                return bindAttr<T>(name, CellCornerAttribute<T>());
-            case ElementKind::CELLS:
-                return bindAttr<T>(name, CellAttribute<T>());
-            default:
-                throw std::runtime_error("Unknown element kind for binding attribute: " + elementKindToString(kind));
-        }
-    }
+    // template<typename T>
+    // Attribute bindAttr(std::string name, ElementKind kind) {
+    //     switch (kind) {
+    //         case ElementKind::POINTS:
+    //             PointAttribute<T> a;
+    //             return bindAttr<T>(name, PointAttribute<T>());
+    //         case ElementKind::EDGES:
+    //             return bindAttr<T>(name, EdgeAttribute<T>());
+    //         case ElementKind::FACETS:
+    //             return bindAttr<T>(name, FacetAttribute<T>());
+    //         case ElementKind::CELL_FACETS:
+    //             return bindAttr<T>(name, CellFacetAttribute<T>());
+    //         case ElementKind::CORNERS:
+    //             return bindAttr<T>(name, CornerAttribute<T>());
+    //         case ElementKind::CELL_CORNERS:
+    //             return bindAttr<T>(name, CellCornerAttribute<T>());
+    //         case ElementKind::CELLS:
+    //             return bindAttr<T>(name, CellAttribute<T>());
+    //         default:
+    //             throw std::runtime_error("Unknown element kind for binding attribute: " + elementKindToString(kind));
+    //     }
+    // }
 
     template<typename T>
     Attribute bindAttr(std::string name, GenericAttribute<T> &attr) {
-
+        
         // Deduce kind of element
         ElementKind kind = umAttributeKind2ElementKind(attr.kind());
         // Deduce type of element from T 

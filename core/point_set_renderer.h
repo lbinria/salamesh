@@ -16,6 +16,7 @@ using namespace UM;
 struct PointSetRenderer : public IRenderer {
 
     PointSetRenderer(PointSet &ps) : 
+        IRenderer(std::make_unique<Shader>("shaders/point2.vert", "shaders/point2.frag")),
         shader("shaders/point2.vert", "shaders/point2.frag"), 
         ps(ps) {
             setPointSize(4.0f); // TODO here use a setting default point size

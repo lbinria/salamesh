@@ -36,6 +36,8 @@ uniform vec2 attrRange = vec2(0.f, 1.f);
 uniform samplerBuffer attributeData;
 uniform int attrElement;
 
+uniform int filterElement;
+uniform int highlightElement;
 uniform samplerBuffer filterBuf;
 uniform samplerBuffer highlightBuf;
 uniform samplerBuffer facetHighlightBuf;
@@ -60,7 +62,14 @@ void main()
 
 
     // Check if cell is filtered
-    bool isFiltered = texelFetch(filterBuf, fragCellIndex).x >= .5;
+    // bool isFiltered = texelFetch(filterBuf, fragCellIndex).x >= .5;
+    bool isFiltered = false;
+    if (filterElement == 3) {
+        isFiltered = texelFetch(filterBuf, fragCellIndex).x >= .5;
+    } else if (filterElement == 4) {
+        isFiltered = texelFetch(filterBuf, fragFacetIndex).x >= .5;
+    }
+
     if (isFiltered) {
         discard;
     }
@@ -91,7 +100,7 @@ void main()
 
     /* --- FILTER END --- */
 
-    if (colorMode == 1) {
+    if (colorMode == 1 && (attrElement == 3 || attrElement == 4)) {
 
         int primitiveIndex;
         // Cell facet attribute
@@ -107,10 +116,18 @@ void main()
     
 
 
-    // Highlight
-    float cellHighlightVal = texelFetch(highlightBuf, fragCellIndex).x;
-    float facetHighlightVal = texelFetch(facetHighlightBuf, fragFacetIndex).x;
-    float highlightVal = max(cellHighlightVal, facetHighlightVal);
+    // Highlight    
+    // float cellHighlightVal = texelFetch(highlightBuf, fragCellIndex).x;
+    // float facetHighlightVal = texelFetch(facetHighlightBuf, fragFacetIndex).x;
+    // float highlightVal = max(cellHighlightVal, facetHighlightVal);
+
+    float highlightVal = 0.;
+    if (highlightElement == 3) {
+        highlightVal = texelFetch(highlightBuf, fragCellIndex).x;
+    } else if (highlightElement == 4) {
+        highlightVal = texelFetch(facetHighlightBuf, fragFacetIndex).x;
+    }
+
 
     if (highlightVal > 0) {
         // Interpolate between hover / select colors according to highlight value

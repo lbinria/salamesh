@@ -21,10 +21,12 @@ using namespace UM;
 struct VolumeRenderer : public IRenderer {
 
 	VolumeRenderer(Volume &m) : 
+		IRenderer(std::make_unique<MeshShader>("shaders/volume.vert", "shaders/volume.frag")),
 		_m(m),
-		shader("shaders/volume.vert", "shaders/volume.frag")
+		shader(static_cast<MeshShader&>(*shaderus))
 		{
 			shader.setColor({0.8f, 0.f, 0.2f}); // TODO here use a setting default point color
+			// shader.setColor({0.8f, 0.6f, 0.2f}); // TODO here use a setting default point color
 		}
 
 
@@ -73,39 +75,6 @@ struct VolumeRenderer : public IRenderer {
 
 	void clean();
 
-	void setTexture(unsigned int tex) { texColorMap = tex; }
-
-	void setVisible(bool v) {
-		visible = v;
-	}
-
-	bool getVisible() const {
-		return visible;
-	}
-
-	void setHighlight(int idx, float highlight) {
-		ptrHighlight[idx] = highlight;
-	}
-
-	void setHighlight(std::vector<float> highlights) {
-		std::memcpy(ptrHighlight, highlights.data(), highlights.size() * sizeof(float));
-	}
-
-	void setFilter(int idx, bool filter) {
-		ptrFilter[idx] = filter ? 1.f : 0.f;
-	}
-
-	// TODO not tested !
-	void setFilter(std::vector<bool> filters) {
-		std::vector<float> f_filters(filters.size());
-		std::transform(filters.begin(), filters.end(), f_filters.begin(), [](bool filter) { return filter ? 1.f : 0.f; });
-		std::memcpy(ptrFilter, f_filters.data(), f_filters.size() * sizeof(float));
-	}
-
-	float* &getFilterPtr() {
-		return ptrFilter;
-	}
-
 	void setFacetHighlight(int idx, float highlight) {
 		ptrFacetHighlight[idx] = highlight;
 	}
@@ -117,7 +86,7 @@ struct VolumeRenderer : public IRenderer {
 	void setAttribute(std::vector<float> attributeData);
 	void setAttribute(ContainerBase *ga, int element);
 
-	MeshShader shader;
+	MeshShader &shader;
 
 	protected:
 

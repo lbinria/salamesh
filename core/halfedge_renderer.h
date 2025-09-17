@@ -23,6 +23,7 @@ struct HalfedgeRenderer : public IRenderer {
 	};
 
 	HalfedgeRenderer(Volume &v) : 
+		IRenderer(std::make_unique<Shader>("shaders/edge.vert", "shaders/edge.frag")),
 		shader("shaders/edge.vert", "shaders/edge.frag"), 
 		// shader("shaders/edgebary.vert", "shaders/edgebary.frag"), 
 		v(v) {

@@ -132,8 +132,8 @@ void MyApp::init() {
 	}
 
 
-	for (int i = 0; i < 1000; ++i)
-		models[3]->setFilter(rand() % 3000, true);
+	// for (int i = 0; i < 1000; ++i)
+	// 	models[3]->setFilter(rand() % 3000, true);
 
 	// int hello_model_idx = addModel("hello_model");
 	// models[hello_model_idx]->load("assets/catorus_hex_facet_attr.geogram");

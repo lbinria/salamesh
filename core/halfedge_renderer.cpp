@@ -163,27 +163,6 @@ void HalfedgeRenderer::push() {
 		}
 	}
 
-	// nverts = 24 * v.ncells();
-	// // std::vector<LineVert> vertices(nverts);
-	// std::vector<LineVert> vertices;
-
-	// for (auto &c : v.iter_cells()) {
-	// 	for (int f = 0; f < 6; ++f) {
-	// 		for (int i = 0; i < 4; ++i) {
-	// 			auto lc0 = reference_cells[1].facets[i % 4 + 4 * f];
-	// 			auto lc1 = reference_cells[1].facets[(i + 1) % 4 + 4 * f];
-	// 			auto v0 = c.corner(lc0).vertex();
-	// 			auto v1 = c.corner(lc1).vertex();
-	// 			auto p0 = v0.pos();
-	// 			auto p1 = v1.pos();
-				
-	// 			// build the 4 “corner” vertices
-	// 			LineVert lv0{glm::vec3(p0.x, p0.y, p0.z), glm::vec3(p1.x, p1.y, p1.z), -1.0f, 0.0f};  // corner: start, left side
-	// 			vertices.push_back(lv0);
-	// 		}
-	// 	}
-	// }
-
 	glBindVertexArray(VAO);
 	glBindBuffer(GL_ARRAY_BUFFER, VBO);
 	glBufferData(GL_ARRAY_BUFFER, nverts * sizeof(LineVert), vertices.data(), GL_STATIC_DRAW);

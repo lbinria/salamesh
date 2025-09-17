@@ -20,6 +20,7 @@ using namespace UM;
 struct SurfaceRenderer : public IRenderer {
 	
 	SurfaceRenderer(Surface &m) : 
+		IRenderer(std::make_unique<MeshShader>("shaders/surface.vert", "shaders/surface.frag")),
 		_m(m),
 		shader("shaders/surface.vert", "shaders/surface.frag")
 		{
@@ -68,38 +69,6 @@ struct SurfaceRenderer : public IRenderer {
 		// pushFilters();
 	}
 
-	void setTexture(unsigned int tex) { texColorMap = tex; }
-
-	void setVisible(bool v) {
-		visible = v;
-	}
-
-	bool getVisible() const {
-		return visible;
-	}
-
-	void setHighlight(int idx, float highlight) {
-		ptrHighlight[idx] = highlight;
-	}
-
-	void setHighlight(std::vector<float> highlights) {
-		std::memcpy(ptrHighlight, highlights.data(), highlights.size() * sizeof(float));
-	}
-
-	void setFilter(int idx, bool filter) {
-		ptrFilter[idx] = filter ? 1.f : 0.f;
-	}
-
-	// TODO not tested !
-	void setFilter(std::vector<bool> filters) {
-		std::vector<float> f_filters(filters.size());
-		std::transform(filters.begin(), filters.end(), f_filters.begin(), [](bool filter) { return filter ? 1.f : 0.f; });
-		std::memcpy(ptrFilter, f_filters.data(), f_filters.size() * sizeof(float));
-	}
-
-	float* &getFilterPtr() {
-		return ptrFilter;
-	}
 
 	void setAttribute(std::vector<float> attributeData);
 	void setAttribute(ContainerBase *ga, int element);

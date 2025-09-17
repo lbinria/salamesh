@@ -334,20 +334,58 @@ struct QuadModel final : public Model {
 
 
 
-    void addAttr(ElementKind kind, NamedContainer &container) {
+    // void addAttr(ElementKind kind, NamedContainer &container) {
         
-        // Get the type of the container
-        ElementType type = ElementType::DOUBLE; // Default type
-        if (auto a = dynamic_cast<AttributeContainer<double>*>(container.ptr.get())) {
-            type = ElementType::DOUBLE;
-        } else if (auto a = dynamic_cast<AttributeContainer<int>*>(container.ptr.get())) {
-            type = ElementType::INT;
-        } else if (auto a = dynamic_cast<AttributeContainer<bool>*>(container.ptr.get())) {
-            type = ElementType::BOOL;
-        } else {
-            throw std::runtime_error("Unknown attribute type for container: " + container.name);
-        }
+    //     // Get the type of the container
+    //     ElementType type = ElementType::DOUBLE; // Default type
+    //     if (auto a = dynamic_cast<AttributeContainer<double>*>(container.ptr.get())) {
+    //         type = ElementType::DOUBLE;
+    //     } else if (auto a = dynamic_cast<AttributeContainer<int>*>(container.ptr.get())) {
+    //         type = ElementType::INT;
+    //     } else if (auto a = dynamic_cast<AttributeContainer<bool>*>(container.ptr.get())) {
+    //         type = ElementType::BOOL;
+    //     } else {
+    //         throw std::runtime_error("Unknown attribute type for container: " + container.name);
+    //     }
 
-        attrs.emplace_back(container.name, kind, type, container.ptr);
-    }
+    //     attrs.emplace_back(container.name, kind, type, container.ptr);
+    // }
+
+    // template<typename T>
+    // Attribute bindAttr(std::string name, ElementKind kind) {
+    //     switch (kind) {
+    //         case ElementKind::POINTS:
+    //             PointAttribute<T> a;
+    //             a.bind(name, _surfaceAttributes, _quad);
+    //             return bindAttr<T>(name, a);
+    //         case ElementKind::EDGES:
+    //             EdgeAttribute<T> a;
+    //             a.bind(name, _surfaceAttributes, _quad);
+    //             return bindAttr<T>(name, a);
+    //         case ElementKind::FACETS:
+    //             FacetAttribute<T> a;
+    //             a.bind(name, _surfaceAttributes, _quad);
+    //             return bindAttr<T>(name, a);
+    //         case ElementKind::CELL_FACETS:
+    //             CellFacetAttribute<T> a;
+    //             a.bind(name, _surfaceAttributes, _quad);
+    //             return bindAttr<T>(name, a);
+    //         case ElementKind::CORNERS:
+    //             CornerAttribute<T> a;
+    //             a.bind(name, _surfaceAttributes, _quad);
+    //             return bindAttr<T>(name, a);
+    //         case ElementKind::CELL_CORNERS:
+    //             CellCornerAttribute<T> a;
+    //             a.bind(name, _surfaceAttributes, _quad);
+    //             return bindAttr<T>(name, a);
+    //         case ElementKind::CELLS:
+    //             CellAttribute<T> a;
+    //             a.bind(name, _surfaceAttributes, _quad);
+    //             return bindAttr<T>(name, a);
+    //         default:
+    //             throw std::runtime_error("Unknown element kind for binding attribute: " + elementKindToString(kind));
+    //     }
+    // }
+
+
 };

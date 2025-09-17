@@ -13,15 +13,15 @@ struct MeshShader : Shader {
 	
 	using Shader::Shader;
 
-	using Shader::clean;
+	// using Shader::clean;
 
-	using Shader::use;
-	using Shader::setBool;
-	using Shader::setFloat;
-	using Shader::setFloat2;
-	using Shader::setFloat3;
-	using Shader::setInt;
-	using Shader::setMat4;
+	// using Shader::use;
+	// using Shader::setBool;
+	// using Shader::setFloat;
+	// using Shader::setFloat2;
+	// using Shader::setFloat3;
+	// using Shader::setInt;
+	// using Shader::setMat4;
 
 	void setModel(glm::mat4 model) {
 		use();
@@ -36,6 +36,16 @@ struct MeshShader : Shader {
 	void setAttrRange(glm::vec2 range) {
 		use();
 		setFloat2("attrRange", range);
+	}
+
+	void setHighlightElement(int element) {
+		use();
+		setInt("highlightElement", element);
+	}
+
+	void setFilterElement(int element) {
+		use();
+		setInt("filterElement", element);
 	}
 
 	void setColorMode(Model::ColorMode mode) {
