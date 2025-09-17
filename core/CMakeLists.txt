@@ -19,7 +19,6 @@ set(SOURCES
     camera.h
 
     shader.cpp shader.h 
-    mesh_shader.cpp mesh_shader.h
     point_set_renderer.cpp point_set_renderer.h
     halfedge_renderer.cpp halfedge_renderer.h
     surface_renderer.cpp surface_renderer.h

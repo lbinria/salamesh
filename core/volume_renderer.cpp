@@ -3,7 +3,8 @@
 // TODO move to Renderer base class
 void VolumeRenderer::setAttribute(ContainerBase *ga, int element) {
 	// Set attribute element to shader
-	shader.setAttrElement(element);
+	shader.use();
+	shader.setInt("attrElement", element);
 
 	// Prepare data
 	std::vector<float> converted_attribute_data;
@@ -47,7 +48,8 @@ void VolumeRenderer::setAttribute(std::vector<float> attributeData) {
 	}
 
 	// Update min/max
-	shader.setAttrRange(glm::vec2(min, max));
+	shader.use();
+	shader.setFloat2("attrRange", glm::vec2(min, max));
 
 	// Update sample
 	glBindBuffer(GL_TEXTURE_BUFFER, bufAttr);

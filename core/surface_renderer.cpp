@@ -2,7 +2,8 @@
 
 void SurfaceRenderer::setAttribute(ContainerBase *ga, int element) {
 	// Set attribute element to shader
-	shader.setAttrElement(element);
+	shader.use();
+	shader.setInt("attrElement", element);
 
 	// Prepare data
 	std::vector<float> converted_attribute_data;
@@ -35,22 +36,40 @@ void SurfaceRenderer::setAttribute(ContainerBase *ga, int element) {
 }
 
 
-void SurfaceRenderer::setAttribute(std::vector<float> attributeData) {
+// void SurfaceRenderer::setAttribute(std::vector<float> attributeData) {
 
-	// Get bounds (min-max)
+// 	// Get bounds (min-max)
+// 	float min = std::numeric_limits<float>::max(); 
+// 	float max = std::numeric_limits<float>::min();
+// 	for (auto x : attributeData) {
+// 		min = std::min(min, x);
+// 		max = std::max(max, x);
+// 	}
+
+// 	// Update min/max
+// 	shader.setAttrRange(glm::vec2(min, max));
+
+// 	// Update sample
+// 	glBindBuffer(GL_TEXTURE_BUFFER, bufAttr);
+// 	glBufferData(GL_TEXTURE_BUFFER, attributeData.size() * sizeof(float), attributeData.data(), GL_STATIC_DRAW);
+// }
+
+void SurfaceRenderer::setAttribute(std::vector<float> data) {
+
+		// Get bounds (min-max)
 	float min = std::numeric_limits<float>::max(); 
 	float max = std::numeric_limits<float>::min();
-	for (auto x : attributeData) {
+	for (auto x : data) {
 		min = std::min(min, x);
 		max = std::max(max, x);
 	}
 
 	// Update min/max
-	shader.setAttrRange(glm::vec2(min, max));
+	shader.use();
+	shader.setFloat2("attrRange", glm::vec2(min, max));
 
 	// Update sample
-	glBindBuffer(GL_TEXTURE_BUFFER, bufAttr);
-	glBufferData(GL_TEXTURE_BUFFER, attributeData.size() * sizeof(float), attributeData.data(), GL_STATIC_DRAW);
+	std::memcpy(ptrAttr, data.data(), data.size() * sizeof(float));
 }
 
 void SurfaceRenderer::init() {
@@ -69,16 +88,26 @@ void SurfaceRenderer::init() {
 	glBindTexture(GL_TEXTURE_BUFFER, texBary);
 	glTexBuffer(GL_TEXTURE_BUFFER, GL_RGB32F, bufBary);
 
+	// glGenBuffers(1, &bufAttr);
+	// glGenTextures(1, &texAttr);
+	// glBindBuffer(GL_TEXTURE_BUFFER, bufAttr);
+	// glActiveTexture(GL_TEXTURE0 + 2); 
+	// glBindTexture(GL_TEXTURE_BUFFER, texAttr);
+	// glTexBuffer(GL_TEXTURE_BUFFER, GL_R32F, bufAttr);
+
+	GLbitfield flags = GL_MAP_WRITE_BIT | GL_MAP_PERSISTENT_BIT | GL_MAP_COHERENT_BIT;
 
 	glGenBuffers(1, &bufAttr);
-	glGenTextures(1, &texAttr);
 	glBindBuffer(GL_TEXTURE_BUFFER, bufAttr);
+	glBufferStorage(GL_TEXTURE_BUFFER, _m.nfacets() * sizeof(float), nullptr, flags);
+	// Map once and keep pointer (not compatible for MacOS... because need OpenGL >= 4.6 i think)
+	ptrAttr = (float*)glMapBufferRange(GL_TEXTURE_BUFFER, 0, _m.nfacets() * sizeof(float), flags);
+
+	glGenTextures(1, &texAttr);
 	glActiveTexture(GL_TEXTURE0 + 2); 
 	glBindTexture(GL_TEXTURE_BUFFER, texAttr);
 	glTexBuffer(GL_TEXTURE_BUFFER, GL_R32F, bufAttr);
 
-	GLbitfield flags = GL_MAP_WRITE_BIT | GL_MAP_PERSISTENT_BIT | GL_MAP_COHERENT_BIT;
-	
 	glGenBuffers(1, &bufHighlight);
 	glBindBuffer(GL_TEXTURE_BUFFER, bufHighlight);
 	glBufferStorage(GL_TEXTURE_BUFFER, _m.nfacets() * sizeof(float), nullptr, flags);
@@ -204,7 +233,8 @@ void SurfaceRenderer::render(glm::vec3 &position) {
 	model = glm::translate(model, position);
 	
 	// Draw	
-	shader.setModel(model);
+	shader.use();
+	shader.setMat4("model", model);
 	glDrawArrays(GL_TRIANGLES, 0, nverts);
 }
 

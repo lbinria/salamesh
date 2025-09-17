@@ -89,7 +89,7 @@ struct TriModel final : public Model {
     }
 
     void setColorMode(Model::ColorMode mode) override {
-        _triRenderer.shader.setColorMode(mode);
+        _triRenderer.setColorMode(mode);
         _pointSetRenderer.setColorMode(mode);
         // _halfedgeRenderer.setColorMode(mode);
         colorMode = mode;
@@ -100,7 +100,7 @@ struct TriModel final : public Model {
     }
 
     void setColor(glm::vec3 c) override {
-        _triRenderer.shader.setColor(c);
+        _triRenderer.setColor(c);
         color = c;
     }
 
@@ -109,7 +109,7 @@ struct TriModel final : public Model {
     }
 
     void setLight(bool enabled) override {
-        _triRenderer.shader.setLight(enabled);
+        _triRenderer.setLight(enabled);
         isLightEnabled = enabled;
     }
 
@@ -118,7 +118,7 @@ struct TriModel final : public Model {
     }
 
     void setLightFollowView(bool follow) override {
-		_triRenderer.shader.setLightFollowView(follow);
+		_triRenderer.setLightFollowView(follow);
         isLightFollowView = follow;
     }
 
@@ -127,7 +127,7 @@ struct TriModel final : public Model {
     }
 
     void setClipping(bool enabled) override {
-        _triRenderer.shader.setClipping(enabled);
+        _triRenderer.setClipping(enabled);
         _pointSetRenderer.setClipping(enabled);
         isClipping = enabled;
     }
@@ -137,7 +137,7 @@ struct TriModel final : public Model {
     }
 
     void setClippingPlanePoint(glm::vec3 p) override {
-        _triRenderer.shader.setClippingPlanePoint(p);
+        _triRenderer.setClippingPlanePoint(p);
         _pointSetRenderer.setClippingPlanePoint(p);
         clippingPlanePoint = p;
     }
@@ -147,7 +147,7 @@ struct TriModel final : public Model {
     }
 
     void setClippingPlaneNormal(glm::vec3 n) override {
-        _triRenderer.shader.setClippingPlaneNormal(n);
+        _triRenderer.setClippingPlaneNormal(n);
         _pointSetRenderer.setClippingPlaneNormal(n);
         clippingPlaneNormal = n;
     }
@@ -157,7 +157,7 @@ struct TriModel final : public Model {
     }
 
     void setInvertClipping(bool invert) override {
-        _triRenderer.shader.setInvertClipping(invert);
+        _triRenderer.setInvertClipping(invert);
         _pointSetRenderer.setInvertClipping(invert);
         invertClipping = invert;
     }
@@ -167,7 +167,7 @@ struct TriModel final : public Model {
     }
 
     void setMeshSize(float val) override {
-        _triRenderer.shader.setMeshSize(val);
+        _triRenderer.setMeshSize(val);
         meshSize = val;
     }
 
@@ -176,7 +176,7 @@ struct TriModel final : public Model {
     }
 
     void setMeshShrink(float val) override {
-        _triRenderer.shader.setMeshShrink(val);
+        _triRenderer.setMeshShrink(val);
         meshShrink = val;
     }
 
@@ -193,7 +193,7 @@ struct TriModel final : public Model {
     }
 
     void setFragRenderMode(Model::RenderMode mode) override {
-        _triRenderer.shader.setFragRenderMode(mode);
+        _triRenderer.setFragRenderMode(mode);
         fragRenderMode = mode;
     }
 
@@ -202,7 +202,7 @@ struct TriModel final : public Model {
     }
 
     void setSelectedColormap(int idx) override {
-        _triRenderer.shader.setSelectedColormap(idx);
+        _triRenderer.setSelectedColormap(idx);
         selectedColormap = idx;
     }
 
@@ -251,7 +251,7 @@ struct TriModel final : public Model {
     }
 
     void setMeshIndex(int index) override {
-        _triRenderer.shader.setMeshIndex(index);
+        _triRenderer.setMeshIndex(index);
     }
 
     bool getPointVisible() const override {

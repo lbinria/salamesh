@@ -90,7 +90,7 @@ struct HexModel final : public Model {
     }
 
     void setColorMode(Model::ColorMode mode) override {
-        _hexRenderer.shader.setColorMode(mode);
+        _hexRenderer.setColorMode(mode);
         _pointSetRenderer.setColorMode(mode);
         _halfedgeRenderer.setColorMode(mode);
         colorMode = mode;
@@ -101,7 +101,7 @@ struct HexModel final : public Model {
     }
 
     void setColor(glm::vec3 c) override {
-        _hexRenderer.shader.setColor(c);
+        _hexRenderer.setColor(c);
         color = c;
     }
 
@@ -110,7 +110,7 @@ struct HexModel final : public Model {
     }
 
     void setLight(bool enabled) override {
-        _hexRenderer.shader.setLight(enabled);
+        _hexRenderer.setLight(enabled);
         isLightEnabled = enabled;
     }
 
@@ -119,7 +119,7 @@ struct HexModel final : public Model {
     }
 
     void setLightFollowView(bool follow) override {
-		_hexRenderer.shader.setLightFollowView(follow);
+		_hexRenderer.setLightFollowView(follow);
         isLightFollowView = follow;
     }
 
@@ -128,7 +128,7 @@ struct HexModel final : public Model {
     }
 
     void setClipping(bool enabled) override {
-        _hexRenderer.shader.setClipping(enabled);
+        _hexRenderer.setClipping(enabled);
         _pointSetRenderer.setClipping(enabled);
         isClipping = enabled;
     }
@@ -138,7 +138,7 @@ struct HexModel final : public Model {
     }
 
     void setClippingPlanePoint(glm::vec3 p) override {
-        _hexRenderer.shader.setClippingPlanePoint(p);
+        _hexRenderer.setClippingPlanePoint(p);
         _pointSetRenderer.setClippingPlanePoint(p);
         clippingPlanePoint = p;
     }
@@ -148,7 +148,7 @@ struct HexModel final : public Model {
     }
 
     void setClippingPlaneNormal(glm::vec3 n) override {
-        _hexRenderer.shader.setClippingPlaneNormal(n);
+        _hexRenderer.setClippingPlaneNormal(n);
         _pointSetRenderer.setClippingPlaneNormal(n);
         clippingPlaneNormal = n;
     }
@@ -158,7 +158,7 @@ struct HexModel final : public Model {
     }
 
     void setInvertClipping(bool invert) override {
-        _hexRenderer.shader.setInvertClipping(invert);
+        _hexRenderer.setInvertClipping(invert);
         _pointSetRenderer.setInvertClipping(invert);
         invertClipping = invert;
     }
@@ -168,7 +168,7 @@ struct HexModel final : public Model {
     }
 
     void setMeshSize(float val) override {
-        _hexRenderer.shader.setMeshSize(val);
+        _hexRenderer.setMeshSize(val);
         meshSize = val;
     }
 
@@ -177,7 +177,7 @@ struct HexModel final : public Model {
     }
 
     void setMeshShrink(float val) override {
-        _hexRenderer.shader.setMeshShrink(val);
+        _hexRenderer.setMeshShrink(val);
         meshShrink = val;
     }
 
@@ -194,7 +194,7 @@ struct HexModel final : public Model {
     }
 
     void setFragRenderMode(Model::RenderMode mode) override {
-        _hexRenderer.shader.setFragRenderMode(mode);
+        _hexRenderer.setFragRenderMode(mode);
         fragRenderMode = mode;
     }
 
@@ -203,7 +203,7 @@ struct HexModel final : public Model {
     }
 
     void setSelectedColormap(int idx) override {
-        _hexRenderer.shader.setSelectedColormap(idx);
+        _hexRenderer.setSelectedColormap(idx);
         selectedColormap = idx;
     }
 
@@ -248,7 +248,7 @@ struct HexModel final : public Model {
     }
 
     void setMeshIndex(int index) override {
-        _hexRenderer.shader.setMeshIndex(index);
+        _hexRenderer.setMeshIndex(index);
     }
 
     bool getPointVisible() const override {

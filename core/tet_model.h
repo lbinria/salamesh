@@ -89,7 +89,7 @@ struct TetModel final : public Model {
     }
 
     void setColorMode(Model::ColorMode mode) override {
-        _tetRenderer.shader.setColorMode(mode);
+        _tetRenderer.setColorMode(mode);
         _pointSetRenderer.setColorMode(mode);
         // _halfedgeRenderer.setColorMode(mode);
         colorMode = mode;
@@ -100,7 +100,7 @@ struct TetModel final : public Model {
     }
 
     void setColor(glm::vec3 c) override {
-        _tetRenderer.shader.setColor(c);
+        _tetRenderer.setColor(c);
         color = c;
     }
 
@@ -109,7 +109,7 @@ struct TetModel final : public Model {
     }
 
     void setLight(bool enabled) override {
-        _tetRenderer.shader.setLight(enabled);
+        _tetRenderer.setLight(enabled);
         isLightEnabled = enabled;
     }
 
@@ -118,7 +118,7 @@ struct TetModel final : public Model {
     }
 
     void setLightFollowView(bool follow) override {
-		_tetRenderer.shader.setLightFollowView(follow);
+		_tetRenderer.setLightFollowView(follow);
         isLightFollowView = follow;
     }
 
@@ -127,7 +127,7 @@ struct TetModel final : public Model {
     }
 
     void setClipping(bool enabled) override {
-        _tetRenderer.shader.setClipping(enabled);
+        _tetRenderer.setClipping(enabled);
         _pointSetRenderer.setClipping(enabled);
         isClipping = enabled;
     }
@@ -137,7 +137,7 @@ struct TetModel final : public Model {
     }
 
     void setClippingPlanePoint(glm::vec3 p) override {
-        _tetRenderer.shader.setClippingPlanePoint(p);
+        _tetRenderer.setClippingPlanePoint(p);
         _pointSetRenderer.setClippingPlanePoint(p);
         clippingPlanePoint = p;
     }
@@ -147,7 +147,7 @@ struct TetModel final : public Model {
     }
 
     void setClippingPlaneNormal(glm::vec3 n) override {
-        _tetRenderer.shader.setClippingPlaneNormal(n);
+        _tetRenderer.setClippingPlaneNormal(n);
         _pointSetRenderer.setClippingPlaneNormal(n);
         clippingPlaneNormal = n;
     }
@@ -157,7 +157,7 @@ struct TetModel final : public Model {
     }
 
     void setInvertClipping(bool invert) override {
-        _tetRenderer.shader.setInvertClipping(invert);
+        _tetRenderer.setInvertClipping(invert);
         _pointSetRenderer.setInvertClipping(invert);
         invertClipping = invert;
     }
@@ -167,7 +167,7 @@ struct TetModel final : public Model {
     }
 
     void setMeshSize(float val) override {
-        _tetRenderer.shader.setMeshSize(val);
+        _tetRenderer.setMeshSize(val);
         meshSize = val;
     }
 
@@ -176,7 +176,7 @@ struct TetModel final : public Model {
     }
 
     void setMeshShrink(float val) override {
-        _tetRenderer.shader.setMeshShrink(val);
+        _tetRenderer.setMeshShrink(val);
         meshShrink = val;
     }
 
@@ -193,7 +193,7 @@ struct TetModel final : public Model {
     }
 
     void setFragRenderMode(Model::RenderMode mode) override {
-        _tetRenderer.shader.setFragRenderMode(mode);
+        _tetRenderer.setFragRenderMode(mode);
         fragRenderMode = mode;
     }
 
@@ -202,7 +202,7 @@ struct TetModel final : public Model {
     }
 
     void setSelectedColormap(int idx) override {
-        _tetRenderer.shader.setSelectedColormap(idx);
+        _tetRenderer.setSelectedColormap(idx);
         selectedColormap = idx;
     }
 
@@ -250,7 +250,7 @@ struct TetModel final : public Model {
     }
 
     void setMeshIndex(int index) override {
-        _tetRenderer.shader.setMeshIndex(index);
+        _tetRenderer.setMeshIndex(index);
     }
 
     bool getPointVisible() const override {

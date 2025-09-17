@@ -13,18 +13,17 @@
 #include "renderer.h"
 #include "model.h"
 #include "element.h"
-#include "mesh_shader.h"
 #include "vertex.h"
 using namespace UM;
 
 struct SurfaceRenderer : public IRenderer {
 	
 	SurfaceRenderer(Surface &m) : 
-		IRenderer(std::make_unique<MeshShader>("shaders/surface.vert", "shaders/surface.frag")),
-		_m(m),
-		shader("shaders/surface.vert", "shaders/surface.frag")
+		IRenderer(Shader("shaders/surface.vert", "shaders/surface.frag")),
+		_m(m)
 		{
-			shader.setColor({0.8f, 0.f, 0.2f}); // TODO here use a setting default mesh color
+			shader.use();
+			shader.setFloat3("color", {0.8f, 0.f, 0.2f});
 		}
 
 
@@ -73,7 +72,7 @@ struct SurfaceRenderer : public IRenderer {
 	void setAttribute(std::vector<float> attributeData);
 	void setAttribute(ContainerBase *ga, int element);
 
-	MeshShader shader;
+	// MeshShader shader;
 
 	protected:
 

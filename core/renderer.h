@@ -23,7 +23,98 @@ struct IRenderer {
 		return visible;
 	}
 
-	IRenderer(std::unique_ptr<Shader> shader) : shaderus(std::move(shader)) {}
+	IRenderer(Shader shader) : shader(std::move(shader)) {}
+
+	// TODO see list of shader function, some are specific to mesh_renderer...
+	void setModel(glm::mat4 model) {
+		shader.use();
+		shader.setMat4("model", model);
+	}
+
+	void setAttrElement(int element) {
+		shader.use();
+		shader.setInt("attrElement", element);
+	}
+
+	void setAttrRange(glm::vec2 range) {
+		shader.use();
+		shader.setFloat2("attrRange", range);
+	}
+
+	void setHighlightElement(int element) {
+		shader.use();
+		shader.setInt("highlightElement", element);
+	}
+
+	void setFilterElement(int element) {
+		shader.use();
+		shader.setInt("filterElement", element);
+	}
+
+	void setColorMode(Model::ColorMode mode) {
+		shader.use();
+		shader.setInt("colorMode", mode);
+	}
+
+	void setColor(glm::vec3 color) {
+		shader.use();
+		shader.setFloat3("color", color);
+	}
+
+	void setLight(bool enabled) {
+		shader.use();
+		shader.setFloat("is_light_enabled", enabled);
+	}
+
+	void setLightFollowView(bool follow) {
+		shader.use();
+		shader.setInt("is_light_follow_view", follow);
+	}
+
+	void setClipping(bool enabled) {
+		shader.use();
+		shader.setInt("is_clipping_enabled", enabled);
+	}
+
+	void setClippingPlanePoint(glm::vec3 p) {
+		shader.use();
+		shader.setFloat3("clipping_plane_point", p);
+	}
+
+	void setClippingPlaneNormal(glm::vec3 n) {
+		shader.use();
+		shader.setFloat3("clipping_plane_normal", n);
+	}
+
+	void setInvertClipping(bool invert) {
+		shader.use();
+		shader.setInt("invert_clipping", invert);
+	}
+
+	void setMeshSize(float val) {
+		shader.use();
+		shader.setFloat("meshSize", val);
+	}
+
+	void setMeshShrink(float val) {
+		shader.use();
+		shader.setFloat("meshShrink", val);
+	}
+
+	void setFragRenderMode(Model::RenderMode mode) {
+		shader.use();
+		shader.setInt("fragRenderMode", mode);
+	}
+
+	void setSelectedColormap(int idx) {
+		shader.use();
+		shader.setInt("colormap", idx);
+	}
+
+	void setMeshIndex(int index) {
+		shader.use();
+		shader.setInt("meshIndex", index);
+	}
 
 
 	// void setAttribute(ContainerBase *ga, int element) {
@@ -103,7 +194,7 @@ struct IRenderer {
 		return ptrFilter;
 	}
 
-	std::unique_ptr<Shader> shaderus;
+	Shader shader;
 
 	protected:
 

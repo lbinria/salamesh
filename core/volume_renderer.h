@@ -13,7 +13,6 @@
 #include "renderer.h"
 #include "model.h"
 #include "element.h"
-#include "mesh_shader.h"
 #include "vertex.h"
 
 using namespace UM;
@@ -21,12 +20,11 @@ using namespace UM;
 struct VolumeRenderer : public IRenderer {
 
 	VolumeRenderer(Volume &m) : 
-		IRenderer(std::make_unique<MeshShader>("shaders/volume.vert", "shaders/volume.frag")),
-		_m(m),
-		shader(static_cast<MeshShader&>(*shaderus))
+		IRenderer(Shader("shaders/volume.vert", "shaders/volume.frag")),
+		_m(m)
 		{
-			shader.setColor({0.8f, 0.f, 0.2f}); // TODO here use a setting default point color
-			// shader.setColor({0.8f, 0.6f, 0.2f}); // TODO here use a setting default point color
+			shader.use();
+			shader.setFloat3("color", {0.8f, 0.f, 0.2f});
 		}
 
 
@@ -86,7 +84,7 @@ struct VolumeRenderer : public IRenderer {
 	void setAttribute(std::vector<float> attributeData);
 	void setAttribute(ContainerBase *ga, int element);
 
-	MeshShader &shader;
+	// MeshShader &shader;
 
 	protected:
 
