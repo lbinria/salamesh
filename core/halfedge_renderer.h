@@ -31,31 +31,10 @@ struct HalfedgeRenderer : public IRenderer {
 			setEdgeOutsideColor({0.0, 0.6, 0.45}); // TODO here use a setting default edge outside color
 		}
 
-	// void setAttribute(ContainerBase *ga, int elementKind);
-	// void setAttribute(std::vector<float> attributeData);
-
 	void init();
 	void push();
 	void render(glm::vec3 &position);
 	void clean();
-
-	void setColorMode(Model::ColorMode mode) {
-		shader.use();
-		shader.setInt("colorMode", mode);
-	}
-
-	// TODO rename setColorMap
-	void setTexture(unsigned int tex) {
-		texColorMap = tex;
-	}
-
-	bool getVisible() const {
-		return visible;
-	}
-
-	void setVisible(bool v) {
-		visible = v;
-	}
 
 	float getEdgeSize() const {
 		return edgeSize;
@@ -87,31 +66,7 @@ struct HalfedgeRenderer : public IRenderer {
 		edgeOutsideColor = color;
 	}
 
-	void setFilter(int idx, bool filter) {
-		ptrFilter[idx] = filter ? 1.f : 0.f;
-	}
-
-	float* &getFilterPtr() {
-		return ptrFilter;
-	}
-
-	// TODO not tested !
-	void setFilter(std::vector<bool> filters) {
-		std::vector<float> f_filters(filters.size());
-		std::transform(filters.begin(), filters.end(), f_filters.begin(), [](bool filter) { return filter ? 1.f : 0.f; });
-		std::memcpy(ptrFilter, f_filters.data(), f_filters.size() * sizeof(float));
-	}
-
-	void setHighlight(int idx, float val) {
-		ptrHighlight[idx] = val;
-	}
-
-	void setHighlight(std::vector<float> highlights) {
-		std::memcpy(ptrHighlight, highlights.data(), highlights.size() * sizeof(float));
-	}
-
 	Volume &v;
-	// Shader shader;
 
 	private:
 

@@ -139,12 +139,6 @@ struct Model {
     virtual void render() = 0;
     virtual void clean() = 0;
 
-	// TODO temp for refactoring because model is not necessarily a hex model
-	// virtual Hexahedra& getHexahedra() = 0;
-	// virtual VolumeAttributes& getVolumeAttributes() = 0;
-	// virtual Triangles& getTriangles() = 0;
-	// virtual SurfaceAttributes& getSurfaceAttributes() = 0;
-
 
     virtual int nverts() const = 0; 
     virtual int nfacets() const = 0; 
@@ -408,8 +402,10 @@ struct Model {
     glm::vec3 clippingPlanePoint{0.f, 0.f, 0.f};
     glm::vec3 clippingPlaneNormal{0.f, 0.f, 1.f};
     bool invertClipping = false;
+
     float meshSize = 0.01f;
     float meshShrink = 0.f;
+    
     Model::RenderMode fragRenderMode = Model::RenderMode::Color;
     Model::ColorMode colorMode = Model::ColorMode::COLOR;
     glm::vec3 color{0.8f, 0.f, 0.2f};

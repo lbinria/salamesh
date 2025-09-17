@@ -1,56 +1,5 @@
 #include "point_set_renderer.h"
 
-// // TODO elementKind useless here
-// void PointSetRenderer::setAttribute(ContainerBase *ga, int elementKind) {
-
-// 	// Prepare data
-// 	std::vector<float> converted_attribute_data;
-
-// 	// Transform data
-// 	if (auto a = dynamic_cast<AttributeContainer<double>*>(ga)) {
-
-// 		converted_attribute_data.resize(a->data.size());
-// 		std::transform(a->data.begin(), a->data.end(), converted_attribute_data.begin(), [](double x) { return static_cast<float>(x);});
-
-// 	} else if (auto a = dynamic_cast<AttributeContainer<float>*>(ga)) {
-		
-// 		converted_attribute_data.resize(a->data.size());
-// 		std::transform(a->data.begin(), a->data.end(), converted_attribute_data.begin(), [](auto x) { return static_cast<float>(x);});
-
-// 	} else if (auto a = dynamic_cast<AttributeContainer<int>*>(ga)) {
-		
-// 		converted_attribute_data.resize(a->data.size());
-// 		std::transform(a->data.begin(), a->data.end(), converted_attribute_data.begin(), [](auto x) { return static_cast<float>(x);});
-
-// 	} else if (auto a = dynamic_cast<AttributeContainer<bool>*>(ga)) {
-
-// 		converted_attribute_data.resize(a->data.size());
-// 		std::transform(a->data.begin(), a->data.end(), converted_attribute_data.begin(), [](auto x) { return static_cast<float>(x);});
-
-// 	}
-
-// 	// Set attribute data to shader
-// 	setAttribute(converted_attribute_data);
-// }
-
-// void PointSetRenderer::setAttribute(std::vector<float> attributeData) {
-// 	// Get bounds (min-max)
-// 	float min = std::numeric_limits<float>::max(); 
-// 	float max = std::numeric_limits<float>::min();
-// 	for (auto x : attributeData) {
-// 		min = std::min(min, x);
-// 		max = std::max(max, x);
-// 	}
-
-// 	// Update min/max
-// 	shader.use();
-// 	shader.setFloat2("attrRange", glm::vec2(min, max));
-
-// 	// Update sample
-// 	glBindBuffer(GL_TEXTURE_BUFFER, bufAttr);
-// 	glBufferData(GL_TEXTURE_BUFFER, attributeData.size() * sizeof(float), attributeData.data(), GL_STATIC_DRAW);
-// }
-
 void PointSetRenderer::init() {
 
 	glGenVertexArrays(1, &VAO);

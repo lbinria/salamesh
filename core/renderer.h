@@ -91,16 +91,19 @@ struct IRenderer {
 		shader.setInt("invert_clipping", invert);
 	}
 
+	// Only on mesh
 	void setMeshSize(float val) {
 		shader.use();
 		shader.setFloat("meshSize", val);
 	}
 
+	// Only on mesh
 	void setMeshShrink(float val) {
 		shader.use();
 		shader.setFloat("meshShrink", val);
 	}
 
+	// Only on mesh ?
 	void setFragRenderMode(Model::RenderMode mode) {
 		shader.use();
 		shader.setInt("fragRenderMode", mode);
@@ -111,6 +114,7 @@ struct IRenderer {
 		shader.setInt("colormap", idx);
 	}
 
+	// Only on mesh
 	void setMeshIndex(int index) {
 		shader.use();
 		shader.setInt("meshIndex", index);

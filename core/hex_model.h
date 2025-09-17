@@ -336,21 +336,5 @@ struct HexModel final : public Model {
     PointSetRenderer _pointSetRenderer;
     HalfedgeRenderer _halfedgeRenderer;
     HexRenderer _hexRenderer;
-
-    // void addAttr(ElementKind kind, NamedContainer &container) {
-        
-    //     // Get the type of the container
-    //     ElementType type = ElementType::DOUBLE; // Default type
-    //     if (auto a = dynamic_cast<AttributeContainer<double>*>(container.ptr.get())) {
-    //         type = ElementType::DOUBLE;
-    //     } else if (auto a = dynamic_cast<AttributeContainer<int>*>(container.ptr.get())) {
-    //         type = ElementType::INT;
-    //     } else if (auto a = dynamic_cast<AttributeContainer<bool>*>(container.ptr.get())) {
-    //         type = ElementType::BOOL;
-    //     } else {
-    //         throw std::runtime_error("Unknown attribute type for container: " + container.name);
-    //     }
-
-    //     attrs.emplace_back(container.name, kind, type, container.ptr);
-    // }
+    
 };

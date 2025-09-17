@@ -331,26 +331,6 @@ struct QuadModel final : public Model {
     //HalfedgeRenderer _halfedgeRenderer;
     QuadRenderer _quadRenderer;
 
-
-
-
-    // void addAttr(ElementKind kind, NamedContainer &container) {
-        
-    //     // Get the type of the container
-    //     ElementType type = ElementType::DOUBLE; // Default type
-    //     if (auto a = dynamic_cast<AttributeContainer<double>*>(container.ptr.get())) {
-    //         type = ElementType::DOUBLE;
-    //     } else if (auto a = dynamic_cast<AttributeContainer<int>*>(container.ptr.get())) {
-    //         type = ElementType::INT;
-    //     } else if (auto a = dynamic_cast<AttributeContainer<bool>*>(container.ptr.get())) {
-    //         type = ElementType::BOOL;
-    //     } else {
-    //         throw std::runtime_error("Unknown attribute type for container: " + container.name);
-    //     }
-
-    //     attrs.emplace_back(container.name, kind, type, container.ptr);
-    // }
-
     // template<typename T>
     // Attribute bindAttr(std::string name, ElementKind kind) {
     //     switch (kind) {
