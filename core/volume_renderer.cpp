@@ -1,61 +1,5 @@
 #include "volume_renderer.h"
 
-// TODO move to Renderer base class
-void VolumeRenderer::setAttribute(ContainerBase *ga, int element) {
-	// Set attribute element to shader
-	shader.use();
-	shader.setInt("attrElement", element);
-
-	// Prepare data
-	std::vector<float> converted_attribute_data;
-
-	// Transform data
-	if (auto a = dynamic_cast<AttributeContainer<double>*>(ga)) {
-
-		converted_attribute_data.resize(a->data.size());
-		std::transform(a->data.begin(), a->data.end(), converted_attribute_data.begin(), [](double x) { return static_cast<float>(x);});
-
-	} else if (auto a = dynamic_cast<AttributeContainer<float>*>(ga)) {
-		
-		converted_attribute_data.resize(a->data.size());
-		std::transform(a->data.begin(), a->data.end(), converted_attribute_data.begin(), [](auto x) { return static_cast<float>(x);});
-
-	} else if (auto a = dynamic_cast<AttributeContainer<int>*>(ga)) {
-		
-		converted_attribute_data.resize(a->data.size());
-		std::transform(a->data.begin(), a->data.end(), converted_attribute_data.begin(), [](auto x) { return static_cast<float>(x);});
-
-	} else if (auto a = dynamic_cast<AttributeContainer<bool>*>(ga)) {
-
-		converted_attribute_data.resize(a->data.size());
-		std::transform(a->data.begin(), a->data.end(), converted_attribute_data.begin(), [](auto x) { return static_cast<float>(x);});
-
-	}
-
-	// Set attribute data to shader
-	setAttribute(converted_attribute_data);
-}
-
-// TODO move to Renderer base class
-void VolumeRenderer::setAttribute(std::vector<float> attributeData) {
-
-	// Get bounds (min-max)
-	float min = std::numeric_limits<float>::max(); 
-	float max = std::numeric_limits<float>::min();
-	for (auto x : attributeData) {
-		min = std::min(min, x);
-		max = std::max(max, x);
-	}
-
-	// Update min/max
-	shader.use();
-	shader.setFloat2("attrRange", glm::vec2(min, max));
-
-	// Update sample
-	glBindBuffer(GL_TEXTURE_BUFFER, bufAttr);
-	glBufferData(GL_TEXTURE_BUFFER, attributeData.size() * sizeof(float), attributeData.data(), GL_STATIC_DRAW);
-}
-
 void VolumeRenderer::init() {
 
 	// TODO maybe update buffer size of ptr on push ? move ncells somewher eelse
@@ -73,15 +17,26 @@ void VolumeRenderer::init() {
 	glTexBuffer(GL_TEXTURE_BUFFER, GL_RGB32F, bufBary);
 
 
+	// glGenBuffers(1, &bufAttr);
+	// glGenTextures(1, &texAttr);
+	// glBindBuffer(GL_TEXTURE_BUFFER, bufAttr);
+	// glActiveTexture(GL_TEXTURE0 + 2); 
+	// glBindTexture(GL_TEXTURE_BUFFER, texAttr);
+	// glTexBuffer(GL_TEXTURE_BUFFER, GL_R32F, bufAttr);
+
+	GLbitfield flags = GL_MAP_WRITE_BIT | GL_MAP_PERSISTENT_BIT | GL_MAP_COHERENT_BIT;
+	
 	glGenBuffers(1, &bufAttr);
-	glGenTextures(1, &texAttr);
 	glBindBuffer(GL_TEXTURE_BUFFER, bufAttr);
+	glBufferStorage(GL_TEXTURE_BUFFER, _m.nfacets() * sizeof(float), nullptr, flags);
+	// Map once and keep pointer (not compatible for MacOS... because need OpenGL >= 4.6 i think)
+	ptrAttr = (float*)glMapBufferRange(GL_TEXTURE_BUFFER, 0, _m.nfacets() * sizeof(float), flags);
+
+	glGenTextures(1, &texAttr);
 	glActiveTexture(GL_TEXTURE0 + 2); 
 	glBindTexture(GL_TEXTURE_BUFFER, texAttr);
 	glTexBuffer(GL_TEXTURE_BUFFER, GL_R32F, bufAttr);
 
-	GLbitfield flags = GL_MAP_WRITE_BIT | GL_MAP_PERSISTENT_BIT | GL_MAP_COHERENT_BIT;
-	
 	glGenBuffers(1, &bufHighlight);
 	glBindBuffer(GL_TEXTURE_BUFFER, bufHighlight);
 	glBufferStorage(GL_TEXTURE_BUFFER, _m.ncells() * sizeof(float), nullptr, flags);

@@ -22,8 +22,8 @@ struct PointSetRenderer : public IRenderer {
             setColor({0.23, 0.85, 0.66}); // TODO here use a setting default point color
         }
 
-    void setAttribute(ContainerBase *ga, int elementKind);
-    void setAttribute(std::vector<float> attributeData);
+    // void setAttribute(ContainerBase *ga, int elementKind);
+    // void setAttribute(std::vector<float> attributeData);
 
     void init();
     void push();

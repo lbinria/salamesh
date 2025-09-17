@@ -1,55 +1,55 @@
 #include "point_set_renderer.h"
 
-// TODO elementKind useless here
-void PointSetRenderer::setAttribute(ContainerBase *ga, int elementKind) {
+// // TODO elementKind useless here
+// void PointSetRenderer::setAttribute(ContainerBase *ga, int elementKind) {
 
-	// Prepare data
-	std::vector<float> converted_attribute_data;
+// 	// Prepare data
+// 	std::vector<float> converted_attribute_data;
 
-	// Transform data
-	if (auto a = dynamic_cast<AttributeContainer<double>*>(ga)) {
+// 	// Transform data
+// 	if (auto a = dynamic_cast<AttributeContainer<double>*>(ga)) {
 
-		converted_attribute_data.resize(a->data.size());
-		std::transform(a->data.begin(), a->data.end(), converted_attribute_data.begin(), [](double x) { return static_cast<float>(x);});
+// 		converted_attribute_data.resize(a->data.size());
+// 		std::transform(a->data.begin(), a->data.end(), converted_attribute_data.begin(), [](double x) { return static_cast<float>(x);});
 
-	} else if (auto a = dynamic_cast<AttributeContainer<float>*>(ga)) {
+// 	} else if (auto a = dynamic_cast<AttributeContainer<float>*>(ga)) {
 		
-		converted_attribute_data.resize(a->data.size());
-		std::transform(a->data.begin(), a->data.end(), converted_attribute_data.begin(), [](auto x) { return static_cast<float>(x);});
+// 		converted_attribute_data.resize(a->data.size());
+// 		std::transform(a->data.begin(), a->data.end(), converted_attribute_data.begin(), [](auto x) { return static_cast<float>(x);});
 
-	} else if (auto a = dynamic_cast<AttributeContainer<int>*>(ga)) {
+// 	} else if (auto a = dynamic_cast<AttributeContainer<int>*>(ga)) {
 		
-		converted_attribute_data.resize(a->data.size());
-		std::transform(a->data.begin(), a->data.end(), converted_attribute_data.begin(), [](auto x) { return static_cast<float>(x);});
+// 		converted_attribute_data.resize(a->data.size());
+// 		std::transform(a->data.begin(), a->data.end(), converted_attribute_data.begin(), [](auto x) { return static_cast<float>(x);});
 
-	} else if (auto a = dynamic_cast<AttributeContainer<bool>*>(ga)) {
+// 	} else if (auto a = dynamic_cast<AttributeContainer<bool>*>(ga)) {
 
-		converted_attribute_data.resize(a->data.size());
-		std::transform(a->data.begin(), a->data.end(), converted_attribute_data.begin(), [](auto x) { return static_cast<float>(x);});
+// 		converted_attribute_data.resize(a->data.size());
+// 		std::transform(a->data.begin(), a->data.end(), converted_attribute_data.begin(), [](auto x) { return static_cast<float>(x);});
 
-	}
+// 	}
 
-	// Set attribute data to shader
-	setAttribute(converted_attribute_data);
-}
+// 	// Set attribute data to shader
+// 	setAttribute(converted_attribute_data);
+// }
 
-void PointSetRenderer::setAttribute(std::vector<float> attributeData) {
-	// Get bounds (min-max)
-	float min = std::numeric_limits<float>::max(); 
-	float max = std::numeric_limits<float>::min();
-	for (auto x : attributeData) {
-		min = std::min(min, x);
-		max = std::max(max, x);
-	}
+// void PointSetRenderer::setAttribute(std::vector<float> attributeData) {
+// 	// Get bounds (min-max)
+// 	float min = std::numeric_limits<float>::max(); 
+// 	float max = std::numeric_limits<float>::min();
+// 	for (auto x : attributeData) {
+// 		min = std::min(min, x);
+// 		max = std::max(max, x);
+// 	}
 
-	// Update min/max
-	shader.use();
-	shader.setFloat2("attrRange", glm::vec2(min, max));
+// 	// Update min/max
+// 	shader.use();
+// 	shader.setFloat2("attrRange", glm::vec2(min, max));
 
-	// Update sample
-	glBindBuffer(GL_TEXTURE_BUFFER, bufAttr);
-	glBufferData(GL_TEXTURE_BUFFER, attributeData.size() * sizeof(float), attributeData.data(), GL_STATIC_DRAW);
-}
+// 	// Update sample
+// 	glBindBuffer(GL_TEXTURE_BUFFER, bufAttr);
+// 	glBufferData(GL_TEXTURE_BUFFER, attributeData.size() * sizeof(float), attributeData.data(), GL_STATIC_DRAW);
+// }
 
 void PointSetRenderer::init() {
 
@@ -60,14 +60,25 @@ void PointSetRenderer::init() {
 	glBindBuffer(GL_ARRAY_BUFFER, VBO);
 
 	
-	glGenBuffers(1, &bufAttr);
-	glGenTextures(1, &texAttr);
-	glBindBuffer(GL_TEXTURE_BUFFER, bufAttr);
-	glActiveTexture(GL_TEXTURE0 + 2);
-	glBindTexture(GL_TEXTURE_BUFFER, texAttr);
-	glTexBuffer(GL_TEXTURE_BUFFER, GL_R32F, bufAttr);
+	// glGenBuffers(1, &bufAttr);
+	// glGenTextures(1, &texAttr);
+	// glBindBuffer(GL_TEXTURE_BUFFER, bufAttr);
+	// glActiveTexture(GL_TEXTURE0 + 2);
+	// glBindTexture(GL_TEXTURE_BUFFER, texAttr);
+	// glTexBuffer(GL_TEXTURE_BUFFER, GL_R32F, bufAttr);
 
 	GLbitfield flags = GL_MAP_WRITE_BIT | GL_MAP_PERSISTENT_BIT | GL_MAP_COHERENT_BIT;
+
+	glGenBuffers(1, &bufAttr);
+	glBindBuffer(GL_TEXTURE_BUFFER, bufAttr);
+	glBufferStorage(GL_TEXTURE_BUFFER, ps.size() * sizeof(float), nullptr, flags);
+	// Map once and keep pointer (not compatible for MacOS... because need OpenGL >= 4.6 i think)
+	ptrAttr = (float*)glMapBufferRange(GL_TEXTURE_BUFFER, 0, ps.size() * sizeof(float), flags);
+
+	glGenTextures(1, &texAttr);
+	glActiveTexture(GL_TEXTURE0 + 2); 
+	glBindTexture(GL_TEXTURE_BUFFER, texAttr);
+	glTexBuffer(GL_TEXTURE_BUFFER, GL_R32F, bufAttr);
 
 	// Filter
 	glGenBuffers(1, &bufFilter);

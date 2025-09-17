@@ -69,8 +69,8 @@ struct SurfaceRenderer : public IRenderer {
 	}
 
 
-	void setAttribute(std::vector<float> attributeData);
-	void setAttribute(ContainerBase *ga, int element);
+	// void setAttribute(std::vector<float> attributeData);
+	// void setAttribute(ContainerBase *ga, int element);
 
 	// MeshShader shader;
 

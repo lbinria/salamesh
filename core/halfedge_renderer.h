@@ -31,8 +31,8 @@ struct HalfedgeRenderer : public IRenderer {
 			setEdgeOutsideColor({0.0, 0.6, 0.45}); // TODO here use a setting default edge outside color
 		}
 
-	void setAttribute(ContainerBase *ga, int elementKind);
-	void setAttribute(std::vector<float> attributeData);
+	// void setAttribute(ContainerBase *ga, int elementKind);
+	// void setAttribute(std::vector<float> attributeData);
 
 	void init();
 	void push();
