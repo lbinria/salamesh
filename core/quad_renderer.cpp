@@ -63,6 +63,6 @@ void QuadRenderer::push() {
 		}
 	}
 
-	SurfaceRenderer::push(vertices);
+	SurfaceRenderer::push_bary(vertices);
 
 }

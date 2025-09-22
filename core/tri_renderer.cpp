@@ -40,5 +40,5 @@ void TriRenderer::push() {
 		}
 	}
 
-	SurfaceRenderer::push(vertices);
+	SurfaceRenderer::push_bary(vertices);
 }

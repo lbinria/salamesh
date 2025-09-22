@@ -33,7 +33,13 @@ struct SurfaceRenderer : public IRenderer {
 
 	virtual void push() override = 0;
 
-	void push(std::vector<Vertex> &vertices) {
+
+
+	protected:
+
+	Surface &_m;
+
+	void push_bary(std::vector<Vertex> &vertices) {
 
 		glBindVertexArray(VAO);
 
@@ -67,8 +73,4 @@ struct SurfaceRenderer : public IRenderer {
 		// pushHighlights();
 		// pushFilters();
 	}
-
-	protected:
-
-	Surface &_m;
 };

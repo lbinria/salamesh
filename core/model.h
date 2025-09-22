@@ -210,6 +210,27 @@ struct Model {
         return selectedAttr;
     }
 
+    void setSelectedAttr(int idx) {
+
+        // Check attrs size
+        if (idx < 0 || idx >= attrs.size()) {
+            throw std::runtime_error(
+                "Selected attribute index out of bound: " + 
+                std::to_string(idx) + ", model has " + 
+                std::to_string(attrs.size()) + 
+                " attributes."
+            );
+        }
+
+        selectedAttr = idx;
+        int kind = attrs[idx].kind;
+        // TODO see condition here not very smart maybe abstract renderers ?
+        if (kind == ElementKind::POINTS) {
+            _pointSetRenderer.setAttribute(attrs[idx].ptr.get(), -1);
+        } else 
+            _meshRenderer->setAttribute(attrs[idx].ptr.get(), kind);
+    }
+
     void setSelectedAttr(std::string name, ElementKind kind) {
 
         // Search attribute by name
@@ -275,8 +296,8 @@ struct Model {
     // Attribute bindAttr(std::string name, ElementKind kind) {
     //     switch (kind) {
     //         case ElementKind::POINTS:
-    //             PointAttribute<T> a;
-    //             return bindAttr<T>(name, PointAttribute<T>());
+    //             PointAttribute<T> pa;
+    //             return bindAttr<T>(name, pa);
     //         case ElementKind::EDGES:
     //             return bindAttr<T>(name, EdgeAttribute<T>());
     //         case ElementKind::FACETS:
@@ -434,32 +455,15 @@ struct Model {
 
     void setSelectedColormap(int idx) {
         _meshRenderer->setSelectedColormap(idx);
+        _pointSetRenderer.setSelectedColormap(idx);
+        if (_halfedgeRenderer != nullptr)
+            _halfedgeRenderer->setSelectedColormap(idx);
+            
         selectedColormap = idx;
     }
 
     void setMeshIndex(int index) {
         _meshRenderer->setMeshIndex(index);
-    }
-
-    void setSelectedAttr(int idx) {
-
-        // Check attrs size
-        if (idx < 0 || idx >= attrs.size()) {
-            throw std::runtime_error(
-                "Selected attribute index out of bound: " + 
-                std::to_string(idx) + ", model has " + 
-                std::to_string(attrs.size()) + 
-                " attributes."
-            );
-        }
-
-        selectedAttr = idx;
-        int kind = attrs[idx].kind;
-        // TODO see condition here not very smart maybe abstract renderers ?
-        if (kind == ElementKind::POINTS) {
-            _pointSetRenderer.setAttribute(attrs[idx].ptr.get(), -1);
-        } else 
-            _meshRenderer->setAttribute(attrs[idx].ptr.get(), kind);
     }
 
     // Renderer getters
@@ -491,6 +495,7 @@ struct Model {
 
     std::vector<Attribute> attrs;
     int selectedAttr = 0;
+    std::string selectedHighlightAttr = "_highlight";
 
 
     bool isLightEnabled = true;

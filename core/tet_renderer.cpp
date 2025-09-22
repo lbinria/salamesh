@@ -48,6 +48,6 @@ void TetRenderer::push() {
 		}
 	}
 
-	VolumeRenderer::push(vertices);
+	VolumeRenderer::push_bary(vertices);
 
 }

@@ -31,8 +31,28 @@ struct VolumeRenderer : public IRenderer {
 	// TODO eventually merge init / update
 	void init();
 	void render(glm::vec3 &position);
-	
-	void push(std::vector<Vertex> &vertices) {
+
+
+
+	void clean();
+
+	void setFacetHighlight(int idx, float highlight) {
+		ptrFacetHighlight[idx] = highlight;
+	}
+
+	void setFacetHighlight(std::vector<float> highlights) {
+		std::memcpy(ptrFacetHighlight, highlights.data(), highlights.size() * sizeof(float));
+	}
+
+	protected:
+
+	Volume &_m;
+
+	unsigned int bufFacetHighlight; // Sample buffers
+	unsigned int texFacetHighlight; // Textures
+	float *ptrFacetHighlight;
+
+	void push_bary(std::vector<Vertex> &vertices) {
 
 		glBindVertexArray(VAO);
 
@@ -69,24 +89,5 @@ struct VolumeRenderer : public IRenderer {
 		// Push filters if there is any
 		// pushFilters();
 	}
-
-
-	void clean();
-
-	void setFacetHighlight(int idx, float highlight) {
-		ptrFacetHighlight[idx] = highlight;
-	}
-
-	void setFacetHighlight(std::vector<float> highlights) {
-		std::memcpy(ptrFacetHighlight, highlights.data(), highlights.size() * sizeof(float));
-	}
-
-	protected:
-
-	Volume &_m;
-
-	unsigned int bufFacetHighlight; // Sample buffers
-	unsigned int texFacetHighlight; // Textures
-	float *ptrFacetHighlight;
 
 };

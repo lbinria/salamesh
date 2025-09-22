@@ -189,30 +189,32 @@ function draw_model_properties(model, view)
 				cur_model.points.color = new_point_color
 			end
 
-			local sel_edge_visible, new_edge_visible = imgui.Checkbox("Show edges", cur_model.edges.visible)
-			if (sel_edge_visible) then 
-				print("Change edge visibility: " .. tostring(new_edge_visible))
-				cur_model.edges.visible = new_edge_visible
-			end
+			if cur_model.edges then 
 
-			local sel_edge_size, new_edge_size = imgui.SliderFloat("Edge size", cur_model.edges.size, 0, 50)
-			if (sel_edge_size) then 
-				print("Change edge size: " .. tostring(new_edge_size))
-				cur_model.edges.size = new_edge_size
-			end
+				local sel_edge_visible, new_edge_visible = imgui.Checkbox("Show edges", cur_model.edges.visible)
+				if (sel_edge_visible) then 
+					print("Change edge visibility: " .. tostring(new_edge_visible))
+					cur_model.edges.visible = new_edge_visible
+				end
 
-			local sel_edge_inside_color, new_edge_inside_color = imgui.ColorEdit3("Edge inside color", cur_model.edges.inside_color)
-			if (sel_edge_inside_color) then 
-				print("Change edge inside color: " .. tostring(new_edge_inside_color))
-				cur_model.edges.inside_color = new_edge_inside_color
-			end
+				local sel_edge_size, new_edge_size = imgui.SliderFloat("Edge size", cur_model.edges.size, 0, 50)
+				if (sel_edge_size) then 
+					print("Change edge size: " .. tostring(new_edge_size))
+					cur_model.edges.size = new_edge_size
+				end
 
-			local sel_edge_outside_color, new_edge_outside_color = imgui.ColorEdit3("Edge outside color", cur_model.edges.outside_color)
-			if (sel_edge_outside_color) then 
-				print("Change edge outside color: " .. tostring(new_edge_outside_color))
-				cur_model.edges.outside_color = new_edge_outside_color
-			end
+				local sel_edge_inside_color, new_edge_inside_color = imgui.ColorEdit3("Edge inside color", cur_model.edges.inside_color)
+				if (sel_edge_inside_color) then 
+					print("Change edge inside color: " .. tostring(new_edge_inside_color))
+					cur_model.edges.inside_color = new_edge_inside_color
+				end
 
+				local sel_edge_outside_color, new_edge_outside_color = imgui.ColorEdit3("Edge outside color", cur_model.edges.outside_color)
+				if (sel_edge_outside_color) then 
+					print("Change edge outside color: " .. tostring(new_edge_outside_color))
+					cur_model.edges.outside_color = new_edge_outside_color
+				end
+			end 
 		end
 
 		if (imgui.CollapsingHeader("Attributes##" .. cur_model.name .. "_properties_attributes")) then 
