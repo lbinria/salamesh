@@ -53,12 +53,26 @@ namespace bindings {
 				"bool_container", sol::readonly_property(&Attribute::getContainer<bool>)
 			);
 
+
+			sol::usertype<PointSetRenderer> pointSetRenderer_t = lua.new_usertype<PointSetRenderer>("PointSetRenderer");
+			pointSetRenderer_t["visible"] = sol::property(
+				&PointSetRenderer::getVisible,
+				&PointSetRenderer::setVisible
+			);
+			pointSetRenderer_t["color"] = sol::property(
+				&PointSetRenderer::getColor,
+				&PointSetRenderer::setColor
+			);
+			pointSetRenderer_t["size"] = sol::property(
+				&PointSetRenderer::getPointSize,
+				&PointSetRenderer::setPointSize
+			);
+
 			sol::usertype<Model> model_t = lua.new_usertype<Model>("Model");
 
 			model_t.set_function("load", &Model::load);
 			model_t.set_function("save", &Model::save);
 			model_t.set_function("save_as", &Model::saveAs);
-
 
 			model_t["name"] = sol::property(
 				&Model::getName,
@@ -124,6 +138,8 @@ namespace bindings {
 				&Model::getInvertClipping,
 				&Model::setInvertClipping
 			);
+
+			model_t["points"] = sol::readonly_property(&Model::getPoints);
 
 			model_t["meshSize"] = sol::property(
 				&Model::getMeshSize,
@@ -203,6 +219,7 @@ namespace bindings {
 				&Model::getSelectedColormap,
 				&Model::setSelectedColormap
 			);
+
 
 
 		}

@@ -69,24 +69,3 @@ void QuadModel::saveAs(const std::string path) const {
 
 	write_by_extension(path, _quad, attributes);
 }
-
-void QuadModel::setSelectedAttr(int idx) {
-
-	// Check attrs size
-	if (idx < 0 || idx >= attrs.size()) {
-		throw std::runtime_error(
-			"Selected attribute index out of bound: " + 
-			std::to_string(idx) + ", model has " + 
-			std::to_string(attrs.size()) + 
-			" attributes."
-		);
-	}
-
-	selectedAttr = idx;
-	int kind = attrs[idx].kind;
-	// TODO see condition here not very smart maybe abstract renderers ?
-	if (kind == ElementKind::POINTS) {
-		_pointSetRenderer.setAttribute(attrs[idx].ptr.get(), -1);
-	} else 
-		_meshRenderer->setAttribute(attrs[idx].ptr.get(), kind);
-}

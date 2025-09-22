@@ -30,20 +30,6 @@ struct Model {
         HYBRID = 6 
     };
 
-    // // Color modes:
-    // // Solid color display, or attribute display
-    // enum ColorMode {
-    //     COLOR,
-    //     ATTRIBUTE,
-    // };
-
-    // // TODO maybe useless (because using ElementKind for picking) maybe merge with color mode ?
-    // enum RenderMode {
-    //     Color = 0,
-    //     Pick_facet = 2,
-    //     Pick_cell = 3
-    // };
-
     Model(std::unique_ptr<IRenderer> meshRenderer, PointSetRenderer pointSetRenderer, std::optional<HalfedgeRenderer> halfedgeRenderer) :
     _name(""),
     _path(""),
@@ -61,7 +47,6 @@ struct Model {
 	template<typename T>
 	T& as() {
         static_assert(std::is_base_of_v<Model, T>, "Model::as() can only be used with derived classes of Model");
-        // static_assert(getModelType() == T::getModelType(), "Model::as() can only be used with the same ModelType");
 		return static_cast<T&>(*this);
 	}
 
@@ -273,10 +258,8 @@ struct Model {
         return selectedAttr;
     }
 
-    virtual void setSelectedAttr(int idx) = 0;
-    // virtual void setSelectedAttr(std::string name, ElementKind kind) = 0;
-
     void setSelectedAttr(std::string name, ElementKind kind) {
+
         // Search attribute by name
         for (int i = 0; i < attrs.size(); ++i) {
             const auto &attr = attrs[i];
@@ -652,6 +635,40 @@ struct Model {
         _pointSetRenderer.setHighlight(highlights);
     }
 
+    void setSelectedAttr(int idx) {
+
+        // Check attrs size
+        if (idx < 0 || idx >= attrs.size()) {
+            throw std::runtime_error(
+                "Selected attribute index out of bound: " + 
+                std::to_string(idx) + ", model has " + 
+                std::to_string(attrs.size()) + 
+                " attributes."
+            );
+        }
+
+        selectedAttr = idx;
+        int kind = attrs[idx].kind;
+        // TODO see condition here not very smart maybe abstract renderers ?
+        if (kind == ElementKind::POINTS) {
+            _pointSetRenderer.setAttribute(attrs[idx].ptr.get(), -1);
+        } else 
+            _meshRenderer->setAttribute(attrs[idx].ptr.get(), kind);
+    }
+
+    // Renderer getters
+    PointSetRenderer& getPoints() {
+        return _pointSetRenderer;
+    }
+
+    std::optional<HalfedgeRenderer>& getHalfedges() {
+        return _halfedgeRenderer;
+    }
+
+    std::unique_ptr<IRenderer>& getMesh() {
+        return _meshRenderer;
+    }
+
     protected:
     std::string _name;
     std::string _path;
@@ -683,8 +700,8 @@ struct Model {
     
     int selectedColormap = 0;
 
+    // Renderers
     std::unique_ptr<IRenderer> _meshRenderer;
     PointSetRenderer _pointSetRenderer;
     std::optional<HalfedgeRenderer> _halfedgeRenderer;
-    // std::unique_ptr<IRenderer> halfedgeRenderer;
 };

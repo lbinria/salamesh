@@ -21,10 +21,7 @@ struct TetModel final : public Model {
 
 	TetModel() : 
         _m(), 
-        Model::Model(std::make_unique<TetRenderer>(_m), PointSetRenderer(_m.points), std::nullopt)
-        // _tetRenderer(_m)
-        // _pointSetRenderer(_m.points)
-        /*_halfedgeRenderer(_m)*/ {
+        Model::Model(std::make_unique<TetRenderer>(_m), PointSetRenderer(_m.points), std::nullopt) {
         }
 
     ModelType getModelType() const override {
@@ -84,19 +81,10 @@ struct TetModel final : public Model {
         
     }
 
-
-    using Model::setSelectedAttr;
-    void setSelectedAttr(int idx) override;
-
     private:
 
     // Mesh
     Tetrahedra _m;
     VolumeAttributes _volumeAttributes;
-
-    // Renderers
-    // PointSetRenderer _pointSetRenderer;
-    // HalfedgeRenderer _halfedgeRenderer;
-    // TetRenderer _tetRenderer;
 
 };

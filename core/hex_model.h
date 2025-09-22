@@ -21,10 +21,7 @@ struct HexModel final : public Model {
 
 	HexModel() : 
         _m(), 
-        // _hexRenderer(_m), 
         Model::Model(std::make_unique<HexRenderer>(_m), PointSetRenderer(_m.points), std::make_optional<HalfedgeRenderer>(_m))
-        // _pointSetRenderer(_m.points),
-        // _halfedgeRenderer(_m) 
         {}
 
     ModelType getModelType() const override {
@@ -83,21 +80,11 @@ struct HexModel final : public Model {
 
         
     }
-
-
-    using Model::setSelectedAttr;
-    void setSelectedAttr(int idx) override;
     
     private:
-
 
     // Mesh
     Hexahedra _m;
     VolumeAttributes _volumeAttributes;
-
-    // Renderers
-    // PointSetRenderer _pointSetRenderer;
-    // HalfedgeRenderer _halfedgeRenderer;
-    // HexRenderer _hexRenderer;
     
 };

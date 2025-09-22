@@ -21,9 +21,7 @@ struct TriModel final : public Model {
 	TriModel() : 
         _tri(), 
         Model::Model(std::make_unique<TriRenderer>(_tri), PointSetRenderer(_tri.points), std::nullopt)
-        // _triRenderer(_tri)
-        // _pointSetRenderer(_tri.points)
-        /* _halfedgeRenderer(_tri)*/ {}
+    {}
 
 
     ModelType getModelType() const override {
@@ -84,18 +82,10 @@ struct TriModel final : public Model {
         
     }
 
-    using Model::setSelectedAttr;
-    void setSelectedAttr(int idx) override;
-
     private: 
 
     // Mesh
     Triangles _tri;
     SurfaceAttributes _surfaceAttributes;
-
-    // Renderers
-    // PointSetRenderer _pointSetRenderer;
-    //HalfedgeRenderer _halfedgeRenderer;
-    // TriRenderer _triRenderer;
 
 };

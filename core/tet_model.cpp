@@ -76,13 +76,3 @@ void TetModel::saveAs(const std::string path) const {
 
 	write_by_extension(path, _m, attributes);
 }
-
-void TetModel::setSelectedAttr(int idx) {
-	selectedAttr = idx;
-	int kind = attrs[idx].kind;
-	// TODO see condition here not very smart maybe abstract renderers ?
-	if (kind == ElementKind::POINTS) {
-		_pointSetRenderer.setAttribute(attrs[idx].ptr.get(), -1);
-	} else 
-		_meshRenderer->setAttribute(attrs[idx].ptr.get(), kind);
-}

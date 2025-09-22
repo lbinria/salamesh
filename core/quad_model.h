@@ -22,8 +22,7 @@ struct QuadModel final : public Model {
         _quad(), 
         // _quadRenderer(_quad), 
         Model::Model(std::make_unique<QuadRenderer>(_quad), PointSetRenderer(_quad.points), std::nullopt)
-        // _pointSetRenderer(_quad.points)
-        /* _halfedgeRenderer(_quad)*/ {}
+    {}
 
 
     ModelType getModelType() const override {
@@ -84,56 +83,11 @@ struct QuadModel final : public Model {
         
     }
 
-    using Model::setSelectedAttr;
-    void setSelectedAttr(int idx) override;
-
 
     private: 
 
     // Mesh
     Quads _quad;
     SurfaceAttributes _surfaceAttributes;
-
-    // Renderers
-    // PointSetRenderer _pointSetRenderer;
-    //HalfedgeRenderer _halfedgeRenderer;
-    // QuadRenderer _quadRenderer;
-
-    // template<typename T>
-    // Attribute bindAttr(std::string name, ElementKind kind) {
-    //     switch (kind) {
-    //         case ElementKind::POINTS:
-    //             PointAttribute<T> a;
-    //             a.bind(name, _surfaceAttributes, _quad);
-    //             return bindAttr<T>(name, a);
-    //         case ElementKind::EDGES:
-    //             EdgeAttribute<T> a;
-    //             a.bind(name, _surfaceAttributes, _quad);
-    //             return bindAttr<T>(name, a);
-    //         case ElementKind::FACETS:
-    //             FacetAttribute<T> a;
-    //             a.bind(name, _surfaceAttributes, _quad);
-    //             return bindAttr<T>(name, a);
-    //         case ElementKind::CELL_FACETS:
-    //             CellFacetAttribute<T> a;
-    //             a.bind(name, _surfaceAttributes, _quad);
-    //             return bindAttr<T>(name, a);
-    //         case ElementKind::CORNERS:
-    //             CornerAttribute<T> a;
-    //             a.bind(name, _surfaceAttributes, _quad);
-    //             return bindAttr<T>(name, a);
-    //         case ElementKind::CELL_CORNERS:
-    //             CellCornerAttribute<T> a;
-    //             a.bind(name, _surfaceAttributes, _quad);
-    //             return bindAttr<T>(name, a);
-    //         case ElementKind::CELLS:
-    //             CellAttribute<T> a;
-    //             a.bind(name, _surfaceAttributes, _quad);
-    //             return bindAttr<T>(name, a);
-    //         default:
-    //             throw std::runtime_error("Unknown element kind for binding attribute: " + elementKindToString(kind));
-    //     }
-    // }
-
 
 };
