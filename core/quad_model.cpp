@@ -88,15 +88,5 @@ void QuadModel::setSelectedAttr(int idx) {
 	if (kind == ElementKind::POINTS) {
 		_pointSetRenderer.setAttribute(attrs[idx].ptr.get(), -1);
 	} else 
-		_quadRenderer.setAttribute(attrs[idx].ptr.get(), kind);
-}
-
-void QuadModel::push() {
-	_quadRenderer.push();
-	_pointSetRenderer.push();
-	// _halfedgeRenderer.push();
-
-	if (colorMode == ColorMode::ATTRIBUTE) {
-		updateAttr();
-	}
+		_meshRenderer->setAttribute(attrs[idx].ptr.get(), kind);
 }

@@ -76,15 +76,5 @@ void TriModel::setSelectedAttr(int idx) {
 	if (kind == ElementKind::POINTS) {
 		_pointSetRenderer.setAttribute(attrs[idx].ptr.get(), -1);
 	} else 
-		_triRenderer.setAttribute(attrs[idx].ptr.get(), kind);
-}
-
-void TriModel::push() {
-	_triRenderer.push();
-	_pointSetRenderer.push();
-	// _halfedgeRenderer.push();
-
-	if (colorMode == ColorMode::ATTRIBUTE) {
-		updateAttr();
-	}
+		_meshRenderer->setAttribute(attrs[idx].ptr.get(), kind);
 }

@@ -145,10 +145,42 @@ struct Model {
     }
 
     // Lifecycle functions
-    virtual void init() = 0; // TODO see because it is an app function => it should be override by user but not used ! (public for override, private for use ?)
-    virtual void push() = 0;
-    virtual void render() = 0;
-    virtual void clean() = 0;
+	void init() {
+		_meshRenderer->init();
+		_pointSetRenderer.init();
+        if (_halfedgeRenderer.has_value())
+            _halfedgeRenderer.value().init();
+	}
+
+    void push() {
+        _meshRenderer->push();
+        _pointSetRenderer.push();
+        if (_halfedgeRenderer.has_value())
+            _halfedgeRenderer.value().push();
+
+        if (colorMode == ColorMode::ATTRIBUTE) {
+            updateAttr();
+        }
+    }
+
+    void render() {
+        if (!visible)
+            return;
+        
+        glm::vec3 pos = getWorldPosition();
+
+        _meshRenderer->render(pos);
+        _pointSetRenderer.render(pos);
+        if (_halfedgeRenderer.has_value())
+            _halfedgeRenderer.value().render(pos);
+	}
+
+    void clean() {
+		_meshRenderer->clean();
+        _pointSetRenderer.clean();
+        if (_halfedgeRenderer.has_value())
+            _halfedgeRenderer.value().clean();
+	}
 
 
     virtual int nverts() const = 0; 
@@ -156,12 +188,12 @@ struct Model {
     virtual int ncells() const = 0; 
 
     // General shader uniforms
-    virtual void setTexture(unsigned int tex) = 0;
+    // virtual void setTexture(unsigned int tex) = 0;
     
-	virtual void setHighlight(int idx, float highlight) = 0;
-	virtual void setHighlight(std::vector<float> highlights) = 0;
-    virtual void setPointHighlight(int idx, float highlight) = 0;
-    virtual void setPointHighlight(std::vector<float> highlights) = 0;
+	// virtual void setHighlight(int idx, float highlight) = 0;
+	// virtual void setHighlight(std::vector<float> highlights) = 0;
+    // virtual void setPointHighlight(int idx, float highlight) = 0;
+    // virtual void setPointHighlight(std::vector<float> highlights) = 0;
     // TODO setEdgeHighlight
 
     virtual void setFilter(int idx, bool filter) = 0;
@@ -169,42 +201,42 @@ struct Model {
     // TODO setPointFilter
     // TODO setEdgeFilter
 
-    virtual int getColorMode() const = 0;
-    virtual void setColorMode(ColorMode mode) = 0;
-    virtual glm::vec3 getColor() const = 0;
-    virtual void setColor(glm::vec3 c) = 0;
+    // virtual int getColorMode() const = 0;
+    // virtual void setColorMode(ColorMode mode) = 0;
+    // virtual glm::vec3 getColor() const = 0;
+    // virtual void setColor(glm::vec3 c) = 0;
 
-    virtual bool getLight() const = 0;
-    virtual void setLight(bool enabled) = 0;
-    virtual bool getLightFollowView() const = 0;
-    virtual void setLightFollowView(bool follow) = 0;
-    virtual bool getClipping() const = 0;
-    virtual void setClipping(bool enabled) = 0;
-    virtual glm::vec3 getClippingPlanePoint() const = 0;
-    virtual void setClippingPlanePoint(glm::vec3 p) = 0;
-    virtual glm::vec3 getClippingPlaneNormal() const = 0;
-    virtual void setClippingPlaneNormal(glm::vec3 n) = 0;
-    virtual bool getInvertClipping() const = 0;
-    virtual void setInvertClipping(bool invert) = 0;
-    virtual float getMeshSize() const = 0;
-    virtual void setMeshSize(float val) = 0;
-    virtual float getMeshShrink() const = 0;
-    virtual void setMeshShrink(float val) = 0;
-    virtual int getFragRenderMode() const = 0;
-    virtual void setFragRenderMode(RenderMode mode) = 0;
+    // virtual bool getLight() const = 0;
+    // virtual void setLight(bool enabled) = 0;
+    // virtual bool getLightFollowView() const = 0;
+    // virtual void setLightFollowView(bool follow) = 0;
+    // virtual bool getClipping() const = 0;
+    // virtual void setClipping(bool enabled) = 0;
+    // virtual glm::vec3 getClippingPlanePoint() const = 0;
+    // virtual void setClippingPlanePoint(glm::vec3 p) = 0;
+    // virtual glm::vec3 getClippingPlaneNormal() const = 0;
+    // virtual void setClippingPlaneNormal(glm::vec3 n) = 0;
+    // virtual bool getInvertClipping() const = 0;
+    // virtual void setInvertClipping(bool invert) = 0;
+    // virtual float getMeshSize() const = 0;
+    // virtual void setMeshSize(float val) = 0;
+    // virtual float getMeshShrink() const = 0;
+    // virtual void setMeshShrink(float val) = 0;
+    // virtual int getFragRenderMode() const = 0;
+    // virtual void setFragRenderMode(RenderMode mode) = 0;
 
-    virtual glm::vec3 getPointColor() const = 0;
-    virtual void setPointColor(glm::vec3 color) = 0;
-    virtual float getPointSize() const = 0;
-    virtual void setPointSize(float size) = 0;
+    // virtual glm::vec3 getPointColor() const = 0;
+    // virtual void setPointColor(glm::vec3 color) = 0;
+    // virtual float getPointSize() const = 0;
+    // virtual void setPointSize(float size) = 0;
 
 
-    virtual float getEdgeSize() const = 0;
-    virtual void setEdgeSize(float size) = 0;
-    virtual glm::vec3 getEdgeInsideColor() const  = 0;
-    virtual void setEdgeInsideColor(glm::vec3 color)  = 0;
-    virtual glm::vec3 getEdgeOutsideColor() const  = 0;
-    virtual void setEdgeOutsideColor(glm::vec3 color) = 0;
+    // virtual float getEdgeSize() const = 0;
+    // virtual void setEdgeSize(float size) = 0;
+    // virtual glm::vec3 getEdgeInsideColor() const  = 0;
+    // virtual void setEdgeInsideColor(glm::vec3 color)  = 0;
+    // virtual glm::vec3 getEdgeOutsideColor() const  = 0;
+    // virtual void setEdgeOutsideColor(glm::vec3 color) = 0;
 
     void addAttr(ElementKind kind, NamedContainer &container) {
         
@@ -266,8 +298,8 @@ struct Model {
     // virtual void removeAttr(const std::string& name, ElementKind element) = 0;
 
     // Model attributes shader uniforms
-    virtual int getSelectedColormap() const = 0;
-    virtual void setSelectedColormap(int idx) = 0;
+    // virtual int getSelectedColormap() const = 0;
+    // virtual void setSelectedColormap(int idx) = 0;
 
     template<typename T>
     ElementType deduceType(GenericAttribute<T> &attr) {
@@ -351,7 +383,7 @@ struct Model {
 
 
     // Model (maybe not virtual !)
-    virtual void setMeshIndex(int index) = 0;
+    // virtual void setMeshIndex(int index) = 0;
 
     glm::vec3 getPosition() const {
         return position;
@@ -369,12 +401,12 @@ struct Model {
         visible = v;
     }
     
-    virtual bool getMeshVisible() const = 0;
-    virtual void setMeshVisible(bool v) = 0;    
-    virtual bool getPointVisible() const = 0;
-    virtual void setPointVisible(bool v) = 0;
-    virtual bool getEdgeVisible() const = 0;
-    virtual void setEdgeVisible(bool v) = 0;
+    // virtual bool getMeshVisible() const = 0;
+    // virtual void setMeshVisible(bool v) = 0;    
+    // virtual bool getPointVisible() const = 0;
+    // virtual void setPointVisible(bool v) = 0;
+    // virtual bool getEdgeVisible() const = 0;
+    // virtual void setEdgeVisible(bool v) = 0;
 
     std::shared_ptr<Model> getParent() const {
         return parent;
@@ -390,6 +422,234 @@ struct Model {
         } else {
             return position;
         }
+    }
+
+    // Renderer functions
+    void setTexture(unsigned int tex) {
+        _meshRenderer->setTexture(tex);
+        _pointSetRenderer.setTexture(tex);
+        if (_halfedgeRenderer.has_value())
+            _halfedgeRenderer.value().setTexture(tex);
+    }
+
+    int getColorMode() const {
+        return colorMode;
+    }
+
+    void setColorMode(ColorMode mode) {
+        _meshRenderer->setColorMode(mode);
+        _pointSetRenderer.setColorMode(mode);
+        if (_halfedgeRenderer.has_value())
+            _halfedgeRenderer.value().setColorMode(mode);
+        colorMode = mode;
+    }
+
+    glm::vec3 getColor() const {
+        return color;
+    }
+
+    void setColor(glm::vec3 c) {
+        _meshRenderer->setColor(c);
+        color = c;
+    }
+
+    bool getLight() const {
+        return isLightEnabled;
+    }
+
+    void setLight(bool enabled) {
+        _meshRenderer->setLight(enabled);
+        isLightEnabled = enabled;
+    }
+
+    bool getLightFollowView() const {
+        return isLightFollowView;
+    }
+
+    void setLightFollowView(bool follow) {
+		_meshRenderer->setLightFollowView(follow);
+        isLightFollowView = follow;
+    }
+
+    bool getClipping() const {
+        return isClipping;
+    }
+
+    void setClipping(bool enabled) {
+        _meshRenderer->setClipping(enabled);
+        _pointSetRenderer.setClipping(enabled);
+        isClipping = enabled;
+    }
+
+    glm::vec3 getClippingPlanePoint() const {
+        return clippingPlanePoint;
+    }
+
+    void setClippingPlanePoint(glm::vec3 p) {
+        _meshRenderer->setClippingPlanePoint(p);
+        _pointSetRenderer.setClippingPlanePoint(p);
+        clippingPlanePoint = p;
+    }
+
+    glm::vec3 getClippingPlaneNormal() const {
+        return clippingPlaneNormal;
+    }
+
+    void setClippingPlaneNormal(glm::vec3 n) {
+        _meshRenderer->setClippingPlaneNormal(n);
+        _pointSetRenderer.setClippingPlaneNormal(n);
+        clippingPlaneNormal = n;
+    }
+
+    bool getInvertClipping() const {
+        return invertClipping;
+    }
+
+    void setInvertClipping(bool invert) {
+        _meshRenderer->setInvertClipping(invert);
+        _pointSetRenderer.setInvertClipping(invert);
+        invertClipping = invert;
+    }
+
+    float getMeshSize() const {
+        return meshSize;
+    }
+
+    void setMeshSize(float val) {
+        _meshRenderer->setMeshSize(val);
+        meshSize = val;
+    }
+
+    float getMeshShrink() const {
+        return meshShrink;
+    }
+
+    void setMeshShrink(float val) {
+        _meshRenderer->setMeshShrink(val);
+        meshShrink = val;
+    }
+
+    bool getMeshVisible() const {
+        return _meshRenderer->getVisible();
+    }
+
+    void setMeshVisible(bool visible) {
+        return _meshRenderer->setVisible(visible);
+    }
+
+    int getFragRenderMode() const {
+        return fragRenderMode;
+    }
+
+    void setFragRenderMode(RenderMode mode) {
+        _meshRenderer->setFragRenderMode(mode);
+        fragRenderMode = mode;
+    }
+
+    int getSelectedColormap() const {
+        return selectedColormap;
+    }
+
+    void setSelectedColormap(int idx) {
+        _meshRenderer->setSelectedColormap(idx);
+        selectedColormap = idx;
+    }
+
+    glm::vec3 getPointColor() const {
+        return _pointSetRenderer.getColor();
+    }
+
+    void setPointColor(glm::vec3 color) {
+        _pointSetRenderer.setColor(color);
+    }
+
+    float getPointSize() const {
+        return _pointSetRenderer.getPointSize();
+    }
+
+    void setPointSize(float size) {
+        _pointSetRenderer.setPointSize(size);
+    }
+
+    float getEdgeSize() const {
+        if (_halfedgeRenderer.has_value())
+            return _halfedgeRenderer.value().getEdgeSize();
+        else
+            return 0.0f;
+    }
+
+    void setEdgeSize(float size) {
+        if (_halfedgeRenderer.has_value())
+            _halfedgeRenderer.value().setEdgeSize(size);
+    }
+
+    glm::vec3 getEdgeInsideColor() const {
+        if (_halfedgeRenderer.has_value())
+            return _halfedgeRenderer.value().getEdgeInsideColor();
+        else
+            return glm::vec3(0);
+    }
+
+    void setEdgeInsideColor(glm::vec3 color) {
+        if (_halfedgeRenderer.has_value())
+            _halfedgeRenderer.value().setEdgeInsideColor(color);
+    }
+
+    glm::vec3 getEdgeOutsideColor() const {
+        if (_halfedgeRenderer.has_value())
+            return _halfedgeRenderer.value().getEdgeOutsideColor();
+        else
+            return glm::vec3(0);
+    }
+
+    void setEdgeOutsideColor(glm::vec3 color) {
+        if (_halfedgeRenderer.has_value())
+            _halfedgeRenderer.value().setEdgeOutsideColor(color);
+    }
+
+    void setMeshIndex(int index) {
+        _meshRenderer->setMeshIndex(index);
+    }
+
+    bool getPointVisible() const {
+        return _pointSetRenderer.getVisible();
+    }
+
+    void setPointVisible(bool v) {
+        _pointSetRenderer.setVisible(v);
+    }
+
+    bool getEdgeVisible() const {
+        return _halfedgeRenderer.has_value() && _halfedgeRenderer.value().getVisible();
+    }
+
+    void setEdgeVisible(bool v) {
+        if (_halfedgeRenderer.has_value())
+            _halfedgeRenderer.value().setVisible(v);
+    }
+
+    void setHighlight(int idx, float highlight) {
+        _meshRenderer->setHighlight(idx, highlight);
+    }
+
+    void setHighlight(std::vector<float> highlights) {
+        _meshRenderer->setHighlight(highlights);
+    }
+
+    void setFacetHighlight(int idx, float highlight) {
+        // _meshRenderer->setFacetHighlight(idx, highlight);
+    }
+
+    void setFacetHighlight(std::vector<float> highlights) {
+        // _meshRenderer->setFacetHighlight(highlights);
+    }
+
+    void setPointHighlight(int idx, float highlight) {
+        _pointSetRenderer.setHighlight(idx, highlight);
+    }
+
+    void setPointHighlight(std::vector<float> highlights) {
+        _pointSetRenderer.setHighlight(highlights);
     }
 
     protected:

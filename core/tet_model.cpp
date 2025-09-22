@@ -84,15 +84,5 @@ void TetModel::setSelectedAttr(int idx) {
 	if (kind == ElementKind::POINTS) {
 		_pointSetRenderer.setAttribute(attrs[idx].ptr.get(), -1);
 	} else 
-		_tetRenderer.setAttribute(attrs[idx].ptr.get(), kind);
-}
-
-void TetModel::push() {
-	_tetRenderer.push();
-	_pointSetRenderer.push();
-	//_halfedgeRenderer.push();
-
-	if (colorMode == ColorMode::ATTRIBUTE) {
-		updateAttr();
-	}
+		_meshRenderer->setAttribute(attrs[idx].ptr.get(), kind);
 }

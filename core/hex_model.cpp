@@ -86,14 +86,3 @@ void HexModel::setSelectedAttr(int idx) {
 	} else 
 		_meshRenderer->setAttribute(attrs[idx].ptr.get(), kind);
 }
-
-void HexModel::push() {
-	_meshRenderer->push();
-	_pointSetRenderer.push();
-	if (_halfedgeRenderer.has_value())
-		_halfedgeRenderer.value().push();
-
-	if (colorMode == ColorMode::ATTRIBUTE) {
-		updateAttr();
-	}
-}
