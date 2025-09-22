@@ -1,8 +1,8 @@
 #pragma once
 
 #include "renderer.h"
-// TODO should not inlcude this, because of ColorMode ! create a separate file for ColorMode
-#include "model.h"
+#include "color_mode.h"
+#include "render_mode.h"
 
 #include "shader.h"
 #include "vertex.h"

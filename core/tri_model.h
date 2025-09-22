@@ -20,8 +20,9 @@ struct TriModel final : public Model {
 
 	TriModel() : 
         _tri(), 
-        _triRenderer(_tri), 
-        _pointSetRenderer(_tri.points)
+        Model::Model(std::make_unique<TriRenderer>(_tri), PointSetRenderer(_tri.points), std::nullopt),
+        _triRenderer(_tri)
+        // _pointSetRenderer(_tri.points)
         /* _halfedgeRenderer(_tri)*/ {}
 
 
@@ -328,7 +329,7 @@ struct TriModel final : public Model {
     SurfaceAttributes _surfaceAttributes;
 
     // Renderers
-    PointSetRenderer _pointSetRenderer;
+    // PointSetRenderer _pointSetRenderer;
     //HalfedgeRenderer _halfedgeRenderer;
     TriRenderer _triRenderer;
 

@@ -21,8 +21,9 @@ struct TetModel final : public Model {
 
 	TetModel() : 
         _m(), 
-        _tetRenderer(_m), 
-        _pointSetRenderer(_m.points)
+        Model::Model(std::make_unique<TetRenderer>(_m), PointSetRenderer(_m.points), std::nullopt),
+        _tetRenderer(_m)
+        // _pointSetRenderer(_m.points)
         /*_halfedgeRenderer(_m)*/ {
         }
 
@@ -337,7 +338,7 @@ struct TetModel final : public Model {
     VolumeAttributes _volumeAttributes;
 
     // Renderers
-    PointSetRenderer _pointSetRenderer;
+    // PointSetRenderer _pointSetRenderer;
     // HalfedgeRenderer _halfedgeRenderer;
     TetRenderer _tetRenderer;
 

@@ -21,10 +21,11 @@ struct HexModel final : public Model {
 
 	HexModel() : 
         _m(), 
-        _hexRenderer(_m), 
-        _pointSetRenderer(_m.points),
-        _halfedgeRenderer(_m) {
-        }
+        // _hexRenderer(_m), 
+        Model::Model(std::make_unique<HexRenderer>(_m), PointSetRenderer(_m.points), std::make_optional<HalfedgeRenderer>(_m))
+        // _pointSetRenderer(_m.points),
+        // _halfedgeRenderer(_m) 
+        {}
 
     ModelType getModelType() const override {
         return ModelType::HEX;
@@ -41,9 +42,10 @@ struct HexModel final : public Model {
 
 
 	void init() override {
-		_hexRenderer.init();
+		_meshRenderer->init();
 		_pointSetRenderer.init();
-        _halfedgeRenderer.init();
+        if (_halfedgeRenderer.has_value())
+            _halfedgeRenderer.value().init();
 	}
 
     void push() override;
@@ -54,15 +56,17 @@ struct HexModel final : public Model {
         
         glm::vec3 pos = getWorldPosition();
 
-        _hexRenderer.render(pos);
+        _meshRenderer->render(pos);
         _pointSetRenderer.render(pos);
-        _halfedgeRenderer.render(pos);
+        if (_halfedgeRenderer.has_value())
+            _halfedgeRenderer.value().render(pos);
 	}
     
     void clean() override {
-		_hexRenderer.clean();
+		_meshRenderer->clean();
         _pointSetRenderer.clean();
-        _halfedgeRenderer.clean();
+        if (_halfedgeRenderer.has_value())
+            _halfedgeRenderer.value().clean();
 	}
 
 	Hexahedra& getHexahedra() { return _m; }
@@ -82,9 +86,10 @@ struct HexModel final : public Model {
 
 
     void setTexture(unsigned int tex) override {
-        _hexRenderer.setTexture(tex);
+        _meshRenderer->setTexture(tex);
         _pointSetRenderer.setTexture(tex);
-        _halfedgeRenderer.setTexture(tex);
+        if (_halfedgeRenderer.has_value())
+            _halfedgeRenderer.value().setTexture(tex);
     }
 
     int getColorMode() const override {
@@ -92,9 +97,10 @@ struct HexModel final : public Model {
     }
 
     void setColorMode(ColorMode mode) override {
-        _hexRenderer.setColorMode(mode);
+        _meshRenderer->setColorMode(mode);
         _pointSetRenderer.setColorMode(mode);
-        _halfedgeRenderer.setColorMode(mode);
+        if (_halfedgeRenderer.has_value())
+            _halfedgeRenderer.value().setColorMode(mode);
         colorMode = mode;
     }
 
@@ -103,7 +109,7 @@ struct HexModel final : public Model {
     }
 
     void setColor(glm::vec3 c) override {
-        _hexRenderer.setColor(c);
+        _meshRenderer->setColor(c);
         color = c;
     }
 
@@ -112,7 +118,7 @@ struct HexModel final : public Model {
     }
 
     void setLight(bool enabled) override {
-        _hexRenderer.setLight(enabled);
+        _meshRenderer->setLight(enabled);
         isLightEnabled = enabled;
     }
 
@@ -121,7 +127,7 @@ struct HexModel final : public Model {
     }
 
     void setLightFollowView(bool follow) override {
-		_hexRenderer.setLightFollowView(follow);
+		_meshRenderer->setLightFollowView(follow);
         isLightFollowView = follow;
     }
 
@@ -130,7 +136,7 @@ struct HexModel final : public Model {
     }
 
     void setClipping(bool enabled) override {
-        _hexRenderer.setClipping(enabled);
+        _meshRenderer->setClipping(enabled);
         _pointSetRenderer.setClipping(enabled);
         isClipping = enabled;
     }
@@ -140,7 +146,7 @@ struct HexModel final : public Model {
     }
 
     void setClippingPlanePoint(glm::vec3 p) override {
-        _hexRenderer.setClippingPlanePoint(p);
+        _meshRenderer->setClippingPlanePoint(p);
         _pointSetRenderer.setClippingPlanePoint(p);
         clippingPlanePoint = p;
     }
@@ -150,7 +156,7 @@ struct HexModel final : public Model {
     }
 
     void setClippingPlaneNormal(glm::vec3 n) override {
-        _hexRenderer.setClippingPlaneNormal(n);
+        _meshRenderer->setClippingPlaneNormal(n);
         _pointSetRenderer.setClippingPlaneNormal(n);
         clippingPlaneNormal = n;
     }
@@ -160,7 +166,7 @@ struct HexModel final : public Model {
     }
 
     void setInvertClipping(bool invert) override {
-        _hexRenderer.setInvertClipping(invert);
+        _meshRenderer->setInvertClipping(invert);
         _pointSetRenderer.setInvertClipping(invert);
         invertClipping = invert;
     }
@@ -170,7 +176,7 @@ struct HexModel final : public Model {
     }
 
     void setMeshSize(float val) override {
-        _hexRenderer.setMeshSize(val);
+        _meshRenderer->setMeshSize(val);
         meshSize = val;
     }
 
@@ -179,16 +185,16 @@ struct HexModel final : public Model {
     }
 
     void setMeshShrink(float val) override {
-        _hexRenderer.setMeshShrink(val);
+        _meshRenderer->setMeshShrink(val);
         meshShrink = val;
     }
 
     bool getMeshVisible() const override {
-        return _hexRenderer.getVisible();
+        return _meshRenderer->getVisible();
     }
 
     void setMeshVisible(bool visible) override {
-        return _hexRenderer.setVisible(visible);
+        return _meshRenderer->setVisible(visible);
     }
 
     int getFragRenderMode() const override {
@@ -196,7 +202,7 @@ struct HexModel final : public Model {
     }
 
     void setFragRenderMode(RenderMode mode) override {
-        _hexRenderer.setFragRenderMode(mode);
+        _meshRenderer->setFragRenderMode(mode);
         fragRenderMode = mode;
     }
 
@@ -205,7 +211,7 @@ struct HexModel final : public Model {
     }
 
     void setSelectedColormap(int idx) override {
-        _hexRenderer.setSelectedColormap(idx);
+        _meshRenderer->setSelectedColormap(idx);
         selectedColormap = idx;
     }
 
@@ -226,31 +232,43 @@ struct HexModel final : public Model {
     }
 
     float getEdgeSize() const override {
-        return _halfedgeRenderer.getEdgeSize();
+        if (_halfedgeRenderer.has_value())
+            return _halfedgeRenderer.value().getEdgeSize();
+        else
+            return 0.0f;
     }
 
     void setEdgeSize(float size) override {
-        _halfedgeRenderer.setEdgeSize(size);
+        if (_halfedgeRenderer.has_value())
+            _halfedgeRenderer.value().setEdgeSize(size);
     }
 
     glm::vec3 getEdgeInsideColor() const override {
-        return _halfedgeRenderer.getEdgeInsideColor();
+        if (_halfedgeRenderer.has_value())
+            return _halfedgeRenderer.value().getEdgeInsideColor();
+        else
+            return glm::vec3(0);
     }
 
     void setEdgeInsideColor(glm::vec3 color) override {
-        _halfedgeRenderer.setEdgeInsideColor(color);
+        if (_halfedgeRenderer.has_value())
+            _halfedgeRenderer.value().setEdgeInsideColor(color);
     }
 
     glm::vec3 getEdgeOutsideColor() const override {
-        return _halfedgeRenderer.getEdgeOutsideColor();
+        if (_halfedgeRenderer.has_value())
+            return _halfedgeRenderer.value().getEdgeOutsideColor();
+        else
+            return glm::vec3(0);
     }
 
     void setEdgeOutsideColor(glm::vec3 color) override {
-        _halfedgeRenderer.setEdgeOutsideColor(color);
+        if (_halfedgeRenderer.has_value())
+            _halfedgeRenderer.value().setEdgeOutsideColor(color);
     }
 
     void setMeshIndex(int index) override {
-        _hexRenderer.setMeshIndex(index);
+        _meshRenderer->setMeshIndex(index);
     }
 
     bool getPointVisible() const override {
@@ -262,27 +280,28 @@ struct HexModel final : public Model {
     }
 
     bool getEdgeVisible() const override {
-        return _halfedgeRenderer.getVisible();
+        return _halfedgeRenderer.has_value() && _halfedgeRenderer.value().getVisible();
     }
 
     void setEdgeVisible(bool v) override {
-        _halfedgeRenderer.setVisible(v);
+        if (_halfedgeRenderer.has_value())
+            _halfedgeRenderer.value().setVisible(v);
     }
 
     void setHighlight(int idx, float highlight) override {
-        _hexRenderer.setHighlight(idx, highlight);
+        _meshRenderer->setHighlight(idx, highlight);
     }
 
     void setHighlight(std::vector<float> highlights) override {
-        _hexRenderer.setHighlight(highlights);
+        _meshRenderer->setHighlight(highlights);
     }
 
     void setFacetHighlight(int idx, float highlight) {
-        _hexRenderer.setFacetHighlight(idx, highlight);
+        // _meshRenderer->setFacetHighlight(idx, highlight);
     }
 
     void setFacetHighlight(std::vector<float> highlights) {
-        _hexRenderer.setFacetHighlight(highlights);
+        // _meshRenderer->setFacetHighlight(highlights);
     }
 
     void setPointHighlight(int idx, float highlight) override {
@@ -295,7 +314,7 @@ struct HexModel final : public Model {
 
     // TODO filter anything else than cell !
     void setFilter(int idx, bool filter) override {
-        _hexRenderer.setFilter(idx, filter);
+        _meshRenderer->setFilter(idx, filter);
 
         // TODO it works but... not very efficient !
         Volume::Cell c(_m, idx);
@@ -310,7 +329,7 @@ struct HexModel final : public Model {
                     continue;
                 
                 int ci = i / 8;
-                if (_hexRenderer.getFilterPtr()[ci] <= 0) {
+                if (_meshRenderer->getFilterPtr()[ci] <= 0) {
                     allFiltered = false;
                     break;
                 }
@@ -335,8 +354,8 @@ struct HexModel final : public Model {
     VolumeAttributes _volumeAttributes;
 
     // Renderers
-    PointSetRenderer _pointSetRenderer;
-    HalfedgeRenderer _halfedgeRenderer;
-    HexRenderer _hexRenderer;
+    // PointSetRenderer _pointSetRenderer;
+    // HalfedgeRenderer _halfedgeRenderer;
+    // HexRenderer _hexRenderer;
     
 };

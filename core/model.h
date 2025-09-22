@@ -5,6 +5,8 @@
 #include "renderer.h"
 #include "color_mode.h"
 #include "render_mode.h"
+#include "point_set_renderer.h"
+#include "halfedge_renderer.h"
 
 #include "../include/glm/glm.hpp"
 #include "../include/json.hpp"
@@ -42,13 +44,19 @@ struct Model {
     //     Pick_cell = 3
     // };
 
-    Model() :
+    Model(std::unique_ptr<IRenderer> meshRenderer, PointSetRenderer pointSetRenderer, std::optional<HalfedgeRenderer> halfedgeRenderer) :
     _name(""),
-    _path("") {}
+    _path(""),
+    _meshRenderer(std::move(meshRenderer)),
+    _pointSetRenderer(std::move(pointSetRenderer)),
+    _halfedgeRenderer(std::move(halfedgeRenderer)) {}
 
-    Model(std::string name) : 
+    Model(std::unique_ptr<IRenderer> meshRenderer, PointSetRenderer pointSetRenderer, std::optional<HalfedgeRenderer> halfedgeRenderer, std::string name) : 
     _name(name), 
-    _path("") {}
+    _path(""),
+    _meshRenderer(std::move(meshRenderer)),
+    _pointSetRenderer(std::move(pointSetRenderer)),
+    _halfedgeRenderer(std::move(halfedgeRenderer)) {}
 
 	template<typename T>
 	T& as() {
@@ -415,7 +423,8 @@ struct Model {
     
     int selectedColormap = 0;
 
-    // std::unique_ptr<IRenderer> meshRenderer;
-    // std::unique_ptr<IRenderer> pointSetRenderer;
+    std::unique_ptr<IRenderer> _meshRenderer;
+    PointSetRenderer _pointSetRenderer;
+    std::optional<HalfedgeRenderer> _halfedgeRenderer;
     // std::unique_ptr<IRenderer> halfedgeRenderer;
 };

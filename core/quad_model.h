@@ -21,7 +21,8 @@ struct QuadModel final : public Model {
 	QuadModel() : 
         _quad(), 
         _quadRenderer(_quad), 
-        _pointSetRenderer(_quad.points)
+        Model::Model(std::make_unique<QuadRenderer>(_quad), PointSetRenderer(_quad.points), std::nullopt)
+        // _pointSetRenderer(_quad.points)
         /* _halfedgeRenderer(_quad)*/ {}
 
 
@@ -329,7 +330,7 @@ struct QuadModel final : public Model {
     SurfaceAttributes _surfaceAttributes;
 
     // Renderers
-    PointSetRenderer _pointSetRenderer;
+    // PointSetRenderer _pointSetRenderer;
     //HalfedgeRenderer _halfedgeRenderer;
     QuadRenderer _quadRenderer;
 
