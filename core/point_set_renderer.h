@@ -4,7 +4,7 @@
 
 #include <ultimaille/all.h>
 
-// TODO should not inlcude this, because of Model::ColorMode ! create a separate file for ColorMode
+// TODO should not inlcude this, because of ColorMode ! create a separate file for ColorMode
 #include "model.h"
 #include "renderer.h"
 

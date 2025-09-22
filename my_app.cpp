@@ -38,7 +38,7 @@ void MyApp::loadModel(const std::string& filename) {
 	model->setLight(true);
 	model->setMeshShrink(0.f);
 	model->setMeshSize(0.0f);
-	model->setColorMode(Model::ColorMode::COLOR);
+	model->setColorMode(ColorMode::COLOR);
 	model->setEdgeVisible(false);
 
 	models.push_back(std::move(model));	

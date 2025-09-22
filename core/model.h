@@ -2,6 +2,9 @@
 
 #include "element.h"
 #include "attribute.h"
+#include "renderer.h"
+#include "color_mode.h"
+#include "render_mode.h"
 
 #include "../include/glm/glm.hpp"
 #include "../include/json.hpp"
@@ -25,19 +28,19 @@ struct Model {
         HYBRID = 6 
     };
 
-    // Color modes:
-    // Solid color display, or attribute display
-    enum ColorMode {
-        COLOR,
-        ATTRIBUTE,
-    };
+    // // Color modes:
+    // // Solid color display, or attribute display
+    // enum ColorMode {
+    //     COLOR,
+    //     ATTRIBUTE,
+    // };
 
-    // TODO maybe useless (because using ElementKind for picking) maybe merge with color mode ?
-    enum RenderMode {
-        Color = 0,
-        Pick_facet = 2,
-        Pick_cell = 3
-    };
+    // // TODO maybe useless (because using ElementKind for picking) maybe merge with color mode ?
+    // enum RenderMode {
+    //     Color = 0,
+    //     Pick_facet = 2,
+    //     Pick_cell = 3
+    // };
 
     Model() :
     _name(""),
@@ -95,7 +98,7 @@ struct Model {
             model_state["position"][2].get<float>()
         );
         
-        setColorMode((Model::ColorMode)model_state["color_mode"].get<int>());
+        setColorMode((ColorMode)model_state["color_mode"].get<int>());
 
         setLight(model_state["is_light_enabled"].get<bool>());
         setLightFollowView(model_state["is_light_follow_view"].get<bool>());
@@ -159,7 +162,7 @@ struct Model {
     // TODO setEdgeFilter
 
     virtual int getColorMode() const = 0;
-    virtual void setColorMode(Model::ColorMode mode) = 0;
+    virtual void setColorMode(ColorMode mode) = 0;
     virtual glm::vec3 getColor() const = 0;
     virtual void setColor(glm::vec3 c) = 0;
 
@@ -180,7 +183,7 @@ struct Model {
     virtual float getMeshShrink() const = 0;
     virtual void setMeshShrink(float val) = 0;
     virtual int getFragRenderMode() const = 0;
-    virtual void setFragRenderMode(Model::RenderMode mode) = 0;
+    virtual void setFragRenderMode(RenderMode mode) = 0;
 
     virtual glm::vec3 getPointColor() const = 0;
     virtual void setPointColor(glm::vec3 color) = 0;
@@ -406,11 +409,13 @@ struct Model {
     float meshSize = 0.01f;
     float meshShrink = 0.f;
     
-    Model::RenderMode fragRenderMode = Model::RenderMode::Color;
-    Model::ColorMode colorMode = Model::ColorMode::COLOR;
+    RenderMode fragRenderMode = RenderMode::Color;
+    ColorMode colorMode = ColorMode::COLOR;
     glm::vec3 color{0.8f, 0.f, 0.2f};
     
     int selectedColormap = 0;
 
-
+    // std::unique_ptr<IRenderer> meshRenderer;
+    // std::unique_ptr<IRenderer> pointSetRenderer;
+    // std::unique_ptr<IRenderer> halfedgeRenderer;
 };

@@ -7,6 +7,8 @@
 #include "point_set_renderer.h"
 #include "halfedge_renderer.h"
 #include "tri_renderer.h"
+#include "color_mode.h"
+#include "render_mode.h"
 
 using namespace UM;
 using json = nlohmann::json;
@@ -88,7 +90,7 @@ struct TriModel final : public Model {
         return colorMode;
     }
 
-    void setColorMode(Model::ColorMode mode) override {
+    void setColorMode(ColorMode mode) override {
         _triRenderer.setColorMode(mode);
         _pointSetRenderer.setColorMode(mode);
         // _halfedgeRenderer.setColorMode(mode);
@@ -192,7 +194,7 @@ struct TriModel final : public Model {
         return fragRenderMode;
     }
 
-    void setFragRenderMode(Model::RenderMode mode) override {
+    void setFragRenderMode(RenderMode mode) override {
         _triRenderer.setFragRenderMode(mode);
         fragRenderMode = mode;
     }

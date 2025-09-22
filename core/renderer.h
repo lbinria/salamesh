@@ -1,8 +1,10 @@
 #pragma once
 
-#include "model.h"
+#include "color_mode.h"
+#include "render_mode.h"
 #include "element.h"
 #include "shader.h"
+#include "attribute.h"
 #include "../include/glm/glm.hpp"
 
 
@@ -51,7 +53,7 @@ struct IRenderer {
 		shader.setInt("filterElement", element);
 	}
 
-	void setColorMode(Model::ColorMode mode) {
+	void setColorMode(ColorMode mode) {
 		shader.use();
 		shader.setInt("colorMode", mode);
 	}
@@ -104,7 +106,7 @@ struct IRenderer {
 	}
 
 	// Only on mesh ?
-	void setFragRenderMode(Model::RenderMode mode) {
+	void setFragRenderMode(RenderMode mode) {
 		shader.use();
 		shader.setInt("fragRenderMode", mode);
 	}

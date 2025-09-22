@@ -7,6 +7,8 @@
 #include "point_set_renderer.h"
 #include "halfedge_renderer.h"
 #include "hex_renderer.h"
+#include "color_mode.h"
+#include "render_mode.h"
 
 using namespace UM;
 using json = nlohmann::json;
@@ -89,7 +91,7 @@ struct HexModel final : public Model {
         return colorMode;
     }
 
-    void setColorMode(Model::ColorMode mode) override {
+    void setColorMode(ColorMode mode) override {
         _hexRenderer.setColorMode(mode);
         _pointSetRenderer.setColorMode(mode);
         _halfedgeRenderer.setColorMode(mode);
@@ -193,7 +195,7 @@ struct HexModel final : public Model {
         return fragRenderMode;
     }
 
-    void setFragRenderMode(Model::RenderMode mode) override {
+    void setFragRenderMode(RenderMode mode) override {
         _hexRenderer.setFragRenderMode(mode);
         fragRenderMode = mode;
     }

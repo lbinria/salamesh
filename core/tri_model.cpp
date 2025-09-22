@@ -84,7 +84,7 @@ void TriModel::push() {
 	_pointSetRenderer.push();
 	// _halfedgeRenderer.push();
 
-	if (colorMode == Model::ColorMode::ATTRIBUTE) {
+	if (colorMode == ColorMode::ATTRIBUTE) {
 		updateAttr();
 	}
 }

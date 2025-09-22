@@ -51,7 +51,7 @@ struct SurfaceModel : public Model {
 			model_state["position"][2].get<float>()
 		);
 		
-		setColorMode((Model::ColorMode)model_state["color_mode"].get<int>());
+		setColorMode((ColorMode)model_state["color_mode"].get<int>());
 
 		setLight(model_state["is_light_enabled"].get<bool>());
 		setLightFollowView(model_state["is_light_follow_view"].get<bool>());
@@ -130,7 +130,7 @@ struct SurfaceModel : public Model {
 		return colorMode;
 	}
 
-	void setColorMode(Model::ColorMode mode) override {
+	void setColorMode(ColorMode mode) override {
 		_surfaceRenderer->shader.setColorMode(mode);
 		_pointSetRenderer.setColorMode(mode);
 		// _halfedgeRenderer.setColorMode(mode);
@@ -234,7 +234,7 @@ struct SurfaceModel : public Model {
 		return fragRenderMode;
 	}
 
-	void setFragRenderMode(Model::RenderMode mode) override {
+	void setFragRenderMode(RenderMode mode) override {
 		_surfaceRenderer->shader.setFragRenderMode(mode);
 		fragRenderMode = mode;
 	}
@@ -373,8 +373,8 @@ struct SurfaceModel : public Model {
 	bool invertClipping = false;
 	float meshSize = 0.01f;
 	float meshShrink = 0.f;
-	Model::RenderMode fragRenderMode = Model::RenderMode::Color;
-	Model::ColorMode colorMode = Model::ColorMode::COLOR;
+	RenderMode fragRenderMode = RenderMode::Color;
+	ColorMode colorMode = ColorMode::COLOR;
 	glm::vec3 color{0.8f, 0.f, 0.2f};
 	
 	int selectedColormap = 0;

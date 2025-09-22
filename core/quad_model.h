@@ -7,6 +7,8 @@
 #include "point_set_renderer.h"
 #include "halfedge_renderer.h"
 #include "quad_renderer.h"
+#include "color_mode.h"
+#include "render_mode.h"
 
 using namespace UM;
 using json = nlohmann::json;
@@ -24,7 +26,7 @@ struct QuadModel final : public Model {
 
 
     ModelType getModelType() const override {
-        return ModelType::TRI;
+        return ModelType::QUAD;
     }
 
 
@@ -88,7 +90,7 @@ struct QuadModel final : public Model {
         return colorMode;
     }
 
-    void setColorMode(Model::ColorMode mode) override {
+    void setColorMode(ColorMode mode) override {
         _quadRenderer.setColorMode(mode);
         _pointSetRenderer.setColorMode(mode);
         // _halfedgeRenderer.setColorMode(mode);
@@ -192,7 +194,7 @@ struct QuadModel final : public Model {
         return fragRenderMode;
     }
 
-    void setFragRenderMode(Model::RenderMode mode) override {
+    void setFragRenderMode(RenderMode mode) override {
         _quadRenderer.setFragRenderMode(mode);
         fragRenderMode = mode;
     }
