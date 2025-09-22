@@ -58,9 +58,14 @@ struct IRenderer {
 		shader.setInt("colorMode", mode);
 	}
 
-	void setColor(glm::vec3 color) {
+	glm::vec3 getColor() const {
+		return color;
+	}
+
+	void setColor(glm::vec3 c) {
 		shader.use();
-		shader.setFloat3("color", color);
+		shader.setFloat3("color", c);
+		color = c;
 	}
 
 	void setLight(bool enabled) {
@@ -94,15 +99,25 @@ struct IRenderer {
 	}
 
 	// Only on mesh
+	float getMeshSize() const {
+		return meshSize;
+	}
+
 	void setMeshSize(float val) {
 		shader.use();
 		shader.setFloat("meshSize", val);
+		meshSize = val;
 	}
 
 	// Only on mesh
+	float getMeshShrink() const {
+		return meshShrink;
+	}
+
 	void setMeshShrink(float val) {
 		shader.use();
 		shader.setFloat("meshShrink", val);
+		meshShrink = val;
 	}
 
 	// Only on mesh ?
@@ -204,6 +219,10 @@ struct IRenderer {
 	protected:
 
 	bool visible = true;
+
+    glm::vec3 color{0.8f, 0.f, 0.2f};
+    float meshSize = 0.01f;
+    float meshShrink = 0.f;
 
 	unsigned int VAO, VBO; // Buffers
 	unsigned int bufBary, bufHighlight, bufAttr, bufFilter; // Sample buffers

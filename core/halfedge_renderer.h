@@ -36,30 +36,36 @@ struct HalfedgeRenderer : public IRenderer {
 	void render(glm::vec3 &position);
 	void clean();
 
+	// Rename to getThickness
 	float getEdgeSize() const {
 		return edgeSize;
 	}
 
+	// Rename to setThickness
 	void setEdgeSize(float size) {
 		shader.use();
 		shader.setFloat("uThickness", size);
 		edgeSize = size;
 	}
 
+	// Rename to getInsideColor
 	glm::vec3 getEdgeInsideColor() const {
 		return edgeInsideColor;
 	}
 
+	// Rename to setInsideColor
 	void setEdgeInsideColor(glm::vec3 color) {
 		shader.use();
 		shader.setFloat3("uColorInside", color);
 		edgeInsideColor = color;
 	}
 
+	// Rename to getOutsideColor
 	glm::vec3 getEdgeOutsideColor() const {
 		return edgeOutsideColor;
 	}
 
+	// Rename to setOutsideColor
 	void setEdgeOutsideColor(glm::vec3 color) {
 		shader.use();
 		shader.setFloat3("uColorOutside", color);

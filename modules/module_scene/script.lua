@@ -153,40 +153,46 @@ function draw_model_properties(model, view)
 				cur_model.mesh_visible = new_mesh_visible
 			end
 
-			local sel_color, new_color = imgui.ColorEdit3("Color", cur_model.color)
+			-- local sel_color, new_color = imgui.ColorEdit3("Color", cur_model.color)
+			-- if (sel_color) then 
+			-- 	print("Change color: " .. tostring(new_color))
+			-- 	cur_model.color = new_color
+			-- end
+
+			local sel_color, new_color = imgui.ColorEdit3("Color", cur_model.mesh.color)
 			if (sel_color) then 
 				print("Change color: " .. tostring(new_color))
-				cur_model.color = new_color
+				cur_model.mesh.color = new_color
 			end
 
-			local sel_slider_mesh_size, new_mesh_size = imgui.SliderFloat("Mesh size", cur_model.meshSize, 0, 1)
+			local sel_slider_mesh_size, new_mesh_size = imgui.SliderFloat("Mesh size", cur_model.mesh.size, 0, 1)
 			if (sel_slider_mesh_size) then 
 				print("Change mesh size: " .. tostring(new_mesh_size))
-				cur_model.meshSize = new_mesh_size
+				cur_model.mesh.size = new_mesh_size
 			end
 
-			local sel_slider_mesh_shrink, new_mesh_shrink = imgui.SliderFloat("Mesh shrink", cur_model.meshShrink, 0, 1)
+			local sel_slider_mesh_shrink, new_mesh_shrink = imgui.SliderFloat("Mesh shrink", cur_model.mesh.shrink, 0, 1)
 			if (sel_slider_mesh_shrink) then 
 				print("Change mesh shrink: " .. tostring(new_mesh_shrink))
-				cur_model.meshShrink = new_mesh_shrink
+				cur_model.mesh.shrink = new_mesh_shrink
 			end
 
-			local sel_point_visible, new_point_visible = imgui.Checkbox("Show points", cur_model.point_visible)
+			local sel_point_visible, new_point_visible = imgui.Checkbox("Show points", cur_model.points.visible)
 			if (sel_point_visible) then 
 				print("Change point visibility: " .. tostring(new_point_visible))
-				cur_model.point_visible = new_point_visible
+				cur_model.points.visible = new_point_visible
 			end
 
-			local sel_point_size, new_point_size = imgui.SliderFloat("Point size", cur_model.point_size, 0, 50)
+			local sel_point_size, new_point_size = imgui.SliderFloat("Point size", cur_model.points.size, 0, 50)
 			if (sel_point_size) then 
 				print("Change point size: " .. tostring(new_point_size))
-				cur_model.point_size = new_point_size
+				cur_model.points.size = new_point_size
 			end
 
-			local sel_point_color, new_point_color = imgui.ColorEdit3("Point color", cur_model.point_color)
+			local sel_point_color, new_point_color = imgui.ColorEdit3("Point color", cur_model.points.color)
 			if (sel_point_color) then 
 				-- print("Change point color: " .. tostring(new_point_color))
-				cur_model.point_color = new_point_color
+				cur_model.points.color = new_point_color
 			end
 
 			local sel_edge_visible, new_edge_visible = imgui.Checkbox("Show edge", cur_model.edge_visible)
@@ -195,10 +201,16 @@ function draw_model_properties(model, view)
 				cur_model.edge_visible = new_edge_visible
 			end
 
-			local sel_edge_size, new_edge_size = imgui.SliderFloat("Edge size", cur_model.edge_size, 0, 50)
-			if (sel_edge_size) then 
-				print("Change edge size: " .. tostring(new_edge_size))
-				cur_model.edge_size = new_edge_size
+			-- local sel_edge_size, new_edge_size = imgui.SliderFloat("Edge size", cur_model.edges.size, 0, 50)
+			-- if (sel_edge_size) then 
+			-- 	print("Change edge size: " .. tostring(new_edge_size))
+			-- 	cur_model.edges.size = new_edge_size
+			-- end
+
+			local sel_edge_size2, new_edge_size2 = imgui.SliderFloat("Edge size 2", cur_model.edge_size, 0, 50)
+			if (sel_edge_size2) then 
+				print("Change edge size: " .. tostring(new_edge_size2))
+				cur_model.edge_size = new_edge_size2
 			end
 
 			local sel_edge_inside_color, new_edge_inside_color = imgui.ColorEdit3("Edge inside color", cur_model.edge_inside_color)

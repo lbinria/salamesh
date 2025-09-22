@@ -72,8 +72,8 @@ struct Model {
         j["clipping_plane_point"] = { clippingPlanePoint.x, clippingPlanePoint.y, clippingPlanePoint.z };
         j["clipping_plane_normal"] = { clippingPlaneNormal.x, clippingPlaneNormal.y, clippingPlaneNormal.z };
         j["invert_clipping"] = invertClipping;
-        j["mesh_size"] = meshSize;
-        j["mesh_shrink"] = meshShrink;
+        j["mesh_size"] = getMesh().getMeshSize();
+        j["mesh_shrink"] = getMesh().getMeshShrink();
         j["frag_render_mode"] = fragRenderMode;
         j["selected_colormap"] = selectedColormap;
         j["visible"] = visible;
@@ -111,9 +111,9 @@ struct Model {
 
         setInvertClipping(model_state["invert_clipping"].get<bool>());
 
-        setMeshSize(model_state["mesh_size"].get<float>());
-        setMeshShrink(model_state["mesh_shrink"].get<float>());
-        
+        getMesh().setMeshSize(model_state["mesh_size"].get<float>());
+        getMesh().setMeshShrink(model_state["mesh_shrink"].get<float>());
+
         setSelectedColormap(model_state["selected_colormap"].get<int>());
         setVisible(model_state["visible"].get<bool>());
 
@@ -427,14 +427,14 @@ struct Model {
         colorMode = mode;
     }
 
-    glm::vec3 getColor() const {
-        return color;
-    }
+    // glm::vec3 getColor() const {
+    //     return color;
+    // }
 
-    void setColor(glm::vec3 c) {
-        _meshRenderer->setColor(c);
-        color = c;
-    }
+    // void setColor(glm::vec3 c) {
+    //     _meshRenderer->setColor(c);
+    //     color = c;
+    // }
 
     bool getLight() const {
         return isLightEnabled;
@@ -442,6 +442,8 @@ struct Model {
 
     void setLight(bool enabled) {
         _meshRenderer->setLight(enabled);
+        // _pointSetRenderer.setLight(enabled); 
+        // TODO _halfedgeRenderer->setLight(enabled); 
         isLightEnabled = enabled;
     }
 
@@ -494,31 +496,31 @@ struct Model {
         invertClipping = invert;
     }
 
-    float getMeshSize() const {
-        return meshSize;
-    }
+    // float getMeshSize() const {
+    //     return meshSize;
+    // }
 
-    void setMeshSize(float val) {
-        _meshRenderer->setMeshSize(val);
-        meshSize = val;
-    }
+    // void setMeshSize(float val) {
+    //     _meshRenderer->setMeshSize(val);
+    //     meshSize = val;
+    // }
 
-    float getMeshShrink() const {
-        return meshShrink;
-    }
+    // float getMeshShrink() const {
+    //     return meshShrink;
+    // }
 
-    void setMeshShrink(float val) {
-        _meshRenderer->setMeshShrink(val);
-        meshShrink = val;
-    }
+    // void setMeshShrink(float val) {
+    //     _meshRenderer->setMeshShrink(val);
+    //     meshShrink = val;
+    // }
 
-    bool getMeshVisible() const {
-        return _meshRenderer->getVisible();
-    }
+    // bool getMeshVisible() const {
+    //     return _meshRenderer->getVisible();
+    // }
 
-    void setMeshVisible(bool visible) {
-        return _meshRenderer->setVisible(visible);
-    }
+    // void setMeshVisible(bool visible) {
+    //     return _meshRenderer->setVisible(visible);
+    // }
 
     int getFragRenderMode() const {
         return fragRenderMode;
@@ -538,21 +540,21 @@ struct Model {
         selectedColormap = idx;
     }
 
-    glm::vec3 getPointColor() const {
-        return _pointSetRenderer.getColor();
-    }
+    // glm::vec3 getPointColor() const {
+    //     return _pointSetRenderer.getColor();
+    // }
 
-    void setPointColor(glm::vec3 color) {
-        _pointSetRenderer.setColor(color);
-    }
+    // void setPointColor(glm::vec3 color) {
+    //     _pointSetRenderer.setColor(color);
+    // }
 
-    float getPointSize() const {
-        return _pointSetRenderer.getPointSize();
-    }
+    // float getPointSize() const {
+    //     return _pointSetRenderer.getPointSize();
+    // }
 
-    void setPointSize(float size) {
-        _pointSetRenderer.setPointSize(size);
-    }
+    // void setPointSize(float size) {
+    //     _pointSetRenderer.setPointSize(size);
+    // }
 
     float getEdgeSize() const {
         if (_halfedgeRenderer.has_value())
@@ -594,13 +596,13 @@ struct Model {
         _meshRenderer->setMeshIndex(index);
     }
 
-    bool getPointVisible() const {
-        return _pointSetRenderer.getVisible();
-    }
+    // bool getPointVisible() const {
+    //     return _pointSetRenderer.getVisible();
+    // }
 
-    void setPointVisible(bool v) {
-        _pointSetRenderer.setVisible(v);
-    }
+    // void setPointVisible(bool v) {
+    //     _pointSetRenderer.setVisible(v);
+    // }
 
     bool getEdgeVisible() const {
         return _halfedgeRenderer.has_value() && _halfedgeRenderer.value().getVisible();
@@ -661,12 +663,16 @@ struct Model {
         return _pointSetRenderer;
     }
 
-    std::optional<HalfedgeRenderer>& getHalfedges() {
+    std::optional<HalfedgeRenderer>& getEdges() {
         return _halfedgeRenderer;
     }
 
-    std::unique_ptr<IRenderer>& getMesh() {
-        return _meshRenderer;
+    IRenderer& getMesh() const {
+        // Warning, I do that here because I have the garantee that _meshRenderer is always initialized
+        // If _meshRenderer is uninitialized, this will throw a segfault
+        // (I don't want to transfer ownership)
+        // Maybe there is a better way to do that
+        return *_meshRenderer;
     }
 
     protected:
@@ -691,12 +697,12 @@ struct Model {
     glm::vec3 clippingPlaneNormal{0.f, 0.f, 1.f};
     bool invertClipping = false;
 
-    float meshSize = 0.01f;
-    float meshShrink = 0.f;
+    // float meshSize = 0.01f;
+    // float meshShrink = 0.f;
     
     RenderMode fragRenderMode = RenderMode::Color;
     ColorMode colorMode = ColorMode::COLOR;
-    glm::vec3 color{0.8f, 0.f, 0.2f};
+    // glm::vec3 color{0.8f, 0.f, 0.2f};
     
     int selectedColormap = 0;
 

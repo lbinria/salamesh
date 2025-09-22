@@ -55,6 +55,7 @@ namespace bindings {
 
 
 			sol::usertype<PointSetRenderer> pointSetRenderer_t = lua.new_usertype<PointSetRenderer>("PointSetRenderer");
+
 			pointSetRenderer_t["visible"] = sol::property(
 				&PointSetRenderer::getVisible,
 				&PointSetRenderer::setVisible
@@ -67,6 +68,48 @@ namespace bindings {
 				&PointSetRenderer::getPointSize,
 				&PointSetRenderer::setPointSize
 			);
+
+			sol::usertype<HalfedgeRenderer> halfedgeRenderer_t = lua.new_usertype<HalfedgeRenderer>("HalfedgeRenderer");
+
+			halfedgeRenderer_t["visible"] = sol::property(
+				&HalfedgeRenderer::getVisible,
+				&HalfedgeRenderer::setVisible
+			);
+			halfedgeRenderer_t["inside_color"] = sol::property(
+				&HalfedgeRenderer::getEdgeInsideColor,
+				&HalfedgeRenderer::setEdgeInsideColor
+			);
+			halfedgeRenderer_t["outside_color"] = sol::property(
+				&HalfedgeRenderer::getEdgeOutsideColor,
+				&HalfedgeRenderer::setEdgeOutsideColor
+			);
+			halfedgeRenderer_t["size"] = sol::property(
+				&HalfedgeRenderer::getEdgeSize,
+				&HalfedgeRenderer::setEdgeSize
+			);
+
+			sol::usertype<IRenderer> meshRenderer_t = lua.new_usertype<IRenderer>("MeshRenderer");
+
+			meshRenderer_t["visible"] = sol::property(
+				&IRenderer::getVisible,
+				&IRenderer::setVisible
+			);
+
+			meshRenderer_t["color"] = sol::property(
+				&IRenderer::getColor,
+				&IRenderer::setColor
+			);
+
+			meshRenderer_t["size"] = sol::property(
+				&IRenderer::getMeshSize,
+				&IRenderer::setMeshSize
+			);
+			meshRenderer_t["shrink"] = sol::property(
+				&IRenderer::getMeshShrink,
+				&IRenderer::setMeshShrink
+			);
+
+
 
 			sol::usertype<Model> model_t = lua.new_usertype<Model>("Model");
 
@@ -89,10 +132,10 @@ namespace bindings {
 				&Model::setVisible
 			);
 
-			model_t["color"] = sol::property(
-				&Model::getColor,
-				&Model::setColor
-			);
+			// model_t["color"] = sol::property(
+			// 	&Model::getColor,
+			// 	&Model::setColor
+			// );
 
 			model_t["position"] = sol::property(
 				&Model::getPosition,
@@ -108,9 +151,6 @@ namespace bindings {
 				&Model::setLight
 			);
 
-			// model_t.set_function("getLight", &Model::getLight);
-			// model_t.set_function("setLight", &Model::setLight);
-
 			model_t["is_light_follow_view"] = sol::property(
 				&Model::getLightFollowView,
 				&Model::setLightFollowView
@@ -120,9 +160,6 @@ namespace bindings {
 				&Model::getClipping,
 				&Model::setClipping
 			);
-
-			// model_t.set_function("getClipping", &Model::getClipping);
-			// model_t.set_function("setClipping", &Model::setClipping);
 
 			model_t["clipping_plane_point"] = sol::property(
 				&Model::getClippingPlanePoint,
@@ -139,37 +176,40 @@ namespace bindings {
 				&Model::setInvertClipping
 			);
 
+			// Renderers accesses
 			model_t["points"] = sol::readonly_property(&Model::getPoints);
+			model_t["edges"] = sol::readonly_property(&Model::getEdges);
+			model_t["mesh"] = sol::readonly_property(&Model::getMesh);
 
-			model_t["meshSize"] = sol::property(
-				&Model::getMeshSize,
-				&Model::setMeshSize
-			);
+			// model_t["meshSize"] = sol::property(
+			// 	&Model::getMeshSize,
+			// 	&Model::setMeshSize
+			// );
 
-			model_t["meshShrink"] = sol::property(
-				&Model::getMeshShrink,
-				&Model::setMeshShrink
-			);
+			// model_t["meshShrink"] = sol::property(
+			// 	&Model::getMeshShrink,
+			// 	&Model::setMeshShrink
+			// );
 
-			model_t["mesh_visible"] = sol::property(
-				&Model::getMeshVisible,
-				&Model::setMeshVisible
-			);
+			// model_t["mesh_visible"] = sol::property(
+			// 	&Model::getMeshVisible,
+			// 	&Model::setMeshVisible
+			// );
 
-			model_t["point_color"] = sol::property(
-				&Model::getPointColor,
-				&Model::setPointColor
-			);
+			// model_t["point_color"] = sol::property(
+			// 	&Model::getPointColor,
+			// 	&Model::setPointColor
+			// );
 
-			model_t["point_size"] = sol::property(
-				&Model::getPointSize,
-				&Model::setPointSize
-			);
+			// model_t["point_size"] = sol::property(
+			// 	&Model::getPointSize,
+			// 	&Model::setPointSize
+			// );
 
-			model_t["point_visible"] = sol::property(
-				&Model::getPointVisible,
-				&Model::setPointVisible
-			);
+			// model_t["point_visible"] = sol::property(
+			// 	&Model::getPointVisible,
+			// 	&Model::setPointVisible
+			// );
 
 			model_t["edge_size"] = sol::property(
 				&Model::getEdgeSize,
