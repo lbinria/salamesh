@@ -30,14 +30,14 @@ struct Model {
         HYBRID = 6 
     };
 
-    Model(std::unique_ptr<IRenderer> meshRenderer, PointSetRenderer pointSetRenderer, std::optional<HalfedgeRenderer> halfedgeRenderer) :
+    Model(std::unique_ptr<IRenderer> meshRenderer, PointSetRenderer pointSetRenderer, std::shared_ptr<HalfedgeRenderer> halfedgeRenderer) :
     _name(""),
     _path(""),
     _meshRenderer(std::move(meshRenderer)),
     _pointSetRenderer(std::move(pointSetRenderer)),
     _halfedgeRenderer(std::move(halfedgeRenderer)) {}
 
-    Model(std::unique_ptr<IRenderer> meshRenderer, PointSetRenderer pointSetRenderer, std::optional<HalfedgeRenderer> halfedgeRenderer, std::string name) : 
+    Model(std::unique_ptr<IRenderer> meshRenderer, PointSetRenderer pointSetRenderer, std::shared_ptr<HalfedgeRenderer> halfedgeRenderer, std::string name) : 
     _name(name), 
     _path(""),
     _meshRenderer(std::move(meshRenderer)),
@@ -133,15 +133,15 @@ struct Model {
 	void init() {
 		_meshRenderer->init();
 		_pointSetRenderer.init();
-        if (_halfedgeRenderer.has_value())
-            _halfedgeRenderer.value().init();
+        if (_halfedgeRenderer != nullptr)
+            _halfedgeRenderer->init();
 	}
 
     void push() {
         _meshRenderer->push();
         _pointSetRenderer.push();
-        if (_halfedgeRenderer.has_value())
-            _halfedgeRenderer.value().push();
+        if (_halfedgeRenderer != nullptr)
+            _halfedgeRenderer->push();
 
         if (colorMode == ColorMode::ATTRIBUTE) {
             updateAttr();
@@ -156,72 +156,26 @@ struct Model {
 
         _meshRenderer->render(pos);
         _pointSetRenderer.render(pos);
-        if (_halfedgeRenderer.has_value())
-            _halfedgeRenderer.value().render(pos);
+        if (_halfedgeRenderer != nullptr)
+            _halfedgeRenderer->render(pos);
 	}
 
     void clean() {
 		_meshRenderer->clean();
         _pointSetRenderer.clean();
-        if (_halfedgeRenderer.has_value())
-            _halfedgeRenderer.value().clean();
+        if (_halfedgeRenderer != nullptr)
+            _halfedgeRenderer->clean();
 	}
 
-
+    // Mesh info
     virtual int nverts() const = 0; 
     virtual int nfacets() const = 0; 
     virtual int ncells() const = 0; 
 
-    // General shader uniforms
-    // virtual void setTexture(unsigned int tex) = 0;
-    
-	// virtual void setHighlight(int idx, float highlight) = 0;
-	// virtual void setHighlight(std::vector<float> highlights) = 0;
-    // virtual void setPointHighlight(int idx, float highlight) = 0;
-    // virtual void setPointHighlight(std::vector<float> highlights) = 0;
-    // TODO setEdgeHighlight
+
 
     virtual void setFilter(int idx, bool filter) = 0;
-    // TODO setFacetFilter
-    // TODO setPointFilter
-    // TODO setEdgeFilter
 
-    // virtual int getColorMode() const = 0;
-    // virtual void setColorMode(ColorMode mode) = 0;
-    // virtual glm::vec3 getColor() const = 0;
-    // virtual void setColor(glm::vec3 c) = 0;
-
-    // virtual bool getLight() const = 0;
-    // virtual void setLight(bool enabled) = 0;
-    // virtual bool getLightFollowView() const = 0;
-    // virtual void setLightFollowView(bool follow) = 0;
-    // virtual bool getClipping() const = 0;
-    // virtual void setClipping(bool enabled) = 0;
-    // virtual glm::vec3 getClippingPlanePoint() const = 0;
-    // virtual void setClippingPlanePoint(glm::vec3 p) = 0;
-    // virtual glm::vec3 getClippingPlaneNormal() const = 0;
-    // virtual void setClippingPlaneNormal(glm::vec3 n) = 0;
-    // virtual bool getInvertClipping() const = 0;
-    // virtual void setInvertClipping(bool invert) = 0;
-    // virtual float getMeshSize() const = 0;
-    // virtual void setMeshSize(float val) = 0;
-    // virtual float getMeshShrink() const = 0;
-    // virtual void setMeshShrink(float val) = 0;
-    // virtual int getFragRenderMode() const = 0;
-    // virtual void setFragRenderMode(RenderMode mode) = 0;
-
-    // virtual glm::vec3 getPointColor() const = 0;
-    // virtual void setPointColor(glm::vec3 color) = 0;
-    // virtual float getPointSize() const = 0;
-    // virtual void setPointSize(float size) = 0;
-
-
-    // virtual float getEdgeSize() const = 0;
-    // virtual void setEdgeSize(float size) = 0;
-    // virtual glm::vec3 getEdgeInsideColor() const  = 0;
-    // virtual void setEdgeInsideColor(glm::vec3 color)  = 0;
-    // virtual glm::vec3 getEdgeOutsideColor() const  = 0;
-    // virtual void setEdgeOutsideColor(glm::vec3 color) = 0;
 
     void addAttr(ElementKind kind, NamedContainer &container) {
         
@@ -364,10 +318,6 @@ struct Model {
         return a;
     }
 
-
-    // Model (maybe not virtual !)
-    // virtual void setMeshIndex(int index) = 0;
-
     glm::vec3 getPosition() const {
         return position;
     }
@@ -383,13 +333,6 @@ struct Model {
     void setVisible(bool v) {
         visible = v;
     }
-    
-    // virtual bool getMeshVisible() const = 0;
-    // virtual void setMeshVisible(bool v) = 0;    
-    // virtual bool getPointVisible() const = 0;
-    // virtual void setPointVisible(bool v) = 0;
-    // virtual bool getEdgeVisible() const = 0;
-    // virtual void setEdgeVisible(bool v) = 0;
 
     std::shared_ptr<Model> getParent() const {
         return parent;
@@ -411,8 +354,8 @@ struct Model {
     void setTexture(unsigned int tex) {
         _meshRenderer->setTexture(tex);
         _pointSetRenderer.setTexture(tex);
-        if (_halfedgeRenderer.has_value())
-            _halfedgeRenderer.value().setTexture(tex);
+        if (_halfedgeRenderer != nullptr)
+            _halfedgeRenderer->setTexture(tex);
     }
 
     int getColorMode() const {
@@ -422,19 +365,10 @@ struct Model {
     void setColorMode(ColorMode mode) {
         _meshRenderer->setColorMode(mode);
         _pointSetRenderer.setColorMode(mode);
-        if (_halfedgeRenderer.has_value())
-            _halfedgeRenderer.value().setColorMode(mode);
+        if (_halfedgeRenderer != nullptr)
+            _halfedgeRenderer->setColorMode(mode);
         colorMode = mode;
     }
-
-    // glm::vec3 getColor() const {
-    //     return color;
-    // }
-
-    // void setColor(glm::vec3 c) {
-    //     _meshRenderer->setColor(c);
-    //     color = c;
-    // }
 
     bool getLight() const {
         return isLightEnabled;
@@ -496,32 +430,6 @@ struct Model {
         invertClipping = invert;
     }
 
-    // float getMeshSize() const {
-    //     return meshSize;
-    // }
-
-    // void setMeshSize(float val) {
-    //     _meshRenderer->setMeshSize(val);
-    //     meshSize = val;
-    // }
-
-    // float getMeshShrink() const {
-    //     return meshShrink;
-    // }
-
-    // void setMeshShrink(float val) {
-    //     _meshRenderer->setMeshShrink(val);
-    //     meshShrink = val;
-    // }
-
-    // bool getMeshVisible() const {
-    //     return _meshRenderer->getVisible();
-    // }
-
-    // void setMeshVisible(bool visible) {
-    //     return _meshRenderer->setVisible(visible);
-    // }
-
     int getFragRenderMode() const {
         return fragRenderMode;
     }
@@ -540,102 +448,33 @@ struct Model {
         selectedColormap = idx;
     }
 
-    // glm::vec3 getPointColor() const {
-    //     return _pointSetRenderer.getColor();
-    // }
-
-    // void setPointColor(glm::vec3 color) {
-    //     _pointSetRenderer.setColor(color);
-    // }
-
-    // float getPointSize() const {
-    //     return _pointSetRenderer.getPointSize();
-    // }
-
-    // void setPointSize(float size) {
-    //     _pointSetRenderer.setPointSize(size);
-    // }
-
-    float getEdgeSize() const {
-        if (_halfedgeRenderer.has_value())
-            return _halfedgeRenderer.value().getEdgeSize();
-        else
-            return 0.0f;
-    }
-
-    void setEdgeSize(float size) {
-        if (_halfedgeRenderer.has_value())
-            _halfedgeRenderer.value().setEdgeSize(size);
-    }
-
-    glm::vec3 getEdgeInsideColor() const {
-        if (_halfedgeRenderer.has_value())
-            return _halfedgeRenderer.value().getEdgeInsideColor();
-        else
-            return glm::vec3(0);
-    }
-
-    void setEdgeInsideColor(glm::vec3 color) {
-        if (_halfedgeRenderer.has_value())
-            _halfedgeRenderer.value().setEdgeInsideColor(color);
-    }
-
-    glm::vec3 getEdgeOutsideColor() const {
-        if (_halfedgeRenderer.has_value())
-            return _halfedgeRenderer.value().getEdgeOutsideColor();
-        else
-            return glm::vec3(0);
-    }
-
-    void setEdgeOutsideColor(glm::vec3 color) {
-        if (_halfedgeRenderer.has_value())
-            _halfedgeRenderer.value().setEdgeOutsideColor(color);
-    }
-
     void setMeshIndex(int index) {
         _meshRenderer->setMeshIndex(index);
     }
 
-    // bool getPointVisible() const {
-    //     return _pointSetRenderer.getVisible();
+    // void setHighlight(int idx, float highlight) {
+    //     _meshRenderer->setHighlight(idx, highlight);
     // }
 
-    // void setPointVisible(bool v) {
-    //     _pointSetRenderer.setVisible(v);
+    // void setHighlight(std::vector<float> highlights) {
+    //     _meshRenderer->setHighlight(highlights);
     // }
 
-    bool getEdgeVisible() const {
-        return _halfedgeRenderer.has_value() && _halfedgeRenderer.value().getVisible();
-    }
+    // void setFacetHighlight(int idx, float highlight) {
+    //     // _meshRenderer->setFacetHighlight(idx, highlight);
+    // }
 
-    void setEdgeVisible(bool v) {
-        if (_halfedgeRenderer.has_value())
-            _halfedgeRenderer.value().setVisible(v);
-    }
+    // void setFacetHighlight(std::vector<float> highlights) {
+    //     // _meshRenderer->setFacetHighlight(highlights);
+    // }
 
-    void setHighlight(int idx, float highlight) {
-        _meshRenderer->setHighlight(idx, highlight);
-    }
+    // void setPointHighlight(int idx, float highlight) {
+    //     _pointSetRenderer.setHighlight(idx, highlight);
+    // }
 
-    void setHighlight(std::vector<float> highlights) {
-        _meshRenderer->setHighlight(highlights);
-    }
-
-    void setFacetHighlight(int idx, float highlight) {
-        // _meshRenderer->setFacetHighlight(idx, highlight);
-    }
-
-    void setFacetHighlight(std::vector<float> highlights) {
-        // _meshRenderer->setFacetHighlight(highlights);
-    }
-
-    void setPointHighlight(int idx, float highlight) {
-        _pointSetRenderer.setHighlight(idx, highlight);
-    }
-
-    void setPointHighlight(std::vector<float> highlights) {
-        _pointSetRenderer.setHighlight(highlights);
-    }
+    // void setPointHighlight(std::vector<float> highlights) {
+    //     _pointSetRenderer.setHighlight(highlights);
+    // }
 
     void setSelectedAttr(int idx) {
 
@@ -663,7 +502,7 @@ struct Model {
         return _pointSetRenderer;
     }
 
-    std::optional<HalfedgeRenderer>& getEdges() {
+    std::shared_ptr<HalfedgeRenderer> getEdges() {
         return _halfedgeRenderer;
     }
 
@@ -696,18 +535,16 @@ struct Model {
     glm::vec3 clippingPlanePoint{0.f, 0.f, 0.f};
     glm::vec3 clippingPlaneNormal{0.f, 0.f, 1.f};
     bool invertClipping = false;
-
-    // float meshSize = 0.01f;
-    // float meshShrink = 0.f;
     
     RenderMode fragRenderMode = RenderMode::Color;
     ColorMode colorMode = ColorMode::COLOR;
-    // glm::vec3 color{0.8f, 0.f, 0.2f};
     
     int selectedColormap = 0;
 
     // Renderers
     std::unique_ptr<IRenderer> _meshRenderer;
     PointSetRenderer _pointSetRenderer;
-    std::optional<HalfedgeRenderer> _halfedgeRenderer;
+    // std::optional<std::shared_ptr<HalfedgeRenderer>> _halfedgeRenderer;
+    std::shared_ptr<HalfedgeRenderer> _halfedgeRenderer;
+
 };

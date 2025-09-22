@@ -20,7 +20,7 @@ struct TriModel final : public Model {
 
 	TriModel() : 
         _tri(), 
-        Model::Model(std::make_unique<TriRenderer>(_tri), PointSetRenderer(_tri.points), std::nullopt)
+        Model::Model(std::make_unique<TriRenderer>(_tri), PointSetRenderer(_tri.points), nullptr)
     {}
 
 

@@ -36,12 +36,13 @@ void MyApp::loadModel(const std::string& filename) {
 
 	model->setMeshIndex(models.size());
 	model->setLight(true);
-	// model->setMeshShrink(0.f);
-	// model->setMeshSize(0.0f);
+
 	model->getMesh().setMeshShrink(0.f);
 	model->getMesh().setMeshSize(0.0f);
 	model->setColorMode(ColorMode::COLOR);
-	model->setEdgeVisible(false);
+	
+	if (model->getEdges() != nullptr)
+		model->getEdges()->setVisible(false);
 
 	models.push_back(std::move(model));	
 

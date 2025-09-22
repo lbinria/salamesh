@@ -21,7 +21,7 @@ struct QuadModel final : public Model {
 	QuadModel() : 
         _quad(), 
         // _quadRenderer(_quad), 
-        Model::Model(std::make_unique<QuadRenderer>(_quad), PointSetRenderer(_quad.points), std::nullopt)
+        Model::Model(std::make_unique<QuadRenderer>(_quad), PointSetRenderer(_quad.points), nullptr)
     {}
 
 

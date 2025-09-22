@@ -147,17 +147,11 @@ function draw_model_properties(model, view)
 
 		if (imgui.CollapsingHeader("Style##" .. cur_model.name .. "_properties_style")) then 
 
-			local sel_mesh_visible, new_mesh_visible = imgui.Checkbox("Show mesh", cur_model.mesh_visible)
+			local sel_mesh_visible, new_mesh_visible = imgui.Checkbox("Show mesh", cur_model.mesh.visible)
 			if (sel_mesh_visible) then 
 				print("Change mesh visibility: " .. tostring(new_mesh_visible))
-				cur_model.mesh_visible = new_mesh_visible
+				cur_model.mesh.visible = new_mesh_visible
 			end
-
-			-- local sel_color, new_color = imgui.ColorEdit3("Color", cur_model.color)
-			-- if (sel_color) then 
-			-- 	print("Change color: " .. tostring(new_color))
-			-- 	cur_model.color = new_color
-			-- end
 
 			local sel_color, new_color = imgui.ColorEdit3("Color", cur_model.mesh.color)
 			if (sel_color) then 
@@ -195,48 +189,31 @@ function draw_model_properties(model, view)
 				cur_model.points.color = new_point_color
 			end
 
-			local sel_edge_visible, new_edge_visible = imgui.Checkbox("Show edge", cur_model.edge_visible)
+			local sel_edge_visible, new_edge_visible = imgui.Checkbox("Show edges", cur_model.edges.visible)
 			if (sel_edge_visible) then 
 				print("Change edge visibility: " .. tostring(new_edge_visible))
-				cur_model.edge_visible = new_edge_visible
+				cur_model.edges.visible = new_edge_visible
 			end
 
-			-- local sel_edge_size, new_edge_size = imgui.SliderFloat("Edge size", cur_model.edges.size, 0, 50)
-			-- if (sel_edge_size) then 
-			-- 	print("Change edge size: " .. tostring(new_edge_size))
-			-- 	cur_model.edges.size = new_edge_size
-			-- end
-
-			local sel_edge_size2, new_edge_size2 = imgui.SliderFloat("Edge size 2", cur_model.edge_size, 0, 50)
-			if (sel_edge_size2) then 
-				print("Change edge size: " .. tostring(new_edge_size2))
-				cur_model.edge_size = new_edge_size2
+			local sel_edge_size, new_edge_size = imgui.SliderFloat("Edge size", cur_model.edges.size, 0, 50)
+			if (sel_edge_size) then 
+				print("Change edge size: " .. tostring(new_edge_size))
+				cur_model.edges.size = new_edge_size
 			end
 
-			local sel_edge_inside_color, new_edge_inside_color = imgui.ColorEdit3("Edge inside color", cur_model.edge_inside_color)
+			local sel_edge_inside_color, new_edge_inside_color = imgui.ColorEdit3("Edge inside color", cur_model.edges.inside_color)
 			if (sel_edge_inside_color) then 
 				print("Change edge inside color: " .. tostring(new_edge_inside_color))
-				cur_model.edge_inside_color = new_edge_inside_color
+				cur_model.edges.inside_color = new_edge_inside_color
 			end
 
-			local sel_edge_outside_color, new_edge_outside_color = imgui.ColorEdit3("Edge outside color", cur_model.edge_outside_color)
+			local sel_edge_outside_color, new_edge_outside_color = imgui.ColorEdit3("Edge outside color", cur_model.edges.outside_color)
 			if (sel_edge_outside_color) then 
 				print("Change edge outside color: " .. tostring(new_edge_outside_color))
-				cur_model.edge_outside_color = new_edge_outside_color
+				cur_model.edges.outside_color = new_edge_outside_color
 			end
 
 		end
-
-		-- if (imgui.BeginCombo("Pick Mode", app.pick_mode_strings[app.pick_mode + 1])) then
-		-- 	for i = 1, #app.pick_mode_strings do
-		-- 		local is_selected = (i - 1) == app.pick_mode
-		-- 		if (imgui.Selectable(app.pick_mode_strings[i], is_selected)) then
-		-- 			print("Change pick mode to: " .. app.pick_mode_strings[i])
-		-- 			app.pick_mode = i - 1
-		-- 		end
-		-- 	end
-		-- 	imgui.EndCombo()
-		-- end
 
 		if (imgui.CollapsingHeader("Attributes##" .. cur_model.name .. "_properties_attributes")) then 
 

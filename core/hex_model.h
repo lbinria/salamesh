@@ -21,7 +21,7 @@ struct HexModel final : public Model {
 
 	HexModel() : 
         _m(), 
-        Model::Model(std::make_unique<HexRenderer>(_m), PointSetRenderer(_m.points), std::make_optional<HalfedgeRenderer>(_m))
+        Model::Model(std::make_unique<HexRenderer>(_m), PointSetRenderer(_m.points),  std::make_shared<HalfedgeRenderer>(_m))
         {}
 
     ModelType getModelType() const override {

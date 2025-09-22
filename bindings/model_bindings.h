@@ -211,25 +211,25 @@ namespace bindings {
 			// 	&Model::setPointVisible
 			// );
 
-			model_t["edge_size"] = sol::property(
-				&Model::getEdgeSize,
-				&Model::setEdgeSize
-			);
+			// model_t["edge_size"] = sol::property(
+			// 	&Model::getEdgeSize,
+			// 	&Model::setEdgeSize
+			// );
 
-			model_t["edge_inside_color"] = sol::property(
-				&Model::getEdgeInsideColor,
-				&Model::setEdgeInsideColor
-			);
+			// model_t["edge_inside_color"] = sol::property(
+			// 	&Model::getEdgeInsideColor,
+			// 	&Model::setEdgeInsideColor
+			// );
 
-			model_t["edge_outside_color"] = sol::property(
-				&Model::getEdgeOutsideColor,
-				&Model::setEdgeOutsideColor
-			);
+			// model_t["edge_outside_color"] = sol::property(
+			// 	&Model::getEdgeOutsideColor,
+			// 	&Model::setEdgeOutsideColor
+			// );
 
-			model_t["edge_visible"] = sol::property(
-				&Model::getEdgeVisible,
-				&Model::setEdgeVisible
-			);
+			// model_t["edge_visible"] = sol::property(
+			// 	&Model::getEdgeVisible,
+			// 	&Model::setEdgeVisible
+			// );
 
 			model_t["color_mode_strings"] = sol::readonly_property(
 				&Model::getColorModeStrings

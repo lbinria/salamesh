@@ -21,7 +21,7 @@ struct TetModel final : public Model {
 
 	TetModel() : 
         _m(), 
-        Model::Model(std::make_unique<TetRenderer>(_m), PointSetRenderer(_m.points), std::nullopt) {
+        Model::Model(std::make_unique<TetRenderer>(_m), PointSetRenderer(_m.points), nullptr) {
         }
 
     ModelType getModelType() const override {
