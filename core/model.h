@@ -4,7 +4,6 @@
 #include "attribute.h"
 #include "renderer.h"
 #include "color_mode.h"
-#include "render_mode.h"
 #include "point_set_renderer.h"
 #include "halfedge_renderer.h"
 
@@ -74,7 +73,6 @@ struct Model {
         j["invert_clipping"] = invertClipping;
         j["mesh_size"] = getMesh().getMeshSize();
         j["mesh_shrink"] = getMesh().getMeshShrink();
-        j["frag_render_mode"] = fragRenderMode;
         j["selected_colormap"] = selectedColormap;
         j["visible"] = visible;
         return j.dump(4);
@@ -430,15 +428,6 @@ struct Model {
         invertClipping = invert;
     }
 
-    int getFragRenderMode() const {
-        return fragRenderMode;
-    }
-
-    void setFragRenderMode(RenderMode mode) {
-        _meshRenderer->setFragRenderMode(mode);
-        fragRenderMode = mode;
-    }
-
     int getSelectedColormap() const {
         return selectedColormap;
     }
@@ -451,30 +440,6 @@ struct Model {
     void setMeshIndex(int index) {
         _meshRenderer->setMeshIndex(index);
     }
-
-    // void setHighlight(int idx, float highlight) {
-    //     _meshRenderer->setHighlight(idx, highlight);
-    // }
-
-    // void setHighlight(std::vector<float> highlights) {
-    //     _meshRenderer->setHighlight(highlights);
-    // }
-
-    // void setFacetHighlight(int idx, float highlight) {
-    //     // _meshRenderer->setFacetHighlight(idx, highlight);
-    // }
-
-    // void setFacetHighlight(std::vector<float> highlights) {
-    //     // _meshRenderer->setFacetHighlight(highlights);
-    // }
-
-    // void setPointHighlight(int idx, float highlight) {
-    //     _pointSetRenderer.setHighlight(idx, highlight);
-    // }
-
-    // void setPointHighlight(std::vector<float> highlights) {
-    //     _pointSetRenderer.setHighlight(highlights);
-    // }
 
     void setSelectedAttr(int idx) {
 
@@ -536,7 +501,6 @@ struct Model {
     glm::vec3 clippingPlaneNormal{0.f, 0.f, 1.f};
     bool invertClipping = false;
     
-    RenderMode fragRenderMode = RenderMode::Color;
     ColorMode colorMode = ColorMode::COLOR;
     
     int selectedColormap = 0;

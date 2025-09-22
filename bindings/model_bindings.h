@@ -132,11 +132,6 @@ namespace bindings {
 				&Model::setVisible
 			);
 
-			// model_t["color"] = sol::property(
-			// 	&Model::getColor,
-			// 	&Model::setColor
-			// );
-
 			model_t["position"] = sol::property(
 				&Model::getPosition,
 				&Model::setPosition
@@ -181,55 +176,6 @@ namespace bindings {
 			model_t["edges"] = sol::readonly_property(&Model::getEdges);
 			model_t["mesh"] = sol::readonly_property(&Model::getMesh);
 
-			// model_t["meshSize"] = sol::property(
-			// 	&Model::getMeshSize,
-			// 	&Model::setMeshSize
-			// );
-
-			// model_t["meshShrink"] = sol::property(
-			// 	&Model::getMeshShrink,
-			// 	&Model::setMeshShrink
-			// );
-
-			// model_t["mesh_visible"] = sol::property(
-			// 	&Model::getMeshVisible,
-			// 	&Model::setMeshVisible
-			// );
-
-			// model_t["point_color"] = sol::property(
-			// 	&Model::getPointColor,
-			// 	&Model::setPointColor
-			// );
-
-			// model_t["point_size"] = sol::property(
-			// 	&Model::getPointSize,
-			// 	&Model::setPointSize
-			// );
-
-			// model_t["point_visible"] = sol::property(
-			// 	&Model::getPointVisible,
-			// 	&Model::setPointVisible
-			// );
-
-			// model_t["edge_size"] = sol::property(
-			// 	&Model::getEdgeSize,
-			// 	&Model::setEdgeSize
-			// );
-
-			// model_t["edge_inside_color"] = sol::property(
-			// 	&Model::getEdgeInsideColor,
-			// 	&Model::setEdgeInsideColor
-			// );
-
-			// model_t["edge_outside_color"] = sol::property(
-			// 	&Model::getEdgeOutsideColor,
-			// 	&Model::setEdgeOutsideColor
-			// );
-
-			// model_t["edge_visible"] = sol::property(
-			// 	&Model::getEdgeVisible,
-			// 	&Model::setEdgeVisible
-			// );
 
 			model_t["color_mode_strings"] = sol::readonly_property(
 				&Model::getColorModeStrings

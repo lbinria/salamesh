@@ -2,7 +2,6 @@
 
 #include "renderer.h"
 #include "color_mode.h"
-#include "render_mode.h"
 
 #include "shader.h"
 #include "vertex.h"

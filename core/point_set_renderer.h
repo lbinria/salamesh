@@ -5,7 +5,6 @@
 #include <ultimaille/all.h>
 
 #include "color_mode.h"
-#include "render_mode.h"
 
 #include "renderer.h"
 

@@ -1,7 +1,6 @@
 #pragma once
 
 #include "color_mode.h"
-#include "render_mode.h"
 #include "element.h"
 #include "shader.h"
 #include "attribute.h"
@@ -118,12 +117,6 @@ struct IRenderer {
 		shader.use();
 		shader.setFloat("meshShrink", val);
 		meshShrink = val;
-	}
-
-	// Only on mesh ?
-	void setFragRenderMode(RenderMode mode) {
-		shader.use();
-		shader.setInt("fragRenderMode", mode);
 	}
 
 	void setSelectedColormap(int idx) {

@@ -8,7 +8,6 @@
 #include "halfedge_renderer.h"
 #include "tet_renderer.h"
 #include "color_mode.h"
-#include "render_mode.h"
 
 using namespace UM;
 using json = nlohmann::json;

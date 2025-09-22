@@ -21,8 +21,6 @@ in vec3 fragWorldPos;
 uniform bool is_light_enabled;
 uniform bool is_light_follow_view;
 
-uniform int fragRenderMode = 0;
-uniform int fragRenderMeshMode = 2;
 uniform float meshSize;
 
 uniform int clipping_mode = 0; // 0: cell, 1: std, 2: slice
@@ -151,13 +149,9 @@ void main()
         col = col * diffuse;
     }
 
-
-
-    if (fragRenderMode == 0 && (fragRenderMeshMode & 2) == 2) {
-        // Render wireframe
-        if (fragHeights.x < meshSize || fragHeights.y < meshSize || fragHeights.z < meshSize) {
-            col = vec3(0,0,0);
-        }
+    // Wireframe
+    if (fragHeights.x < meshSize || fragHeights.y < meshSize || fragHeights.z < meshSize) {
+        col = vec3(0,0,0);
     }
 
     // Outputs

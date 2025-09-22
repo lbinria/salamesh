@@ -392,7 +392,6 @@ void App::start()
 
 		// Render scene
 		for (auto &model : models) {
-			model->setFragRenderMode(RenderMode::Color);
 			model->setTexture(colormaps[model->getSelectedColormap()]);
 			model->render();
 		}
@@ -416,7 +415,6 @@ void App::start()
 
 		// // Render scene
 		// for (auto &model : models) {
-		// 	model->setFragRenderMode(RenderMode::Color);
 		// 	model->setTexture(colormaps[model->getSelectedColormap()]);
 		// 	model->render();
 		// }
