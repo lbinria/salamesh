@@ -144,7 +144,14 @@ struct Model {
         if (colorMode == ColorMode::ATTRIBUTE) {
             updateAttr();
         }
+
+        // Push highlight and filter attributes if they exist
+        pushHighlights();
+        pushFilters();
     }
+
+    virtual void pushHighlights() = 0;
+    virtual void pushFilters() = 0;
 
     void render() {
         if (!visible)
@@ -337,6 +344,39 @@ struct Model {
         return a;
     }
 
+    int getSelectedColormap() const {
+        return selectedColormap;
+    }
+
+    void setSelectedColormap(int idx) {
+        _meshRenderer->setSelectedColormap(idx);
+        _pointSetRenderer.setSelectedColormap(idx);
+        if (_halfedgeRenderer != nullptr)
+            _halfedgeRenderer->setSelectedColormap(idx);
+            
+        selectedColormap = idx;
+    }
+
+    std::tuple<std::string, ElementKind> getHighlightAttr() const {
+        return {selectedHighlightAttr, selectedHighlightElement};
+    }
+
+    void setHighlightAttr(std::string name, ElementKind kind) {
+        selectedHighlightAttr = name;
+        selectedHighlightElement = kind;
+        _meshRenderer->setHighlightElement(kind);
+    }
+
+    std::tuple<std::string, ElementKind> getFilterAttr() const {
+        return {selectedFilterAttr, selectedFilterElement};
+    }
+
+    void setFilterAttr(std::string name, ElementKind kind) {
+        selectedFilterAttr = name;
+        selectedFilterElement = kind;
+        _meshRenderer->setFilterElement(kind);
+    }
+
     glm::vec3 getPosition() const {
         return position;
     }
@@ -449,19 +489,6 @@ struct Model {
         invertClipping = invert;
     }
 
-    int getSelectedColormap() const {
-        return selectedColormap;
-    }
-
-    void setSelectedColormap(int idx) {
-        _meshRenderer->setSelectedColormap(idx);
-        _pointSetRenderer.setSelectedColormap(idx);
-        if (_halfedgeRenderer != nullptr)
-            _halfedgeRenderer->setSelectedColormap(idx);
-            
-        selectedColormap = idx;
-    }
-
     void setMeshIndex(int index) {
         _meshRenderer->setMeshIndex(index);
     }
@@ -495,7 +522,11 @@ struct Model {
 
     std::vector<Attribute> attrs;
     int selectedAttr = 0;
+
     std::string selectedHighlightAttr = "_highlight";
+    ElementKind selectedHighlightElement = ElementKind::CELLS;
+    std::string selectedFilterAttr = "_filter";
+    ElementKind selectedFilterElement = ElementKind::CELLS;
 
 
     bool isLightEnabled = true;

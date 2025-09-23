@@ -35,7 +35,7 @@ uniform samplerBuffer attributeData;
 uniform int attrElement;
 
 uniform int filterElement;
-uniform int highlightElement = 3;
+uniform int highlightElement;
 uniform samplerBuffer filterBuf;
 uniform samplerBuffer highlightBuf;
 uniform samplerBuffer facetHighlightBuf;

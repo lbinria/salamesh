@@ -45,11 +45,15 @@ struct IRenderer {
 	void setHighlightElement(int element) {
 		shader.use();
 		shader.setInt("highlightElement", element);
+
+		// Eventually resize ptr
 	}
 
 	void setFilterElement(int element) {
 		shader.use();
 		shader.setInt("filterElement", element);
+
+		// Eventually resize ptr
 	}
 
 	void setColorMode(ColorMode mode) {
@@ -184,19 +188,23 @@ struct IRenderer {
 		std::memcpy(ptrAttr, data.data(), data.size() * sizeof(float));
 	}
 
+	// Maybe protected ?
 	void setHighlight(int idx, float highlight) {
 		ptrHighlight[idx] = highlight;
 	}
 
+	// Maybe protected ?
 	void setHighlight(std::vector<float> highlights) {
 		std::memcpy(ptrHighlight, highlights.data(), highlights.size() * sizeof(float));
 	}
 
+	// Maybe protected ?
 	void setFilter(int idx, bool filter) {
 		ptrFilter[idx] = filter ? 1.f : 0.f;
 	}
 
 	// TODO not tested !
+	// Maybe protected ?
 	void setFilter(std::vector<bool> filters) {
 		std::vector<float> f_filters(filters.size());
 		std::transform(filters.begin(), filters.end(), f_filters.begin(), [](bool filter) { return filter ? 1.f : 0.f; });
@@ -224,6 +232,9 @@ struct IRenderer {
 	float *ptrAttr;
 	float *ptrHighlight;
 	float *ptrFilter;
+
+	int highlightPtrSize = 0;
+	int filterPtrSize = 0;
 
 	int nverts = 0;
 

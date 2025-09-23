@@ -79,6 +79,94 @@ struct HexModel final : public Model {
 
         
     }
+
+    void pushHighlights() override {
+        
+        switch (selectedHighlightElement) {
+            case ElementKind::CELLS:
+            {
+                CellAttribute<float> hl_c;
+                if (!hl_c.bind(selectedHighlightAttr, _volumeAttributes, _m))
+                    return;
+                
+                _meshRenderer->setHighlight(hl_c.ptr->data);
+
+                break;
+            }
+            case ElementKind::CELL_FACETS:
+            {
+                CellFacetAttribute<float> hl_f;
+                if (!hl_f.bind(selectedHighlightAttr, _volumeAttributes, _m))
+                    return;
+
+                _meshRenderer->setHighlight(hl_f.ptr->data);
+
+                break;
+            }
+            case ElementKind::POINTS:
+            {
+                PointAttribute<float> hl_p;
+                if (!hl_p.bind(selectedHighlightAttr, _volumeAttributes, _m))
+                    return;
+
+                _pointSetRenderer.setHighlight(hl_p.ptr->data);
+
+                break;
+            }
+            case ElementKind::EDGES:
+            {
+                std::cerr << "Warning: HexModel::pushHighlights() does not support highlight on edges." << std::endl;
+                return;
+            }
+            default:
+                std::cerr << "Warning: HexModel::pushHighlights() only supports highlight on cells or cell facets." << std::endl;
+                return;
+        }
+
+    }
+
+    void pushFilters() override {
+        switch (selectedFilterElement) {
+            case ElementKind::CELLS:
+            {
+                CellAttribute<bool> flt_c;
+                if (!flt_c.bind(selectedFilterAttr, _volumeAttributes, _m))
+                    return;
+                
+                _meshRenderer->setFilter(flt_c.ptr->data);
+
+                break;
+            }
+            case ElementKind::CELL_FACETS:
+            {
+                CellFacetAttribute<bool> flt_f;
+                if (!flt_f.bind(selectedFilterAttr, _volumeAttributes, _m))
+                    return;
+
+                _meshRenderer->setFilter(flt_f.ptr->data);
+
+                break;
+            }
+            case ElementKind::POINTS:
+            {
+                PointAttribute<bool> flt_p;
+                if (!flt_p.bind(selectedFilterAttr, _volumeAttributes, _m))
+                    return;
+
+                _pointSetRenderer.setFilter(flt_p.ptr->data);
+
+                break;
+            }
+            case ElementKind::EDGES:
+            {
+                std::cerr << "Warning: HexModel::pushFilters() does not support filter on edges." << std::endl;
+                return;
+            }
+            default:
+                std::cerr << "Warning: HexModel::pushFilters() only supports filter on cells or cell facets." << std::endl;
+                return;
+        }
+    }
     
     private:
 

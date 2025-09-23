@@ -82,6 +82,13 @@ struct QuadModel final : public Model {
         
     }
 
+    void pushHighlights() override {
+
+    }
+
+    void pushFilters() override {
+        
+    }
 
     private: 
 

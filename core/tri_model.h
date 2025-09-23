@@ -81,6 +81,14 @@ struct TriModel final : public Model {
         
     }
 
+    void pushHighlights() override {
+
+    }
+
+    void pushFilters() override {
+        
+    }
+
     private: 
 
     // Mesh
