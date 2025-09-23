@@ -49,6 +49,11 @@ void VolumeRenderer::init() {
 	glTexBuffer(GL_TEXTURE_BUFFER, GL_R32F, bufHighlight);
 
 
+	createPersistentBuffer(highlightBuffer, _m.ncells() * sizeof(float));
+	glCreateTextures(GL_TEXTURE_BUFFER, 1, &texHighlight2);
+	glActiveTexture(GL_TEXTURE0 + 3); 
+	glTextureBuffer(texHighlight2, GL_R32F, highlightBuffer.buf);
+
 	glGenBuffers(1, &bufFacetHighlight);
 	glBindBuffer(GL_TEXTURE_BUFFER, bufFacetHighlight);
 	glBufferStorage(GL_TEXTURE_BUFFER, _m.nfacets() * sizeof(float), nullptr, flags);
@@ -90,7 +95,8 @@ void VolumeRenderer::init() {
 	glBindTexture(GL_TEXTURE_BUFFER, texAttr);
 
 	glActiveTexture(GL_TEXTURE0 + 3);
-	glBindTexture(GL_TEXTURE_BUFFER, texHighlight);
+	// glBindTexture(GL_TEXTURE_BUFFER, texHighlight);
+	glBindTexture(GL_TEXTURE_BUFFER, texHighlight2);
 
 	glActiveTexture(GL_TEXTURE0 + 4);
 	glBindTexture(GL_TEXTURE_BUFFER, texFacetHighlight);
@@ -171,7 +177,7 @@ void VolumeRenderer::render(glm::vec3 &position) {
 	glBindTexture(GL_TEXTURE_BUFFER, texAttr);
 
 	glActiveTexture(GL_TEXTURE0 + 3);
-	glBindTexture(GL_TEXTURE_BUFFER, texHighlight);
+	glBindTexture(GL_TEXTURE_BUFFER, texHighlight2);
 
 	glActiveTexture(GL_TEXTURE0 + 4);
 	glBindTexture(GL_TEXTURE_BUFFER, texFacetHighlight);

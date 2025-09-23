@@ -123,7 +123,7 @@ void main()
     if (highlightElement == 3) {
         highlightVal = texelFetch(highlightBuf, fragCellIndex).x;
     } else if (highlightElement == 4) {
-        highlightVal = texelFetch(facetHighlightBuf, fragFacetIndex).x;
+        highlightVal = texelFetch(highlightBuf, fragFacetIndex).x;
     }
 
 

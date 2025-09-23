@@ -67,10 +67,5 @@ struct SurfaceRenderer : public IRenderer {
 
 		glBindBuffer(GL_TEXTURE_BUFFER, bufBary);
 		glBufferData(GL_TEXTURE_BUFFER, barys.size() * sizeof(float), barys.data(), GL_STATIC_DRAW);
-
-		// Get selected attribute => 
-		// pushAttrs();
-		// pushHighlights();
-		// pushFilters();
 	}
 };

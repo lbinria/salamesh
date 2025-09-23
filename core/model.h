@@ -146,12 +146,12 @@ struct Model {
         }
 
         // Push highlight and filter attributes if they exist
-        pushHighlights();
-        pushFilters();
+        updateHighlights();
+        updateFilters();
     }
 
-    virtual void pushHighlights() = 0;
-    virtual void pushFilters() = 0;
+    virtual void updateHighlights() = 0;
+    virtual void updateFilters() = 0;
 
     void render() {
         if (!visible)
@@ -363,8 +363,16 @@ struct Model {
 
     void setHighlightAttr(std::string name, ElementKind kind) {
         selectedHighlightAttr = name;
+        setHighlightElement(kind);
+    }
+
+    void setHighlightElement(ElementKind kind) {
         selectedHighlightElement = kind;
+
         _meshRenderer->setHighlightElement(kind);
+        _pointSetRenderer.setHighlightElement(kind);
+        if (_halfedgeRenderer)
+            _halfedgeRenderer->setHighlightElement(kind);
     }
 
     std::tuple<std::string, ElementKind> getFilterAttr() const {
@@ -374,7 +382,11 @@ struct Model {
     void setFilterAttr(std::string name, ElementKind kind) {
         selectedFilterAttr = name;
         selectedFilterElement = kind;
+
         _meshRenderer->setFilterElement(kind);
+        _pointSetRenderer.setFilterElement(kind);
+        if (_halfedgeRenderer)
+            _halfedgeRenderer->setFilterElement(kind);
     }
 
     glm::vec3 getPosition() const {
@@ -436,7 +448,7 @@ struct Model {
     void setLight(bool enabled) {
         _meshRenderer->setLight(enabled);
         // _pointSetRenderer.setLight(enabled); 
-        // TODO _halfedgeRenderer->setLight(enabled); 
+        // _halfedgeRenderer->setLight(enabled); 
         isLightEnabled = enabled;
     }
 

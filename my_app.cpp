@@ -374,6 +374,45 @@ void MyApp::draw_gui() {
 		// }
 	}
 
+	// Test
+	ImGui::Begin("Test");
+
+	ImGui::Text("Test window");
+
+	if (ImGui::Button("Highlight cells")) {
+		auto &model = getCurrentModel().as<HexModel>();
+		model.setHighlightAttr("_highlight", ElementKind::CELLS);
+		CellAttribute<float> hl;
+		hl.bind("_highlight", model.getVolumeAttributes(), model.getHexahedra());
+
+		for (auto c : model.getHexahedra().iter_cells()) {
+			if (c % 2 == 0)
+				hl[c] = 1.f;
+			else 
+				hl[c] = 0.5f;
+		}
+
+		model.updateHighlights();
+	}
+
+	if (ImGui::Button("Highlight facets")) {
+		auto &model = getCurrentModel().as<HexModel>();
+		model.setHighlightAttr("_highlight", ElementKind::CELL_FACETS);
+		CellFacetAttribute<float> hl;
+		hl.bind("_highlight", model.getVolumeAttributes(), model.getHexahedra());
+
+		for (auto c : model.getHexahedra().iter_facets()) {
+			if (c % 2 == 0)
+				hl[c] = 1.f;
+			else 
+				hl[c] = 0.5f;
+		}
+
+		model.updateHighlights();
+	}
+
+
+	ImGui::End();
 
 }
 

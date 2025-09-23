@@ -80,11 +80,11 @@ struct TetModel final : public Model {
         
     }
 
-    void pushHighlights() override {
+    void updateHighlights() override {
 
     }
 
-    void pushFilters() override {
+    void updateFilters() override {
         
     }
 

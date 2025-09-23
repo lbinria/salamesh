@@ -80,7 +80,7 @@ struct HexModel final : public Model {
         
     }
 
-    void pushHighlights() override {
+    void updateHighlights() override {
         
         switch (selectedHighlightElement) {
             case ElementKind::CELLS:
@@ -89,7 +89,8 @@ struct HexModel final : public Model {
                 if (!hl_c.bind(selectedHighlightAttr, _volumeAttributes, _m))
                     return;
                 
-                _meshRenderer->setHighlight(hl_c.ptr->data);
+                _meshRenderer->resizeHightlightBuffer(hl_c.ptr->data.size());
+                _meshRenderer->setHighlight(hl_c.ptr->data);                
 
                 break;
             }
@@ -99,6 +100,7 @@ struct HexModel final : public Model {
                 if (!hl_f.bind(selectedHighlightAttr, _volumeAttributes, _m))
                     return;
 
+                _meshRenderer->resizeHightlightBuffer(hl_f.ptr->data.size());
                 _meshRenderer->setHighlight(hl_f.ptr->data);
 
                 break;
@@ -109,23 +111,19 @@ struct HexModel final : public Model {
                 if (!hl_p.bind(selectedHighlightAttr, _volumeAttributes, _m))
                     return;
 
+                // _pointSetRenderer.resizeHightlightBuffer(hl_p.ptr->data.size());
                 _pointSetRenderer.setHighlight(hl_p.ptr->data);
 
                 break;
             }
-            case ElementKind::EDGES:
-            {
-                std::cerr << "Warning: HexModel::pushHighlights() does not support highlight on edges." << std::endl;
-                return;
-            }
             default:
-                std::cerr << "Warning: HexModel::pushHighlights() only supports highlight on cells or cell facets." << std::endl;
+                std::cerr << "Warning: HexModel::updateHighlights() only supports highlight on cells, cell facets or points." << std::endl;
                 return;
         }
 
     }
 
-    void pushFilters() override {
+    void updateFilters() override {
         switch (selectedFilterElement) {
             case ElementKind::CELLS:
             {
@@ -157,13 +155,8 @@ struct HexModel final : public Model {
 
                 break;
             }
-            case ElementKind::EDGES:
-            {
-                std::cerr << "Warning: HexModel::pushFilters() does not support filter on edges." << std::endl;
-                return;
-            }
             default:
-                std::cerr << "Warning: HexModel::pushFilters() only supports filter on cells or cell facets." << std::endl;
+                std::cerr << "Warning: HexModel::updateFilters() only supports filter on cells, cell facets or points." << std::endl;
                 return;
         }
     }

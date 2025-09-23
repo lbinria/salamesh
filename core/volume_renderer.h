@@ -28,21 +28,9 @@ struct VolumeRenderer : public IRenderer {
 		}
 
 
-	// TODO eventually merge init / update
 	void init();
 	void render(glm::vec3 &position);
-
-
-
 	void clean();
-
-	void setFacetHighlight(int idx, float highlight) {
-		ptrFacetHighlight[idx] = highlight;
-	}
-
-	void setFacetHighlight(std::vector<float> highlights) {
-		std::memcpy(ptrFacetHighlight, highlights.data(), highlights.size() * sizeof(float));
-	}
 
 	protected:
 
@@ -85,9 +73,9 @@ struct VolumeRenderer : public IRenderer {
 		// _m.attr_cells, _m.attr_corners...
 		// pushAttrs();
 		// Push highlights if there is any
-		// pushHighlights();
+		// updateHighlights();
 		// Push filters if there is any
-		// pushFilters();
+		// updateFilters();
 	}
 
 };

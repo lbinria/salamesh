@@ -42,18 +42,14 @@ struct IRenderer {
 		shader.setFloat2("attrRange", range);
 	}
 
-	void setHighlightElement(int element) {
+	void setHighlightElement(ElementKind element) {
 		shader.use();
 		shader.setInt("highlightElement", element);
-
-		// Eventually resize ptr
 	}
 
-	void setFilterElement(int element) {
+	void setFilterElement(ElementKind element) {
 		shader.use();
 		shader.setInt("filterElement", element);
-
-		// Eventually resize ptr
 	}
 
 	void setColorMode(ColorMode mode) {
@@ -190,12 +186,14 @@ struct IRenderer {
 
 	// Maybe protected ?
 	void setHighlight(int idx, float highlight) {
-		ptrHighlight[idx] = highlight;
+		// ptrHighlight[idx] = highlight;
+		highlightBuffer.ptr[idx] = highlight;
 	}
 
 	// Maybe protected ?
 	void setHighlight(std::vector<float> highlights) {
-		std::memcpy(ptrHighlight, highlights.data(), highlights.size() * sizeof(float));
+		// std::memcpy(ptrHighlight, highlights.data(), highlights.size() * sizeof(float));
+		std::memcpy(highlightBuffer.ptr, highlights.data(), highlights.size() * sizeof(float));
 	}
 
 	// Maybe protected ?
@@ -215,6 +213,23 @@ struct IRenderer {
 		return ptrFilter;
 	}
 
+	void resizeHightlightBuffer(int size) {		
+		resizePersistentBuffer(highlightBuffer, size);
+		// unsigned int newTexHighlight = 0;
+		// glCreateTextures(GL_TEXTURE_BUFFER, 1, &newTexHighlight);
+		// glActiveTexture(GL_TEXTURE0 + 3); 
+		// glTextureBuffer(newTexHighlight, GL_R32F, highlightBuffer.buf);
+		
+		// glActiveTexture(GL_TEXTURE0 + 3);
+		// glBindTexture(GL_TEXTURE_BUFFER, newTexHighlight);
+
+		// shader.use();
+		// shader.setInt("highlightBuf", 3);
+
+		// glDeleteTextures(1, &texHighlight2);
+		// texHighlight2 = texHighlight;
+	}
+
 	Shader shader;
 
 	protected:
@@ -227,14 +242,76 @@ struct IRenderer {
 
 	unsigned int VAO, VBO; // Buffers
 	unsigned int bufBary, bufHighlight, bufAttr, bufFilter; // Sample buffers
-	unsigned int texColorMap, texBary, texHighlight, texAttr, texFilter; // Textures
+	unsigned int texColorMap, texBary, texHighlight, texHighlight2, texAttr, texFilter; // Textures
 
 	float *ptrAttr;
 	float *ptrHighlight;
 	float *ptrFilter;
 
-	int highlightPtrSize = 0;
-	int filterPtrSize = 0;
+
+	struct PersistentBuffer {
+		GLuint buf = 0;
+		float* ptr = nullptr;
+		GLsizeiptr size = 0;
+		GLbitfield mapFlags = 0;
+		GLbitfield storageFlags = 0;
+	};
+
+	PersistentBuffer highlightBuffer;
+
+	void createPersistentBuffer(PersistentBuffer &b, GLsizeiptr size,
+								GLbitfield mapFlags = GL_MAP_READ_BIT | GL_MAP_WRITE_BIT | GL_MAP_PERSISTENT_BIT | GL_MAP_COHERENT_BIT,
+								GLbitfield storageFlags = GL_DYNAMIC_STORAGE_BIT) {
+		if (b.buf) {
+			glDeleteBuffers(1, &b.buf);
+			b.buf = 0;
+		}
+		b.size = size;
+		b.mapFlags = mapFlags;
+		b.storageFlags = storageFlags | GL_MAP_PERSISTENT_BIT | GL_MAP_WRITE_BIT; // ensure write/persistent for mapping
+
+		glGenBuffers(1, &b.buf);
+		glBindBuffer(GL_TEXTURE_BUFFER, b.buf);
+		glBufferStorage(GL_TEXTURE_BUFFER, size, nullptr, mapFlags);
+		// Map once and keep pointer (not compatible for MacOS... because need OpenGL >= 4.6 i think)
+		b.ptr = (float*)glMapBufferRange(GL_TEXTURE_BUFFER, 0, size, mapFlags);
+
+		// glCreateBuffers(1, &b.buf);
+		// glNamedBufferStorage(b.buf, size, nullptr, b.storageFlags);
+		// b.ptr = glMapNamedBufferRange(b.buf, 0, size, b.mapFlags);
+		if (!b.ptr) throw std::runtime_error("Failed to map buffer");
+	}
+
+	void destroyPersistentBuffer(PersistentBuffer &b) {
+		if (b.buf == 0) return;
+		if (b.ptr) {
+			glUnmapNamedBuffer(b.buf);
+			b.ptr = nullptr;
+		}
+		glDeleteBuffers(1, &b.buf);
+		b.buf = 0;
+		b.size = 0;
+	}
+
+	void resizePersistentBuffer(PersistentBuffer &b, GLsizeiptr newSize)
+	{
+		if (newSize == b.size) return;
+		// Create new buffer
+		PersistentBuffer nb;
+		createPersistentBuffer(nb, newSize, b.mapFlags, b.storageFlags);
+		// Copy existing data (up to min size)
+		if (b.ptr && nb.ptr) {
+			GLsizeiptr copySize = (b.size < newSize) ? b.size : newSize;
+			std::memcpy(nb.ptr, b.ptr, (size_t)copySize);
+		} else {
+			// Fallback to glCopyNamedBufferSubData if you prefer GPU-side copy:
+			// glCopyNamedBufferSubData(b.buf, nb.buf, 0, 0, std::min(b.size, newSize));
+		}
+		// Replace old buffer with new
+		destroyPersistentBuffer(b);
+		b = nb; // move new buffer into b
+	}
+
 
 	int nverts = 0;
 
