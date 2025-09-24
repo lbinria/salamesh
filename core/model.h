@@ -18,6 +18,10 @@ using namespace UM;
 using json = nlohmann::json;
 
 struct Model {
+    struct AttrSelection {
+        std::string attrName;
+        ElementKind elementKind;
+    };
 
     enum ModelType {
         POINTSET = 0,
@@ -146,12 +150,21 @@ struct Model {
         }
 
         // Push highlight and filter attributes if they exist
+        // TODO here update all layers in foreach
         updateHighlights();
         updateFilters();
     }
 
-    virtual void updateHighlights() = 0;
-    virtual void updateFilters() = 0;
+    void updateHighlights() {
+        updateLayer(IRenderer::Layer::HIGHLIGHT);
+    }
+
+    // The same as TetModel
+    void updateFilters() {
+        updateLayer(IRenderer::Layer::FILTER);
+    }
+
+    virtual void updateLayer(IRenderer::Layer layer) = 0;
 
     void render() {
         if (!visible)
@@ -179,7 +192,7 @@ struct Model {
 
 
 
-    virtual void setFilter(int idx, bool filter) = 0;
+    // virtual void setFilter(int idx, bool filter) = 0;
 
 
     void addAttr(ElementKind kind, NamedContainer &container) {
@@ -357,38 +370,79 @@ struct Model {
         selectedColormap = idx;
     }
 
-    std::tuple<std::string, ElementKind> getHighlightAttr() const {
-        return {selectedHighlightAttr, selectedHighlightElement};
-    }
+    // AttrSelection getHighlightAttr() const {
+    //     return selectedAttrByLayer[IRenderer::Layer::HIGHLIGHT];
+    // }
 
     void setHighlightAttr(std::string name, ElementKind kind) {
-        selectedHighlightAttr = name;
-        setHighlights(kind);
+        selectedAttrByLayer[IRenderer::Layer::HIGHLIGHT].attrName = name;
+        setHighlight(kind);
     }
 
-    void setHighlights(ElementKind kind) {
-        selectedHighlightElement = kind;
+    // AttrSelection getFilterAttr() const {
+    //     return selectedAttrByLayer[IRenderer::Layer::FILTER];
+    // }
+
+    void setFilterAttr(std::string name, ElementKind kind) {
+        selectedAttrByLayer[IRenderer::Layer::FILTER].attrName = name;
+        setFilter(kind);
+    }
+
+    void setHighlight(ElementKind kind) {
+        setLayer(kind, IRenderer::Layer::HIGHLIGHT);
+    }
+
+    void setFilter(ElementKind kind) {
+        setLayer(kind, IRenderer::Layer::FILTER);
+    }
+
+    void unsetHighlight(ElementKind kind) {
+        unsetLayer(kind, IRenderer::Layer::HIGHLIGHT);
+    }
+
+    void unsetHighlights() {
+        // Unset all
+        unsetHighlight(ElementKind::CELLS);
+        unsetHighlight(ElementKind::FACETS);
+        unsetHighlight(ElementKind::EDGES);
+        unsetHighlight(ElementKind::POINTS);
+    }
+
+    void unsetFilter(ElementKind kind) {
+        unsetLayer(kind, IRenderer::Layer::FILTER);
+    }
+
+    void unsetFilters() {
+        // Unset all
+        unsetFilter(ElementKind::CELLS);
+        unsetFilter(ElementKind::FACETS);
+        unsetFilter(ElementKind::EDGES);
+        unsetFilter(ElementKind::POINTS);
+    }
+
+    void setLayer(ElementKind kind, IRenderer::Layer layer) {
+        selectedAttrByLayer[layer].elementKind = kind;
 
         switch (kind) {
             case ElementKind::CELLS:
             case ElementKind::CELL_FACETS:
             case ElementKind::FACETS:
-                _meshRenderer->setHighlightElement(kind);
+                _meshRenderer->setLayerElement(kind, layer);
             break;
             case ElementKind::EDGES:
             case ElementKind::CORNERS:
                 if (_halfedgeRenderer)
-                    _halfedgeRenderer->setHighlightElement(kind);
+                    _halfedgeRenderer->setLayerElement(kind, layer);
             break;
             case ElementKind::POINTS:
-                _pointSetRenderer.setHighlightElement(kind);
+                _pointSetRenderer.setLayerElement(kind, layer);
             break;
             default:
             
             break;
         }
 
-        updateHighlights();
+        updateLayer(layer);
     }
 
     void unsetLayer(ElementKind kind, IRenderer::Layer layer) {
@@ -419,31 +473,9 @@ struct Model {
         }
     }
 
-    void unsetHighlights(ElementKind kind) {
-        unsetLayer(kind, IRenderer::Layer::HIGHLIGHT);
-    }
 
-    void unsetHighlights() {
-        // Unset all
-        unsetHighlights(ElementKind::CELLS);
-        unsetHighlights(ElementKind::FACETS);
-        unsetHighlights(ElementKind::EDGES);
-        unsetHighlights(ElementKind::POINTS);
-    }
 
-    std::tuple<std::string, ElementKind> getFilterAttr() const {
-        return {selectedFilterAttr, selectedFilterElement};
-    }
 
-    void setFilterAttr(std::string name, ElementKind kind) {
-        selectedFilterAttr = name;
-        selectedFilterElement = kind;
-
-        _meshRenderer->setFilterElement(kind);
-        _pointSetRenderer.setFilterElement(kind);
-        if (_halfedgeRenderer)
-            _halfedgeRenderer->setFilterElement(kind);
-    }
 
     glm::vec3 getPosition() const {
         return position;
@@ -591,10 +623,18 @@ struct Model {
     std::vector<Attribute> attrs;
     int selectedAttr = 0;
 
-    std::string selectedHighlightAttr = "_highlight";
-    ElementKind selectedHighlightElement = ElementKind::CELLS;
-    std::string selectedFilterAttr = "_filter";
-    ElementKind selectedFilterElement = ElementKind::CELLS;
+
+
+    std::map<IRenderer::Layer, AttrSelection> selectedAttrByLayer{
+        { IRenderer::Layer::HIGHLIGHT, {"_highlight", ElementKind::POINTS} },
+        { IRenderer::Layer::FILTER, {"_filter", ElementKind::POINTS} },
+    };
+
+
+    // std::string selectedHighlightAttr = "_highlight";
+    // ElementKind selectedHighlightElement = ElementKind::POINTS;
+    // std::string selectedFilterAttr = "_filter";
+    // ElementKind selectedFilterElement = ElementKind::POINTS;
 
 
     bool isLightEnabled = true;

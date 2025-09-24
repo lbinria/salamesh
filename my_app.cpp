@@ -423,13 +423,49 @@ void MyApp::draw_gui() {
 			hl[c] = static_cast<float>(rand()) / RAND_MAX;
 		}
 
-		model.setHighlights(ElementKind::POINTS);
+		model.setHighlight(ElementKind::POINTS);
 	}
 
 	if (ImGui::Button("Unset highlights")) {
 		auto &model = getCurrentModel().as<HexModel>();
 		model.unsetHighlights();
 	}
+
+	if (ImGui::Button("Filter cell")) {
+
+		auto &model = getCurrentModel().as<HexModel>();
+		auto &hex = model.getHexahedra();
+		
+		CellAttribute<float> fl;
+		fl.bind("_filter", model.getVolumeAttributes(), hex);
+
+		for (auto c : hex.iter_cells()) {
+			fl[c] = static_cast<float>(rand()) / RAND_MAX > .5f ? 1 : 0;
+		}
+
+		model.setFilter(ElementKind::CELLS);
+	}
+
+	if (ImGui::Button("Filter points")) {
+
+		auto &model = getCurrentModel().as<HexModel>();
+		auto &hex = model.getHexahedra();
+		
+		PointAttribute<float> fl;
+		fl.bind("_filter", model.getVolumeAttributes(), hex);
+
+		for (auto c : hex.iter_vertices()) {
+			fl[c] = static_cast<float>(rand()) / RAND_MAX > .5f ? 1 : 0;
+		}
+
+		model.setFilter(ElementKind::POINTS);
+	}
+
+	if (ImGui::Button("Unset filters")) {
+		auto &model = getCurrentModel().as<HexModel>();
+		model.unsetFilters();
+	}
+
 
 
 	ImGui::End();

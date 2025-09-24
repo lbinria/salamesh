@@ -37,6 +37,19 @@ void VolumeRenderer::init() {
 	glBindTexture(GL_TEXTURE_BUFFER, texAttr);
 	glTexBuffer(GL_TEXTURE_BUFFER, GL_R32F, bufAttr);
 
+
+
+	// glGenBuffers(1, &bufFilter);
+	// glBindBuffer(GL_TEXTURE_BUFFER, bufFilter);
+	// glBufferStorage(GL_TEXTURE_BUFFER, _m.ncells() * sizeof(float), nullptr, flags);
+	// // Map once and keep pointer (not compatible for MacOS... because need OpenGL >= 4.6 i think)
+	// ptrFilter = (float*)glMapBufferRange(GL_TEXTURE_BUFFER, 0, _m.ncells() * sizeof(float), flags);
+
+	// glGenTextures(1, &texFilter);
+	// glActiveTexture(GL_TEXTURE0 + 4); 
+	// glBindTexture(GL_TEXTURE_BUFFER, texFilter);
+	// glTexBuffer(GL_TEXTURE_BUFFER, GL_R32F, bufFilter);
+
 	// For the moment don't use persistent mapped memory
 	glGenBuffers(1, &bufHighlight);
 	glGenTextures(1, &texHighlight);
@@ -45,18 +58,13 @@ void VolumeRenderer::init() {
 	glBindTexture(GL_TEXTURE_BUFFER, texHighlight);
 	glTexBuffer(GL_TEXTURE_BUFFER, GL_R32F, bufHighlight);
 
+	// For the moment don't use persistent mapped memory
 	glGenBuffers(1, &bufFilter);
-	glBindBuffer(GL_TEXTURE_BUFFER, bufFilter);
-	glBufferStorage(GL_TEXTURE_BUFFER, _m.ncells() * sizeof(float), nullptr, flags);
-	// Map once and keep pointer (not compatible for MacOS... because need OpenGL >= 4.6 i think)
-	ptrFilter = (float*)glMapBufferRange(GL_TEXTURE_BUFFER, 0, _m.ncells() * sizeof(float), flags);
-
 	glGenTextures(1, &texFilter);
+	glBindBuffer(GL_TEXTURE_BUFFER, bufFilter);
 	glActiveTexture(GL_TEXTURE0 + 4); 
 	glBindTexture(GL_TEXTURE_BUFFER, texFilter);
 	glTexBuffer(GL_TEXTURE_BUFFER, GL_R32F, bufFilter);
-
-
 
 
 
@@ -179,12 +187,12 @@ void VolumeRenderer::clean() {
 	// 	ptrHighlight = nullptr;
 	// }
 
-	// Unmap filter
-	if (ptrFilter) {
-		glBindBuffer(GL_TEXTURE_BUFFER, bufFilter);
-		glUnmapBuffer(GL_TEXTURE_BUFFER);
-		ptrFilter = nullptr;
-	}
+	// // Unmap filter
+	// if (ptrFilter) {
+	// 	glBindBuffer(GL_TEXTURE_BUFFER, bufFilter);
+	// 	glUnmapBuffer(GL_TEXTURE_BUFFER);
+	// 	ptrFilter = nullptr;
+	// }
 
 	glDeleteBuffers(1, &bufBary);
 	glDeleteTextures(1, &texBary);

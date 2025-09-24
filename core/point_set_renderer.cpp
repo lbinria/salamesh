@@ -29,19 +29,6 @@ void PointSetRenderer::init() {
 	glBindTexture(GL_TEXTURE_BUFFER, texAttr);
 	glTexBuffer(GL_TEXTURE_BUFFER, GL_R32F, bufAttr);
 
-	// Filter
-	glGenBuffers(1, &bufFilter);
-	glBindBuffer(GL_TEXTURE_BUFFER, bufFilter);
-
-	glBufferStorage(GL_TEXTURE_BUFFER, ps.size() * sizeof(float), nullptr, flags);
-	// Map once and keep pointer (not compatible for MacOS... because need OpenGL >= 4.6 i think)
-	ptrFilter = (float*)glMapBufferRange(GL_TEXTURE_BUFFER, 0, ps.size() * sizeof(float), flags);
-
-	glGenTextures(1, &texFilter);
-	glActiveTexture(GL_TEXTURE0 + 4); 
-	glBindTexture(GL_TEXTURE_BUFFER, texFilter);
-	glTexBuffer(GL_TEXTURE_BUFFER, GL_R32F, bufFilter);
-
 	// Highlight
 	// glGenBuffers(1, &bufHighlight);
 	// glBindBuffer(GL_TEXTURE_BUFFER, bufHighlight);
@@ -55,12 +42,34 @@ void PointSetRenderer::init() {
 	// glBindTexture(GL_TEXTURE_BUFFER, texHighlight);
 	// glTexBuffer(GL_TEXTURE_BUFFER, GL_R32F, bufHighlight);
 
+	// // Filter
+	// glGenBuffers(1, &bufFilter);
+	// glBindBuffer(GL_TEXTURE_BUFFER, bufFilter);
+
+	// glBufferStorage(GL_TEXTURE_BUFFER, ps.size() * sizeof(float), nullptr, flags);
+	// // Map once and keep pointer (not compatible for MacOS... because need OpenGL >= 4.6 i think)
+	// ptrFilter = (float*)glMapBufferRange(GL_TEXTURE_BUFFER, 0, ps.size() * sizeof(float), flags);
+
+	// glGenTextures(1, &texFilter);
+	// glActiveTexture(GL_TEXTURE0 + 4); 
+	// glBindTexture(GL_TEXTURE_BUFFER, texFilter);
+	// glTexBuffer(GL_TEXTURE_BUFFER, GL_R32F, bufFilter);
+
+	// For the moment don't use persistent mapped memory
 	glGenBuffers(1, &bufHighlight);
 	glGenTextures(1, &texHighlight);
 	glBindBuffer(GL_TEXTURE_BUFFER, bufHighlight);
 	glActiveTexture(GL_TEXTURE0 + 3);
 	glBindTexture(GL_TEXTURE_BUFFER, texHighlight);
 	glTexBuffer(GL_TEXTURE_BUFFER, GL_R32F, bufHighlight);
+
+	// For the moment don't use persistent mapped memory
+	glGenBuffers(1, &bufFilter);
+	glGenTextures(1, &texFilter);
+	glBindBuffer(GL_TEXTURE_BUFFER, bufFilter);
+	glActiveTexture(GL_TEXTURE0 + 4);
+	glBindTexture(GL_TEXTURE_BUFFER, texFilter);
+	glTexBuffer(GL_TEXTURE_BUFFER, GL_R32F, bufFilter);
 
 
 	shader.use();
@@ -140,11 +149,11 @@ void PointSetRenderer::clean() {
 	// }
 
 	// Unmap filter
-	if (ptrFilter) {
-		glBindBuffer(GL_TEXTURE_BUFFER, bufFilter);
-		glUnmapBuffer(GL_TEXTURE_BUFFER);
-		ptrFilter = nullptr;
-	}
+	// if (ptrFilter) {
+	// 	glBindBuffer(GL_TEXTURE_BUFFER, bufFilter);
+	// 	glUnmapBuffer(GL_TEXTURE_BUFFER);
+	// 	ptrFilter = nullptr;
+	// }
 
 	glDeleteBuffers(1, &bufAttr);
 	glDeleteTextures(1, &texAttr);

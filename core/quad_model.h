@@ -53,41 +53,37 @@ struct QuadModel final : public Model {
         return 0;
     } 
 
-    void setFilter(int idx, bool filter) override {
+    // void setFilter(int idx, bool filter) override {
 
-        _meshRenderer->setFilter(idx, filter);
-        Surface::Facet f(_quad, idx);
-        for (int lv = 0; lv < 3; ++lv) {
-            auto v = f.vertex(lv);
+    //     _meshRenderer->setFilter(idx, filter);
+    //     Surface::Facet f(_quad, idx);
+    //     for (int lv = 0; lv < 3; ++lv) {
+    //         auto v = f.vertex(lv);
 
-            bool allFiltered = true;
+    //         bool allFiltered = true;
 
-            // Iterate on corners
-            for (int c = 0; c < _quad.facets.size(); ++c) {
-                // If iterated corner is not current vertex, skip !
-                if (_quad.facets[c] != v)
-                    continue;
+    //         // Iterate on corners
+    //         for (int c = 0; c < _quad.facets.size(); ++c) {
+    //             // If iterated corner is not current vertex, skip !
+    //             if (_quad.facets[c] != v)
+    //                 continue;
 
-                int fi = c / 3;
-                if (_meshRenderer->getFilterPtr()[fi] <= 0) {
-                    allFiltered = false;
-                    break;
-                }
-            }
+    //             int fi = c / 3;
+    //             if (_meshRenderer->getFilterPtr()[fi] <= 0) {
+    //                 allFiltered = false;
+    //                 break;
+    //             }
+    //         }
 
-            // Only filter point when all attached facets are filtered
-            _pointSetRenderer.setFilter(v, allFiltered);
+    //         // Only filter point when all attached facets are filtered
+    //         _pointSetRenderer.setFilter(v, allFiltered);
 
-        }
+    //     }
         
-    }
+    // }
 
-    void updateHighlights() override {
+    void updateLayer(IRenderer::Layer layer) {
 
-    }
-
-    void updateFilters() override {
-        
     }
 
     private: 

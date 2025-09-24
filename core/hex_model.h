@@ -50,123 +50,81 @@ struct HexModel final : public Model {
         return _m.ncells();
     } 
 
-    // TODO filter anything else than cell !
-    void setFilter(int idx, bool filter) override {
-        _meshRenderer->setFilter(idx, filter);
+    // // TODO filter anything else than cell !
+    // void setFilter(int idx, bool filter) override {
+    //     _meshRenderer->setFilter(idx, filter);
 
-        // TODO it works but... not very efficient !
-        Volume::Cell c(_m, idx);
-        for (int lc = 0; lc < 8; ++lc) {
-            auto corner = c.corner(lc);
-            auto v = corner.vertex();
-            // Retrieve all cells attached to this point to see whether filtered
-            bool allFiltered = true;
-            // #pragma omp parallel for
-            for (int i = 0; i < _m.cells.size(); ++i) {
-                if (_m.cells[i] != v)
-                    continue;
+    //     // TODO it works but... not very efficient !
+    //     Volume::Cell c(_m, idx);
+    //     for (int lc = 0; lc < 8; ++lc) {
+    //         auto corner = c.corner(lc);
+    //         auto v = corner.vertex();
+    //         // Retrieve all cells attached to this point to see whether filtered
+    //         bool allFiltered = true;
+    //         // #pragma omp parallel for
+    //         for (int i = 0; i < _m.cells.size(); ++i) {
+    //             if (_m.cells[i] != v)
+    //                 continue;
                 
-                int ci = i / 8;
-                if (_meshRenderer->getFilterPtr()[ci] <= 0) {
-                    allFiltered = false;
-                    break;
-                }
-            }
+    //             int ci = i / 8;
+    //             if (_meshRenderer->getFilterPtr()[ci] <= 0) {
+    //                 allFiltered = false;
+    //                 break;
+    //             }
+    //         }
 
-            _pointSetRenderer.setFilter(v, allFiltered);
-            // _pointSetRenderer.setHighlight(v, 0.1f);
-        }
+    //         _pointSetRenderer.setFilter(v, allFiltered);
+    //         // _pointSetRenderer.setHighlight(v, 0.1f);
+    //     }
 
         
-    }
+    // }
 
-    // The same as TetModel
-    void updateHighlights() override {
+
+    void updateLayer(IRenderer::Layer layer) {
+
+        auto &selectedAttr = selectedAttrByLayer[layer];
         
-        switch (selectedHighlightElement) {
+        switch (selectedAttr.elementKind) {
             case ElementKind::CELLS:
             {
-                CellAttribute<float> hl_c;
-                if (!hl_c.bind(selectedHighlightAttr, _volumeAttributes, _m))
+                CellAttribute<float> filter;
+                if (!filter.bind(selectedAttr.attrName, _volumeAttributes, _m))
                     return;
+
+                // // Convert data bool -> float
+                // std::vector<float> f_filters(filter.ptr->data.size());
+                // std::transform(filter.ptr->data.begin(), filter.ptr->data.end(), f_filters.begin(), [](bool v) { return v ? 1.f : 0.f; });
                 
-                // _meshRenderer->resizeHightlightBuffer(hl_c.ptr->data.size());
-                _meshRenderer->setHighlight(hl_c.ptr->data);                
+                _meshRenderer->setLayer(filter.ptr->data, layer);
 
                 break;
             }
             case ElementKind::CELL_FACETS:
             {
-                CellFacetAttribute<float> hl_f;
-                if (!hl_f.bind(selectedHighlightAttr, _volumeAttributes, _m))
+                CellFacetAttribute<float> filter;
+                if (!filter.bind(selectedAttr.attrName, _volumeAttributes, _m))
                     return;
 
-                // _meshRenderer->resizeHightlightBuffer(hl_f.ptr->data.size());
-                _meshRenderer->setHighlight(hl_f.ptr->data);
+                // // Convert data bool -> float
+                // std::vector<float> f_filters(filter.ptr->data.size());
+                // std::transform(filter.ptr->data.begin(), filter.ptr->data.end(), f_filters.begin(), [](bool v) { return v ? 1.f : 0.f; });
+
+                _meshRenderer->setLayer(filter.ptr->data, layer);
 
                 break;
             }
             case ElementKind::POINTS:
             {
-                PointAttribute<float> hl_p;
-                if (!hl_p.bind(selectedHighlightAttr, _volumeAttributes, _m))
+                PointAttribute<float> filter;
+                if (!filter.bind(selectedAttr.attrName, _volumeAttributes, _m))
                     return;
 
-                // _pointSetRenderer.resizeHightlightBuffer(hl_p.ptr->data.size());
-                _pointSetRenderer.setHighlight(hl_p.ptr->data);
+                // // Convert data bool -> float
+                // std::vector<float> f_filters(filter.ptr->data.size());
+                // std::transform(filter.ptr->data.begin(), filter.ptr->data.end(), f_filters.begin(), [](bool v) { return v ? 1.f : 0.f; });
 
-                break;
-            }
-            default:
-                std::cerr << "Warning: HexModel::updateHighlights() only supports highlight on cells, cell facets or points." << std::endl;
-                return;
-        }
-
-    }
-
-    // The same as TetModel
-    void updateFilters() override {
-        
-        switch (selectedHighlightElement) {
-            case ElementKind::CELLS:
-            {
-                CellAttribute<bool> filter;
-                if (!filter.bind(selectedFilterAttr, _volumeAttributes, _m))
-                    return;
-
-                // Convert data bool -> float
-                std::vector<float> f_filters(filter.ptr->data.size());
-                std::transform(filter.ptr->data.begin(), filter.ptr->data.end(), f_filters.begin(), [](bool v) { return v ? 1.f : 0.f; });
-                
-                _meshRenderer->setFilter(f_filters);
-
-                break;
-            }
-            case ElementKind::CELL_FACETS:
-            {
-                CellFacetAttribute<bool> filter;
-                if (!filter.bind(selectedFilterAttr, _volumeAttributes, _m))
-                    return;
-
-                // Convert data bool -> float
-                std::vector<float> f_filters(filter.ptr->data.size());
-                std::transform(filter.ptr->data.begin(), filter.ptr->data.end(), f_filters.begin(), [](bool v) { return v ? 1.f : 0.f; });
-
-                _meshRenderer->setFilter(f_filters);
-
-                break;
-            }
-            case ElementKind::POINTS:
-            {
-                PointAttribute<bool> filter;
-                if (!filter.bind(selectedFilterAttr, _volumeAttributes, _m))
-                    return;
-
-                // Convert data bool -> float
-                std::vector<float> f_filters(filter.ptr->data.size());
-                std::transform(filter.ptr->data.begin(), filter.ptr->data.end(), f_filters.begin(), [](bool v) { return v ? 1.f : 0.f; });
-
-                _pointSetRenderer.setFilter(f_filters);
+                _pointSetRenderer.setLayer(filter.ptr->data, layer);
 
                 break;
             }
@@ -174,7 +132,6 @@ struct HexModel final : public Model {
                 std::cerr << "Warning: HexModel::updateFilters() only supports highlight on cells, cell facets or points." << std::endl;
                 return;
         }
-
     }
     
     private:

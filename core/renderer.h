@@ -58,6 +58,20 @@ struct IRenderer {
 		shader.setInt("filterElement", element);
 	}
 
+	void setLayerElement(ElementKind element, Layer layer) {
+		switch (layer)
+		{
+		case Layer::HIGHLIGHT:
+			setHighlightElement(element);
+			break;
+		case Layer::FILTER:
+			setFilterElement(element);
+			break;
+		default:
+			break;
+		}
+	}
+
 	void setColorMode(ColorMode mode) {
 		shader.use();
 		shader.setInt("colorMode", mode);
@@ -255,9 +269,9 @@ struct IRenderer {
 		}
 	}
 
-	float* &getFilterPtr() {
-		return ptrFilter;
-	}
+	// float* &getFilterPtr() {
+	// 	return ptrFilter;
+	// }
 
 	// void resizeHightlightBuffer(int size) {		
 	// 	resizePersistentBuffer(highlightBuffer, size);
@@ -292,7 +306,7 @@ struct IRenderer {
 
 	float *ptrAttr;
 	// float *ptrHighlight;
-	float *ptrFilter;
+	// float *ptrFilter;
 
 
 	struct PersistentBuffer {
