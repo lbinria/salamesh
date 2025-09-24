@@ -36,10 +36,6 @@ struct VolumeRenderer : public IRenderer {
 
 	Volume &_m;
 
-	unsigned int bufFacetHighlight; // Sample buffers
-	unsigned int texFacetHighlight; // Textures
-	float *ptrFacetHighlight;
-
 	void push_bary(std::vector<Vertex> &vertices) {
 
 		glBindVertexArray(VAO);

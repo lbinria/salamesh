@@ -10,6 +10,7 @@
 struct IRenderer {
 
 	enum Layer {
+		COLORMAP,
 		HIGHLIGHT,
 		FILTER
 	};

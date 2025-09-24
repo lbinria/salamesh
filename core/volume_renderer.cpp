@@ -45,18 +45,6 @@ void VolumeRenderer::init() {
 	glBindTexture(GL_TEXTURE_BUFFER, texHighlight);
 	glTexBuffer(GL_TEXTURE_BUFFER, GL_R32F, bufHighlight);
 
-
-	glGenBuffers(1, &bufFacetHighlight);
-	glBindBuffer(GL_TEXTURE_BUFFER, bufFacetHighlight);
-	glBufferStorage(GL_TEXTURE_BUFFER, _m.nfacets() * sizeof(float), nullptr, flags);
-	// Map once and keep pointer (not compatible for MacOS... because need OpenGL >= 4.6 i think)
-	ptrFacetHighlight = (float*)glMapBufferRange(GL_TEXTURE_BUFFER, 0, _m.nfacets() * sizeof(float), flags);
-
-	glGenTextures(1, &texFacetHighlight);
-	glActiveTexture(GL_TEXTURE0 + 4); 
-	glBindTexture(GL_TEXTURE_BUFFER, texFacetHighlight);
-	glTexBuffer(GL_TEXTURE_BUFFER, GL_R32F, bufFacetHighlight);
-
 	glGenBuffers(1, &bufFilter);
 	glBindBuffer(GL_TEXTURE_BUFFER, bufFilter);
 	glBufferStorage(GL_TEXTURE_BUFFER, _m.ncells() * sizeof(float), nullptr, flags);
@@ -64,7 +52,7 @@ void VolumeRenderer::init() {
 	ptrFilter = (float*)glMapBufferRange(GL_TEXTURE_BUFFER, 0, _m.ncells() * sizeof(float), flags);
 
 	glGenTextures(1, &texFilter);
-	glActiveTexture(GL_TEXTURE0 + 5); 
+	glActiveTexture(GL_TEXTURE0 + 4); 
 	glBindTexture(GL_TEXTURE_BUFFER, texFilter);
 	glTexBuffer(GL_TEXTURE_BUFFER, GL_R32F, bufFilter);
 
@@ -90,9 +78,6 @@ void VolumeRenderer::init() {
 	glBindTexture(GL_TEXTURE_BUFFER, texHighlight);
 
 	glActiveTexture(GL_TEXTURE0 + 4);
-	glBindTexture(GL_TEXTURE_BUFFER, texFacetHighlight);
-
-	glActiveTexture(GL_TEXTURE0 + 5);
 	glBindTexture(GL_TEXTURE_BUFFER, texFilter);
 
 	glBindBuffer(GL_TEXTURE_BUFFER, 0);
@@ -101,8 +86,7 @@ void VolumeRenderer::init() {
 	shader.setInt("bary", 1);
 	shader.setInt("attributeData", 2);
 	shader.setInt("highlightBuf", 3);
-	shader.setInt("facetHighlightBuf", 4);
-	shader.setInt("filterBuf", 5);
+	shader.setInt("filterBuf", 4);
 
 	#ifdef _DEBUG
 	std::cout << "vertex attrib setup..." << std::endl;
@@ -171,9 +155,6 @@ void VolumeRenderer::render(glm::vec3 &position) {
 	glBindTexture(GL_TEXTURE_BUFFER, texHighlight);
 
 	glActiveTexture(GL_TEXTURE0 + 4);
-	glBindTexture(GL_TEXTURE_BUFFER, texFacetHighlight);
-
-	glActiveTexture(GL_TEXTURE0 + 5);
 	glBindTexture(GL_TEXTURE_BUFFER, texFilter);
 
 	glm::mat4 model = glm::mat4(1.0f);
@@ -198,12 +179,6 @@ void VolumeRenderer::clean() {
 	// 	ptrHighlight = nullptr;
 	// }
 
-	// Unmap facet highlight
-	if (ptrFacetHighlight) {
-		glBindBuffer(GL_TEXTURE_BUFFER, bufFacetHighlight);
-		glUnmapBuffer(GL_TEXTURE_BUFFER);
-		ptrFacetHighlight = nullptr;
-	}
 	// Unmap filter
 	if (ptrFilter) {
 		glBindBuffer(GL_TEXTURE_BUFFER, bufFilter);
@@ -217,8 +192,6 @@ void VolumeRenderer::clean() {
 	glDeleteTextures(1, &texAttr);
 	glDeleteBuffers(1, &bufHighlight);
 	glDeleteTextures(1, &texHighlight);
-	glDeleteBuffers(1, &bufFacetHighlight);
-	glDeleteTextures(1, &texFacetHighlight);
 	glDeleteBuffers(1, &bufFilter);
 	glDeleteTextures(1, &texFilter);
 	glBindBuffer(GL_TEXTURE_BUFFER, 0);
