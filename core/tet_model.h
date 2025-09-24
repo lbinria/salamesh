@@ -80,12 +80,101 @@ struct TetModel final : public Model {
         
     }
 
+    // The same as HexModel
     void updateHighlights() override {
+        
+        switch (selectedHighlightElement) {
+            case ElementKind::CELLS:
+            {
+                CellAttribute<float> hl_c;
+                if (!hl_c.bind(selectedHighlightAttr, _volumeAttributes, _m))
+                    return;
+                
+                // _meshRenderer->resizeHightlightBuffer(hl_c.ptr->data.size());
+                _meshRenderer->setHighlight(hl_c.ptr->data);                
+
+                break;
+            }
+            case ElementKind::CELL_FACETS:
+            {
+                CellFacetAttribute<float> hl_f;
+                if (!hl_f.bind(selectedHighlightAttr, _volumeAttributes, _m))
+                    return;
+
+                // _meshRenderer->resizeHightlightBuffer(hl_f.ptr->data.size());
+                _meshRenderer->setHighlight(hl_f.ptr->data);
+
+                break;
+            }
+            case ElementKind::POINTS:
+            {
+                PointAttribute<float> hl_p;
+                if (!hl_p.bind(selectedHighlightAttr, _volumeAttributes, _m))
+                    return;
+
+                // _pointSetRenderer.resizeHightlightBuffer(hl_p.ptr->data.size());
+                _pointSetRenderer.setHighlight(hl_p.ptr->data);
+
+                break;
+            }
+            default:
+                std::cerr << "Warning: HexModel::updateHighlights() only supports highlight on cells, cell facets or points." << std::endl;
+                return;
+        }
 
     }
 
+    // The same as HexModel
     void updateFilters() override {
         
+        switch (selectedHighlightElement) {
+            case ElementKind::CELLS:
+            {
+                CellAttribute<bool> filter;
+                if (!filter.bind(selectedFilterAttr, _volumeAttributes, _m))
+                    return;
+
+                // Convert data bool -> float
+                std::vector<float> f_filters(filter.ptr->data.size());
+                std::transform(filter.ptr->data.begin(), filter.ptr->data.end(), f_filters.begin(), [](bool v) { return v ? 1.f : 0.f; });
+                
+                _meshRenderer->setFilter(f_filters);
+
+                break;
+            }
+            case ElementKind::CELL_FACETS:
+            {
+                CellFacetAttribute<bool> filter;
+                if (!filter.bind(selectedFilterAttr, _volumeAttributes, _m))
+                    return;
+
+                // Convert data bool -> float
+                std::vector<float> f_filters(filter.ptr->data.size());
+                std::transform(filter.ptr->data.begin(), filter.ptr->data.end(), f_filters.begin(), [](bool v) { return v ? 1.f : 0.f; });
+
+                _meshRenderer->setFilter(f_filters);
+
+                break;
+            }
+            case ElementKind::POINTS:
+            {
+                PointAttribute<bool> filter;
+                if (!filter.bind(selectedFilterAttr, _volumeAttributes, _m))
+                    return;
+
+                // Convert data bool -> float
+                std::vector<float> f_filters(filter.ptr->data.size());
+                std::transform(filter.ptr->data.begin(), filter.ptr->data.end(), f_filters.begin(), [](bool v) { return v ? 1.f : 0.f; });
+
+                _pointSetRenderer.setFilter(f_filters);
+
+                break;
+            }
+            default:
+                std::cerr << "Warning: HexModel::updateFilters() only supports highlight on cells, cell facets or points." << std::endl;
+                return;
+        }
+
     }
 
     private:

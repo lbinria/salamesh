@@ -195,31 +195,63 @@ struct IRenderer {
 		std::memcpy(ptrAttr, data.data(), data.size() * sizeof(float));
 	}
 
-	void setHighlight(int idx, float highlight) {
+	void setHighlight(int idx, float val) {
 		// ptrHighlight[idx] = highlight;
 		// highlightBuffer.ptr[idx] = highlight;
 		glBindBuffer(GL_TEXTURE_BUFFER, bufHighlight);
-		glBufferSubData(GL_TEXTURE_BUFFER, idx * sizeof(float), sizeof(float), &highlight);
+		glBufferSubData(GL_TEXTURE_BUFFER, idx * sizeof(float), sizeof(float), &val);
 	}
 
-	void setHighlight(std::vector<float> highlights) {
+	void setHighlight(std::vector<float> data) {
 		// std::memcpy(ptrHighlight, highlights.data(), highlights.size() * sizeof(float));
 		// std::memcpy(highlightBuffer.ptr, highlights.data(), highlights.size() * sizeof(float));
 		glBindBuffer(GL_TEXTURE_BUFFER, bufHighlight);
-		glBufferData(GL_TEXTURE_BUFFER, highlights.size() * sizeof(float), highlights.data(), GL_DYNAMIC_DRAW);
+		glBufferData(GL_TEXTURE_BUFFER, data.size() * sizeof(float), data.data(), GL_DYNAMIC_DRAW);
 	}
 
-	// Maybe protected ?
-	void setFilter(int idx, bool filter) {
-		ptrFilter[idx] = filter ? 1.f : 0.f;
+	void setFilter(int idx, float val) {
+		// ptrFilter[idx] = filter ? 1.f : 0.f;
+		glBindBuffer(GL_TEXTURE_BUFFER, bufFilter);
+		glBufferSubData(GL_TEXTURE_BUFFER, idx * sizeof(float), sizeof(float), &val);
 	}
 
 	// TODO not tested !
 	// Maybe protected ?
-	void setFilter(std::vector<bool> filters) {
-		std::vector<float> f_filters(filters.size());
-		std::transform(filters.begin(), filters.end(), f_filters.begin(), [](bool filter) { return filter ? 1.f : 0.f; });
-		std::memcpy(ptrFilter, f_filters.data(), f_filters.size() * sizeof(float));
+	void setFilter(std::vector<float> data) {
+		// std::vector<float> f_filters(filters.size());
+		// std::transform(filters.begin(), filters.end(), f_filters.begin(), [](bool filter) { return filter ? 1.f : 0.f; });
+		// std::memcpy(ptrFilter, f_filters.data(), f_filters.size() * sizeof(float));
+		glBindBuffer(GL_TEXTURE_BUFFER, bufFilter);
+		glBufferData(GL_TEXTURE_BUFFER, data.size() * sizeof(float), data.data(), GL_DYNAMIC_DRAW);
+	}
+
+	
+	void setLayer(int idx, float val, Layer layer) {
+		switch (layer)
+		{
+		case Layer::HIGHLIGHT:
+			setHighlight(idx, val);
+			break;
+		case Layer::FILTER:
+			setFilter(idx, val);
+			break;
+		default:
+			break;
+		}
+	}
+
+	void setLayer(std::vector<float> data, Layer layer) {
+		switch (layer)
+		{
+		case Layer::HIGHLIGHT:
+			setHighlight(data);
+			break;
+		case Layer::FILTER:
+			setFilter(data);
+			break;
+		default:
+			break;
+		}
 	}
 
 	float* &getFilterPtr() {

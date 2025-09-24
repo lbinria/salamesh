@@ -391,32 +391,36 @@ struct Model {
         updateHighlights();
     }
 
-    void unsetHighlights(ElementKind kind) {
+    void unsetLayer(ElementKind kind, IRenderer::Layer layer) {
         switch (kind) {
             case ElementKind::CELLS: {
                 std::vector<float> zeros(ncells(), 0.f);
-                _meshRenderer->setHighlight(zeros);
+                _meshRenderer->setLayer(zeros, layer);
                 break;
             }
             case ElementKind::CELL_FACETS:
             case ElementKind::FACETS: {
                 std::vector<float> zeros(nfacets(), 0.f);
-                _meshRenderer->setHighlight(zeros);
+                _meshRenderer->setLayer(zeros, layer);
                 break;
             }
             case ElementKind::EDGES:
             case ElementKind::CORNERS: {
                 // TODO implement nhalfedges()
                 // std::vector<float> zeros(ned(), 0.f);
-                // _meshRenderer->setHighlight(zeros);
+                // _meshRenderer->setLayer(zeros, layer);
                 break;
             }
             case ElementKind::POINTS: {
                 std::vector<float> zeros(nverts(), 0.f);
-                _pointSetRenderer.setHighlight(zeros);
+                _pointSetRenderer.setLayer(zeros, layer);
                 break;
             }
         }
+    }
+
+    void unsetHighlights(ElementKind kind) {
+        unsetLayer(kind, IRenderer::Layer::HIGHLIGHT);
     }
 
     void unsetHighlights() {
