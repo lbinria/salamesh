@@ -89,7 +89,7 @@ struct HexModel final : public Model {
                 if (!hl_c.bind(selectedHighlightAttr, _volumeAttributes, _m))
                     return;
                 
-                _meshRenderer->resizeHightlightBuffer(hl_c.ptr->data.size());
+                // _meshRenderer->resizeHightlightBuffer(hl_c.ptr->data.size());
                 _meshRenderer->setHighlight(hl_c.ptr->data);                
 
                 break;
@@ -100,7 +100,7 @@ struct HexModel final : public Model {
                 if (!hl_f.bind(selectedHighlightAttr, _volumeAttributes, _m))
                     return;
 
-                _meshRenderer->resizeHightlightBuffer(hl_f.ptr->data.size());
+                // _meshRenderer->resizeHightlightBuffer(hl_f.ptr->data.size());
                 _meshRenderer->setHighlight(hl_f.ptr->data);
 
                 break;

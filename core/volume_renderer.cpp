@@ -37,22 +37,14 @@ void VolumeRenderer::init() {
 	glBindTexture(GL_TEXTURE_BUFFER, texAttr);
 	glTexBuffer(GL_TEXTURE_BUFFER, GL_R32F, bufAttr);
 
+	// For the moment don't use persistent mapped memory
 	glGenBuffers(1, &bufHighlight);
-	glBindBuffer(GL_TEXTURE_BUFFER, bufHighlight);
-	glBufferStorage(GL_TEXTURE_BUFFER, _m.ncells() * sizeof(float), nullptr, flags);
-	// Map once and keep pointer (not compatible for MacOS... because need OpenGL >= 4.6 i think)
-	ptrHighlight = (float*)glMapBufferRange(GL_TEXTURE_BUFFER, 0, _m.ncells() * sizeof(float), flags);
-
 	glGenTextures(1, &texHighlight);
+	glBindBuffer(GL_TEXTURE_BUFFER, bufHighlight);
 	glActiveTexture(GL_TEXTURE0 + 3); 
 	glBindTexture(GL_TEXTURE_BUFFER, texHighlight);
 	glTexBuffer(GL_TEXTURE_BUFFER, GL_R32F, bufHighlight);
 
-
-	createPersistentBuffer(highlightBuffer, _m.ncells() * sizeof(float));
-	glCreateTextures(GL_TEXTURE_BUFFER, 1, &texHighlight2);
-	glActiveTexture(GL_TEXTURE0 + 3); 
-	glTextureBuffer(texHighlight2, GL_R32F, highlightBuffer.buf);
 
 	glGenBuffers(1, &bufFacetHighlight);
 	glBindBuffer(GL_TEXTURE_BUFFER, bufFacetHighlight);
@@ -95,8 +87,7 @@ void VolumeRenderer::init() {
 	glBindTexture(GL_TEXTURE_BUFFER, texAttr);
 
 	glActiveTexture(GL_TEXTURE0 + 3);
-	// glBindTexture(GL_TEXTURE_BUFFER, texHighlight);
-	glBindTexture(GL_TEXTURE_BUFFER, texHighlight2);
+	glBindTexture(GL_TEXTURE_BUFFER, texHighlight);
 
 	glActiveTexture(GL_TEXTURE0 + 4);
 	glBindTexture(GL_TEXTURE_BUFFER, texFacetHighlight);
@@ -177,7 +168,7 @@ void VolumeRenderer::render(glm::vec3 &position) {
 	glBindTexture(GL_TEXTURE_BUFFER, texAttr);
 
 	glActiveTexture(GL_TEXTURE0 + 3);
-	glBindTexture(GL_TEXTURE_BUFFER, texHighlight2);
+	glBindTexture(GL_TEXTURE_BUFFER, texHighlight);
 
 	glActiveTexture(GL_TEXTURE0 + 4);
 	glBindTexture(GL_TEXTURE_BUFFER, texFacetHighlight);
@@ -201,11 +192,12 @@ void VolumeRenderer::clean() {
 	glDeleteBuffers(1, &VBO);
 
 	// Unmap highlight
-	if (ptrHighlight) {
-		glBindBuffer(GL_TEXTURE_BUFFER, bufHighlight);
-		glUnmapBuffer(GL_TEXTURE_BUFFER);
-		ptrHighlight = nullptr;
-	}
+	// if (ptrHighlight) {
+	// 	glBindBuffer(GL_TEXTURE_BUFFER, bufHighlight);
+	// 	glUnmapBuffer(GL_TEXTURE_BUFFER);
+	// 	ptrHighlight = nullptr;
+	// }
+
 	// Unmap facet highlight
 	if (ptrFacetHighlight) {
 		glBindBuffer(GL_TEXTURE_BUFFER, bufFacetHighlight);

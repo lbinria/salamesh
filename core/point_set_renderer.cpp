@@ -43,15 +43,22 @@ void PointSetRenderer::init() {
 	glTexBuffer(GL_TEXTURE_BUFFER, GL_R32F, bufFilter);
 
 	// Highlight
+	// glGenBuffers(1, &bufHighlight);
+	// glBindBuffer(GL_TEXTURE_BUFFER, bufHighlight);
+
+	// glBufferStorage(GL_TEXTURE_BUFFER, ps.size() * sizeof(float), nullptr, flags);
+	// // Map once and keep pointer (not compatible for MacOS... because need OpenGL >= 4.6 i think)
+	// ptrHighlight = (float*)glMapBufferRange(GL_TEXTURE_BUFFER, 0, ps.size() * sizeof(float), flags);
+
+	// glGenTextures(1, &texHighlight);
+	// glActiveTexture(GL_TEXTURE0 + 3); 
+	// glBindTexture(GL_TEXTURE_BUFFER, texHighlight);
+	// glTexBuffer(GL_TEXTURE_BUFFER, GL_R32F, bufHighlight);
+
 	glGenBuffers(1, &bufHighlight);
-	glBindBuffer(GL_TEXTURE_BUFFER, bufHighlight);
-
-	glBufferStorage(GL_TEXTURE_BUFFER, ps.size() * sizeof(float), nullptr, flags);
-	// Map once and keep pointer (not compatible for MacOS... because need OpenGL >= 4.6 i think)
-	ptrHighlight = (float*)glMapBufferRange(GL_TEXTURE_BUFFER, 0, ps.size() * sizeof(float), flags);
-
 	glGenTextures(1, &texHighlight);
-	glActiveTexture(GL_TEXTURE0 + 3); 
+	glBindBuffer(GL_TEXTURE_BUFFER, bufHighlight);
+	glActiveTexture(GL_TEXTURE0 + 3);
 	glBindTexture(GL_TEXTURE_BUFFER, texHighlight);
 	glTexBuffer(GL_TEXTURE_BUFFER, GL_R32F, bufHighlight);
 
@@ -126,11 +133,11 @@ void PointSetRenderer::clean() {
 	glDeleteBuffers(1, &VBO);
 
 	// Unmap highlight
-	if (ptrHighlight) {
-		glBindBuffer(GL_TEXTURE_BUFFER, bufHighlight);
-		glUnmapBuffer(GL_TEXTURE_BUFFER);
-		ptrHighlight = nullptr;
-	}
+	// if (ptrHighlight) {
+	// 	glBindBuffer(GL_TEXTURE_BUFFER, bufHighlight);
+	// 	glUnmapBuffer(GL_TEXTURE_BUFFER);
+	// 	ptrHighlight = nullptr;
+	// }
 
 	// Unmap filter
 	if (ptrFilter) {

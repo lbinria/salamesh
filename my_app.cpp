@@ -411,6 +411,26 @@ void MyApp::draw_gui() {
 		model.updateHighlights();
 	}
 
+	if (ImGui::Button("Highlight points")) {
+
+		auto &model = getCurrentModel().as<HexModel>();
+		auto &hex = model.getHexahedra();
+		
+		PointAttribute<float> hl;
+		hl.bind("_highlight", model.getVolumeAttributes(), hex);
+
+		for (auto c : hex.iter_vertices()) {
+			hl[c] = static_cast<float>(rand()) / RAND_MAX;
+		}
+
+		model.setHighlights(ElementKind::POINTS);
+	}
+
+	if (ImGui::Button("Unset highlights")) {
+		auto &model = getCurrentModel().as<HexModel>();
+		model.unsetHighlights();
+	}
+
 
 	ImGui::End();
 

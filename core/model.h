@@ -363,16 +363,68 @@ struct Model {
 
     void setHighlightAttr(std::string name, ElementKind kind) {
         selectedHighlightAttr = name;
-        setHighlightElement(kind);
+        setHighlights(kind);
     }
 
-    void setHighlightElement(ElementKind kind) {
+    void setHighlights(ElementKind kind) {
         selectedHighlightElement = kind;
 
-        _meshRenderer->setHighlightElement(kind);
-        _pointSetRenderer.setHighlightElement(kind);
-        if (_halfedgeRenderer)
-            _halfedgeRenderer->setHighlightElement(kind);
+        switch (kind) {
+            case ElementKind::CELLS:
+            case ElementKind::CELL_FACETS:
+            case ElementKind::FACETS:
+                _meshRenderer->setHighlightElement(kind);
+            break;
+            case ElementKind::EDGES:
+            case ElementKind::CORNERS:
+                if (_halfedgeRenderer)
+                    _halfedgeRenderer->setHighlightElement(kind);
+            break;
+            case ElementKind::POINTS:
+                _pointSetRenderer.setHighlightElement(kind);
+            break;
+            default:
+            
+            break;
+        }
+
+        updateHighlights();
+    }
+
+    void unsetHighlights(ElementKind kind) {
+        switch (kind) {
+            case ElementKind::CELLS: {
+                std::vector<float> zeros(ncells(), 0.f);
+                _meshRenderer->setHighlight(zeros);
+                break;
+            }
+            case ElementKind::CELL_FACETS:
+            case ElementKind::FACETS: {
+                std::vector<float> zeros(nfacets(), 0.f);
+                _meshRenderer->setHighlight(zeros);
+                break;
+            }
+            case ElementKind::EDGES:
+            case ElementKind::CORNERS: {
+                // TODO implement nhalfedges()
+                // std::vector<float> zeros(ned(), 0.f);
+                // _meshRenderer->setHighlight(zeros);
+                break;
+            }
+            case ElementKind::POINTS: {
+                std::vector<float> zeros(nverts(), 0.f);
+                _pointSetRenderer.setHighlight(zeros);
+                break;
+            }
+        }
+    }
+
+    void unsetHighlights() {
+        // Unset all
+        unsetHighlights(ElementKind::CELLS);
+        unsetHighlights(ElementKind::FACETS);
+        unsetHighlights(ElementKind::EDGES);
+        unsetHighlights(ElementKind::POINTS);
     }
 
     std::tuple<std::string, ElementKind> getFilterAttr() const {

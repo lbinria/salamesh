@@ -9,6 +9,11 @@
 
 struct IRenderer {
 
+	enum Layer {
+		HIGHLIGHT,
+		FILTER
+	};
+
 	virtual void init() = 0;
 	virtual void push() = 0;
 	virtual void render(glm::vec3 &position) = 0;
@@ -166,15 +171,21 @@ struct IRenderer {
 		setAttribute(converted_attribute_data);
 	}
 
-	void setAttribute(std::vector<float> data) {
-
-			// Get bounds (min-max)
+	std::tuple<float, float> getRange(std::vector<float>& data) {
 		float min = std::numeric_limits<float>::max(); 
 		float max = std::numeric_limits<float>::min();
 		for (auto x : data) {
 			min = std::min(min, x);
 			max = std::max(max, x);
 		}
+
+		return std::make_tuple(min, max);
+	}
+
+	void setAttribute(std::vector<float> data) {
+
+		// Get range (min-max)
+		auto [min, max] = getRange(data);
 
 		// Update min/max
 		shader.use();
@@ -184,16 +195,18 @@ struct IRenderer {
 		std::memcpy(ptrAttr, data.data(), data.size() * sizeof(float));
 	}
 
-	// Maybe protected ?
 	void setHighlight(int idx, float highlight) {
 		// ptrHighlight[idx] = highlight;
-		highlightBuffer.ptr[idx] = highlight;
+		// highlightBuffer.ptr[idx] = highlight;
+		glBindBuffer(GL_TEXTURE_BUFFER, bufHighlight);
+		glBufferSubData(GL_TEXTURE_BUFFER, idx * sizeof(float), sizeof(float), &highlight);
 	}
 
-	// Maybe protected ?
 	void setHighlight(std::vector<float> highlights) {
 		// std::memcpy(ptrHighlight, highlights.data(), highlights.size() * sizeof(float));
-		std::memcpy(highlightBuffer.ptr, highlights.data(), highlights.size() * sizeof(float));
+		// std::memcpy(highlightBuffer.ptr, highlights.data(), highlights.size() * sizeof(float));
+		glBindBuffer(GL_TEXTURE_BUFFER, bufHighlight);
+		glBufferData(GL_TEXTURE_BUFFER, highlights.size() * sizeof(float), highlights.data(), GL_DYNAMIC_DRAW);
 	}
 
 	// Maybe protected ?
@@ -213,22 +226,22 @@ struct IRenderer {
 		return ptrFilter;
 	}
 
-	void resizeHightlightBuffer(int size) {		
-		resizePersistentBuffer(highlightBuffer, size);
-		// unsigned int newTexHighlight = 0;
-		// glCreateTextures(GL_TEXTURE_BUFFER, 1, &newTexHighlight);
-		// glActiveTexture(GL_TEXTURE0 + 3); 
-		// glTextureBuffer(newTexHighlight, GL_R32F, highlightBuffer.buf);
+	// void resizeHightlightBuffer(int size) {		
+	// 	resizePersistentBuffer(highlightBuffer, size);
+	// 	// unsigned int newTexHighlight = 0;
+	// 	// glCreateTextures(GL_TEXTURE_BUFFER, 1, &newTexHighlight);
+	// 	// glActiveTexture(GL_TEXTURE0 + 3); 
+	// 	// glTextureBuffer(newTexHighlight, GL_R32F, highlightBuffer.buf);
 		
-		// glActiveTexture(GL_TEXTURE0 + 3);
-		// glBindTexture(GL_TEXTURE_BUFFER, newTexHighlight);
+	// 	// glActiveTexture(GL_TEXTURE0 + 3);
+	// 	// glBindTexture(GL_TEXTURE_BUFFER, newTexHighlight);
 
-		// shader.use();
-		// shader.setInt("highlightBuf", 3);
+	// 	// shader.use();
+	// 	// shader.setInt("highlightBuf", 3);
 
-		// glDeleteTextures(1, &texHighlight2);
-		// texHighlight2 = texHighlight;
-	}
+	// 	// glDeleteTextures(1, &texHighlight2);
+	// 	// texHighlight2 = texHighlight;
+	// }
 
 	Shader shader;
 
@@ -242,10 +255,10 @@ struct IRenderer {
 
 	unsigned int VAO, VBO; // Buffers
 	unsigned int bufBary, bufHighlight, bufAttr, bufFilter; // Sample buffers
-	unsigned int texColorMap, texBary, texHighlight, texHighlight2, texAttr, texFilter; // Textures
+	unsigned int texColorMap, texBary, texHighlight, texAttr, texFilter; // Textures
 
 	float *ptrAttr;
-	float *ptrHighlight;
+	// float *ptrHighlight;
 	float *ptrFilter;
 
 
@@ -257,7 +270,7 @@ struct IRenderer {
 		GLbitfield storageFlags = 0;
 	};
 
-	PersistentBuffer highlightBuffer;
+	// PersistentBuffer highlightBuffer;
 
 	void createPersistentBuffer(PersistentBuffer &b, GLsizeiptr size,
 								GLbitfield mapFlags = GL_MAP_READ_BIT | GL_MAP_WRITE_BIT | GL_MAP_PERSISTENT_BIT | GL_MAP_COHERENT_BIT,
