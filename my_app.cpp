@@ -441,6 +441,8 @@ void MyApp::draw_gui() {
 
 		for (auto c : hex.iter_cells()) {
 			fl[c] = static_cast<float>(rand()) / RAND_MAX > .5f ? 1 : 0;
+			// TODO do below, to update only one element
+			// model.updateHighlightAt(c);
 		}
 
 		model.setFilter(ElementKind::CELLS);

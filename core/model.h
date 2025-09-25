@@ -375,8 +375,7 @@ struct Model {
     // }
 
     void setHighlightAttr(std::string name, ElementKind kind) {
-        selectedAttrByLayer[IRenderer::Layer::HIGHLIGHT].attrName = name;
-        setHighlight(kind);
+        setLayerAttr(name, kind, IRenderer::Layer::HIGHLIGHT);
     }
 
     // AttrSelection getFilterAttr() const {
@@ -384,8 +383,13 @@ struct Model {
     // }
 
     void setFilterAttr(std::string name, ElementKind kind) {
-        selectedAttrByLayer[IRenderer::Layer::FILTER].attrName = name;
-        setFilter(kind);
+        setLayerAttr(name, kind, IRenderer::Layer::FILTER);
+    }
+
+    // Choose which attribute to bind to layer
+    void setLayerAttr(std::string name, ElementKind kind, IRenderer::Layer layer) {
+        selectedAttrByLayer[layer].attrName = name;
+        setLayer(kind, layer);
     }
 
     void setHighlight(ElementKind kind) {

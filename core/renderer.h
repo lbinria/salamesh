@@ -49,23 +49,23 @@ struct IRenderer {
 	}
 
 	void setHighlightElement(ElementKind element) {
-		shader.use();
-		shader.setInt("highlightElement", element);
+		setLayerElement(element, Layer::HIGHLIGHT);
 	}
 
 	void setFilterElement(ElementKind element) {
-		shader.use();
-		shader.setInt("filterElement", element);
+		setLayerElement(element, Layer::FILTER);
 	}
 
 	void setLayerElement(ElementKind element, Layer layer) {
 		switch (layer)
 		{
 		case Layer::HIGHLIGHT:
-			setHighlightElement(element);
+			shader.use();
+			shader.setInt("highlightElement", element);
 			break;
 		case Layer::FILTER:
-			setFilterElement(element);
+			shader.use();
+			shader.setInt("filterElement", element);
 			break;
 		default:
 			break;
