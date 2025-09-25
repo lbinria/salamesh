@@ -109,39 +109,35 @@ void MyApp::init() {
 	if (!args.models.empty())
 		loadModel(*args.models.begin());
 
-	// // Heavy load test (slow...)
-	// for (int i = 0; i < 10; ++i) {
-	// 	loadModel("assets/catorus_hex_attr.geogram");
-	// 	models[i+1]->setPosition(models[0]->getPosition() + glm::vec3(rand() % 10 / 10.f, rand() % 10 / 10.f, rand() % 10 / 10.f));
+	// ----- TESTS ------
+
+	// // // Heavy load test (slow...)
+	// // for (int i = 0; i < 10; ++i) {
+	// // 	loadModel("assets/catorus_hex_attr.geogram");
+	// // 	models[i+1]->setPosition(models[0]->getPosition() + glm::vec3(rand() % 10 / 10.f, rand() % 10 / 10.f, rand() % 10 / 10.f));
+	// // }
+
+	// loadModel("assets/catorus_hex_facet_attr.geogram");
+	// loadModel("assets/catorus_quad.geogram");
+	// loadModel("assets/catorus_tri.geogram");
+	// loadModel("assets/catorus_tet.geogram");
+
+	// // load_state("/home/tex/Desktop/state.json");
+
+	// models[1]->setPosition(glm::vec3(1.f, 0.f, 0.f));
+	// models[2]->setPosition(glm::vec3(2.f, 0.f, 0.f));
+	// models[3]->setPosition(glm::vec3(3.f, 0.f, 0.f));
+	// models[4]->setPosition(glm::vec3(4.f, 0.f, 0.f));
+
+	// models[1]->setParent(models[0]);
+	// models[2]->setParent(models[0]);
+
+	// for (auto &m : getChildrenOf(models[0])) {
+	// 	std::cout << "child: " << m->getName() << std::endl;
 	// }
 
-	loadModel("assets/catorus_hex_facet_attr.geogram");
-	loadModel("assets/catorus_quad.geogram");
-	loadModel("assets/catorus_tri.geogram");
-	loadModel("assets/catorus_tet.geogram");
+	// ----- TESTS ------
 
-	// load_state("/home/tex/Desktop/state.json");
-
-	models[1]->setPosition(glm::vec3(1.f, 0.f, 0.f));
-	models[2]->setPosition(glm::vec3(2.f, 0.f, 0.f));
-	models[3]->setPosition(glm::vec3(3.f, 0.f, 0.f));
-	models[4]->setPosition(glm::vec3(4.f, 0.f, 0.f));
-
-	models[1]->setParent(models[0]);
-	models[2]->setParent(models[0]);
-
-	for (auto &m : getChildrenOf(models[0])) {
-		std::cout << "child: " << m->getName() << std::endl;
-	}
-
-
-	// for (int i = 0; i < 1000; ++i)
-	// 	models[3]->setFilter(rand() % 3000, true);
-
-	// int hello_model_idx = addModel("hello_model");
-	// models[hello_model_idx]->load("assets/catorus_hex_facet_attr.geogram");
-	// models[hello_model_idx]->setPosition(glm::vec3(0.f, 2.f, 0.f));
-	// std::cout << "Remove model: " << removeModel("hello_model") << std::endl;;
 
 
 	Shader screenShader("shaders/screen.vert", "shaders/screen.frag");
@@ -150,9 +146,15 @@ void MyApp::init() {
 
 
 	{
+		// Get cameras start pos
+		glm::vec3 camera_pos(0.f);
+		if (hasModels()) {
+			camera_pos = getCurrentModel().getPosition();
+		}
+
 		// Create cameras
-		auto arcball_camera = std::make_shared<ArcBallCamera>("Arcball", glm::vec3(0.f, 0.f, -3.f), getCurrentModel().getPosition(), glm::vec3(0.f, 1.f, 0.f), glm::vec3(45.f, screenWidth, screenHeight));
-		auto descent_camera = std::make_shared<DescentCamera>("Descent", glm::vec3(0.f, 0.f, -3.f), getCurrentModel().getPosition(), glm::vec3(0.f, 1.f, 0.f), glm::vec3(45.f, screenWidth, screenHeight));
+		auto arcball_camera = std::make_shared<ArcBallCamera>("Arcball", glm::vec3(0.f, 0.f, -3.f), camera_pos, glm::vec3(0.f, 1.f, 0.f), glm::vec3(45.f, screenWidth, screenHeight));
+		auto descent_camera = std::make_shared<DescentCamera>("Descent", glm::vec3(0.f, 0.f, -3.f), camera_pos, glm::vec3(0.f, 1.f, 0.f), glm::vec3(45.f, screenWidth, screenHeight));
 		cameras.push_back(std::move(arcball_camera));
 		cameras.push_back(std::move(descent_camera));
 	}
@@ -375,102 +377,102 @@ void MyApp::draw_gui() {
 	}
 
 	// Test
-	ImGui::Begin("Test");
+	// ImGui::Begin("Test");
 
-	ImGui::Text("Test window");
+	// ImGui::Text("Test window");
 
-	if (ImGui::Button("Highlight cells")) {
-		auto &model = getCurrentModel().as<HexModel>();
-		model.setHighlightAttr("_highlight", ElementKind::CELLS);
-		CellAttribute<float> hl;
-		hl.bind("_highlight", model.getVolumeAttributes(), model.getHexahedra());
+	// if (ImGui::Button("Highlight cells")) {
+	// 	auto &model = getCurrentModel().as<HexModel>();
+	// 	model.setHighlightAttr("_highlight", ElementKind::CELLS);
+	// 	CellAttribute<float> hl;
+	// 	hl.bind("_highlight", model.getVolumeAttributes(), model.getHexahedra());
 
-		for (auto c : model.getHexahedra().iter_cells()) {
-			if (c % 2 == 0)
-				hl[c] = 1.f;
-			else 
-				hl[c] = 0.5f;
-		}
+	// 	for (auto c : model.getHexahedra().iter_cells()) {
+	// 		if (c % 2 == 0)
+	// 			hl[c] = 1.f;
+	// 		else 
+	// 			hl[c] = 0.5f;
+	// 	}
 
-		model.updateHighlights();
-	}
+	// 	model.updateHighlights();
+	// }
 
-	if (ImGui::Button("Highlight facets")) {
-		auto &model = getCurrentModel().as<HexModel>();
-		model.setHighlightAttr("_highlight", ElementKind::CELL_FACETS);
-		CellFacetAttribute<float> hl;
-		hl.bind("_highlight", model.getVolumeAttributes(), model.getHexahedra());
+	// if (ImGui::Button("Highlight facets")) {
+	// 	auto &model = getCurrentModel().as<HexModel>();
+	// 	model.setHighlightAttr("_highlight", ElementKind::CELL_FACETS);
+	// 	CellFacetAttribute<float> hl;
+	// 	hl.bind("_highlight", model.getVolumeAttributes(), model.getHexahedra());
 
-		for (auto c : model.getHexahedra().iter_facets()) {
-			if (c % 2 == 0)
-				hl[c] = 1.f;
-			else 
-				hl[c] = 0.5f;
-		}
+	// 	for (auto c : model.getHexahedra().iter_facets()) {
+	// 		if (c % 2 == 0)
+	// 			hl[c] = 1.f;
+	// 		else 
+	// 			hl[c] = 0.5f;
+	// 	}
 
-		model.updateHighlights();
-	}
+	// 	model.updateHighlights();
+	// }
 
-	if (ImGui::Button("Highlight points")) {
+	// if (ImGui::Button("Highlight points")) {
 
-		auto &model = getCurrentModel().as<HexModel>();
-		auto &hex = model.getHexahedra();
+	// 	auto &model = getCurrentModel().as<HexModel>();
+	// 	auto &hex = model.getHexahedra();
 		
-		PointAttribute<float> hl;
-		hl.bind("_highlight", model.getVolumeAttributes(), hex);
+	// 	PointAttribute<float> hl;
+	// 	hl.bind("_highlight", model.getVolumeAttributes(), hex);
 
-		for (auto c : hex.iter_vertices()) {
-			hl[c] = static_cast<float>(rand()) / RAND_MAX;
-		}
+	// 	for (auto c : hex.iter_vertices()) {
+	// 		hl[c] = static_cast<float>(rand()) / RAND_MAX;
+	// 	}
 
-		model.setHighlight(ElementKind::POINTS);
-	}
+	// 	model.setHighlight(ElementKind::POINTS);
+	// }
 
-	if (ImGui::Button("Unset highlights")) {
-		auto &model = getCurrentModel().as<HexModel>();
-		model.unsetHighlights();
-	}
+	// if (ImGui::Button("Unset highlights")) {
+	// 	auto &model = getCurrentModel().as<HexModel>();
+	// 	model.unsetHighlights();
+	// }
 
-	if (ImGui::Button("Filter cell")) {
+	// if (ImGui::Button("Filter cell")) {
 
-		auto &model = getCurrentModel().as<HexModel>();
-		auto &hex = model.getHexahedra();
+	// 	auto &model = getCurrentModel().as<HexModel>();
+	// 	auto &hex = model.getHexahedra();
 		
-		CellAttribute<float> fl;
-		fl.bind("_filter", model.getVolumeAttributes(), hex);
+	// 	CellAttribute<float> fl;
+	// 	fl.bind("_filter", model.getVolumeAttributes(), hex);
 
-		for (auto c : hex.iter_cells()) {
-			fl[c] = static_cast<float>(rand()) / RAND_MAX > .5f ? 1 : 0;
-			// TODO do below, to update only one element
-			// model.updateHighlightAt(c);
-		}
+	// 	for (auto c : hex.iter_cells()) {
+	// 		fl[c] = static_cast<float>(rand()) / RAND_MAX > .5f ? 1 : 0;
+	// 		// TODO do below, to update only one element
+	// 		// model.updateHighlightAt(c);
+	// 	}
 
-		model.setFilter(ElementKind::CELLS);
-	}
+	// 	model.setFilter(ElementKind::CELLS);
+	// }
 
-	if (ImGui::Button("Filter points")) {
+	// if (ImGui::Button("Filter points")) {
 
-		auto &model = getCurrentModel().as<HexModel>();
-		auto &hex = model.getHexahedra();
+	// 	auto &model = getCurrentModel().as<HexModel>();
+	// 	auto &hex = model.getHexahedra();
 		
-		PointAttribute<float> fl;
-		fl.bind("_filter", model.getVolumeAttributes(), hex);
+	// 	PointAttribute<float> fl;
+	// 	fl.bind("_filter", model.getVolumeAttributes(), hex);
 
-		for (auto c : hex.iter_vertices()) {
-			fl[c] = static_cast<float>(rand()) / RAND_MAX > .5f ? 1 : 0;
-		}
+	// 	for (auto c : hex.iter_vertices()) {
+	// 		fl[c] = static_cast<float>(rand()) / RAND_MAX > .5f ? 1 : 0;
+	// 	}
 
-		model.setFilter(ElementKind::POINTS);
-	}
+	// 	model.setFilter(ElementKind::POINTS);
+	// }
 
-	if (ImGui::Button("Unset filters")) {
-		auto &model = getCurrentModel().as<HexModel>();
-		model.unsetFilters();
-	}
+	// if (ImGui::Button("Unset filters")) {
+	// 	auto &model = getCurrentModel().as<HexModel>();
+	// 	model.unsetFilters();
+	// }
 
 
 
-	ImGui::End();
+	// ImGui::End();
 
 }
 

@@ -152,6 +152,10 @@ struct App : public IApp {
         return models.size();
     }
 
+    bool hasModels() override {
+        return countModels() > 0;
+    }
+
     void setSelectedModel(int selected) override {
         if (selected < 0 || selected >= models.size()) {
             std::cerr << "Invalid model index: " << selected << std::endl;

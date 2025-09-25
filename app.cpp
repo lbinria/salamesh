@@ -531,6 +531,9 @@ long App::pick_edge(double x, double y) {
 }
 
 long App::pick_vertex(double x, double y) {
+	if (!hasModels())
+		return -1;
+
 	glBindFramebuffer(GL_READ_FRAMEBUFFER, getRenderSurface().fbo);
 	glReadBuffer(GL_COLOR_ATTACHMENT3);
 	long id = pick(x, y);
@@ -539,6 +542,9 @@ long App::pick_vertex(double x, double y) {
 }
 
 long App::pick_facet(double x, double y) {
+	if (!hasModels())
+		return -1;
+
 	glBindFramebuffer(GL_READ_FRAMEBUFFER, getRenderSurface().fbo);
 	glReadBuffer(GL_COLOR_ATTACHMENT1);
 	long id = pick(x, y);
@@ -547,6 +553,9 @@ long App::pick_facet(double x, double y) {
 }
 
 long App::pick_cell(double x, double y) {
+	if (!hasModels())
+		return -1;
+
 	glBindFramebuffer(GL_READ_FRAMEBUFFER, getRenderSurface().fbo);
 	glReadBuffer(GL_COLOR_ATTACHMENT2);
 	long id = pick(x, y);
@@ -563,6 +572,9 @@ long App::pick_mesh(double x, double y) {
 }
 
 std::vector<long> App::pick_vertices(double x, double y, int radius) {
+	if (!hasModels())
+		return {};
+
 	glBindFramebuffer(GL_READ_FRAMEBUFFER, getRenderSurface().fbo);
 	glReadBuffer(GL_COLOR_ATTACHMENT3);
 	auto ids = pick(x, y, radius);
@@ -578,6 +590,9 @@ std::vector<long> App::pick_vertices(double x, double y, int radius) {
 }
 
 std::vector<long> App::pick_facets(double x, double y, int radius) {
+	if (!hasModels())
+		return {};
+
 	glBindFramebuffer(GL_READ_FRAMEBUFFER, getRenderSurface().fbo);
 	glReadBuffer(GL_COLOR_ATTACHMENT1);
 	auto ids = pick(x, y, radius);
@@ -593,6 +608,9 @@ std::vector<long> App::pick_facets(double x, double y, int radius) {
 }
 
 std::vector<long> App::pick_cells(double x, double y, int radius) {
+	if (!hasModels())
+		return {};
+		
 	glBindFramebuffer(GL_READ_FRAMEBUFFER, getRenderSurface().fbo);
 	glReadBuffer(GL_COLOR_ATTACHMENT2);
 	auto ids = pick(x, y, radius);

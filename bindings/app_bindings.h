@@ -39,10 +39,12 @@ namespace bindings {
 			lua["app"] = &app;
 			sol::usertype<IApp> app_type = lua.new_usertype<IApp>("IApp");
 
-			// TODO maybe move 2 lines to app bindings
+			app_type["count_models"] = sol::readonly_property(&IApp::countModels);
+			app_type["has_models"] = sol::readonly_property(&IApp::hasModels);
 			app_type["models"] = sol::readonly_property(&IApp::getModels);
 			app_type.set_function("getChildrenOf", &IApp::getChildrenOf);
 			app_type["model"] = sol::readonly_property(&IApp::getCurrentModel);
+
 			app_type["cameras"] = sol::readonly_property(&IApp::getCameras);
 			app_type["camera"] = sol::readonly_property(&IApp::getCamera);
 			

@@ -28,6 +28,7 @@ struct IApp {
     virtual int getIndexOfModel(std::string name) = 0;
     virtual std::vector<std::shared_ptr<Model>> getChildrenOf(std::shared_ptr<Model> model) = 0;
     virtual int countModels() = 0;
+    virtual bool hasModels() = 0;
     virtual int getSelectedModel() = 0;
     virtual void setSelectedModel(int selected) = 0;
     virtual Model& getCurrentModel() = 0;

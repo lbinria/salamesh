@@ -331,7 +331,10 @@ function draw_gui()
 
 			imgui.Separator()
 
-			draw_model_properties(app.model, 0)
+			-- Check if app has at least one model, to draw properties of current one (if exists)
+			if (app.has_models) then
+				draw_model_properties(app.model, 0)
+			end
 
 			imgui.EndTabItem()
 
