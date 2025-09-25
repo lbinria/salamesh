@@ -40,6 +40,66 @@ struct TriangleInspector : public Component {
 			// float eps = powf(10.0f, logv);
 
 			for (auto &f : m.iter_facets()) {
+				auto v0 = f.vertex(0);
+				auto v1 = f.vertex(1);
+				auto v2 = f.vertex(2);
+
+				bool topo_degenerated[3] = {false};
+
+				if (v0 == v1) {
+					topo_degenerated[0] = true;
+					topo_degenerated[1] = true;
+				}
+				if (v0 == v2) {
+					topo_degenerated[0] = true;
+					topo_degenerated[2] = true;
+				}
+				if (v1 == v2) {
+					topo_degenerated[1] = true;
+					topo_degenerated[2] = true;
+				}
+
+				bool isTopoDegenerated = topo_degenerated[0] || topo_degenerated[1] || topo_degenerated[2];
+				if (isTopoDegenerated) {
+
+					if (ImGui::TextLink(("Facet " + std::to_string(f) + "##link_goto_topo_degenerated_facet" + std::to_string(f)).c_str())) {
+						Triangle3 t = f;
+						vec3 fPos = t.bary_verts();
+						glm::vec3 glmFPos(fPos.x, fPos.y, fPos.z);
+						auto dir = glm::normalize(app.getCamera().getEye() - glmFPos);
+						glm::vec3 newPos = glmFPos - dir * 1.f; 
+						app.getCamera().setEye(newPos);
+						app.getCamera().lookAt(glmFPos);
+					}
+					ImGui::SameLine();
+
+					ImGui::TextColored(ImVec4(1.f, 0.f, 0.f, 1.f), " is topo degenerated. Following corners coincide: ");
+
+					for (int i = 0; i < 3; ++i) {
+						if (topo_degenerated[i]) {
+
+							std::string lnkLabel = "corner " 
+								+ std::to_string(i) 
+								+ " (vert " 
+								+ std::to_string(f.vertex(i)) 
+								+ ")##link_goto_topo_degenerated_vertex" 
+								+ std::to_string(f.vertex(i));
+
+							ImGui::SameLine();
+							if (ImGui::TextLink(lnkLabel.c_str())) {
+								// Compute line between current camera pos and vertex pos
+								vec3 vPos = f.vertex(i).pos();
+								glm::vec3 glmVPos(vPos.x, vPos.y, vPos.z);
+								auto dir = glm::normalize(app.getCamera().getEye() - glmVPos);
+								glm::vec3 newPos = glmVPos - dir * 1.f; 
+								app.getCamera().setEye(newPos);
+								app.getCamera().lookAt(glmVPos);
+							}
+						}
+					}
+
+				}
+
 				auto p0 = f.vertex(0).pos();
 				auto p1 = f.vertex(1).pos();
 				auto p2 = f.vertex(2).pos();
@@ -49,9 +109,31 @@ struct TriangleInspector : public Component {
 				float p0p2Dist = (p0 - p2).norm2(); 
 				float p1p2Dist = (p1 - p2).norm2();
 
-				if (p0p1Dist < eps || p0p2Dist < eps || p1p2Dist < eps) {
-					std::string s = "Facet " + std::to_string(f) + " is geo degenerated.";
-					ImGui::TextColored(ImVec4(1.f, 0.f, 0.f, 1.f), s.c_str());
+				if (!isTopoDegenerated && (p0p1Dist < eps || p0p2Dist < eps || p1p2Dist < eps)) {
+					if (ImGui::TextLink(("Facet " + std::to_string(f) + "##link_goto_geo_degenerated_facet" + std::to_string(f)).c_str())) {
+						Triangle3 t = f;
+						vec3 fPos = t.bary_verts();
+						glm::vec3 glmFPos(fPos.x, fPos.y, fPos.z);
+						auto dir = glm::normalize(app.getCamera().getEye() - glmFPos);
+						glm::vec3 newPos = glmFPos - dir * 1.f; 
+						app.getCamera().setEye(newPos);
+						app.getCamera().lookAt(glmFPos);
+					}
+					ImGui::SameLine();
+
+					ImGui::TextColored(ImVec4(1.f, 0.f, 0.f, 1.f), " is geo degenerated.");
+
+					if (ImGui::TextLink(("Hide others##link_show_only_geo_degenerated_facet" + std::to_string(f)).c_str())) {
+						FacetAttribute<float> filter;
+						filter.bind("_filter", tri_model.getSurfaceAttributes(), m);
+
+						for (auto &cf : m.iter_facets()) {
+							if (cf != f) {
+								filter[cf] = 1.f;
+							}
+						}
+						model.setFilter(ElementKind::FACETS);
+					}
 				}
 			}
 
