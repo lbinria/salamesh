@@ -2,6 +2,8 @@
 #include "helpers/settings_manager.h"
 #include "helpers/module_loader.h"
 
+#include "triangle_inspector.h"
+
 #include <filesystem>
 namespace fs = std::filesystem;
 
@@ -206,6 +208,9 @@ void MyApp::init() {
 		}
 	}
 
+	// ----- TEST -----
+	// TODO remove just for testing manually add components
+	scripts.push_back(std::make_unique<TriangleInspector>(*this));
 }
 
 void MyApp::update(float dt) {
