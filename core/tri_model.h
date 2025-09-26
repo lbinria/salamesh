@@ -5,7 +5,7 @@
 #include <string>
 #include "model.h"
 #include "point_set_renderer.h"
-#include "halfedge_renderer.h"
+#include "halfedge_renderer_2.h"
 #include "tri_renderer.h"
 #include "color_mode.h"
 
@@ -21,7 +21,8 @@ struct TriModel final : public Model {
         _tri(), 
         Model::Model({
             {"mesh_renderer", std::make_shared<TriRenderer>(_tri)}, 
-            {"point_renderer", std::make_shared<PointSetRenderer>(_tri.points) }
+            {"point_renderer", std::make_shared<PointSetRenderer>(_tri.points) },
+            {"edge_renderer", std::make_shared<HalfedgeRenderer2>(_tri) }
         })
         {}
 
