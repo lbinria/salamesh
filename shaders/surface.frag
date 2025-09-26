@@ -85,7 +85,7 @@ void main()
 
     /* --- FILTER END --- */
 
-    if (colorMode == 1 && attrElement == 2) {
+    if (colorMode == 1 && attrElement == 8) {
 
         int primitiveIndex;
         // Cell facet attribute

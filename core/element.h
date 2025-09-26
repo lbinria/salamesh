@@ -2,13 +2,13 @@
 #include <string>
 
 enum ElementKind {
-	CORNERS = -1,
-	POINTS = 0,
-	EDGES = 1,
-	FACETS = 2,
-	CELLS = 3,
-	CELL_FACETS = 4,
-	CELL_CORNERS = 5
+	POINTS = 1,
+	CORNERS = 2,
+	EDGES = 4,
+	FACETS = 8,
+	CELLS = 16,
+	CELL_FACETS = 32,
+	CELL_CORNERS = 64
 };
 
 enum ElementType {

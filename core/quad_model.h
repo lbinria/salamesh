@@ -19,9 +19,11 @@ struct QuadModel final : public Model {
 
 	QuadModel() : 
         _quad(), 
-        // _quadRenderer(_quad), 
-        Model::Model(std::make_unique<QuadRenderer>(_quad), PointSetRenderer(_quad.points), nullptr)
-    {}
+        Model::Model({
+            {"mesh_renderer", std::make_shared<QuadRenderer>(_quad)}, 
+            {"point_renderer", std::make_shared<PointSetRenderer>(_quad.points) }
+        })
+        {}
 
 
     ModelType getModelType() const override {

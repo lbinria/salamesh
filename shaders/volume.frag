@@ -62,9 +62,9 @@ void main()
     // Check if cell is filtered
     // bool isFiltered = texelFetch(filterBuf, fragCellIndex).x >= .5;
     bool isFiltered = false;
-    if (filterElement == 3) {
+    if (filterElement == 16) {
         isFiltered = texelFetch(filterBuf, fragCellIndex).x >= .5;
-    } else if (filterElement == 4) {
+    } else if (filterElement == 32) {
         isFiltered = texelFetch(filterBuf, fragFacetIndex).x >= .5;
     }
 
@@ -98,14 +98,14 @@ void main()
 
     /* --- FILTER END --- */
 
-    if (colorMode == 1 && (attrElement == 3 || attrElement == 4)) {
+    if (colorMode == 1 && (attrElement == 16 || attrElement == 32)) {
 
         int primitiveIndex;
         // Cell facet attribute
-        if (attrElement == 4)
+        if (attrElement == 32)
             primitiveIndex = fragFacetIndex;
         // Cell attribute
-        else if (attrElement == 3)
+        else if (attrElement == 16)
             primitiveIndex = fragCellIndex;
 
         float fragAttrVal = texelFetch(attributeData, primitiveIndex).x;
@@ -120,9 +120,9 @@ void main()
     // float highlightVal = max(cellHighlightVal, facetHighlightVal);
 
     float highlightVal = 0.;
-    if (highlightElement == 3) {
+    if (highlightElement == 16) {
         highlightVal = texelFetch(highlightBuf, fragCellIndex).x;
-    } else if (highlightElement == 4) {
+    } else if (highlightElement == 32) {
         highlightVal = texelFetch(highlightBuf, fragFacetIndex).x;
     }
 

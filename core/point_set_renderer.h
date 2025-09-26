@@ -27,6 +27,8 @@ struct PointSetRenderer : public IRenderer {
     void render(glm::vec3 &position);
     void clean();
 
+	int getRenderElementKind() override { return ElementKind::POINTS; }
+
     float getPointSize() const {
         return pointSize;
     }

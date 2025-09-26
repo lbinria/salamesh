@@ -33,19 +33,15 @@ struct Model {
         HYBRID = 6 
     };
 
-    Model(std::unique_ptr<IRenderer> meshRenderer, PointSetRenderer pointSetRenderer, std::shared_ptr<HalfedgeRenderer> halfedgeRenderer) :
+    Model(std::map<std::string, std::shared_ptr<IRenderer>> renderers) :
     _name(""),
     _path(""),
-    _meshRenderer(std::move(meshRenderer)),
-    _pointSetRenderer(std::move(pointSetRenderer)),
-    _halfedgeRenderer(std::move(halfedgeRenderer)) {}
+    _renderers(std::move(renderers)) {}
 
-    Model(std::unique_ptr<IRenderer> meshRenderer, PointSetRenderer pointSetRenderer, std::shared_ptr<HalfedgeRenderer> halfedgeRenderer, std::string name) : 
+    Model(std::map<std::string, std::shared_ptr<IRenderer>> renderers, std::string name) : 
     _name(name), 
     _path(""),
-    _meshRenderer(std::move(meshRenderer)),
-    _pointSetRenderer(std::move(pointSetRenderer)),
-    _halfedgeRenderer(std::move(halfedgeRenderer)) {}
+    _renderers(std::move(renderers)) {}
 
 	template<typename T>
 	T& as() {
@@ -133,17 +129,13 @@ struct Model {
 
     // Lifecycle functions
 	void init() {
-		_meshRenderer->init();
-		_pointSetRenderer.init();
-        if (_halfedgeRenderer != nullptr)
-            _halfedgeRenderer->init();
+        for (auto const &[k, r] : _renderers)
+            r->init();
 	}
 
     void push() {
-        _meshRenderer->push();
-        _pointSetRenderer.push();
-        if (_halfedgeRenderer != nullptr)
-            _halfedgeRenderer->push();
+        for (auto const &[k, r] : _renderers)
+            r->push();
 
         if (colorMode == ColorMode::ATTRIBUTE) {
             updateAttr();
@@ -172,17 +164,13 @@ struct Model {
         
         glm::vec3 pos = getWorldPosition();
 
-        _meshRenderer->render(pos);
-        _pointSetRenderer.render(pos);
-        if (_halfedgeRenderer != nullptr)
-            _halfedgeRenderer->render(pos);
+        for (auto const &[k, r] : _renderers)
+            r->render(pos);
 	}
 
     void clean() {
-		_meshRenderer->clean();
-        _pointSetRenderer.clean();
-        if (_halfedgeRenderer != nullptr)
-            _halfedgeRenderer->clean();
+        for (auto const &[k, r] : _renderers)
+            r->clean();
 	}
 
     // Mesh info
@@ -243,12 +231,19 @@ struct Model {
         }
 
         selectedAttr = idx;
-        int kind = attrs[idx].kind;
+        ElementKind kind = attrs[idx].kind;
+
+        for (auto const &[k, r] : _renderers) {
+            if (r->isRenderElement(kind)) {
+                r->setAttribute(attrs[idx].ptr.get(), kind);
+            }
+        }
+
         // TODO see condition here not very smart maybe abstract renderers ?
-        if (kind == ElementKind::POINTS) {
-            _pointSetRenderer.setAttribute(attrs[idx].ptr.get(), -1);
-        } else 
-            _meshRenderer->setAttribute(attrs[idx].ptr.get(), kind);
+        // if (kind == ElementKind::POINTS) {
+        //     _pointSetRenderer.setAttribute(attrs[idx].ptr.get(), -1);
+        // } else 
+        //     _meshRenderer->setAttribute(attrs[idx].ptr.get(), kind);
     }
 
     void setSelectedAttr(std::string name, ElementKind kind) {
@@ -362,10 +357,8 @@ struct Model {
     }
 
     void setSelectedColormap(int idx) {
-        _meshRenderer->setSelectedColormap(idx);
-        _pointSetRenderer.setSelectedColormap(idx);
-        if (_halfedgeRenderer != nullptr)
-            _halfedgeRenderer->setSelectedColormap(idx);
+        for (auto const &[k, r] : _renderers)
+            r->setSelectedColormap(idx);
             
         selectedColormap = idx;
     }
@@ -427,54 +420,90 @@ struct Model {
     void setLayer(ElementKind kind, IRenderer::Layer layer) {
         selectedAttrByLayer[layer].elementKind = kind;
 
-        switch (kind) {
-            case ElementKind::CELLS:
-            case ElementKind::CELL_FACETS:
-            case ElementKind::FACETS:
-                _meshRenderer->setLayerElement(kind, layer);
-            break;
-            case ElementKind::EDGES:
-            case ElementKind::CORNERS:
-                if (_halfedgeRenderer)
-                    _halfedgeRenderer->setLayerElement(kind, layer);
-            break;
-            case ElementKind::POINTS:
-                _pointSetRenderer.setLayerElement(kind, layer);
-            break;
-            default:
-            
-            break;
+        for (auto const &[k, r] : _renderers) {
+            if (r->isRenderElement(kind)) {
+                r->setLayerElement(kind, layer);
+            }
         }
+
+        // switch (kind) {
+        //     case ElementKind::CELLS:
+        //     case ElementKind::CELL_FACETS:
+        //     case ElementKind::FACETS:
+        //         _meshRenderer->setLayerElement(kind, layer);
+        //     break;
+        //     case ElementKind::EDGES:
+        //     case ElementKind::CORNERS:
+        //         if (_halfedgeRenderer)
+        //             _halfedgeRenderer->setLayerElement(kind, layer);
+        //     break;
+        //     case ElementKind::POINTS:
+        //         _pointSetRenderer.setLayerElement(kind, layer);
+        //     break;
+        //     default:
+            
+        //     break;
+        // }
 
         updateLayer(layer);
     }
 
     void unsetLayer(ElementKind kind, IRenderer::Layer layer) {
+        // Prepare a vector of zeros of the size of the element kind to unset
+        std::vector<float> zeros;
         switch (kind) {
             case ElementKind::CELLS: {
-                std::vector<float> zeros(ncells(), 0.f);
-                _meshRenderer->setLayer(zeros, layer);
+                zeros.resize(ncells(), 0.f);
                 break;
             }
             case ElementKind::CELL_FACETS:
             case ElementKind::FACETS: {
-                std::vector<float> zeros(nfacets(), 0.f);
-                _meshRenderer->setLayer(zeros, layer);
+                zeros.resize(nfacets(), 0.f);
                 break;
             }
             case ElementKind::EDGES:
             case ElementKind::CORNERS: {
                 // TODO implement nhalfedges()
-                // std::vector<float> zeros(ned(), 0.f);
-                // _meshRenderer->setLayer(zeros, layer);
                 break;
             }
             case ElementKind::POINTS: {
-                std::vector<float> zeros(nverts(), 0.f);
-                _pointSetRenderer.setLayer(zeros, layer);
+                zeros.resize(nverts(), 0.f);
                 break;
             }
         }
+
+        // If renderer is rendering this kind of element, set requested layer data to zeros
+        for (auto const &[k ,r] : _renderers) {
+            if (r->isRenderElement(kind)) {
+                r->setLayer(zeros, layer);
+            }
+        }
+
+        // switch (kind) {
+        //     case ElementKind::CELLS: {
+        //         std::vector<float> zeros(ncells(), 0.f);
+        //         _meshRenderer->setLayer(zeros, layer);
+        //         break;
+        //     }
+        //     case ElementKind::CELL_FACETS:
+        //     case ElementKind::FACETS: {
+        //         std::vector<float> zeros(nfacets(), 0.f);
+        //         _meshRenderer->setLayer(zeros, layer);
+        //         break;
+        //     }
+        //     case ElementKind::EDGES:
+        //     case ElementKind::CORNERS: {
+        //         // TODO implement nhalfedges()
+        //         // std::vector<float> zeros(ned(), 0.f);
+        //         // _meshRenderer->setLayer(zeros, layer);
+        //         break;
+        //     }
+        //     case ElementKind::POINTS: {
+        //         std::vector<float> zeros(nverts(), 0.f);
+        //         _pointSetRenderer.setLayer(zeros, layer);
+        //         break;
+        //     }
+        // }
     }
 
 
@@ -515,10 +544,8 @@ struct Model {
 
     // Renderer functions
     void setTexture(unsigned int tex) {
-        _meshRenderer->setTexture(tex);
-        _pointSetRenderer.setTexture(tex);
-        if (_halfedgeRenderer != nullptr)
-            _halfedgeRenderer->setTexture(tex);
+        for (auto const &[k, r] : _renderers)
+            r->setTexture(tex);
     }
 
     int getColorMode() const {
@@ -526,10 +553,9 @@ struct Model {
     }
 
     void setColorMode(ColorMode mode) {
-        _meshRenderer->setColorMode(mode);
-        _pointSetRenderer.setColorMode(mode);
-        if (_halfedgeRenderer != nullptr)
-            _halfedgeRenderer->setColorMode(mode);
+        for (auto const &[k, r] : _renderers)
+            r->setColorMode(mode);
+
         colorMode = mode;
     }
 
@@ -538,9 +564,9 @@ struct Model {
     }
 
     void setLight(bool enabled) {
-        _meshRenderer->setLight(enabled);
-        // _pointSetRenderer.setLight(enabled); 
-        // _halfedgeRenderer->setLight(enabled); 
+        for (auto const &[k, r] : _renderers)
+            r->setLight(enabled);
+
         isLightEnabled = enabled;
     }
 
@@ -549,7 +575,9 @@ struct Model {
     }
 
     void setLightFollowView(bool follow) {
-		_meshRenderer->setLightFollowView(follow);
+        for (auto const &[k, r] : _renderers)
+            r->setLightFollowView(follow);
+
         isLightFollowView = follow;
     }
 
@@ -558,8 +586,9 @@ struct Model {
     }
 
     void setClipping(bool enabled) {
-        _meshRenderer->setClipping(enabled);
-        _pointSetRenderer.setClipping(enabled);
+        for (auto const &[k, r] : _renderers)
+            r->setClipping(enabled);
+
         isClipping = enabled;
     }
 
@@ -568,8 +597,9 @@ struct Model {
     }
 
     void setClippingPlanePoint(glm::vec3 p) {
-        _meshRenderer->setClippingPlanePoint(p);
-        _pointSetRenderer.setClippingPlanePoint(p);
+        for (auto const &[k, r] : _renderers)
+            r->setClippingPlanePoint(p);
+
         clippingPlanePoint = p;
     }
 
@@ -578,8 +608,9 @@ struct Model {
     }
 
     void setClippingPlaneNormal(glm::vec3 n) {
-        _meshRenderer->setClippingPlaneNormal(n);
-        _pointSetRenderer.setClippingPlaneNormal(n);
+        for (auto const &[k, r] : _renderers)
+            r->setClippingPlaneNormal(n);
+
         clippingPlaneNormal = n;
     }
 
@@ -588,22 +619,27 @@ struct Model {
     }
 
     void setInvertClipping(bool invert) {
-        _meshRenderer->setInvertClipping(invert);
-        _pointSetRenderer.setInvertClipping(invert);
+        for (auto const &[k, r] : _renderers)
+            r->setInvertClipping(invert);
+
         invertClipping = invert;
     }
 
     void setMeshIndex(int index) {
-        _meshRenderer->setMeshIndex(index);
+        for (auto const &[k, r] : _renderers)
+            r->setMeshIndex(index);
     }
 
     // Renderer getters
     PointSetRenderer& getPoints() {
-        return _pointSetRenderer;
+        return *static_cast<PointSetRenderer*>(_renderers.at("point_renderer").get());
     }
 
     std::shared_ptr<HalfedgeRenderer> getEdges() {
-        return _halfedgeRenderer;
+        if (_renderers.contains("edge_renderer"))
+            return  std::static_pointer_cast<HalfedgeRenderer>(_renderers.at("edge_renderer"));
+            
+        return nullptr;
     }
 
     IRenderer& getMesh() const {
@@ -611,7 +647,11 @@ struct Model {
         // If _meshRenderer is uninitialized, this will throw a segfault
         // (I don't want to transfer ownership)
         // Maybe there is a better way to do that
-        return *_meshRenderer;
+        return *_renderers.at("mesh_renderer");
+    }
+
+    bool hasRenderer(std::string name) {
+        return _renderers.contains(name);
     }
 
     protected:
@@ -647,9 +687,9 @@ struct Model {
     int selectedColormap = 0;
 
     // Renderers
-    std::unique_ptr<IRenderer> _meshRenderer;
-    PointSetRenderer _pointSetRenderer;
-    std::shared_ptr<HalfedgeRenderer> _halfedgeRenderer;
+    // std::unique_ptr<IRenderer> _meshRenderer;
+    // PointSetRenderer _pointSetRenderer;
+    // std::shared_ptr<HalfedgeRenderer> _halfedgeRenderer;
 
     std::map<std::string, std::shared_ptr<IRenderer>> _renderers;
 

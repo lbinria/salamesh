@@ -32,6 +32,8 @@ struct VolumeRenderer : public IRenderer {
 	void render(glm::vec3 &position);
 	void clean();
 
+	int getRenderElementKind() override { return ElementKind::CELLS | ElementKind::CELL_FACETS; }
+
 	protected:
 
 	Volume &_m;

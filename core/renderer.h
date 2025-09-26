@@ -15,10 +15,17 @@ struct IRenderer {
 		FILTER
 	};
 
+	// Should overwrite which element renderer is rendering
+	virtual int getRenderElementKind() = 0;
+
 	virtual void init() = 0;
 	virtual void push() = 0;
 	virtual void render(glm::vec3 &position) = 0;
 	virtual void clean() = 0;
+
+	bool isRenderElement(ElementKind kind) {
+		return (getRenderElementKind() & kind) == kind;
+	}
 
 	void setTexture(unsigned int tex) { texColorMap = tex; }
 

@@ -90,13 +90,17 @@ struct TriangleInspector : public Component {
 
 		// Check for degenerated
 		// Get when model changed event to not compute everytime !
-		if (!app.hasModels())
+		if (!app.hasModels()) {
+			ImGui::End();
 			return true;
+		}
 
 		// Get current model and check it's a triangle mesh
 		auto &model = app.getCurrentModel();
-		if (model.getModelType() != Model::ModelType::TRI)
+		if (model.getModelType() != Model::ModelType::TRI) {
+			ImGui::End();
 			return true;
+		}
 
 		auto &tri_model = model.as<TriModel>();
 		auto &m = tri_model.getTriangles();

@@ -19,8 +19,11 @@ struct TriModel final : public Model {
 
 	TriModel() : 
         _tri(), 
-        Model::Model(std::make_unique<TriRenderer>(_tri), PointSetRenderer(_tri.points), nullptr)
-    {}
+        Model::Model({
+            {"mesh_renderer", std::make_shared<TriRenderer>(_tri)}, 
+            {"point_renderer", std::make_shared<PointSetRenderer>(_tri.points) }
+        })
+        {}
 
 
     ModelType getModelType() const override {
@@ -84,7 +87,9 @@ struct TriModel final : public Model {
     void updateLayer(IRenderer::Layer layer) {
 
         auto &selectedAttr = selectedAttrByLayer[layer];
-        
+
+        std::vector<float> data;
+
         switch (selectedAttr.elementKind) {
             case ElementKind::FACETS:
             {
@@ -92,8 +97,7 @@ struct TriModel final : public Model {
                 if (!layerAttr.bind(selectedAttr.attrName, _surfaceAttributes, _tri))
                     return;
 
-                _meshRenderer->setLayer(layerAttr.ptr->data, layer);
-
+                data = layerAttr.ptr->data;
                 break;
             }
             case ElementKind::POINTS:
@@ -102,14 +106,47 @@ struct TriModel final : public Model {
                 if (!layerAttr.bind(selectedAttr.attrName, _surfaceAttributes, _tri))
                     return;
 
-                _pointSetRenderer.setLayer(layerAttr.ptr->data, layer);
-
+                data = layerAttr.ptr->data;
                 break;
             }
             default:
                 std::cerr << "Warning: HexModel::updateFilters() only supports highlight on cells, cell facets or points." << std::endl;
                 return;
         }
+
+        for (auto const &[k, r] : _renderers) {
+            if (r->isRenderElement(selectedAttr.elementKind)) {
+                r->setLayer(data, layer);
+            }
+        }
+        
+
+
+        // switch (selectedAttr.elementKind) {
+        //     case ElementKind::FACETS:
+        //     {
+        //         FacetAttribute<float> layerAttr;
+        //         if (!layerAttr.bind(selectedAttr.attrName, _surfaceAttributes, _tri))
+        //             return;
+
+        //         _meshRenderer->setLayer(layerAttr.ptr->data, layer);
+
+        //         break;
+        //     }
+        //     case ElementKind::POINTS:
+        //     {
+        //         PointAttribute<float> layerAttr;
+        //         if (!layerAttr.bind(selectedAttr.attrName, _surfaceAttributes, _tri))
+        //             return;
+
+        //         _pointSetRenderer.setLayer(layerAttr.ptr->data, layer);
+
+        //         break;
+        //     }
+        //     default:
+        //         std::cerr << "Warning: HexModel::updateFilters() only supports highlight on cells, cell facets or points." << std::endl;
+        //         return;
+        // }
     }
 
     private: 

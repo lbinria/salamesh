@@ -9,6 +9,8 @@
 #include "tet_renderer.h"
 #include "color_mode.h"
 
+
+
 using namespace UM;
 using json = nlohmann::json;
 
@@ -20,8 +22,11 @@ struct TetModel final : public Model {
 
 	TetModel() : 
         _m(), 
-        Model::Model(std::make_unique<TetRenderer>(_m), PointSetRenderer(_m.points), nullptr) {
-        }
+        Model::Model({
+            {"mesh_renderer", std::make_shared<TetRenderer>(_m)}, 
+            {"point_renderer", std::make_shared<PointSetRenderer>(_m.points) }
+        })
+        {}
 
     ModelType getModelType() const override {
         return ModelType::TET;
@@ -80,56 +85,51 @@ struct TetModel final : public Model {
         
     // }
 
+
+    // TODO its the same as hex_model, refact !
     void updateLayer(IRenderer::Layer layer) {
 
         auto &selectedAttr = selectedAttrByLayer[layer];
         
+        std::vector<float> data;
+
         switch (selectedAttr.elementKind) {
             case ElementKind::CELLS:
             {
-                CellAttribute<float> filter;
-                if (!filter.bind(selectedAttr.attrName, _volumeAttributes, _m))
+                CellAttribute<float> layerAttr;
+                if (!layerAttr.bind(selectedAttr.attrName, _volumeAttributes, _m))
                     return;
-
-                // // Convert data bool -> float
-                // std::vector<float> f_filters(filter.ptr->data.size());
-                // std::transform(filter.ptr->data.begin(), filter.ptr->data.end(), f_filters.begin(), [](bool v) { return v ? 1.f : 0.f; });
                 
-                _meshRenderer->setLayer(filter.ptr->data, layer);
-
+                data = layerAttr.ptr->data;
                 break;
             }
             case ElementKind::CELL_FACETS:
             {
-                CellFacetAttribute<float> filter;
-                if (!filter.bind(selectedAttr.attrName, _volumeAttributes, _m))
+                CellFacetAttribute<float> layerAttr;
+                if (!layerAttr.bind(selectedAttr.attrName, _volumeAttributes, _m))
                     return;
-
-                // // Convert data bool -> float
-                // std::vector<float> f_filters(filter.ptr->data.size());
-                // std::transform(filter.ptr->data.begin(), filter.ptr->data.end(), f_filters.begin(), [](bool v) { return v ? 1.f : 0.f; });
-
-                _meshRenderer->setLayer(filter.ptr->data, layer);
-
+                
+                data = layerAttr.ptr->data;
                 break;
             }
             case ElementKind::POINTS:
             {
-                PointAttribute<float> filter;
-                if (!filter.bind(selectedAttr.attrName, _volumeAttributes, _m))
+                PointAttribute<float> layerAttr;
+                if (!layerAttr.bind(selectedAttr.attrName, _volumeAttributes, _m))
                     return;
-
-                // // Convert data bool -> float
-                // std::vector<float> f_filters(filter.ptr->data.size());
-                // std::transform(filter.ptr->data.begin(), filter.ptr->data.end(), f_filters.begin(), [](bool v) { return v ? 1.f : 0.f; });
-
-                _pointSetRenderer.setLayer(filter.ptr->data, layer);
-
+                
+                data = layerAttr.ptr->data;
                 break;
             }
             default:
                 std::cerr << "Warning: HexModel::updateFilters() only supports highlight on cells, cell facets or points." << std::endl;
                 return;
+        }
+
+        for (auto const &[k, r] : _renderers) {
+            if (r->isRenderElement(selectedAttr.elementKind)) {
+                r->setLayer(data, layer);
+            }
         }
     }
 
