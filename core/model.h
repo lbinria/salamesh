@@ -634,13 +634,6 @@ struct Model {
         { IRenderer::Layer::FILTER, {"_filter", ElementKind::POINTS} },
     };
 
-
-    // std::string selectedHighlightAttr = "_highlight";
-    // ElementKind selectedHighlightElement = ElementKind::POINTS;
-    // std::string selectedFilterAttr = "_filter";
-    // ElementKind selectedFilterElement = ElementKind::POINTS;
-
-
     bool isLightEnabled = true;
     bool isLightFollowView = false;
 
@@ -656,7 +649,8 @@ struct Model {
     // Renderers
     std::unique_ptr<IRenderer> _meshRenderer;
     PointSetRenderer _pointSetRenderer;
-    // std::optional<std::shared_ptr<HalfedgeRenderer>> _halfedgeRenderer;
     std::shared_ptr<HalfedgeRenderer> _halfedgeRenderer;
+
+    std::map<std::string, std::shared_ptr<IRenderer>> _renderers;
 
 };

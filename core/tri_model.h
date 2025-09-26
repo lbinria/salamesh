@@ -83,6 +83,33 @@ struct TriModel final : public Model {
 
     void updateLayer(IRenderer::Layer layer) {
 
+        auto &selectedAttr = selectedAttrByLayer[layer];
+        
+        switch (selectedAttr.elementKind) {
+            case ElementKind::FACETS:
+            {
+                FacetAttribute<float> layerAttr;
+                if (!layerAttr.bind(selectedAttr.attrName, _surfaceAttributes, _tri))
+                    return;
+
+                _meshRenderer->setLayer(layerAttr.ptr->data, layer);
+
+                break;
+            }
+            case ElementKind::POINTS:
+            {
+                PointAttribute<float> layerAttr;
+                if (!layerAttr.bind(selectedAttr.attrName, _surfaceAttributes, _tri))
+                    return;
+
+                _pointSetRenderer.setLayer(layerAttr.ptr->data, layer);
+
+                break;
+            }
+            default:
+                std::cerr << "Warning: HexModel::updateFilters() only supports highlight on cells, cell facets or points." << std::endl;
+                return;
+        }
     }
 
     private: 
