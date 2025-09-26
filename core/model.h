@@ -239,12 +239,6 @@ struct Model {
                 r->setAttribute(attrs[idx].ptr.get(), kind);
             }
         }
-
-        // TODO see condition here not very smart maybe abstract renderers ?
-        // if (kind == ElementKind::POINTS) {
-        //     _pointSetRenderer.setAttribute(attrs[idx].ptr.get(), -1);
-        // } else 
-        //     _meshRenderer->setAttribute(attrs[idx].ptr.get(), kind);
     }
 
     void setSelectedAttr(std::string name, ElementKind kind) {
@@ -266,12 +260,6 @@ struct Model {
     void updateAttr() {
         setSelectedAttr(selectedAttr);
     }
-
-    // virtual void removeAttr(const std::string& name, ElementKind element) = 0;
-
-    // Model attributes shader uniforms
-    // virtual int getSelectedColormap() const = 0;
-    // virtual void setSelectedColormap(int idx) = 0;
 
     template<typename T>
     ElementType deduceType(GenericAttribute<T> &attr) {
@@ -427,24 +415,6 @@ struct Model {
             }
         }
 
-        // switch (kind) {
-        //     case ElementKind::CELLS:
-        //     case ElementKind::CELL_FACETS:
-        //     case ElementKind::FACETS:
-        //         _meshRenderer->setLayerElement(kind, layer);
-        //     break;
-        //     case ElementKind::EDGES:
-        //     case ElementKind::CORNERS:
-        //         if (_halfedgeRenderer)
-        //             _halfedgeRenderer->setLayerElement(kind, layer);
-        //     break;
-        //     case ElementKind::POINTS:
-        //         _pointSetRenderer.setLayerElement(kind, layer);
-        //     break;
-        //     default:
-        //     break;
-        // }
-
         updateLayer(layer);
     }
 
@@ -480,32 +450,6 @@ struct Model {
                 r->setLayer(zeros, layer);
             }
         }
-
-        // switch (kind) {
-        //     case ElementKind::CELLS: {
-        //         std::vector<float> zeros(ncells(), 0.f);
-        //         _meshRenderer->setLayer(zeros, layer);
-        //         break;
-        //     }
-        //     case ElementKind::CELL_FACETS:
-        //     case ElementKind::FACETS: {
-        //         std::vector<float> zeros(nfacets(), 0.f);
-        //         _meshRenderer->setLayer(zeros, layer);
-        //         break;
-        //     }
-        //     case ElementKind::EDGES:
-        //     case ElementKind::CORNERS: {
-        //         // TODO implement nhalfedges()
-        //         // std::vector<float> zeros(ned(), 0.f);
-        //         // _meshRenderer->setLayer(zeros, layer);
-        //         break;
-        //     }
-        //     case ElementKind::POINTS: {
-        //         std::vector<float> zeros(nverts(), 0.f);
-        //         _pointSetRenderer.setLayer(zeros, layer);
-        //         break;
-        //     }
-        // }
     }
 
 
@@ -689,10 +633,6 @@ struct Model {
     int selectedColormap = 0;
 
     // Renderers
-    // std::unique_ptr<IRenderer> _meshRenderer;
-    // PointSetRenderer _pointSetRenderer;
-    // std::shared_ptr<HalfedgeRenderer> _halfedgeRenderer;
-
     std::map<std::string, std::shared_ptr<IRenderer>> _renderers;
 
 };
