@@ -49,11 +49,15 @@ struct HexModel final : public Model {
 
     int nfacets() const override {
         return _m.nfacets();
-    } 
+    }
 
     int ncells() const override {
         return _m.ncells();
-    } 
+    }
+
+    int ncorners() const override {
+        return _m.ncorners();
+    }
 
     // // TODO filter anything else than cell !
     // void setFilter(int idx, bool filter) override {

@@ -177,6 +177,7 @@ struct Model {
     virtual int nverts() const = 0; 
     virtual int nfacets() const = 0; 
     virtual int ncells() const = 0; 
+    virtual int ncorners() const = 0; 
 
 
 
@@ -441,7 +442,6 @@ struct Model {
         //         _pointSetRenderer.setLayerElement(kind, layer);
         //     break;
         //     default:
-            
         //     break;
         // }
 
@@ -461,9 +461,11 @@ struct Model {
                 zeros.resize(nfacets(), 0.f);
                 break;
             }
-            case ElementKind::EDGES:
-            case ElementKind::CORNERS: {
-                // TODO implement nhalfedges()
+            case ElementKind::EDGES: {
+                // TODO implement nedges()
+                break;
+            } case ElementKind::CORNERS: {
+                zeros.resize(ncorners(), 0.f);
                 break;
             }
             case ElementKind::POINTS: {

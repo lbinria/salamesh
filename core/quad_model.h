@@ -53,7 +53,11 @@ struct QuadModel final : public Model {
 
     int ncells() const override {
         return 0;
-    } 
+    }
+
+    int ncorners() const override {
+        return _quad.ncorners();
+    }
 
     // void setFilter(int idx, bool filter) override {
 
