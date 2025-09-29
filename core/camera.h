@@ -8,7 +8,7 @@
 struct Camera {
 
 	const float FAR_PLANE = 100.f;
-	const float NEAR_PLANE = 0.1f;
+	const float NEAR_PLANE = 0.00001f;
 
     Camera() = default;
 

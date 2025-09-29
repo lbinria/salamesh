@@ -4,7 +4,7 @@ layout (location = 0) in vec3 aP0;
 layout (location = 1) in vec3 aP1;
 layout (location = 2) in float aSide;
 layout (location = 3) in float aEnd;
-layout (location = 4) in int vertexIndex;
+layout (location = 4) in int halfedgeIndex;
 
 layout (std140, binding = 0) uniform Matrices
 {
@@ -19,7 +19,7 @@ uniform float uThickness = 10.0; // in pixels
 
 
 out vec2 vLocalUV; // (u,v) in [0..1] for fragment
-flat out int FragVertexIndex;
+flat out int FragHalfedgeIndex;
 
 
 
@@ -71,4 +71,6 @@ void main()
     // // 9) build local UV for shading:
     // //    u = side→ 0 at -1, 1 at +1  ;  v = along the segment
     vLocalUV = vec2( (aSide + 1.0)*0.5, aEnd );
+
+    FragHalfedgeIndex = halfedgeIndex;
 }

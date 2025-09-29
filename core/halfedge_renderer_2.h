@@ -15,6 +15,7 @@ using namespace UM;
 struct HalfedgeRenderer2 : public IRenderer {
 
 	struct LineVert {
+		int halfedgeIndex;
 		glm::vec3 P0;
 		glm::vec3 P1;
 		float side;

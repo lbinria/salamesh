@@ -181,6 +181,15 @@ struct TriangleInspector : public Component {
 			
 			if (!isTopoDegenerated && (p0p1Dist < eps || p0p2Dist < eps || p1p2Dist < eps)) {
 
+				PointAttribute<float> pointHl;
+				pointHl.bind("_highlight", tri_model.getSurfaceAttributes(), tri_model.getTriangles());
+
+				if (geo_degenerated[0]) {
+					pointHl[f.vertex(0)] = 0.1f;
+				}
+
+				tri_model.setHighlight(ElementKind::POINTS);
+
 				if (ImGui::TextLink(("Facet " + std::to_string(f) + "##link_goto_geo_degenerated_facet" + std::to_string(f)).c_str())) {
 					Triangle3 t = f;
 					cameraGoto(um2glm(t.bary_verts()));
@@ -195,13 +204,24 @@ struct TriangleInspector : public Component {
 					FacetAttribute<float> filter;
 					filter.bind("_filter", tri_model.getSurfaceAttributes(), m);
 
+					CornerAttribute<float> cornerHl;
+					cornerHl.bind("_highlight", tri_model.getSurfaceAttributes(), m);
+
 					for (auto &cf : m.iter_facets()) {
 						if (cf != f) {
 							filter[cf] = 1.f;
+
+
+						} else {
+							for (int i = 0; i < 3; ++i) {
+								int cornerIdx = cf * 3 + i;
+								cornerHl[cornerIdx] = 0.1f;
+							}
 						}
 					}
 
 					model.setFilter(ElementKind::FACETS);
+					model.setHighlight(ElementKind::CORNERS);
 
 					// Goto facet
 					Triangle3 t = f;

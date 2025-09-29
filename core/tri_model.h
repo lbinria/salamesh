@@ -96,18 +96,27 @@ struct TriModel final : public Model {
         std::vector<float> data;
 
         switch (selectedAttr.elementKind) {
-            case ElementKind::FACETS:
+            case ElementKind::POINTS:
             {
-                FacetAttribute<float> layerAttr;
+                PointAttribute<float> layerAttr;
                 if (!layerAttr.bind(selectedAttr.attrName, _surfaceAttributes, _tri))
                     return;
 
                 data = layerAttr.ptr->data;
                 break;
             }
-            case ElementKind::POINTS:
+            case ElementKind::CORNERS: 
             {
-                PointAttribute<float> layerAttr;
+                CornerAttribute<float> layerAttr;
+                if (!layerAttr.bind(selectedAttr.attrName, _surfaceAttributes, _tri))
+                    return;
+
+                data = layerAttr.ptr->data;
+                break;
+            }
+            case ElementKind::FACETS:
+            {
+                FacetAttribute<float> layerAttr;
                 if (!layerAttr.bind(selectedAttr.attrName, _surfaceAttributes, _tri))
                     return;
 

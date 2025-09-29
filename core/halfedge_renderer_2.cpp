@@ -9,48 +9,41 @@ void HalfedgeRenderer2::init() {
 	glBindBuffer(GL_ARRAY_BUFFER, VBO);
 
 	
-	// glGenBuffers(1, &bufAttr);
-	// glGenTextures(1, &texAttr);
-	// glBindBuffer(GL_TEXTURE_BUFFER, bufAttr);
-	// glActiveTexture(GL_TEXTURE0 + 2);
-	// glBindTexture(GL_TEXTURE_BUFFER, texAttr);
-	// glTexBuffer(GL_TEXTURE_BUFFER, GL_R32F, bufAttr);
+	// For the moment don't use persistent mapped memory
+	glGenBuffers(1, &bufHighlight);
+	glGenTextures(1, &texHighlight);
+	glBindBuffer(GL_TEXTURE_BUFFER, bufHighlight);
+	glActiveTexture(GL_TEXTURE0 + 3); 
+	glBindTexture(GL_TEXTURE_BUFFER, texHighlight);
+	glTexBuffer(GL_TEXTURE_BUFFER, GL_R32F, bufHighlight);
 
-	// GLbitfield flags = GL_MAP_WRITE_BIT | GL_MAP_PERSISTENT_BIT | GL_MAP_COHERENT_BIT;
+	// For the moment don't use persistent mapped memory
+	glGenBuffers(1, &bufFilter);
+	glGenTextures(1, &texFilter);
+	glBindBuffer(GL_TEXTURE_BUFFER, bufFilter);
+	glActiveTexture(GL_TEXTURE0 + 4); 
+	glBindTexture(GL_TEXTURE_BUFFER, texFilter);
+	glTexBuffer(GL_TEXTURE_BUFFER, GL_R32F, bufFilter);
 
-	// // Filter
-	// glGenBuffers(1, &bufFilter);
-	// glBindBuffer(GL_TEXTURE_BUFFER, bufFilter);
+	// WTF ?
+	glActiveTexture(GL_TEXTURE0 + 3);
+	glBindTexture(GL_TEXTURE_BUFFER, texHighlight);
 
-	// glBufferStorage(GL_TEXTURE_BUFFER, ps.size() * sizeof(float), nullptr, flags);
-	// // Map once and keep pointer (not compatible for MacOS... because need OpenGL >= 4.6 i think)
-	// ptrFilter = (float*)glMapBufferRange(GL_TEXTURE_BUFFER, 0, ps.size() * sizeof(float), flags);
+	glActiveTexture(GL_TEXTURE0 + 4);
+	glBindTexture(GL_TEXTURE_BUFFER, texFilter);
 
-	// glGenTextures(1, &texFilter);
-	// glActiveTexture(GL_TEXTURE0 + 4); 
-	// glBindTexture(GL_TEXTURE_BUFFER, texFilter);
-	// glTexBuffer(GL_TEXTURE_BUFFER, GL_R32F, bufFilter);
-
-	// // Highlight
-	// glGenBuffers(1, &bufHighlight);
-	// glBindBuffer(GL_TEXTURE_BUFFER, bufHighlight);
-
-	// glBufferStorage(GL_TEXTURE_BUFFER, ps.size() * sizeof(float), nullptr, flags);
-	// // Map once and keep pointer (not compatible for MacOS... because need OpenGL >= 4.6 i think)
-	// ptrHighlight = (float*)glMapBufferRange(GL_TEXTURE_BUFFER, 0, ps.size() * sizeof(float), flags);
-
-	// glGenTextures(1, &texHighlight);
-	// glActiveTexture(GL_TEXTURE0 + 3); 
-	// glBindTexture(GL_TEXTURE_BUFFER, texHighlight);
-	// glTexBuffer(GL_TEXTURE_BUFFER, GL_R32F, bufHighlight);
-
-
+	glBindBuffer(GL_TEXTURE_BUFFER, 0);
+	
 	shader.use();
 	// shader.setInt("attrBuf", 2);
-	// shader.setInt("highlightBuf", 3);
-	// shader.setInt("filterBuf", 4);
+	shader.setInt("highlightBuf", 3);
+	shader.setInt("filterBuf", 4);
 
 	// VBO
+	GLuint halfedgeIndexLoc = glGetAttribLocation(shader.id, "halfedgeIndex");
+	glEnableVertexAttribArray(halfedgeIndexLoc);
+	glVertexAttribIPointer(halfedgeIndexLoc, 1, GL_INT, sizeof(LineVert), (void*)offsetof(LineVert, halfedgeIndex));
+
 	GLuint p0Loc = glGetAttribLocation(shader.id, "aP0");
 	glEnableVertexAttribArray(p0Loc);
 	glVertexAttribPointer(p0Loc, 3, GL_FLOAT, GL_FALSE, sizeof(LineVert), (void*)offsetof(LineVert, P0));
@@ -93,11 +86,13 @@ void HalfedgeRenderer2::push() {
 			auto p0 = v0.pos();
 			auto p1 = v1.pos();
 			
+			int halfedgeIdx = f * 3 + i;
+
 			// build the 4 “corner” vertices
-			LineVert lv0{glm::vec3(p0.x, p0.y, p0.z), glm::vec3(p1.x, p1.y, p1.z), -1.0f, 0.0f};  // corner: start, left side
-			LineVert lv1{glm::vec3(p0.x, p0.y, p0.z), glm::vec3(p1.x, p1.y, p1.z), +1.0f, 0.0f};  // corner: start, right side
-			LineVert lv2{glm::vec3(p0.x, p0.y, p0.z), glm::vec3(p1.x, p1.y, p1.z), -1.0f, 1.0f};  // corner: end,   left side
-			LineVert lv3{glm::vec3(p0.x, p0.y, p0.z), glm::vec3(p1.x, p1.y, p1.z), +1.0f, 1.0f};  // corner: end,   right side
+			LineVert lv0{halfedgeIdx, glm::vec3(p0.x, p0.y, p0.z), glm::vec3(p1.x, p1.y, p1.z), -1.0f, 0.0f};  // corner: start, left side
+			LineVert lv1{halfedgeIdx, glm::vec3(p0.x, p0.y, p0.z), glm::vec3(p1.x, p1.y, p1.z), +1.0f, 0.0f};  // corner: start, right side
+			LineVert lv2{halfedgeIdx, glm::vec3(p0.x, p0.y, p0.z), glm::vec3(p1.x, p1.y, p1.z), -1.0f, 1.0f};  // corner: end,   left side
+			LineVert lv3{halfedgeIdx, glm::vec3(p0.x, p0.y, p0.z), glm::vec3(p1.x, p1.y, p1.z), +1.0f, 1.0f};  // corner: end,   right side
 
 			vertices.push_back(lv0);
 			vertices.push_back(lv1);
@@ -122,14 +117,11 @@ void HalfedgeRenderer2::render(glm::vec3 &position) {
 
 	glBindVertexArray(VAO);
 
-	// glActiveTexture(GL_TEXTURE0);
-	// glBindTexture(GL_TEXTURE_1D, texColorMap);
-	// glActiveTexture(GL_TEXTURE0 + 2);
-	// glBindTexture(GL_TEXTURE_BUFFER, texAttr);
-	// glActiveTexture(GL_TEXTURE0 + 3);
-	// glBindTexture(GL_TEXTURE_BUFFER, texHighlight);
-	// glActiveTexture(GL_TEXTURE0 + 4);
-	// glBindTexture(GL_TEXTURE_BUFFER, texFilter);
+	glActiveTexture(GL_TEXTURE0 + 3);
+	glBindTexture(GL_TEXTURE_BUFFER, texHighlight);
+
+	glActiveTexture(GL_TEXTURE0 + 4);
+	glBindTexture(GL_TEXTURE_BUFFER, texFilter);
 
 
 	glm::mat4 model = glm::mat4(1.0f);
@@ -139,7 +131,6 @@ void HalfedgeRenderer2::render(glm::vec3 &position) {
 	shader.setMat4("model", model);
 
 	glDrawArrays(GL_TRIANGLES, 0, nverts);
-	// glDrawArrays(GL_POINTS, 0, nverts);
 }
 
 void HalfedgeRenderer2::clean() {

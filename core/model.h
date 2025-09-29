@@ -400,10 +400,13 @@ struct Model {
 
     void unsetFilters() {
         // Unset all
-        unsetFilter(ElementKind::CELLS);
-        unsetFilter(ElementKind::FACETS);
-        unsetFilter(ElementKind::EDGES);
         unsetFilter(ElementKind::POINTS);
+        unsetFilter(ElementKind::CORNERS);
+        unsetFilter(ElementKind::EDGES);
+        unsetFilter(ElementKind::FACETS);
+        unsetFilter(ElementKind::CELLS);
+        unsetFilter(ElementKind::CELL_FACETS);
+        unsetFilter(ElementKind::CELL_CORNERS);
     }
 
     void setLayer(ElementKind kind, IRenderer::Layer layer) {

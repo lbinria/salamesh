@@ -51,6 +51,10 @@ void HalfedgeRenderer::init() {
 	// shader.setInt("filterBuf", 4);
 
 	// VBO
+	GLuint halfedgeIndexLoc = glGetAttribLocation(shader.id, "halfedgeIndex");
+	glEnableVertexAttribArray(halfedgeIndexLoc);
+	glVertexAttribIPointer(halfedgeIndexLoc, 1, GL_INT, sizeof(LineVert), (void*)offsetof(LineVert, halfedgeIndex));
+
 	GLuint p0Loc = glGetAttribLocation(shader.id, "aP0");
 	glEnableVertexAttribArray(p0Loc);
 	glVertexAttribPointer(p0Loc, 3, GL_FLOAT, GL_FALSE, sizeof(LineVert), (void*)offsetof(LineVert, P0));
@@ -94,11 +98,14 @@ void HalfedgeRenderer::push() {
 				auto p0 = v0.pos();
 				auto p1 = v1.pos();
 				
+				int halfedgeIdx = c * 24 + f * i;
+
+
 				// build the 4 “corner” vertices
-				LineVert lv0{glm::vec3(p0.x, p0.y, p0.z), glm::vec3(p1.x, p1.y, p1.z), -1.0f, 0.0f};  // corner: start, left side
-				LineVert lv1{glm::vec3(p0.x, p0.y, p0.z), glm::vec3(p1.x, p1.y, p1.z), +1.0f, 0.0f};  // corner: start, right side
-				LineVert lv2{glm::vec3(p0.x, p0.y, p0.z), glm::vec3(p1.x, p1.y, p1.z), -1.0f, 1.0f};  // corner: end,   left side
-				LineVert lv3{glm::vec3(p0.x, p0.y, p0.z), glm::vec3(p1.x, p1.y, p1.z), +1.0f, 1.0f};  // corner: end,   right side
+				LineVert lv0{halfedgeIdx, glm::vec3(p0.x, p0.y, p0.z), glm::vec3(p1.x, p1.y, p1.z), -1.0f, 0.0f};  // corner: start, left side
+				LineVert lv1{halfedgeIdx, glm::vec3(p0.x, p0.y, p0.z), glm::vec3(p1.x, p1.y, p1.z), +1.0f, 0.0f};  // corner: start, right side
+				LineVert lv2{halfedgeIdx, glm::vec3(p0.x, p0.y, p0.z), glm::vec3(p1.x, p1.y, p1.z), -1.0f, 1.0f};  // corner: end,   left side
+				LineVert lv3{halfedgeIdx, glm::vec3(p0.x, p0.y, p0.z), glm::vec3(p1.x, p1.y, p1.z), +1.0f, 1.0f};  // corner: end,   right side
 
 				vertices.push_back(lv0);
 				vertices.push_back(lv1);

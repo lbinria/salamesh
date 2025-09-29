@@ -7,7 +7,7 @@ layout(depth_less) out float gl_FragDepth;
 layout(location = 0) out vec4 FragColor;
 layout(location = 3) out vec4 FragVertexIndexOut;
 
-flat in int FragVertexIndex;
+flat in int FragHalfedgeIndex;
 
 uniform vec3 pointColor;
 
@@ -43,6 +43,11 @@ float sdfEquilateralTriangle(vec2 p) {
 
 void main()
 {
+    // Check whether point is filtered
+    bool isFiltered = texelFetch(filterBuf, FragHalfedgeIndex).x > 0;
+    if (isFiltered)
+        discard;
+
     // dist from border: center is u=0.5
     float d = abs(vLocalUV.x - 0.5) - 0.5;  
     float e = fwidth(d);
@@ -73,6 +78,18 @@ void main()
     float light = 1. - dot(N, vec3(0.35,0.45,1.)) /** .5 + .5*/;
     vec3 col = mix(uColorOutside, uColorInside, t) * (light * 0.5 + 0.25);
     
+    // Highlight
+    float highlightVal = texelFetch(highlightBuf, FragHalfedgeIndex).x;
+
+    if (highlightVal > 0) {
+        // Interpolate between hover / select colors according to highlight value
+        vec3 hovColor = vec3(1.0, 0.0, 0.0);
+        vec3 selColor = vec3(1.0, 0.9, 0.0);
+        vec3 hlColor = mix(hovColor, selColor, highlightVal);
+        // Mix with current point color (80%)
+        col = mix(col, hlColor, .8);
+    }
+
     FragColor = vec4(col, 1.);
 
     // FragColor = vec4(0.75, 0.73, 1.0, 1.0); // default white
