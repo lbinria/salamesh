@@ -233,12 +233,12 @@ struct App : public IApp {
     
 
     void notifyComponentChanged(const std::string &id) {
-        for (auto &script : scripts) {
+        for (auto &component : components) {
             // Do not notify the component itself
-            if (script->id() == id)
+            if (component->id() == id)
                 continue;
             // Notify other components
-            script->componentChanged(id);
+            component->componentChanged(id);
         }
     }
 
@@ -263,7 +263,7 @@ struct App : public IApp {
 
     // glm::mat4 projection;
 
-    std::vector<std::unique_ptr<Component>> scripts;
+    std::vector<std::unique_ptr<Component>> components;
 	InputState st;
 
     ElementKind pickMode = ElementKind::CELLS;

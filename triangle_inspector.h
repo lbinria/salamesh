@@ -36,8 +36,11 @@ struct TriangleInspector : public Component {
 		}
 	}
 
+	// Get 2D screen pos of all points of the model
     std::vector<glm::vec2> getPoint2D(Camera &c, TriModel &model) const {
         std::vector<glm::vec2> points2D;
+		points2D.reserve(model.nverts());
+		
         for (int i = 0; i < model.nverts(); ++i) {
 			vec3 p3 = model.getTriangles().points[i];
 			glm::vec4 p(p3.x, p3.y, p3.z, 1.f);
@@ -102,7 +105,9 @@ struct TriangleInspector : public Component {
 		eps = 1. / pow(10, eps_digits);
 		ImGui::Text("Epsilon: %.15g", eps);
 
-		
+		int epsScreen = triModel.getPoints().getPointSize();
+		ImGui::Text("Vertice overlap threshold distance (in pixel): %i", epsScreen);
+
 		// Highlight degenerated points
 		PointAttribute<float> pointHl;
 		pointHl.bind("_highlight", triModel.getSurfaceAttributes(), triModel.getTriangles());
@@ -114,31 +119,34 @@ struct TriangleInspector : public Component {
 			bool isDegenerated[3] = {false};
 
 			// Get 3D pos
-			auto p30 = f.vertex(0).pos();
-			auto p31 = f.vertex(1).pos();
-			auto p32 = f.vertex(2).pos();
+			auto v0 = f.vertex(0);
+			auto v1 = f.vertex(1);
+			auto v2 = f.vertex(2);
+			auto p30 = v0.pos();
+			auto p31 = v1.pos();
+			auto p32 = v2.pos();
 
 			double p0p1Dist = (p30 - p31).norm();
 			double p0p2Dist = (p30 - p32).norm();
 			double p1p2Dist = (p31 - p32).norm();
 
-			if (p0p1Dist < eps) {
+			if (p0p1Dist < eps && v0 != v1) {
 				isDegenerated[0] = true;
 				isDegenerated[1] = true;
 			}
-			if (p0p2Dist < eps) {
+			if (p0p2Dist < eps && v0 != v2) {
 				isDegenerated[0] = true;
 				isDegenerated[2] = true;
 			}
-			if (p1p2Dist < eps) {
+			if (p1p2Dist < eps && v1 != v2) {
 				isDegenerated[1] = true;
 				isDegenerated[2] = true;
 			}
 
 
-			auto pScreen0 = sl::glm2um(points2D[f.vertex(0)]);
-			auto pScreen1 = sl::glm2um(points2D[f.vertex(1)]);
-			auto pScreen2 = sl::glm2um(points2D[f.vertex(2)]);
+			auto pScreen0 = sl::glm2um(points2D[v0]);
+			auto pScreen1 = sl::glm2um(points2D[v1]);
+			auto pScreen2 = sl::glm2um(points2D[v2]);
 
 
 			// Check for points
@@ -146,23 +154,26 @@ struct TriangleInspector : public Component {
 			double p0p2ScreenDist = (pScreen0 - pScreen2).norm(); 
 			double p1p2ScreenDist = (pScreen1 - pScreen2).norm();
 
-			if (p0p1ScreenDist < epsScreen) {
-				isOverlap[0] = true;
-				isOverlap[1] = true;
-			}
-			if (p0p2ScreenDist < epsScreen) {
-				isOverlap[0] = true;
-				isOverlap[2] = true;
-			}
-			if (p1p2ScreenDist < epsScreen) {
-				isOverlap[1] = true;
-				isOverlap[2] = true;
-			}
+
 
 			bool isFacetDegenerated = isDegenerated[0] || isDegenerated[1] || isDegenerated[2];
 
 			// List degenerate facets in the UI
 			if (isFacetDegenerated) {
+
+				// Check for overlap in screen space
+				if (p0p1ScreenDist < epsScreen) {
+					isOverlap[0] = true;
+					isOverlap[1] = true;
+				}
+				if (p0p2ScreenDist < epsScreen) {
+					isOverlap[0] = true;
+					isOverlap[2] = true;
+				}
+				if (p1p2ScreenDist < epsScreen) {
+					isOverlap[1] = true;
+					isOverlap[2] = true;
+				}
 
 				// Goto facet
 				if (ImGui::TextLink(("Facet " + std::to_string(f) + "##link_goto_geo_degenerated_facet" + std::to_string(f)).c_str())) {
@@ -186,100 +197,6 @@ struct TriangleInspector : public Component {
 			triModel.setHighlight(ElementKind::POINTS);
 		}
 
-
-		// for (auto &f : m.iter_facets()) {
-		// 	auto v0 = f.vertex(0);
-		// 	auto v1 = f.vertex(1);
-		// 	auto v2 = f.vertex(2);
-
-		// 	bool topo_degenerated[3] = {false};
-
-		// 	if (v0 == v1) {
-		// 		topo_degenerated[0] = true;
-		// 		topo_degenerated[1] = true;
-		// 	}
-		// 	if (v0 == v2) {
-		// 		topo_degenerated[0] = true;
-		// 		topo_degenerated[2] = true;
-		// 	}
-		// 	if (v1 == v2) {
-		// 		topo_degenerated[1] = true;
-		// 		topo_degenerated[2] = true;
-		// 	}
-
-		// 	bool isTopoDegenerated = topo_degenerated[0] || topo_degenerated[1] || topo_degenerated[2];
-		// 	if (isTopoDegenerated) {
-
-		// 		if (ImGui::TextLink(("Facet " + std::to_string(f) + "##link_goto_topo_degenerated_facet_" + std::to_string(f)).c_str())) {
-		// 			Triangle3 t = f;
-		// 			cameraGoto(sl::um2glm(t.bary_verts()));
-		// 		}
-		// 		ImGui::SameLine();
-
-		// 		ImGui::TextColored(ImVec4(1.f, 0.f, 0.f, 1.f), " is topo degenerated. Following corners coincide: ");
-
-		// 		drawUIDegeneratedCorners(f, topo_degenerated);
-		// 	}
-
-		// 	bool geo_degenerated[3] = {false};
-
-		// 	// auto p0 = f.vertex(0).pos();
-		// 	// auto p1 = f.vertex(1).pos();
-		// 	// auto p2 = f.vertex(2).pos();
-		// 	auto gp0 = points2D[f.vertex(0)];
-		// 	auto gp1 = points2D[f.vertex(1)];
-		// 	auto gp2 = points2D[f.vertex(2)];
-		// 	auto p0 = vec3(gp0.x, gp0.y, gp0.z);
-		// 	auto p1 = vec3(gp1.x, gp1.y, gp1.z);
-		// 	auto p2 = vec3(gp2.x, gp2.y, gp2.z);
-
-		// 	eps = 2.0f;
-
-		// 	// Check for points
-		// 	double p0p1Dist = (p0 - p1).norm(); 
-		// 	double p0p2Dist = (p0 - p2).norm(); 
-		// 	double p1p2Dist = (p1 - p2).norm();
-
-		// 	if (p0p1Dist < eps) {
-		// 		geo_degenerated[0] = true;
-		// 		geo_degenerated[1] = true;
-		// 	}
-		// 	if (p0p2Dist < eps) {
-		// 		geo_degenerated[0] = true;
-		// 		geo_degenerated[2] = true;
-		// 	}
-		// 	if (p1p2Dist < eps) {
-		// 		geo_degenerated[1] = true;
-		// 		geo_degenerated[2] = true;
-		// 	}
-
-		// 	bool isGeoDegenerated = !isTopoDegenerated && (geo_degenerated[0] || geo_degenerated[1] || geo_degenerated[2]);
-
-
-
-		// 	for (int i = 0; i < 3; ++i) {
-		// 		if ((!isTopoDegenerated && geo_degenerated[i]))
-		// 			pointHl[f.vertex(i)] = 1;
-		// 		// pointHl[f.vertex(i)] = (!isTopoDegenerated && geo_degenerated[i]) ? 1 : 0;
-		// 	}
-		// 	tri_model.setHighlight(ElementKind::POINTS);
-
-
-
-		// 	if (isGeoDegenerated) {
-
-		// 		// Goto facet
-		// 		if (ImGui::TextLink(("Facet " + std::to_string(f) + "##link_goto_geo_degenerated_facet" + std::to_string(f)).c_str())) {
-		// 			Triangle3 t = f;
-		// 			cameraGoto(sl::um2glm(t.bary_verts()));
-		// 		}
-		// 		ImGui::SameLine();
-		// 		ImGui::TextColored(ImVec4(1.f, 0.f, 0.f, 1.f), " is geo degenerated.");
-
-		// 		drawUIDegeneratedCorners(f, geo_degenerated);
-		// 	}
-		// }
-
 		ImGui::End();
 		return true;
 	}
@@ -299,6 +216,6 @@ struct TriangleInspector : public Component {
 
 	bool once = false;
 	double eps = 0.001;
-	int epsScreen = 2;
+	// int epsScreen = 2;
 
 };

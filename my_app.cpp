@@ -53,7 +53,7 @@ void MyApp::loadModel(const std::string& filename) {
 	#endif
 
 	// Notify components
-	for (auto &c : scripts) {
+	for (auto &c : components) {
 		c->modelLoaded(filename);
 	}
 
@@ -82,6 +82,7 @@ bool MyApp::removeModel(std::string name) {
 	for (int i = 0; i < models.size(); ++i) {
 		auto &m = models[i];
 		if (m->getName() == name) {
+			// TODO fix here using removeModel(int)
 			models.erase(models.begin() + i);
 			return true;
 		}
@@ -110,11 +111,18 @@ int MyApp::getIndexOfModel(std::string name) {
 void MyApp::init() {
 
 
-	std::cout << "INIT" << std::endl;
+	std::cout << "Init" << std::endl;
 
 	// TODO Only load first for the moment
-	if (!args.models.empty())
-		loadModel(*args.models.begin());
+	if (!args.models.empty()) {
+		for (auto m : args.models) {
+			if (!fs::exists(m) || !fs::is_regular_file(m)) {
+				std::cerr << "Model path given as a command line argument does not exist or is not a file: " << m << std::endl;
+				continue;
+			}
+			loadModel(m);
+		}
+	}
 
 	// ----- TESTS ------
 
@@ -195,7 +203,7 @@ void MyApp::init() {
 				if (component) {
 					// TODO see if init
 					// component->init();
-					scripts.push_back(std::move(component));
+					components.push_back(std::move(component));
 				} else {
 					std::cout << "Failed to load component from: " << entry.path().string() << std::endl;
 				}
@@ -209,13 +217,25 @@ void MyApp::init() {
 			std::string script_path = m + "/script.lua";
 			auto script = std::make_unique<LuaScript>(*this, script_path);
 			script->init();
-			scripts.push_back(std::move(script));
+			components.push_back(std::move(script));
 		}
+	}
+
+	// Load scripts from args
+	for (auto s : args.scripts) {
+		if (!fs::exists(s) || !fs::is_regular_file(s)) {
+			std::cerr << "Script path given as a command line argument does not exist or is not a file: " << s << std::endl;
+			continue;
+		}
+		std::cout << "load script: " << s << std::endl;
+		auto script = std::make_unique<LuaScript>(*this, s);
+		script->init();
+		components.push_back(std::move(script));
 	}
 
 	// ----- TEST -----
 	// TODO remove just for testing manually add components
-	scripts.push_back(std::make_unique<TriangleInspector>(*this));
+	components.push_back(std::make_unique<TriangleInspector>(*this));
 }
 
 void MyApp::update(float dt) {
@@ -239,43 +259,11 @@ void MyApp::update(float dt) {
 
 
 	if (st.mouse.isLeftButton()) {
-		
 		getCamera().move(glm::vec2(screenWidth, screenHeight), st.mouse.pos, st.mouse.lastPos);
-
-		// auto pickIDs = pick_cells(st.mouse.pos.x, st.mouse.pos.y, st.mouse.getCursorRadius());
-		// for (long pickID : pickIDs) {
-		// 	if (getCamera().isLocked() && pickID >= 0 && pickID < hex.ncells()) {
-		// 		models[selectedModel]->setFilter(pickID, true);
-		// 	}
-		// }
-
 	}
 
-	// if (dblClick) {
-	// 	double xPos, yPos;
-	// 	glfwGetCursorPos(window, &xPos, &yPos);
-	// 	long pickID = pick(xPos, yPos);
-
-	// 	if (pickID > 0 && pickID < hex.ncells()) {
-	// 		Volume::Cell c(hex, pickID);
-	// 		auto p = 
-	// 			(c.vertex(0).pos() + 
-	// 			c.vertex(1).pos() +
-	// 			c.vertex(2).pos() +
-	// 			c.vertex(3).pos() +
-	// 			c.vertex(4).pos() +
-	// 			c.vertex(5).pos() +
-	// 			c.vertex(6).pos() +
-	// 			c.vertex(7).pos()) / 8.;
-
-	// 		getCamera().lookAt(glm::vec3(p.x, p.y, p.z));
-
-	// 		std::cout << "dblClick on cell: " << pickID << std::endl;
-	// 	}
-	// }
-
-	for (auto &script : scripts) {
-		script->update(dt);
+	for (auto &component : components) {
+		component->update(dt);
 	}
 
 }
@@ -362,7 +350,7 @@ void MyApp::draw_gui() {
 
 
 
-	for (auto &script : scripts) {
+	for (auto &script : components) {
 		// if (script->status == LuaScript::SCRIPT_STATUS_OK) {
 			bool success = script->draw_gui(ImGui::GetCurrentContext());
 			if (!success) {
@@ -520,7 +508,7 @@ void MyApp::key_event(int key, int scancode, int action, int mods) {
 		getCamera().setFov(fov);
 	}
 
-	for (auto &script : scripts) {
+	for (auto &script : components) {
 		script->key_event(key, scancode, action, mods);
 	}
 
@@ -537,14 +525,14 @@ void MyApp::mouse_scroll(double xoffset, double yoffset) {
 	else 
 		st.mouse.setCursorRadius(st.mouse.getCursorRadius() + static_cast<int>(yoffset));
 
-	for (auto &script : scripts) {
+	for (auto &script : components) {
 		script->mouse_scroll(xoffset, yoffset);
 	}
 }
 
 void MyApp::mouse_button(int button, int action, int mods) {
 
-	for (auto &script : scripts)
+	for (auto &script : components)
 		script->mouse_button(button, action, mods);
 }
 
@@ -569,7 +557,7 @@ void MyApp::mouse_move(double x, double y) {
 			st.edge.setHovered({});
 	}
 
-	for (auto &script : scripts) {
+	for (auto &script : components) {
 		script->mouse_move(x, y);
 	}
 
