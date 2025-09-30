@@ -207,8 +207,8 @@ struct App : public IApp {
     InputState& getInputState() override { return st; }
 
     std::vector<std::string> getPickModeStrings() const { return std::vector<std::string>(pickModeStrings, pickModeStrings + 4); }
-    int getPickMode() override { return pickMode; }
-    void setPickMode(ElementKind mode) override { pickMode = mode; }
+    // int getPickMode() override { return pickMode; }
+    // void setPickMode(ElementKind mode) override { pickMode = mode; }
     
     std::vector<unsigned int> getColorMaps2D() override {
         return {colormaps2D[0], colormaps2D[1]};
@@ -266,7 +266,7 @@ struct App : public IApp {
     std::vector<std::unique_ptr<Component>> components;
 	InputState st;
 
-    ElementKind pickMode = ElementKind::CELLS;
+    // ElementKind pickMode = ElementKind::CELLS;
 
 
     // TODO make private

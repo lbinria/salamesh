@@ -59,13 +59,11 @@ void main()
     // optional hard discard of outside
     if(t<0.01) discard;
 
-
-
     // vLocalUV is between (0,0) - (1,1) in a square
     // We want to discard outside of circle
-    vec2 uv = vLocalUV * 2. - vec2(1.);
-    if (length(uv) - 1. > 0)
-        discard;
+    // vec2 uv = vLocalUV * 2. - vec2(1.);
+    // if (length(uv) - 1. > 0)
+    //     discard;
 
     // Point coord from [0, 1] to [-1, 1]
     vec2 V = 2.0 * (gl_PointCoord - vec2(0.5, 0.5));

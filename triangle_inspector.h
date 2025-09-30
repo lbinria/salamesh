@@ -99,7 +99,7 @@ struct TriangleInspector : public Component {
 
 		std::vector<glm::vec2> points2D = getPoint2D(app.getCamera(), triModel);
 
-		// Eps for min distance square between two points, to be recognized a triangle as geometrically degenerated
+		// Eps for min distance between two points, to recognized a triangle as geometrically degenerated
 		static int eps_digits = 3;
 		ImGui::SliderInt("Epsilon digits", &eps_digits, 1, 15);
 		eps = 1. / pow(10, eps_digits);
@@ -200,6 +200,7 @@ struct TriangleInspector : public Component {
 		ImGui::End();
 		return true;
 	}
+
     void update(float dt) {}
 
     // Input events
@@ -216,6 +217,5 @@ struct TriangleInspector : public Component {
 
 	bool once = false;
 	double eps = 0.001;
-	// int epsScreen = 2;
 
 };

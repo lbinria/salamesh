@@ -568,7 +568,7 @@ void MyApp::save_state(const std::string filename) {
 
 	json j;
 	j["cull_mode"] = cull_mode;
-	j["pick_mode"] = pickMode;
+	// j["pick_mode"] = pickMode;
 	j["selected_model"] = selectedModel;
 	j["models"] = json::array();
 
@@ -602,7 +602,7 @@ void MyApp::load_state(const std::string filename) {
 	ifs.close();
 	std::cout << "State loaded from: " << filename << std::endl;
 	cull_mode = j["cull_mode"].get<int>();
-	pickMode = (ElementKind)j["pick_mode"].get<int>();
+	// pickMode = (ElementKind)j["pick_mode"].get<int>();
 	selectedModel = j["selected_model"].get<int>();
 	// Clear current models
 	models.clear();

@@ -47,8 +47,8 @@ struct IApp {
     virtual std::vector<std::string> getPickModeStrings() const = 0;
 
     // TODO maybe useless when picking functions below will be implemented
-    virtual int getPickMode() = 0;
-    virtual void setPickMode(ElementKind mode) = 0;
+    // virtual int getPickMode() = 0;
+    // virtual void setPickMode(ElementKind mode) = 0;
 
     virtual int getScreenWidth() const = 0;
     virtual int getScreenHeight() const = 0;

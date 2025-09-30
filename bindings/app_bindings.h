@@ -64,10 +64,10 @@ namespace bindings {
 
 			app_type["pick_mode_strings"] = sol::readonly_property(&IApp::getPickModeStrings);
 
-			app_type["pick_mode"] = sol::property(
-				&IApp::getPickMode,
-				&IApp::setPickMode
-			);
+			// app_type["pick_mode"] = sol::property(
+			// 	&IApp::getPickMode,
+			// 	&IApp::setPickMode
+			// );
 
 			app_type["colormaps_2d"] = sol::readonly_property(&IApp::getColorMaps2D);
 
