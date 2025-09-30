@@ -50,6 +50,9 @@ struct IApp {
     virtual int getPickMode() = 0;
     virtual void setPickMode(ElementKind mode) = 0;
 
+    virtual int getScreenWidth() const = 0;
+    virtual int getScreenHeight() const = 0;
+    virtual double getScreenAspectRatio() const = 0;
 
     // virtual glm::vec3 pickPoint(long x, long y) = 0;
     virtual long pick_vertex(double x, double y) = 0;

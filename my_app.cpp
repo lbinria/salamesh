@@ -52,6 +52,11 @@ void MyApp::loadModel(const std::string& filename) {
 	// TODO display model info
 	#endif
 
+	// Notify components
+	for (auto &c : scripts) {
+		c->modelLoaded(filename);
+	}
+
 	Commands::get().add_command("app.loadModel(" + filename + ")");
 }
 

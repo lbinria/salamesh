@@ -40,6 +40,7 @@ struct LuaScript final : public Component {
 		mouse_scroll_func = lua.get<sol::protected_function>("mouse_scroll");
 		key_event_func = lua.get<sol::protected_function>("key_event");
 		componentChanged_func = lua.get<sol::protected_function>("componentChanged");
+		modelLoaded_func = lua.get<sol::protected_function>("modelLoaded");
 
 		// Check whether functions exists
 		has_init = init_func.valid();
@@ -52,6 +53,7 @@ struct LuaScript final : public Component {
 		has_mouse_scroll = mouse_scroll_func.valid();
 		has_key_event = key_event_func.valid();
 		has_componentChanged = componentChanged_func.valid();
+		has_modelLoaded = modelLoaded_func.valid();
 	}
 
 
@@ -142,6 +144,11 @@ struct LuaScript final : public Component {
 			componentChanged_func(id);
 	}
 
+	void modelLoaded(const std::string &path) override {
+		if (has_modelLoaded)
+			modelLoaded_func(path);
+	}
+
 
 	enum Status {
 		SCRIPT_STATUS_OK,
@@ -163,6 +170,7 @@ struct LuaScript final : public Component {
 	sol::protected_function mouse_scroll_func;
 	sol::protected_function key_event_func;
 	sol::protected_function componentChanged_func;
+	sol::protected_function modelLoaded_func;
 
 
 	bool 
@@ -174,6 +182,7 @@ struct LuaScript final : public Component {
 		has_draw_gui, 
 		has_update, 
 		has_cleanup, 
-		has_componentChanged;
+		has_componentChanged,
+		has_modelLoaded;
 
 };

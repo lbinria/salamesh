@@ -214,6 +214,10 @@ struct App : public IApp {
         return {colormaps2D[0], colormaps2D[1]};
     }
 
+    int getScreenWidth() const { return screenWidth; }
+    int getScreenHeight() const { return screenHeight; }
+    double getScreenAspectRatio() const { return static_cast<double>(screenWidth) / screenHeight; }
+
     // To override lifecycle functions
     virtual void init() = 0;
     virtual void update(float dt) = 0;

@@ -80,10 +80,35 @@ struct TriangleInspector : public Component {
 		}
 	}
 
+    std::vector<glm::vec3> getPoint2D(Camera &c, TriModel &model) const {
+        std::vector<glm::vec3> points2D;
+        for (int i = 0; i < model.nverts(); ++i) {
+			vec3 pp = model.getTriangles().points[i];
+			glm::vec4 p(pp.x, pp.y, pp.z, 1.f);
+            
+			p = c.getProjectionMatrix() * c.getViewMatrix() * p;
+            p /= p.w;
+			
+			p.x = (p.x + 1.f) * 0.5f * app.getScreenWidth();
+			p.y = (1.f - (p.y + 1.f) * 0.5f) * app.getScreenHeight();
+			p.z = (p.z + 1.f * 0.5f) * 100.f; // Near - Far
+
+            points2D.push_back(glm::vec3(p.x, p.y, p.z));
+        }
+        return points2D;	
+    }
+
+	
+
     // Lifecycle
-    void init() {}
+    void init() {
+	}
     // virtual void setup() = 0;
 	void cleanup() {}
+
+	void modelLoaded(const std::string &path) override {
+
+	}
     
 	bool draw_gui(ImGuiContext* ctx) {
 		ImGui::Begin("Triangle diagnostic");
@@ -105,6 +130,8 @@ struct TriangleInspector : public Component {
 		auto &tri_model = model.as<TriModel>();
 		auto &m = tri_model.getTriangles();
 		
+		std::vector<glm::vec3> points2D = getPoint2D(app.getCamera(), tri_model);
+
 		// Eps for min distance square between two points, to be recognized a triangle as geometrically degenerated
 		static int eps_digits = 3;
 		ImGui::SliderInt("Epsilon digits", &eps_digits, 1, 15);
@@ -116,6 +143,12 @@ struct TriangleInspector : public Component {
 		// 	// changed
 		// }
 		// float eps = powf(10.0f, logv);
+
+		
+		// Highlight degenerated points
+		PointAttribute<float> pointHl;
+		pointHl.bind("_highlight", tri_model.getSurfaceAttributes(), tri_model.getTriangles());
+		pointHl.fill(0.f);
 
 		for (auto &f : m.iter_facets()) {
 			auto v0 = f.vertex(0);
@@ -153,14 +186,22 @@ struct TriangleInspector : public Component {
 
 			bool geo_degenerated[3] = {false};
 
-			auto p0 = f.vertex(0).pos();
-			auto p1 = f.vertex(1).pos();
-			auto p2 = f.vertex(2).pos();
+			// auto p0 = f.vertex(0).pos();
+			// auto p1 = f.vertex(1).pos();
+			// auto p2 = f.vertex(2).pos();
+			auto gp0 = points2D[f.vertex(0)];
+			auto gp1 = points2D[f.vertex(1)];
+			auto gp2 = points2D[f.vertex(2)];
+			auto p0 = vec3(gp0.x, gp0.y, gp0.z);
+			auto p1 = vec3(gp1.x, gp1.y, gp1.z);
+			auto p2 = vec3(gp2.x, gp2.y, gp2.z);
+
+			eps = 2.0f;
 
 			// Check for points
-			float p0p1Dist = (p0 - p1).norm2(); 
-			float p0p2Dist = (p0 - p2).norm2(); 
-			float p1p2Dist = (p1 - p2).norm2();
+			double p0p1Dist = (p0 - p1).norm(); 
+			double p0p2Dist = (p0 - p2).norm(); 
+			double p1p2Dist = (p1 - p2).norm();
 
 			if (p0p1Dist < eps) {
 				geo_degenerated[0] = true;
@@ -175,21 +216,22 @@ struct TriangleInspector : public Component {
 				geo_degenerated[2] = true;
 			}
 
-			bool isGeoDegenerated = geo_degenerated[0] || geo_degenerated[1] || geo_degenerated[2];
+			bool isGeoDegenerated = !isTopoDegenerated && (geo_degenerated[0] || geo_degenerated[1] || geo_degenerated[2]);
 
 
-			
-			if (!isTopoDegenerated && (p0p1Dist < eps || p0p2Dist < eps || p1p2Dist < eps)) {
 
-				PointAttribute<float> pointHl;
-				pointHl.bind("_highlight", tri_model.getSurfaceAttributes(), tri_model.getTriangles());
+			for (int i = 0; i < 3; ++i) {
+				if ((!isTopoDegenerated && geo_degenerated[i]))
+					pointHl[f.vertex(i)] = 1;
+				// pointHl[f.vertex(i)] = (!isTopoDegenerated && geo_degenerated[i]) ? 1 : 0;
+			}
+			tri_model.setHighlight(ElementKind::POINTS);
 
-				if (geo_degenerated[0]) {
-					pointHl[f.vertex(0)] = 0.1f;
-				}
 
-				tri_model.setHighlight(ElementKind::POINTS);
 
+			if (isGeoDegenerated) {
+
+				// Goto facet
 				if (ImGui::TextLink(("Facet " + std::to_string(f) + "##link_goto_geo_degenerated_facet" + std::to_string(f)).c_str())) {
 					Triangle3 t = f;
 					cameraGoto(um2glm(t.bary_verts()));
@@ -198,35 +240,6 @@ struct TriangleInspector : public Component {
 				ImGui::TextColored(ImVec4(1.f, 0.f, 0.f, 1.f), " is geo degenerated.");
 
 				displayDegeneratedCorners(f, geo_degenerated);
-
-				ImGui::SameLine();
-				if (ImGui::TextLink(("Hide other facets##link_show_only_geo_degenerated_facet" + std::to_string(f)).c_str())) {
-					FacetAttribute<float> filter;
-					filter.bind("_filter", tri_model.getSurfaceAttributes(), m);
-
-					CornerAttribute<float> cornerHl;
-					cornerHl.bind("_highlight", tri_model.getSurfaceAttributes(), m);
-
-					for (auto &cf : m.iter_facets()) {
-						if (cf != f) {
-							filter[cf] = 1.f;
-
-
-						} else {
-							for (int i = 0; i < 3; ++i) {
-								int cornerIdx = cf * 3 + i;
-								cornerHl[cornerIdx] = 0.1f;
-							}
-						}
-					}
-
-					model.setFilter(ElementKind::FACETS);
-					model.setHighlight(ElementKind::CORNERS);
-
-					// Goto facet
-					Triangle3 t = f;
-					cameraGoto(um2glm(t.bary_verts()));
-				}
 			}
 		}
 
