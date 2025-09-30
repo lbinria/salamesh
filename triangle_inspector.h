@@ -102,7 +102,9 @@ struct TriangleInspector : public Component {
 
     // Lifecycle
     void init() {
+
 	}
+
     // virtual void setup() = 0;
 	void cleanup() {}
 
@@ -110,6 +112,8 @@ struct TriangleInspector : public Component {
 
 	}
     
+	bool once = false;
+
 	bool draw_gui(ImGuiContext* ctx) {
 		ImGui::Begin("Triangle diagnostic");
 
@@ -130,6 +134,13 @@ struct TriangleInspector : public Component {
 		auto &tri_model = model.as<TriModel>();
 		auto &m = tri_model.getTriangles();
 		
+		// Beuurk !
+		if (!once) {
+			tri_model.getPoints().setHoverColor(glm::vec3(1.f, 1.f, 1.f));
+			tri_model.getPoints().setSelectColor(glm::vec3(0.88f, 0.06f, 0.01f));
+			once = true;
+		}
+
 		std::vector<glm::vec3> points2D = getPoint2D(app.getCamera(), tri_model);
 
 		// Eps for min distance square between two points, to be recognized a triangle as geometrically degenerated

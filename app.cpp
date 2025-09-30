@@ -279,6 +279,14 @@ void App::setup() {
 		<< "GL_MAX_COLOR_ATTACHMENTS = " << maxColorAttachments << std::endl
 		<< "GL_MAX_DRAW_BUFFERS     = " << maxDrawBuffers     << std::endl;
 
+	// Check max draw buffers
+	if (maxColorAttachments < 5) {
+		std::cerr << "Warning: your GPU supports only " << maxColorAttachments << " color attachments, some features may not work." << std::endl;
+	}
+	if (maxDrawBuffers < 5) {
+		std::cerr << "Warning: your GPU supports only " << maxDrawBuffers << " draw buffers, some features may not work." << std::endl;
+	}
+
 	// Load colormap texture
 	int width, height, nrChannels;
 	load_texture_1d("assets/CET-R41px.png", colormaps[0], width, height, nrChannels);

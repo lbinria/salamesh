@@ -19,7 +19,8 @@ uniform vec3 clipping_plane_normal = vec3(0.2f, 0.6f, 0.0f); // (a, b, c)
 uniform vec3 clipping_plane_point = vec3(0.0f, 0.0f, 0.0);  // A point on the plane
 uniform int invert_clipping = 0; // 0: normal, 1: inverted
 
-
+uniform vec3 hoverColor = vec3(1.,1.,1.);
+uniform vec3 selectColor = vec3(0., 0.22, 1.);
 
 uniform int colorMode = 0;
 
@@ -86,9 +87,10 @@ void main()
     float highlightVal = texelFetch(highlightBuf, FragVertexIndex).x;
     if (highlightVal > 0) {
         // Interpolate between hover / select colors according to highlight value
-        vec3 hovColor = vec3(1.,1.,1.);
-        vec3 selColor = vec3(0., 0.22, 1.);
-        vec3 hlColor = mix(hovColor, selColor, highlightVal);
+        float t = highlightVal;
+        // Add condition if you want a hard switch between hover and select
+        t = step(0.5, highlightVal);
+        vec3 hlColor = mix(hoverColor, selectColor, t);
         // Mix with current point color (80%)
         col = mix(col, hlColor, .8);
     }

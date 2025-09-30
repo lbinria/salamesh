@@ -13,6 +13,9 @@ uniform vec3 pointColor;
 
 uniform int colorMode = 0;
 
+uniform vec3 hoverColor = vec3(1.,1.,1.);
+uniform vec3 selectColor = vec3(0., 0.22, 1.);
+
 uniform sampler1D fragColorMap;
 uniform vec2 attrRange = vec2(0.f, 1.f);
 uniform samplerBuffer attrBuf;
@@ -85,9 +88,10 @@ void main()
 
     if (highlightVal > 0) {
         // Interpolate between hover / select colors according to highlight value
-        vec3 hovColor = vec3(1.0, 0.0, 0.0);
-        vec3 selColor = vec3(1.0, 0.9, 0.0);
-        vec3 hlColor = mix(hovColor, selColor, highlightVal);
+        float t = highlightVal;
+        // Add condition if you want a hard switch between hover and select
+        t = step(0.5, highlightVal);
+        vec3 hlColor = mix(hoverColor, selectColor, t);
         // Mix with current point color (80%)
         col = mix(col, hlColor, .8);
     }

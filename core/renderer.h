@@ -94,6 +94,26 @@ struct IRenderer {
 		color = c;
 	}
 
+	glm::vec3 getHoverColor() const {
+		return hoverColor;
+	}
+
+	void setHoverColor(glm::vec3 c) {
+		shader.use();
+		shader.setFloat3("hoverColor", c);
+		hoverColor = c;
+	}
+
+	glm::vec3 getSelectColor() const {
+		return selectColor;
+	}
+
+	void setSelectColor(glm::vec3 c) {
+		shader.use();
+		shader.setFloat3("selectColor", c);
+		selectColor = c;
+	}
+
 	void setLight(bool enabled) {
 		shader.use();
 		shader.setFloat("is_light_enabled", enabled);
@@ -304,6 +324,8 @@ struct IRenderer {
 	bool visible = true;
 
     glm::vec3 color{0.8f, 0.f, 0.2f};
+	glm::vec3 hoverColor{1.f, 1.f, 1.f};
+	glm::vec3 selectColor{0.f, 0.22f, 1.f};
     float meshSize = 0.01f;
     float meshShrink = 0.f;
 
