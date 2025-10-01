@@ -25,6 +25,11 @@ void QuadRenderer::push() {
 
 		for (int t = 0; t < 2; ++t) {
 
+			auto p0 = f.vertex(0).pos();
+			auto p1 = f.vertex(1).pos();
+			auto p2 = f.vertex(2).pos();
+			auto p3 = f.vertex(3).pos();
+
 			const double a = (points[verts[t][1]] - points[verts[t][0]]).norm();
 			const double b = (points[verts[t][2]] - points[verts[t][1]]).norm();
 			const double c = (points[verts[t][2]] - points[verts[t][0]]).norm();
@@ -39,7 +44,6 @@ void QuadRenderer::push() {
 
 				auto v = f.vertex(lv);
 				auto p = v.pos();
-
 				// Compute height
 				const double h = area / (.5 * side_lengths[(lv + 1) % 3]);
 
@@ -52,7 +56,12 @@ void QuadRenderer::push() {
 
 				vertices.push_back({ 
 					vertexIndex: v,
-					position: glm::vec3(p.x, p.y, p.z),
+					localIndex: lv,
+					p: glm::vec3(p.x, p.y, p.z),
+					p0: glm::vec3(p0.x, p0.y, p0.z),
+					p1: glm::vec3(p1.x, p1.y, p1.z),
+					p2: glm::vec3(p2.x, p2.y, p2.z),
+					p3: glm::vec3(p3.x, p3.y, p3.z),
 					size: 1.f,
 					normal: glm::vec3(n.x, n.y, n.z),
 					heights: edge,

@@ -159,7 +159,7 @@ function draw_model_properties(model, view)
 				cur_model.mesh.color = new_color
 			end
 
-			local sel_slider_mesh_size, new_mesh_size = imgui.SliderFloat("Mesh size", cur_model.mesh.size, 0, 1)
+			local sel_slider_mesh_size, new_mesh_size = imgui.SliderFloat("Mesh size", cur_model.mesh.size, 0, 100)
 			if (sel_slider_mesh_size) then 
 				print("Change mesh size: " .. tostring(new_mesh_size))
 				cur_model.mesh.size = new_mesh_size

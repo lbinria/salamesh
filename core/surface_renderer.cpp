@@ -105,19 +105,36 @@ void SurfaceRenderer::init() {
 	std::cout << "vertex attrib setup..." << std::endl;
 	#endif
 
-	GLuint positionLocation = glGetAttribLocation(shader.id, "aPos");
+	GLuint pLoc = glGetAttribLocation(shader.id, "p");
+	GLuint p0Loc = glGetAttribLocation(shader.id, "p0");
+	GLuint p1Loc = glGetAttribLocation(shader.id, "p1");
+	GLuint p2Loc = glGetAttribLocation(shader.id, "p2");
+	GLuint p3Loc = glGetAttribLocation(shader.id, "p3");
 	GLuint sizeLocation = glGetAttribLocation(shader.id, "size");
 	GLuint normalLocation = glGetAttribLocation(shader.id, "normal");
 	GLuint heightsLocation = glGetAttribLocation(shader.id, "aHeights");
 	GLuint facetIndexLocation = glGetAttribLocation(shader.id, "facetIndex");
 	GLuint cellIndexLocation = glGetAttribLocation(shader.id, "cellIndex");
 	GLuint vertexIndexLocation = glGetAttribLocation(shader.id, "vertexIndex");
+	GLuint localIndexLocation = glGetAttribLocation(shader.id, "localIndex");
 
 	glBindVertexArray(VAO);
 	glBindBuffer(GL_ARRAY_BUFFER, VBO);
 
-	glEnableVertexAttribArray(positionLocation);
-	glVertexAttribPointer(positionLocation, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)offsetof(Vertex, position));
+	glEnableVertexAttribArray(pLoc);
+	glVertexAttribPointer(pLoc, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)offsetof(Vertex, p));
+
+	glEnableVertexAttribArray(p0Loc);
+	glVertexAttribPointer(p0Loc, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)offsetof(Vertex, p0));
+
+	glEnableVertexAttribArray(p1Loc);
+	glVertexAttribPointer(p1Loc, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)offsetof(Vertex, p1));
+
+	glEnableVertexAttribArray(p2Loc);
+	glVertexAttribPointer(p2Loc, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)offsetof(Vertex, p2));
+
+	glEnableVertexAttribArray(p3Loc);
+	glVertexAttribPointer(p3Loc, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)offsetof(Vertex, p3));
 
 	glEnableVertexAttribArray(sizeLocation);
 	glVertexAttribPointer(sizeLocation, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)offsetof(Vertex, size));
@@ -136,6 +153,9 @@ void SurfaceRenderer::init() {
 
 	glEnableVertexAttribArray(vertexIndexLocation);
 	glVertexAttribIPointer(vertexIndexLocation, 1, GL_INT, sizeof(Vertex), (void*)offsetof(Vertex, vertexIndex));
+
+	glEnableVertexAttribArray(localIndexLocation);
+	glVertexAttribIPointer(localIndexLocation, 1, GL_INT, sizeof(Vertex), (void*)offsetof(Vertex, localIndex));
 
 	
 	std::chrono::steady_clock::time_point end = std::chrono::steady_clock::now();

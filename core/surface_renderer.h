@@ -18,6 +18,21 @@ using namespace UM;
 
 struct SurfaceRenderer : public IRenderer {
 	
+	struct Vertex {
+		int vertexIndex;
+		int localIndex;
+		glm::vec3 p;
+		glm::vec3 p0;
+		glm::vec3 p1;
+		glm::vec3 p2;
+		glm::vec3 p3;
+		float size;
+		glm::vec3 normal; 
+		glm::vec3 heights;
+		int facetIndex;
+		int cellIndex;
+	};
+
 	SurfaceRenderer(Surface &m) : 
 		IRenderer(Shader("shaders/surface.vert", "shaders/surface.frag")),
 		_m(m)

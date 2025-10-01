@@ -19,6 +19,16 @@ using namespace UM;
 
 struct VolumeRenderer : public IRenderer {
 
+	struct Vertex {
+		int vertexIndex;
+		glm::vec3 position;
+		float size;
+		glm::vec3 normal; 
+		glm::vec3 heights;
+		int facetIndex;
+		int cellIndex;
+	};
+
 	VolumeRenderer(Volume &m) : 
 		IRenderer(Shader("shaders/volume.vert", "shaders/volume.frag")),
 		_m(m)

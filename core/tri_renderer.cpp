@@ -18,9 +18,14 @@ void TriRenderer::push() {
 		const double s = a + b + c;
 		const double area = sqrt(s * (s - a) * (s - b) * (s - c));
 
+		auto p0 = f.vertex(0).pos();
+		auto p1 = f.vertex(1).pos();
+		auto p2 = f.vertex(2).pos();
+
 		for (int lv = 0; lv < 3; ++lv) {
 			auto v = f.vertex(lv);
 			auto p = v.pos();
+
 
 			// Compute height
 			const double h = area / (.5 * side_lengths[(lv + 1) % 3]);
@@ -30,7 +35,12 @@ void TriRenderer::push() {
 
 			vertices.push_back({ 
 				vertexIndex: v,
-				position: glm::vec3(p.x, p.y, p.z),
+				localIndex: lv,
+				p: glm::vec3(p.x, p.y, p.z),
+				p0: glm::vec3(p0.x, p0.y, p0.z),
+				p1: glm::vec3(p1.x, p1.y, p1.z),
+				p2: glm::vec3(p2.x, p2.y, p2.z),
+				p3: glm::vec3(0.f, 0.f, 0.f),
 				size: 1.f,
 				normal: glm::vec3(n.x, n.y, n.z),
 				heights: edge,

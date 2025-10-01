@@ -15,6 +15,16 @@ using namespace UM;
 
 struct PointSetRenderer : public IRenderer {
 
+	struct Vertex {
+		int vertexIndex;
+		glm::vec3 position;
+		float size;
+		glm::vec3 normal; 
+		glm::vec3 heights;
+		int facetIndex;
+		int cellIndex;
+	};
+
     PointSetRenderer(PointSet &ps) : 
         IRenderer(Shader("shaders/point2.vert", "shaders/point2.frag")),
         ps(ps) {

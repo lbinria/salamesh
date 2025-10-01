@@ -28,7 +28,9 @@ struct DescentCamera final : public Camera {
 		glm::vec3 forwardYP = glm::vec3(pitchMat * glm::vec4(forwardY, 0.0f));
 
 		// 5) Build new lookAt and view‐matrix
-		glm::vec3 newLookAt = m_eye + forwardYP;
+		glm::vec3 newLookAt = m_eye + (forwardYP * 1000.0f /* multiply is a quick & dirty fix. It enables look at to be very far away, therefore position doesn't collide with look at */);
+        // Note that if there is collision between position & look at (look at is very close to eye), move forward direction gets inverted each times you pass the look at point.
+        // This fix doesn't works as soon as you move very close to the look at point, but it's good enough for now.
 		glm::mat4 view = glm::lookAt(m_eye, newLookAt, m_upVector);
 
 
