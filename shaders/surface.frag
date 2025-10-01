@@ -130,8 +130,6 @@ void main()
     // Wireframe
     if (fragHeights.y < meshSize || fragHeights.z < meshSize || fragHeights.x < meshSize) {
         col = vec3(0,0,0);
-    } else {
-        col =vec3(1,1,1);
     }
 
     // Outputs

@@ -7,6 +7,7 @@
 #include "point_set_renderer.h"
 #include "halfedge_renderer_2.h"
 #include "tri_renderer.h"
+#include "bbox_renderer.h"
 #include "color_mode.h"
 
 using namespace UM;
@@ -22,7 +23,8 @@ struct TriModel final : public Model {
         Model::Model({
             {"mesh_renderer", std::make_shared<TriRenderer>(_tri)}, 
             {"point_renderer", std::make_shared<PointSetRenderer>(_tri.points) },
-            {"edge_renderer", std::make_shared<HalfedgeRenderer2>(_tri) }
+            {"edge_renderer", std::make_shared<HalfedgeRenderer2>(_tri) },
+            {"bbox_renderer", std::make_shared<BBoxRenderer>(_tri.points) }
         })
         {}
 
