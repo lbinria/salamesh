@@ -8,7 +8,7 @@
 #include "halfedge_renderer.h"
 #include "tet_renderer.h"
 #include "color_mode.h"
-
+#include "helpers.h"
 
 
 using namespace UM;
@@ -58,6 +58,20 @@ struct TetModel final : public Model {
     int ncorners() const override {
         return _m.ncorners();
     }
+
+    std::tuple<glm::vec3, glm::vec3> bbox() override {
+        glm::vec3 min = glm::vec3(FLT_MAX);
+        glm::vec3 max = glm::vec3(-FLT_MAX);
+
+        for (auto &v : _m.iter_vertices()) {
+            glm::vec3 p = sl::um2glm(v.pos());
+            min = glm::min(min, p);
+            max = glm::max(max, p);
+        }
+
+        return {min, max};
+    }
+
 
     // // TODO filter anything else than cell !
     // void setFilter(int idx, bool filter) override {

@@ -48,6 +48,9 @@ void MyApp::loadModel(const std::string& filename) {
 
 	models.push_back(std::move(model));	
 
+	// Current camera look at the model
+	getCamera().lookAt(getCurrentModel().getCenter());
+
 	#ifdef _DEBUG
 	// TODO display model info
 	#endif
@@ -164,7 +167,7 @@ void MyApp::init() {
 		// Get cameras start pos
 		glm::vec3 camera_pos(0.f);
 		if (hasModels()) {
-			camera_pos = getCurrentModel().getPosition();
+			camera_pos = getCurrentModel().getCenter();
 		}
 
 		// Create cameras

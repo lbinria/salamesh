@@ -178,7 +178,12 @@ struct Model {
     virtual int nfacets() const = 0; 
     virtual int ncells() const = 0; 
     virtual int ncorners() const = 0; 
+    virtual std::tuple<glm::vec3, glm::vec3> bbox() = 0;
 
+    glm::vec3 getCenter() {
+        auto [bmin, bmax] = bbox();
+        return (bmin + bmax) / 2.f;
+    }
 
 
     // virtual void setFilter(int idx, bool filter) = 0;

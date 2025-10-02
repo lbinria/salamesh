@@ -20,6 +20,7 @@ struct Camera {
         m_lookAt(std::move(lookAt)),
         m_upVector(std::move(up)),
         m_projectionMatrix(glm::perspective(glm::radians(fovAndScreen.x), fovAndScreen.y / fovAndScreen.z, NEAR_PLANE, FAR_PLANE)),
+        // m_projectionMatrix(glm::ortho(-1.f, 1.f, -1.f, 1.f, NEAR_PLANE, FAR_PLANE)),
         m_fovAndScreen(std::move(fovAndScreen))
     {
         updateViewMatrix();
@@ -37,6 +38,7 @@ struct Camera {
     void setCameraView(glm::vec3 eye, glm::vec3 lookAt, glm::vec3 up, glm::vec3 fovAndScreen)
     {
         setCameraView(eye, lookAt, up, glm::perspective(glm::radians(fovAndScreen.x), fovAndScreen.y / fovAndScreen.z, NEAR_PLANE, FAR_PLANE));
+        // setCameraView(eye, lookAt, up, glm::ortho(-1.f, 1.f, -1.f, 1.f, NEAR_PLANE, FAR_PLANE));
         updateViewMatrix();
     }
 

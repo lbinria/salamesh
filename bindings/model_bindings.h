@@ -141,6 +141,14 @@ namespace bindings {
 				&Model::getWorldPosition
 			);
 
+			model_t["bbox"] = sol::readonly_property(
+				&Model::bbox
+			);
+
+			model_t["center"] = sol::readonly_property(
+				&Model::getCenter
+			);
+
 			model_t["light"] = sol::property(
 				&Model::getLight,
 				&Model::setLight
