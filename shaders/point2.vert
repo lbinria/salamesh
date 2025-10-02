@@ -34,8 +34,8 @@ void main()
 	// Compute 2D pos in pixel of center of point
 	vec4 ndc = gl_Position / gl_Position.w;
 	vec2 screenPos = (ndc.xy * 0.5 + 0.5) * uViewport;
-
 	screenPos += vec2(gl_PointSize * 0.5);
+
 	// Back to NDC
 	vec2 ndc2 = screenPos / uViewport * 2.0 - 1.0;
 	// Reconstruct clip z and w roughly by lerping
@@ -45,8 +45,8 @@ void main()
 	vec4 pos2 = vec4(ndc2 * clipW, clipZ, clipW);
 	// Back to world space
 	vec4 pos_world = inverse(projection * view * model) * pos2;
-	// pointDepth = length(pos - pos_world.xyz) * 0.5;
-	pointDepth = distance(pos, pos_world.xyz) * 0.5;
+	pointDepth = (length(pos - pos_world.xyz) * 0.5) / 100000.0;
+	// pointDepth = distance(pos, pos_world.xyz) * 0.5;
 
 
 	fragWorldPos = pos;
