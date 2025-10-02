@@ -57,6 +57,12 @@ function draw_model_properties(model, view)
 	-- TODO using ':' instead of '.' for to_string call... for sending self...
 	imgui.Text("World position: " .. model_pos:to_string());
 	imgui.Text("Local position: " .. p:to_string());
+	imgui.Text("Center: " .. model.center:to_string());
+	imgui.Text("Radius: " .. string.format("%.4f", model.radius));
+
+	-- imgui.Text("Bounding box: " .. model.bbox[0]:to_string());
+	imgui.Text("Number of vertices: " .. tostring(model.nverts));
+	imgui.Text("Number of facets: " .. tostring(model.nfacets));
 
 
 	-- local cur_model = app.model

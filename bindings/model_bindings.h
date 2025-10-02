@@ -153,6 +153,23 @@ namespace bindings {
 				&Model::getRadius
 			);
 
+			model_t["nverts"] = sol::readonly_property(
+				&Model::nverts
+			);
+
+			model_t["nfacets"] = sol::readonly_property(
+				&Model::nfacets
+			);
+
+			model_t["ncorners"] = sol::readonly_property(
+				&Model::ncorners
+			);
+
+			model_t["ncells"] = sol::readonly_property(
+				&Model::ncells
+			);
+
+
 			model_t["light"] = sol::property(
 				&Model::getLight,
 				&Model::setLight

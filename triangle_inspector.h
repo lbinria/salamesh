@@ -195,18 +195,19 @@ struct TriangleInspector : public Component {
 
 			// List degenerate facets in the UI
 			if (isFacetDegenerated) {
-				// Goto facet
-				if (ImGui::TextLink(("Facet " + std::to_string(f) + "##link_goto_geo_degenerated_facet" + std::to_string(f)).c_str())) {
-					Triangle3 t = f;
-					cameraGoto(sl::um2glm(t.bary_verts()));
-				}
-				ImGui::SameLine();
-				ImGui::TextColored(ImVec4(1.f, 0.f, 0.f, 1.f), " is geo degenerated.");
-				ImGui::SameLine();
-				// ImGui::Text("Dist: %.15g", dist);
 
-				// Draw which corners are degenerated in the UI
-				drawUIDegeneratedCorners(f, isOverlap);
+				// // Goto facet
+				// if (ImGui::TextLink(("Facet " + std::to_string(f) + "##link_goto_geo_degenerated_facet" + std::to_string(f)).c_str())) {
+				// 	Triangle3 t = f;
+				// 	cameraGoto(sl::um2glm(t.bary_verts()));
+				// }
+				// ImGui::SameLine();
+				// ImGui::TextColored(ImVec4(1.f, 0.f, 0.f, 1.f), " is geo degenerated.");
+				// ImGui::SameLine();
+				// // ImGui::Text("Dist: %.15g", dist);
+
+				// // Draw which corners are degenerated in the UI
+				// drawUIDegeneratedCorners(f, isOverlap);
 
 				facetHl[f] = 1.f;
 				triModel.setHighlight(ElementKind::FACETS);
@@ -256,10 +257,10 @@ struct TriangleInspector : public Component {
 				ImGui::Text("Click to open...");
 				ImGui::EndTooltip();
 
-				if (app.getInputState().mouse.isLeftButton()) {
-					tooltipOpen = f;
-					tooltipPos = ImGui::GetMousePos();
-				}
+				// if (app.getInputState().mouse.isLeftButton()) {
+				// 	tooltipOpen = f;
+				// 	tooltipPos = ImGui::GetMousePos();
+				// }
 			}
 		}
 

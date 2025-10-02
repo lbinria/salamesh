@@ -46,10 +46,13 @@ void MyApp::loadModel(const std::string& filename) {
 	if (model->getEdges() != nullptr)
 		model->getEdges()->setVisible(false);
 
-	models.push_back(std::move(model));	
 
 	// Current camera look at the model
-	getCamera().lookAt(getCurrentModel().getCenter());
+	auto modelPos = model->getPosition();
+	getCamera().lookAt(model->getCenter());
+	getCamera().setEye({modelPos.x, modelPos.y, modelPos.z - model->getRadius() * 2.});
+
+	models.push_back(std::move(model));	
 
 	#ifdef _DEBUG
 	// TODO display model info
@@ -244,20 +247,26 @@ void MyApp::init() {
 void MyApp::update(float dt) {
 	// Continuous update
 
+	//
+	float speed = 0.01f;
+	if (countModels() > 0) {
+		speed = getCurrentModel().getRadius() * 0.05f;
+	}
+
 	if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS) {
-		getCamera().moveForward(0.01f);
+		getCamera().moveForward(speed);
 	} else if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS) {
-		getCamera().moveForward(-0.01f);
+		getCamera().moveForward(-speed);
 	}
 	if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS) {
-		getCamera().moveRight(-0.01f);
+		getCamera().moveRight(-speed);
 	} else if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS) {
-		getCamera().moveRight(0.01f);
+		getCamera().moveRight(speed);
 	}
 	if (glfwGetKey(window, GLFW_KEY_Q) == GLFW_PRESS) {
-		getCamera().moveUp(0.01f);
+		getCamera().moveUp(speed);
 	} else if (glfwGetKey(window, GLFW_KEY_E) == GLFW_PRESS) {
-		getCamera().moveUp(-0.01f);
+		getCamera().moveUp(-speed);
 	}
 
 
@@ -350,14 +359,14 @@ void MyApp::draw_gui() {
 				// open Dialog Simple
 				IGFD::FileDialogConfig config;
 				config.path = ".";
-				ImGuiFileDialog::Instance()->OpenDialog("ChooseFileDlgKey", "Choose File", ".geogram,.mesh,.obj,.json,.jpg", config);
+				ImGuiFileDialog::Instance()->OpenDialog("ChooseFileDlgKey", "Choose File", ".geogram,.mesh,.obj,.json,(.jpg,.obj)", config);
 			}
 
 			if (ImGui::MenuItem("Save model as")) {
 				// open Dialog Simple
 				IGFD::FileDialogConfig config;
 				config.path = ".";
-				ImGuiFileDialog::Instance()->OpenDialog("SaveModelAs", "Save as", ".geogram,.mesh", config);
+				ImGuiFileDialog::Instance()->OpenDialog("SaveModelAs", "Save as", ".geogram,.mesh,.obj", config);
 			}
 
 			if (ImGui::MenuItem("Save state")) {
