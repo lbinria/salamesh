@@ -271,6 +271,74 @@ void MyApp::update(float dt) {
 
 }
 
+
+// call each frame after NewFrame() and before Render()
+void TopModePanel(int &currentMode, const std::vector<ImTextureID>& icons, ImVec2 iconSize = ImVec2(28,28)) {
+	// Layout and appearance settings
+	const float panelHeight = 48.0f;
+	const float margin = 32.0f;
+	ImGuiIO& io = ImGui::GetIO();
+	ImVec2 displaySize = io.DisplaySize;
+
+	ImGuiWindowFlags flags = ImGuiWindowFlags_NoDecoration
+						| ImGuiWindowFlags_NoMove
+						| ImGuiWindowFlags_NoSavedSettings
+						| ImGuiWindowFlags_NoFocusOnAppearing
+						| ImGuiWindowFlags_NoNav;
+
+	ImVec2 pos = ImVec2(margin, margin);
+	ImVec2 size = ImVec2(displaySize.x - margin*2.0f, panelHeight);
+
+	ImGui::SetNextWindowPos(pos);
+	ImGui::SetNextWindowSize(size);
+	ImGui::SetNextWindowBgAlpha(0.0f); // fallback for some backends
+
+	ImGui::PushStyleColor(ImGuiCol_WindowBg, IM_COL32(0,0,0,0));    // fully transparent
+	ImGui::PushStyleColor(ImGuiCol_Border, IM_COL32(0,0,0,0));      // no border
+	ImGui::Begin("##TopModePanel", nullptr, flags);
+
+	// Optional rounded background with semi-transparency:
+	ImDrawList* dl = ImGui::GetWindowDrawList();
+	ImVec2 winMin = ImGui::GetWindowPos();
+	ImVec2 winMax = ImVec2(winMin.x + ImGui::GetWindowSize().x, winMin.y + ImGui::GetWindowSize().y);
+	float rounding = 8.0f;
+	// draw a subtle translucent rounded rect behind icons (customize color/alpha)
+	dl->AddRectFilled(winMin, ImVec2(winMax.x, winMax.y), IM_COL32(20,20,20,120), rounding);
+	dl->AddRect(winMin, ImVec2(winMax.x, winMax.y), IM_COL32(255,255,255,10), rounding);
+
+	// Icon buttons
+	ImGui::SetCursorPosY((panelHeight - iconSize.y) * 0.5f); // center vertically
+	for (int i = 0; i < (int)icons.size(); ++i) {
+		if (i > 0) ImGui::SameLine();
+
+		// highlight active mode
+		bool active = (currentMode == i);
+		if (active) {
+			ImGui::PushStyleColor(ImGuiCol_Button, IM_COL32(255,255,255,20));
+			ImGui::PushStyleColor(ImGuiCol_ButtonHovered, IM_COL32(255,255,255,30));
+			ImGui::PushStyleColor(ImGuiCol_ButtonActive, IM_COL32(255,255,255,40));
+		}
+
+		// Use ImageButton for texture icons; if you have a font icon, use ImGui::Button with Text
+		ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2(0,0));
+		ImGui::PushStyleColor(ImGuiCol_Button, ImVec4(0,0,0,0));
+		ImGui::PushStyleColor(ImGuiCol_ButtonHovered, ImVec4(0,0,0,0));
+		ImGui::PushStyleColor(ImGuiCol_ButtonActive, ImVec4(0,0,0,0));
+		if (ImGui::ImageButton(("btn_mode_" + std::to_string(i)).c_str(), icons[i], iconSize, ImVec2(0,0), ImVec2(1,1))) {
+			currentMode = i; // select mode
+		}
+		ImGui::PopStyleColor(3);
+		ImGui::PopStyleVar();
+
+		if (active) ImGui::PopStyleColor(3);
+	}
+
+	ImGui::End();
+	ImGui::PopStyleColor(2);
+}
+
+
+
 bool firstLoop = true;
 
 void MyApp::draw_gui() {
@@ -305,6 +373,10 @@ void MyApp::draw_gui() {
 		}
 		ImGui::EndMainMenuBar();
 	}
+
+	
+	int currentMode = 0;
+	TopModePanel(currentMode, {(ImTextureID)bugAntIcon});
 
 	// display
 	if (ImGuiFileDialog::Instance()->Display("ChooseFileDlgKey")) {

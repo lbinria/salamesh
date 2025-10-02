@@ -275,7 +275,11 @@ struct App : public IApp {
 
     bool renderSurfaceWindowHovered = false;
 
+    unsigned int bugAntIcon = 0;
+    
     private:
+
+    
 
 
 	long pick_edge(Hexahedra &m, glm::vec3 p0, int c) {
