@@ -7,9 +7,7 @@
 
 struct Camera {
 
-	const float FAR_PLANE = 100.f;
-	// const float NEAR_PLANE = 0.001f;
-	const float NEAR_PLANE = 0.1f;
+
 
     Camera() = default;
 
@@ -19,7 +17,7 @@ struct Camera {
         m_target_eye(m_eye),
         m_lookAt(std::move(lookAt)),
         m_upVector(std::move(up)),
-        m_projectionMatrix(glm::perspective(glm::radians(fovAndScreen.x), fovAndScreen.y / fovAndScreen.z, NEAR_PLANE, FAR_PLANE)),
+        m_projectionMatrix(glm::perspective(glm::radians(fovAndScreen.x), fovAndScreen.y / fovAndScreen.z, nearPlane, farPlane)),
         // m_projectionMatrix(glm::ortho(-1.f, 1.f, -1.f, 1.f, NEAR_PLANE, FAR_PLANE)),
         m_fovAndScreen(std::move(fovAndScreen))
     {
@@ -37,7 +35,7 @@ struct Camera {
 
     void setCameraView(glm::vec3 eye, glm::vec3 lookAt, glm::vec3 up, glm::vec3 fovAndScreen)
     {
-        setCameraView(eye, lookAt, up, glm::perspective(glm::radians(fovAndScreen.x), fovAndScreen.y / fovAndScreen.z, NEAR_PLANE, FAR_PLANE));
+        setCameraView(eye, lookAt, up, glm::perspective(glm::radians(fovAndScreen.x), fovAndScreen.y / fovAndScreen.z, nearPlane, farPlane));
         // setCameraView(eye, lookAt, up, glm::ortho(-1.f, 1.f, -1.f, 1.f, NEAR_PLANE, FAR_PLANE));
         updateViewMatrix();
     }
@@ -119,6 +117,9 @@ protected:
     glm::vec3 m_upVector; // Orientation of the camera
     glm::vec3 m_target_eye;
     bool m_lock = false;
+
+	float farPlane = 100000.f;
+	float nearPlane = 0.1f;
 
     /**
      * @brief Sigmoid function for smooth zooming.
