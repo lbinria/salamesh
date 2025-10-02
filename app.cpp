@@ -423,6 +423,7 @@ void App::start()
 			model->render();
 		}
 
+
 		// Go back to default framebuffer to draw the screen quad
 		glBindFramebuffer(GL_FRAMEBUFFER, 0);
 		getRenderSurface().render(screenShader, quadVAO);

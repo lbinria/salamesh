@@ -350,7 +350,7 @@ void MyApp::draw_gui() {
 				// open Dialog Simple
 				IGFD::FileDialogConfig config;
 				config.path = ".";
-				ImGuiFileDialog::Instance()->OpenDialog("ChooseFileDlgKey", "Choose File", ".geogram,.mesh,.json,.jpg", config);
+				ImGuiFileDialog::Instance()->OpenDialog("ChooseFileDlgKey", "Choose File", ".geogram,.mesh,.obj,.json,.jpg", config);
 			}
 
 			if (ImGui::MenuItem("Save model as")) {

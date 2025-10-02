@@ -279,8 +279,6 @@ struct App : public IApp {
     
     private:
 
-    
-
 
 	long pick_edge(Hexahedra &m, glm::vec3 p0, int c) {
 		// Search nearest edge

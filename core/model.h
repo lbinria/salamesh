@@ -185,6 +185,11 @@ struct Model {
         return (bmin + bmax) / 2.f;
     }
 
+    double getRadius() {
+        auto [bmin, bmax] = bbox();
+        return glm::length(bmax - bmin) / 2.f;
+    }
+
 
     // virtual void setFilter(int idx, bool filter) = 0;
 

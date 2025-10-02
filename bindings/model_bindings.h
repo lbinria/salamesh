@@ -149,6 +149,10 @@ namespace bindings {
 				&Model::getCenter
 			);
 
+			model_t["radius"] = sol::readonly_property(
+				&Model::getRadius
+			);
+
 			model_t["light"] = sol::property(
 				&Model::getLight,
 				&Model::setLight

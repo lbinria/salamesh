@@ -323,7 +323,7 @@ function draw_gui()
 					app.selected_model = i
 					-- Set camera position !
 					local model_pos = model.center
-					app.camera.position = vec3.new(model_pos.x, model_pos.y, model_pos.z - 3.);
+					app.camera.position = vec3.new(model_pos.x, model_pos.y, model_pos.z - model.radius * 2.);
 					app.camera.look_at = vec3.new(model_pos.x, model_pos.y, model_pos.z);
 				end
 				imgui.PopID()

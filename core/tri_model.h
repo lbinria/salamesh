@@ -8,6 +8,7 @@
 #include "halfedge_renderer_2.h"
 #include "tri_renderer.h"
 #include "bbox_renderer.h"
+#include "clipping_renderer.h"
 #include "color_mode.h"
 #include "helpers.h"
 
@@ -25,7 +26,8 @@ struct TriModel final : public Model {
             {"mesh_renderer", std::make_shared<TriRenderer>(_tri)}, 
             {"point_renderer", std::make_shared<PointSetRenderer>(_tri.points) },
             {"edge_renderer", std::make_shared<HalfedgeRenderer2>(_tri) },
-            {"bbox_renderer", std::make_shared<BBoxRenderer>(_tri.points) }
+            {"bbox_renderer", std::make_shared<BBoxRenderer>(_tri.points) },
+            {"zclipping_renderer", std::make_shared<ClippingRenderer>(_tri.points) }
         })
         {}
 
