@@ -47,6 +47,7 @@ end
 
 local clipping_planes = {"x", "y", "z"}
 local sel_clipping_plane = 1
+
 local invert_clipping = false
 
 function draw_model_properties(model, view)
@@ -98,6 +99,19 @@ function draw_model_properties(model, view)
 				print("Enable clipping: " .. tostring(new_enable_clipping))
 				cur_model.clipping = new_enable_clipping
 				app.cull = false
+			end
+
+			if (imgui.BeginCombo("##Clipping plane mode", cur_model.clipping_mode_strings[cur_model.clipping_mode])) then
+				for i = 1, #cur_model.clipping_mode_strings do
+					local is_selected = i == cur_model.clipping_mode
+					if (imgui.Selectable(cur_model.clipping_mode_strings[i], is_selected)) then
+						
+						cur_model.clipping_mode = i
+
+						print("Set clipping mode to: " .. tostring(cur_model.clipping_mode))
+					end
+				end
+				imgui.EndCombo()
 			end
 
 			if (imgui.BeginCombo("##Clipping plane normal", clipping_planes[sel_clipping_plane])) then

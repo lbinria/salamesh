@@ -104,12 +104,11 @@ namespace bindings {
 				&IRenderer::getMeshSize,
 				&IRenderer::setMeshSize
 			);
+
 			meshRenderer_t["shrink"] = sol::property(
 				&IRenderer::getMeshShrink,
 				&IRenderer::setMeshShrink
 			);
-
-
 
 			sol::usertype<Model> model_t = lua.new_usertype<Model>("Model");
 
@@ -180,6 +179,17 @@ namespace bindings {
 				&Model::setLightFollowView
 			);
 
+			// model_t["clipping_mode"] = sol::property(
+			// 	&Model::getClippingMode,
+			// 	&Model::setClippingMode
+			// );
+
+			model_t["clipping_mode"] = sol::property([](Model &self) {
+				return self.getClippingMode() + 1;
+			}, [](Model &self, int selected) {
+				self.setClippingMode(static_cast<IRenderer::ClippingMode>(selected - 1));
+			});
+
 			model_t["clipping"] = sol::property(
 				&Model::getClipping,
 				&Model::setClipping
@@ -202,12 +212,15 @@ namespace bindings {
 
 			model_t.set_function("setupClipping", &Model::setupClipping);
 
+			model_t["clipping_mode_strings"] = sol::readonly_property(&Model::getClippingModeStrings);
+
 			// Renderers accesses
 			model_t["points"] = sol::readonly_property(&Model::getPoints);
 			model_t["edges"] = sol::readonly_property(&Model::getEdges);
 			model_t["mesh"] = sol::readonly_property(&Model::getMesh);
 
 
+			// TODO here change implementation by managing index offset from lua to C++ +1 / -1
 			model_t["color_mode_strings"] = sol::readonly_property(
 				&Model::getColorModeStrings
 			);

@@ -206,7 +206,8 @@ struct App : public IApp {
 
     InputState& getInputState() override { return st; }
 
-    std::vector<std::string> getPickModeStrings() const { return std::vector<std::string>(pickModeStrings, pickModeStrings + 4); }
+
+    // std::vector<std::string> getPickModeStrings() const { return std::vector<std::string>(pickModeStrings, pickModeStrings + 4); }
     // int getPickMode() override { return pickMode; }
     // void setPickMode(ElementKind mode) override { pickMode = mode; }
     
@@ -242,7 +243,7 @@ struct App : public IApp {
         }
     }
 
-    const char* pickModeStrings[4] = {"Points", "Edges", "Facets", "Cells"};
+    // const char* pickModeStrings[4] = {"Points", "Edges", "Facets", "Cells"};
 
 
 

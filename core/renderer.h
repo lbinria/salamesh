@@ -15,6 +15,12 @@ struct IRenderer {
 		FILTER
 	};
 
+	enum ClippingMode {
+		CELL = 0,
+		STD = 1
+	};
+
+
 	// Should overwrite which element renderer is rendering
 	virtual int getRenderElementKind() = 0;
 
@@ -122,6 +128,11 @@ struct IRenderer {
 	void setLightFollowView(bool follow) {
 		shader.use();
 		shader.setInt("is_light_follow_view", follow);
+	}
+
+	virtual void setClippingMode(ClippingMode mode) {
+		shader.use();
+		shader.setInt("clipping_mode", mode);		
 	}
 
 	virtual void setClipping(bool enabled) {

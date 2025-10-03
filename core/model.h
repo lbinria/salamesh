@@ -127,6 +127,11 @@ struct Model {
         return {colorModeStrings[0], colorModeStrings[1]};
     }
 
+    static constexpr const char* clippingModeStrings[2] = {"Cell", "Std"};
+    constexpr std::array<std::string_view, 2> getClippingModeStrings() {
+        return {clippingModeStrings[0], clippingModeStrings[1]};
+    }
+
     // Lifecycle functions
 	void init() {
         for (auto const &[k, r] : _renderers)
@@ -540,6 +545,17 @@ struct Model {
         isLightFollowView = follow;
     }
 
+    IRenderer::ClippingMode getClippingMode() const {
+        return clippingMode;
+    }
+
+    void setClippingMode(IRenderer::ClippingMode mode) {
+        for (auto const &[k, r] : _renderers)
+            r->setClippingMode(mode);
+
+        clippingMode = mode;
+    }
+
     bool getClipping() const {
         return isClipping;
     }
@@ -641,6 +657,7 @@ struct Model {
     bool isLightEnabled = true;
     bool isLightFollowView = false;
 
+    IRenderer::ClippingMode clippingMode = IRenderer::ClippingMode::STD;
     bool isClipping = false;
     glm::vec3 clippingPlanePoint{0.f, 0.f, 0.f};
     glm::vec3 clippingPlaneNormal{0.f, 0.f, 1.f};

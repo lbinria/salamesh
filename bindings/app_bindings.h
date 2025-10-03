@@ -62,7 +62,7 @@ namespace bindings {
 
 			app_type["input_state"] = sol::readonly_property(&IApp::getInputState);
 
-			app_type["pick_mode_strings"] = sol::readonly_property(&IApp::getPickModeStrings);
+			// app_type["pick_mode_strings"] = sol::readonly_property(&IApp::getPickModeStrings);
 
 			// app_type["pick_mode"] = sol::property(
 			// 	&IApp::getPickMode,
