@@ -173,8 +173,8 @@ void ClippingRenderer::push() {
 
 	auto res = intersectPlaneAABB(
 		glm::dvec3(pMin), glm::dvec3(pMax),
-		glm::dvec3(clipping_plane_point),
-		glm::dvec3(clipping_plane_normal)
+		glm::dvec3(clippingPlanePoint),
+		glm::dvec3(clippingPlaneNormal)
 	);
 
 	if (res.valid) {

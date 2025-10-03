@@ -37,26 +37,24 @@ struct TriangleInspector : public Component {
 	}
 
 	// Get 2D screen pos of all points of the model
-    std::vector<glm::vec2> getPoint2D(Camera &c, TriModel &model) const {
-        std::vector<glm::vec2> points2D;
+	std::vector<glm::vec2> getPoint2D(Camera &c, TriModel &model) const {
+		std::vector<glm::vec2> points2D;
 		points2D.reserve(model.nverts());
 		
-        for (int i = 0; i < model.nverts(); ++i) {
+		for (int i = 0; i < model.nverts(); ++i) {
 			vec3 p3 = model.getTriangles().points[i];
 			glm::vec4 p(p3.x, p3.y, p3.z, 1.f);
-            
+			
 			p = c.getProjectionMatrix() * c.getViewMatrix() * p;
-			// auto proj = glm::ortho(-1.f, 1.f, -1.f, 1.f, 0.1f, 100.f);
-			// p = proj * c.getViewMatrix() * p;
-            p /= p.w;
+			p /= p.w;
 			
 			p.x = (p.x + 1.f) * 0.5f * app.getScreenWidth();
 			p.y = (1.f - (p.y + 1.f) * 0.5f) * app.getScreenHeight();
 
-            points2D.push_back(glm::vec2(p.x, p.y));
-        }
-        return points2D;	
-    }
+			points2D.push_back(glm::vec2(p.x, p.y));
+		}
+		return points2D;	
+	}
 
 	
 
@@ -228,9 +226,9 @@ struct TriangleInspector : public Component {
 		// Update one time by ten
 		static int time = 0;
 		++time;
-		if (time == 10) {
-			// triModel.setHighlight(ElementKind::FACETS);
-			// triModel.setHighlight(ElementKind::POINTS);
+		if (time == 100) {
+			triModel.setHighlight(ElementKind::FACETS);
+			triModel.setHighlight(ElementKind::POINTS);
 			time = 0;
 		}
 

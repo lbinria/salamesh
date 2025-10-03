@@ -124,17 +124,17 @@ struct IRenderer {
 		shader.setInt("is_light_follow_view", follow);
 	}
 
-	void setClipping(bool enabled) {
+	virtual void setClipping(bool enabled) {
 		shader.use();
 		shader.setInt("is_clipping_enabled", enabled);
 	}
 
-	void setClippingPlanePoint(glm::vec3 p) {
+	virtual void setClippingPlanePoint(glm::vec3 p) {
 		shader.use();
 		shader.setFloat3("clipping_plane_point", p);
 	}
 
-	void setClippingPlaneNormal(glm::vec3 n) {
+	virtual void setClippingPlaneNormal(glm::vec3 n) {
 		shader.use();
 		shader.setFloat3("clipping_plane_normal", n);
 	}

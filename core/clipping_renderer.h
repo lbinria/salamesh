@@ -31,6 +31,23 @@ struct ClippingRenderer : public IRenderer {
 
 	int getRenderElementKind() override { return 0; }
 
+	void setClipping(bool enabled) {
+		IRenderer::setClipping(enabled);
+		visible = enabled;
+	}
+
+	void setClippingPlanePoint(glm::vec3 p) {
+		IRenderer::setClippingPlanePoint(p);
+		clippingPlanePoint = p;
+		push();
+	}
+
+	void setClippingPlaneNormal(glm::vec3 n) {
+		IRenderer::setClippingPlaneNormal(n);
+		clippingPlaneNormal = n;
+		push();
+	}
+
 	// glm::vec3 getColor() const {
 	// 	return color;
 	// }
@@ -45,8 +62,8 @@ struct ClippingRenderer : public IRenderer {
 	private:
 	PointSet &ps;
 	glm::vec3 color;
-	glm::vec3 clipping_plane_point{0.0f, 0.0f, 0.0f}; // A point on the plane
-	glm::vec3 clipping_plane_normal{1.0f, 0.0f, 0.0f}; // The normal of the plane
+	glm::vec3 clippingPlanePoint{0.0f, 0.0f, 0.0f}; // A point on the plane
+	glm::vec3 clippingPlaneNormal{1.0f, 0.0f, 0.0f}; // The normal of the plane
 
 	
 };
