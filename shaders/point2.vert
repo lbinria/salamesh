@@ -19,6 +19,9 @@ uniform float pointSize;
 
 uniform vec2 uViewport = vec2(2560.0, 1440.0); // viewport size in pixels
 flat out float pointDepth;
+flat out float pointZ;
+
+
 
 void main()
 {
@@ -41,12 +44,29 @@ void main()
 	// Reconstruct clip z and w roughly by lerping
 	float clipW = gl_Position.w;
 	float clipZ = gl_Position.z;
-	// Inverse of perspective division
-	vec4 pos2 = vec4(ndc2 * clipW, clipZ, clipW);
+	// Inverse of perspective division, return to clip space
+	vec4 clipNPos = vec4(ndc2 * clipW, clipZ, clipW);
 	// Back to world space
-	vec4 pos_world = inverse(projection * view * model) * pos2;
-	pointDepth = (length(pos - pos_world.xyz) * 0.5) / 100000.0;
-	// pointDepth = distance(pos, pos_world.xyz) * 0.5;
+	vec4 worldNPos = inverse(projection * view * model) * clipNPos;
+	
+
+	float d = length(worldNPos.xyz - pos);
+	worldNPos.z -= d;
+	// To clip space
+	vec4 clipNPos2 = projection * view * model * worldNPos;
+	// Perspective division
+	vec3 ndc3 = clipNPos2.xyz / clipNPos2.w;
+	pointZ = (ndc3.z * 0.5 + 0.5);
+
+
+
+	// Seems doesn't works because of non-linear depth buffer
+	// pointDepth = (length(pos - pos_world.xyz) * 0.5) / (100000.0 - 0.1);
+	// pointDepth = (length(pos - pos_world.xyz)) / (100000.0 - 0.1);
+
+
+
+
 
 
 	fragWorldPos = pos;

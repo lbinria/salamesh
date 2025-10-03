@@ -32,6 +32,7 @@ uniform samplerBuffer filterBuf;
 uniform samplerBuffer highlightBuf;
 
 flat in float pointDepth;
+flat in float pointZ;
 
 vec3 encode_id(int id) {
     int r = id & 0x000000FF;
@@ -71,11 +72,14 @@ void main()
         discard;
     }
 
+    float myPointDepth = abs(gl_FragCoord.z - pointZ);
+
+
     // Compute normal using point coordinates and radius as Z
     vec3 N = vec3(V.x, -V.y, sqrt(oneMinusR2));
     // Update depth according to radius
     // gl_FragDepth = gl_FragCoord.z - 0.00005 * N.z;
-    gl_FragDepth = gl_FragCoord.z - pointDepth * N.z;
+    gl_FragDepth = gl_FragCoord.z - myPointDepth * N.z;
     // gl_FragDepth = gl_FragCoord.z - 0.00000000005 * N.z;
     // gl_FragDepth = gl_FragCoord.z - 0.0000005 * N.z;
     
