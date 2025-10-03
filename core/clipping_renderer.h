@@ -21,6 +21,7 @@ struct ClippingRenderer : public IRenderer {
 	ClippingRenderer(PointSet &ps) : 
 		IRenderer(Shader("shaders/clipping.vert", "shaders/clipping.frag")),
 		ps(ps) {
+			visible = false;
 			// setColor(glm::vec3(1.0, 1.0, 1.0));
 		}
 

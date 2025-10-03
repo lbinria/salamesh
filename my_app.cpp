@@ -46,6 +46,8 @@ void MyApp::loadModel(const std::string& filename) {
 	if (model->getEdges() != nullptr)
 		model->getEdges()->setVisible(false);
 
+	// Setup default clipping plane
+	model->setupClipping();
 
 	// Current camera look at the model
 	auto modelPos = model->getPosition();

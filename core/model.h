@@ -584,6 +584,11 @@ struct Model {
         invertClipping = invert;
     }
 
+    void setupClipping() {
+        setClippingPlanePoint(getCenter());
+        setClippingPlaneNormal({1, 0, 0});
+    }
+
     void setMeshIndex(int index) {
         for (auto const &[k, r] : _renderers)
             r->setMeshIndex(index);

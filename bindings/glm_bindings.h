@@ -18,17 +18,44 @@ namespace bindings {
 								glm::vec3(const glm::vec3&)>{},
 
 				// Operators
-				sol::meta_function::addition, [](const glm::vec3 &a, const glm::vec3 &b) {
-					return a + b;
-				},
+			// app_type.set_function("remove_model", sol::overload(
+			// 	[](IApp &self, int idx) {
+			// 		self.removeModel(idx);
+			// 	},
+			// 	[](IApp &self, std::string name) -> bool {
+			// 		return self.removeModel(name);
+			// 	}
+			// ));
+
+				sol::meta_function::addition, sol::overload(
+					[](const glm::vec3 &a, const glm::vec3 &b) {
+						return a + b;
+					}/*, 
+					[](const float a, const glm::vec3 &b) {
+						return a + b;
+					}*/
+				),
+
+				// sol::meta_function::addition, [](const glm::vec3 &a, const glm::vec3 &b) {
+				// 	return a + b;
+				// },
 
 				sol::meta_function::subtraction, [](const glm::vec3 &a, const glm::vec3 &b) {
 					return a - b;
 				},
 
-				sol::meta_function::multiplication, [](const glm::vec3 &a, const glm::vec3 &b) {
-					return a * b;
-				},
+				// sol::meta_function::multiplication, [](const glm::vec3 &a, const glm::vec3 &b) {
+				// 	return a * b;
+				// },
+
+				sol::meta_function::multiplication, sol::overload(
+					[](const glm::vec3 &a, const glm::vec3 &b) {
+						return a * b;
+					}, 
+					[](const float a, const glm::vec3 &b) {
+						return a * b;
+					}
+				),
 
 				sol::meta_function::division, [](const glm::vec3 &a, const glm::vec3 &b) {
 					return a / b;

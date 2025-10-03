@@ -200,6 +200,8 @@ namespace bindings {
 				&Model::setInvertClipping
 			);
 
+			model_t.set_function("setupClipping", &Model::setupClipping);
+
 			// Renderers accesses
 			model_t["points"] = sol::readonly_property(&Model::getPoints);
 			model_t["edges"] = sol::readonly_property(&Model::getEdges);

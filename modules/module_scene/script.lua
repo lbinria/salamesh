@@ -122,16 +122,29 @@ function draw_model_properties(model, view)
 			end
 
 			local plane_pos = 0
+			-- Maybe it exists a better way to get model center from x,y,z than that ugly switch
+			local center_at = 0;
 			if (sel_clipping_plane == 1) then
 				plane_pos = cur_model.clipping_plane_point.x
+				center_at = cur_model.center.x
 			elseif (sel_clipping_plane == 2) then
 				plane_pos = cur_model.clipping_plane_point.y
+				center_at = cur_model.center.y
 			elseif (sel_clipping_plane == 3) then
 				plane_pos = cur_model.clipping_plane_point.z
+				center_at = cur_model.center.z
 			end
 
-			local sel_slider_clipping_plane_point, new_clipping_plane_pos = imgui.SliderFloat("Clipping plane point", plane_pos, -1., 1.)
+			-- 0 -> cur_model.center - cur_model.radius
+			-- 1 -> cur_model.center + cur_model.radius
+			local plane_pos_factor = (plane_pos - center_at) / cur_model.radius
+
+			local sel_slider_clipping_plane_point, new_clipping_plane_pos_factor = imgui.SliderFloat("Clipping plane point", plane_pos_factor, -1., 1.)
 			if (sel_slider_clipping_plane_point) then 
+
+				-- local new_clipping_plane_pos = cur_model.radius * new_clipping_plane_pos_factor + center_at
+				local new_clipping_plane_pos = center_at + new_clipping_plane_pos_factor * cur_model.radius
+
 				local v 
 				if (sel_clipping_plane == 1) then
 					v = vec3.new(new_clipping_plane_pos, cur_model.clipping_plane_point.y, cur_model.clipping_plane_point.z)
