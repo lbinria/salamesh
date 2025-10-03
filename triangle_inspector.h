@@ -210,7 +210,6 @@ struct TriangleInspector : public Component {
 				// drawUIDegeneratedCorners(f, isOverlap);
 
 				facetHl[f] = 1.f;
-				triModel.setHighlight(ElementKind::FACETS);
 			}
 
 
@@ -220,11 +219,21 @@ struct TriangleInspector : public Component {
 					pointHl[f.vertex(i)] = 1;
 			}
 
-			triModel.setHighlight(ElementKind::POINTS);
 
 
 
 		}
+
+
+		// Update one time by ten
+		static int time = 0;
+		++time;
+		if (time == 10) {
+			// triModel.setHighlight(ElementKind::FACETS);
+			// triModel.setHighlight(ElementKind::POINTS);
+			time = 0;
+		}
+
 
 
 		// // Get inverted facets
