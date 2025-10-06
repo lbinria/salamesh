@@ -68,12 +68,50 @@ struct TriangleInspector : public Component {
 
 	void modelLoaded(const std::string &path) override {}
     
-	std::array<bool, 3> getOverlap(int epsScreen, Surface::Facet &f, const std::vector<glm::vec2> &points2D) {
+	// Need to compute this, after each screen size changes only
+	float getZEps(Camera &c, glm::mat4 &modelMat, glm::vec3 pos /* World pos */, int epsScreen) {
+		glm::vec2 viewport = { app.getScreenWidth(), app.getScreenHeight() };
+
+		// Clip space
+		glm::vec4 p = c.getProjectionMatrix() * c.getViewMatrix() * modelMat * glm::vec4(pos, 1.0);
+
+		// Compute 2D pos in pixel of center of point
+		glm::vec4 ndc = p / p.w;
+		glm::vec2 screenPos = (glm::vec2{ndc.x, ndc.y} * 0.5f + 0.5f) * viewport;
+		// Move point by adding pixel offset
+		screenPos += glm::vec2{static_cast<float>(epsScreen), static_cast<float>(epsScreen) } * .5f;
+
+		// Back to the future... heu NDC
+		glm::vec2 ndc2 = screenPos / viewport * 2.f - 1.f;
+		float clipW = p.w;
+		float clipZ = p.z;
+		// Inverse of perspective division, return to clip space
+		glm::vec4 clipNPos = glm::vec4(ndc2 * clipW, clipZ, clipW);
+		// Back to world space
+		glm::vec4 worldNPos = glm::inverse(c.getProjectionMatrix() * c.getViewMatrix() * modelMat) * clipNPos;
+		// Compute dist between offset point and starting point
+		float d = glm::length(glm::vec3{worldNPos} - pos);
+		// // Move Z of point at distance of d
+		// worldNPos.z -= d;
+		// // To clip space
+		// glm::vec4 clipNPos2 = projection * view * model * worldNPos;
+		// // // Perspective division
+		// // vec3 ndc3 = clipNPos2.xyz / clipNPos2.w;
+		// // pointZ = (ndc3.z * 0.5 + 0.5);
+		return d;
+
+	}
+
+	std::array<bool, 3> getOverlap(Camera &c, glm::mat4 modelMat, int epsScreen, Surface::Facet &f, const std::vector<glm::vec2> &points2D) {
 		std::array<bool, 3> isOverlap = {false};
 		// Get 3D pos
 		auto v0 = f.vertex(0);
 		auto v1 = f.vertex(1);
 		auto v2 = f.vertex(2);
+
+		glm::vec3 p0 = sl::um2glm(v0.pos());
+		glm::vec3 p1 = sl::um2glm(v1.pos());
+		glm::vec3 p2 = sl::um2glm(v2.pos());
 
 		auto pScreen0 = sl::glm2um(points2D[v0]);
 		auto pScreen1 = sl::glm2um(points2D[v1]);
@@ -84,16 +122,24 @@ struct TriangleInspector : public Component {
 		double p0p2ScreenDist = (pScreen0 - pScreen2).norm(); 
 		double p1p2ScreenDist = (pScreen1 - pScreen2).norm();
 
+		float zDist = 0.f;
+		if (p0p1ScreenDist < epsScreen || 
+			p0p2ScreenDist < epsScreen ||
+			p1p2ScreenDist < epsScreen) {
+				// Only compute Z here
+				zDist = getZEps(c, modelMat, sl::um2glm(v0.pos()), epsScreen);
+		}
+
 		// Check for overlap in screen space
-		if (p0p1ScreenDist < epsScreen) {
+		if (p0p1ScreenDist < epsScreen && abs(p0.z - p1.z) < zDist) {
 			isOverlap[0] = true;
 			isOverlap[1] = true;
 		}
-		if (p0p2ScreenDist < epsScreen) {
+		if (p0p2ScreenDist < epsScreen && abs(p0.z - p2.z) < zDist) {
 			isOverlap[0] = true;
 			isOverlap[2] = true;
 		}
-		if (p1p2ScreenDist < epsScreen) {
+		if (p1p2ScreenDist < epsScreen && abs(p1.z - p2.z) < zDist) {
 			isOverlap[1] = true;
 			isOverlap[2] = true;
 		}
@@ -129,7 +175,7 @@ struct TriangleInspector : public Component {
 			triModel.getMesh().setSelectColor(glm::vec3(1.f, 0.06f, 0.51f));
 
 			triModel.getMesh().setColor(glm::vec3(1.f, 1.f, 1.f));
-			triModel.getMesh().setMeshSize(2.f);
+			triModel.getMesh().setMeshSize(0.5f);
 		}
 		
 		// Beuurk !
@@ -160,34 +206,37 @@ struct TriangleInspector : public Component {
 
 		for (auto &f : m.iter_facets()) {
 
-			bool isOverlap[3] = {false};
-			// Get 3D pos
-			auto v0 = f.vertex(0);
-			auto v1 = f.vertex(1);
-			auto v2 = f.vertex(2);
+			// bool isOverlap[3] = {false};
+			// // Get 3D pos
+			// auto v0 = f.vertex(0);
+			// auto v1 = f.vertex(1);
+			// auto v2 = f.vertex(2);
 
-			auto pScreen0 = sl::glm2um(points2D[v0]);
-			auto pScreen1 = sl::glm2um(points2D[v1]);
-			auto pScreen2 = sl::glm2um(points2D[v2]);
+			// auto pScreen0 = sl::glm2um(points2D[v0]);
+			// auto pScreen1 = sl::glm2um(points2D[v1]);
+			// auto pScreen2 = sl::glm2um(points2D[v2]);
 
-			// Check for points
-			double p0p1ScreenDist = (pScreen0 - pScreen1).norm(); 
-			double p0p2ScreenDist = (pScreen0 - pScreen2).norm(); 
-			double p1p2ScreenDist = (pScreen1 - pScreen2).norm();
+			// // Check for points
+			// double p0p1ScreenDist = (pScreen0 - pScreen1).norm(); 
+			// double p0p2ScreenDist = (pScreen0 - pScreen2).norm(); 
+			// double p1p2ScreenDist = (pScreen1 - pScreen2).norm();
 
-			// Check for overlap in screen space
-			if (p0p1ScreenDist < epsScreen) {
-				isOverlap[0] = true;
-				isOverlap[1] = true;
-			}
-			if (p0p2ScreenDist < epsScreen) {
-				isOverlap[0] = true;
-				isOverlap[2] = true;
-			}
-			if (p1p2ScreenDist < epsScreen) {
-				isOverlap[1] = true;
-				isOverlap[2] = true;
-			}
+			// // Check for overlap in screen space
+			// if (p0p1ScreenDist < epsScreen) {
+			// 	isOverlap[0] = true;
+			// 	isOverlap[1] = true;
+			// }
+			// if (p0p2ScreenDist < epsScreen) {
+			// 	isOverlap[0] = true;
+			// 	isOverlap[2] = true;
+			// }
+			// if (p1p2ScreenDist < epsScreen) {
+			// 	isOverlap[1] = true;
+			// 	isOverlap[2] = true;
+			// }
+			glm::mat4 modelMat = glm::mat4(1.0f);
+			modelMat = glm::translate(modelMat, model.getPosition());
+			auto isOverlap = getOverlap(app.getCamera(), modelMat, epsScreen, f, points2D);
 
 			bool isFacetDegenerated = isOverlap[0] || isOverlap[1] || isOverlap[2];
 
@@ -226,7 +275,7 @@ struct TriangleInspector : public Component {
 		// Update one time by ten
 		static int time = 0;
 		++time;
-		if (time == 100) {
+		if (time == 10) {
 			triModel.setHighlight(ElementKind::FACETS);
 			triModel.setHighlight(ElementKind::POINTS);
 			time = 0;
@@ -272,8 +321,11 @@ struct TriangleInspector : public Component {
 		}
 
 		if (tooltipOpen != -1) {
+			glm::mat4 modelMat = glm::mat4(1.0f);
+			modelMat = glm::translate(modelMat, model.getPosition());
+
 			Surface::Facet facet(triModel.getTriangles(), tooltipOpen);
-			auto overlaps = getOverlap(epsScreen, facet, points2D);
+			auto overlaps = getOverlap(app.getCamera(), modelMat, epsScreen, facet, points2D);
 
 			ImGui::SetNextWindowPos(tooltipPos);
 			ImGui::Begin("Info");
@@ -297,178 +349,6 @@ struct TriangleInspector : public Component {
 	}
 	
 
-	// bool draw_gui(ImGuiContext* ctx) {
-	// 	ImGui::Begin("Triangle diagnostic");
-
-	// 	// Check for degenerated
-	// 	// Get when model changed event to not compute everytime !
-	// 	if (!app.hasModels()) {
-	// 		ImGui::End();
-	// 		return true;
-	// 	}
-
-	// 	// Get current model and check it's a triangle mesh
-	// 	auto &model = app.getCurrentModel();
-	// 	if (model.getModelType() != Model::ModelType::TRI) {
-	// 		ImGui::End();
-	// 		return true;
-	// 	}
-
-	// 	auto &triModel = model.as<TriModel>();
-	// 	auto &m = triModel.getTriangles();
-
-	// 	if (ImGui::Button("View degenerated triangles")) {
-	// 		triModel.getPoints().setHoverColor(glm::vec3(1.f, 1.f, 1.f));
-	// 		triModel.getPoints().setSelectColor(glm::vec3(0.88f, 0.06f, 0.01f));
-
-	// 		triModel.getMesh().setHoverColor(glm::vec3(1.f, 1.f, 1.f));
-	// 		triModel.getMesh().setSelectColor(glm::vec3(1.f, 0.06f, 0.51f));
-
-	// 		triModel.getMesh().setColor(glm::vec3(1.f, 1.f, 1.f));
-	// 		triModel.getMesh().setMeshSize(2.f);
-	// 	}
-		
-	// 	// Beuurk !
-	// 	if (!once) {
-	// 		once = true;
-	// 	}
-
-	// 	std::vector<glm::vec2> points2D = getPoint2D(app.getCamera(), triModel);
-
-	// 	// Eps for min distance between two points, to recognized a triangle as geometrically degenerated
-	// 	static int eps_digits = 3;
-	// 	ImGui::SliderInt("Epsilon digits", &eps_digits, 1, 15);
-	// 	eps = 1. / pow(10, eps_digits);
-	// 	ImGui::Text("Epsilon: %.15g", eps);
-
-	// 	int epsScreen = triModel.getPoints().getPointSize();
-	// 	ImGui::Text("Vertice overlap threshold distance (in pixel): %i", epsScreen);
-
-	// 	// Highlight degenerated points
-	// 	PointAttribute<float> pointHl;
-	// 	pointHl.bind("_highlight", triModel.getSurfaceAttributes(), triModel.getTriangles());
-	// 	pointHl.fill(0.f);
-
-	// 	// Highlight degenerated facets
-	// 	FacetAttribute<float> facetHl;
-	// 	facetHl.bind("_highlight", triModel.getSurfaceAttributes(), triModel.getTriangles());
-	// 	facetHl.fill(0.f);
-
-	// 	for (auto &f : m.iter_facets()) {
-
-	// 		bool isOverlap[3] = {false};
-	// 		bool isDegenerated[3] = {false};
-
-	// 		// Get 3D pos
-	// 		auto v0 = f.vertex(0);
-	// 		auto v1 = f.vertex(1);
-	// 		auto v2 = f.vertex(2);
-	// 		auto p30 = v0.pos();
-	// 		auto p31 = v1.pos();
-	// 		auto p32 = v2.pos();
-
-	// 		double p0p1Dist = (p30 - p31).norm();
-	// 		double p0p2Dist = (p30 - p32).norm();
-	// 		double p1p2Dist = (p31 - p32).norm();
-
-	// 		double dist = 0.f;
-	// 		if (p0p1Dist < eps && v0 != v1) {
-	// 			isDegenerated[0] = true;
-	// 			isDegenerated[1] = true;
-	// 			dist = p0p1Dist;
-	// 		}
-	// 		if (p0p2Dist < eps && v0 != v2) {
-	// 			isDegenerated[0] = true;
-	// 			isDegenerated[2] = true;
-	// 			dist = p0p2Dist;
-	// 		}
-	// 		if (p1p2Dist < eps && v1 != v2) {
-	// 			isDegenerated[1] = true;
-	// 			isDegenerated[2] = true;
-	// 			dist = p1p2Dist;
-	// 		}
-
-
-	// 		auto pScreen0 = sl::glm2um(points2D[v0]);
-	// 		auto pScreen1 = sl::glm2um(points2D[v1]);
-	// 		auto pScreen2 = sl::glm2um(points2D[v2]);
-
-
-	// 		// Check for points
-	// 		double p0p1ScreenDist = (pScreen0 - pScreen1).norm(); 
-	// 		double p0p2ScreenDist = (pScreen0 - pScreen2).norm(); 
-	// 		double p1p2ScreenDist = (pScreen1 - pScreen2).norm();
-
-
-
-	// 		bool isFacetDegenerated = isDegenerated[0] || isDegenerated[1] || isDegenerated[2];
-
-	// 		// List degenerate facets in the UI
-	// 		if (isFacetDegenerated) {
-
-	// 			// Check for overlap in screen space
-	// 			if (p0p1ScreenDist < epsScreen) {
-	// 				isOverlap[0] = true;
-	// 				isOverlap[1] = true;
-	// 			}
-	// 			if (p0p2ScreenDist < epsScreen) {
-	// 				isOverlap[0] = true;
-	// 				isOverlap[2] = true;
-	// 			}
-	// 			if (p1p2ScreenDist < epsScreen) {
-	// 				isOverlap[1] = true;
-	// 				isOverlap[2] = true;
-	// 			}
-
-	// 			// Goto facet
-	// 			if (ImGui::TextLink(("Facet " + std::to_string(f) + "##link_goto_geo_degenerated_facet" + std::to_string(f)).c_str())) {
-	// 				Triangle3 t = f;
-	// 				cameraGoto(sl::um2glm(t.bary_verts()));
-	// 			}
-	// 			ImGui::SameLine();
-	// 			ImGui::TextColored(ImVec4(1.f, 0.f, 0.f, 1.f), " is geo degenerated.");
-	// 			ImGui::SameLine();
-	// 			ImGui::Text("Dist: %.15g", dist);
-
-	// 			// Draw which corners are degenerated in the UI
-	// 			drawUIDegeneratedCorners(f, isDegenerated);
-
-	// 			facetHl[f] = 1.f;
-	// 			triModel.setHighlight(ElementKind::FACETS);
-	// 		}
-
-
-	// 		// Highlight overlap points
-	// 		for (int i = 0; i < 3; ++i) {
-	// 			if (isOverlap[i])
-	// 				pointHl[f.vertex(i)] = 1;
-	// 		}
-
-	// 		triModel.setHighlight(ElementKind::POINTS);
-
-
-
-	// 	}
-
-
-	// 	// // Get inverted facets
-	// 	// for (auto &f : m.iter_facets()) {
-	// 	// 	Triangle3 t = f;
-	// 	// 	vec3 u = t.v[1] - t.v[0];
-	// 	// 	vec3 v = t.v[2] - t.v[0];
-	// 	// 	double signed_scalar = (t.normal() * (cross(u, v)));
-	// 	// 	if (signed_scalar < 0) {
-	// 	// 		// Goto facet
-	// 	// 		if (ImGui::TextLink(("Facet " + std::to_string(f) + "##link_goto_inverted_facet" + std::to_string(f)).c_str())) {
-	// 	// 			cameraGoto(sl::um2glm(t.bary_verts()));
-	// 	// 		}
-	// 	// 	}
-	// 	// }
-
-
-	// 	ImGui::End();
-	// 	return true;
-	// }
 
     void update(float dt) {}
 
