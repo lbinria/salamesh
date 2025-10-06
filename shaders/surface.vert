@@ -78,24 +78,22 @@ void main()
    float a = length(s1 - s0);
    float b = length(s2 - s1);
    float c = length(s2 - s0);
-   // float s = (a + b + c) * 0.5;
-   float s = (a + b + c);
-   float area = sqrt(s * (s - a) * (s - b) * (s - c));
-   // float height0 = 2.0 * area / a;
-   // float height1 = 2.0 * area / b;
-   // float height2 = 2.0 * area / c;
-   float h0 = area / (0.5 * a);
-   float h1 = area / (0.5 * b);
-   float h2 = area / (0.5 * c);
+   float s = (a + b + c) * 0.5;
+   
+   // Max with zero to avoid negative sqrt 
+   // (that is possible with degenerative triangles)
+   // sqrt(x) with x < 0 gives NaN in glsl
+   float arg = max(0.0, s * (s - a) * (s - b) * (s - c)); 
+   float area = sqrt(arg);
+
+   float h0 = 2. * area / a;
+   float h1 = 2. * area / b;
+   float h2 = 2. * area / c;
+
    vec3 heights = vec3(h0, h1, h2);
    
    fragHeights = vec3(0);
    fragHeights[localIndex] = heights[(localIndex + 1) % 3];
-
-		// const double side_lengths[] = {a, b, c};
-		// const double s = a + b + c;
-		// const double area = sqrt(s * (s - a) * (s - b) * (s - c));
-			// const double h = area / (.5 * side_lengths[(lv + 1) % 3]);
 
 
    fragBary = bary;
