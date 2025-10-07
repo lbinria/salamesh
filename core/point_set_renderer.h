@@ -2,6 +2,9 @@
 
 #include <vector>
 
+#include "../include/json.hpp"
+using json = nlohmann::json;
+
 #include <ultimaille/all.h>
 
 #include "color_mode.h"
@@ -50,20 +53,31 @@ struct PointSetRenderer : public IRenderer {
     }
 
     glm::vec3 getColor() const {
-        return pointColor;
+        return color;
     }
     
-    void setColor(glm::vec3 color) {
+    void setColor(glm::vec3 c) {
         shader.use();
-        shader.setFloat3("pointColor", color);
-        pointColor = color;
+        shader.setFloat3("pointColor", c);
+        color = c;
     }
 
     PointSet &ps;
 
+
     private:
 
     float pointSize;
-    glm::vec3 pointColor;
+    glm::vec3 color;
+
+    void doLoadState(json &j) override {
+        setPointSize(j["pointSize"].get<float>());
+        setColor({j["pointColor"][0].get<float>(), j["pointColor"][1].get<float>(), j["pointColor"][2].get<float>()});
+    }
+
+    void doSaveState(json &j) const override {
+        j["pointSize"] = pointSize;
+        j["pointColor"] = json::array({color.x, color.y, color.z});
+    }
 
 };

@@ -2,6 +2,7 @@
 #include "helpers/settings_manager.h"
 #include "helpers/module_loader.h"
 
+#include "view_component.h"
 #include "triangle_inspector.h"
 
 #include <filesystem>
@@ -243,6 +244,7 @@ void MyApp::init() {
 
 	// ----- TEST -----
 	// TODO remove just for testing manually add components
+	components.push_back(std::make_unique<ViewComponent>(*this));
 	components.push_back(std::make_unique<TriangleInspector>(*this));
 }
 
@@ -283,8 +285,33 @@ void MyApp::update(float dt) {
 }
 
 
+void ModePanel(std::string modeStr) {
+	ImGuiWindowFlags flags = ImGuiWindowFlags_NoDecoration
+						| ImGuiWindowFlags_NoMove
+						| ImGuiWindowFlags_NoSavedSettings
+						| ImGuiWindowFlags_NoFocusOnAppearing
+						| ImGuiWindowFlags_NoNav;
+
+	const float margin = 32.0f;
+	ImGuiIO& io = ImGui::GetIO();
+	ImVec2 displaySize = io.DisplaySize;
+
+	ImVec2 pos = ImVec2(margin, margin + 48.f);
+	ImVec2 size = ImVec2(displaySize.x - margin * 2.0f, 25.f);
+
+	ImGui::SetNextWindowPos(pos);
+	ImGui::SetNextWindowSize(size);
+	ImGui::SetNextWindowBgAlpha(0.0f); // fallback for some backends
+
+	ImGui::Begin("##ModeInfoPanel", nullptr, flags);
+
+	ImGui::Text("Mode: %s", modeStr.c_str());
+
+	ImGui::End();
+}
+
 // call each frame after NewFrame() and before Render()
-void TopModePanel(int &currentMode, const std::vector<ImTextureID>& icons, ImVec2 iconSize = ImVec2(28,28)) {
+void TopModePanel(int &currentMode, const std::vector<std::pair<std::string, ImTextureID>>& icons, ImVec2 iconSize = ImVec2(28,28)) {
 	// Layout and appearance settings
 	const float panelHeight = 48.0f;
 	const float margin = 32.0f;
@@ -326,22 +353,29 @@ void TopModePanel(int &currentMode, const std::vector<ImTextureID>& icons, ImVec
 		bool active = (currentMode == i);
 		if (active) {
 			ImGui::PushStyleColor(ImGuiCol_Button, IM_COL32(255,255,255,20));
-			ImGui::PushStyleColor(ImGuiCol_ButtonHovered, IM_COL32(255,255,255,30));
-			ImGui::PushStyleColor(ImGuiCol_ButtonActive, IM_COL32(255,255,255,40));
+			ImGui::PushStyleColor(ImGuiCol_ButtonHovered, IM_COL32(255,255,255,200));
+			ImGui::PushStyleColor(ImGuiCol_ButtonActive, IM_COL32(255,255,255,230));
 		}
 
 		// Use ImageButton for texture icons; if you have a font icon, use ImGui::Button with Text
 		ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2(0,0));
-		ImGui::PushStyleColor(ImGuiCol_Button, ImVec4(0,0,0,0));
-		ImGui::PushStyleColor(ImGuiCol_ButtonHovered, ImVec4(0,0,0,0));
-		ImGui::PushStyleColor(ImGuiCol_ButtonActive, ImVec4(0,0,0,0));
-		if (ImGui::ImageButton(("btn_mode_" + std::to_string(i)).c_str(), icons[i], iconSize, ImVec2(0,0), ImVec2(1,1))) {
+		// ImGui::PushStyleColor(ImGuiCol_Button, ImVec4(0,0,0,0));
+		// ImGui::PushStyleColor(ImGuiCol_ButtonHovered, ImVec4(0,0,0,0));
+		// ImGui::PushStyleColor(ImGuiCol_ButtonActive, ImVec4(0,0,0,0));
+		if (ImGui::ImageButton(("btn_mode_" + std::to_string(i)).c_str(), icons[i].second, iconSize, ImVec2(0,0), ImVec2(1,1))) {
 			currentMode = i; // select mode
 		}
-		ImGui::PopStyleColor(3);
+		// ImGui::PopStyleColor(3);
 		ImGui::PopStyleVar();
 
 		if (active) ImGui::PopStyleColor(3);
+
+		if (ImGui::IsItemHovered()) {
+			ImGui::BeginTooltip();
+			ImGui::Text(icons[i].first.c_str());
+			ImGui::EndTooltip();
+		}
+
 	}
 
 	ImGui::End();
@@ -389,8 +423,17 @@ void MyApp::draw_gui() {
 	}
 
 	
-	int currentMode = 0;
-	TopModePanel(currentMode, {(ImTextureID)bugAntIcon});
+	static int currentMode = -1;
+	TopModePanel(currentMode, {{"view", (ImTextureID)eyeIcon}, {"diagnostic", (ImTextureID)bugAntIcon}});
+
+	if (currentMode == 0) {
+		setNavigationPath({"view"});
+	} else if (currentMode == 1) {
+		setNavigationPath({"diagnostic"});
+	}
+
+	ModePanel(getNavigationPathString());
+
 
 	// display
 	if (ImGuiFileDialog::Instance()->Display("ChooseFileDlgKey")) {
@@ -669,7 +712,9 @@ void MyApp::save_state(const std::string filename) {
 
 	// Save model states
 	for (auto &m : models) {
-		std::string str_state = m->save_state();
+		json j;
+		m->saveState(j);
+		std::string str_state = j.dump(4);
 		j["models"].push_back(json::parse(str_state));
 	}
 
@@ -702,9 +747,9 @@ void MyApp::load_state(const std::string filename) {
 	// Clear current models
 	models.clear();
 	// Load models from state
-	for (const auto& model_state : j["models"]) {
+	for (auto& j : j["models"]) {
 		auto model = std::make_unique<HexModel>();
-		model->load_state(model_state);
+		model->loadState(j);
 		model->init();
 		model->push();
 		models.push_back(std::move(model));

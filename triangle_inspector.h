@@ -6,6 +6,7 @@
 #include <random>
 #include <sstream>
 #include <iomanip>
+
 struct TriangleInspector : public Component {
 
 	TriangleInspector(IApp &app) : app(app) {}
@@ -58,12 +59,12 @@ struct TriangleInspector : public Component {
 
 	
 
-    // Lifecycle
-    void init() {
+	// Lifecycle
+	void init() {
 
 	}
 
-    // virtual void setup() = 0;
+	// virtual void setup() = 0;
 	void cleanup() {}
 
 	void modelLoaded(const std::string &path) override {}
@@ -148,6 +149,11 @@ struct TriangleInspector : public Component {
 	}
 
 	bool draw_gui(ImGuiContext* ctx) {
+		// Check that main mode is "diagnostic"
+		if (app.getNavigationPath().size() == 0 || app.getNavigationPath().front() != "diagnostic") {
+			return true;
+		}
+
 		ImGui::Begin("Triangle diagnostic");
 
 		// Check for degenerated

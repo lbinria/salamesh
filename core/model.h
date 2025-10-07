@@ -59,8 +59,7 @@ struct Model {
     }
 
 
-    std::string save_state() const {
-        json j;
+    void saveState(json &j) const {
         j["name"] = _name;
         j["path"] = _path;
         j["position"] = { position.x, position.y, position.z };
@@ -71,50 +70,62 @@ struct Model {
         j["clipping_plane_point"] = { clippingPlanePoint.x, clippingPlanePoint.y, clippingPlanePoint.z };
         j["clipping_plane_normal"] = { clippingPlaneNormal.x, clippingPlaneNormal.y, clippingPlaneNormal.z };
         j["invert_clipping"] = invertClipping;
-        j["mesh_size"] = getMesh().getMeshSize();
-        j["mesh_shrink"] = getMesh().getMeshShrink();
         j["selected_colormap"] = selectedColormap;
         j["visible"] = visible;
-        return j.dump(4);
+
+        for (auto &[k, r] : _renderers) {
+            r->saveState(j["renderers"][k]);
+        }
     }
 
-    void load_state(json model_state) {
+    void loadState(json &j) {
         
-        _name = model_state["name"].get<std::string>();
-        _path = model_state["path"].get<std::string>();
+        _name = j["name"].get<std::string>();
+        _path = j["path"].get<std::string>();
 
         position = glm::vec3(
-            model_state["position"][0].get<float>(),
-            model_state["position"][1].get<float>(),
-            model_state["position"][2].get<float>()
+            j["position"][0].get<float>(),
+            j["position"][1].get<float>(),
+            j["position"][2].get<float>()
         );
         
-        setColorMode((ColorMode)model_state["color_mode"].get<int>());
+        setColorMode((ColorMode)j["color_mode"].get<int>());
 
-        setLight(model_state["is_light_enabled"].get<bool>());
-        setLightFollowView(model_state["is_light_follow_view"].get<bool>());
-        setClipping(model_state["is_clipping"].get<bool>());
+        setLight(j["is_light_enabled"].get<bool>());
+        setLightFollowView(j["is_light_follow_view"].get<bool>());
+        setClipping(j["is_clipping"].get<bool>());
 
         setClippingPlanePoint(glm::vec3(
-            model_state["clipping_plane_point"][0].get<float>(),
-            model_state["clipping_plane_point"][1].get<float>(),
-            model_state["clipping_plane_point"][2].get<float>()
+            j["clipping_plane_point"][0].get<float>(),
+            j["clipping_plane_point"][1].get<float>(),
+            j["clipping_plane_point"][2].get<float>()
         ));
 
         setClippingPlaneNormal(glm::vec3(
-            model_state["clipping_plane_normal"][0].get<float>(),
-            model_state["clipping_plane_normal"][1].get<float>(),
-            model_state["clipping_plane_normal"][2].get<float>()
+            j["clipping_plane_normal"][0].get<float>(),
+            j["clipping_plane_normal"][1].get<float>(),
+            j["clipping_plane_normal"][2].get<float>()
         ));
 
-        setInvertClipping(model_state["invert_clipping"].get<bool>());
+        setInvertClipping(j["invert_clipping"].get<bool>());
 
-        getMesh().setMeshSize(model_state["mesh_size"].get<float>());
-        getMesh().setMeshShrink(model_state["mesh_shrink"].get<float>());
+        setSelectedColormap(j["selected_colormap"].get<int>());
+        setVisible(j["visible"].get<bool>());
 
-        setSelectedColormap(model_state["selected_colormap"].get<int>());
-        setVisible(model_state["visible"].get<bool>());
+        // Load renderers state
+        auto renderers = getRenderers();
 
+        for (auto &[k, r] : renderers) {
+            if (j["renderers"].contains(k))
+                r->loadState(j["renderers"][k]);
+        }
+
+    }
+
+    void loadModelFromState(json &j) {
+        // Load state
+        loadState(j);
+        // Load model from path discovered in state
         load(_path);
     }
 
@@ -632,6 +643,10 @@ struct Model {
 
     bool hasRenderer(std::string name) {
         return _renderers.contains(name);
+    }
+
+    std::map<std::string, std::shared_ptr<IRenderer>> getRenderers() const {
+        return _renderers;
     }
 
     protected:

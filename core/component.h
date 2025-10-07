@@ -27,6 +27,7 @@ struct Component {
 
     // App events
     virtual void componentChanged(const std::string &id) = 0;
+    virtual void navigationPathChanged(const std::vector<std::string> &oldNavPath, const std::vector<std::string> &newNavPath) {};
     virtual void modelLoaded(const std::string &path) {};
     
 };

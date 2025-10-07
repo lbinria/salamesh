@@ -6,6 +6,9 @@
 #include "attribute.h"
 #include "../include/glm/glm.hpp"
 
+#include "../include/json.hpp"
+using json = nlohmann::json;
+
 
 struct IRenderer {
 
@@ -328,6 +331,26 @@ struct IRenderer {
 	// 	// texHighlight2 = texHighlight;
 	// }
 
+	void loadState(json &j) {
+		setColor(glm::vec3(j["color"][0].get<float>(), j["color"][1].get<float>(), j["color"][2].get<float>()));
+		setHoverColor(glm::vec3(j["hoverColor"][0].get<float>(), j["hoverColor"][1].get<float>(), j["hoverColor"][2].get<float>()));
+		setSelectColor(glm::vec3(j["selectColor"][0].get<float>(), j["selectColor"][1].get<float>(), j["selectColor"][2].get<float>()));
+		setMeshSize(j["meshSize"].get<float>());
+		setMeshShrink(j["meshShrink"].get<float>());
+		doLoadState(j);
+	}
+
+    void saveState(json &j) const {
+        j["color"] = json::array({color.x, color.y, color.z});
+        j["hoverColor"] = json::array({hoverColor.x, hoverColor.y, hoverColor.z});
+        j["selectColor"] = json::array({selectColor.x, selectColor.y, selectColor.z});
+        j["meshSize"] = meshSize;
+        j["meshShrink"] = meshShrink;
+		doSaveState(j);
+    }
+
+
+
 	Shader shader;
 
 	protected:
@@ -414,5 +437,10 @@ struct IRenderer {
 
 
 	int nverts = 0;
+
+	private:
+
+	virtual void doLoadState(json &j) = 0;
+	virtual void doSaveState(json &j) const = 0;
 
 };

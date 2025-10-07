@@ -8,6 +8,11 @@
 
 #include <vector>
 #include <ultimaille/all.h>
+
+#include "../include/json.hpp"
+using json = nlohmann::json;
+
+
 #include "../include/glm/glm.hpp"
 
 using namespace UM;
@@ -82,6 +87,16 @@ struct HalfedgeRenderer : public IRenderer {
 	glm::vec3 edgeInsideColor;
 	glm::vec3 edgeOutsideColor;
 
+	void doLoadState(json &j) override {
+		setEdgeSize(j["edgeSize"].get<float>());
+		setEdgeInsideColor({j["edgeInsideColor"][0].get<float>(), j["edgeInsideColor"][1].get<float>(), j["edgeInsideColor"][2].get<float>()});
+		setEdgeOutsideColor({j["edgeOutsideColor"][0].get<float>(), j["edgeOutsideColor"][1].get<float>(), j["edgeOutsideColor"][2].get<float>()});
+	}
 
+	void doSaveState(json &j) const override {
+		j["edgeSize"] = edgeSize;
+		j["edgeInsideColor"] = json::array({edgeInsideColor.x, edgeInsideColor.y, edgeInsideColor.z});
+		j["edgeOutsideColor"] = json::array({edgeOutsideColor.x, edgeOutsideColor.y, edgeOutsideColor.z});
+	}
 	
 };

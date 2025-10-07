@@ -8,6 +8,10 @@
 
 #include <vector>
 #include <ultimaille/all.h>
+
+#include "../include/json.hpp"
+using json = nlohmann::json;
+
 #include "../include/glm/glm.hpp"
 
 using namespace UM;
@@ -46,5 +50,12 @@ struct BBoxRenderer : public IRenderer {
 	PointSet &ps;
 	glm::vec3 color;
 
+	void doLoadState(json &j) override {
+		setColor({j["bboxColor"][0].get<float>(), j["bboxColor"][1].get<float>(), j["bboxColor"][2].get<float>()});
+	}
+
+	void doSaveState(json &j) const override {
+		j["bboxColor"] = json::array({color.x, color.y, color.z});
+	}
 	
 };

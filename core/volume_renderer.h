@@ -10,6 +10,9 @@
 #include "../include/glm/gtc/matrix_transform.hpp"
 #include "../include/glm/gtc/type_ptr.hpp"
 
+#include "../include/json.hpp"
+using json = nlohmann::json;
+
 #include "renderer.h"
 #include "model.h"
 #include "element.h"
@@ -85,5 +88,10 @@ struct VolumeRenderer : public IRenderer {
 		// Push filters if there is any
 		// updateFilters();
 	}
+
+	private:
+	
+	void doLoadState(json &j) override {}
+	void doSaveState(json &j) const override {}
 
 };

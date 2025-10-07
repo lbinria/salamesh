@@ -311,6 +311,7 @@ void App::setup() {
 
 	// Load icons
 	int iconWidth, iconHeight, iconChannels;
+	load_texture_2d("assets/icons/Eye.png", eyeIcon, iconWidth, iconHeight, iconChannels);
 	load_texture_2d("assets/icons/BugAnt.png", bugAntIcon, iconWidth, iconHeight, iconChannels);
 
 	auto renderSurface = std::make_unique<RenderSurface>(screenWidth, screenHeight);

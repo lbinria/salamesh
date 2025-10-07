@@ -234,20 +234,50 @@ struct App : public IApp {
     
 
     void notifyComponentChanged(const std::string &id) {
-        for (auto &component : components) {
+        for (auto &c : components) {
             // Do not notify the component itself
-            if (component->id() == id)
+            if (c->id() == id)
                 continue;
             // Notify other components
-            component->componentChanged(id);
+            c->componentChanged(id);
+        }
+    }
+
+    void notifyNavigationPathChange(std::vector<std::string> &oldNavPath, std::vector<std::string>& newNavPath) {
+        for (auto &c : components) {
+            c->navigationPathChanged(oldNavPath, newNavPath);
         }
     }
 
     // const char* pickModeStrings[4] = {"Points", "Edges", "Facets", "Cells"};
 
 
+    std::vector<std::string> getNavigationPath() {
+        return navPath;
+    }
+
+    void setNavigationPath(std::vector<std::string> path) {
+        notifyNavigationPathChange(navPath, path);
+        navPath = path;
+    }
+
+    void topNavigationPath() {
+        navPath.erase(navPath.end() - 1);
+    }
+
+    std::string getNavigationPathString() {
+        if (navPath.empty()) return {};
+
+        std::ostringstream oss;
+        oss << navPath[0];
+        for (size_t i = 1; i < navPath.size(); ++i) 
+            oss << '.' << navPath[i];
+
+        return oss.str();
+    }
 
 
+    // TODO set as protected
     std::vector<std::shared_ptr<Camera>> cameras;
     int selected_camera = 0;
 
@@ -276,10 +306,15 @@ struct App : public IApp {
 
     bool renderSurfaceWindowHovered = false;
 
+    unsigned int eyeIcon = 0;
     unsigned int bugAntIcon = 0;
     
+
+
     private:
 
+    // Current navigation path of the app
+    std::vector<std::string> navPath;
 
 	long pick_edge(Hexahedra &m, glm::vec3 p0, int c) {
 		// Search nearest edge

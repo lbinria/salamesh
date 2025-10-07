@@ -65,4 +65,9 @@ struct IApp {
 
 
     virtual void notifyComponentChanged(const std::string &id) = 0;
+
+    virtual std::vector<std::string> getNavigationPath() = 0;
+    virtual void setNavigationPath(std::vector<std::string> path) = 0;
+    virtual std::string getNavigationPathString() = 0;
+
 };

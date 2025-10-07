@@ -10,6 +10,9 @@
 #include "../include/glm/gtc/matrix_transform.hpp"
 #include "../include/glm/gtc/type_ptr.hpp"
 
+#include "../include/json.hpp"
+using json = nlohmann::json;
+
 #include "renderer.h"
 #include "model.h"
 #include "element.h"
@@ -84,4 +87,9 @@ struct SurfaceRenderer : public IRenderer {
 		glBindBuffer(GL_TEXTURE_BUFFER, bufBary);
 		glBufferData(GL_TEXTURE_BUFFER, barys.size() * sizeof(float), barys.data(), GL_STATIC_DRAW);
 	}
+
+	private:
+
+	void doLoadState(json &j) override {}
+	void doSaveState(json &j) const override {}
 };
