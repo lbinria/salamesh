@@ -210,7 +210,7 @@ void MyApp::init() {
 				ModuleLoader loader;
 				auto component = loader.load(entry.path().string(), *this);
 				if (component) {
-					// TODO see if init
+					// TODO see if init, I THINK IT  MUST BE INIT init is app init, but check module (collapse, painting before change)
 					// component->init();
 					components.push_back(std::move(component));
 				} else {
@@ -244,8 +244,12 @@ void MyApp::init() {
 
 	// ----- TEST -----
 	// TODO remove just for testing manually add components
-	components.push_back(std::make_unique<ViewComponent>(*this));
-	components.push_back(std::make_unique<TriangleInspector>(*this));
+	auto viewComp = std::make_unique<ViewComponent>(*this);
+	auto triDiagnosticComp = std::make_unique<TriangleInspector>(*this);
+	viewComp->init();
+	triDiagnosticComp->init();
+	components.push_back(std::move(viewComp));
+	components.push_back(std::move(triDiagnosticComp));
 }
 
 void MyApp::update(float dt) {

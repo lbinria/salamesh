@@ -400,7 +400,6 @@ void App::start()
 		float dt = timeValue - lastTimeValue;
 
 		processInput(window);
-		update(dt);
 
 		// Set view / projection from current camera
 		view = getCamera().getViewMatrix();
@@ -424,6 +423,7 @@ void App::start()
 			model->render();
 		}
 
+		update(dt);
 
 		// Go back to default framebuffer to draw the screen quad
 		glBindFramebuffer(GL_FRAMEBUFFER, 0);
@@ -500,6 +500,10 @@ void App::clean() {
 
 	for (auto &model : models) {
 		model->clean();
+	}
+
+	for (auto &c : components) {
+		c->cleanup();
 	}
 
 	glDeleteVertexArrays(1, &quadVAO);

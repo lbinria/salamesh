@@ -261,6 +261,13 @@ struct App : public IApp {
         navPath = path;
     }
 
+    void addNavigationPath(std::string pathComponent) {
+        std::vector<std::string> newPath(navPath);
+        newPath.push_back(pathComponent);
+        notifyNavigationPathChange(navPath, newPath);
+        navPath = newPath;
+    }
+
     void topNavigationPath() {
         navPath.erase(navPath.end() - 1);
     }

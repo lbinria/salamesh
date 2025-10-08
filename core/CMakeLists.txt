@@ -19,6 +19,7 @@ set(SOURCES
     camera.h
 
     shader.cpp shader.h 
+    line_renderer.cpp line_renderer.h
     point_set_renderer.cpp point_set_renderer.h
     halfedge_renderer.cpp halfedge_renderer.h
     halfedge_renderer_2.cpp halfedge_renderer_2.h
