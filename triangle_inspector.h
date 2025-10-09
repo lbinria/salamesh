@@ -10,29 +10,7 @@
 
 struct TriangleInspector : public Component {
 
-	TriangleInspector(IApp &app) : app(app) {}
-
-	// // Get 2D screen pos of all points of the model
-	// std::vector<glm::vec2> getPoint2D(Camera &c, TriModel &model) const {
-	// 	std::vector<glm::vec2> points2D;
-	// 	points2D.reserve(model.nverts());
-		
-	// 	for (int i = 0; i < model.nverts(); ++i) {
-	// 		vec3 p3 = model.getTriangles().points[i];
-	// 		glm::vec4 p(p3.x, p3.y, p3.z, 1.f);
-			
-	// 		p = c.getProjectionMatrix() * c.getViewMatrix() * p;
-	// 		p /= p.w;
-			
-	// 		p.x = (p.x + 1.f) * 0.5f * app.getScreenWidth();
-	// 		p.y = (1.f - (p.y + 1.f) * 0.5f) * app.getScreenHeight();
-
-	// 		points2D.push_back(glm::vec2(p.x, p.y));
-	// 	}
-	// 	return points2D;	
-	// }
-
-	
+	TriangleInspector(IApp &app) : app(app) {}	
 
 	// Lifecycle
 	void init() {
@@ -195,35 +173,6 @@ struct TriangleInspector : public Component {
 
 			facetHl[f] = .5f;
 
-			// // List degenerate facets in the UI
-			// if (isFacetDegenerated) {
-
-			// 	// // Goto facet
-			// 	// if (ImGui::TextLink(("Facet " + std::to_string(f) + "##link_goto_geo_degenerated_facet" + std::to_string(f)).c_str())) {
-			// 	// 	Triangle3 t = f;
-			// 	// 	cameraGoto(sl::um2glm(t.bary_verts()));
-			// 	// }
-			// 	// ImGui::SameLine();
-			// 	// ImGui::TextColored(ImVec4(1.f, 0.f, 0.f, 1.f), " is geo degenerated.");
-			// 	// ImGui::SameLine();
-			// 	// // ImGui::Text("Dist: %.15g", dist);
-
-			// 	// // Draw which corners are degenerated in the UI
-			// 	// drawUIDegeneratedCorners(f, isOverlap);
-
-			// 	facetHl[f] = 1.f;
-			// }
-
-
-			// // Highlight overlap points
-			// for (int i = 0; i < 3; ++i) {
-			// 	if (isOverlap[i])
-			// 		pointHl[f.vertex(i)] = 1;
-			// }
-
-
-
-
 		}
 
 
@@ -278,23 +227,9 @@ struct TriangleInspector : public Component {
 		}
 
 
-		//
 		static int tooltipOpen = -1;
 		static ImVec2 tooltipPos;
-		// if (app.getInputState().facet.anyHovered() && tooltipOpen == -1) {
-		// 	auto f = app.getInputState().facet.getAllHovered().front();
-		// 	if (facetHl[f] >= 0.5f && tooltipOpen == -1) {
-		// 		ImGui::BeginTooltip();
-		// 		ImGui::Text("Degenerated facet %ld", f);
-		// 		ImGui::Text("Click to open...");
-		// 		ImGui::EndTooltip();
 
-		// 		// if (app.getInputState().mouse.isLeftButton()) {
-		// 		// 	tooltipOpen = f;
-		// 		// 	tooltipPos = ImGui::GetMousePos();
-		// 		// }
-		// 	}
-		// }
 
 		if (st.vertex.anyHovered()) {
 			auto v = st.vertex.getAllHovered().front();
