@@ -309,13 +309,13 @@ void ModePanel(std::string modeStr) {
 
 	ImGui::Begin("##ModeInfoPanel", nullptr, flags);
 
-	ImGui::Text("Mode: %s", modeStr.c_str());
+	ImGui::Text("Navigation path: %s", modeStr.c_str());
 
 	ImGui::End();
 }
 
 // call each frame after NewFrame() and before Render()
-void TopModePanel(int &currentMode, const std::vector<std::pair<std::string, ImTextureID>>& icons, ImVec2 iconSize = ImVec2(28,28)) {
+void MyApp::TopModePanel(int &currentMode, const std::vector<std::pair<std::string, ImTextureID>>& icons, ImVec2 iconSize) {
 	// Layout and appearance settings
 	const float panelHeight = 48.0f;
 	const float margin = 32.0f;
@@ -368,6 +368,7 @@ void TopModePanel(int &currentMode, const std::vector<std::pair<std::string, ImT
 		// ImGui::PushStyleColor(ImGuiCol_ButtonActive, ImVec4(0,0,0,0));
 		if (ImGui::ImageButton(("btn_mode_" + std::to_string(i)).c_str(), icons[i].second, iconSize, ImVec2(0,0), ImVec2(1,1))) {
 			currentMode = i; // select mode
+			setNavigationPath({icons[i].first});
 		}
 		// ImGui::PopStyleColor(3);
 		ImGui::PopStyleVar();
@@ -430,11 +431,11 @@ void MyApp::draw_gui() {
 	static int currentMode = -1;
 	TopModePanel(currentMode, {{"view", (ImTextureID)eyeIcon}, {"diagnostic", (ImTextureID)bugAntIcon}});
 
-	if (currentMode == 0) {
-		setNavigationPath({"view"});
-	} else if (currentMode == 1) {
-		setNavigationPath({"diagnostic"});
-	}
+	// if (currentMode == 0) {
+	// 	setNavigationPath({"view"});
+	// } else if (currentMode == 1) {
+	// 	setNavigationPath({"diagnostic"});
+	// }
 
 	ModePanel(getNavigationPathString());
 

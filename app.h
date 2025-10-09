@@ -278,7 +278,7 @@ struct App : public IApp {
         std::ostringstream oss;
         oss << navPath[0];
         for (size_t i = 1; i < navPath.size(); ++i) 
-            oss << '.' << navPath[i];
+            oss << '/' << navPath[i];
 
         return oss.str();
     }
