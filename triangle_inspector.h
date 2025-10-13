@@ -104,12 +104,6 @@ struct TriangleInspector : public Component {
 
 		}
 		
-		// Beuurk !
-		if (!once) {
-			once = true;
-		}
-
-
 		float pointSize = triModel.getPoints().getPointSize();
 
 		// Compute PVM matrix
@@ -137,6 +131,22 @@ struct TriangleInspector : public Component {
 		lineRenderer.push();
 		
 
+		// Beuurk !
+		if (!once) {
+
+			std::vector<BBox3> bboxes;
+			for (auto &v : m.iter_vertices()) {
+				BBox3 bb;
+				bb.add(v.pos() - vec3{radiuses[v], radiuses[v], radiuses[v]});
+				bb.add(v.pos() + vec3{radiuses[v], radiuses[v], radiuses[v]});
+				bboxes.push_back(bb);
+			}
+
+			hbbox.init(bboxes);
+
+			once = true;
+		}
+
 
 		// Highlight degenerated points
 		PointAttribute<float> pointHl;
@@ -151,27 +161,51 @@ struct TriangleInspector : public Component {
 		std::vector<std::vector<long>> pointOverlaps(m.nverts());
 
 		int nOverlaps = 0;
-		for (auto &f : m.iter_facets()) {
+		// for (auto &f : m.iter_facets()) {
 			
-			for (int lv = 0; lv < 3; ++lv) {
-				auto a = f.vertex(lv);
-				auto b = f.vertex((lv + 1) % 3);
+		// 	for (int lv = 0; lv < 3; ++lv) {
+		// 		auto a = f.vertex(lv);
+		// 		auto b = f.vertex((lv + 1) % 3);
 
-				auto pA = sl::um2glm(a.pos());
-				auto pB = sl::um2glm(b.pos());
+		// 		auto pA = sl::um2glm(a.pos());
+		// 		auto pB = sl::um2glm(b.pos());
 
-				if (glm::distance(pA, pB) < radiuses[a] + radiuses[b]) {
-					// facetHl[f] = 1.f;
-					pointHl[a] = 1.f;
-					pointHl[b] = 1.f;
+		// 		if (glm::distance(pA, pB) < radiuses[a] + radiuses[b]) {
+		// 			// facetHl[f] = 1.f;
+		// 			pointHl[a] = 1.f;
+		// 			pointHl[b] = 1.f;
 
-					pointOverlaps[a].push_back(b);
-					pointOverlaps[b].push_back(a);
-					++nOverlaps;
-				}
+		// 			pointOverlaps[a].push_back(b);
+		// 			pointOverlaps[b].push_back(a);
+		// 			++nOverlaps;
+		// 		}
+		// 	}
+
+		// 	facetHl[f] = .5f;
+
+		// }
+
+
+		for (auto &a : m.iter_vertices()) {
+			
+			BBox3 bbox;
+			bbox.add(a.pos() - vec3{radiuses[a], radiuses[a], radiuses[a]});
+			bbox.add(a.pos() + vec3{radiuses[a], radiuses[a], radiuses[a]});
+			std::vector<int> results;
+			hbbox.intersect(bbox, results);
+
+			if (results.size() == 0)
+				continue;
+
+			// pointHl[a] = 1.f;
+
+			for (auto &b : results) {
+				if (b == a) continue;
+
+				pointHl[b] = 1.f;
+				pointOverlaps[a].push_back(b);
 			}
-
-			facetHl[f] = .5f;
+			++nOverlaps;
 
 		}
 
@@ -295,5 +329,6 @@ struct TriangleInspector : public Component {
 	double eps = 0.001;
 
 	LineRenderer lineRenderer;
+	HBoxes3 hbbox;
 
 };
