@@ -1,4 +1,4 @@
-#pragma once_quad
+#pragma once
 
 #include <vector>
 #include <tuple>

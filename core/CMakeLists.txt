@@ -8,6 +8,12 @@ set(JSON_SOURCES
     ../include/json.hpp
 )
 
+if(WIN32)
+  set(OPENGL_FILES)
+else()
+  set(OPENGL_FILES ../include/glad.c)
+endif(WIN32)
+
 set(SOURCES
     app_interface.h
     component.h component.cpp
@@ -38,7 +44,7 @@ set(SOURCES
 
   # some include files to build with the lib
   ../include/stb_include.cpp 
-  ../include/glad.c 
+  ${OPENGL_FILES} 
 )
 
 include_directories(salamesh PRIVATE ../include)

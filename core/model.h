@@ -213,13 +213,13 @@ struct Model {
     void addAttr(ElementKind kind, NamedContainer &container) {
         
         // Get the type of the container
-        ElementType type = ElementType::DOUBLE; // Default type
+        ElementType type = ElementType::DOUBLE_ELT; // Default type
         if (auto a = dynamic_cast<AttributeContainer<double>*>(container.ptr.get())) {
-            type = ElementType::DOUBLE;
+            type = ElementType::DOUBLE_ELT;
         } else if (auto a = dynamic_cast<AttributeContainer<int>*>(container.ptr.get())) {
-            type = ElementType::INT;
+            type = ElementType::INT_ELT;
         } else if (auto a = dynamic_cast<AttributeContainer<bool>*>(container.ptr.get())) {
-            type = ElementType::BOOL;
+            type = ElementType::BOOL_ELT;
         } else {
             throw std::runtime_error("Unknown attribute type for container: " + container.name);
         }
@@ -290,11 +290,11 @@ struct Model {
     template<typename T>
     ElementType deduceType(GenericAttribute<T> &attr) {
         if constexpr (std::is_same_v<T, double>) {
-            return ElementType::DOUBLE;
+            return ElementType::DOUBLE_ELT;
         } else if constexpr (std::is_same_v<T, int>) {
-            return ElementType::INT;
+            return ElementType::INT_ELT;
         } else if constexpr (std::is_same_v<T, bool>) {
-            return ElementType::BOOL;
+            return ElementType::BOOL_ELT;
         } else {
             throw std::runtime_error("Unknown attribute type for container: " + attr.getName());
         }
@@ -311,7 +311,7 @@ struct Model {
 
     ElementKind umAttributeKind2ElementKind(AttributeBase::TYPE kind) {
         switch (kind) {
-            case AttributeBase::POINTS: return ElementKind::POINTS;
+            case AttributeBase::POINTS: return ElementKind::POINTS_ELT;
             case AttributeBase::EDGES: return ElementKind::EDGES;
             case AttributeBase::FACETS: return ElementKind::FACETS;
             case AttributeBase::CORNERS: return ElementKind::CORNERS;
@@ -417,7 +417,7 @@ struct Model {
         unsetHighlight(ElementKind::CELLS);
         unsetHighlight(ElementKind::FACETS);
         unsetHighlight(ElementKind::EDGES);
-        unsetHighlight(ElementKind::POINTS);
+        unsetHighlight(ElementKind::POINTS_ELT);
     }
 
     void unsetFilter(ElementKind kind) {
@@ -426,7 +426,7 @@ struct Model {
 
     void unsetFilters() {
         // Unset all
-        unsetFilter(ElementKind::POINTS);
+        unsetFilter(ElementKind::POINTS_ELT);
         unsetFilter(ElementKind::CORNERS);
         unsetFilter(ElementKind::EDGES);
         unsetFilter(ElementKind::FACETS);
@@ -467,7 +467,7 @@ struct Model {
                 zeros.resize(ncorners(), 0.f);
                 break;
             }
-            case ElementKind::POINTS: {
+            case ElementKind::POINTS_ELT: {
                 zeros.resize(nverts(), 0.f);
                 break;
             }
@@ -665,8 +665,8 @@ struct Model {
 
 
     std::map<IRenderer::Layer, AttrSelection> selectedAttrByLayer{
-        { IRenderer::Layer::HIGHLIGHT, {"_highlight", ElementKind::POINTS} },
-        { IRenderer::Layer::FILTER, {"_filter", ElementKind::POINTS} },
+        { IRenderer::Layer::HIGHLIGHT, {"_highlight", ElementKind::POINTS_ELT} },
+        { IRenderer::Layer::FILTER, {"_filter", ElementKind::POINTS_ELT} },
     };
 
     bool isLightEnabled = true;

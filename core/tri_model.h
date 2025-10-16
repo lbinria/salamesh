@@ -114,7 +114,7 @@ struct TriModel final : public Model {
         std::vector<float> data;
 
         switch (selectedAttr.elementKind) {
-            case ElementKind::POINTS:
+            case ElementKind::POINTS_ELT:
             {
                 PointAttribute<float> layerAttr;
                 if (!layerAttr.bind(selectedAttr.attrName, _surfaceAttributes, _tri))

@@ -1,6 +1,13 @@
 #pragma once
 
+#ifdef _WIN32
+#define NOMINMAX
+#include <Windows.h>
+#include <glew/include/GL/glew.h>
+#else
 #include <glad/glad.h>
+#endif
+
 #include <GLFW/glfw3.h>
 
 #include "core/app_interface.h"

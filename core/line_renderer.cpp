@@ -28,8 +28,8 @@ void LineRenderer::push() {
 
 	// Map Line -> LineComponent for VBO
 	for (auto &l : lines) {
-		lineComponents.push_back({ p: l.a, color: l.color });
-		lineComponents.push_back({ p: l.b, color: l.color });
+		lineComponents.push_back({.p = l.a, .color = l.color});
+		lineComponents.push_back({ .p = l.b, .color = l.color });
 	}
 
 	nverts = lineComponents.size();

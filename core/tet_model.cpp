@@ -20,7 +20,7 @@ bool TetModel::load(const std::string path) {
 	clearAttrs();
 
 	for (auto &a : _volumeAttributes.points) {
-		addAttr(ElementKind::POINTS, a);
+		addAttr(ElementKind::POINTS_ELT, a);
 	}
 	for (auto a : _volumeAttributes.cell_corners) {
 		addAttr(ElementKind::CELL_CORNERS, a);
@@ -56,7 +56,7 @@ void TetModel::saveAs(const std::string path) const {
 		ElementKind kind = a.kind;
 		auto &container = a.ptr;
 
-		if (kind == ElementKind::POINTS) {
+		if (kind == ElementKind::POINTS_ELT) {
 			point_attrs.push_back(NamedContainer(name, container));
 		} else if (kind == ElementKind::CELL_CORNERS) {
 			cell_corner_attrs.push_back(NamedContainer(name, container));

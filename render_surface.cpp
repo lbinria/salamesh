@@ -1,6 +1,11 @@
 #include "render_surface.h"
 
+#ifdef _WIN32
+#include <glew/include/GL/glew.h>
+#else
 #include <glad/glad.h>
+#endif
+
 #include <GLFW/glfw3.h>
 
 #include <iostream>

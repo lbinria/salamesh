@@ -60,13 +60,13 @@ void HexRenderer::push() {
 					edge[0] = std::numeric_limits<float>::max();
 
 					vertices[i] = { 
-						vertexIndex: vi,
-						position: glm::vec3(v.x, v.y, v.z),
-						size: 1.f,
-						normal: glm::vec3(n.x, n.y, n.z),
-						heights: edge,
-						facetIndex: ci * 6 + lfi,
-						cellIndex: ci
+						.vertexIndex= vi,
+						.position= glm::vec3(v.x, v.y, v.z),
+						.size= 1.f,
+						.normal= glm::vec3(n.x, n.y, n.z),
+						.heights= edge,
+						.facetIndex= ci * 6 + lfi,
+						.cellIndex= ci
 					};
 
 					++i;

@@ -1,3 +1,5 @@
+#pragma once
+
 #include <iostream>
 // JSON !!
 #include <json.hpp>

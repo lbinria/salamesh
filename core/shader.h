@@ -1,6 +1,12 @@
 #pragma once
 
+#ifdef _WIN32
+#include "../include/glew/include/GL/glew.h"
+#else
 #include "../include/glad/glad.h"
+#endif
+
+
   
 #include <string>
 #include <fstream>

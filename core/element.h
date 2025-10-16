@@ -2,7 +2,7 @@
 #include <string>
 
 enum ElementKind {
-	POINTS = 1,
+	POINTS_ELT = 1,
 	CORNERS = 2,
 	EDGES = 4,
 	FACETS = 8,
@@ -12,14 +12,14 @@ enum ElementKind {
 };
 
 enum ElementType {
-	DOUBLE,
-	INT,
-	BOOL
+	DOUBLE_ELT,
+	INT_ELT,
+	BOOL_ELT
 };
 
 static std::string elementKindToString(ElementKind e) {
 	switch (e) {
-		case ElementKind::POINTS: return "points";
+		case ElementKind::POINTS_ELT: return "points";
 		case ElementKind::EDGES: return "edges";
 		case ElementKind::FACETS: return "facets";
 		case ElementKind::CELL_FACETS: return "cell_facets";
@@ -32,9 +32,9 @@ static std::string elementKindToString(ElementKind e) {
 
 static std::string elementTypeToString(ElementType t) {
 	switch (t) {
-		case ElementType::DOUBLE: return "double";
-		case ElementType::INT: return "int";
-		case ElementType::BOOL: return "bool";
+		case ElementType::DOUBLE_ELT: return "double";
+		case ElementType::INT_ELT: return "int";
+		case ElementType::BOOL_ELT: return "bool";
 		default: return "unknown";
 	}
 }

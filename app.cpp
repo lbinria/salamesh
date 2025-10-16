@@ -256,11 +256,18 @@ void App::setup() {
     ImGui_ImplGlfw_InitForOpenGL(window, true);
     ImGui_ImplOpenGL3_Init("#version 330");
 
+	// hook function pointers
+	#ifdef WIN32
+		glewInit();
+	#else
+
 	if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress))
 	{
 		std::cout << "Failed to initialize GLAD" << std::endl;
 		return;
-	}    
+	}
+	
+	#endif
 
 	std::chrono::steady_clock::time_point end_setup = std::chrono::steady_clock::now();
     std::cout << "GLFW / ImGui setup in: " << std::chrono::duration_cast<std::chrono::milliseconds>(end_setup - begin_setup).count() << "ms" << std::endl;
@@ -658,8 +665,8 @@ std::vector<long> App::pick_cells(double x, double y, int radius) {
 	return clean_ids;
 }
 
-float getLinearDepth(float depth, float near, float far) {
-	return near * far / (far + depth * (near - far));
+float getLinearDepth(float depth, float _near, float _far) {
+	return _near * _far / (_far + depth * (_near - _far));
 }
 
 float App::getDepth(double x, double y) {

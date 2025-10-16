@@ -130,7 +130,7 @@ struct TetModel final : public Model {
                 data = layerAttr.ptr->data;
                 break;
             }
-            case ElementKind::POINTS:
+            case ElementKind::POINTS_ELT:
             {
                 PointAttribute<float> layerAttr;
                 if (!layerAttr.bind(selectedAttr.attrName, _volumeAttributes, _m))

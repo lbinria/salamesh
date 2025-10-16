@@ -1,15 +1,60 @@
-cmake_minimum_required(VERSION 3.12...3.26)
+cmake_minimum_required(VERSION 3.5...4.1.2)
 
 project(salamesh)
 set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_BUILD_RPATH_USE_ORIGIN TRUE)
 
+find_package(OpenMP COMPONENTS CXX)
 
-# Find the GLFW library
-find_package(glfw3 REQUIRED)
+if (MSVC)
+  add_compile_options(/W4 /openmp:llvm   /wd26451 /bigobj)
+endif()
 
-find_package(Lua REQUIRED)
+IF(WIN32)
+  SET(PROJECT_BINARY_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/build)
+
+	add_subdirectory(include/glew)
+	add_subdirectory(include/glfw)
+
+  # Set the path to the Lua library and include directory
+  set(LUA_DIR "${CMAKE_SOURCE_DIR}/libs/lua-5.4.2_Win64_dll17_lib")
+  set(LUA_INCLUDE_DIR "${LUA_DIR}/include")
+  set(LUA_LIB_DIR "${LUA_DIR}")
+
+  # Include the lib directory
+  include_directories(${LUA_INCLUDE_DIR})
+  # Link against the Lua library
+  # find_library(LUA_LIBRARIES lua5.4 HINTS ${LUA_LIB_DIR})
+  # Directly link the Lua library
+  set(LUA_LIBRARIES "${LUA_LIB_DIR}/lua54.lib") # Change this to the actual library filename
+
+  # Ensure that the library was found
+  if(NOT LUA_LIBRARIES)
+      message(FATAL_ERROR "Could not find Lua library")
+  endif()
+
+  set(OPENGL_FILES)
+
+	SET(OPENGL_LIBS
+		opengl32
+		glew
+	)
+
+ELSE()
+	# FIND_PACKAGE(OpenGL REQUIRED)
+  find_package(glfw3 REQUIRED)
+  find_package(Lua REQUIRED)
+  set(OPENGL_FILES include/glad.c)
+
+	SET(OPENGL_LIBS
+		${OPENGL_LIBRARIES}
+	)
+ENDIF(WIN32)
+
+
+
+
 
 set(IMGUI_SOURCES
     include/imgui/imgui.cpp
@@ -43,7 +88,7 @@ include(FetchContent)
 FetchContent_Declare(
   ultimaille
   GIT_REPOSITORY https://github.com/ssloy/ultimaille
-  GIT_TAG        8fb23b7
+  GIT_TAG        c6647c059ea952112c4ddb6613f5224e636c74db
 )
 FetchContent_MakeAvailable(ultimaille)
 
@@ -78,7 +123,7 @@ add_executable(salamesh
   render_surface.cpp render_surface.h
   # some include files to build with the executable
   include/stb_include.cpp 
-  include/glad.c 
+  ${OPENGL_FILES}
   ${SOL_SOURCES}
   ${IMGUI_SOURCES}
   ${JSON_SOURCES}
@@ -92,8 +137,13 @@ target_include_directories(salamesh PRIVATE ${LUA_INCLUDE_DIR})
 # Link the libraries
 target_link_libraries(salamesh PRIVATE salamesh_core)
 target_link_libraries(salamesh PRIVATE glfw)
-target_link_libraries(salamesh PRIVATE ImGuiFileDialog ${CMAKE_DL_LIBS} ultimaille m $<$<BOOL:${OpenMP_CXX_FOUND}>:OpenMP::OpenMP_CXX>)
+target_link_libraries(salamesh PRIVATE ImGuiFileDialog ${CMAKE_DL_LIBS} ultimaille $<$<BOOL:${OpenMP_CXX_FOUND}>:OpenMP::OpenMP_CXX>)
 target_link_libraries(salamesh PRIVATE ${LUA_LIBRARIES})
+target_link_libraries(salamesh PRIVATE ${OPENGL_LIBS})
+
+if (NOT WIN32)
+target_link_libraries(salamesh PRIVATE m)
+endif()
 
 # Copy assets to the build directory
 message("Copying assets from ${PROJECT_SOURCE_DIR}/assets to ${CMAKE_CURRENT_BINARY_DIR}/assets")

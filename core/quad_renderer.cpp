@@ -55,18 +55,18 @@ void QuadRenderer::push() {
 
 
 				vertices.push_back({ 
-					vertexIndex: v,
-					localIndex: lv,
-					p: glm::vec3(p.x, p.y, p.z),
-					p0: glm::vec3(p0.x, p0.y, p0.z),
-					p1: glm::vec3(p1.x, p1.y, p1.z),
-					p2: glm::vec3(p2.x, p2.y, p2.z),
-					p3: glm::vec3(p3.x, p3.y, p3.z),
-					size: 1.f,
-					normal: glm::vec3(n.x, n.y, n.z),
-					heights: edge,
-					facetIndex: f,
-					cellIndex: 0
+					.vertexIndex= v,
+					.localIndex= lv,
+					.p= glm::vec3(p.x, p.y, p.z),
+					.p0= glm::vec3(p0.x, p0.y, p0.z),
+					.p1= glm::vec3(p1.x, p1.y, p1.z),
+					.p2= glm::vec3(p2.x, p2.y, p2.z),
+					.p3= glm::vec3(p3.x, p3.y, p3.z),
+					.size= 1.f,
+					.normal= glm::vec3(n.x, n.y, n.z),
+					.heights= edge,
+					.facetIndex= f,
+					.cellIndex= 0
 				});
 			}
 		}

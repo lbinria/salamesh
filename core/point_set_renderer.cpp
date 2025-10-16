@@ -99,9 +99,9 @@ void PointSetRenderer::push() {
 		auto &v = ps[i];
 
 		vertices[i] = { 
-			vertexIndex: i,
-			position: glm::vec3(v.x, v.y, v.z),
-			size: 1.f
+			.vertexIndex = i,
+			.position = glm::vec3(v.x, v.y, v.z),
+			.size = 1.f
 		};
 	}
 
