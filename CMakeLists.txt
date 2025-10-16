@@ -145,12 +145,51 @@ if (NOT WIN32)
 target_link_libraries(salamesh PRIVATE m)
 endif()
 
+if(MSVC)
+    set(CONFIGURATION ${CMAKE_CFG_INTDIR})  # MSVC uses CMAKE_CFG_INTDIR
+else()
+    set(CONFIGURATION "")  # Default behavior for other systems
+endif()
+
 # Copy assets to the build directory
-message("Copying assets from ${PROJECT_SOURCE_DIR}/assets to ${CMAKE_CURRENT_BINARY_DIR}/assets")
-file(COPY ${PROJECT_SOURCE_DIR}/assets DESTINATION ${CMAKE_BINARY_DIR})
+# message("Configuration: ${CMAKE_CFG_INTDIR}")
+
+# Listing all output configs
+# foreach (OUTPUTCONFIG ${CMAKE_CONFIGURATION_TYPES})
+# message("Configuration: ${OUTPUTCONFIG}")
+# endforeach (OUTPUTCONFIG CMAKE_CONFIGURATION_TYPES )
+
+message("Current binary dir: ${CMAKE_CURRENT_BINARY_DIR}")
+
+message("Copying assets from ${PROJECT_SOURCE_DIR}/assets to ${CMAKE_CURRENT_BINARY_DIR}/${CONFIGURATION}/assets")
+file(COPY ${PROJECT_SOURCE_DIR}/assets DESTINATION ${CMAKE_CURRENT_BINARY_DIR})
 message("Copying shaders from ${PROJECT_SOURCE_DIR}/shaders to ${CMAKE_CURRENT_BINARY_DIR}/shaders")
-file(COPY ${PROJECT_SOURCE_DIR}/shaders DESTINATION ${CMAKE_BINARY_DIR})
+file(COPY ${PROJECT_SOURCE_DIR}/shaders DESTINATION ${CMAKE_CURRENT_BINARY_DIR})
 message("Copying default / test modules from ${PROJECT_SOURCE_DIR}/modules to ${CMAKE_CURRENT_BINARY_DIR}/modules")
-file(COPY ${PROJECT_SOURCE_DIR}/modules DESTINATION ${CMAKE_BINARY_DIR})
+file(COPY ${PROJECT_SOURCE_DIR}/modules DESTINATION ${CMAKE_CURRENT_BINARY_DIR})
 message("Copying default settings from ${PROJECT_SOURCE_DIR}/settings.json to ${CMAKE_CURRENT_BINARY_DIR}/settings.json")
-configure_file(${PROJECT_SOURCE_DIR}/settings.json ${CMAKE_BINARY_DIR}/settings.json COPYONLY)
+configure_file(${PROJECT_SOURCE_DIR}/settings.json ${CMAKE_CURRENT_BINARY_DIR}/settings.json COPYONLY)
+
+
+# Define a custom command to copy assets after the executable is built
+add_custom_command(
+    TARGET ${PROJECT_NAME}
+    POST_BUILD
+    # Shared librairies copy
+    COMMAND ${CMAKE_COMMAND} -E copy_if_different ${PROJECT_SOURCE_DIR}/libs/lua-5.4.2_Win64_dll17_lib/lua54.dll ${CMAKE_CURRENT_BINARY_DIR}/$<CONFIG>/
+    COMMAND ${CMAKE_COMMAND} -E copy_if_different ${PROJECT_SOURCE_DIR}/include/glew/bin/Release/x64/glew32.dll ${CMAKE_CURRENT_BINARY_DIR}/$<CONFIG>/
+    # Default settings copy
+    COMMAND ${CMAKE_COMMAND} -E copy_if_different ${PROJECT_SOURCE_DIR}/settings.json ${CMAKE_CURRENT_BINARY_DIR}/$<CONFIG>/
+    # Shader copy
+    COMMAND ${CMAKE_COMMAND} -E make_directory ${CMAKE_CURRENT_BINARY_DIR}/$<CONFIG>/shaders
+    COMMAND ${CMAKE_COMMAND} -E copy_directory ${PROJECT_SOURCE_DIR}/shaders ${CMAKE_CURRENT_BINARY_DIR}/$<CONFIG>/shaders
+    COMMENT "Copying shaders to ${CMAKE_CURRENT_BINARY_DIR}/$<CONFIG>/shaders/"
+    # Modules copy
+    COMMAND ${CMAKE_COMMAND} -E make_directory ${CMAKE_CURRENT_BINARY_DIR}/$<CONFIG>/modules
+    COMMAND ${CMAKE_COMMAND} -E copy_directory ${PROJECT_SOURCE_DIR}/modules ${CMAKE_CURRENT_BINARY_DIR}/$<CONFIG>/modules
+    COMMENT "Copying modules to ${CMAKE_CURRENT_BINARY_DIR}/$<CONFIG>/modules/"  
+    # Assets copy
+    COMMAND ${CMAKE_COMMAND} -E make_directory ${CMAKE_CURRENT_BINARY_DIR}/$<CONFIG>/assets
+    COMMAND ${CMAKE_COMMAND} -E copy_directory ${PROJECT_SOURCE_DIR}/assets ${CMAKE_CURRENT_BINARY_DIR}/$<CONFIG>/assets
+    COMMENT "Copying assets to ${CMAKE_CURRENT_BINARY_DIR}/$<CONFIG>/assets/"
+)
