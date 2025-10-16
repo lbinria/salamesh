@@ -183,11 +183,11 @@ add_custom_command(
     # Shader copy
     COMMAND ${CMAKE_COMMAND} -E make_directory ${CMAKE_CURRENT_BINARY_DIR}/$<CONFIG>/shaders
     COMMAND ${CMAKE_COMMAND} -E copy_directory ${PROJECT_SOURCE_DIR}/shaders ${CMAKE_CURRENT_BINARY_DIR}/$<CONFIG>/shaders
-    COMMENT "Copying shaders to ${CMAKE_CURRENT_BINARY_DIR}/$<CONFIG>/shaders/"
+    # COMMENT "Copying shaders to ${CMAKE_CURRENT_BINARY_DIR}/$<CONFIG>/shaders/"
     # Modules copy
     COMMAND ${CMAKE_COMMAND} -E make_directory ${CMAKE_CURRENT_BINARY_DIR}/$<CONFIG>/modules
     COMMAND ${CMAKE_COMMAND} -E copy_directory ${PROJECT_SOURCE_DIR}/modules ${CMAKE_CURRENT_BINARY_DIR}/$<CONFIG>/modules
-    COMMENT "Copying modules to ${CMAKE_CURRENT_BINARY_DIR}/$<CONFIG>/modules/"  
+    # COMMENT "Copying modules to ${CMAKE_CURRENT_BINARY_DIR}/$<CONFIG>/modules/"  
     # Assets copy
     COMMAND ${CMAKE_COMMAND} -E make_directory ${CMAKE_CURRENT_BINARY_DIR}/$<CONFIG>/assets
     COMMAND ${CMAKE_COMMAND} -E copy_directory ${PROJECT_SOURCE_DIR}/assets ${CMAKE_CURRENT_BINARY_DIR}/$<CONFIG>/assets
