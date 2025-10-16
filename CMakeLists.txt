@@ -1,14 +1,23 @@
 cmake_minimum_required(VERSION 3.5...4.1.2)
 
-project(salamesh)
+project(salamesh LANGUAGES C CXX)
 set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_BUILD_RPATH_USE_ORIGIN TRUE)
+
+get_property(is_multi_config GLOBAL PROPERTY GENERATOR_IS_MULTI_CONFIG)
+if(NOT is_multi_config AND NOT (CMAKE_BUILD_TYPE OR DEFINED ENV{CMAKE_BUILD_TYPE}))
+  set(CMAKE_BUILD_TYPE Release CACHE STRING "Release default")
+endif()
 
 find_package(OpenMP COMPONENTS CXX)
 
 if (MSVC)
   add_compile_options(/W4 /openmp:llvm   /wd26451 /bigobj)
+else()
+  # TODO activate when ready to that 
+  # lots of warnings and all warnings as errors
+  # add_compile_options(-Wall -Wextra -pedantic)
 endif()
 
 IF(WIN32)
@@ -88,11 +97,9 @@ include(FetchContent)
 FetchContent_Declare(
   ultimaille
   GIT_REPOSITORY https://github.com/ssloy/ultimaille
-  GIT_TAG        c6647c059ea952112c4ddb6613f5224e636c74db
+  GIT_TAG        c6647c0
 )
 FetchContent_MakeAvailable(ultimaille)
-
-# Add ultimaille directory to get ultimaille CMakeLists
 include_directories(${ultimaille_SOURCE_DIR})
 
 set(SOL_SOURCES
@@ -131,8 +138,9 @@ add_executable(salamesh
 
 target_include_directories(salamesh PRIVATE include)
 target_include_directories(salamesh PRIVATE include/imgui)
-
 target_include_directories(salamesh PRIVATE ${LUA_INCLUDE_DIR})
+
+
 
 # Link the libraries
 target_link_libraries(salamesh PRIVATE salamesh_core)

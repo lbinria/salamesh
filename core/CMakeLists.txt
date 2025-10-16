@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.12...3.26)
+cmake_minimum_required(VERSION 3.5...4.1.2)
 
 project(salamesh_core)
 set(CMAKE_CXX_STANDARD 20)
@@ -47,7 +47,9 @@ set(SOURCES
   ${OPENGL_FILES} 
 )
 
-include_directories(salamesh PRIVATE ../include)
+# include_directories(salamesh PRIVATE ../include)
+include_directories(../include)
+# include_directories(${ultimaille_SOURCE_DIR})
 
 # Add the library
 add_library(salamesh_core ${SOURCES} ${JSON_SOURCES})
