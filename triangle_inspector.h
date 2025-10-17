@@ -137,8 +137,7 @@ struct TriangleInspector : public Component {
 			std::vector<BBox3> bboxes;
 			for (auto &v : m.iter_vertices()) {
 				BBox3 bb;
-				bb.add(v.pos() - vec3{radiuses[v], radiuses[v], radiuses[v]});
-				bb.add(v.pos() + vec3{radiuses[v], radiuses[v], radiuses[v]});
+				bb.add(v.pos());
 				bboxes.push_back(bb);
 			}
 
@@ -221,18 +220,18 @@ struct TriangleInspector : public Component {
 			}
 			ImGui::Text("Overlaps number: %i", nOverlaps);
 
-			static int vertexId = -1;
-			ImGui::InputInt("Go to vertex: ", &vertexId);
-			ImGui::SameLine();
-			if (ImGui::SmallButton("go")) {
-				auto v = m.vertex(vertexId);
-				app.getCamera().lookAt(sl::um2glm(v.pos()));
-			}
+			// static int vertexId = -1;
+			// ImGui::InputInt("Go to vertex: ", &vertexId);
+			// ImGui::SameLine();
+			// if (ImGui::SmallButton("go")) {
+			// 	auto v = m.vertex(vertexId);
+			// 	app.getCamera().lookAt(sl::um2glm(v.pos()));
+			// }
 
-			if (vertexId >= 0 && vertexId < m.nverts()) {
-				auto p =  m.vertex(vertexId).pos();
-				ImGui::Text("x: %f, y: %f, z: %f", p.x, p.y, p.z);
-			}
+			// if (vertexId >= 0 && vertexId < m.nverts()) {
+			// 	auto p =  m.vertex(vertexId).pos();
+			// 	ImGui::Text("x: %f, y: %f, z: %f", p.x, p.y, p.z);
+			// }
 		}
 
 		ImGui::End();
@@ -281,7 +280,7 @@ struct TriangleInspector : public Component {
 			ImGui::EndTooltip();
 		}
 
-		if (st.facet.anyHovered()) {
+		else if (st.facet.anyHovered()) {
 			auto f = st.facet.getAllHovered().front();
 
 			ImGui::BeginTooltip();
