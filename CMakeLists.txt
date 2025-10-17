@@ -69,7 +69,8 @@ include(FetchContent)
 FetchContent_Declare(
   ultimaille
   GIT_REPOSITORY https://github.com/ssloy/ultimaille
-  GIT_TAG        c6647c0
+  # GIT_TAG        c6647c0
+  GIT_TAG        6d50ee5
 )
 FetchContent_MakeAvailable(ultimaille)
 include_directories(${ultimaille_SOURCE_DIR})
