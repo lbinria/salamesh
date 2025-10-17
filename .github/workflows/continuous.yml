@@ -22,12 +22,16 @@ jobs:
       with:
         submodules: recursive
 
-    # - name: Install Clang 16 (macOS)
-    #   if: matrix.cfg.os == 'macos-latest'
-    #   run: |
-    #     brew install llvm@16
+    - name: Install Clang 16 (macOS)
+      if: matrix.cfg.os == 'macos-latest'
+      run: |
+        brew update
+        brew install llvm@16
+        brew install glfw
+        brew install lua  # Adjust version or formula as needed
 
     - name: Install dependencies
+      if: matrix.cfg.os == 'ubuntu-latest'
       run: |
         sudo apt-get update
         # Install GLFW development packages
