@@ -4,19 +4,19 @@
 #include <memory>
 #include <stdexcept>
 
-// #ifdef _WIN32
+#ifdef _WIN32
 // #define NOMINMAX
 // #include <Windows.h>
-// // #else
-// // #include <dlfcn.h>
-// #endif
+#else
+#include <dlfcn.h>
+#endif
 
 #include "../core/app_interface.h"
 #include "../core/component.h"
 
 struct ModuleLoader {
 	
-	// #ifdef WIN32
+	#ifdef WIN32
 	std::unique_ptr<Component> load(const std::string& path, IApp& app) {
 		// Load the DLL
 		HMODULE handle = LoadLibrary(path.c_str());
@@ -51,40 +51,40 @@ struct ModuleLoader {
 		return std::unique_ptr<Component>(component);
 	}
 
-	// #else
+	#else
 	
-	// std::unique_ptr<Component> load(const std::string path, IApp &app) {
+	std::unique_ptr<Component> load(const std::string path, IApp &app) {
 
-	// 	void *handle = dlopen(path.c_str(), RTLD_NOW);
+		void *handle = dlopen(path.c_str(), RTLD_NOW);
 
-	// 	if (!handle) {
-    //         const char* error = dlerror();
-    //         throw std::runtime_error(std::string("Failed to load library '") + path + "': " + 
-    //                                (error ? error : "Unknown error"));
-	// 		return nullptr;
-	// 	}
+		if (!handle) {
+            const char* error = dlerror();
+            throw std::runtime_error(std::string("Failed to load library '") + path + "': " + 
+                                   (error ? error : "Unknown error"));
+			return nullptr;
+		}
 
-	// 	std::cout << "opened." << std::endl;
+		std::cout << "opened." << std::endl;
 
-	// 	Component* (*allocator)(IApp&);
-	// 	allocator = (Component*(*)(IApp&))dlsym(handle, "allocator");
+		Component* (*allocator)(IApp&);
+		allocator = (Component*(*)(IApp&))dlsym(handle, "allocator");
 		
-	// 	if (!allocator) {
-	// 		std::cout << "fail to allocator func." << std::endl;
-	// 		return nullptr;
-	// 	}
+		if (!allocator) {
+			std::cout << "fail to allocator func." << std::endl;
+			return nullptr;
+		}
 		
-	// 	std::cout << "func allocator created." << std::endl;
+		std::cout << "func allocator created." << std::endl;
 
-	// 	Component* component = (Component*)allocator(app);
+		Component* component = (Component*)allocator(app);
 
-	// 	std::cout << "allocated." << std::endl;
+		std::cout << "allocated." << std::endl;
 
-	// 	// dlclose(handle);
+		// dlclose(handle);
 
-	// 	return std::unique_ptr<Component>(component);
-	// }
+		return std::unique_ptr<Component>(component);
+	}
 
-	// #endif
+	#endif
 	
 };

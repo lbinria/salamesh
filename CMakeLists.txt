@@ -153,19 +153,6 @@ if (NOT WIN32)
 target_link_libraries(salamesh PRIVATE m)
 endif()
 
-if(MSVC)
-    set(CONFIGURATION ${CMAKE_CFG_INTDIR})  # MSVC uses CMAKE_CFG_INTDIR
-else()
-    set(CONFIGURATION "")  # Default behavior for other systems
-endif()
-
-# Copy assets to the build directory
-# message("Configuration: ${CMAKE_CFG_INTDIR}")
-
-# Listing all output configs
-# foreach (OUTPUTCONFIG ${CMAKE_CONFIGURATION_TYPES})
-# message("Configuration: ${OUTPUTCONFIG}")
-# endforeach (OUTPUTCONFIG CMAKE_CONFIGURATION_TYPES )
 
 message("Current binary dir: ${CMAKE_CURRENT_BINARY_DIR}")
 
@@ -178,7 +165,7 @@ file(COPY ${PROJECT_SOURCE_DIR}/modules DESTINATION ${CMAKE_CURRENT_BINARY_DIR})
 message("Copying default settings from ${PROJECT_SOURCE_DIR}/settings.json to ${CMAKE_CURRENT_BINARY_DIR}/settings.json")
 configure_file(${PROJECT_SOURCE_DIR}/settings.json ${CMAKE_CURRENT_BINARY_DIR}/settings.json COPYONLY)
 
-
+if(MSVC)
 # Define a custom command to copy assets after the executable is built
 add_custom_command(
     TARGET ${PROJECT_NAME}
@@ -201,3 +188,4 @@ add_custom_command(
     COMMAND ${CMAKE_COMMAND} -E copy_directory ${PROJECT_SOURCE_DIR}/assets ${CMAKE_CURRENT_BINARY_DIR}/$<CONFIG>/assets
     COMMENT "Copying assets to ${CMAKE_CURRENT_BINARY_DIR}/$<CONFIG>/assets/"
 )
+endif()
