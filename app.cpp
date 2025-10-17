@@ -544,7 +544,22 @@ long App::pick_edge(double x, double y) {
 		return -1;
 
 	auto p = pickPoint(x, y);
-	int h = st.cell.anyHovered() ? st.cell.getHovered() : st.facet.getHovered();
+
+	// TODO here look at all condition that are useless, but if I use line below, there is a bug
+	// It seems that some hovered element are update during call to this function, is it possible as
+	// it is called by callback mouse_move that is decorelated from main loop
+	// Line below should be sufficient to get hovered
+
+	// int h = st.cell.anyHovered() ? st.cell.getHovered() : st.facet.getHovered();
+
+	int h;
+	if (st.cell.anyHovered() && (model->getModelType() == Model::ModelType::HEX || model->getModelType() == Model::ModelType::TET))
+		h = st.cell.getHovered();
+	else if (st.facet.anyHovered() && (model->getModelType() == Model::ModelType::TRI || model->getModelType() == Model::ModelType::QUAD))
+		h = st.facet.getHovered();
+	else 
+		return -1;
+
 	return model->pick_edge(p, h);
 }
 
@@ -556,6 +571,7 @@ long App::pick_vertex(double x, double y) {
 	glReadBuffer(GL_COLOR_ATTACHMENT3);
 	long id = pick(x, y);
 	glBindFramebuffer(GL_READ_FRAMEBUFFER, 0);
+	// TODO getCurrentModel is false !!!! when picking is current picking model instead
 	return id >= 0 && id < getCurrentModel().nverts() ? id : -1;
 }
 
@@ -567,6 +583,7 @@ long App::pick_facet(double x, double y) {
 	glReadBuffer(GL_COLOR_ATTACHMENT1);
 	long id = pick(x, y);
 	glBindFramebuffer(GL_READ_FRAMEBUFFER, 0);
+	// TODO getCurrentModel is false !!!! when picking is current picking model instead
 	return id >= 0 && id < getCurrentModel().nfacets() ? id : -1;
 }
 
@@ -578,6 +595,7 @@ long App::pick_cell(double x, double y) {
 	glReadBuffer(GL_COLOR_ATTACHMENT2);
 	long id = pick(x, y);
 	glBindFramebuffer(GL_READ_FRAMEBUFFER, 0);
+	// TODO getCurrentModel is false !!!! when picking is current picking model instead
 	return id >= 0 && id < getCurrentModel().ncells() ? id : -1;
 }
 
@@ -601,6 +619,7 @@ std::vector<long> App::pick_vertices(double x, double y, int radius) {
 	// Clean ids
 	std::vector<long> clean_ids;
 	std::copy_if(ids.begin(), ids.end(), std::back_inserter(clean_ids), [&](long id) {
+		// TODO getCurrentModel is false !!!! when picking is current picking model instead
 		return id >= 0 && id < getCurrentModel().nverts();
 	});
 
@@ -619,6 +638,7 @@ std::vector<long> App::pick_facets(double x, double y, int radius) {
 	// Clean ids
 	std::vector<long> clean_ids;
 	std::copy_if(ids.begin(), ids.end(), std::back_inserter(clean_ids), [&](long id) {
+		// TODO getCurrentModel is false !!!! when picking is current picking model instead
 		return id >= 0 && id < getCurrentModel().nfacets();
 	});
 
@@ -637,6 +657,7 @@ std::vector<long> App::pick_cells(double x, double y, int radius) {
 	// Clean ids
 	std::vector<long> clean_ids;
 	std::copy_if(ids.begin(), ids.end(), std::back_inserter(clean_ids), [&](long id) {
+		// TODO getCurrentModel is false !!!! when picking is current picking model instead
 		return id >= 0 && id < getCurrentModel().ncells();
 	});
 
