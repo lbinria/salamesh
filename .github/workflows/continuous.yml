@@ -9,7 +9,7 @@ jobs:
       matrix:
         cfg: [{os: ubuntu-latest, cxx: g++-12},
               # get clang 16 ! because we need C++20 support
-              {os: macos-latest, cxx: /opt/homebrew/opt/llvm@16/bin/clang++}] 
+              {os: macos-latest, cxx: /opt/homebrew/opt/llvm@20/bin/clang++}] 
         config: [Release, Debug]
 
     runs-on:  ${{ matrix.cfg.os }}
@@ -22,11 +22,11 @@ jobs:
       with:
         submodules: recursive
 
-    - name: Install Clang 16 (macOS)
+    - name: Install Clang 20 (macOS)
       if: matrix.cfg.os == 'macos-latest'
       run: |
         brew update
-        brew install llvm@16
+        brew install llvm@20
         brew install glfw
         brew install lua  # Adjust version or formula as needed
 
