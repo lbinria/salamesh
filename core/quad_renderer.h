@@ -15,7 +15,6 @@
 #include "element.h"
 #include "surface_renderer.h"
 #include "shader.h"
-#include "vertex.h"
 
 // TODO IMPORTANT see to bind mesh directly to the shader via buffermap and pointers
 

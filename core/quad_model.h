@@ -102,8 +102,14 @@ struct QuadModel final : public Model {
         
     // }
 
+    // TODO implement this !!!
     void updateLayer(IRenderer::Layer layer) {
 
+    }
+
+    // TODO implements this !!!
+    long pick_edge(glm::vec3 p0, int f) override {
+        return -1;
     }
 
     private: 

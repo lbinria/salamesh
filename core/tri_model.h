@@ -181,6 +181,34 @@ struct TriModel final : public Model {
         // }
     }
 
+    long pick_edge(glm::vec3 p0, int f) override {
+        // Search nearest edge
+        double min_d = std::numeric_limits<double>().max();
+        long found_e = -1;
+        
+        for (int lv = 0; lv < 3; ++lv) {
+            
+        	// Get global indices of vertex on edge extremities
+        	auto v0 = _tri.facet(f).vertex(lv % 3);
+        	auto v1 = _tri.facet(f).vertex((lv + 1) % 3);
+
+        	// Get points from current edge
+        	vec3 p1 = _tri.points[v0];
+        	vec3 p2 = _tri.points[v1];
+        	vec3 b = (p1 + p2) * .5;
+        	// Compute dist from picked point to bary of edge points
+        	double d = (vec3(p0.x, p0.y, p0.z) - b).norm(); // TODO maybe use norm2 will give the same result
+
+        	// Keep min dist
+        	if (d < min_d) {
+        		min_d = d;
+        		found_e = f * 3 + lv;
+        	}
+        }
+
+        return found_e;
+    }
+
     private: 
 
     // Mesh

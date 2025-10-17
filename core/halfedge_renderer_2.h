@@ -4,7 +4,6 @@
 #include "color_mode.h"
 
 #include "shader.h"
-#include "vertex.h"
 
 #include <vector>
 #include <ultimaille/all.h>

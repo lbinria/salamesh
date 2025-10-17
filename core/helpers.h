@@ -28,4 +28,5 @@ namespace sl {
 	inline UM::vec4 glm2um(glm::vec4 v) {
 		return {v.x, v.y, v.z, v.w};
 	}
+
 }

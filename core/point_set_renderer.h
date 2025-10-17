@@ -12,7 +12,6 @@ using json = nlohmann::json;
 #include "renderer.h"
 
 #include "shader.h"
-#include "vertex.h"
 
 using namespace UM;
 

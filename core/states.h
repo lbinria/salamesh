@@ -10,6 +10,8 @@ struct InputState {
 			return hovered;
 		}
 
+		// Keep attention that returned element is arbitrary 
+		// when the cursor radius is greater than 1
 		long getHovered() {
 			// Get the hovered element at the mouse pos
 			if (hovered.empty()) {

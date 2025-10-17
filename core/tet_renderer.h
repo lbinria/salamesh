@@ -14,7 +14,6 @@
 #include "model.h"
 #include "element.h"
 #include "shader.h"
-#include "vertex.h"
 
 using namespace UM;
 
