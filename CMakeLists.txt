@@ -62,8 +62,19 @@ ELSE()
 ENDIF(WIN32)
 
 
+# ULTIMAILLE
 
-
+# Get development version of ultimaille directly from git repository 
+include(FetchContent)
+FetchContent_Declare(
+  ultimaille
+  GIT_REPOSITORY https://github.com/ssloy/ultimaille
+  GIT_TAG        c6647c0
+)
+FetchContent_MakeAvailable(ultimaille)
+include_directories(${ultimaille_SOURCE_DIR})
+include_directories(${stlbfgs_SOURCE_DIR})
+include_directories(${OpenNL_psm_SOURCE_DIR})
 
 set(IMGUI_SOURCES
     include/imgui/imgui.cpp
@@ -90,17 +101,7 @@ if(_IFD_INCS)
   )
 endif()
 
-# ULTIMAILLE
 
-# Get development version of ultimaille directly from git repository 
-include(FetchContent)
-FetchContent_Declare(
-  ultimaille
-  GIT_REPOSITORY https://github.com/ssloy/ultimaille
-  GIT_TAG        c6647c0
-)
-FetchContent_MakeAvailable(ultimaille)
-include_directories(${ultimaille_SOURCE_DIR})
 
 set(SOL_SOURCES
     include/sol/sol.hpp

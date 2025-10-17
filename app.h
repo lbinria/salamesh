@@ -49,8 +49,6 @@
 #include "script.h"
 #include "commands.h"
 
-#include <ultimaille/all.h>
-
 using namespace UM;
 
 #include <filesystem>

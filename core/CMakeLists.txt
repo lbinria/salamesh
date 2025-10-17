@@ -47,9 +47,8 @@ set(SOURCES
   ${OPENGL_FILES} 
 )
 
-# include_directories(salamesh PRIVATE ../include)
 include_directories(../include)
-# include_directories(${ultimaille_SOURCE_DIR})
+
 
 # Add the library
 add_library(salamesh_core ${SOURCES} ${JSON_SOURCES})
