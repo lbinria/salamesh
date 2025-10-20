@@ -340,17 +340,12 @@ void App::setup() {
 
 	// Init UBO
 	glGenBuffers(1, &uboMatrices);
-	// glGenBuffers(1, &uboViewport);
 
 	// Setup UBO
 	glBindBuffer(GL_UNIFORM_BUFFER, uboMatrices);
 	glBufferData(GL_UNIFORM_BUFFER, sizeof(UBOMatrices), nullptr, GL_DYNAMIC_DRAW);
 	glBindBuffer(GL_UNIFORM_BUFFER, 0);
 	glBindBufferRange(GL_UNIFORM_BUFFER, 0, uboMatrices, 0, sizeof(UBOMatrices));
-	// glBindBuffer(GL_UNIFORM_BUFFER, uboMatrices);
-	// glBufferData(GL_UNIFORM_BUFFER, sizeof(glm::mat4) * 2, nullptr, GL_DYNAMIC_DRAW);
-	// glBindBuffer(GL_UNIFORM_BUFFER, 0);
-	// glBindBufferRange(GL_UNIFORM_BUFFER, 0, uboMatrices, 0, sizeof(glm::mat4) * 2);
 
 
 	glViewport(0, 0, screenWidth, screenHeight);
@@ -432,17 +427,6 @@ void App::start()
 		glBindBuffer(GL_UNIFORM_BUFFER, uboMatrices);
 		glBufferData(GL_UNIFORM_BUFFER, sizeof(UBOMatrices), &mats, GL_DYNAMIC_DRAW);
 		glBindBuffer(GL_UNIFORM_BUFFER, 0);
-
-		// glm::mat4 mats[2] = { view, projection }; // Ensure view and projection matrices are contiguous in memory
-		// glBindBuffer(GL_UNIFORM_BUFFER, uboMatrices);
-		// glBufferData(GL_UNIFORM_BUFFER, sizeof(glm::mat4) * 2, glm::value_ptr(mats[0]), GL_DYNAMIC_DRAW);
-		// glBindBuffer(GL_UNIFORM_BUFFER, 0); 
-
-		// glm::vec2 vp{getScreenWidth(), getScreenHeight()};
-		// glBindBuffer(GL_UNIFORM_BUFFER, uboViewport);
-		// glBufferData(GL_UNIFORM_BUFFER, sizeof(glm::vec2), glm::value_ptr(vp), GL_DYNAMIC_DRAW);
-		// glBindBuffer(GL_UNIFORM_BUFFER, 0);
-
 
 		getRenderSurface().bind();
 		getRenderSurface().clear();
