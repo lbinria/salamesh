@@ -14,9 +14,6 @@ struct IApp {
     virtual bool removeModel(std::string name) = 0;
     virtual void loadModel(const std::string& filename) = 0;
 
-    virtual int getWidth() = 0;
-    virtual int getHeight() = 0;
-
     virtual void setCullMode(int mode) = 0;
     virtual bool getCull() const = 0;
     virtual void setCull(bool enabled) = 0;

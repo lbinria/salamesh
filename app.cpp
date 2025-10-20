@@ -1,5 +1,11 @@
 #include "app.h"
 
+struct UBOMatrices {
+	alignas(16) glm::mat4 view;
+	alignas(16) glm::mat4 proj;
+	alignas(16) glm::vec2 viewport;
+};
+
 void App::screenshot(const std::string& filename) {
     int width, height;
     glfwGetWindowSize(window, &width, &height);
@@ -334,12 +340,17 @@ void App::setup() {
 
 	// Init UBO
 	glGenBuffers(1, &uboMatrices);
+	// glGenBuffers(1, &uboViewport);
 
 	// Setup UBO
 	glBindBuffer(GL_UNIFORM_BUFFER, uboMatrices);
-	glBufferData(GL_UNIFORM_BUFFER, sizeof(glm::mat4) * 2, nullptr, GL_DYNAMIC_DRAW);
+	glBufferData(GL_UNIFORM_BUFFER, sizeof(UBOMatrices), nullptr, GL_DYNAMIC_DRAW);
 	glBindBuffer(GL_UNIFORM_BUFFER, 0);
-	glBindBufferRange(GL_UNIFORM_BUFFER, 0, uboMatrices, 0, sizeof(glm::mat4) * 2);
+	glBindBufferRange(GL_UNIFORM_BUFFER, 0, uboMatrices, 0, sizeof(UBOMatrices));
+	// glBindBuffer(GL_UNIFORM_BUFFER, uboMatrices);
+	// glBufferData(GL_UNIFORM_BUFFER, sizeof(glm::mat4) * 2, nullptr, GL_DYNAMIC_DRAW);
+	// glBindBuffer(GL_UNIFORM_BUFFER, 0);
+	// glBindBufferRange(GL_UNIFORM_BUFFER, 0, uboMatrices, 0, sizeof(glm::mat4) * 2);
 
 
 	glViewport(0, 0, screenWidth, screenHeight);
@@ -413,10 +424,25 @@ void App::start()
 		projection = getCamera().getProjectionMatrix();
 
 		// Update UBO
-		glm::mat4 mats[2] = { view, projection }; // Ensure view and projection matrices are contiguous in memory
+		UBOMatrices mats{
+			view,
+			projection,
+			{getScreenWidth(), getScreenHeight()}
+		};
 		glBindBuffer(GL_UNIFORM_BUFFER, uboMatrices);
-		glBufferData(GL_UNIFORM_BUFFER, sizeof(glm::mat4) * 2, glm::value_ptr(mats[0]), GL_DYNAMIC_DRAW);
-		glBindBuffer(GL_UNIFORM_BUFFER, 0); 
+		glBufferData(GL_UNIFORM_BUFFER, sizeof(UBOMatrices), &mats, GL_DYNAMIC_DRAW);
+		glBindBuffer(GL_UNIFORM_BUFFER, 0);
+
+		// glm::mat4 mats[2] = { view, projection }; // Ensure view and projection matrices are contiguous in memory
+		// glBindBuffer(GL_UNIFORM_BUFFER, uboMatrices);
+		// glBufferData(GL_UNIFORM_BUFFER, sizeof(glm::mat4) * 2, glm::value_ptr(mats[0]), GL_DYNAMIC_DRAW);
+		// glBindBuffer(GL_UNIFORM_BUFFER, 0); 
+
+		// glm::vec2 vp{getScreenWidth(), getScreenHeight()};
+		// glBindBuffer(GL_UNIFORM_BUFFER, uboViewport);
+		// glBufferData(GL_UNIFORM_BUFFER, sizeof(glm::vec2), glm::value_ptr(vp), GL_DYNAMIC_DRAW);
+		// glBindBuffer(GL_UNIFORM_BUFFER, 0);
+
 
 		getRenderSurface().bind();
 		getRenderSurface().clear();
@@ -524,15 +550,6 @@ void App::clean() {
 		glDeleteTextures(1, &colormaps[i]);
 	for (int i = 0; i < IM_ARRAYSIZE(colormaps2D); ++i)
 		glDeleteTextures(1, &colormaps2D[i]);
-}
-
-
-int App::getWidth() {
-	return screenWidth;
-}
-
-int App::getHeight() {
-	return screenHeight;
 }
 
 long App::pick_edge(double x, double y) {

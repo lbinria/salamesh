@@ -10,10 +10,11 @@ layout (std140, binding = 0) uniform Matrices
 {
 	mat4 view;
 	mat4 projection;
+    vec2 viewport;
 };
 
 uniform mat4 model;
-uniform vec2 uViewport = vec2(2560.0, 1440.0); // viewport size in pixels
+// uniform vec2 uViewport = vec2(2560.0, 1440.0); // viewport size in pixels
 uniform float uThickness = 10.0; // in pixels
 
 
@@ -38,8 +39,8 @@ void main()
     vec2 ndc1 = c1.xy / c1.w;
 
     // 3) to screen coords (pixels)
-    vec2 s0 = (ndc0 * 0.5 + 0.5) * uViewport;
-    vec2 s1 = (ndc1 * 0.5 + 0.5) * uViewport;
+    vec2 s0 = (ndc0 * 0.5 + 0.5) * viewport;
+    vec2 s1 = (ndc1 * 0.5 + 0.5) * viewport;
 
     // Bary in screen coords
 	vec2 sb = (s0 + s1) / 2.0;

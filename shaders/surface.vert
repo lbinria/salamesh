@@ -17,9 +17,10 @@ layout (std140, binding = 0) uniform Matrices
 {
 	mat4 view;
 	mat4 projection;
+   vec2 viewport;
 };
 
-uniform vec2 uViewport = vec2(2560.0, 1440.0); // viewport size in pixels
+// uniform vec2 uViewport = vec2(2560.0, 1440.0); // viewport size in pixels
 
 
 out vec3 fragBary;
@@ -67,10 +68,10 @@ void main()
    vec2 ndc3 = c3.xy / c3.w;
 
     // To screen coords (pixels)
-   vec2 s0 = (ndc0 * 0.5 + 0.5) * uViewport;
-   vec2 s1 = (ndc1 * 0.5 + 0.5) * uViewport;
-   vec2 s2 = (ndc2 * 0.5 + 0.5) * uViewport;
-   vec2 s3 = (ndc3 * 0.5 + 0.5) * uViewport;
+   vec2 s0 = (ndc0 * 0.5 + 0.5) * viewport;
+   vec2 s1 = (ndc1 * 0.5 + 0.5) * viewport;
+   vec2 s2 = (ndc2 * 0.5 + 0.5) * viewport;
+   vec2 s3 = (ndc3 * 0.5 + 0.5) * viewport;
 
    // Compute triangle heights in screen space (pixels)
    // using Heron's formula:

@@ -54,7 +54,7 @@ struct TriangleInspector : public Component {
 		// worldPosOff = glm::unProject(screen, vm, p, viewport);
 
 		// ---- 4. Compute distance between point and offset point in world-space cartesian coordinates ----
-		return glm::length(glm::vec3(worldPosOff) - glm::vec3(worldPos));
+		return glm::length(glm::vec3(worldPosOff) - worldPos);
 	}
 
 
@@ -157,9 +157,9 @@ struct TriangleInspector : public Component {
 		facetHl.bind("_highlight", triModel.getSurfaceAttributes(), triModel.getTriangles());
 		facetHl.fill(0.f);
 
-		std::vector<std::vector<long>> pointOverlaps(m.nverts());
-
+		std::vector<std::set<long>> pointOverlaps(m.nverts());
 		int nOverlaps = 0;
+
 		// for (auto &f : m.iter_facets()) {
 			
 		// 	for (int lv = 0; lv < 3; ++lv) {
@@ -193,18 +193,22 @@ struct TriangleInspector : public Component {
 			std::vector<int> results;
 			hbbox.intersect(bbox, results);
 
-			if (results.size() == 0)
+			if (results.size() <= 1)
 				continue;
 
-			// pointHl[a] = 1.f;
-
+			bool isOverlaps = false;
 			for (auto &b : results) {
 				if (b == a) continue;
 
+				pointHl[a] = 1.f;
 				pointHl[b] = 1.f;
-				pointOverlaps[a].push_back(b);
+				pointOverlaps[a].insert(b);
+				pointOverlaps[b].insert(a);
+				isOverlaps = true;
 			}
-			++nOverlaps;
+			
+			if (isOverlaps)
+				++nOverlaps;
 
 		}
 

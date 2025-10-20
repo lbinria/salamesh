@@ -77,7 +77,7 @@ struct App : public IApp {
     unsigned int texFacetID;
     unsigned int texVertexID;
 
-    unsigned int uboMatrices;
+    unsigned int uboMatrices, uboViewport;
 
     unsigned int quadVAO, quadVBO;
 
@@ -96,9 +96,6 @@ struct App : public IApp {
     void start();
     void clean();
 
-    // Frame functions
-    int getWidth() override;
-    int getHeight() override;
 
     // Utils functions
     void screenshot(const std::string& filename) override;

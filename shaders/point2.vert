@@ -8,6 +8,7 @@ layout (std140, binding = 0) uniform Matrices
 {
 	mat4 view;
 	mat4 projection;
+	vec2 viewport;
 };
 
 flat out int FragVertexIndex;
@@ -17,7 +18,7 @@ out vec3 fragWorldPos;
 uniform mat4 model;
 uniform float pointSize;
 
-uniform vec2 uViewport = vec2(2560.0, 1440.0); // viewport size in pixels
+// uniform vec2 viewport = vec2(2560.0, 1440.0); // viewport size in pixels
 flat out float pointDepth;
 flat out float pointZ;
 
@@ -37,7 +38,7 @@ void main()
 
 	// Compute 2D pos in pixel of center of point
 	vec4 ndc = gl_Position / gl_Position.w;
-	vec2 screenPos = (ndc.xy * 0.5 + 0.5) * uViewport;
+	vec2 screenPos = (ndc.xy * 0.5 + 0.5) * viewport;
 
 
 	// // If pointSize is a world space measure, compute pointSize in pixel
@@ -46,7 +47,7 @@ void main()
 	// 	vec4 posOff = projection * (pp + vec4(vec3(pointSize), 0.));
 
 	// 	vec4 ndcOff = posOff / gl_Position.w;
-	// 	vec2 screenPosOff = (ndcOff.xy * 0.5 + 0.5) * uViewport;
+	// 	vec2 screenPosOff = (ndcOff.xy * 0.5 + 0.5) * viewport;
 	// 	float pointSizeInPixels = length(screenPosOff - screenPos);
 	// 	gl_PointSize = pointSizeInPixels * sizeScale;
 
@@ -57,7 +58,7 @@ void main()
 		// Add offset
 		screenPos += vec2(gl_PointSize * 0.5);
 		// Back to NDC
-		vec2 ndc2 = screenPos / uViewport * 2.0 - 1.0;
+		vec2 ndc2 = screenPos / viewport * 2.0 - 1.0;
 		// Reconstruct clip z and w roughly by lerping
 		float clipW = gl_Position.w;
 		float clipZ = gl_Position.z;
