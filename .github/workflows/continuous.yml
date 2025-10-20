@@ -45,6 +45,21 @@ jobs:
     - name: CMake Build
       run: cmake --build build --parallel
 
+    - name: Create archive
+      if: ${{ github.ref_type == 'tag' }}
+      run: tar -czvf salamesh_${{ matrix.cfg.os }}.tar.gz build/*
+
+    -
+      name: Deploy
+      uses: xresloader/upload-to-github-release@v1
+      with:
+        tags: true
+        draft: false
+        file: salamesh_${{ matrix.cfg.os }}.tar.gz
+        overwrite: false
+        update_latest_release: true
+        verbose: true
+
 
   windows-msvc:
     runs-on: windows-latest
@@ -59,3 +74,18 @@ jobs:
 
     - name: Release build
       run: cmake --build build --parallel --config Release
+
+    - name: Create archive
+      if: ${{ github.ref_type == 'tag' }}
+      run: Compress-Archive -Path build/Release/* -Destination salamesh_win.zip
+
+    -
+      name: Deploy
+      uses: xresloader/upload-to-github-release@v1
+      with:
+        tags: true
+        draft: false
+        file: salamesh_win.zip
+        overwrite: false
+        update_latest_release: true
+        verbose: true
