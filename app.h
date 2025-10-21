@@ -229,17 +229,6 @@ struct App : public IApp {
     virtual void mouse_button(int button, int action, int mods) = 0;
     virtual void mouse_dbl_click() {}
     virtual void key_event(int key, int scancode, int action, int mods) = 0;
-    
-
-    void notifyComponentChanged(const std::string &id) {
-        for (auto &c : components) {
-            // Do not notify the component itself
-            if (c->id() == id)
-                continue;
-            // Notify other components
-            c->componentChanged(id);
-        }
-    }
 
     void notifyNavigationPathChange(std::vector<std::string> &oldNavPath, std::vector<std::string>& newNavPath) {
         for (auto &c : components) {

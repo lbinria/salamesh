@@ -323,7 +323,6 @@ struct TriangleInspector : public Component {
     void key_event(int key, int scancode, int action, int mods) {}
 
     // App events
-    void componentChanged(const std::string &id) {}
 
 	private:
 	IApp &app;

@@ -44,17 +44,6 @@ struct ViewComponent : public Component {
     void mouse_scroll(double xoffset, double yoffset) {}
     void key_event(int key, int scancode, int action, int mods) {}
 
-    // App events
-    void componentChanged(const std::string &id) {
-		if (id == this->id()) {
-			std::cout << "component change to me: view" << std::endl;
-		}
-
-		// When exit: save gfx state
-
-		// When enter: load gfx state
-	}
-
 	void navigationPathChanged(const std::vector<std::string> &oldNavPath, const std::vector<std::string> &newNavPath) override {
 		// When exit view component
 		if (oldNavPath.size() > 0 && oldNavPath.front() == "view" && newNavPath.size() > 0 && newNavPath.front() != "view") {

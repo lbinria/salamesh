@@ -41,12 +41,6 @@ struct IApp {
 
     virtual InputState& getInputState() = 0;
 
-    // virtual std::vector<std::string> getPickModeStrings() const = 0;
-
-    // TODO maybe useless when picking functions below will be implemented
-    // virtual int getPickMode() = 0;
-    // virtual void setPickMode(ElementKind mode) = 0;
-
     virtual int getScreenWidth() const = 0;
     virtual int getScreenHeight() const = 0;
     virtual double getScreenAspectRatio() const = 0;
@@ -59,9 +53,6 @@ struct IApp {
     virtual long pick_mesh(double x, double y) = 0;
 
     virtual std::vector<unsigned int> getColorMaps2D() = 0;
-
-
-    virtual void notifyComponentChanged(const std::string &id) = 0;
 
     virtual std::vector<std::string> getNavigationPath() = 0;
     virtual void setNavigationPath(std::vector<std::string> path) = 0;
