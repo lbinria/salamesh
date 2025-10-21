@@ -29,7 +29,13 @@ bool TriModel::load(const std::string path) {
 	}
 
 	init();
+
+	std::cout << "model initialized." << std::endl;
+	
 	push();
+
+	std::cout << "model pushed." << std::endl;
+
 	return true;
 }
 

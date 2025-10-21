@@ -21,11 +21,15 @@ void MyApp::loadModel(const std::string& filename) {
 	// TODO please do something more intelligent here !
 	std::unique_ptr<Model> model;
 
+	std::cout << "load model..." << std::endl;
+
 	model = std::make_unique<HexModel>();
 	bool hex_load_success = model->load(filename);
 	if (!hex_load_success) {
 		model = std::make_unique<TriModel>();
 		bool tri_load_success = model->load(filename);
+		std::cout << "tri model..." << std::endl;
+
 		if (!tri_load_success) {
 			model = std::make_unique<QuadModel>();
 			bool tri_load_success = model->load(filename);
@@ -36,21 +40,31 @@ void MyApp::loadModel(const std::string& filename) {
 		}
 	}
 
+	std::cout << "setup model..." << std::endl;
 
 	model->setName(std::filesystem::path(filename).stem().string() + std::to_string(models.size()));
 
 	model->setMeshIndex(models.size());
 	model->setLight(true);
 
+	std::cout << "setup model mesh..." << std::endl;
+
 	model->getMesh().setMeshShrink(0.f);
 	model->getMesh().setMeshSize(0.0f);
 	model->setColorMode(ColorMode::COLOR);
 	
-	if (model->getEdges() != nullptr)
-		model->getEdges()->setVisible(false);
+	std::cout << "setup model edges..." << std::endl;
+
+	auto edges = model->getEdges();
+	if (edges)
+		edges->setVisible(false);
+
+	std::cout << "setup model clip..." << std::endl;
 
 	// Setup default clipping plane
 	model->setupClipping();
+
+	std::cout << "setup camera..." << std::endl;
 
 	// Current camera look at the model
 	auto modelPos = model->getPosition();
@@ -62,6 +76,8 @@ void MyApp::loadModel(const std::string& filename) {
 	#ifdef _DEBUG
 	// TODO display model info
 	#endif
+
+	std::cout << "notify model loaded to components..." << std::endl;
 
 	// Notify components
 	for (auto &c : components) {
