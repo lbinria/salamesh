@@ -12,10 +12,6 @@ namespace fs = std::filesystem;
 
 // TODO be able to load tet, surf, etc
 void MyApp::loadModel(const std::string& filename) {
-	#ifdef _DEBUG
-	std::cout << "read model..." << std::endl;
-	std::chrono::steady_clock::time_point begin_read_model = std::chrono::steady_clock::now();
-	#endif
 
 	// TODO Should deduce type here
 	// TODO please do something more intelligent here !
@@ -23,10 +19,15 @@ void MyApp::loadModel(const std::string& filename) {
 
 	std::cout << "load model..." << std::endl;
 
+	std::cout << "make model pointer..." << std::endl;
 	model = std::make_unique<HexModel>();
+	std::cout << "trying to load hex model..." << std::endl;
 	bool hex_load_success = model->load(filename);
+	std::cout << "load hex model: " << std::to_string(hex_load_success) << std::endl;
 	if (!hex_load_success) {
+		std::cout << "make model pointer..." << std::endl;
 		model = std::make_unique<TriModel>();
+		std::cout << "trying to load tri model..." << std::endl;
 		bool tri_load_success = model->load(filename);
 		std::cout << "tri model..." << std::endl;
 
@@ -72,10 +73,6 @@ void MyApp::loadModel(const std::string& filename) {
 	getCamera().setEye({modelPos.x, modelPos.y, modelPos.z - model->getRadius() * 2.});
 
 	models.push_back(std::move(model));	
-
-	#ifdef _DEBUG
-	// TODO display model info
-	#endif
 
 	std::cout << "notify model loaded to components..." << std::endl;
 
