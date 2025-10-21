@@ -1,7 +1,7 @@
 #pragma once 
-#include "core/component.h"
-#include "core/helpers.h"
-#include "core/line_renderer.h"
+#include "../core/component.h"
+#include "../core/helpers.h"
+#include "../core/line_renderer.h"
 
 #include <string>
 #include <random>

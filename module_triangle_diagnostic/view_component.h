@@ -1,14 +1,14 @@
 #pragma once 
-#include "core/app_interface.h"
-#include "core/component.h"
-#include "core/helpers.h"
+#include "../core/app_interface.h"
+#include "../core/component.h"
+#include "../core/helpers.h"
 
 #include <string>
 #include <random>
 #include <sstream>
 #include <iomanip>
 
-#include "../include/json.hpp"
+#include "../../include/json.hpp"
 using json = nlohmann::json;
 
 

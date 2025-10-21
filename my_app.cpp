@@ -2,8 +2,8 @@
 #include "helpers/settings_manager.h"
 #include "helpers/module_loader.h"
 
-#include "view_component.h"
-#include "triangle_inspector.h"
+#include "module_triangle_diagnostic/view_component.h"
+#include "module_triangle_diagnostic/triangle_inspector.h"
 
 #include <filesystem>
 namespace fs = std::filesystem;
