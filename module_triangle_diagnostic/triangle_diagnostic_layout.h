@@ -12,9 +12,9 @@
 using json = nlohmann::json;
 
 
-struct LayoutDiagnostic : public Component {
+struct TriangleDiagnosticLayout : public Component {
 
-	LayoutDiagnostic(IApp &app) : app(app) {}
+	TriangleDiagnosticLayout(IApp &app) : app(app) {}
 
 
 	// Lifecycle
@@ -31,6 +31,15 @@ struct LayoutDiagnostic : public Component {
 
 
 	bool draw_gui(ImGuiContext* ctx) {
+		// Check that nav path is "diagnostic"
+		if (app.getNavigationPath().size() == 0 || app.getNavigationPath().front() != "diagnostic")
+			return true;
+
+
+		ImGui::Begin("Triangle diagnostic");
+		
+		ImGui::End();
+
 		return true;
 	}
 	

@@ -2,8 +2,10 @@
 #include "helpers/settings_manager.h"
 #include "helpers/module_loader.h"
 
+#include "module_triangle_diagnostic/triangle_diagnostic_layout.h"
 #include "module_triangle_diagnostic/view_component.h"
 #include "module_triangle_diagnostic/triangle_inspector.h"
+#include "module_triangle_diagnostic/inverted_triangle_viewer.h"
 
 #include <filesystem>
 namespace fs = std::filesystem;
@@ -244,12 +246,19 @@ void MyApp::init() {
 
 	// ----- TEST -----
 	// TODO remove just for testing manually add components
+	auto layoutComp = std::make_unique<TriangleDiagnosticLayout>(*this);
 	auto viewComp = std::make_unique<ViewComponent>(*this);
 	auto triDiagnosticComp = std::make_unique<TriangleInspector>(*this);
+	auto invertedTriangleViewerComp = std::make_unique<InvertedTriangleViewer>(*this);
+
+	layoutComp->init();
 	viewComp->init();
 	triDiagnosticComp->init();
+	invertedTriangleViewerComp->init();
+	components.push_back(std::move(layoutComp));
 	components.push_back(std::move(viewComp));
 	components.push_back(std::move(triDiagnosticComp));
+	components.push_back(std::move(invertedTriangleViewerComp));
 }
 
 void MyApp::update(float dt) {

@@ -1,6 +1,7 @@
 #pragma once 
 #include <string>
 
+// TODO rename other adding _ELT
 enum ElementKind {
 	POINTS_ELT = 1,
 	CORNERS = 2,
