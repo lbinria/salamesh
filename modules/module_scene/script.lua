@@ -326,6 +326,12 @@ function draw_model_properties(model, view)
 						end
 						imgui.EndCombo()
 					end
+
+					local sel_input_attr_repeat, new_input_attr_repeat = imgui.InputInt("Repeat##attr_repeat_input", cur_model.mesh.attr_repeat)
+					if (sel_input_attr_repeat) then 
+						print("Change attribute repeat: " .. tostring(new_input_attr_repeat))
+						cur_model.mesh.attr_repeat = new_input_attr_repeat;
+					end
 				end
 
 

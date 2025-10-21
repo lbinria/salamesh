@@ -31,6 +31,7 @@ uniform vec3 selectColor = vec3(0., 0.22, 1.);
 
 uniform sampler1D fragColorMap;
 uniform vec2 attrRange = vec2(0.f, 1.f);
+uniform int attrRepeat = 1;
 uniform samplerBuffer attributeData;
 uniform int attrElement;
 
@@ -94,8 +95,14 @@ void main()
         // Cell facet attribute
         primitiveIndex = fragFacetIndex;
 
-        float fragAttrVal = texelFetch(attributeData, primitiveIndex).x;
-        col = vec3(texture(fragColorMap, clamp((fragAttrVal - attrRange.x) / (attrRange.y - attrRange.x), 0., 1.)));
+        // float fragAttrVal = texelFetch(attributeData, primitiveIndex).x;
+        // col = vec3(texture(fragColorMap, clamp((fragAttrVal - attrRange.x) / (attrRange.y - attrRange.x), 0., 1.)));
+
+        
+        float range = attrRange.y - attrRange.x;
+        float rangeRepeat = range / attrRepeat;
+        float fragAttrVal = mod(texelFetch(attributeData, primitiveIndex).x - attrRange.x, rangeRepeat);
+        col = vec3(texture(fragColorMap, clamp(fragAttrVal / rangeRepeat, 0., 1.)));
     }
     
 

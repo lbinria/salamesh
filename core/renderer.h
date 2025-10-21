@@ -64,6 +64,16 @@ struct IRenderer {
 		shader.setFloat2("attrRange", range);
 	}
 
+	int getAttrRepeat() {
+		return attrRepeat;
+	}
+
+	void setAttrRepeat(int n) {
+		attrRepeat = n <= 0 ? 1 : n;
+		shader.use();
+		shader.setInt("attrRepeat", attrRepeat);
+	}
+
 	void setHighlightElement(ElementKind element) {
 		setLayerElement(element, Layer::HIGHLIGHT);
 	}
@@ -362,6 +372,7 @@ struct IRenderer {
 	glm::vec3 selectColor{0.f, 0.22f, 1.f};
     float meshSize = 0.01f;
     float meshShrink = 0.f;
+	int attrRepeat = 1;
 
 	unsigned int VAO, VBO; // Buffers
 	unsigned int bufBary, bufHighlight, bufAttr, bufFilter; // Sample buffers

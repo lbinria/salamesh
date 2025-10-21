@@ -110,6 +110,11 @@ namespace bindings {
 				&IRenderer::setMeshShrink
 			);
 
+			meshRenderer_t["attr_repeat"] = sol::property(
+				&IRenderer::getAttrRepeat,
+				&IRenderer::setAttrRepeat
+			);
+
 			sol::usertype<Model> model_t = lua.new_usertype<Model>("Model");
 
 			model_t.set_function("load", &Model::load);
