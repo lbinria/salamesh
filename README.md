@@ -31,7 +31,7 @@ git clone https://github.com/lbinria/salamesh.git
 ```
 ```
 # Install dev libs (OpenGL / GLFW / Lua)
-sudo apt install -y libgl1-mesa-dev libglu1-mesa-dev libglfw3 libglfw3-dev lua lua5.4 liblua5.4-dev
+sudo apt install -y libgl1-mesa-dev libglu1-mesa-dev libglfw3 libglfw3-dev lua5.4 liblua5.4-dev
 ```
 ```
 # Go to the salamesh directory & configure cmake
