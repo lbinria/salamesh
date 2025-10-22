@@ -153,9 +153,13 @@ struct Model {
         for (auto const &[k, r] : _renderers)
             r->push();
 
+        std::cout << "update attr" << std::endl;
+
         if (colorMode == ColorMode::ATTRIBUTE) {
             updateAttr();
         }
+
+        std::cout << "update hl / filter" << std::endl;
 
         // Push highlight and filter attributes if they exist
         // TODO here update all layers in foreach

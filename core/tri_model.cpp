@@ -3,12 +3,19 @@
 bool TriModel::load(const std::string path) {
 	// TODO check if the model failed to read in ultimaille, else there is side effects ! 
 	
+	std::cout << "read by extension..." << std::endl;
+
 	// Load the mesh
-	_surfaceAttributes= read_by_extension(path, _tri);
+	_surfaceAttributes = read_by_extension(path, _tri);
 	_path = path;
+
+	std::cout << "check facets..." << std::endl;
 
 	if (_tri.nfacets() <= 0)
 		return false;
+
+	std::cout << "extract name: " << _name << std::endl;
+
 
 	// Extract name
 	if (_name.empty()) {
@@ -16,17 +23,31 @@ bool TriModel::load(const std::string path) {
 		_name = p.stem().string();
 	}
 
+	std::cout << "clear attr..." << std::endl;
+
+
 	clearAttrs();
+
+	std::cout << "add point attr..." << std::endl;
 
 	for (auto &a : _surfaceAttributes.points) {
 		addAttr(ElementKind::POINTS_ELT, a);
 	}
+
+	std::cout << "add facet attr..." << std::endl;
+
 	for (auto &a : _surfaceAttributes.facets) {
 		addAttr(ElementKind::FACETS, a);
 	}
+
+	std::cout << "add corner attr..." << std::endl;
+
+
 	for (auto &a : _surfaceAttributes.corners) {
 		addAttr(ElementKind::CORNERS, a);
 	}
+
+	std::cout << "init..." << std::endl;
 
 	init();
 
