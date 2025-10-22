@@ -6,17 +6,11 @@ bool HexModel::load(const std::string path) {
 	// Load the mesh
 
 	// Remove cout
-	std::cout << "read by extension..." << std::endl;
 	_volumeAttributes = read_by_extension(path, _m);
 	_path = path;
 
-	std::cout << "check n cells:" << std::to_string(_m.ncells()) << std::endl;
-
 	if (_m.ncells() <= 0)
 		return false;
-
-	std::cout << "extract name..." << std::endl;
-
 
 	// Extract name
 	if (_name.empty()) {
@@ -24,13 +18,7 @@ bool HexModel::load(const std::string path) {
 		_name = p.stem().string();
 	}
 
-	std::cout << "clear attr..." << std::endl;
-
-
 	clearAttrs();
-
-	std::cout << "add volume attr..." << std::endl;
-
 
 	for (auto &a : _volumeAttributes.points) {
 		addAttr(ElementKind::POINTS_ELT, a);
@@ -45,15 +33,9 @@ bool HexModel::load(const std::string path) {
 		addAttr(ElementKind::CELLS, a);
 	}
 
-	std::cout << "init in gpu..." << std::endl;
-
-
 	init();
-
-	std::cout << "push to gpu..." << std::endl;
-
-
 	push();
+	
 	return true;
 }
 

@@ -17,19 +17,11 @@ void MyApp::loadModel(const std::string& filename) {
 	// TODO please do something more intelligent here !
 	std::unique_ptr<Model> model;
 
-	std::cout << "load model..." << std::endl;
-
-	std::cout << "make model pointer..." << std::endl;
 	model = std::make_unique<HexModel>();
-	std::cout << "trying to load hex model..." << std::endl;
 	bool hex_load_success = model->load(filename);
-	std::cout << "load hex model: " << std::to_string(hex_load_success) << std::endl;
 	if (!hex_load_success) {
-		std::cout << "make model pointer..." << std::endl;
 		model = std::make_unique<TriModel>();
-		std::cout << "trying to load tri model..." << std::endl;
 		bool tri_load_success = model->load(filename);
-		std::cout << "tri model..." << std::endl;
 
 		if (!tri_load_success) {
 			model = std::make_unique<QuadModel>();
@@ -41,31 +33,21 @@ void MyApp::loadModel(const std::string& filename) {
 		}
 	}
 
-	std::cout << "setup model..." << std::endl;
-
 	model->setName(std::filesystem::path(filename).stem().string() + std::to_string(models.size()));
 
 	model->setMeshIndex(models.size());
 	model->setLight(true);
 
-	std::cout << "setup model mesh..." << std::endl;
-
 	model->getMesh().setMeshShrink(0.f);
 	model->getMesh().setMeshSize(0.0f);
 	model->setColorMode(ColorMode::COLOR);
 	
-	std::cout << "setup model edges..." << std::endl;
-
 	auto edges = model->getEdges();
 	if (edges)
 		edges->setVisible(false);
 
-	std::cout << "setup model clip..." << std::endl;
-
 	// Setup default clipping plane
 	model->setupClipping();
-
-	std::cout << "setup camera..." << std::endl;
 
 	// Current camera look at the model
 	auto modelPos = model->getPosition();
@@ -73,8 +55,6 @@ void MyApp::loadModel(const std::string& filename) {
 	getCamera().setEye({modelPos.x, modelPos.y, modelPos.z - model->getRadius() * 2.});
 
 	models.push_back(std::move(model));	
-
-	std::cout << "notify model loaded to components..." << std::endl;
 
 	// Notify components
 	for (auto &c : components) {
