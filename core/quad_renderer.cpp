@@ -57,13 +57,15 @@ void QuadRenderer::push() {
 					.p1= glm::vec3(p1.x, p1.y, p1.z),
 					.p2= glm::vec3(p2.x, p2.y, p2.z),
 					.p3= glm::vec3(p3.x, p3.y, p3.z),
-					.facetIndex= f,
-					.cellIndex= 0
+					.facetIndex= f
 				});
 			}
 		}
 	}
 
-	SurfaceRenderer::push_bary(vertices);
+	shader.use();
+	shader.setInt("nvertsPerFacet", 4);
+
+	SurfaceRenderer::push(vertices);
 
 }

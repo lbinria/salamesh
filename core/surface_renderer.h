@@ -29,7 +29,6 @@ struct SurfaceRenderer : public IRenderer {
 		glm::vec3 p2;
 		glm::vec3 p3;
 		int facetIndex;
-		int cellIndex;
 	};
 
 	SurfaceRenderer(Surface &m) : 
@@ -54,34 +53,10 @@ struct SurfaceRenderer : public IRenderer {
 
 	Surface &_m;
 
-	void push_bary(std::vector<Vertex> &vertices) {
-
+	void push(std::vector<Vertex> &vertices) {
 		glBindVertexArray(VAO);
-
 		glBindBuffer(GL_ARRAY_BUFFER, VBO);
 		glBufferData(GL_ARRAY_BUFFER, vertices.size() * sizeof(Vertex), vertices.data(), GL_STATIC_DRAW);
-
-		// Compute barys here
-		int nvertsPerFacet = _m.facet_size(*_m.facets.begin());
-		std::vector<float> barys(_m.nfacets() * 3);
-
-		const int size = _m.nfacets();
-		for (int fi = 0; fi < size; ++fi) {
-			// Compute bary
-			const int off = fi * nvertsPerFacet;
-			vec3 b(0, 0, 0);
-
-			for (int lv = 0; lv < nvertsPerFacet; ++lv) {
-				b += _m.points[_m.facets[off + lv]];
-			}
-
-			barys[fi * 3] = b.x / nvertsPerFacet;
-			barys[fi * 3 + 1] = b.y / nvertsPerFacet;
-			barys[fi * 3 + 2] = b.z / nvertsPerFacet;
-		}
-
-		glBindBuffer(GL_TEXTURE_BUFFER, bufBary);
-		glBufferData(GL_TEXTURE_BUFFER, barys.size() * sizeof(float), barys.data(), GL_STATIC_DRAW);
 	}
 
 	private:

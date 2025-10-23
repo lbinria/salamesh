@@ -18,8 +18,6 @@ layout (std140, binding = 0) uniform Matrices
    vec2 viewport;
 };
 
-// uniform vec2 uViewport = vec2(2560.0, 1440.0); // viewport size in pixels
-
 
 out vec3 fragBary;
 out vec3 fragNormal;
