@@ -9,12 +9,12 @@ void SurfaceRenderer::init() {
 	glGenVertexArrays(1, &VAO);
 	glGenBuffers(1, &VBO);
 
-	glGenBuffers(1, &bufBary);
-	glGenTextures(1, &texBary);
-	glBindBuffer(GL_TEXTURE_BUFFER, bufBary);
-	glActiveTexture(GL_TEXTURE0 + 1); 
-	glBindTexture(GL_TEXTURE_BUFFER, texBary);
-	glTexBuffer(GL_TEXTURE_BUFFER, GL_RGB32F, bufBary);
+	// glGenBuffers(1, &bufBary);
+	// glGenTextures(1, &texBary);
+	// glBindBuffer(GL_TEXTURE_BUFFER, bufBary);
+	// glActiveTexture(GL_TEXTURE0 + 1); 
+	// glBindTexture(GL_TEXTURE_BUFFER, texBary);
+	// glTexBuffer(GL_TEXTURE_BUFFER, GL_RGB32F, bufBary);
 
 	// glGenBuffers(1, &bufAttr);
 	// glGenTextures(1, &texAttr);
@@ -79,10 +79,9 @@ void SurfaceRenderer::init() {
 
 
 
-	// Set up texture units
-	
-	glActiveTexture(GL_TEXTURE0 + 1);
-	glBindTexture(GL_TEXTURE_BUFFER, texBary);
+	// Set up texture units	
+	// glActiveTexture(GL_TEXTURE0 + 1);
+	// glBindTexture(GL_TEXTURE_BUFFER, texBary);
 	
 	glActiveTexture(GL_TEXTURE0 + 2);
 	glBindTexture(GL_TEXTURE_BUFFER, texAttr);
@@ -96,7 +95,7 @@ void SurfaceRenderer::init() {
 	glBindBuffer(GL_TEXTURE_BUFFER, 0);
 
 	shader.use();
-	shader.setInt("bary", 1);
+	// shader.setInt("bary", 1);
 	shader.setInt("attributeData", 2);
 	shader.setInt("highlightBuf", 3);
 	shader.setInt("filterBuf", 4);
@@ -160,8 +159,8 @@ void SurfaceRenderer::render(glm::vec3 &position) {
 	glActiveTexture(GL_TEXTURE0);
 	glBindTexture(GL_TEXTURE_1D, texColorMap);
 
-	glActiveTexture(GL_TEXTURE0 + 1);
-	glBindTexture(GL_TEXTURE_BUFFER, texBary);
+	// glActiveTexture(GL_TEXTURE0 + 1);
+	// glBindTexture(GL_TEXTURE_BUFFER, texBary);
 
 	glActiveTexture(GL_TEXTURE0 + 2);
 	glBindTexture(GL_TEXTURE_BUFFER, texAttr);
@@ -201,7 +200,7 @@ void SurfaceRenderer::clean() {
 	// }
 
 	glDeleteBuffers(1, &bufBary);
-	glDeleteTextures(1, &texBary);
+	// glDeleteTextures(1, &texBary);
 	glDeleteBuffers(1, &bufAttr);
 	glDeleteTextures(1, &texAttr);
 	glDeleteBuffers(1, &bufHighlight);
