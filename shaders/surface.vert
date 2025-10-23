@@ -6,8 +6,6 @@ layout (location = 1) in vec3 p0;
 layout (location = 2) in vec3 p1;
 layout (location = 3) in vec3 p2;
 layout (location = 4) in vec3 p3;
-layout (location = 5) in vec3 normal;
-layout (location = 6) in vec3 aHeights;
 // Indexes of the primitive this vertices belongs to
 layout (location = 7) in int vertexIndex;
 layout (location = 8) in int facetIndex;
@@ -36,8 +34,6 @@ out vec3 fragWorldPos;
 
 uniform mat4 model;
 uniform int nvertsPerFacet = 3; /* 3 or 4 for tri / quad */
-
-uniform samplerBuffer bary;
 
 uniform float meshShrink;
 

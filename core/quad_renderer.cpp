@@ -57,7 +57,6 @@ void QuadRenderer::push() {
 					.p1= glm::vec3(p1.x, p1.y, p1.z),
 					.p2= glm::vec3(p2.x, p2.y, p2.z),
 					.p3= glm::vec3(p3.x, p3.y, p3.z),
-					.size= 1.f,
 					.facetIndex= f,
 					.cellIndex= 0
 				});

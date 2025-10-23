@@ -110,7 +110,6 @@ void SurfaceRenderer::init() {
 	GLuint p1Loc = glGetAttribLocation(shader.id, "p1");
 	GLuint p2Loc = glGetAttribLocation(shader.id, "p2");
 	GLuint p3Loc = glGetAttribLocation(shader.id, "p3");
-	GLuint sizeLocation = glGetAttribLocation(shader.id, "size");
 	GLuint facetIndexLocation = glGetAttribLocation(shader.id, "facetIndex");
 	GLuint cellIndexLocation = glGetAttribLocation(shader.id, "cellIndex");
 	GLuint vertexIndexLocation = glGetAttribLocation(shader.id, "vertexIndex");
@@ -133,9 +132,6 @@ void SurfaceRenderer::init() {
 
 	glEnableVertexAttribArray(p3Loc);
 	glVertexAttribPointer(p3Loc, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)offsetof(Vertex, p3));
-
-	glEnableVertexAttribArray(sizeLocation);
-	glVertexAttribPointer(sizeLocation, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)offsetof(Vertex, size));
 
 	glEnableVertexAttribArray(facetIndexLocation);
 	glVertexAttribIPointer(facetIndexLocation, 1, GL_INT, sizeof(Vertex), (void*)offsetof(Vertex, facetIndex));
