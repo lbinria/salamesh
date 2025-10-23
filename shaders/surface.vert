@@ -35,17 +35,33 @@ flat out vec3 fragViewDir;
 out vec3 fragWorldPos;
 
 uniform mat4 model;
+uniform int nvertsPerFacet = 3; /* 3 or 4 for tri / quad */
 
 uniform samplerBuffer bary;
 
 uniform float meshShrink;
 
+
+
 void main()
 {
-   vec3 bary = texelFetch(bary, facetIndex).xyz;
-   // vec3 bary = (p0 + p1 + p2) / 3.;
+   // Compute bary
+   vec3 bary = nvertsPerFacet == 3 ? (p0 + p1 + p2) / 3. : (p0 + p1 + p2 + p3) / 4.;
 
-   // Shrink
+   // Compute facet normal
+   vec3 n;
+   if (nvertsPerFacet == 3)
+      n = normalize(cross(p1 - p0, p2 - p0));
+   else if (nvertsPerFacet == 4) {
+      vec3 res = vec3(0);
+      res += cross(p0 - bary, p1 - bary);
+      res += cross(p1 - bary, p2 - bary);
+      res += cross(p2 - bary, p3 - bary);
+      res += cross(p3 - bary, p0 - bary);
+      n = normalize(res);
+   }
+
+   // Apply shrink
    vec3 sp = p - (p - bary) * meshShrink;
    vec3 sp0 = p0 - (p0 - bary) * meshShrink;
    vec3 sp1 = p1 - (p1 - bary) * meshShrink;
@@ -55,6 +71,8 @@ void main()
    // Transform to clip space
    gl_Position = projection * view * model * vec4(sp, 1.0);
    
+   // Compute facet triangles heights
+
    // To clip space for all corners (for height computation)
    vec4 c0 = projection * view * model * vec4(sp0, 1.0);
    vec4 c1 = projection * view * model * vec4(sp1, 1.0);
@@ -98,8 +116,7 @@ void main()
 
 
    fragBary = bary;
-   fragNormal = normal;
-   // fragHeights = aHeights;
+   fragNormal = n;
    fragFacetIndex = facetIndex;
    fragVertexIndex = vertexIndex;
    fragWorldPos = sp;

@@ -93,11 +93,13 @@ struct TriangleInspector : public Component {
 				triModel.getPoints().setHoverColor(glm::vec3(1.f, 1.f, 1.f));
 				triModel.getPoints().setSelectColor(glm::vec3(0.88f, 0.06f, 0.01f));
 
-				triModel.getMesh().setHoverColor(glm::vec3(1.f, 1.f, 1.f));
-				triModel.getMesh().setSelectColor(glm::vec3(1.f, 0.06f, 0.51f));
-
-				triModel.getMesh().setColor(glm::vec3(1.f, 1.f, 1.f));
-				triModel.getMesh().setMeshSize(0.5f);
+				auto &meshRenderer = triModel.getMesh();
+				// Highlights
+				meshRenderer.setHoverColor(glm::vec3(1.f, 1.f, 1.f));
+				meshRenderer.setSelectColor(glm::vec3(1.f, 0.06f, 0.51f));
+				// Gfx
+				meshRenderer.setColor(glm::vec3(1.f, 1.f, 1.f));
+				meshRenderer.setMeshSize(0.5f);
 
 			}
 
