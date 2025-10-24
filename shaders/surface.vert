@@ -39,21 +39,25 @@ uniform float meshShrink;
 
 void main()
 {
-   // Compute bary
-   vec3 bary = nvertsPerFacet == 3 ? (p0 + p1 + p2) / 3. : (p0 + p1 + p2 + p3) / 4.;
+   // // Compute bary
+   // vec3 bary = nvertsPerFacet == 3 ? (p0 + p1 + p2) / 3. : (p0 + p1 + p2 + p3) / 4.;
    
-   // Compute facet normal
-   vec3 n;
-   if (nvertsPerFacet == 3)
-      n = normalize(cross(p1 - p0, p2 - p0));
-   else if (nvertsPerFacet == 4) {
-      vec3 res = vec3(0);
-      res += cross(p0 - bary, p1 - bary);
-      res += cross(p1 - bary, p2 - bary);
-      res += cross(p2 - bary, p3 - bary);
-      res += cross(p3 - bary, p0 - bary);
-      n = normalize(res);
-   }
+   // // Compute facet normal
+   // vec3 n;
+   // if (nvertsPerFacet == 3)
+   //    n = normalize(cross(p1 - p0, p2 - p0));
+   // else if (nvertsPerFacet == 4) {
+   //    vec3 res = vec3(0);
+   //    res += cross(p0 - bary, p1 - bary);
+   //    res += cross(p1 - bary, p2 - bary);
+   //    res += cross(p2 - bary, p3 - bary);
+   //    res += cross(p3 - bary, p0 - bary);
+   //    n = normalize(res);
+   // }
+
+   // JUST FOR TESTING
+   vec3 bary = (p0 + p1 + p2) / 3.;
+   vec3 n = normalize(cross(p1 - p0, p2 - p0));
 
    // Apply shrink
    vec3 sp = p - (p - bary) * meshShrink;
