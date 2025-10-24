@@ -7,9 +7,9 @@ layout (location = 2) in vec3 p1;
 layout (location = 3) in vec3 p2;
 layout (location = 4) in vec3 p3;
 // Indexes of the primitive this vertices belongs to
-layout (location = 7) in int vertexIndex;
-layout (location = 8) in int facetIndex;
-layout (location = 9) in int localIndex;
+layout (location = 5) in int vertexIndex;
+layout (location = 6) in int facetIndex;
+layout (location = 7) in int localIndex;
 
 layout (std140, binding = 0) uniform Matrices
 {
@@ -41,7 +41,7 @@ void main()
 {
    // Compute bary
    vec3 bary = nvertsPerFacet == 3 ? (p0 + p1 + p2) / 3. : (p0 + p1 + p2 + p3) / 4.;
-
+   
    // Compute facet normal
    vec3 n;
    if (nvertsPerFacet == 3)
