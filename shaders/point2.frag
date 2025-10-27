@@ -85,6 +85,7 @@ void main()
     
     // Attribute color mode !
     if (colorMode != 0) {
+        // TODO add repeat / transparency colormaps
         float fragAttrVal = texelFetch(attrBuf, FragVertexIndex).x;
         col = vec3(texture(fragColorMap, clamp((fragAttrVal - attrRange.x) / (attrRange.y - attrRange.x), 0., 1.)));
     }

@@ -111,6 +111,7 @@ void main()
         else if (attrElement == 16)
             primitiveIndex = fragCellIndex;
 
+        // TODO add repeat / transparency colormaps
         float fragAttrVal = texelFetch(attributeData, primitiveIndex).x;
         col = vec3(texture(fragColorMap, clamp((fragAttrVal - attrRange.x) / (attrRange.y - attrRange.x), 0., 1.)));
     }
