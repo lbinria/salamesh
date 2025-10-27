@@ -273,7 +273,7 @@ function draw_model_properties(model, view)
 			end
 
 			if (cur_model.color_mode == 1) then
-				local items = {"Item1", "Item2"}
+				local items = {"Item1", "Item2", "Item3"}
 				local colormap_size = imgui.ImVec2(320, 35)
 
 				if (imgui.BeginCombo("##combo_colormaps_selection", items[cur_model.selected_colormap + 1])) then

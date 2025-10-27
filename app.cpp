@@ -48,16 +48,27 @@ static void load_texture_1d(const std::string &path, unsigned int & texture, int
 
 	unsigned char *new_data = stbi_load(path.c_str(), &width, &height, &nChannels, 0);
 	
-	if (new_data) {
-		std::cout << "Load: " << path << ", w: " << width << ", h: " << height << ", channels: " << nChannels << std::endl;
-		glTexImage1D(GL_TEXTURE_1D, 0, GL_RGB, width, 0, GL_RGB, GL_UNSIGNED_BYTE, new_data);
-		
-		// glGenerateMipmap(GL_TEXTURE_1D);
-		glActiveTexture(GL_TEXTURE0);
-		glBindTexture(GL_TEXTURE_1D, texture);
-	} else {
+	if (!new_data) {
 		std::cout << "Failed to load texture" << std::endl;
+		return;
 	}
+
+	GLenum format = GL_RGB;
+	if (nChannels == 1)
+		format = GL_RED;
+	else if (nChannels == 3)
+		format = GL_RGB;
+	else if (nChannels == 4)
+		format = GL_RGBA;
+
+	std::cout << "Load: " << path << ", w: " << width << ", h: " << height << ", channels: " << nChannels << std::endl;
+	glTexImage1D(GL_TEXTURE_1D, 0, format, width, 0, format, GL_UNSIGNED_BYTE, new_data);
+	
+	// glGenerateMipmap(GL_TEXTURE_1D);
+	glActiveTexture(GL_TEXTURE0);
+	glBindTexture(GL_TEXTURE_1D, texture);
+	
+
 	stbi_image_free(new_data);
 }
 
@@ -323,6 +334,9 @@ void App::setup() {
 	load_texture_2d("assets/CET-R41px.png", colormaps2D[0], width, height, nrChannels);
 	load_texture_1d("assets/CET-L08px.png", colormaps[1], width, height, nrChannels);
 	load_texture_2d("assets/CET-L08px.png", colormaps2D[1], width, height, nrChannels);
+
+	load_texture_1d("assets/colormap_alpha.png", colormaps[2], width, height, nrChannels);
+	load_texture_2d("assets/colormap_alpha.png", colormaps2D[2], width, height, nrChannels);
 
 	// Load icons
 	int iconWidth, iconHeight, iconChannels;

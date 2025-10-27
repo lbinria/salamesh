@@ -284,6 +284,17 @@ void MyApp::update(float dt) {
 		getCamera().move(glm::vec2(screenWidth, screenHeight), st.mouse.pos, st.mouse.lastPos);
 	}
 
+	if (st.mouse.isRightButton()) {
+		auto arcball = dynamic_cast<ArcBallCamera*>(&getCamera());
+		if (arcball) {
+			glm::mat4 model = glm::mat4(1.0f);
+			model = glm::translate(model, getCurrentModel().getPosition());
+			
+			float depth = getDepth(st.mouse.pos.x, st.mouse.pos.y);
+			arcball->movePan({getScreenWidth(), getScreenHeight()}, model, depth, st.mouse.lastPos, st.mouse.pos);
+		}
+	}
+
 	for (auto &component : components) {
 		component->update(dt);
 	}

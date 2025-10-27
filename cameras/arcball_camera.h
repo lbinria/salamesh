@@ -42,14 +42,56 @@ struct ArcBallCamera : public Camera {
         setCameraView(position, m_lookAt, m_upVector, m_projectionMatrix);
     }
 
-    void movePlane(glm::vec2 deltaPos) {
+    // void movePan(glm::vec2 viewport, glm::mat4 model, float depth, glm::vec2 oldPos, glm::vec2 newPos) {
+    //     if (m_lock)
+    //         return;
+
+    //     glm::vec2 delta = newPos - oldPos;
+
+    //     float fov = m_fovAndScreen.x;
+    //     float width = m_fovAndScreen.y;
+    //     float height = m_fovAndScreen.z;
+    //     float aspect = width / height;
+    //     float fovY = 2.0f * atanf( tanf(fov * 0.5f) / aspect ); // convert fovX -> fovY
+
+    //     float d = glm::length(m_lookAt - m_eye);
+        
+    //     glm::vec3 forward = glm::normalize(m_lookAt - m_eye);
+    //     glm::vec3 right = glm::normalize(glm::cross(forward, m_upVector));
+    //     glm::vec3 camUp = glm::normalize(glm::cross(right, forward));
+
+
+    //     float worldPerPixelY = (2.0f * d * tanf(fovY * 0.5f)) / height;
+    //     float worldPerPixelX = worldPerPixelY * aspect;
+        
+    //     glm::vec3 offset = right * (-delta.x * worldPerPixelX) + camUp * (delta.y * worldPerPixelY);
+        
+
+    //     setCameraView(m_eye + offset, m_lookAt + offset, m_upVector, m_projectionMatrix);
+    // }
+
+    void movePan(glm::vec2 viewport, glm::mat4 model, float depth, glm::vec2 oldPos, glm::vec2 newPos) {
         if (m_lock)
             return;
 
-        glm::vec3 lookAt(m_lookAt.x, m_lookAt.y, m_lookAt.z);
-        lookAt -= getRightVector() * deltaPos.x * .005f;
-        lookAt += m_upVector * deltaPos.y * .005f;
-        setCameraView(m_eye, lookAt, m_upVector, m_projectionMatrix);
+        glm::vec2 delta = newPos - oldPos;
+
+        float d = glm::length(m_lookAt - m_eye);
+        
+        glm::vec3 forward = glm::normalize(m_lookAt - m_eye);
+        glm::vec3 right = glm::normalize(glm::cross(forward, m_upVector));
+        glm::vec3 camUp = glm::normalize(glm::cross(right, forward));
+
+        float fov = m_fovAndScreen.x;
+        // float worldPerPixelY = (2.0f * d * tan(fov * 0.5f)) / m_fovAndScreen.z;
+        // float worldPerPixelX = worldPerPixelY * (m_fovAndScreen.y / m_fovAndScreen.z) /* aspect */;
+        // glm::vec3 offset = right * (-delta.x * worldPerPixelX) + camUp * (delta.y * worldPerPixelY);
+
+        float worldPerPixelY = (2.0f * d * tan(fov * 0.5f)) / m_fovAndScreen.z;
+        float worldPerPixelX = worldPerPixelY * (m_fovAndScreen.y / m_fovAndScreen.z) /* aspect */;
+        glm::vec3 offset = right * (-delta.x * worldPerPixelX) + camUp * (delta.y * worldPerPixelY);
+        
+        setCameraView(m_eye + offset, m_lookAt + offset, m_upVector, m_projectionMatrix);
     }
 
     void moveRight(float speed) override {

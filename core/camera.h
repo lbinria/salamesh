@@ -84,7 +84,7 @@ struct Camera {
 
     glm::mat4x4 getViewMatrix() const { return m_viewMatrix; }
     glm::mat4x4 getProjectionMatrix() const { return m_projectionMatrix; }
-    glm::vec3 getUpVector() const { return m_upVector; }
+    glm::vec3 getWorldUpVector() const { return m_upVector; }
 
     // Read-only property: fov_and_screen
     glm::vec3 getFovAndScreen() const { return m_fovAndScreen; }
@@ -99,13 +99,9 @@ struct Camera {
         setCameraView(m_eye, m_lookAt, m_upVector, m_fovAndScreen);
     }
 
-    /**
-     * @brief Returns the view direction of the camera. 
-     * View direction is the negative z-axis of the view matrix.
-     * @note Exposed
-     */
-    glm::vec3 getViewDir() const { return -glm::transpose(m_viewMatrix)[2]; }
     glm::vec3 getRightVector() const { return glm::transpose(m_viewMatrix)[0]; }
+    glm::vec3 getUpVector() const { return glm::transpose(m_viewMatrix)[1]; }
+    glm::vec3 getViewDir() const { return -glm::transpose(m_viewMatrix)[2]; }
 
 protected:
 	std::string m_name;
