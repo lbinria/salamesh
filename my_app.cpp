@@ -144,13 +144,11 @@ void MyApp::init() {
 	// Check for files given in args (is it models, scripts ?)
 	std::set<std::string> accepted{".obj", ".mesh", ".geogram"};
 	for (auto &p : args.paths) {
-		std::cout << "check path: " << p << std::endl;
-		if (accepted.contains(p.extension())) {
-			args.models.push_back(fs::absolute(p));
-			std::cout << "add " << fs::absolute(p) << " to model" << std::endl;
+		if (accepted.contains(p.extension().string())) {
+			args.models.push_back(fs::absolute(p).string());
 		}
 		else if (p.extension() == ".lua")
-			args.scripts.push_back(p);
+			args.scripts.push_back(fs::absolute(p).string());
 	}
 	
 	if (!args.models.empty()) {
