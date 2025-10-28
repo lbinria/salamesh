@@ -6,7 +6,7 @@
 
 #include "core/app_interface.h"
 #include "core/component.h"
-#include "core/states.h"
+#include "core/input_states.h"
 
 #include "bindings/imgui_bindings.h"
 #include "bindings/app_bindings.h"

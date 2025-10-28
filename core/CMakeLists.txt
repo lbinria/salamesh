@@ -19,7 +19,7 @@ set(SOURCES
     component.h component.cpp
     attribute.h
     element.h
-    states.h 
+    input_states.h 
     renderer.h
     model.h
     camera.h

@@ -1,7 +1,7 @@
 #pragma once
 
 #include "model.h"
-#include "states.h"
+#include "input_states.h"
 #include "element.h"
 #include "camera.h"
 
