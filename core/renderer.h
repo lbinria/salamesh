@@ -320,28 +320,8 @@ struct IRenderer {
 		}
 	}
 
-	// float* &getFilterPtr() {
-	// 	return ptrFilter;
-	// }
-
-	// void resizeHightlightBuffer(int size) {		
-	// 	resizePersistentBuffer(highlightBuffer, size);
-	// 	// unsigned int newTexHighlight = 0;
-	// 	// glCreateTextures(GL_TEXTURE_BUFFER, 1, &newTexHighlight);
-	// 	// glActiveTexture(GL_TEXTURE0 + 3); 
-	// 	// glTextureBuffer(newTexHighlight, GL_R32F, highlightBuffer.buf);
-		
-	// 	// glActiveTexture(GL_TEXTURE0 + 3);
-	// 	// glBindTexture(GL_TEXTURE_BUFFER, newTexHighlight);
-
-	// 	// shader.use();
-	// 	// shader.setInt("highlightBuf", 3);
-
-	// 	// glDeleteTextures(1, &texHighlight2);
-	// 	// texHighlight2 = texHighlight;
-	// }
-
 	void loadState(json &j) {
+		setVisible(j["visible"].get<bool>());
 		setColor(glm::vec3(j["color"][0].get<float>(), j["color"][1].get<float>(), j["color"][2].get<float>()));
 		setHoverColor(glm::vec3(j["hoverColor"][0].get<float>(), j["hoverColor"][1].get<float>(), j["hoverColor"][2].get<float>()));
 		setSelectColor(glm::vec3(j["selectColor"][0].get<float>(), j["selectColor"][1].get<float>(), j["selectColor"][2].get<float>()));
@@ -350,14 +330,15 @@ struct IRenderer {
 		doLoadState(j);
 	}
 
-    void saveState(json &j) const {
-        j["color"] = json::array({color.x, color.y, color.z});
-        j["hoverColor"] = json::array({hoverColor.x, hoverColor.y, hoverColor.z});
-        j["selectColor"] = json::array({selectColor.x, selectColor.y, selectColor.z});
-        j["meshSize"] = meshSize;
-        j["meshShrink"] = meshShrink;
+	void saveState(json &j) const {
+		j["visible"] = visible;
+		j["color"] = json::array({color.x, color.y, color.z});
+		j["hoverColor"] = json::array({hoverColor.x, hoverColor.y, hoverColor.z});
+		j["selectColor"] = json::array({selectColor.x, selectColor.y, selectColor.z});
+		j["meshSize"] = meshSize;
+		j["meshShrink"] = meshShrink;
 		doSaveState(j);
-    }
+	}
 
 
 
@@ -367,11 +348,11 @@ struct IRenderer {
 
 	bool visible = true;
 
-    glm::vec3 color{0.8f, 0.f, 0.2f};
+	glm::vec3 color{0.8f, 0.f, 0.2f};
 	glm::vec3 hoverColor{1.f, 1.f, 1.f};
 	glm::vec3 selectColor{0.f, 0.22f, 1.f};
-    float meshSize = 0.01f;
-    float meshShrink = 0.f;
+	float meshSize = 0.01f;
+	float meshShrink = 0.f;
 	int attrRepeat = 1;
 
 	unsigned int VAO, VBO; // Buffers

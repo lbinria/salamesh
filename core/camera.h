@@ -2,6 +2,9 @@
 #include "../include/glm/glm.hpp"
 #include "../include/glm/gtc/matrix_transform.hpp"
 
+#include "../include/json.hpp"
+using json = nlohmann::json;
+
 #include <string>
 #include <algorithm>
 
@@ -11,14 +14,13 @@ struct Camera {
 
     Camera() = default;
 
+    // TODO Remove this constructor, it is useless, just use default + setCameraView to place the camera
     Camera(std::string name, glm::vec3 eye, glm::vec3 lookAt, glm::vec3 up, glm::vec3 fovAndScreen) : 
 		m_name(name),
         m_eye(std::move(eye)),
-        m_target_eye(m_eye),
         m_lookAt(std::move(lookAt)),
         m_upVector(std::move(up)),
         m_projectionMatrix(glm::perspective(glm::radians(fovAndScreen.x), fovAndScreen.y / fovAndScreen.z, nearPlane, farPlane)),
-        // m_projectionMatrix(glm::ortho(-1.f, 1.f, -1.f, 1.f, NEAR_PLANE, FAR_PLANE)),
         m_fovAndScreen(std::move(fovAndScreen))
     {
         updateViewMatrix();
@@ -36,7 +38,6 @@ struct Camera {
     void setCameraView(glm::vec3 eye, glm::vec3 lookAt, glm::vec3 up, glm::vec3 fovAndScreen)
     {
         setCameraView(eye, lookAt, up, glm::perspective(glm::radians(fovAndScreen.x), fovAndScreen.y / fovAndScreen.z, nearPlane, farPlane));
-        // setCameraView(eye, lookAt, up, glm::ortho(-1.f, 1.f, -1.f, 1.f, NEAR_PLANE, FAR_PLANE));
         updateViewMatrix();
     }
 
@@ -103,6 +104,35 @@ struct Camera {
     glm::vec3 getUpVector() const { return glm::transpose(m_viewMatrix)[1]; }
     glm::vec3 getViewDir() const { return -glm::transpose(m_viewMatrix)[2]; }
 
+    void saveState(json &j) {
+        j["name"] = m_name;
+        j["fov_and_screen"] = json::array({m_fovAndScreen.x, m_fovAndScreen.y, m_fovAndScreen.z});
+        j["eye"] = json::array({m_eye.x, m_eye.y, m_eye.z});
+        j["look_at"] = json::array({m_lookAt.x, m_lookAt.y, m_lookAt.z});
+        j["up"] = json::array({m_upVector.x, m_upVector.y, m_upVector.z});
+        j["type"] = getType();
+        doSaveState(j);
+    }
+
+    void loadState(json &j) {
+        m_name = j["name"].get<std::string>();
+        auto &jFovAndScreen = j["fov_and_screen"];
+        m_fovAndScreen = glm::vec3(jFovAndScreen[0], jFovAndScreen[1], jFovAndScreen[2]);
+        auto &jEye = j["eye"];
+        m_eye = glm::vec3(jEye[0], jEye[1], jEye[2]);
+        auto &jLookAt = j["look_at"];
+        m_lookAt = glm::vec3(jLookAt[0], jLookAt[1], jLookAt[2]);
+        auto &jUp = j["up"];
+        m_upVector = glm::vec3(jUp[0], jUp[1], jUp[2]);
+        doLoadState(j);
+        setCameraView(m_eye, m_lookAt, m_upVector, m_fovAndScreen);
+    }
+
+    virtual void doSaveState(json &j) = 0;
+    virtual void doLoadState(json &j) = 0;
+
+    virtual std::string getType() = 0;
+
 protected:
 	std::string m_name;
     glm::vec3 m_fovAndScreen;
@@ -111,7 +141,6 @@ protected:
     glm::vec3 m_eye; // Camera position in 3D
     glm::vec3 m_lookAt; // Point that the camera is looking at
     glm::vec3 m_upVector; // Orientation of the camera
-    glm::vec3 m_target_eye;
     bool m_lock = false;
 
 	float farPlane = 100000.f;

@@ -195,14 +195,14 @@ struct App : public IApp {
         }
         // TODO see this, quick-fix
         getRenderSurface().setCamera(cameras[selected]);
-        selected_camera = selected;
+        selectedCamera = selected;
     }
     
     int getSelectedCamera() override {
-        return selected_camera;
+        return selectedCamera;
     }
 
-    Camera& getCamera() override { return *cameras[selected_camera]; }
+    Camera& getCamera() override { return *cameras[selectedCamera]; }
 
     RenderSurface &getRenderSurface() { return *renderSurfaces[0]; }
 
@@ -236,7 +236,7 @@ struct App : public IApp {
         }
     }
 
-    // const char* pickModeStrings[4] = {"Points", "Edges", "Facets", "Cells"};
+	virtual std::unique_ptr<Camera> makeCamera(std::string type) = 0;
 
 
     std::vector<std::string> getNavigationPath() {
@@ -273,7 +273,8 @@ struct App : public IApp {
 
     // TODO set as protected
     std::vector<std::shared_ptr<Camera>> cameras;
-    int selected_camera = 0;
+    // TODO rename
+    int selectedCamera = 0;
 
     protected:
     Args args;

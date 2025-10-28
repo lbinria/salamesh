@@ -60,8 +60,14 @@ struct Model {
 
 
     void saveState(json &j) const {
+        // Save current mesh state into a file
+        auto now = std::chrono::system_clock::now();
+        auto unix_timestamp = std::to_string(std::chrono::duration_cast<std::chrono::seconds>(now.time_since_epoch()).count());
+        auto filename = _name + "_" + unix_timestamp + ".geogram";
+        saveAs(filename);
+
         j["name"] = _name;
-        j["path"] = _path;
+        j["path"] = filename;
         j["position"] = { position.x, position.y, position.z };
         j["color_mode"] = colorMode;
         j["is_light_enabled"] = isLightEnabled;
@@ -71,11 +77,14 @@ struct Model {
         j["clipping_plane_normal"] = { clippingPlaneNormal.x, clippingPlaneNormal.y, clippingPlaneNormal.z };
         j["invert_clipping"] = invertClipping;
         j["selected_colormap"] = selectedColormap;
+        j["selected_attr"] = selectedAttr;
         j["visible"] = visible;
 
         for (auto &[k, r] : _renderers) {
             r->saveState(j["renderers"][k]);
         }
+
+        doSaveState(j);
     }
 
     void loadState(json &j) {
@@ -109,6 +118,7 @@ struct Model {
 
         setInvertClipping(j["invert_clipping"].get<bool>());
 
+        setSelectedAttr(j["selected_attr"].get<int>());
         setSelectedColormap(j["selected_colormap"].get<int>());
         setVisible(j["visible"].get<bool>());
 
@@ -120,14 +130,11 @@ struct Model {
                 r->loadState(j["renderers"][k]);
         }
 
+        doLoadState(j);
     }
 
-    void loadModelFromState(json &j) {
-        // Load state
-        loadState(j);
-        // Load model from path discovered in state
-        load(_path);
-    }
+    virtual void doLoadState(json &j) {};
+    virtual void doSaveState(json &j) const {};
 
     std::string getName() const { return _name; }
     void setName(std::string name) { _name = name; }

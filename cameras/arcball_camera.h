@@ -119,4 +119,9 @@ struct ArcBallCamera : public Camera {
         setCameraView(m_eye, m_lookAt, m_upVector, m_projectionMatrix);
     }
 
+    void doSaveState(json &j) {}
+    void doLoadState(json &j) {}
+
+    std::string getType() override { return "ArcBallCamera"; }
+
 };

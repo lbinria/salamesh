@@ -436,9 +436,11 @@ void MyApp::draw_gui() {
 			}
 
 			if (ImGui::MenuItem("Save state")) {
-				std::string filename = "state.json";
-				save_state(filename);
-				std::cout << "State saved to: " << filename << std::endl;
+				save_state("state.json");
+			}
+
+			if (ImGui::MenuItem("Load state")) {
+				load_state("state.json");
 			}
 
 			if (ImGui::MenuItem("Quit")) {
@@ -733,19 +735,22 @@ void MyApp::save_state(const std::string filename) {
 
 	json j;
 	j["cull_mode"] = cull_mode;
-	// j["pick_mode"] = pickMode;
 	j["selected_model"] = selectedModel;
+	j["selected_camera"] = selectedCamera;
 	j["models"] = json::array();
+	j["cameras"] = json::array();
 
-	// Save model states
-	for (auto &m : models) {
-		json j;
-		m->saveState(j);
-		std::string str_state = j.dump(4);
-		j["models"].push_back(json::parse(str_state));
+	// Save models states
+	for (int i = 0; i < models.size(); ++i) {		
+		auto &m = models[i];
+		m->saveState(j["models"][i]);
 	}
 
-	// TODO Save camera(s) states
+	// Save cameras states
+	for (int i = 0; i < cameras.size(); ++i) {
+		auto &c = cameras[i];
+		c->saveState(j["cameras"][i]);
+	}
 
 
 	std::ofstream ofs(filename);
@@ -759,28 +764,58 @@ void MyApp::save_state(const std::string filename) {
 }
 
 void MyApp::load_state(const std::string filename) {
+
 	std::ifstream ifs(filename);
 	if (!ifs.is_open()) {
 		std::cerr << "Failed to open file for loading state: " << filename << std::endl;
 		return;
 	}
+
 	json j;
 	ifs >> j;
 	ifs.close();
+
 	std::cout << "State loaded from: " << filename << std::endl;
+	
 	cull_mode = j["cull_mode"].get<int>();
-	// pickMode = (ElementKind)j["pick_mode"].get<int>();
 	selectedModel = j["selected_model"].get<int>();
+	selectedCamera = j["selected_camera"].get<int>();
+
 	// Clear current models
+	// TODO make a function to clean all scenes properly !
 	models.clear();
-	// Load models from state
-	for (auto& j : j["models"]) {
-		auto model = std::make_unique<HexModel>();
-		model->loadState(j);
-		model->init();
-		model->push();
-		models.push_back(std::move(model));
+	cameras.clear();
+
+	// Load models states
+	for (auto &jModel : j["models"]) {
+		// Effectively load the model
+		loadModel(jModel["path"]);
+		auto &model = models.back();
+		// Load state into last loaded model
+		model->loadState(jModel);
 	}
-	// TODO Load camera(s) states
+
+	// Load cameras states
+	for (auto &jCamera : j["cameras"]) {
+		auto type = jCamera["type"].get<std::string>();
+		auto camera = makeCamera(type);
+		camera->loadState(jCamera);
+		cameras.push_back(std::move(camera));
+	}
+
+
 	std::cout << "State loaded successfully." << std::endl;
+}
+
+std::unique_ptr<Camera> MyApp::makeCamera(std::string type) {
+	// Register cameras
+	if (type == "ArcBallCamera")
+		return std::make_unique<ArcBallCamera>();
+	else if (type == "DescentCamera")
+		return std::make_unique<DescentCamera>();
+	else 
+		throw std::runtime_error(
+			"Unable to make camera of type " + 
+			type + 
+			", maybe you should override `makeCamera` to add the construction of your custom camera class ?");
 }

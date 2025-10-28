@@ -38,12 +38,7 @@ struct TriModel final : public Model {
 
 
 	bool load(const std::string path) override;
-	// void save() const override;
 	void saveAs(const std::string path) const override;
-
-
-	// std::string save_state() const override;
-	// void load_state(json model_state);
 
 
 	Triangles& getTriangles() { return _tri; }
@@ -77,35 +72,6 @@ struct TriModel final : public Model {
 
         return {min, max};
     }
-
-    // void setFilter(int idx, bool filter) override {
-
-    //     _meshRenderer->setFilter(idx, filter);
-    //     Surface::Facet f(_tri, idx);
-    //     for (int lv = 0; lv < 3; ++lv) {
-    //         auto v = f.vertex(lv);
-
-    //         bool allFiltered = true;
-
-    //         // Iterate on corners
-    //         for (int c = 0; c < _tri.facets.size(); ++c) {
-    //             // If iterated corner is not current vertex, skip !
-    //             if (_tri.facets[c] != v)
-    //                 continue;
-
-    //             int fi = c / 3;
-    //             if (_meshRenderer->getFilterPtr()[fi] <= 0) {
-    //                 allFiltered = false;
-    //                 break;
-    //             }
-    //         }
-
-    //         // Only filter point when all attached facets are filtered
-    //         _pointSetRenderer.setFilter(v, allFiltered);
-
-    //     }
-        
-    // }
 
     void updateLayer(IRenderer::Layer layer) {
 
@@ -151,34 +117,6 @@ struct TriModel final : public Model {
                 r->setLayer(data, layer);
             }
         }
-        
-
-
-        // switch (selectedAttr.elementKind) {
-        //     case ElementKind::FACETS:
-        //     {
-        //         FacetAttribute<float> layerAttr;
-        //         if (!layerAttr.bind(selectedAttr.attrName, _surfaceAttributes, _tri))
-        //             return;
-
-        //         _meshRenderer->setLayer(layerAttr.ptr->data, layer);
-
-        //         break;
-        //     }
-        //     case ElementKind::POINTS:
-        //     {
-        //         PointAttribute<float> layerAttr;
-        //         if (!layerAttr.bind(selectedAttr.attrName, _surfaceAttributes, _tri))
-        //             return;
-
-        //         _pointSetRenderer.setLayer(layerAttr.ptr->data, layer);
-
-        //         break;
-        //     }
-        //     default:
-        //         std::cerr << "Warning: HexModel::updateFilters() only supports highlight on cells, cell facets or points." << std::endl;
-        //         return;
-        // }
     }
 
     long pick_edge(glm::vec3 p0, int f) override {
