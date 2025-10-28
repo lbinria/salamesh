@@ -33,12 +33,9 @@ function draw_tree(model, i)
 		for i = 1, #app.models do
 			-- TODO ImGuiTreeNodeFlags_Selected if model selected
 			local child = app.models[i]
-			if (child.parent ~= model) then 
-				goto continue
+			if (child.parent == model) then 
+				draw_tree(child, i)
 			end
-
-			draw_tree(child, i)
-			::continue::
 		end
 
 		imgui.TreePop()
@@ -69,7 +66,7 @@ function draw_model_properties(model, view)
 	-- local cur_model = app.model
 	local cur_model = model
 
-	if (imgui.CollapsingHeader("Properties##" .. cur_model.name .. "_properties")) then 
+	-- if (imgui.CollapsingHeader("Properties##" .. cur_model.name .. "_properties")) then 
 
 
 		if (imgui.CollapsingHeader("Light##" .. cur_model.name .. "_properties_light")) then 
@@ -338,7 +335,7 @@ function draw_model_properties(model, view)
 			end 
 
 		end
-	end
+	-- end
 end
 
 function draw_gui()
@@ -389,12 +386,9 @@ function draw_gui()
 				for i = 1, #app.models do
 					-- TODO ImGuiTreeNodeFlags_Selected if model selected
 					local model = app.models[i]
-					if (model.parent ~= nil) then 
-						goto continue
+					if (model.parent == nil) then 
+						draw_tree(model, i)
 					end
-
-					draw_tree(model, i)
-					::continue::
 				end
 
 				imgui.TreePop()

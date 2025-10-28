@@ -102,11 +102,16 @@ void main()
         float range = attrRange.y - attrRange.x;
         float rangeRepeat = range / attrRepeat;
         float fragAttrVal = mod(texelFetch(attributeData, primitiveIndex).x - attrRange.x, rangeRepeat);
-        vec4 alphaCol = texture(fragColorMap, clamp(fragAttrVal / rangeRepeat, 0., 1.));
-        if (alphaCol.a > 0.)
-            col = vec3(alphaCol);
-        else 
+        vec4 attrCol = texture(fragColorMap, clamp(fragAttrVal / rangeRepeat, 0., 1.));
+        if (attrCol.a > 0.)
+            col = vec3(attrCol);
+        else {
             discard;
+            // if (mod(gl_FragCoord.x + gl_FragCoord.y, 2.) < 0.001)
+            //     discard;
+            // else
+            //     col = vec3(1.);
+        }
     }
     
 
