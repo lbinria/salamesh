@@ -117,7 +117,42 @@ void MyApp::init() {
 
 	std::cout << "Init" << std::endl;
 
-	// TODO Only load first for the moment
+	Shader screenShader("shaders/screen.vert", "shaders/screen.frag");
+	screenShader.use();
+	screenShader.setInt("screenTexture", 0);
+
+
+	{
+		// Get cameras start pos
+		glm::vec3 camera_pos(0.f);
+		if (hasModels()) {
+			camera_pos = getCurrentModel().getCenter();
+		}
+
+		// Create cameras
+		auto arcball_camera = std::make_shared<ArcBallCamera>("Arcball", glm::vec3(0.f, 0.f, -3.f), camera_pos, glm::vec3(0.f, 1.f, 0.f), glm::vec3(45.f, screenWidth, screenHeight));
+		auto descent_camera = std::make_shared<DescentCamera>("Descent", glm::vec3(0.f, 0.f, -3.f), camera_pos, glm::vec3(0.f, 1.f, 0.f), glm::vec3(45.f, screenWidth, screenHeight));
+		cameras.push_back(std::move(arcball_camera));
+		cameras.push_back(std::move(descent_camera));
+	}
+	
+	getRenderSurface().setCamera(cameras[0]);
+	// renderSurfaces[1]->setCamera(cameras[1]);
+
+
+	// Load model
+	// Check for files given in args (is it models, scripts ?)
+	std::set<std::string> accepted{".obj", ".mesh", ".geogram"};
+	for (auto &p : args.paths) {
+		std::cout << "check path: " << p << std::endl;
+		if (accepted.contains(p.extension())) {
+			args.models.push_back(fs::absolute(p));
+			std::cout << "add " << fs::absolute(p) << " to model" << std::endl;
+		}
+		else if (p.extension() == ".lua")
+			args.scripts.push_back(p);
+	}
+	
 	if (!args.models.empty()) {
 		for (auto m : args.models) {
 			if (!fs::exists(m) || !fs::is_regular_file(m)) {
@@ -156,30 +191,6 @@ void MyApp::init() {
 	// }
 
 	// ----- TESTS ------
-
-
-
-	Shader screenShader("shaders/screen.vert", "shaders/screen.frag");
-	screenShader.use();
-	screenShader.setInt("screenTexture", 0);
-
-
-	{
-		// Get cameras start pos
-		glm::vec3 camera_pos(0.f);
-		if (hasModels()) {
-			camera_pos = getCurrentModel().getCenter();
-		}
-
-		// Create cameras
-		auto arcball_camera = std::make_shared<ArcBallCamera>("Arcball", glm::vec3(0.f, 0.f, -3.f), camera_pos, glm::vec3(0.f, 1.f, 0.f), glm::vec3(45.f, screenWidth, screenHeight));
-		auto descent_camera = std::make_shared<DescentCamera>("Descent", glm::vec3(0.f, 0.f, -3.f), camera_pos, glm::vec3(0.f, 1.f, 0.f), glm::vec3(45.f, screenWidth, screenHeight));
-		cameras.push_back(std::move(arcball_camera));
-		cameras.push_back(std::move(descent_camera));
-	}
-	
-	getRenderSurface().setCamera(cameras[0]);
-	// renderSurfaces[1]->setCamera(cameras[1]);
 
 
 	// Engines loading...

@@ -1,5 +1,7 @@
 #pragma once 
 
+#include <filesystem>
+
 // JSON !!
 #include <json.hpp>
 #include <fstream>
@@ -10,9 +12,7 @@ struct Args {
 	std::string settings_path = "settings.json";
 	std::vector<std::string> models = {};
 	std::vector<std::string> scripts = {};
-	// std::vector<std::string> models = {"assets/catorus_hex_attr.geogram"};
-	// std::vector<std::string> models = {"assets/joint.geogram"};
-	// std::vector<std::string> models = {};
+	std::vector<std::filesystem::path> paths = {};
 
 	bool parse(std::string content) {
 
