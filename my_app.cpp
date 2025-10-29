@@ -746,12 +746,13 @@ void MyApp::loadState(json &j, const std::string path) {
 	for (auto &jModel : j["models"]) {
 		// Concatenate state.json file path with model path
 		// in order to search the mesh file relatively to the state.json file
+		std::string modelRelPath = jModel["path"];
 		auto modelPath = 
 			std::filesystem::path(path).remove_filename() / 
-			std::filesystem::path(jModel["path"]);
+			std::filesystem::path(modelRelPath);
 		
 		// Try to load the model mesh
-		if (!loadModel(modelPath))
+		if (!loadModel(modelPath.string()))
 			continue;
 		
 		// Get last added model
