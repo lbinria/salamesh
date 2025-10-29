@@ -57,12 +57,18 @@ struct TriangleInspector : public Component {
 		return glm::length(glm::vec3(worldPosOff) - worldPos);
 	}
 
+	// Check if nav path is "overlapping_vertices"
+	bool isNavHere() {
+		return app.getNavigationPathString() == "diagnostic/overlapping_vertices";
+	}
 
 	bool draw_gui(ImGuiContext* ctx) {
 		// Check that nav path is "diagnostic"
 		if (app.getNavigationPath().size() == 0 || app.getNavigationPath().front() != "diagnostic") {
 			return true;
 		}
+
+
 
 		ImGui::Begin("Triangle diagnostic");
 
@@ -82,6 +88,13 @@ struct TriangleInspector : public Component {
 
 		auto &triModel = model.as<TriModel>();
 		auto &m = triModel.getTriangles();
+
+		bool isNav = isNavHere();
+
+		if (isNav) {
+			ImGui::PushItemFlag(ImGuiItemFlags_Disabled, true);
+			ImGui::PushStyleVar(ImGuiStyleVar_Alpha, ImGui::GetStyle().Alpha * 0.5f);
+		}
 
 		if (ImGui::Button("Overlapping vertices view")) {
 			
@@ -104,6 +117,11 @@ struct TriangleInspector : public Component {
 			}
 
 
+		}
+
+		if (isNav) {
+			ImGui::PopItemFlag();
+			ImGui::PopStyleVar();
 		}
 		
 		float pointSize = triModel.getPoints().getPointSize();
@@ -218,26 +236,12 @@ struct TriangleInspector : public Component {
 		triModel.setHighlight(ElementKind::POINTS_ELT);
 
 
-
-		if (app.getNavigationPathString() == "diagnostic/overlapping_vertices") {
+		if (isNav) {
 			float newPointSize = model.getPoints().getPointSize();
 			if (ImGui::SliderFloat("Threshold (point size)", &newPointSize, 0, 50.f)) {
 				model.getPoints().setPointSize(newPointSize);
 			}
 			ImGui::Text("Overlaps number: %i", nOverlaps);
-
-			// static int vertexId = -1;
-			// ImGui::InputInt("Go to vertex: ", &vertexId);
-			// ImGui::SameLine();
-			// if (ImGui::SmallButton("go")) {
-			// 	auto v = m.vertex(vertexId);
-			// 	app.getCamera().lookAt(sl::um2glm(v.pos()));
-			// }
-
-			// if (vertexId >= 0 && vertexId < m.nverts()) {
-			// 	auto p =  m.vertex(vertexId).pos();
-			// 	ImGui::Text("x: %f, y: %f, z: %f", p.x, p.y, p.z);
-			// }
 		}
 
 		ImGui::End();

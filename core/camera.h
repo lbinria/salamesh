@@ -15,13 +15,13 @@ struct Camera {
     Camera() = default;
 
     // TODO Remove this constructor, it is useless, just use default + setCameraView to place the camera
-    Camera(std::string name, glm::vec3 eye, glm::vec3 lookAt, glm::vec3 up, glm::vec3 fovAndScreen) : 
+    Camera(std::string name, glm::vec3 eye, glm::vec3 lookAt, glm::vec3 up, glm::vec2 screen) : 
 		m_name(name),
         m_eye(std::move(eye)),
         m_lookAt(std::move(lookAt)),
         m_upVector(std::move(up)),
-        m_projectionMatrix(glm::perspective(glm::radians(fovAndScreen.x), fovAndScreen.y / fovAndScreen.z, nearPlane, farPlane)),
-        m_fovAndScreen(std::move(fovAndScreen))
+        _screen(std::move(screen)),
+        m_projectionMatrix()
     {
         updateViewMatrix();
     }
@@ -35,15 +35,10 @@ struct Camera {
         updateViewMatrix();
     }
 
-    void setCameraView(glm::vec3 eye, glm::vec3 lookAt, glm::vec3 up, glm::vec3 fovAndScreen)
-    {
-        setCameraView(eye, lookAt, up, glm::perspective(glm::radians(fovAndScreen.x), fovAndScreen.y / fovAndScreen.z, nearPlane, farPlane));
-        updateViewMatrix();
-    }
+    virtual glm::mat4 getProjection() const = 0;
 
     void updateViewMatrix()
     {
-        // Generate view matrix using the eye, lookAt and up vector
         m_viewMatrix = glm::lookAt(m_eye, m_lookAt, m_upVector);
     }
 
@@ -52,17 +47,9 @@ struct Camera {
     virtual void moveForward(float speed) = 0;
     virtual void moveUp(float speed) = 0;
 
-    void zoom(float delta) {
-        float factor = sigmoid(m_fovAndScreen.x, 45.f, 30.f, 2.5f);
-        m_fovAndScreen.x = std::clamp(m_fovAndScreen.x + delta * factor, 0.25f, 60.f);
+    virtual void zoom(float delta) = 0;
+    virtual void resetZoom() = 0;
 
-        setCameraView(m_eye, m_lookAt, m_upVector, m_fovAndScreen);
-    }
-
-    void resetZoom() {
-        setFov(45.f);
-        updateViewMatrix();
-    }
 
     // Property: lock
     void setLock(bool lock) { m_lock = lock;}
@@ -80,7 +67,9 @@ struct Camera {
     glm::vec3 getLookAt() const { return m_lookAt; }
 
     void lookAt(glm::vec3 lookAt) {
-        setCameraView(m_eye, lookAt, m_upVector, m_projectionMatrix);
+        // setCameraView(m_eye, lookAt, m_upVector, m_projectionMatrix);
+        m_lookAt = lookAt;
+        updateViewMatrix();
     }
 
     glm::mat4x4 getViewMatrix() const { return m_viewMatrix; }
@@ -88,16 +77,19 @@ struct Camera {
     glm::vec3 getWorldUpVector() const { return m_upVector; }
 
     // Read-only property: fov_and_screen
-    glm::vec3 getFovAndScreen() const { return m_fovAndScreen; }
+    // TODO delete ! just keep for compatibility
+    glm::vec3 getFovAndScreen() const { return glm::vec3(_fov, _screen); }
 
     // Property: fov
-    float getFov() const { return m_fovAndScreen.x; }
-    void setFov(float fov) { m_fovAndScreen.x = fov; zoom(0.f);/* TODO here update after set fov... not really smart */ }
+    float getFov() const { return _fov; }
+    void setFov(float fov) { _fov = fov; zoom(0.f);/* TODO here update after set fov... not really smart */ }
     
     void setScreenSize(float width, float height) { 
-        m_fovAndScreen.y = width; 
-        m_fovAndScreen.z = height; 
-        setCameraView(m_eye, m_lookAt, m_upVector, m_fovAndScreen);
+        _screen.x = width; 
+        _screen.y = height;
+
+        m_projectionMatrix = getProjection();
+        // setCameraView(m_eye, m_lookAt, m_upVector, getProjection());
     }
 
     glm::vec3 getRightVector() const { return glm::transpose(m_viewMatrix)[0]; }
@@ -106,7 +98,8 @@ struct Camera {
 
     void saveState(json &j) {
         j["name"] = m_name;
-        j["fov_and_screen"] = json::array({m_fovAndScreen.x, m_fovAndScreen.y, m_fovAndScreen.z});
+        j["fov"] = _fov;
+        j["screen"] = json::array({_screen.x, _screen.y});
         j["eye"] = json::array({m_eye.x, m_eye.y, m_eye.z});
         j["look_at"] = json::array({m_lookAt.x, m_lookAt.y, m_lookAt.z});
         j["up"] = json::array({m_upVector.x, m_upVector.y, m_upVector.z});
@@ -116,8 +109,9 @@ struct Camera {
 
     void loadState(json &j) {
         m_name = j["name"].get<std::string>();
-        auto &jFovAndScreen = j["fov_and_screen"];
-        m_fovAndScreen = glm::vec3(jFovAndScreen[0], jFovAndScreen[1], jFovAndScreen[2]);
+        _fov = j["fov"];
+        auto &jScreen = j["screen"];
+        _screen = glm::vec2(jScreen[0], jScreen[1]);
         auto &jEye = j["eye"];
         m_eye = glm::vec3(jEye[0], jEye[1], jEye[2]);
         auto &jLookAt = j["look_at"];
@@ -125,7 +119,9 @@ struct Camera {
         auto &jUp = j["up"];
         m_upVector = glm::vec3(jUp[0], jUp[1], jUp[2]);
         doLoadState(j);
-        setCameraView(m_eye, m_lookAt, m_upVector, m_fovAndScreen);
+        // TODO seems not necessary
+        m_projectionMatrix = getProjection();
+        // setCameraView(m_eye, m_lookAt, m_upVector, getProjection());
     }
 
     virtual void doSaveState(json &j) = 0;
@@ -135,7 +131,9 @@ struct Camera {
 
 protected:
 	std::string m_name;
-    glm::vec3 m_fovAndScreen;
+    float _fov = 45.f;
+    glm::vec2 _screen;
+    // glm::vec3 m_fovAndScreen;
     glm::mat4x4 m_viewMatrix;
     glm::mat4x4 m_projectionMatrix;
     glm::vec3 m_eye; // Camera position in 3D

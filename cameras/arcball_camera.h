@@ -9,6 +9,17 @@ struct ArcBallCamera : public Camera {
 
     using Camera::Camera;
 
+    glm::mat4 getProjection() const override {
+        float aspect = _screen.x / _screen.y;
+        // float b = 0.2f;
+        // return glm::ortho(-b, b, -(aspect*b), aspect*b, nearPlane, farPlane);
+        // return glm::ortho(-0.305873f, 0.346362f, -0.469889f, 0.530111f, nearPlane, farPlane);
+
+        // return glm::ortho(-0.469889f * aspect, 0.530111f * aspect, -0.469889f, 0.530111f, nearPlane, farPlane);
+        return glm::ortho(-0.469889f * aspect * _zoomFactor, 0.530111f * aspect * _zoomFactor, -0.469889f * _zoomFactor, 0.530111f * _zoomFactor, nearPlane, farPlane);
+    }
+
+
     void move(glm::vec2 viewportDims, glm::vec2 mousePos, glm::vec2 lastMousePos) override {
         if (m_lock)
             return;
@@ -42,34 +53,6 @@ struct ArcBallCamera : public Camera {
         setCameraView(position, m_lookAt, m_upVector, m_projectionMatrix);
     }
 
-    // void movePan(glm::vec2 viewport, glm::mat4 model, float depth, glm::vec2 oldPos, glm::vec2 newPos) {
-    //     if (m_lock)
-    //         return;
-
-    //     glm::vec2 delta = newPos - oldPos;
-
-    //     float fov = m_fovAndScreen.x;
-    //     float width = m_fovAndScreen.y;
-    //     float height = m_fovAndScreen.z;
-    //     float aspect = width / height;
-    //     float fovY = 2.0f * atanf( tanf(fov * 0.5f) / aspect ); // convert fovX -> fovY
-
-    //     float d = glm::length(m_lookAt - m_eye);
-        
-    //     glm::vec3 forward = glm::normalize(m_lookAt - m_eye);
-    //     glm::vec3 right = glm::normalize(glm::cross(forward, m_upVector));
-    //     glm::vec3 camUp = glm::normalize(glm::cross(right, forward));
-
-
-    //     float worldPerPixelY = (2.0f * d * tanf(fovY * 0.5f)) / height;
-    //     float worldPerPixelX = worldPerPixelY * aspect;
-        
-    //     glm::vec3 offset = right * (-delta.x * worldPerPixelX) + camUp * (delta.y * worldPerPixelY);
-        
-
-    //     setCameraView(m_eye + offset, m_lookAt + offset, m_upVector, m_projectionMatrix);
-    // }
-
     void movePan(glm::vec2 viewport, glm::mat4 model, float depth, glm::vec2 oldPos, glm::vec2 newPos) {
         if (m_lock)
             return;
@@ -82,16 +65,14 @@ struct ArcBallCamera : public Camera {
         glm::vec3 right = glm::normalize(glm::cross(forward, m_upVector));
         glm::vec3 camUp = glm::normalize(glm::cross(right, forward));
 
-        float fov = m_fovAndScreen.x;
-        // float worldPerPixelY = (2.0f * d * tan(fov * 0.5f)) / m_fovAndScreen.z;
-        // float worldPerPixelX = worldPerPixelY * (m_fovAndScreen.y / m_fovAndScreen.z) /* aspect */;
-        // glm::vec3 offset = right * (-delta.x * worldPerPixelX) + camUp * (delta.y * worldPerPixelY);
+        // float dx = delta.x;
+        float dx = delta.x / (2. * tan(0.5 * _fov));
 
-        float worldPerPixelY = (2.0f * d * tan(fov * 0.5f)) / m_fovAndScreen.z;
-        float worldPerPixelX = worldPerPixelY * (m_fovAndScreen.y / m_fovAndScreen.z) /* aspect */;
-        glm::vec3 offset = right * (-delta.x * worldPerPixelX) + camUp * (delta.y * worldPerPixelY);
+        float offset = depth / (2. * tan(0.5 * _fov)) * dx;
+        glm::vec3 nEye = m_eye + right * offset;
+        glm::vec3 nLookAt = m_lookAt + right * offset;
         
-        setCameraView(m_eye + offset, m_lookAt + offset, m_upVector, m_projectionMatrix);
+        setCameraView(nEye, nLookAt, m_upVector, m_projectionMatrix);
     }
 
     void moveRight(float speed) override {
@@ -99,24 +80,21 @@ struct ArcBallCamera : public Camera {
             return;
 
         m_eye += getRightVector() * speed * 2.f;
-        setCameraView(m_eye, m_lookAt, m_upVector, m_projectionMatrix);
+        updateViewMatrix();
     }
 
-    void moveForward(float speed) override {
-        if (m_lock)
-            return;
+    void moveForward(float speed) override {}
+    void moveUp(float speed) override {}
 
-        m_eye += m_upVector * speed * 2.f;
-        setCameraView(m_eye, m_lookAt, m_upVector, m_projectionMatrix);
-
+    void zoom(float delta) {
+        float factor = sigmoid(_fov, 45.f, 30.f, 2.5f);
+        _zoomFactor += delta * factor;
+        // setCameraView(m_eye, m_lookAt, m_upVector, getProjection());
+        m_projectionMatrix = getProjection();
     }
 
-    void moveUp(float speed) override {
-        if (m_lock)
-            return;
-
-        m_eye += getViewDir() * speed;
-        setCameraView(m_eye, m_lookAt, m_upVector, m_projectionMatrix);
+    void resetZoom() {
+        // TODO fill
     }
 
     void doSaveState(json &j) {}
@@ -124,4 +102,7 @@ struct ArcBallCamera : public Camera {
 
     std::string getType() override { return "ArcBallCamera"; }
 
+    private:
+
+    float _zoomFactor = 1.f;
 };

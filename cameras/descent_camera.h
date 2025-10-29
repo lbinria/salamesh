@@ -6,6 +6,10 @@ struct DescentCamera final : public Camera {
 
 	using Camera::Camera;
 
+    glm::mat4 getProjection() const override {
+        return glm::perspective(glm::radians(_fov), _screen.x / _screen.y, nearPlane, farPlane);
+    }
+
     void move(glm::vec2 viewportDims, glm::vec2 mousePos, glm::vec2 lastMousePos) override {
         if (m_lock)
             return;
@@ -44,7 +48,7 @@ struct DescentCamera final : public Camera {
 
         m_eye += getRightVector() * speed;
         m_lookAt += getRightVector() * speed;
-        setCameraView(m_eye, m_lookAt, m_upVector, m_projectionMatrix);
+        updateViewMatrix();
     }
 
     void moveForward(float speed) override {
@@ -52,7 +56,7 @@ struct DescentCamera final : public Camera {
             return;
 
         m_eye += getViewDir() * speed;
-        setCameraView(m_eye, m_lookAt, m_upVector, m_projectionMatrix);
+        updateViewMatrix();
     }
 
     void moveUp(float speed) override {
@@ -61,7 +65,20 @@ struct DescentCamera final : public Camera {
 
         m_eye += m_upVector * speed;
         m_lookAt += m_upVector * speed;
-        setCameraView(m_eye, m_lookAt, m_upVector, m_projectionMatrix);
+        updateViewMatrix();
+    }
+
+    void zoom(float delta) {
+        float factor = sigmoid(_fov, 45.f, 30.f, 2.5f);
+        _fov = std::clamp(_fov + delta * factor, 0.25f, 60.f);
+        // setCameraView(m_eye, m_lookAt, m_upVector, getProjection());
+        m_projectionMatrix = getProjection();
+    }
+
+    void resetZoom() {
+        // TODO review this part
+        setFov(45.f);
+        updateViewMatrix();
     }
 
     void doSaveState(json &j) {}
