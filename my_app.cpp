@@ -233,16 +233,16 @@ void MyApp::init() {
 	auto layoutComp = std::make_unique<TriangleDiagnosticLayout>(*this);
 	auto viewComp = std::make_unique<ViewComponent>(*this);
 	auto triDiagnosticComp = std::make_unique<TriangleInspector>(*this);
-	auto invertedTriangleViewerComp = std::make_unique<InvertedTriangleViewer>(*this);
+	// auto invertedTriangleViewerComp = std::make_unique<InvertedTriangleViewer>(*this);
 
 	layoutComp->init();
 	viewComp->init();
 	triDiagnosticComp->init();
-	invertedTriangleViewerComp->init();
+	// invertedTriangleViewerComp->init();
 	components.push_back(std::move(layoutComp));
 	components.push_back(std::move(viewComp));
 	components.push_back(std::move(triDiagnosticComp));
-	components.push_back(std::move(invertedTriangleViewerComp));
+	// components.push_back(std::move(invertedTriangleViewerComp));
 }
 
 void MyApp::update(float dt) {
@@ -251,7 +251,8 @@ void MyApp::update(float dt) {
 	//
 	float speed = 0.01f;
 	if (countModels() > 0) {
-		speed = getCurrentModel().getRadius() * 0.05f;
+		// speed = getCurrentModel().getRadius() * 0.05f;
+		speed = getCurrentModel().getRadius() * 0.5f * dt;
 	}
 
 	if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS) {
@@ -281,8 +282,8 @@ void MyApp::update(float dt) {
 			glm::mat4 model = glm::mat4(1.0f);
 			model = glm::translate(model, getCurrentModel().getPosition());
 			
-			float depth = getDepth(st.mouse.pos.x, st.mouse.pos.y);
-			arcball->movePan({getScreenWidth(), getScreenHeight()}, model, depth, st.mouse.lastPos, st.mouse.pos);
+			float z = pickPoint(st.mouse.pos.x, st.mouse.pos.y).z;
+			arcball->movePan({getScreenWidth(), getScreenHeight()}, model, z, st.mouse.lastPos, st.mouse.pos);
 		}
 	}
 
