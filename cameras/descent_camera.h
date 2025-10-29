@@ -6,7 +6,7 @@ struct DescentCamera final : public Camera {
 
 	using Camera::Camera;
 
-    glm::mat4 getProjection() const override {
+    glm::mat4 computeProjection() const override {
         return glm::perspective(glm::radians(_fov), _screen.x / _screen.y, nearPlane, farPlane);
     }
 
@@ -39,7 +39,7 @@ struct DescentCamera final : public Camera {
 
 
         // Update camera
-        setCameraView(m_eye, newLookAt, m_upVector, m_projectionMatrix);
+        setCameraView(m_eye, newLookAt, m_upVector);
     }
 
     void moveRight(float speed) override {
@@ -71,14 +71,11 @@ struct DescentCamera final : public Camera {
     void zoom(float delta) {
         float factor = sigmoid(_fov, 45.f, 30.f, 2.5f);
         _fov = std::clamp(_fov + delta * factor, 0.25f, 60.f);
-        // setCameraView(m_eye, m_lookAt, m_upVector, getProjection());
-        m_projectionMatrix = getProjection();
+        m_projectionMatrix = computeProjection();
     }
 
     void resetZoom() {
-        // TODO review this part
         setFov(45.f);
-        updateViewMatrix();
     }
 
     void doSaveState(json &j) {}

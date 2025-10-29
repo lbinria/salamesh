@@ -135,8 +135,8 @@ void MyApp::init() {
 		}
 
 		// Create cameras
-		auto arcball_camera = std::make_shared<ArcBallCamera>("Arcball", glm::vec3(0.f, 0.f, -3.f), camera_pos, glm::vec3(0.f, 1.f, 0.f), glm::vec3(45.f, screenWidth, screenHeight));
-		auto descent_camera = std::make_shared<DescentCamera>("Descent", glm::vec3(0.f, 0.f, -3.f), camera_pos, glm::vec3(0.f, 1.f, 0.f), glm::vec3(45.f, screenWidth, screenHeight));
+		auto arcball_camera = std::make_shared<ArcBallCamera>("Arcball", glm::vec3(0.f, 0.f, -3.f), camera_pos, glm::vec3(0.f, 1.f, 0.f));
+		auto descent_camera = std::make_shared<DescentCamera>("Descent", glm::vec3(0.f, 0.f, -3.f), camera_pos, glm::vec3(0.f, 1.f, 0.f));
 		cameras.push_back(std::move(arcball_camera));
 		cameras.push_back(std::move(descent_camera));
 	}
@@ -767,6 +767,7 @@ void MyApp::loadState(json &j, const std::string path) {
 		auto type = jCamera["type"].get<std::string>();
 		auto camera = makeCamera(type);
 		camera->loadState(jCamera);
+		camera->setScreenSize(screenWidth, screenHeight);
 		cameras.push_back(std::move(camera));
 	}
 

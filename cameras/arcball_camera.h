@@ -9,7 +9,7 @@ struct ArcBallCamera : public Camera {
 
     using Camera::Camera;
 
-    glm::mat4 getProjection() const override {
+    glm::mat4 computeProjection() const override {
         float aspect = _screen.x / _screen.y;
         // float b = 0.2f;
         // return glm::ortho(-b, b, -(aspect*b), aspect*b, nearPlane, farPlane);
@@ -50,7 +50,7 @@ struct ArcBallCamera : public Camera {
         position = (ry * (position - pivot)) + pivot;
 
         // Update camera
-        setCameraView(position, m_lookAt, m_upVector, m_projectionMatrix);
+        setCameraView(position, m_lookAt, m_upVector);
     }
 
     void movePan(glm::vec2 viewport, glm::mat4 model, float depth, glm::vec2 oldPos, glm::vec2 newPos) {
@@ -72,7 +72,7 @@ struct ArcBallCamera : public Camera {
         glm::vec3 nEye = m_eye + right * offset;
         glm::vec3 nLookAt = m_lookAt + right * offset;
         
-        setCameraView(nEye, nLookAt, m_upVector, m_projectionMatrix);
+        setCameraView(nEye, nLookAt, m_upVector);
     }
 
     void moveRight(float speed) override {
@@ -89,8 +89,8 @@ struct ArcBallCamera : public Camera {
     void zoom(float delta) {
         float factor = sigmoid(_fov, 45.f, 30.f, 2.5f);
         _zoomFactor += delta * factor;
-        // setCameraView(m_eye, m_lookAt, m_upVector, getProjection());
-        m_projectionMatrix = getProjection();
+        // setCameraView(m_eye, m_lookAt, m_upVector, computeProjection());
+        m_projectionMatrix = computeProjection();
     }
 
     void resetZoom() {

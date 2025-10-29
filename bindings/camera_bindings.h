@@ -39,10 +39,6 @@ namespace bindings {
 				&Camera::setFov
 			);
 
-			camera_t["fov_and_screen"] = sol::readonly_property(
-				&Camera::getFovAndScreen
-			);
-
 			camera_t["lock"] = sol::property(
 				&Camera::isLocked,
 				&Camera::setLock
