@@ -1,11 +1,12 @@
 #pragma once 
 
 #include <filesystem>
+#include <optional>
+
+#include <fstream>
 
 // JSON !!
 #include <json.hpp>
-#include <fstream>
-
 using json = nlohmann::json;
 
 struct Args {

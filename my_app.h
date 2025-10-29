@@ -4,11 +4,15 @@
 #include "script.h"
 #include "helpers/args_manager.h"
 
+// JSON !!
+#include <json.hpp>
+using json = nlohmann::json;
+
 struct MyApp : App {
 
 	MyApp(Args args) : App(args) {}
 
-    void loadModel(const std::string& filename) override;
+    bool loadModel(const std::string& filename) override;
     int addModel(std::string name) override;
     void removeModel(int idx) override;
     bool removeModel(std::string name) override;
@@ -29,6 +33,8 @@ struct MyApp : App {
     // States functions
     void save_state(const std::string filename);
     void load_state(const std::string filename);
+
+	void loadState(json &j, const std::string path);
 
 	std::unique_ptr<Camera> makeCamera(std::string type) override;
 

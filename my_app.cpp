@@ -11,7 +11,7 @@
 namespace fs = std::filesystem;
 
 // TODO be able to load tet, surf, etc
-void MyApp::loadModel(const std::string& filename) {
+bool MyApp::loadModel(const std::string& filename) {
 
 	// TODO Should deduce type here
 	// TODO please do something more intelligent here !
@@ -28,7 +28,10 @@ void MyApp::loadModel(const std::string& filename) {
 			bool tri_load_success = model->load(filename);
 			if (!tri_load_success) {
 				model = std::make_unique<TetModel>();
-				model->load(filename);
+				bool tet_load_success = model->load(filename);
+				if (!tet_load_success) {
+					return false;
+				}
 			}
 		}
 	}
@@ -62,6 +65,8 @@ void MyApp::loadModel(const std::string& filename) {
 	}
 
 	Commands::get().add_command("app.loadModel(" + filename + ")");
+
+	return true;
 }
 
 int MyApp::addModel(std::string name) {
@@ -145,54 +150,31 @@ void MyApp::init() {
 	std::set<std::string> accepted{".obj", ".mesh", ".geogram"};
 	for (auto &p : args.paths) {
 		if (accepted.contains(p.extension().string())) {
-			args.models.push_back(fs::absolute(p).string());
+			loadModel(p.string());
 		}
-		else if (p.extension() == ".lua")
-			args.scripts.push_back(fs::absolute(p).string());
-	}
-	
-	if (!args.models.empty()) {
-		for (auto m : args.models) {
-			if (!fs::exists(m) || !fs::is_regular_file(m)) {
-				std::cerr << "Model path given as a command line argument does not exist or is not a file: " << m << std::endl;
-				continue;
+		else if (p.extension() == ".lua") {
+			std::cout << "load script: " << p.string() << std::endl;
+			auto script = std::make_unique<LuaScript>(*this, p.string());
+			script->init();
+			components.push_back(std::move(script));
+		}
+		else if (p.extension() == ".json") {
+			// Check internal format of json file (state file, settings...)
+			std::ifstream ifs(p);
+			if (!ifs.is_open()) {
+				std::cerr << "Failed to open file given as argument: " << p.string() << std::endl;
+				continue;;
 			}
-			loadModel(m);
+
+			json j;
+			ifs >> j;
+			ifs.close();
+
+			if (j["header"]["type"] == "state") {
+				loadState(j, p.string());
+			}
 		}
 	}
-
-	// ----- TESTS ------
-
-	// // // Heavy load test (slow...)
-	// // for (int i = 0; i < 10; ++i) {
-	// // 	loadModel("assets/catorus_hex_attr.geogram");
-	// // 	models[i+1]->setPosition(models[0]->getPosition() + glm::vec3(rand() % 10 / 10.f, rand() % 10 / 10.f, rand() % 10 / 10.f));
-	// // }
-
-	// loadModel("assets/catorus_hex_facet_attr.geogram");
-	// loadModel("assets/catorus_quad.geogram");
-	// loadModel("assets/catorus_tri.geogram");
-	// loadModel("assets/catorus_tet.geogram");
-
-	// // load_state("/home/tex/Desktop/state.json");
-
-	// models[1]->setPosition(glm::vec3(1.f, 0.f, 0.f));
-	// models[2]->setPosition(glm::vec3(2.f, 0.f, 0.f));
-	// models[3]->setPosition(glm::vec3(3.f, 0.f, 0.f));
-	// models[4]->setPosition(glm::vec3(4.f, 0.f, 0.f));
-
-	// models[1]->setParent(models[0]);
-	// models[2]->setParent(models[0]);
-
-	// for (auto &m : getChildrenOf(models[0])) {
-	// 	std::cout << "child: " << m->getName() << std::endl;
-	// }
-
-	// ----- TESTS ------
-
-
-	// Engines loading...
-	
 
 	// Components loading...
 
@@ -234,17 +216,17 @@ void MyApp::init() {
 		}
 	}
 
-	// Load scripts from args
-	for (auto s : args.scripts) {
-		if (!fs::exists(s) || !fs::is_regular_file(s)) {
-			std::cerr << "Script path given as a command line argument does not exist or is not a file: " << s << std::endl;
-			continue;
-		}
-		std::cout << "load script: " << s << std::endl;
-		auto script = std::make_unique<LuaScript>(*this, s);
-		script->init();
-		components.push_back(std::move(script));
-	}
+	// // Load scripts from args
+	// for (auto s : args.scripts) {
+	// 	if (!fs::exists(s) || !fs::is_regular_file(s)) {
+	// 		std::cerr << "Script path given as a command line argument does not exist or is not a file: " << s << std::endl;
+	// 		continue;
+	// 	}
+	// 	std::cout << "load script: " << s << std::endl;
+	// 	auto script = std::make_unique<LuaScript>(*this, s);
+	// 	script->init();
+	// 	components.push_back(std::move(script));
+	// }
 
 	// ----- TEST -----
 	// TODO remove just for testing manually add components
@@ -454,13 +436,6 @@ void MyApp::draw_gui() {
 	
 	static int currentMode = -1;
 	TopModePanel(currentMode, {{"view", (ImTextureID)eyeIcon}, {"diagnostic", (ImTextureID)bugAntIcon}});
-
-	// if (currentMode == 0) {
-	// 	setNavigationPath({"view"});
-	// } else if (currentMode == 1) {
-	// 	setNavigationPath({"diagnostic"});
-	// }
-
 	ModePanel(getNavigationPathString());
 
 
@@ -502,18 +477,8 @@ void MyApp::draw_gui() {
 		ImGuiFileDialog::Instance()->Close();
 	}
 
-
-
-	// ImVec2 window_pos = ImGui::GetWindowPos();
-	// ImVec2 window_size = ImGui::GetWindowSize(); 
-	// ImVec2 window_center = ImVec2(window_pos.x + window_size.x * 0.5f, window_pos.y + window_size.y * 0.5f);
 	
 	ImGui::GetBackgroundDrawList()->AddCircle(ImGui::GetMousePos(), st.mouse.getCursorRadius(), IM_COL32(225, 225, 255, 200), 0, 2);
-	// ImGui::GetBackgroundDrawList()->AddRect(
-	// 	ImVec2(pickRegion.x - pickRegion.z, pickRegion.y - pickRegion.w), 
-	// 	ImVec2(pickRegion.x + pickRegion.z, pickRegion.y + pickRegion.w), 
-	// 	IM_COL32(225, 225, 255, 200), 0, 2
-	// );
 
 
 
@@ -730,10 +695,13 @@ void MyApp::mouse_move(double x, double y) {
 
 }
 
-
+// TODO move to App class
 void MyApp::save_state(const std::string filename) {
 
 	json j;
+
+	// Save app states
+	j["header"]["type"] = "state";
 	j["cull_mode"] = cull_mode;
 	j["selected_model"] = selectedModel;
 	j["selected_camera"] = selectedCamera;
@@ -742,54 +710,51 @@ void MyApp::save_state(const std::string filename) {
 
 	// Save models states
 	for (int i = 0; i < models.size(); ++i) {		
-		auto &m = models[i];
-		m->saveState(j["models"][i]);
+		models[i]->saveState(j["models"][i]);
 	}
 
 	// Save cameras states
 	for (int i = 0; i < cameras.size(); ++i) {
-		auto &c = cameras[i];
-		c->saveState(j["cameras"][i]);
+		cameras[i]->saveState(j["cameras"][i]);
 	}
-
 
 	std::ofstream ofs(filename);
 	if (!ofs.is_open()) {
 		std::cerr << "Failed to open file for saving state: " << filename << std::endl;
 		return;
 	}
+
 	ofs << j.dump(4); // Pretty print with 4 spaces indentation
 	ofs.close();
+
 	std::cout << "State saved to: " << filename << std::endl;
 }
 
-void MyApp::load_state(const std::string filename) {
-
-	std::ifstream ifs(filename);
-	if (!ifs.is_open()) {
-		std::cerr << "Failed to open file for loading state: " << filename << std::endl;
-		return;
-	}
-
-	json j;
-	ifs >> j;
-	ifs.close();
-
-	std::cout << "State loaded from: " << filename << std::endl;
-	
-	cull_mode = j["cull_mode"].get<int>();
-	selectedModel = j["selected_model"].get<int>();
-	selectedCamera = j["selected_camera"].get<int>();
-
-	// Clear current models
+void MyApp::loadState(json &j, const std::string path) {
+	// Clear scene
 	// TODO make a function to clean all scenes properly !
 	models.clear();
 	cameras.clear();
 
+	
+	// Load app state
+	cull_mode = j["cull_mode"].get<int>();
+	selectedModel = j["selected_model"].get<int>();
+	selectedCamera = j["selected_camera"].get<int>();
+
 	// Load models states
 	for (auto &jModel : j["models"]) {
-		// Effectively load the model
-		loadModel(jModel["path"]);
+		// Concatenate state.json file path with model path
+		// in order to search the mesh file relatively to the state.json file
+		auto modelPath = 
+			std::filesystem::path(path).remove_filename() / 
+			std::filesystem::path(jModel["path"]);
+		
+		// Try to load the model mesh
+		if (!loadModel(modelPath))
+			continue;
+		
+		// Get last added model
 		auto &model = models.back();
 		// Load state into last loaded model
 		model->loadState(jModel);
@@ -805,6 +770,24 @@ void MyApp::load_state(const std::string filename) {
 
 
 	std::cout << "State loaded successfully." << std::endl;
+}
+
+// TODO move to App class
+void MyApp::load_state(const std::string filename) {
+
+	std::ifstream ifs(filename);
+	if (!ifs.is_open()) {
+		std::cerr << "Failed to open file for loading state: " << filename << std::endl;
+		return;
+	}
+
+	json j;
+	ifs >> j;
+	ifs.close();
+
+	std::cout << "Load state from: " << filename << std::endl;
+
+	loadState(j, filename);
 }
 
 std::unique_ptr<Camera> MyApp::makeCamera(std::string type) {

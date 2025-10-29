@@ -23,11 +23,6 @@ int main(int argc, char** argv) {
 				args.paths.push_back(path);
 		}
 	}
-
-	// if (argc >= 2) {
-		
-	// 	// TODO check if file access or raw json
-	// }
 	
 	MyApp app(args);
 	app.setup();
