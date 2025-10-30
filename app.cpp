@@ -798,6 +798,7 @@ void App::processInput(GLFWwindow *window) {
 	glfwGetCursorPos(window, &x, &y);
 	st.mouse.lastPos = st.mouse.pos;
 	st.mouse.pos = glm::vec2(x, y);
+	st.mouse.delta = st.mouse.pos - st.mouse.lastPos;
 
 	// Check mouse buttons pressed
 	for (int i = 0; i < 8; ++i) {

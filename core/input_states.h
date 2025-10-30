@@ -43,6 +43,7 @@ struct InputState {
 	struct MouseState {
 		glm::vec2 pos;
 		glm::vec2 lastPos;
+		glm::vec2 delta;
 		bool buttons[8] = {false, false, false, false, false, false, false, false};
 		bool dblButtons[8] = {false, false, false, false, false, false, false, false};
 		std::chrono::steady_clock::time_point lastClicks[8];

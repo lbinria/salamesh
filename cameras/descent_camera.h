@@ -6,7 +6,7 @@ struct DescentCamera final : public Camera {
 
 	using Camera::Camera;
 
-    glm::mat4 computeProjection() const override {
+    glm::mat4 computeProjection() override {
         return glm::perspective(glm::radians(_fov), _screen.x / _screen.y, nearPlane, farPlane);
     }
 

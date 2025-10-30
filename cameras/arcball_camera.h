@@ -9,14 +9,23 @@ struct ArcBallCamera : public Camera {
 
     using Camera::Camera;
 
-    glm::mat4 computeProjection() const override {
+    glm::mat4 computeProjection() override {
         float aspect = _screen.x / _screen.y;
         // float b = 0.2f;
         // return glm::ortho(-b, b, -(aspect*b), aspect*b, nearPlane, farPlane);
         // return glm::ortho(-0.305873f, 0.346362f, -0.469889f, 0.530111f, nearPlane, farPlane);
 
         // return glm::ortho(-0.469889f * aspect, 0.530111f * aspect, -0.469889f, 0.530111f, nearPlane, farPlane);
-        return glm::ortho(-0.469889f * aspect * _zoomFactor, 0.530111f * aspect * _zoomFactor, -0.469889f * _zoomFactor, 0.530111f * _zoomFactor, nearPlane, farPlane);
+
+        // Compute bounds
+        _bounds = {
+            -0.469889f * aspect * _zoomFactor, 
+            0.530111f * aspect * _zoomFactor, 
+            -0.469889f * _zoomFactor, 
+            0.530111f * _zoomFactor
+        };
+
+        return glm::ortho(_bounds.x, _bounds.y, _bounds.z, _bounds.w, nearPlane, farPlane);
     }
 
 
@@ -53,24 +62,30 @@ struct ArcBallCamera : public Camera {
         setCameraView(position, m_lookAt, m_upVector);
     }
 
-    void movePan(glm::vec2 viewport, glm::mat4 model, float depth, glm::vec2 oldPos, glm::vec2 newPos) {
+    void movePan(glm::vec2 delta) {
         if (m_lock)
             return;
 
-        glm::vec2 delta = newPos - oldPos;
+        // Compute view rect size and divide by screen rect size 
+        // to get how many world unit per pixel
+        glm::vec2 viewDims{_bounds.y - _bounds.x, _bounds.w - _bounds.z};
+        glm::vec2 worldUnitPerPixel = viewDims / _screen;
 
-        float d = glm::length(m_lookAt - m_eye);
-        
-        glm::vec3 forward = glm::normalize(m_lookAt - m_eye);
-        glm::vec3 right = glm::normalize(glm::cross(forward, m_upVector));
-        glm::vec3 camUp = glm::normalize(glm::cross(right, forward));
+        // Get offset in world coordinates
+        glm::vec2 offset = worldUnitPerPixel * delta;
 
-        // float dx = delta.x;
-        float dx = delta.x / (2. * tan(0.5 * _fov));
+        glm::vec3 right = getRightVector();
+        glm::vec3 up = getUpVector();
+        // Update camera position / look at
+        glm::vec3 nEye = m_eye + right * -offset.x + up * offset.y;
+        glm::vec3 nLookAt = m_lookAt + right * -offset.x + up * offset.y;
 
-        float offset = depth / (2. * tan(0.5 * _fov)) * dx;
-        glm::vec3 nEye = m_eye + right * offset;
-        glm::vec3 nLookAt = m_lookAt + right * offset;
+        // // float dx = delta.x;
+        // float dx = delta.x / (2. * tan(0.5 * _fov));
+
+        // float offset = depth / (2. * tan(0.5 * _fov)) * dx;
+        // glm::vec3 nEye = m_eye + right * offset;
+        // glm::vec3 nLookAt = m_lookAt + right * offset;
         
         setCameraView(nEye, nLookAt, m_upVector);
     }
@@ -105,4 +120,5 @@ struct ArcBallCamera : public Camera {
     private:
 
     float _zoomFactor = 1.f;
+    glm::vec4 _bounds;
 };

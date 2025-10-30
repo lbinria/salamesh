@@ -15,11 +15,11 @@ struct Camera {
     Camera() = default;
 
     // TODO Remove this constructor, it is useless, just use default + setCameraView to place the camera
-    Camera(std::string name, glm::vec3 eye, glm::vec3 lookAt, glm::vec3 up) : 
+    Camera(std::string name, glm::vec3 up) : 
 		m_name(name),
-        m_eye(std::move(eye)),
-        m_lookAt(std::move(lookAt)),
-        m_upVector(std::move(up)),
+        m_eye(0.f, 0.f, -3.f),
+        m_lookAt(0.f, 0.f, 0.f),
+        // m_upVector(std::move(up)),
         m_projectionMatrix()
     {
         updateViewMatrix();
@@ -31,7 +31,7 @@ struct Camera {
     {
         m_eye = std::move(eye);
         m_lookAt = std::move(lookAt);
-        m_upVector = std::move(up);
+        // m_upVector = std::move(up);
         updateViewMatrix();
     }
 
@@ -39,7 +39,7 @@ struct Camera {
         m_projectionMatrix = std::move(proj);
     }
 
-    virtual glm::mat4 computeProjection() const = 0;
+    virtual glm::mat4 computeProjection() = 0;
 
     void updateViewMatrix()
     {
@@ -98,7 +98,7 @@ struct Camera {
         j["fov"] = _fov;
         j["eye"] = json::array({m_eye.x, m_eye.y, m_eye.z});
         j["look_at"] = json::array({m_lookAt.x, m_lookAt.y, m_lookAt.z});
-        j["up"] = json::array({m_upVector.x, m_upVector.y, m_upVector.z});
+        // j["up"] = json::array({m_upVector.x, m_upVector.y, m_upVector.z});
         j["type"] = getType();
         doSaveState(j);
     }
@@ -110,8 +110,8 @@ struct Camera {
         m_eye = glm::vec3(jEye[0], jEye[1], jEye[2]);
         auto &jLookAt = j["look_at"];
         m_lookAt = glm::vec3(jLookAt[0], jLookAt[1], jLookAt[2]);
-        auto &jUp = j["up"];
-        m_upVector = glm::vec3(jUp[0], jUp[1], jUp[2]);
+        // auto &jUp = j["up"];
+        // m_upVector = glm::vec3(jUp[0], jUp[1], jUp[2]);
         doLoadState(j);
 
         updateViewMatrix();
@@ -131,7 +131,7 @@ protected:
     glm::mat4x4 m_projectionMatrix;
     glm::vec3 m_eye; // Camera position in 3D
     glm::vec3 m_lookAt; // Point that the camera is looking at
-    glm::vec3 m_upVector; // Orientation of the camera
+    const glm::vec3 m_upVector{0.f, 1.f, 0.f}; // Orientation of the camera
     bool m_lock = false;
 
 	float farPlane = 100000.f;

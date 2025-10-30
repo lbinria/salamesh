@@ -128,15 +128,9 @@ void MyApp::init() {
 
 
 	{
-		// Get cameras start pos
-		glm::vec3 camera_pos(0.f);
-		if (hasModels()) {
-			camera_pos = getCurrentModel().getCenter();
-		}
-
 		// Create cameras
-		auto arcball_camera = std::make_shared<ArcBallCamera>("Arcball", glm::vec3(0.f, 0.f, -3.f), camera_pos, glm::vec3(0.f, 1.f, 0.f));
-		auto descent_camera = std::make_shared<DescentCamera>("Descent", glm::vec3(0.f, 0.f, -3.f), camera_pos, glm::vec3(0.f, 1.f, 0.f));
+		auto arcball_camera = std::make_shared<ArcBallCamera>("Arcball", glm::vec3(0.f, 1.f, 0.f));
+		auto descent_camera = std::make_shared<DescentCamera>("Descent", glm::vec3(0.f, 1.f, 0.f));
 		cameras.push_back(std::move(arcball_camera));
 		cameras.push_back(std::move(descent_camera));
 	}
@@ -283,7 +277,7 @@ void MyApp::update(float dt) {
 			model = glm::translate(model, getCurrentModel().getPosition());
 			
 			float z = pickPoint(st.mouse.pos.x, st.mouse.pos.y).z;
-			arcball->movePan({getScreenWidth(), getScreenHeight()}, model, z, st.mouse.lastPos, st.mouse.pos);
+			arcball->movePan(st.mouse.delta);
 		}
 	}
 
@@ -737,12 +731,6 @@ void MyApp::loadState(json &j, const std::string path) {
 	models.clear();
 	cameras.clear();
 
-	
-	// Load app state
-	cull_mode = j["cull_mode"].get<int>();
-	selectedModel = j["selected_model"].get<int>();
-	selectedCamera = j["selected_camera"].get<int>();
-
 	// Load models states
 	for (auto &jModel : j["models"]) {
 		// Concatenate state.json file path with model path
@@ -767,10 +755,13 @@ void MyApp::loadState(json &j, const std::string path) {
 		auto type = jCamera["type"].get<std::string>();
 		auto camera = makeCamera(type);
 		camera->loadState(jCamera);
-		camera->setScreenSize(screenWidth, screenHeight);
 		cameras.push_back(std::move(camera));
 	}
 
+	// Load app state
+	cull_mode = j["cull_mode"].get<int>();
+	setSelectedModel(j["selected_model"].get<int>());
+	setSelectedCamera(j["selected_camera"].get<int>());
 
 	std::cout << "State loaded successfully." << std::endl;
 }
