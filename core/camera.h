@@ -144,4 +144,22 @@ protected:
         return (1.f / (1.f + std::exp(-(x - center) / w))) * max_value * 2.;
     }
 
+    float dsigmoid_dx(float x, float center = 45.f, float w = 90.f, float max_value = 1.f) {
+        float z = std::exp(-(x - center) / w);
+        float s = 1.f / (1.f + z);
+        return 2.f * max_value * s * (1.f - s) / w;
+        // or equivalently:
+        // return 2.f * max_value * (z / ((1.f + z)*(1.f + z))) / w;
+    }
+
+    // derivative of Richards' curve
+    float richards_derivative(float x,
+                            float A, float K, float C, float Q,
+                            float B, float M, float nu)
+    {
+        float z = std::exp(-B * (x - M));
+        float denom = C + Q * z;
+        return (K - A) * (B * Q * z) / (nu * std::pow(denom, 1.f/nu + 1.f));
+    }
+
 };
