@@ -267,7 +267,7 @@ void MyApp::update(float dt) {
 
 
 	if (st.mouse.isLeftButton()) {
-		getCamera().move(glm::vec2(screenWidth, screenHeight), st.mouse.pos, st.mouse.lastPos);
+		getCamera().move(st.mouse.delta);
 	}
 
 	if (st.mouse.isRightButton()) {

@@ -29,15 +29,15 @@ struct ArcBallCamera : public Camera {
     }
 
 
-    void move(glm::vec2 viewportDims, glm::vec2 mousePos, glm::vec2 lastMousePos) override {
+    void move(glm::vec2 mouseDelta) override {
         if (m_lock)
             return;
 
         // Compute delta angles from viewport dimensions
-        glm::vec2 delta((2.f * M_PI) / viewportDims.x, M_PI / viewportDims.y);
+        glm::vec2 delta((2.f * M_PI) / _screen.x, M_PI / _screen.y);
         // Compute actual angles move
-        float angleX = (lastMousePos.x - mousePos.x) * delta.x;
-        float angleY = (lastMousePos.y - mousePos.y) * delta.y;
+        float angleX = -mouseDelta.x * delta.x;
+        float angleY = -mouseDelta.y * delta.y;
 
 
         // 
