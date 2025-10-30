@@ -102,9 +102,15 @@ struct ArcBallCamera : public Camera {
     void moveUp(float speed) override {}
 
     void zoom(float delta) {
-        float factor = sigmoid(_fov, 45.f, 30.f, 2.5f);
-        _zoomFactor += delta * factor;
-        // setCameraView(m_eye, m_lookAt, m_upVector, computeProjection());
+        // fine-tuned using desmos graph with formula: (1/\ (1+\exp(-(x-c)/w)))*m*2
+        // goal is to have greater factor when around _zoomFactor = 1
+        // Change m (max_value) for adjusting speed, but this influences c, w (center, width)
+        // Maybe we can found formula to adjust c, w automatically given m
+        // or just multiplying delta will be sufficient...
+        float factor = sigmoid(_zoomFactor, 0.8f, 0.2f, 0.08f /* factor (max slope of sigmoid) */);
+        std::cout << "factor:" << factor << std::endl;
+        // Clamp zoom factor to be between 1/1000 & 1000
+        _zoomFactor = std::clamp(_zoomFactor + delta * factor, 0.001f, 1000.f); 
         m_projectionMatrix = computeProjection();
     }
 
