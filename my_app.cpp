@@ -129,8 +129,8 @@ void MyApp::init() {
 
 	{
 		// Create cameras
-		auto arcball_camera = std::make_shared<ArcBallCamera>("Arcball", glm::vec3(0.f, 1.f, 0.f));
-		auto descent_camera = std::make_shared<DescentCamera>("Descent", glm::vec3(0.f, 1.f, 0.f));
+		auto arcball_camera = std::make_shared<ArcBallCamera>("Arcball");
+		auto descent_camera = std::make_shared<DescentCamera>("Descent");
 		cameras.push_back(std::move(arcball_camera));
 		cameras.push_back(std::move(descent_camera));
 	}

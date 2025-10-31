@@ -15,11 +15,10 @@ struct Camera {
     Camera() = default;
 
     // TODO Remove this constructor, it is useless, just use default + setCameraView to place the camera
-    Camera(std::string name, glm::vec3 up) : 
+    Camera(std::string name) : 
 		m_name(name),
         m_eye(0.f, 0.f, -3.f),
         m_lookAt(0.f, 0.f, 0.f),
-        // m_upVector(std::move(up)),
         m_projectionMatrix()
     {
         updateViewMatrix();
@@ -27,11 +26,10 @@ struct Camera {
 
     
 
-    void setCameraView(glm::vec3 eye, glm::vec3 lookAt, glm::vec3 up)
+    void setCameraView(glm::vec3 eye, glm::vec3 lookAt)
     {
         m_eye = std::move(eye);
         m_lookAt = std::move(lookAt);
-        // m_upVector = std::move(up);
         updateViewMatrix();
     }
 
@@ -69,7 +67,6 @@ struct Camera {
     void lookAt(glm::vec3 lookAt) {
         m_lookAt = lookAt;
         updateViewMatrix();
-        // setCameraView(m_eye, lookAt, m_upVector);
     }
 
     glm::mat4x4 getViewMatrix() const { return m_viewMatrix; }

@@ -59,7 +59,7 @@ struct ArcBallCamera : public Camera {
         position = (ry * (position - pivot)) + pivot;
 
         // Update camera
-        setCameraView(position, m_lookAt, m_upVector);
+        setCameraView(position, m_lookAt);
     }
 
     void movePan(glm::vec2 delta) {
@@ -87,7 +87,7 @@ struct ArcBallCamera : public Camera {
         // glm::vec3 nEye = m_eye + right * offset;
         // glm::vec3 nLookAt = m_lookAt + right * offset;
         
-        setCameraView(nEye, nLookAt, m_upVector);
+        setCameraView(nEye, nLookAt);
     }
 
     void moveRight(float speed) override {
@@ -108,7 +108,6 @@ struct ArcBallCamera : public Camera {
         // Maybe we can found formula to adjust c, w automatically given m
         // or just multiplying delta will be sufficient...
         float factor = sigmoid(_zoomFactor, 0.8f, 0.2f, 0.08f /* factor (max slope of sigmoid) */);
-        std::cout << "factor:" << factor << std::endl;
         // Clamp zoom factor to be between 1/1000 & 1000
         _zoomFactor = std::clamp(_zoomFactor + delta * factor, 0.001f, 1000.f); 
         updateProjectionMatrix();

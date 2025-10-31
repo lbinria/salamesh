@@ -39,7 +39,7 @@ struct DescentCamera final : public Camera {
 
 
         // Update camera
-        setCameraView(m_eye, newLookAt, m_upVector);
+        setCameraView(m_eye, newLookAt);
     }
 
     void moveRight(float speed) override {
