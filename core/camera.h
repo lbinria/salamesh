@@ -39,7 +39,7 @@ struct Camera {
         m_projectionMatrix = std::move(proj);
     }
 
-    virtual glm::mat4 computeProjection() = 0;
+    virtual void updateProjectionMatrix() = 0;
 
     void updateViewMatrix()
     {
@@ -81,12 +81,12 @@ struct Camera {
     
     void setFov(float fov) { 
         _fov = fov; 
-        m_projectionMatrix = computeProjection();
+        updateProjectionMatrix();
     }
     
     void setScreenSize(float width, float height) {
         _screen = {width, height}; 
-        m_projectionMatrix = computeProjection();
+        updateProjectionMatrix();
     }
 
     glm::vec3 getRightVector() const { return glm::transpose(m_viewMatrix)[0]; }
@@ -98,7 +98,6 @@ struct Camera {
         j["fov"] = _fov;
         j["eye"] = json::array({m_eye.x, m_eye.y, m_eye.z});
         j["look_at"] = json::array({m_lookAt.x, m_lookAt.y, m_lookAt.z});
-        // j["up"] = json::array({m_upVector.x, m_upVector.y, m_upVector.z});
         j["type"] = getType();
         doSaveState(j);
     }
@@ -110,8 +109,6 @@ struct Camera {
         m_eye = glm::vec3(jEye[0], jEye[1], jEye[2]);
         auto &jLookAt = j["look_at"];
         m_lookAt = glm::vec3(jLookAt[0], jLookAt[1], jLookAt[2]);
-        // auto &jUp = j["up"];
-        // m_upVector = glm::vec3(jUp[0], jUp[1], jUp[2]);
         doLoadState(j);
 
         updateViewMatrix();
@@ -150,16 +147,6 @@ protected:
         return 2.f * max_value * s * (1.f - s) / w;
         // or equivalently:
         // return 2.f * max_value * (z / ((1.f + z)*(1.f + z))) / w;
-    }
-
-    // derivative of Richards' curve
-    float richards_derivative(float x,
-                            float A, float K, float C, float Q,
-                            float B, float M, float nu)
-    {
-        float z = std::exp(-B * (x - M));
-        float denom = C + Q * z;
-        return (K - A) * (B * Q * z) / (nu * std::pow(denom, 1.f/nu + 1.f));
     }
 
 };

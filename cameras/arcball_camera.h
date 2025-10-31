@@ -9,7 +9,7 @@ struct ArcBallCamera : public Camera {
 
     using Camera::Camera;
 
-    glm::mat4 computeProjection() override {
+    void updateProjectionMatrix() override {
         float aspect = _screen.x / _screen.y;
         // float b = 0.2f;
         // return glm::ortho(-b, b, -(aspect*b), aspect*b, nearPlane, farPlane);
@@ -25,7 +25,7 @@ struct ArcBallCamera : public Camera {
             0.530111f * _zoomFactor
         };
 
-        return glm::ortho(_bounds.x, _bounds.y, _bounds.z, _bounds.w, nearPlane, farPlane);
+        m_projectionMatrix = glm::ortho(_bounds.x, _bounds.y, _bounds.z, _bounds.w, nearPlane, farPlane);
     }
 
 
@@ -111,21 +111,11 @@ struct ArcBallCamera : public Camera {
         std::cout << "factor:" << factor << std::endl;
         // Clamp zoom factor to be between 1/1000 & 1000
         _zoomFactor = std::clamp(_zoomFactor + delta * factor, 0.001f, 1000.f); 
-        m_projectionMatrix = computeProjection();
+        updateProjectionMatrix();
     }
 
-    // void zoom(float delta) {
-    //     // fine-tuned using desmos graph with formula: (1/\ (1+\exp(-(x-c)/w)))*m*2
-    //     // goal is to have greater factor when around _zoomFactor = 1
-    //     float factor = richards_derivative(_zoomFactor, 0.7f, 1.f, 0.9f, 0.1f, 1.1f, 2.3f, 0.1);
-    //     std::cout << "factor:" << factor << std::endl;
-    //     // Clamp zoom factor to be between 1/1000 & 1000
-    //     _zoomFactor = std::clamp(_zoomFactor + delta * factor, 0.001f, 1000.f); 
-    //     m_projectionMatrix = computeProjection();
-    // }
-
     void resetZoom() {
-        // TODO fill
+        _zoomFactor = 1.f;
     }
 
     void doSaveState(json &j) {}
