@@ -143,12 +143,4 @@ protected:
         return (1.f / (1.f + std::exp(-(x - center) / w))) * max_value * 2.;
     }
 
-    float dsigmoid_dx(float x, float center = 45.f, float w = 90.f, float max_value = 1.f) {
-        float z = std::exp(-(x - center) / w);
-        float s = 1.f / (1.f + z);
-        return 2.f * max_value * s * (1.f - s) / w;
-        // or equivalently:
-        // return 2.f * max_value * (z / ((1.f + z)*(1.f + z))) / w;
-    }
-
 };

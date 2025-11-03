@@ -140,14 +140,25 @@ struct ArcBallCamera : public Camera {
         updateProjectionMatrix();
     }
 
-    void doSaveState(json &j) {}
+    void doSaveState(json &j) {
+        auto [min, max] = _box;
+        j["box"] = json::array({min.x, min.y, min.z, max.x, max.y, max.z});
+    }
 
-    void doLoadState(json &j) {}
+    void doLoadState(json &j) {
+        auto &jBox = j["box"];
+
+        _box = std::make_tuple(
+            glm::vec3{jBox[0], jBox[1], jBox[2]},
+            glm::vec3{jBox[3], jBox[4], jBox[5]}
+        );
+
+        updateProjectionMatrix();
+    }
 
     std::string getType() override { return "ArcBallCamera"; }
 
     private:
 
-    glm::vec4 _bounds; // Ortho camera bounds (left, right, bottom, top)
     std::tuple<glm::vec3, glm::vec3> _box; // Targeted bounding box
 };
