@@ -430,9 +430,12 @@ function draw_gui()
 			local camera = app.camera
 			local p = camera.position
 
-			-- Compute zoom factor
-			local fov = app.camera.fov
-			local zoom_factor = -(fov - 45.) / (45. - 0.25) * 100.
+			-- Compute zoom factor (varies between 0.001 for 0% - 1 for 100%)
+			-- local fov = app.camera.fov
+			-- local zoom_factor = -(fov - 45.) / (45. - 0.25) * 100.
+			local zoom_factor = app.camera.zoom * 100.
+			
+			
 			-- Convert -0 value to 0
 			if (zoom_factor <= 0 and zoom_factor > -0.001) then zoom_factor = 0 end
 

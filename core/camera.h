@@ -14,7 +14,6 @@ struct Camera {
 
     Camera() = default;
 
-    // TODO Remove this constructor, it is useless, just use default + setCameraView to place the camera
     Camera(std::string name) : 
 		m_name(name),
         m_eye(0.f, 0.f, -3.f),
@@ -74,11 +73,10 @@ struct Camera {
     glm::mat4x4 getProjectionMatrix() const { return m_projectionMatrix; }
     glm::vec3 getWorldUpVector() const { return m_upVector; }
 
-    // Property: fov
-    float getFov() const { return _fov; }
+    float getZoom() const { return 1.f - _zoomFactor; }
     
-    void setFov(float fov) { 
-        _fov = fov; 
+    void setZoom(float val) { 
+        _zoomFactor = 1.f - val;
         updateProjectionMatrix();
     }
     
@@ -93,7 +91,7 @@ struct Camera {
 
     void saveState(json &j) {
         j["name"] = m_name;
-        j["fov"] = _fov;
+        j["zoom_factor"] = _zoomFactor;
         j["eye"] = json::array({m_eye.x, m_eye.y, m_eye.z});
         j["look_at"] = json::array({m_lookAt.x, m_lookAt.y, m_lookAt.z});
         j["type"] = getType();
@@ -102,7 +100,7 @@ struct Camera {
 
     void loadState(json &j) {
         m_name = j["name"].get<std::string>();
-        _fov = j["fov"];
+        _zoomFactor = j["zoom_factor"];
         auto &jEye = j["eye"];
         m_eye = glm::vec3(jEye[0], jEye[1], jEye[2]);
         auto &jLookAt = j["look_at"];
@@ -112,6 +110,13 @@ struct Camera {
         updateViewMatrix();
     }
 
+    void copy(Camera &c, std::tuple<glm::vec3, glm::vec3> box) {
+        lookAtBox(box);
+        setEye(c.getEye());
+        // lookAt(c.getLookAt());
+        // setFov(c.getFov());
+    }
+
     virtual void doSaveState(json &j) = 0;
     virtual void doLoadState(json &j) = 0;
 
@@ -119,8 +124,7 @@ struct Camera {
 
 protected:
 	std::string m_name;
-    // TODO move fov to descent camera
-    float _fov = 45.f;
+    float _zoomFactor = 1.f;
     glm::vec2 _screen;
     glm::mat4x4 m_viewMatrix;
     glm::mat4x4 m_projectionMatrix;

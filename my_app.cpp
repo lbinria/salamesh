@@ -303,7 +303,9 @@ void ModePanel(std::string modeStr) {
 	ImGui::SetNextWindowSize(size);
 	ImGui::SetNextWindowBgAlpha(0.0f); // fallback for some backends
 
-	ImGui::Begin("##ModeInfoPanel", nullptr, flags);
+	ImGui::SetNextWindowDockID(0, ImGuiCond_Always); 
+
+	ImGui::Begin("##NavigationPathPanel", nullptr, flags);
 
 	ImGui::Text("Navigation path: %s", modeStr.c_str());
 
@@ -613,23 +615,31 @@ void MyApp::key_event(int key, int scancode, int action, int mods) {
 
 	// Switch cameras with 1 and 2 keys
 	if (key == GLFW_KEY_1 && action == GLFW_PRESS) {
-		auto pos = getCamera().getEye();
-		auto fov = getCamera().getFov();
+		Camera &refCam = getCamera();
 		setSelectedCamera(0);
 		if (countModels() > 0)
-			getCamera().lookAtBox(getCurrentModel().bbox());
-		getCamera().setEye(pos);
-		getCamera().setFov(fov);
+			getCamera().copy(refCam, getCurrentModel().bbox());
+		// auto pos = getCamera().getEye();
+		// auto fov = getCamera().getFov();
+		// setSelectedCamera(0);
+		// if (countModels() > 0)
+		// 	getCamera().lookAtBox(getCurrentModel().bbox());
+		// getCamera().setEye(pos);
+		// getCamera().setFov(fov);
 	} else if (key == GLFW_KEY_2 && action == GLFW_PRESS) {
-		auto pos = getCamera().getEye();
-		auto lookAt = getCamera().getLookAt();
-		auto fov = getCamera().getFov();
-		setSelectedCamera(1); 
+		Camera &refCam = getCamera();
+		setSelectedCamera(1);
 		if (countModels() > 0)
-			getCamera().lookAtBox(getCurrentModel().bbox());
-		getCamera().setEye(pos);
-		getCamera().lookAt(lookAt);
-		getCamera().setFov(fov);
+			getCamera().copy(refCam, getCurrentModel().bbox());
+		// auto pos = getCamera().getEye();
+		// auto lookAt = getCamera().getLookAt();
+		// auto fov = getCamera().getFov();
+		// setSelectedCamera(1); 
+		// if (countModels() > 0)
+		// 	getCamera().lookAtBox(getCurrentModel().bbox());
+		// getCamera().setEye(pos);
+		// getCamera().lookAt(lookAt);
+		// getCamera().setFov(fov);
 	}
 
 	for (auto &script : components) {

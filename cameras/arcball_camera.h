@@ -9,7 +9,11 @@ struct ArcBallCamera : public Camera {
 
     using Camera::Camera;
 
+    
+
     glm::vec4 getBounds() {
+        float zoomFactor = _zoomFactor + 0.001f; // Add eps to avoid screen size = 0 at 100%
+
         auto [min, max] = _box;
         auto wh = min - max;
 
@@ -17,19 +21,19 @@ struct ArcBallCamera : public Camera {
             float aspect = _screen.x / _screen.y;
             
             return {
-                min.x * aspect * _zoomFactor, 
-                max.x * aspect * _zoomFactor, 
-                min.x * _zoomFactor, 
-                max.x * _zoomFactor
+                min.x * aspect * zoomFactor, 
+                max.x * aspect * zoomFactor, 
+                min.x * zoomFactor, 
+                max.x * zoomFactor
             };
         } else {
             float aspect = _screen.y / _screen.x;
             
             return {
-                min.y * _zoomFactor, 
-                max.y * _zoomFactor, 
-                min.y * aspect * _zoomFactor, 
-                max.y * aspect * _zoomFactor
+                min.y * zoomFactor, 
+                max.y * zoomFactor, 
+                min.y * aspect * zoomFactor, 
+                max.y * aspect * zoomFactor
             };
         }
     }
@@ -121,33 +125,29 @@ struct ArcBallCamera : public Camera {
 
     void zoom(float delta) {
         // fine-tuned using desmos graph with formula: (1/\ (1+\exp(-(x-c)/w)))*m*2
-        // goal is to have greater factor when around _zoomFactor = 1
+        // goal is to have greater factor when around _zoomFactor >= 1
         // Change m (max_value) for adjusting speed, but this influences c, w (center, width)
         // Maybe we can found formula to adjust c, w automatically given m
         // or just multiplying delta will be sufficient...
         float factor = sigmoid(_zoomFactor, 0.8f, 0.2f, 0.08f /* factor (max slope of sigmoid) */);
-        // Clamp zoom factor to be between 1/1000 & 1000
-        _zoomFactor = std::clamp(_zoomFactor + delta * factor, 0.001f, 1000.f); 
+        
+        _zoomFactor = std::clamp(_zoomFactor + delta * factor, 0.f, 10.f); 
         updateProjectionMatrix();
     }
 
     void resetZoom() {
         _zoomFactor = 1.f;
+        updateProjectionMatrix();
     }
 
-    void doSaveState(json &j) {
-        j["zoom_factor"] = _zoomFactor;
-    }
+    void doSaveState(json &j) {}
 
-    void doLoadState(json &j) {
-        _zoomFactor = j["zoom_factor"].get<float>();
-    }
+    void doLoadState(json &j) {}
 
     std::string getType() override { return "ArcBallCamera"; }
 
     private:
 
-    float _zoomFactor = 1.f;
     glm::vec4 _bounds; // Ortho camera bounds (left, right, bottom, top)
     std::tuple<glm::vec3, glm::vec3> _box; // Targeted bounding box
 };

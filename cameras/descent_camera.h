@@ -7,7 +7,8 @@ struct DescentCamera final : public Camera {
 	using Camera::Camera;
 
     void updateProjectionMatrix() override {
-        m_projectionMatrix = glm::perspective(glm::radians(_fov), _screen.x / _screen.y, nearPlane, farPlane);
+        float fov = getFov();
+        m_projectionMatrix = glm::perspective(glm::radians(fov), _screen.x / _screen.y, nearPlane, farPlane);
     }
 
     void lookAtBox(std::tuple<glm::vec3, glm::vec3> box) override {
@@ -76,14 +77,32 @@ struct DescentCamera final : public Camera {
         updateViewMatrix();
     }
 
+    // void zoom(float delta) {
+    //     float factor = sigmoid(_fov, 45.f, 30.f, 2.5f);
+    //     _fov = std::clamp(_fov + delta * factor, 0.25f, 60.f);
+    //     updateProjectionMatrix();
+    // }
+
     void zoom(float delta) {
-        float factor = sigmoid(_fov, 45.f, 30.f, 2.5f);
-        _fov = std::clamp(_fov + delta * factor, 0.25f, 60.f);
+        float factor = sigmoid(_zoomFactor, 0.8f, 0.2f, 0.08f /* factor (max slope of sigmoid) */);
+        // Clamp zoom factor to be between 0.0055 and 1.33 to have fov that varies between 0.25° / 60° and center to 45°        
+        _zoomFactor = std::clamp(_zoomFactor + delta * factor, 0.f, 1.f);
         updateProjectionMatrix();
     }
 
     void resetZoom() {
-        setFov(45.f);
+        _zoomFactor = 1.f;
+        updateProjectionMatrix();
+    }
+
+    float getFov() const {
+        // zoom factor = 0 -> fov = 0.25° 
+        // zoom factor = 1 -> fov = 45°
+        return _zoomFactor * FOV_RANGE + FOV_MIN; 
+    }
+    
+    void setFov(float fov) { 
+        _zoomFactor = fov / FOV_RANGE - FOV_MIN;
     }
 
     void doSaveState(json &j) {}
@@ -91,4 +110,7 @@ struct DescentCamera final : public Camera {
 
     std::string getType() override { return "DescentCamera"; }
 
+    const float FOV_MIN = .25f;
+    const float FOV_MAX = 45.f;
+    const float FOV_RANGE = FOV_MAX - FOV_MIN;
 };

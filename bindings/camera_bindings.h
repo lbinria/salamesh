@@ -40,9 +40,9 @@ namespace bindings {
 				&Camera::lookAt
 			);
 
-			camera_t["fov"] = sol::property(
-				&Camera::getFov,
-				&Camera::setFov
+			camera_t["zoom"] = sol::property(
+				&Camera::getZoom,
+				&Camera::setZoom
 			);
 
 			camera_t["lock"] = sol::property(
