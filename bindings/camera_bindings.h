@@ -18,6 +18,12 @@ namespace bindings {
 			camera_t.set_function("move_forward", &Camera::moveForward);
 			camera_t.set_function("zoom", &Camera::zoom);
 			camera_t.set_function("reset_zoom", &Camera::resetZoom);
+			
+			camera_t.set_function("look_at_box", [](Camera &self, sol::table box) { 
+				auto min = box.get<glm::vec3>(1);
+				auto max = box.get<glm::vec3>(2);
+				self.lookAtBox(std::make_tuple(min, max)); 
+			});
 
 			camera_t["name"] = sol::property(
 				&Camera::getName,

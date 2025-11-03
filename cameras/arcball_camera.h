@@ -9,23 +9,47 @@ struct ArcBallCamera : public Camera {
 
     using Camera::Camera;
 
+    glm::vec4 getBounds() {
+        auto [min, max] = _box;
+        auto wh = min - max;
+
+        if (wh.x > wh.y) {
+            float aspect = _screen.x / _screen.y;
+            
+            return {
+                min.x * aspect * _zoomFactor, 
+                max.x * aspect * _zoomFactor, 
+                min.x * _zoomFactor, 
+                max.x * _zoomFactor
+            };
+        } else {
+            float aspect = _screen.y / _screen.x;
+            
+            return {
+                min.y * _zoomFactor, 
+                max.y * _zoomFactor, 
+                min.y * aspect * _zoomFactor, 
+                max.y * aspect * _zoomFactor
+            };
+        }
+    }
+
     void updateProjectionMatrix() override {
-        float aspect = _screen.x / _screen.y;
-        // float b = 0.2f;
-        // return glm::ortho(-b, b, -(aspect*b), aspect*b, nearPlane, farPlane);
-        // return glm::ortho(-0.305873f, 0.346362f, -0.469889f, 0.530111f, nearPlane, farPlane);
+        auto b = getBounds();
+        m_projectionMatrix = glm::ortho(b.x, b.y, b.z, b.w, nearPlane, farPlane);
+    }
 
-        // return glm::ortho(-0.469889f * aspect, 0.530111f * aspect, -0.469889f, 0.530111f, nearPlane, farPlane);
+    void lookAtBox(std::tuple<glm::vec3, glm::vec3> box) override {
+        _box = box;
+        auto [min, max] = box;
+        auto c = (max + min) * .5f;
+        
+        _zoomFactor = 1.f;
+        m_eye = {c.x, c.y, c.z + glm::length(max - min)};
+        m_lookAt = c;
 
-        // Compute bounds
-        _bounds = {
-            -0.469889f * aspect * _zoomFactor, 
-            0.530111f * aspect * _zoomFactor, 
-            -0.469889f * _zoomFactor, 
-            0.530111f * _zoomFactor
-        };
-
-        m_projectionMatrix = glm::ortho(_bounds.x, _bounds.y, _bounds.z, _bounds.w, nearPlane, farPlane);
+        updateViewMatrix();
+        updateProjectionMatrix();
     }
 
 
@@ -68,7 +92,8 @@ struct ArcBallCamera : public Camera {
 
         // Compute view rect size and divide by screen rect size 
         // to get how many world unit per pixel
-        glm::vec2 viewDims{_bounds.y - _bounds.x, _bounds.w - _bounds.z};
+        auto b = getBounds();
+        glm::vec2 viewDims{b.y - b.x, b.w - b.z};
         glm::vec2 worldUnitPerPixel = viewDims / _screen;
 
         // Get offset in world coordinates
@@ -79,13 +104,6 @@ struct ArcBallCamera : public Camera {
         // Update camera position / look at
         glm::vec3 nEye = m_eye + right * -offset.x + up * offset.y;
         glm::vec3 nLookAt = m_lookAt + right * -offset.x + up * offset.y;
-
-        // // float dx = delta.x;
-        // float dx = delta.x / (2. * tan(0.5 * _fov));
-
-        // float offset = depth / (2. * tan(0.5 * _fov)) * dx;
-        // glm::vec3 nEye = m_eye + right * offset;
-        // glm::vec3 nLookAt = m_lookAt + right * offset;
         
         setCameraView(nEye, nLookAt);
     }
@@ -117,13 +135,19 @@ struct ArcBallCamera : public Camera {
         _zoomFactor = 1.f;
     }
 
-    void doSaveState(json &j) {}
-    void doLoadState(json &j) {}
+    void doSaveState(json &j) {
+        j["zoom_factor"] = _zoomFactor;
+    }
+
+    void doLoadState(json &j) {
+        _zoomFactor = j["zoom_factor"].get<float>();
+    }
 
     std::string getType() override { return "ArcBallCamera"; }
 
     private:
 
     float _zoomFactor = 1.f;
-    glm::vec4 _bounds;
+    glm::vec4 _bounds; // Ortho camera bounds (left, right, bottom, top)
+    std::tuple<glm::vec3, glm::vec3> _box; // Targeted bounding box
 };

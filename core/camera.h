@@ -44,6 +44,7 @@ struct Camera {
         m_viewMatrix = glm::lookAt(m_eye, m_lookAt, m_upVector);
     }
 
+    virtual void lookAtBox(std::tuple<glm::vec3, glm::vec3> box) = 0;
     virtual void move(glm::vec2 mouseDelta) = 0;
     virtual void moveRight(float speed) = 0;
     virtual void moveForward(float speed) = 0;

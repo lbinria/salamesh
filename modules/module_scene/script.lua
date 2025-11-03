@@ -22,8 +22,9 @@ function draw_tree(model, i)
 		if (imgui.SmallButton("View")) then 
 			app.selected_model = i
 			-- Set camera position !
-			app.camera.position = vec3.new(model_pos.x, model_pos.y, model_pos.z - 3.);
-			app.camera.look_at = vec3.new(model_pos.x, model_pos.y, model_pos.z);
+			-- app.camera.position = vec3.new(model_pos.x, model_pos.y, model_pos.z - 3.)
+			-- app.camera.look_at = vec3.new(model_pos.x, model_pos.y, model_pos.z)
+			app.camera:look_at_box(model.bbox)
 		end
 
 		draw_model_properties(model, 0)
@@ -58,7 +59,7 @@ function draw_model_properties(model, view)
 	imgui.Text("Center: " .. model.center:to_string());
 	imgui.Text("Radius: " .. string.format("%.4f", model.radius));
 
-	-- imgui.Text("Bounding box: " .. model.bbox[0]:to_string());
+	-- imgui.Text("Bounding box: " .. model.bbox[1]:to_string());
 	imgui.Text("Number of vertices: " .. tostring(model.nverts));
 	imgui.Text("Number of facets: " .. tostring(model.nfacets));
 
@@ -359,8 +360,9 @@ function draw_gui()
 					app.selected_model = i
 					-- Set camera position !
 					local model_pos = model.center
-					app.camera.position = vec3.new(model_pos.x, model_pos.y, model_pos.z - model.radius * 2.);
-					app.camera.look_at = vec3.new(model_pos.x, model_pos.y, model_pos.z);
+					-- app.camera.position = vec3.new(model_pos.x, model_pos.y, model_pos.z - model.radius * 2.);
+					-- app.camera.look_at = vec3.new(model_pos.x, model_pos.y, model_pos.z);
+					app.camera:look_at_box(model.bbox)
 				end
 				imgui.PopID()
 			end

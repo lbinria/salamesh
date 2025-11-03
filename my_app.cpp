@@ -54,8 +54,7 @@ bool MyApp::loadModel(const std::string& filename) {
 
 	// Current camera look at the model
 	auto modelPos = model->getPosition();
-	getCamera().lookAt(model->getCenter());
-	getCamera().setEye({modelPos.x, modelPos.y, modelPos.z - model->getRadius() * 2.});
+	getCamera().lookAtBox(model->bbox());
 
 	models.push_back(std::move(model));	
 
@@ -239,13 +238,11 @@ void MyApp::init() {
 	// components.push_back(std::move(invertedTriangleViewerComp));
 }
 
+// Continuous update
 void MyApp::update(float dt) {
-	// Continuous update
-
-	//
+	
 	float speed = 0.01f;
 	if (countModels() > 0) {
-		// speed = getCurrentModel().getRadius() * 0.05f;
 		speed = getCurrentModel().getRadius() * 0.5f * dt;
 	}
 
@@ -385,10 +382,6 @@ void MyApp::TopModePanel(int &currentMode, const std::vector<std::pair<std::stri
 	ImGui::End();
 	ImGui::PopStyleColor(2);
 }
-
-
-
-bool firstLoop = true;
 
 void MyApp::draw_gui() {
 
@@ -622,7 +615,9 @@ void MyApp::key_event(int key, int scancode, int action, int mods) {
 	if (key == GLFW_KEY_1 && action == GLFW_PRESS) {
 		auto pos = getCamera().getEye();
 		auto fov = getCamera().getFov();
-		setSelectedCamera(0); 
+		setSelectedCamera(0);
+		if (countModels() > 0)
+			getCamera().lookAtBox(getCurrentModel().bbox());
 		getCamera().setEye(pos);
 		getCamera().setFov(fov);
 	} else if (key == GLFW_KEY_2 && action == GLFW_PRESS) {
@@ -630,6 +625,8 @@ void MyApp::key_event(int key, int scancode, int action, int mods) {
 		auto lookAt = getCamera().getLookAt();
 		auto fov = getCamera().getFov();
 		setSelectedCamera(1); 
+		if (countModels() > 0)
+			getCamera().lookAtBox(getCurrentModel().bbox());
 		getCamera().setEye(pos);
 		getCamera().lookAt(lookAt);
 		getCamera().setFov(fov);

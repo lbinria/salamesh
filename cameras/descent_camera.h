@@ -10,6 +10,14 @@ struct DescentCamera final : public Camera {
         m_projectionMatrix = glm::perspective(glm::radians(_fov), _screen.x / _screen.y, nearPlane, farPlane);
     }
 
+    void lookAtBox(std::tuple<glm::vec3, glm::vec3> box) override {
+        auto [min, max] = box;
+        auto c = (min + max) * .5f;
+        m_eye = {c.x, c.y, c.z + glm::length(max - min)};
+        m_lookAt = c;
+	    updateViewMatrix();
+    }
+
     void move(glm::vec2 mouseDelta) override {
         if (m_lock)
             return;

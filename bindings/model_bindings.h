@@ -145,9 +145,18 @@ namespace bindings {
 				&Model::getWorldPosition
 			);
 
-			model_t["bbox"] = sol::readonly_property(
-				&Model::bbox
-			);
+			// model_t["bbox"] = sol::readonly_property(
+			// 	&Model::bbox
+			// );
+			// model_t["bbox"] = sol::readonly_property([](Model& m) {
+			// 	return sol::as_table(m.bbox());
+			// });
+			model_t["bbox"] = sol::readonly_property([](Model& m, sol::this_state s) {
+				sol::state_view lua(s);
+				auto [minv, maxv] = m.bbox();
+				sol::table t = lua.create_table_with(1, minv, 2, maxv);
+				return t;
+			});
 
 			model_t["center"] = sol::readonly_property(
 				&Model::getCenter
