@@ -7,6 +7,7 @@ using json = nlohmann::json;
 
 #include <string>
 #include <algorithm>
+#include <iostream>
 
 struct Camera {
 
@@ -44,7 +45,7 @@ struct Camera {
     }
 
     virtual void lookAtBox(std::tuple<glm::vec3, glm::vec3> box) = 0;
-    virtual void move(glm::vec2 mouseDelta) = 0;
+    virtual void move(glm::vec2 oldPos, glm::vec2 newPos) = 0;
     virtual void moveRight(float speed) = 0;
     virtual void moveForward(float speed) = 0;
     virtual void moveUp(float speed) = 0;
@@ -92,7 +93,22 @@ struct Camera {
     void saveState(json &j) {
         j["name"] = m_name;
         j["zoom_factor"] = _zoomFactor;
-        j["eye"] = json::array({m_eye.x, m_eye.y, m_eye.z});
+        j["view"] = json::array({
+            m_viewMatrix[0][0], m_viewMatrix[0][1], m_viewMatrix[0][2], m_viewMatrix[0][3],
+            m_viewMatrix[1][0], m_viewMatrix[1][1], m_viewMatrix[1][2], m_viewMatrix[1][3],
+            m_viewMatrix[2][0], m_viewMatrix[2][1], m_viewMatrix[2][2], m_viewMatrix[2][3],
+            m_viewMatrix[3][0], m_viewMatrix[3][1], m_viewMatrix[3][2], m_viewMatrix[3][3]
+        });
+
+        // std::cout << "view: ("
+        //     << m_viewMatrix[0][0] << " " << m_viewMatrix[0][1] << " " << m_viewMatrix[0][2] << " " << m_viewMatrix[0][3] << std::endl
+        //     << m_viewMatrix[1][0] << " " << m_viewMatrix[1][1] << " " << m_viewMatrix[1][2] << " " << m_viewMatrix[1][3] << std::endl
+        //     << m_viewMatrix[2][0] << " " << m_viewMatrix[2][1] << " " << m_viewMatrix[2][2] << " " << m_viewMatrix[2][3] << std::endl
+        //     << m_viewMatrix[3][0] << " " << m_viewMatrix[3][1] << " " << m_viewMatrix[3][2] << " " << m_viewMatrix[3][3] 
+        // << std::endl;
+
+        // j["eye"] = json::array({m_eye.x, m_eye.y, m_eye.z});
+
         j["look_at"] = json::array({m_lookAt.x, m_lookAt.y, m_lookAt.z});
         j["type"] = getType();
         doSaveState(j);
@@ -101,20 +117,30 @@ struct Camera {
     void loadState(json &j) {
         m_name = j["name"].get<std::string>();
         _zoomFactor = j["zoom_factor"];
-        auto &jEye = j["eye"];
-        m_eye = glm::vec3(jEye[0], jEye[1], jEye[2]);
+        auto &jView = j["view"];
+        m_viewMatrix = glm::mat4(
+            jView[0].get<float>(), jView[1].get<float>(), jView[2].get<float>(), jView[3].get<float>(),
+            jView[4].get<float>(), jView[5].get<float>(), jView[6].get<float>(), jView[7].get<float>(),
+            jView[8].get<float>(), jView[9].get<float>(), jView[10].get<float>(), jView[11].get<float>(),
+            jView[12].get<float>(), jView[13].get<float>(), jView[14].get<float>(), jView[15].get<float>()
+        );
+
+        // Extract position from view
+        glm::mat4 c = glm::inverse(m_viewMatrix);
+        m_eye = glm::vec3(c[3]);
+
         auto &jLookAt = j["look_at"];
         m_lookAt = glm::vec3(jLookAt[0], jLookAt[1], jLookAt[2]);
+
         doLoadState(j);
 
-        updateViewMatrix();
+        // updateViewMatrix();
     }
 
     void copy(Camera &c, std::tuple<glm::vec3, glm::vec3> box) {
         lookAtBox(box);
         setEye(c.getEye());
-        // lookAt(c.getLookAt());
-        // setFov(c.getFov());
+        setZoom(c.getZoom());
     }
 
     virtual void doSaveState(json &j) = 0;

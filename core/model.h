@@ -668,6 +668,7 @@ struct Model {
     std::string _path;
 
     glm::vec3 position{0, 0, 0};
+    glm::vec3 rotation{0, 0, 0};
     bool visible = true;
 
     // Pointer to parent model, if there is one

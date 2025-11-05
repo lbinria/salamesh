@@ -7,6 +7,10 @@
 #include "module_triangle_diagnostic/triangle_inspector.h"
 #include "module_triangle_diagnostic/inverted_triangle_viewer.h"
 
+#include "cameras/arcball_camera.h"
+#include "cameras/arcball_camera2.h"
+#include "cameras/descent_camera.h"
+
 #include <filesystem>
 namespace fs = std::filesystem;
 
@@ -129,8 +133,10 @@ void MyApp::init() {
 	{
 		// Create cameras
 		auto arcball_camera = std::make_shared<ArcBallCamera>("Arcball");
+		auto arcball_camera2 = std::make_shared<ArcBallCamera2>("Arcball2");
 		auto descent_camera = std::make_shared<DescentCamera>("Descent");
 		cameras.push_back(std::move(arcball_camera));
+		cameras.push_back(std::move(arcball_camera2));
 		cameras.push_back(std::move(descent_camera));
 	}
 	
@@ -264,17 +270,19 @@ void MyApp::update(float dt) {
 
 
 	if (st.mouse.isLeftButton()) {
-		getCamera().move(st.mouse.delta);
+		// getCamera().move(st.mouse.delta);
+		getCamera().move(st.mouse.lastPos, st.mouse.pos);
 	}
 
 	if (st.mouse.isRightButton()) {
 		auto arcball = dynamic_cast<ArcBallCamera*>(&getCamera());
 		if (arcball) {
-			glm::mat4 model = glm::mat4(1.0f);
-			model = glm::translate(model, getCurrentModel().getPosition());
-			
-			float z = pickPoint(st.mouse.pos.x, st.mouse.pos.y).z;
 			arcball->movePan(st.mouse.delta);
+		}
+		else {
+			auto arcball2 = dynamic_cast<ArcBallCamera2*>(&getCamera());
+			if (arcball2)
+				arcball2->movePan(st.mouse.delta);
 		}
 	}
 
@@ -797,6 +805,8 @@ std::unique_ptr<Camera> MyApp::makeCamera(std::string type) {
 		return std::make_unique<ArcBallCamera>();
 	else if (type == "DescentCamera")
 		return std::make_unique<DescentCamera>();
+	else if (type == "ArcBallCamera2")
+		return std::make_unique<ArcBallCamera2>();
 	else 
 		throw std::runtime_error(
 			"Unable to make camera of type " + 

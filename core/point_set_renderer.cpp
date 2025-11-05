@@ -129,6 +129,7 @@ void PointSetRenderer::render(glm::vec3 &position) {
 
 	glm::mat4 model = glm::mat4(1.0f);
 	model = glm::translate(model, position);
+	
 	// Draw	
     shader.use();
 	shader.setMat4("model", model);

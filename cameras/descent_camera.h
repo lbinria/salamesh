@@ -19,10 +19,11 @@ struct DescentCamera final : public Camera {
 	    updateViewMatrix();
     }
 
-    void move(glm::vec2 mouseDelta) override {
+    void move(glm::vec2 oldPos, glm::vec2 newPos) override {
         if (m_lock)
             return;
 
+        glm::vec2 mouseDelta = newPos - oldPos;
         // Compute delta angles from viewport dimensions
         glm::vec2 delta((2.f * M_PI) / _screen.x, M_PI / _screen.y);
         // Compute actual angles move
