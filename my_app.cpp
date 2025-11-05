@@ -8,7 +8,7 @@
 #include "module_triangle_diagnostic/inverted_triangle_viewer.h"
 
 #include "cameras/arcball_camera.h"
-#include "cameras/arcball_camera2.h"
+#include "cameras/trackball_camera.h"
 #include "cameras/descent_camera.h"
 
 #include <filesystem>
@@ -133,10 +133,10 @@ void MyApp::init() {
 	{
 		// Create cameras
 		auto arcball_camera = std::make_shared<ArcBallCamera>("Arcball");
-		auto arcball_camera2 = std::make_shared<ArcBallCamera2>("Arcball2");
+		auto trackball_camera = std::make_shared<TrackBallCamera>("Trackball");
 		auto descent_camera = std::make_shared<DescentCamera>("Descent");
 		cameras.push_back(std::move(arcball_camera));
-		cameras.push_back(std::move(arcball_camera2));
+		cameras.push_back(std::move(trackball_camera));
 		cameras.push_back(std::move(descent_camera));
 	}
 	
@@ -280,9 +280,9 @@ void MyApp::update(float dt) {
 			arcball->movePan(st.mouse.delta);
 		}
 		else {
-			auto arcball2 = dynamic_cast<ArcBallCamera2*>(&getCamera());
-			if (arcball2)
-				arcball2->movePan(st.mouse.delta);
+			auto trackball = dynamic_cast<TrackBallCamera*>(&getCamera());
+			if (trackball)
+				trackball->movePan(st.mouse.delta);
 		}
 	}
 
@@ -769,8 +769,10 @@ void MyApp::loadState(json &j, const std::string path) {
 	for (auto &jCamera : j["cameras"]) {
 		auto type = jCamera["type"].get<std::string>();
 		auto camera = makeCamera(type);
-		camera->loadState(jCamera);
-		cameras.push_back(std::move(camera));
+		if (camera) {
+			camera->loadState(jCamera);
+			cameras.push_back(std::move(camera));
+		}
 	}
 
 	// Load app state
@@ -805,11 +807,15 @@ std::unique_ptr<Camera> MyApp::makeCamera(std::string type) {
 		return std::make_unique<ArcBallCamera>();
 	else if (type == "DescentCamera")
 		return std::make_unique<DescentCamera>();
-	else if (type == "ArcBallCamera2")
-		return std::make_unique<ArcBallCamera2>();
-	else 
-		throw std::runtime_error(
-			"Unable to make camera of type " + 
-			type + 
-			", maybe you should override `makeCamera` to add the construction of your custom camera class ?");
+	else if (type == "TrackBallCamera")
+		return std::make_unique<TrackBallCamera>();
+	else {
+		std::cerr 
+			<< "Unable to make camera of type " 
+			<< type 
+			<< ", maybe you should override `makeCamera` to add the construction of your custom camera class ?" 
+			<< std::endl;
+
+		return nullptr;
+	}
 }

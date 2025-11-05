@@ -5,7 +5,7 @@
 #pragma once
 #include "../core/camera.h"
 
-struct ArcBallCamera2 : public Camera {
+struct TrackBallCamera : public Camera {
 
     using Camera::Camera;
 
@@ -193,7 +193,7 @@ struct ArcBallCamera2 : public Camera {
         updateProjectionMatrix();
     }
 
-    std::string getType() override { return "ArcBallCamera2"; }
+    std::string getType() override { return "TrackBallCamera"; }
 
     private:
 
