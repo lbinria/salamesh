@@ -1,7 +1,3 @@
-/*
-* Thanks to https://asliceofrendering.com/camera/2019/11/30/ArcballCamera/
-*/
-
 #pragma once
 #include "../core/camera.h"
 
@@ -10,7 +6,7 @@ struct TrackBallCamera : public Camera {
     using Camera::Camera;
 
     glm::vec4 getBounds() {
-        float zoomFactor = _zoomFactor + 0.001f; // Add eps to avoid screen size = 0 at 100%
+        float zoomFactor = _zoomFactor + 0.00001f; // Add eps to avoid screen size = 0 at 100%
 
         auto [min, max] = _box;
         auto wh = max - min;
@@ -47,9 +43,9 @@ struct TrackBallCamera : public Camera {
         _box = box;
         auto [min, max] = box;
         auto c = (max + min) * .5f;
-        
+
         _zoomFactor = 1.f;
-        m_eye = {c.x, c.y, c.z + glm::length(max - min)};
+        m_eye = {c.x, c.y, c.z + glm::length(max - min) * 2.f};
         m_lookAt = c;
 
         updateViewMatrix();
@@ -57,12 +53,14 @@ struct TrackBallCamera : public Camera {
     }
 
     glm::vec3 mouseToSphere(glm::vec2 p) {
-        // To NDC
-        // glm::vec2 v = (p / _screen) * glm::vec2(2.) - glm::vec2(1.);
+        // Screen coords to NDC
         glm::vec2 v{p.x / _screen.x * 2.f - 1.f, -(p.y / _screen.y * 2.f - 1.f)};
-        v = -v / 1.96f;
+        // v = -v / 1.96f; // Division make the sphere radius greater than 1
+        // Division make the sphere radius greater than 1 therefore the border of the sphere is out of screen and this enable to not drag out of the sphere
+        v = -v / 2.f;
 
-        float mag = glm::dot(v, v);        
+        // Compute magnitude of v (dist² to the center)
+        float mag = glm::dot(v, v);
         glm::vec3 p3{v.x, v.y, 0.};
 
         if (mag > 1.0) {
@@ -90,10 +88,6 @@ struct TrackBallCamera : public Camera {
 
         // Compute angle between the two points on sphere
         float angle = acos(glm::clamp(glm::dot(v0, v1), -1.f, 1.f));
-        // auto axnn = glm::normalize(ax);
-        // std::cout << "angle: " << angle << std::endl;
-        // std::cout << "ax nn: " << axnn.x << ", " << axnn.y << ", " << axnn.z << std::endl;
-        // std::cout << "ax: " << ax.x << ", " << ax.y << ", " << ax.z << std::endl;
 
         // Create quaternion from axis, angle for rotation
         auto q = glm::angleAxis(angle, glm::normalize(ax));
@@ -102,13 +96,11 @@ struct TrackBallCamera : public Camera {
         m_viewMatrix[1] = q * m_viewMatrix[1];
         m_viewMatrix[2] = q * m_viewMatrix[2];
 
-
-
         // Just update to know where is the camera
-        // glm::vec4 position(m_eye.x, m_eye.y, m_eye.z, 1);
-        // glm::vec4 pivot(m_lookAt.x, m_lookAt.y, m_lookAt.z, 1);
-        // position = (q * (position - pivot)) + pivot;
-        // m_eye = position;
+        glm::vec4 position(m_eye.x, m_eye.y, m_eye.z, 1);
+        glm::vec4 pivot(m_lookAt.x, m_lookAt.y, m_lookAt.z, 1);
+        position = (q * (position - pivot)) + pivot;
+        m_eye = position;
 
 
         // // Update translation T = -R^T*eye
@@ -117,7 +109,7 @@ struct TrackBallCamera : public Camera {
 
         auto cameraMatrix = glm::inverse(m_viewMatrix);
         auto camPos = cameraMatrix[3];
-        m_eye = camPos;
+        // m_eye = camPos;
         std::cout << "eye: " << m_eye.x << ", " << m_eye.y << ", " << m_eye.z <<  std::endl;
         std::cout << "cam pos: " << camPos.x << ", " << camPos.y << ", " << camPos.z << ", " << camPos.w << std::endl;
 
@@ -142,11 +134,6 @@ struct TrackBallCamera : public Camera {
         glm::mat4 T(1.f);
         T = glm::translate(T, right * offset.x + up * -offset.y);
         m_viewMatrix = m_viewMatrix * T;
-
-        // // Update camera position / look at
-        // glm::vec3 nEye = m_eye + right * -offset.x + up * offset.y;
-        // glm::vec3 nLookAt = m_lookAt + right * -offset.x + up * offset.y;
-        // setCameraView(nEye, nLookAt);
     }
 
     void moveRight(float speed) override {
