@@ -15,6 +15,7 @@
 namespace fs = std::filesystem;
 
 // TODO be able to load tet, surf, etc
+// TODO move to app.cpp
 bool MyApp::loadModel(const std::string& filename) {
 
 	// TODO Should deduce type here
@@ -59,8 +60,17 @@ bool MyApp::loadModel(const std::string& filename) {
 	// Current camera look at the model
 	auto modelPos = model->getPosition();
 	getCamera().lookAtBox(model->bbox());
+	
+	models.push_back(std::move(model));
+	setSelectedModel(models.size() - 1);
 
-	models.push_back(std::move(model));	
+
+	// Update cameras far planes
+	auto diameter = computeSceneDiameter();
+
+	for (auto &c : cameras) {
+		c->setFarPlane(diameter * 5.f /* arbitrary value... */);
+	}
 
 	// Notify components
 	for (auto &c : components) {
@@ -72,6 +82,7 @@ bool MyApp::loadModel(const std::string& filename) {
 	return true;
 }
 
+// TODO add model, can be other model than HexModel, must recompute far plane on loading
 int MyApp::addModel(std::string name) {
 	auto model = std::make_unique<HexModel>();
 	model->setName(name);
@@ -627,27 +638,11 @@ void MyApp::key_event(int key, int scancode, int action, int mods) {
 		setSelectedCamera(0);
 		if (countModels() > 0)
 			getCamera().copy(refCam, getCurrentModel().bbox());
-		// auto pos = getCamera().getEye();
-		// auto fov = getCamera().getFov();
-		// setSelectedCamera(0);
-		// if (countModels() > 0)
-		// 	getCamera().lookAtBox(getCurrentModel().bbox());
-		// getCamera().setEye(pos);
-		// getCamera().setFov(fov);
 	} else if (key == GLFW_KEY_2 && action == GLFW_PRESS) {
 		Camera &refCam = getCamera();
 		setSelectedCamera(1);
 		if (countModels() > 0)
 			getCamera().copy(refCam, getCurrentModel().bbox());
-		// auto pos = getCamera().getEye();
-		// auto lookAt = getCamera().getLookAt();
-		// auto fov = getCamera().getFov();
-		// setSelectedCamera(1); 
-		// if (countModels() > 0)
-		// 	getCamera().lookAtBox(getCurrentModel().bbox());
-		// getCamera().setEye(pos);
-		// getCamera().lookAt(lookAt);
-		// getCamera().setFov(fov);
 	}
 
 	for (auto &script : components) {
@@ -657,7 +652,6 @@ void MyApp::key_event(int key, int scancode, int action, int mods) {
 }
 
 void MyApp::mouse_scroll(double xoffset, double yoffset) {
-	// std::cout << "scroll: " << xoffset << ", " << yoffset << std::endl;
 
 	// Maybe move to a cameracontroller class
 	if (!getCamera().isLocked()) {
@@ -746,6 +740,16 @@ void MyApp::loadState(json &j, const std::string path) {
 	models.clear();
 	cameras.clear();
 
+	// Load cameras states
+	for (auto &jCamera : j["cameras"]) {
+		auto type = jCamera["type"].get<std::string>();
+		auto camera = makeCamera(type);
+		if (camera) {
+			camera->loadState(jCamera);
+			cameras.push_back(std::move(camera));
+		}
+	}
+
 	// Load models states
 	for (auto &jModel : j["models"]) {
 		// Concatenate state.json file path with model path
@@ -763,16 +767,8 @@ void MyApp::loadState(json &j, const std::string path) {
 		auto &model = models.back();
 		// Load state into last loaded model
 		model->loadState(jModel);
-	}
 
-	// Load cameras states
-	for (auto &jCamera : j["cameras"]) {
-		auto type = jCamera["type"].get<std::string>();
-		auto camera = makeCamera(type);
-		if (camera) {
-			camera->loadState(jCamera);
-			cameras.push_back(std::move(camera));
-		}
+		// TODO! recompute cameras far / near
 	}
 
 	// Load app state

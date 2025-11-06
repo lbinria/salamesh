@@ -50,6 +50,16 @@ namespace bindings {
 				&Camera::setLock
 			);
 
+			camera_t["near_plane"] = sol::property(
+				&Camera::getNearPlane,
+				&Camera::setNearPlane
+			);
+
+			camera_t["far_plane"] = sol::property(
+				&Camera::getFarPlane,
+				&Camera::setFarPlane
+			);
+
 		}
 
 	};

@@ -787,6 +787,18 @@ std::set<long> App::pick(double xPos, double yPos, int radius) {
 	return pickIDs;
 }
 
+
+float App::computeSceneDiameter() {
+	glm::vec3 min{std::numeric_limits<float>::max()};
+	glm::vec3 max{-std::numeric_limits<float>::max()};
+	for (auto &m : models) {
+		auto [cmin, cmax] = m->bbox();
+		min = glm::min(min, cmin);
+		max = glm::max(max, cmax);
+	}
+	return glm::length(max - min);
+}
+
 void App::processInput(GLFWwindow *window) {
 
 	if (ImGui::GetIO().WantCaptureMouse /*&& renderSurfaceWindowHovered*/) {

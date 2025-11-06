@@ -24,7 +24,8 @@ struct Camera {
         updateViewMatrix();
     }
 
-    
+	const std::string& getName() const { return m_name; }
+	void setName(const std::string& name) { m_name = name; }
 
     void setCameraView(glm::vec3 eye, glm::vec3 lookAt)
     {
@@ -57,8 +58,13 @@ struct Camera {
     void setLock(bool lock) { m_lock = lock;}
     bool isLocked() { return m_lock; }
 
-	const std::string& getName() const { return m_name; }
-	void setName(const std::string& name) { m_name = name; }
+    float getNearPlane() { return nearPlane; }
+    void setNearPlane(float val) { nearPlane = val; }
+
+    float getFarPlane() { return farPlane; }
+    void setFarPlane(float val) { farPlane = val; }
+
+
 
     glm::vec3 getEye() const { return m_eye; }
     void setEye(glm::vec3 eye) { m_eye = std::move(eye); updateViewMatrix(); }
@@ -100,15 +106,6 @@ struct Camera {
             m_viewMatrix[3][0], m_viewMatrix[3][1], m_viewMatrix[3][2], m_viewMatrix[3][3]
         });
 
-        // std::cout << "view: ("
-        //     << m_viewMatrix[0][0] << " " << m_viewMatrix[0][1] << " " << m_viewMatrix[0][2] << " " << m_viewMatrix[0][3] << std::endl
-        //     << m_viewMatrix[1][0] << " " << m_viewMatrix[1][1] << " " << m_viewMatrix[1][2] << " " << m_viewMatrix[1][3] << std::endl
-        //     << m_viewMatrix[2][0] << " " << m_viewMatrix[2][1] << " " << m_viewMatrix[2][2] << " " << m_viewMatrix[2][3] << std::endl
-        //     << m_viewMatrix[3][0] << " " << m_viewMatrix[3][1] << " " << m_viewMatrix[3][2] << " " << m_viewMatrix[3][3] 
-        // << std::endl;
-
-        // j["eye"] = json::array({m_eye.x, m_eye.y, m_eye.z});
-
         j["look_at"] = json::array({m_lookAt.x, m_lookAt.y, m_lookAt.z});
         j["type"] = getType();
         doSaveState(j);
@@ -125,7 +122,7 @@ struct Camera {
             jView[12].get<float>(), jView[13].get<float>(), jView[14].get<float>(), jView[15].get<float>()
         );
 
-        // Extract position from view
+        // Extract position from view matrix
         glm::mat4 c = glm::inverse(m_viewMatrix);
         m_eye = glm::vec3(c[3]);
 
@@ -159,7 +156,7 @@ protected:
     const glm::vec3 m_upVector{0.f, 1.f, 0.f}; // Orientation of the camera
     bool m_lock = false;
 
-	float farPlane = 100000.f;
+	float farPlane = 100.f;
 	float nearPlane = 0.1f;
 
     /**

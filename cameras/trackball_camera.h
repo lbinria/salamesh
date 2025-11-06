@@ -87,7 +87,7 @@ struct TrackBallCamera : public Camera {
             return;
 
         // Compute angle between the two points on sphere
-        float angle = acos(glm::clamp(glm::dot(v0, v1), -1.f, 1.f));
+        float angle = acos(glm::clamp(glm::dot(v0, v1), -1.f, 1.f)) * 1.5f /* speed */;
 
         // Create quaternion from axis, angle for rotation
         auto q = glm::angleAxis(angle, glm::normalize(ax));

@@ -129,6 +129,8 @@ struct App : public IApp {
         cull = enabled; 
     }
 
+	float computeSceneDiameter();
+
     // Accessors
 
     std::vector<std::shared_ptr<Model>>& getModels() override {
