@@ -33,6 +33,8 @@ struct Model {
         HYBRID = 6 
     };
 
+    std::function<bool(Model& /*self*/, const std::string /*path*/)> loadCallback;
+
     Model(std::map<std::string, std::shared_ptr<IRenderer>> renderers) :
     _name(""),
     _path(""),

@@ -18,6 +18,8 @@ struct MyApp : App {
     bool removeModel(std::string name) override;
 	std::shared_ptr<Model> getModelByName(std::string name) override;
 	int getIndexOfModel(std::string name) override;
+	void computeFarPlane();
+
 
 	// Override lifecycle functions
 	void init() override;

@@ -64,13 +64,8 @@ bool MyApp::loadModel(const std::string& filename) {
 	models.push_back(std::move(model));
 	setSelectedModel(models.size() - 1);
 
-
 	// Update cameras far planes
-	auto diameter = computeSceneDiameter();
-
-	for (auto &c : cameras) {
-		c->setFarPlane(diameter * 5.f /* arbitrary value... */);
-	}
+	computeFarPlane();
 
 	// Notify components
 	for (auto &c : components) {
@@ -82,11 +77,26 @@ bool MyApp::loadModel(const std::string& filename) {
 	return true;
 }
 
-// TODO add model, can be other model than HexModel, must recompute far plane on loading
+void MyApp::computeFarPlane() {
+	auto diameter = computeSceneDiameter();
+
+	for (auto &c : cameras) {
+		c->setFarPlane(diameter * 5.f /* .5f is an arbitrary value... */);
+	}
+}
+
+// TODO add model, can be other model than HexModel & must recompute far plane on loading
 int MyApp::addModel(std::string name) {
 	auto model = std::make_unique<HexModel>();
 	model->setName(name);
 	model->setMeshIndex(models.size());
+
+	// 
+	// model->loadCallback = ([this](Model&, const std::string) -> bool {
+	// 	this->computeFarPlane();
+	// 	this->component->modelLoaded(blabla)
+	// });
+
 	models.push_back(std::move(model));
 	return models.size() - 1;
 }
@@ -105,8 +115,7 @@ bool MyApp::removeModel(std::string name) {
 	for (int i = 0; i < models.size(); ++i) {
 		auto &m = models[i];
 		if (m->getName() == name) {
-			// TODO fix here using removeModel(int)
-			models.erase(models.begin() + i);
+			removeModel(i);
 			return true;
 		}
 	}
