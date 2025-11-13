@@ -32,13 +32,16 @@ set(SOURCES
     bbox_renderer.cpp bbox_renderer.h
     clipping_renderer.cpp clipping_renderer.h
     surface_renderer.cpp surface_renderer.h
+    surface_renderer_2.cpp surface_renderer_2.h
     volume_renderer.cpp volume_renderer.h
     tri_renderer.cpp tri_renderer.h
     quad_renderer.cpp quad_renderer.h
+    poly_renderer.cpp poly_renderer.h
     tet_renderer.cpp tet_renderer.h
     hex_renderer.cpp hex_renderer.h
     tri_model.cpp tri_model.h
     quad_model.cpp quad_model.h
+    poly_model.cpp poly_model.h
     tet_model.cpp tet_model.h
     hex_model.cpp hex_model.h
 

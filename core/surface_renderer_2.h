@@ -18,44 +18,26 @@ using json = nlohmann::json;
 #include "element.h"
 using namespace UM;
 
-struct SurfaceRenderer : public IRenderer {
-	
+struct SurfaceRenderer2 : public IRenderer {
+
 	struct Vertex {
 		int vertexIndex;
 		int localIndex;
-		glm::vec3 p;
-		glm::vec3 p0;
-		glm::vec3 p1;
-		glm::vec3 p2;
-		glm::vec3 p3;
-		int facetIndex;
-	};
-
-	// Test
-	struct Vertex2 {
-		int vertexIndex;
 		int facetIndex;
 		glm::vec3 p;
+		glm::vec3 n;
 		glm::vec3 b;
 		glm::vec3 h;
 	};
 
-	SurfaceRenderer(Surface &m) : 
-		IRenderer(Shader("shaders/surface.vert", "shaders/surface.frag")),
-		_m(m)
-		{
-			shader.use();
-			shader.setFloat3("color", {0.8f, 0.f, 0.2f});
-		}
-
-	// Test
-	SurfaceRenderer(Surface &m, int i) : 
+	SurfaceRenderer2(Surface &m) : 
 		IRenderer(Shader("shaders/surface2.vert", "shaders/surface.frag")),
 		_m(m)
 		{
 			shader.use();
 			shader.setFloat3("color", {0.8f, 0.f, 0.2f});
 		}
+
 
 	void init();
 	void render(glm::vec3 &position);

@@ -11,35 +11,45 @@
 #include "cameras/trackball_camera.h"
 #include "cameras/descent_camera.h"
 
+#include "core/poly_model.h"
+
 #include <filesystem>
 namespace fs = std::filesystem;
 
-// TODO be able to load tet, surf, etc
 // TODO move to app.cpp
 bool MyApp::loadModel(const std::string& filename) {
 
-	// TODO Should deduce type here
-	// TODO please do something more intelligent here !
+	// TODO please do something more intelligent here, should deduce mesh type !
+
+	bool success = false;
+
 	std::unique_ptr<Model> model;
+	model = std::make_unique<TriModel>();
 
-	model = std::make_unique<HexModel>();
-	bool hex_load_success = model->load(filename);
-	if (!hex_load_success) {
-		model = std::make_unique<TriModel>();
-		bool tri_load_success = model->load(filename);
+	success = model->load(filename);
 
-		if (!tri_load_success) {
-			model = std::make_unique<QuadModel>();
-			bool tri_load_success = model->load(filename);
-			if (!tri_load_success) {
-				model = std::make_unique<TetModel>();
-				bool tet_load_success = model->load(filename);
-				if (!tet_load_success) {
-					return false;
-				}
-			}
-		}
+	if (!success) {
+		model = std::make_unique<QuadModel>();
+		success = model->load(filename);
 	}
+
+	if (!success) {
+		model = std::make_unique<PolyModel>();
+		success = model->load(filename);
+	}
+
+	if (!success) {
+		model = std::make_unique<TetModel>();
+		success = model->load(filename);
+	}
+
+	if (!success) {
+		model = std::make_unique<HexModel>();
+		success = model->load(filename);
+	}
+
+	if (!success)
+		return false;
 
 	model->setName(std::filesystem::path(filename).stem().string() + std::to_string(models.size()));
 
