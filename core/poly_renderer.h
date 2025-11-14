@@ -10,16 +10,56 @@
 #include "../include/glm/gtc/matrix_transform.hpp"
 #include "../include/glm/gtc/type_ptr.hpp"
 
-#include "model.h"
-#include "surface_renderer_2.h"
-#include "element.h"
-#include "shader.h"
+#include "../include/json.hpp"
+using json = nlohmann::json;
 
+#include "renderer.h"
+#include "model.h"
+#include "element.h"
 using namespace UM;
 
-struct PolyRenderer : public SurfaceRenderer2 {
+struct PolyRenderer : public IRenderer {
 
-	using SurfaceRenderer2::SurfaceRenderer2;
+	struct Vertex {
+		int vertexIndex;
+		int localIndex;
+		int facetIndex;
+		glm::vec3 p;
+		glm::vec3 n;
+		glm::vec3 b;
+		glm::vec3 h;
+	};
+
+	PolyRenderer(Surface &m) : 
+		IRenderer(Shader("shaders/surface2.vert", "shaders/surface.frag")),
+		_m(m)
+		{
+			shader.use();
+			shader.setFloat3("color", {0.8f, 0.f, 0.2f});
+		}
+
+
+	void init();
+	void render(glm::vec3 &position);
+	void clean();
+
 	void push() override;
 
+	int getRenderElementKind() override { return ElementKind::FACETS; }
+
+
+	protected:
+
+	Surface &_m;
+
+	void push(std::vector<Vertex> &vertices) {
+		glBindVertexArray(VAO);
+		glBindBuffer(GL_ARRAY_BUFFER, VBO);
+		glBufferData(GL_ARRAY_BUFFER, vertices.size() * sizeof(Vertex), vertices.data(), GL_STATIC_DRAW);
+	}
+
+	private:
+
+	void doLoadState(json &j) override {}
+	void doSaveState(json &j) const override {}
 };

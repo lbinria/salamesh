@@ -32,7 +32,6 @@ set(SOURCES
     bbox_renderer.cpp bbox_renderer.h
     clipping_renderer.cpp clipping_renderer.h
     surface_renderer.cpp surface_renderer.h
-    surface_renderer_2.cpp surface_renderer_2.h
     volume_renderer.cpp volume_renderer.h
     tri_renderer.cpp tri_renderer.h
     quad_renderer.cpp quad_renderer.h
