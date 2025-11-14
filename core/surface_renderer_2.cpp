@@ -1,4 +1,5 @@
 #include "surface_renderer_2.h"
+#include "../helpers/graphic_api.h"
 
 void SurfaceRenderer2::init() {
 
@@ -58,21 +59,26 @@ void SurfaceRenderer2::init() {
 	// glBindTexture(GL_TEXTURE_BUFFER, texFilter);
 	// glTexBuffer(GL_TEXTURE_BUFFER, GL_R32F, bufFilter);
 
+	// TODO factorize to opengl function createTBO
 	// For the moment don't use persistent mapped memory
-	glGenBuffers(1, &bufHighlight);
-	glGenTextures(1, &texHighlight);
-	glBindBuffer(GL_TEXTURE_BUFFER, bufHighlight);
-	glActiveTexture(GL_TEXTURE0 + 3); 
-	glBindTexture(GL_TEXTURE_BUFFER, texHighlight);
-	glTexBuffer(GL_TEXTURE_BUFFER, GL_R32F, bufHighlight);
+	// glGenBuffers(1, &bufHighlight);
+	// glGenTextures(1, &texHighlight);
+	// glBindBuffer(GL_TEXTURE_BUFFER, bufHighlight);
+	// glActiveTexture(GL_TEXTURE0 + 3); 
+	// glBindTexture(GL_TEXTURE_BUFFER, texHighlight);
+	// glTexBuffer(GL_TEXTURE_BUFFER, GL_R32F, bufHighlight);
+
+	sl::createTBO(bufHighlight, texHighlight, 3);
 
 	// For the moment don't use persistent mapped memory
-	glGenBuffers(1, &bufFilter);
-	glGenTextures(1, &texFilter);
-	glBindBuffer(GL_TEXTURE_BUFFER, bufFilter);
-	glActiveTexture(GL_TEXTURE0 + 4); 
-	glBindTexture(GL_TEXTURE_BUFFER, texFilter);
-	glTexBuffer(GL_TEXTURE_BUFFER, GL_R32F, bufFilter);
+	// glGenBuffers(1, &bufFilter);
+	// glGenTextures(1, &texFilter);
+	// glBindBuffer(GL_TEXTURE_BUFFER, bufFilter);
+	// glActiveTexture(GL_TEXTURE0 + 4); 
+	// glBindTexture(GL_TEXTURE_BUFFER, texFilter);
+	// glTexBuffer(GL_TEXTURE_BUFFER, GL_R32F, bufFilter);
+
+	sl::createTBO(bufFilter, texFilter, 4);
 
 
 
@@ -104,6 +110,8 @@ void SurfaceRenderer2::init() {
 	std::cout << "vertex attrib setup..." << std::endl;
 	#endif
 
+	// TODO create mesh_renderer with virual function setupVBO
+	// TODO factorize to opengl function setupAttrib
 	GLuint pLoc = glGetAttribLocation(shader.id, "p");
 	GLuint nLoc = glGetAttribLocation(shader.id, "n");
 	GLuint bLoc = glGetAttribLocation(shader.id, "b");

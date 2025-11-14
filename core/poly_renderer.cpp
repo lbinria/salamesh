@@ -14,7 +14,7 @@ void PolyRenderer::push() {
 	for (auto &f : _m.iter_facets()) {
 
 		// There is as much triangles as vertices in facet,
-		int nv = f.size();
+		const int nv = f.size();
 		const int ntri = nv;
 
 		// Compute bary
@@ -26,7 +26,7 @@ void PolyRenderer::push() {
 		bary /= nv;
 
 		// Compute normal
-		vec3 pts[nv];			
+		vec3 pts[nv];
 		for (int v = 0; v < nv; ++v) {
 			pts[v] = f.vertex(v).pos();
 		}
