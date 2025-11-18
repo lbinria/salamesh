@@ -11,6 +11,7 @@ uniform mat4 model_view_projection_matrix;
 // Point
 flat in vec3 pos_world_space;
 flat in float radius;
+flat in vec2 fragViewport;
 
 struct Ray {
     vec3 O; // Origin
@@ -24,8 +25,8 @@ struct Ray {
 // The ray is in world space.
 Ray glup_primary_ray() {
 	vec4 near = vec4(
-		2.0 * ( (gl_FragCoord.x - 0.) / 1024. - 0.5),
-		2.0 * ( (gl_FragCoord.y - 0.) / 768. - 0.5),
+		2.0 * ( (gl_FragCoord.x - 0.) / fragViewport.x - 0.5),
+		2.0 * ( (gl_FragCoord.y - 0.) / fragViewport.y - 0.5),
 		0.0, 1.0
 	);
 	near = inverse_projection_view_model * near;

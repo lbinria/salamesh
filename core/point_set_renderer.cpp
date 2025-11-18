@@ -78,21 +78,55 @@ void PointSetRenderer::init() {
 	shader.setInt("filterBuf", 4);
 
 	// VBO
-	GLuint vertexIndexLocation = glGetAttribLocation(shader.id, "vertexIndex");
-	glEnableVertexAttribArray(vertexIndexLocation);
-	glVertexAttribIPointer(vertexIndexLocation, 1, GL_INT, sizeof(Vertex), (void*)offsetof(Vertex, vertexIndex));
+	GLuint vertexIndexLoc = glGetAttribLocation(shader.id, "vertexIndex");
+	glEnableVertexAttribArray(vertexIndexLoc);
+	glVertexAttribIPointer(vertexIndexLoc, 1, GL_INT, sizeof(Vertex), (void*)offsetof(Vertex, vertexIndex));
 
-	GLuint positionLocation = glGetAttribLocation(shader.id, "aPos");
-	glEnableVertexAttribArray(positionLocation);
-	glVertexAttribPointer(positionLocation, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)offsetof(Vertex, position));
+	GLuint posLoc = glGetAttribLocation(shader.id, "aPos");
+	glEnableVertexAttribArray(posLoc);
+	glVertexAttribPointer(posLoc, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)offsetof(Vertex, position));
 
-	GLuint sizeLocation = glGetAttribLocation(shader.id, "sizeScale");
-	glEnableVertexAttribArray(sizeLocation);
-	glVertexAttribPointer(sizeLocation, 1, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)offsetof(Vertex, size));
+	GLuint sizeScaleLoc = glGetAttribLocation(shader.id, "sizeScale");
+	glEnableVertexAttribArray(sizeScaleLoc);
+	glVertexAttribPointer(sizeScaleLoc, 1, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)offsetof(Vertex, size));
+
+	GLuint normalLoc = glGetAttribLocation(shader.id, "normal");
+	glEnableVertexAttribArray(normalLoc);
+	glVertexAttribPointer(normalLoc, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)offsetof(Vertex, normal));
 
 }
 
 void PointSetRenderer::push() {	
+
+	std::vector<glm::vec3> normals(ps.size(), glm::vec3(0.));
+
+	if (_m) {
+
+		auto &m = *_m;
+
+		for (auto &f : m.iter_facets()) {
+
+			// Compute facet normal
+			int nbv = f.size();
+
+			std::vector<vec3> pos(f.size());
+			for (int lv = 0; lv < f.size(); ++lv) {
+				pos[lv] = f.vertex(lv).pos();
+			}
+			auto n = UM::geo::normal(pos.data(), nbv);
+
+			// Set facet normal to all vertices of facet
+			for (int lv = 0; lv < f.size(); ++lv) {
+				auto v = f.vertex(lv);
+				normals[v] += glm::vec3(n.x, n.y, n.z);
+				normals[v] = glm::normalize(normals[v]);
+			}
+		}
+
+		for (int i = 0; i < normals.size(); ++i) {
+			normals[i] = glm::normalize(normals[i]);
+		}
+	}
 
 	std::vector<Vertex> vertices(ps.size());
 	for (int i = 0; i < ps.size(); ++i) {
@@ -101,7 +135,8 @@ void PointSetRenderer::push() {
 		vertices[i] = { 
 			.vertexIndex = i,
 			.position = glm::vec3(v.x, v.y, v.z),
-			.size = 1.f
+			.size = 1.f,
+			.normal = normals[i]
 		};
 	}
 

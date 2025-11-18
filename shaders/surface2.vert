@@ -64,10 +64,10 @@ void main()
    vec2 sh = (ndcH * 0.5 + 0.5) * viewport;
 
    vec3 heights = vec3(0.);
-   if (localIndex == 0)
+   // if (localIndex == 0)
       heights[localIndex] = distance(s, sh);
-   else 
-      heights[localIndex] = 1. / 0.;
+   // else 
+      // heights[localIndex] = 1. / 0.;
    
    fragHeights = heights;
    

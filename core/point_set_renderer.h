@@ -1,6 +1,7 @@
 #pragma once
 
 #include <vector>
+#include <optional>
 
 #include "../include/json.hpp"
 using json = nlohmann::json;
@@ -21,15 +22,24 @@ struct PointSetRenderer : public IRenderer {
 		int vertexIndex;
 		glm::vec3 position;
 		float size;
-		glm::vec3 normal; 
-		glm::vec3 heights;
-		int facetIndex;
-		int cellIndex;
+		glm::vec3 normal;
 	};
 
     PointSetRenderer(PointSet &ps) : 
-        IRenderer(Shader("shaders/point2.vert", "shaders/point2.frag")),
+        // IRenderer(Shader("shaders/point.vert", "shaders/point.frag")),
+        // IRenderer(Shader("shaders/point2.vert", "shaders/point2.frag")),
+        IRenderer(Shader("shaders/flat_point.vert", "shaders/flat_point.frag")),
         ps(ps) {
+            setPointSize(4.0f); // TODO here use a setting default point size
+            setColor({0.23, 0.85, 0.66}); // TODO here use a setting default point color
+        }
+
+    PointSetRenderer(Surface *m) : 
+        // IRenderer(Shader("shaders/point.vert", "shaders/point.frag")),
+        // IRenderer(Shader("shaders/point2.vert", "shaders/point2.frag")),
+        IRenderer(Shader("shaders/flat_point.vert", "shaders/flat_point.frag")),
+        _m(m),
+        ps(m->points) {
             setPointSize(4.0f); // TODO here use a setting default point size
             setColor({0.23, 0.85, 0.66}); // TODO here use a setting default point color
         }
@@ -61,10 +71,14 @@ struct PointSetRenderer : public IRenderer {
         color = c;
     }
 
+
     PointSet &ps;
+    Surface *_m = nullptr;
 
 
     private:
+    
+    std::vector<glm::vec3> normals;
 
     float pointSize;
     glm::vec3 color;

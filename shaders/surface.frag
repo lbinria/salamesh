@@ -108,10 +108,6 @@ void main()
             col = vec3(attrCol);
         else {
             discard;
-            // if (mod(gl_FragCoord.x + gl_FragCoord.y, 2.) < 0.001)
-            //     discard;
-            // else
-            //     col = vec3(1.);
         }
     }
     

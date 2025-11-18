@@ -192,21 +192,35 @@ void PolyRenderer::push() {
 			const int lv = t;
 			// Three points of current triangle
 			vec3 verts[3] = {vec3(bary.x, bary.y, bary.z) , f.vertex(lv).pos(), f.vertex((lv + 1) % nv).pos()};
-			auto v = f.vertex(lv);
 
 			for (int i = 0; i < 3; ++i) {
 
+				// Retrieve vertex id (0 is always the barycenter => no vertex associated)
 				int v = i == 0 ? -1 : f.vertex((lv + (i - 1)) % nv);
 
-				auto p0 = verts[i];
-				auto p1 = verts[(i + 1) % 3];
-				auto p2 = verts[(i + 2) % 3];
+				auto reverseI = (3 - i) % 3;
+				auto reverseI1 = (3 - i + 1) % 3;
+				auto reverseI2 = (3 - i + 2) % 3;
+
+				auto p = verts[i];
+				// auto p0 = verts[reverseI];
+				// auto p1 = verts[(reverseI + 1) % 3];
+				// auto p2 = verts[(reverseI + 2) % 3];
+				auto p0 = verts[reverseI];
+				auto p1 = verts[reverseI1];
+				auto p2 = verts[reverseI2];
+
+				// // Compute the projected point from vertex to base
+				// auto s0 = p0 - p2;
+				// auto s1 = p1 - p2;
+				// auto length = s1.normalized() * s0;
+				// auto bh = p2 + s1.normalized() * length;
 
 				// Compute the projected point from vertex to base
-				auto s0 = p0 - p2;
-				auto s1 = p1 - p2;
-				auto length = s1.normalized() * s0;
-				auto bh = p2 + s1.normalized() * length;
+				auto s0 = p2 - p1;
+				auto s1 = p0 - p1;
+				auto length = s0.normalized() * s1; // Project s1 onto s0
+				auto bh = p1 + s0.normalized() * length;
 
 				// Compute height as the distance between base point and vertex
 				float h = (p0 - bh).norm();
@@ -232,7 +246,7 @@ void PolyRenderer::push() {
 					.vertexIndex = v,
 					.localIndex = i,
 					.facetIndex = f,
-					.p = glm::vec3(p0.x, p0.y, p0.z),
+					.p = glm::vec3(p.x, p.y, p.z),
 					.n = glm::vec3(n.x, n.y, n.z),
 					.b = bary,
 					.h = glm::vec3(bh.x, bh.y, bh.z)

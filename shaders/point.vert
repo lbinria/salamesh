@@ -1,22 +1,22 @@
 #version 440 core
 
 layout (location = 0) in vec3 aPos;
-layout (location = 1) in float size;
-layout (location = 6) in vec3 normal;
-layout (location = 3) in vec3 aHeights;
-// Indexes of the primitive this vertices belongs to
-layout (location = 4) in int facetIndex;
-layout (location = 5) in int cellIndex;
+layout (location = 1) in float sizeScale;
+layout (location = 2) in int vertexIndex;
 
+
+layout (std140, binding = 0) uniform Matrices
+{
+	mat4 view;
+	mat4 projection;
+	vec2 viewport;
+};
 
 uniform mat4 model;
-uniform mat4 view;
-uniform mat4 projection;
 
-uniform samplerBuffer bary;
-uniform samplerBuffer attributeData;
+uniform float pointSize;
 
-uniform float meshShrink;
+flat out vec2 fragViewport;
 
 // Point
 flat out vec3 pos_world_space;
@@ -37,10 +37,8 @@ vec4 row3(in mat4 M) {
 
 void main()
 {
-	vec3 bary = texelFetch(bary, cellIndex).xyz;
 
 	// Shrink
-	// vec3 pos = aPos - (aPos - bary) * meshShrink;
 	vec3 pos = aPos;
 
 	// Transform to clip space
@@ -53,7 +51,7 @@ void main()
 		1.0, 0.0, 0.0, 0.0,
 		0.0, 1.0, 0.0, 0.0,
 		0.0, 0.0, 1.0, 0.0,
-		pos.x/size, pos.y/size, pos.z/size, 1.0/size
+		pos.x/pointSize, pos.y/pointSize, pos.z/pointSize, 1.0/pointSize
 	);
 
 	mat4 PMT = projection * view * model * T;
@@ -69,9 +67,10 @@ void main()
 
 	float discriminant_x = r1Dr4T*r1Dr4T-r4Dr4T*r1Dr1T;
 	float discriminant_y = r2Dr4T*r2Dr4T-r4Dr4T*r2Dr2T;
-	float screen = max(1024., 768.);
+	float screen = max(viewport.x, viewport.y);
 	gl_PointSize = sqrt(max(discriminant_x, discriminant_y)) * screen / (-r4Dr4T);
 
 	pos_world_space = pos.xyz;
-	radius = size;
+	radius = pointSize;
+	fragViewport = viewport;
 }
