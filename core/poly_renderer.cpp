@@ -112,37 +112,42 @@ void PolyRenderer::init() {
 
 	// TODO create mesh_renderer with virual function setupVBO
 	// TODO factorize to opengl function setupAttrib
-	GLuint pLoc = glGetAttribLocation(shader.id, "p");
-	GLuint nLoc = glGetAttribLocation(shader.id, "n");
-	GLuint bLoc = glGetAttribLocation(shader.id, "b");
-	GLuint hLoc = glGetAttribLocation(shader.id, "h");
-	GLuint facetIndexLocation = glGetAttribLocation(shader.id, "facetIndex");
-	GLuint vertexIndexLocation = glGetAttribLocation(shader.id, "vertexIndex");
-	GLuint localIndexLocation = glGetAttribLocation(shader.id, "localIndex");
 
 	glBindVertexArray(VAO);
 	glBindBuffer(GL_ARRAY_BUFFER, VBO);
 
+	GLuint vertexIndexLoc = glGetAttribLocation(shader.id, "vertexIndex");
+	glEnableVertexAttribArray(vertexIndexLoc);
+	glVertexAttribIPointer(vertexIndexLoc, 1, GL_INT, sizeof(Vertex), (void*)offsetof(Vertex, vertexIndex));
+
+	GLuint localIndexLoc = glGetAttribLocation(shader.id, "localIndex");
+	glEnableVertexAttribArray(localIndexLoc);
+	glVertexAttribIPointer(localIndexLoc, 1, GL_INT, sizeof(Vertex), (void*)offsetof(Vertex, localIndex));
+
+	GLuint facetIndexLoc = glGetAttribLocation(shader.id, "facetIndex");
+	glEnableVertexAttribArray(facetIndexLoc);
+	glVertexAttribIPointer(facetIndexLoc, 1, GL_INT, sizeof(Vertex), (void*)offsetof(Vertex, facetIndex));
+
+	GLuint pLoc = glGetAttribLocation(shader.id, "p");
 	glEnableVertexAttribArray(pLoc);
 	glVertexAttribPointer(pLoc, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)offsetof(Vertex, p));
 
+	GLuint p0Loc = glGetAttribLocation(shader.id, "p0");
+	glEnableVertexAttribArray(p0Loc);
+	glVertexAttribPointer(p0Loc, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)offsetof(Vertex, p0));
+
+	GLuint p1Loc = glGetAttribLocation(shader.id, "p1");
+	glEnableVertexAttribArray(p1Loc);
+	glVertexAttribPointer(p1Loc, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)offsetof(Vertex, p1));
+
+	GLuint p2Loc = glGetAttribLocation(shader.id, "p2");
+	glEnableVertexAttribArray(p2Loc);
+	glVertexAttribPointer(p2Loc, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)offsetof(Vertex, p2));
+
+	GLuint nLoc = glGetAttribLocation(shader.id, "n");
 	glEnableVertexAttribArray(nLoc);
 	glVertexAttribPointer(nLoc, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)offsetof(Vertex, n));
 
-	glEnableVertexAttribArray(bLoc);
-	glVertexAttribPointer(bLoc, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)offsetof(Vertex, b));
-
-	glEnableVertexAttribArray(hLoc);
-	glVertexAttribPointer(hLoc, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)offsetof(Vertex, h));
-
-	glEnableVertexAttribArray(facetIndexLocation);
-	glVertexAttribIPointer(facetIndexLocation, 1, GL_INT, sizeof(Vertex), (void*)offsetof(Vertex, facetIndex));
-
-	glEnableVertexAttribArray(vertexIndexLocation);
-	glVertexAttribIPointer(vertexIndexLocation, 1, GL_INT, sizeof(Vertex), (void*)offsetof(Vertex, vertexIndex));
-
-	glEnableVertexAttribArray(localIndexLocation);
-	glVertexAttribIPointer(localIndexLocation, 1, GL_INT, sizeof(Vertex), (void*)offsetof(Vertex, localIndex));
 	
 	std::chrono::steady_clock::time_point end = std::chrono::steady_clock::now();
 
@@ -152,6 +157,113 @@ void PolyRenderer::init() {
 
 }
 
+
+// void PolyRenderer::push() {
+ 
+// 	// Compute number of triangles needed to represent a facet
+// 	int ntri = 0;
+// 	for (auto &f : _m.iter_facets()) {
+// 		int nvertsFacet = f.size();
+// 		ntri += nvertsFacet;
+// 	}
+// 	nverts = 3 * ntri /* 3 points per tri, n tri per facet */;
+
+// 	std::vector<Vertex> vertices;
+// 	for (auto &f : _m.iter_facets()) {
+
+// 		// There is as much triangles as vertices in facet,
+// 		int nv = f.size();
+// 		const int ntri = nv;
+
+// 		// Compute bary
+// 		glm::vec3 bary{0.};
+// 		for (int v = 0; v < nv; ++v) {
+// 			auto pos = f.vertex(v).pos();
+// 			bary += glm::vec3{pos.x, pos.y, pos.z};
+// 		}
+// 		bary /= nv;
+
+// 		// Compute normal
+// 		std::vector<vec3> pts(nv);
+// 		for (int v = 0; v < nv; ++v) {
+// 			pts[v] = f.vertex(v).pos();
+// 		}
+// 		vec3 n = geo::normal(pts.data(), nv);
+
+		
+
+// 		for (int t = 0; t < ntri; ++t) {
+
+// 			const int lv = t;
+// 			// Three points of current triangle
+// 			vec3 verts[3] = {vec3(bary.x, bary.y, bary.z) , f.vertex(lv).pos(), f.vertex((lv + 1) % nv).pos()};
+
+// 			for (int i = 0; i < 3; ++i) {
+
+// 				// Retrieve vertex id (0 is always the barycenter => no vertex associated)
+// 				int v = i == 0 ? -1 : f.vertex((lv + (i - 1)) % nv);
+
+// 				auto reverseI = (3 - i) % 3;
+// 				auto reverseI1 = (3 - i + 1) % 3;
+// 				auto reverseI2 = (3 - i + 2) % 3;
+
+// 				auto p = verts[i];
+// 				// auto p0 = verts[reverseI];
+// 				// auto p1 = verts[(reverseI + 1) % 3];
+// 				// auto p2 = verts[(reverseI + 2) % 3];
+// 				auto p0 = verts[reverseI];
+// 				auto p1 = verts[reverseI1];
+// 				auto p2 = verts[reverseI2];
+
+// 				// // Compute the projected point from vertex to base
+// 				// auto s0 = p0 - p2;
+// 				// auto s1 = p1 - p2;
+// 				// auto length = s1.normalized() * s0;
+// 				// auto bh = p2 + s1.normalized() * length;
+
+// 				// Compute the projected point from vertex to base
+// 				auto s0 = p2 - p1;
+// 				auto s1 = p0 - p1;
+// 				auto length = s0.normalized() * s1; // Project s1 onto s0
+// 				auto bh = p1 + s0.normalized() * length;
+
+// 				// Compute height as the distance between base point and vertex
+// 				float h = (p0 - bh).norm();
+
+// 				// Or equivalently...
+// 				// auto s0 = p0 - p1;
+// 				// auto s1 = p2 - p1;
+
+// 				// Compute height with heron formula
+// 				const double a = (p1 - p0).norm();
+// 				const double b = (p2 - p1).norm();
+// 				const double c = (p2 - p0).norm();
+
+// 				const double side_lengths[] = {a, b, c};
+// 				const double s = (a + b + c) * .5;
+// 				const double area = sqrt(s * (s - a) * (s - b) * (s - c));
+// 				const double h2 = 2. * area / side_lengths[1];
+
+// 				// glm::vec3 hh(0.);
+// 				// hh[i] = h2;
+
+// 				vertices.push_back({ 
+// 					.vertexIndex = v,
+// 					.localIndex = i,
+// 					.facetIndex = f,
+// 					.p = glm::vec3(p.x, p.y, p.z),
+// 					.n = glm::vec3(n.x, n.y, n.z),
+// 					.b = bary,
+// 					.h = glm::vec3(bh.x, bh.y, bh.z)
+// 					// .h = hh
+// 				});
+// 			}
+// 		}
+// 	}
+
+// 	PolyRenderer::push(vertices);
+
+// }
 
 void PolyRenderer::push() {
  
@@ -198,59 +310,19 @@ void PolyRenderer::push() {
 				// Retrieve vertex id (0 is always the barycenter => no vertex associated)
 				int v = i == 0 ? -1 : f.vertex((lv + (i - 1)) % nv);
 
-				auto reverseI = (3 - i) % 3;
-				auto reverseI1 = (3 - i + 1) % 3;
-				auto reverseI2 = (3 - i + 2) % 3;
-
 				auto p = verts[i];
-				// auto p0 = verts[reverseI];
-				// auto p1 = verts[(reverseI + 1) % 3];
-				// auto p2 = verts[(reverseI + 2) % 3];
-				auto p0 = verts[reverseI];
-				auto p1 = verts[reverseI1];
-				auto p2 = verts[reverseI2];
-
-				// // Compute the projected point from vertex to base
-				// auto s0 = p0 - p2;
-				// auto s1 = p1 - p2;
-				// auto length = s1.normalized() * s0;
-				// auto bh = p2 + s1.normalized() * length;
-
-				// Compute the projected point from vertex to base
-				auto s0 = p2 - p1;
-				auto s1 = p0 - p1;
-				auto length = s0.normalized() * s1; // Project s1 onto s0
-				auto bh = p1 + s0.normalized() * length;
-
-				// Compute height as the distance between base point and vertex
-				float h = (p0 - bh).norm();
-
-				// Or equivalently...
-				// auto s0 = p0 - p1;
-				// auto s1 = p2 - p1;
-
-				// Compute height with heron formula
-				const double a = (p1 - p0).norm();
-				const double b = (p2 - p1).norm();
-				const double c = (p2 - p0).norm();
-
-				const double side_lengths[] = {a, b, c};
-				const double s = (a + b + c) * .5;
-				const double area = sqrt(s * (s - a) * (s - b) * (s - c));
-				const double h2 = 2. * area / side_lengths[1];
-
-				// glm::vec3 hh(0.);
-				// hh[i] = h2;
+				auto p1 = verts[1];
+				auto p2 = verts[2];
 
 				vertices.push_back({ 
-					.vertexIndex = v,
+					.vertexIndex = v, // useless i think
 					.localIndex = i,
 					.facetIndex = f,
 					.p = glm::vec3(p.x, p.y, p.z),
-					.n = glm::vec3(n.x, n.y, n.z),
-					.b = bary,
-					.h = glm::vec3(bh.x, bh.y, bh.z)
-					// .h = hh
+					.p0 = bary,
+					.p1 = glm::vec3(p1.x, p1.y, p1.z),
+					.p2 = glm::vec3(p2.x, p2.y, p2.z),
+					.n = glm::vec3(n.x, n.y, n.z)
 				});
 			}
 		}

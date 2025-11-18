@@ -25,9 +25,10 @@ struct PolyRenderer : public IRenderer {
 		int localIndex;
 		int facetIndex;
 		glm::vec3 p;
+		glm::vec3 p0;
+		glm::vec3 p1;
+		glm::vec3 p2;
 		glm::vec3 n;
-		glm::vec3 b;
-		glm::vec3 h;
 	};
 
 	PolyRenderer(Surface &m) : 
