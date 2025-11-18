@@ -94,9 +94,6 @@ void main()
         col = vec3(texture(fragColorMap, clamp((fragAttrVal - attrRange.x) / (attrRange.y - attrRange.x), 0., 1.)));
     }
 
-    // Light
-    // col = col * dot(N, vec3(0.0, 0.0, 1.0));
-
     // Highlight
     float highlightVal = texelFetch(highlightBuf, FragVertexIndex).x;
     if (highlightVal > 0) {

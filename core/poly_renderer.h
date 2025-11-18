@@ -31,7 +31,7 @@ struct PolyRenderer : public IRenderer {
 	};
 
 	PolyRenderer(Surface &m) : 
-		IRenderer(Shader("shaders/surface2.vert", "shaders/surface.frag")),
+		IRenderer(Shader("shaders/poly.vert", "shaders/surface.frag")),
 		_m(m)
 		{
 			shader.use();

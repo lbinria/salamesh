@@ -22,7 +22,6 @@ layout (std140, binding = 0) uniform Matrices
 out vec3 fragBary;
 out vec3 fragNormal;
 out vec3 fragHeights;
-out float fragVertexIndex;
 flat out int fragFacetIndex;
 
 flat out vec3 fragViewDir;
@@ -116,7 +115,6 @@ void main()
    fragBary = bary;
    fragNormal = n;
    fragFacetIndex = facetIndex;
-   fragVertexIndex = vertexIndex;
    fragWorldPos = sp;
 
    fragViewDir = -vec3(view[0][2], view[1][2], view[2][2]);

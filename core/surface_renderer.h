@@ -48,15 +48,6 @@ struct SurfaceRenderer : public IRenderer {
 			shader.setFloat3("color", {0.8f, 0.f, 0.2f});
 		}
 
-	// Test
-	SurfaceRenderer(Surface &m, int i) : 
-		IRenderer(Shader("shaders/surface2.vert", "shaders/surface.frag")),
-		_m(m)
-		{
-			shader.use();
-			shader.setFloat3("color", {0.8f, 0.f, 0.2f});
-		}
-
 	void init();
 	void render(glm::vec3 &position);
 	void clean();
