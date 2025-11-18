@@ -5,7 +5,7 @@
 #include <string>
 #include "model.h"
 #include "point_set_renderer.h"
-#include "halfedge_renderer_2.h"
+#include "halfedge_renderer.h"
 #include "quad_renderer.h"
 #include "bbox_renderer.h"
 #include "clipping_renderer.h"

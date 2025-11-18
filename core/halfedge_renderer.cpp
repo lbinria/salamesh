@@ -1,6 +1,6 @@
-#include "halfedge_renderer_2.h"
+#include "halfedge_renderer.h"
 
-void HalfedgeRenderer2::init() {
+void HalfedgeRenderer::init() {
 
 	glGenVertexArrays(1, &VAO);
 	glGenBuffers(1, &VBO);
@@ -62,7 +62,7 @@ void HalfedgeRenderer2::init() {
 
 }
 
-void HalfedgeRenderer2::render(glm::vec3 &position) {
+void HalfedgeRenderer::render(glm::vec3 &position) {
 
 	if (!visible)
 		return;
@@ -85,7 +85,7 @@ void HalfedgeRenderer2::render(glm::vec3 &position) {
 	glDrawArrays(GL_TRIANGLES, 0, nverts);
 }
 
-void HalfedgeRenderer2::clean() {
+void HalfedgeRenderer::clean() {
 	// Clean up
 	glDeleteVertexArrays(1, &VAO);
 	glDeleteBuffers(1, &VBO);
@@ -134,7 +134,7 @@ void SurfaceHalfedgeRenderer::push() {
 	glBufferData(GL_ARRAY_BUFFER, nverts * sizeof(LineVert), vertices.data(), GL_STATIC_DRAW);
 }
 
-void HexHalfedgeRenderer::push() {
+void VolumeHalfedgeRenderer::push() {
 	// nverts = 24 * _m.ncells() * 6;
 	std::vector<LineVert> vertices;
 

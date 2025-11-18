@@ -5,7 +5,7 @@
 #include <string>
 #include "model.h"
 #include "point_set_renderer.h"
-#include "halfedge_renderer_2.h"
+#include "halfedge_renderer.h"
 #include "hex_renderer.h"
 #include "bbox_renderer.h"
 #include "clipping_renderer.h"
@@ -23,7 +23,7 @@ struct HexModel final : public Model {
         Model::Model({
             {"mesh_renderer", std::make_shared<HexRenderer>(_m)}, 
             {"point_renderer", std::make_shared<PointSetRenderer>(_m.points) },
-            {"edge_renderer", std::make_shared<HexHalfedgeRenderer>(_m) },
+            {"edge_renderer", std::make_shared<VolumeHalfedgeRenderer>(_m) },
             {"bbox_renderer", std::make_shared<BBoxRenderer>(_m.points) },
             {"zclipping_renderer", std::make_shared<ClippingRenderer>(_m.points) }
         })

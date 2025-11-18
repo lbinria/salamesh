@@ -15,7 +15,7 @@ using json = nlohmann::json;
 
 using namespace UM;
 
-struct HalfedgeRenderer2 : public IRenderer {
+struct HalfedgeRenderer : public IRenderer {
 
 	struct LineVert {
 		int halfedgeIndex;
@@ -26,22 +26,6 @@ struct HalfedgeRenderer2 : public IRenderer {
 	};
 
 	using IRenderer::IRenderer;
-
-	// HalfedgeRenderer2(std::shared_ptr<Surface> s) : 
-	// 	IRenderer(Shader("shaders/edge.vert", "shaders/edge.frag")),
-	// 	s(s) {
-	// 		setEdgeSize(2.0f); // TODO here use a setting default edge size
-	// 		setEdgeInsideColor({0.0, 0.97, 0.73}); // TODO here use a setting default edge inside color
-	// 		setEdgeOutsideColor({0.0, 0.6, 0.45}); // TODO here use a setting default edge outside color
-	// 	}
-
-	// HalfedgeRenderer2(std::shared_ptr<Volume> v) : 
-	// 	IRenderer(Shader("shaders/edge.vert", "shaders/edge.frag")),
-	// 	v(v) {
-	// 		setEdgeSize(2.0f); // TODO here use a setting default edge size
-	// 		setEdgeInsideColor({0.0, 0.97, 0.73}); // TODO here use a setting default edge inside color
-	// 		setEdgeOutsideColor({0.0, 0.6, 0.45}); // TODO here use a setting default edge outside color
-	// 	}
 
 	void init();
 	virtual void push() = 0;
@@ -86,11 +70,6 @@ struct HalfedgeRenderer2 : public IRenderer {
 		edgeOutsideColor = color;
 	}
 
-
-
-	// std::shared_ptr<Surface> s;
-	// std::shared_ptr<Volume> v;
-
 	private:
 
 	float edgeSize;
@@ -111,10 +90,10 @@ struct HalfedgeRenderer2 : public IRenderer {
 	
 };
 
-struct SurfaceHalfedgeRenderer : public HalfedgeRenderer2 {
+struct SurfaceHalfedgeRenderer : public HalfedgeRenderer {
 
 	SurfaceHalfedgeRenderer(Surface &m) : 
-		HalfedgeRenderer2(Shader("shaders/edge.vert", "shaders/edge.frag")),
+		HalfedgeRenderer(Shader("shaders/edge.vert", "shaders/edge.frag")),
 		_m(m) {
 			setEdgeSize(2.0f); // TODO here use a setting default edge size
 			setEdgeInsideColor({0.0, 0.97, 0.73}); // TODO here use a setting default edge inside color
@@ -126,10 +105,10 @@ struct SurfaceHalfedgeRenderer : public HalfedgeRenderer2 {
 	Surface &_m;
 };
 
-struct HexHalfedgeRenderer : public HalfedgeRenderer2 {
+struct VolumeHalfedgeRenderer : public HalfedgeRenderer {
 
-	HexHalfedgeRenderer(Volume &m) : 
-		HalfedgeRenderer2(Shader("shaders/edge.vert", "shaders/edge.frag")),
+	VolumeHalfedgeRenderer(Volume &m) : 
+		HalfedgeRenderer(Shader("shaders/edge.vert", "shaders/edge.frag")),
 		_m(m) {
 			setEdgeSize(2.0f); // TODO here use a setting default edge size
 			setEdgeInsideColor({0.0, 0.97, 0.73}); // TODO here use a setting default edge inside color
