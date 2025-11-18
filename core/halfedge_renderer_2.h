@@ -25,17 +25,26 @@ struct HalfedgeRenderer2 : public IRenderer {
 		float end;
 	};
 
-	HalfedgeRenderer2(Surface &s) : 
-		IRenderer(Shader("shaders/edge.vert", "shaders/edge.frag")),
-		// shader("shaders/edgebary.vert", "shaders/edgebary.frag"), 
-		s(s) {
-			setEdgeSize(2.0f); // TODO here use a setting default edge size
-			setEdgeInsideColor({0.0, 0.97, 0.73}); // TODO here use a setting default edge inside color
-			setEdgeOutsideColor({0.0, 0.6, 0.45}); // TODO here use a setting default edge outside color
-		}
+	using IRenderer::IRenderer;
+
+	// HalfedgeRenderer2(std::shared_ptr<Surface> s) : 
+	// 	IRenderer(Shader("shaders/edge.vert", "shaders/edge.frag")),
+	// 	s(s) {
+	// 		setEdgeSize(2.0f); // TODO here use a setting default edge size
+	// 		setEdgeInsideColor({0.0, 0.97, 0.73}); // TODO here use a setting default edge inside color
+	// 		setEdgeOutsideColor({0.0, 0.6, 0.45}); // TODO here use a setting default edge outside color
+	// 	}
+
+	// HalfedgeRenderer2(std::shared_ptr<Volume> v) : 
+	// 	IRenderer(Shader("shaders/edge.vert", "shaders/edge.frag")),
+	// 	v(v) {
+	// 		setEdgeSize(2.0f); // TODO here use a setting default edge size
+	// 		setEdgeInsideColor({0.0, 0.97, 0.73}); // TODO here use a setting default edge inside color
+	// 		setEdgeOutsideColor({0.0, 0.6, 0.45}); // TODO here use a setting default edge outside color
+	// 	}
 
 	void init();
-	void push();
+	virtual void push() = 0;
 	void render(glm::vec3 &position);
 	void clean();
 
@@ -77,7 +86,10 @@ struct HalfedgeRenderer2 : public IRenderer {
 		edgeOutsideColor = color;
 	}
 
-	Surface &s;
+
+
+	// std::shared_ptr<Surface> s;
+	// std::shared_ptr<Volume> v;
 
 	private:
 
@@ -97,4 +109,34 @@ struct HalfedgeRenderer2 : public IRenderer {
 		j["edgeOutsideColor"] = json::array({edgeOutsideColor.x, edgeOutsideColor.y, edgeOutsideColor.z});
 	}
 	
+};
+
+struct SurfaceHalfedgeRenderer : public HalfedgeRenderer2 {
+
+	SurfaceHalfedgeRenderer(Surface &m) : 
+		HalfedgeRenderer2(Shader("shaders/edge.vert", "shaders/edge.frag")),
+		_m(m) {
+			setEdgeSize(2.0f); // TODO here use a setting default edge size
+			setEdgeInsideColor({0.0, 0.97, 0.73}); // TODO here use a setting default edge inside color
+			setEdgeOutsideColor({0.0, 0.6, 0.45}); // TODO here use a setting default edge outside color
+		}
+
+	void push() override;
+
+	Surface &_m;
+};
+
+struct HexHalfedgeRenderer : public HalfedgeRenderer2 {
+
+	HexHalfedgeRenderer(Volume &m) : 
+		HalfedgeRenderer2(Shader("shaders/edge.vert", "shaders/edge.frag")),
+		_m(m) {
+			setEdgeSize(2.0f); // TODO here use a setting default edge size
+			setEdgeInsideColor({0.0, 0.97, 0.73}); // TODO here use a setting default edge inside color
+			setEdgeOutsideColor({0.0, 0.6, 0.45}); // TODO here use a setting default edge outside color
+		}
+
+	void push() override;
+
+	Volume &_m;
 };

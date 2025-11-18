@@ -5,8 +5,11 @@
 #include <string>
 #include "model.h"
 #include "point_set_renderer.h"
-#include "halfedge_renderer.h"
+#include "halfedge_renderer_2.h"
 #include "hex_renderer.h"
+#include "bbox_renderer.h"
+#include "clipping_renderer.h"
+
 #include "color_mode.h"
 #include "helpers.h"
 
@@ -15,17 +18,14 @@ using json = nlohmann::json;
 
 struct HexModel final : public Model {
 
-	// Mesh + Renderer
-
-    // using Model::Model;
-
 	HexModel() : 
         _m(), 
-        // Model::Model(std::make_unique<HexRenderer>(_m), PointSetRenderer(_m.points),  std::make_shared<HalfedgeRenderer>(_m))
         Model::Model({
             {"mesh_renderer", std::make_shared<HexRenderer>(_m)}, 
             {"point_renderer", std::make_shared<PointSetRenderer>(_m.points) },
-            {"edge_renderer", std::make_shared<HalfedgeRenderer>(_m) }
+            {"edge_renderer", std::make_shared<HexHalfedgeRenderer>(_m) },
+            {"bbox_renderer", std::make_shared<BBoxRenderer>(_m.points) },
+            {"zclipping_renderer", std::make_shared<ClippingRenderer>(_m.points) }
         })
         {}
 
@@ -35,11 +35,7 @@ struct HexModel final : public Model {
 
 
 	bool load(const std::string path) override;
-	// void save() const override;
 	void saveAs(const std::string path) const override;
-
-    // std::string save_state() const override;
-    // void load_state(json model_state);
 
 	Hexahedra& getHexahedra() { return _m; }
 	VolumeAttributes& getVolumeAttributes() { return _volumeAttributes; }

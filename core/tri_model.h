@@ -17,15 +17,12 @@ using json = nlohmann::json;
 
 struct TriModel final : public Model {
 
-	// Mesh + Renderer
-    // using Model::Model;
-
 	TriModel() : 
         _tri(), 
         Model::Model({
             {"mesh_renderer", std::make_shared<TriRenderer>(_tri)}, 
             {"point_renderer", std::make_shared<PointSetRenderer>(&_tri) },
-            {"edge_renderer", std::make_shared<HalfedgeRenderer2>(_tri) },
+            {"edge_renderer", std::make_shared<SurfaceHalfedgeRenderer>(_tri) },
             {"bbox_renderer", std::make_shared<BBoxRenderer>(_tri.points) },
             {"zclipping_renderer", std::make_shared<ClippingRenderer>(_tri.points) }
         })

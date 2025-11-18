@@ -60,54 +60,6 @@ void HalfedgeRenderer2::init() {
 	glEnableVertexAttribArray(endLoc);
 	glVertexAttribPointer(endLoc, 1, GL_FLOAT, GL_FALSE, sizeof(LineVert), (void*)offsetof(LineVert, end));
 
-	// GLuint vertexIndexLocation = glGetAttribLocation(shader.id, "vertexIndex");
-	// glEnableVertexAttribArray(vertexIndexLocation);
-	// glVertexAttribIPointer(vertexIndexLocation, 1, GL_INT, sizeof(Vertex), (void*)offsetof(Vertex, vertexIndex));
-
-	// GLuint sizeLocation = glGetAttribLocation(shader.id, "sizeScale");
-	// glEnableVertexAttribArray(sizeLocation);
-	// glVertexAttribPointer(sizeLocation, 1, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)offsetof(Vertex, size));
-
-}
-
-void HalfedgeRenderer2::push() {	
-
-	
-	nverts = s.nfacets() * 3 * 6;
-	std::vector<LineVert> vertices;
-
-	for (auto &f : s.iter_facets()) {
-		for (int i = 0; i < 3; ++i) {
-			// auto lc0 = reference_cells[1].facets[i % 4 + 4 * f];
-			// auto lc1 = reference_cells[1].facets[(i + 1) % 4 + 4 * f];
-			
-			auto v0 = f.vertex(i);
-			auto v1 = f.vertex((i + 1) % 3);
-			auto p0 = v0.pos();
-			auto p1 = v1.pos();
-			
-			int halfedgeIdx = f * 3 + i;
-
-			// build the 4 “corner” vertices
-			LineVert lv0{halfedgeIdx, glm::vec3(p0.x, p0.y, p0.z), glm::vec3(p1.x, p1.y, p1.z), -1.0f, 0.0f};  // corner: start, left side
-			LineVert lv1{halfedgeIdx, glm::vec3(p0.x, p0.y, p0.z), glm::vec3(p1.x, p1.y, p1.z), +1.0f, 0.0f};  // corner: start, right side
-			LineVert lv2{halfedgeIdx, glm::vec3(p0.x, p0.y, p0.z), glm::vec3(p1.x, p1.y, p1.z), -1.0f, 1.0f};  // corner: end,   left side
-			LineVert lv3{halfedgeIdx, glm::vec3(p0.x, p0.y, p0.z), glm::vec3(p1.x, p1.y, p1.z), +1.0f, 1.0f};  // corner: end,   right side
-
-			vertices.push_back(lv0);
-			vertices.push_back(lv1);
-			vertices.push_back(lv2);
-			
-			vertices.push_back(lv2);
-			vertices.push_back(lv3);
-			vertices.push_back(lv1);
-
-		}
-	}
-
-	glBindVertexArray(VAO);
-	glBindBuffer(GL_ARRAY_BUFFER, VBO);
-	glBufferData(GL_ARRAY_BUFFER, nverts * sizeof(LineVert), vertices.data(), GL_STATIC_DRAW);
 }
 
 void HalfedgeRenderer2::render(glm::vec3 &position) {
@@ -141,4 +93,92 @@ void HalfedgeRenderer2::clean() {
 	// TODO clean buffers, textures, unmap ptr...
 
 	shader.clean();
+}
+
+void SurfaceHalfedgeRenderer::push() {	
+	
+	std::vector<LineVert> vertices;
+
+	for (auto &f : _m.iter_facets()) {
+		int facetSize = _m.facet_size(f);
+		for (int i = 0; i < facetSize; ++i) {
+			
+			auto v0 = f.vertex(i);
+			auto v1 = f.vertex((i + 1) % facetSize);
+			auto p0 = v0.pos();
+			auto p1 = v1.pos();
+			
+			int halfedgeIdx = f * facetSize + i;
+
+			// build the 4 “corner” vertices
+			LineVert lv0{halfedgeIdx, glm::vec3(p0.x, p0.y, p0.z), glm::vec3(p1.x, p1.y, p1.z), -1.0f, 0.0f};  // corner: start, left side
+			LineVert lv1{halfedgeIdx, glm::vec3(p0.x, p0.y, p0.z), glm::vec3(p1.x, p1.y, p1.z), +1.0f, 0.0f};  // corner: start, right side
+			LineVert lv2{halfedgeIdx, glm::vec3(p0.x, p0.y, p0.z), glm::vec3(p1.x, p1.y, p1.z), -1.0f, 1.0f};  // corner: end,   left side
+			LineVert lv3{halfedgeIdx, glm::vec3(p0.x, p0.y, p0.z), glm::vec3(p1.x, p1.y, p1.z), +1.0f, 1.0f};  // corner: end,   right side
+
+			vertices.push_back(lv0);
+			vertices.push_back(lv1);
+			vertices.push_back(lv2);
+			
+			vertices.push_back(lv2);
+			vertices.push_back(lv3);
+			vertices.push_back(lv1);
+
+		}
+	}
+
+	nverts = vertices.size();
+
+	glBindVertexArray(VAO);
+	glBindBuffer(GL_ARRAY_BUFFER, VBO);
+	glBufferData(GL_ARRAY_BUFFER, nverts * sizeof(LineVert), vertices.data(), GL_STATIC_DRAW);
+}
+
+void HexHalfedgeRenderer::push() {
+	// nverts = 24 * _m.ncells() * 6;
+	std::vector<LineVert> vertices;
+
+	for (auto &c : _m.iter_cells()) {
+		int nf = _m.nfacets_per_cell();
+		for (int f = 0; f < nf; ++f) {
+			int facetSize = _m.facet_size(f);
+			
+			// TODO here just manage tet / hex, should manage prism, pyramid, etc...
+			// The best is to see if we can make refCell useless
+			int refCell = facetSize == 3 ? 0 : 1;
+
+			for (int i = 0; i < facetSize; ++i) {
+				auto lc0 = reference_cells[refCell].facets[i % facetSize + facetSize * f];
+				auto lc1 = reference_cells[refCell].facets[(i + 1) % facetSize + facetSize * f];
+				auto v0 = c.corner(lc0).vertex();
+				auto v1 = c.corner(lc1).vertex();
+				auto p0 = v0.pos();
+				auto p1 = v1.pos();
+				
+				// int halfedgeIdx = c * 24 + f * i;
+				int halfedgeIdx = c * (nf * facetSize) + f * i;
+
+				// build the 4 “corner” vertices
+				LineVert lv0{halfedgeIdx, glm::vec3(p0.x, p0.y, p0.z), glm::vec3(p1.x, p1.y, p1.z), -1.0f, 0.0f};  // corner: start, left side
+				LineVert lv1{halfedgeIdx, glm::vec3(p0.x, p0.y, p0.z), glm::vec3(p1.x, p1.y, p1.z), +1.0f, 0.0f};  // corner: start, right side
+				LineVert lv2{halfedgeIdx, glm::vec3(p0.x, p0.y, p0.z), glm::vec3(p1.x, p1.y, p1.z), -1.0f, 1.0f};  // corner: end,   left side
+				LineVert lv3{halfedgeIdx, glm::vec3(p0.x, p0.y, p0.z), glm::vec3(p1.x, p1.y, p1.z), +1.0f, 1.0f};  // corner: end,   right side
+
+				vertices.push_back(lv0);
+				vertices.push_back(lv1);
+				vertices.push_back(lv2);
+				
+				vertices.push_back(lv2);
+				vertices.push_back(lv3);
+				vertices.push_back(lv1);
+
+			}
+		}
+	}
+
+	nverts = vertices.size();
+
+	glBindVertexArray(VAO);
+	glBindBuffer(GL_ARRAY_BUFFER, VBO);
+	glBufferData(GL_ARRAY_BUFFER, nverts * sizeof(LineVert), vertices.data(), GL_STATIC_DRAW);
 }

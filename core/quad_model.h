@@ -18,15 +18,12 @@ using json = nlohmann::json;
 
 struct QuadModel final : public Model {
 
-	// Mesh + Renderer
-	// using Model::Model;
-
 	QuadModel() : 
 		_m(), 
 		Model::Model({
 			{"mesh_renderer", std::make_shared<QuadRenderer>(_m)}, 
 			{"point_renderer", std::make_shared<PointSetRenderer>(_m.points) },
-			{"edge_renderer", std::make_shared<HalfedgeRenderer2>(_m) },
+			{"edge_renderer", std::make_shared<SurfaceHalfedgeRenderer>(_m) },
             {"bbox_renderer", std::make_shared<BBoxRenderer>(_m.points) },
             {"zclipping_renderer", std::make_shared<ClippingRenderer>(_m.points) }
 		})

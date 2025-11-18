@@ -5,9 +5,12 @@
 #include <string>
 #include "model.h"
 #include "point_set_renderer.h"
-#include "halfedge_renderer.h"
+#include "halfedge_renderer_2.h"
 #include "bbox_renderer.h"
 #include "poly_renderer.h"
+#include "bbox_renderer.h"
+#include "clipping_renderer.h"
+
 #include "color_mode.h"
 #include "helpers.h"
 
@@ -16,15 +19,14 @@ using json = nlohmann::json;
 
 struct PolyModel final : public Model {
 
-	// Mesh + Renderer
-	// using Model::Model;
-
 	PolyModel() : 
 		_m(), 
 		Model::Model({
 			{"mesh_renderer", std::make_shared<PolyRenderer>(_m)}, 
 			{"point_renderer", std::make_shared<PointSetRenderer>(_m.points) },
-            {"bbox_renderer", std::make_shared<BBoxRenderer>(_m.points) }
+            {"edge_renderer", std::make_shared<SurfaceHalfedgeRenderer>(_m) },
+            {"bbox_renderer", std::make_shared<BBoxRenderer>(_m.points) },
+            {"zclipping_renderer", std::make_shared<ClippingRenderer>(_m.points) }
 		})
 		{}
 
