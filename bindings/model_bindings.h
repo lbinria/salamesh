@@ -69,23 +69,23 @@ namespace bindings {
 				&PointSetRenderer::setPointSize
 			);
 
-			sol::usertype<HalfedgeRenderer> halfedgeRenderer_t = lua.new_usertype<HalfedgeRenderer>("HalfedgeRenderer");
+			sol::usertype<HalfedgeRenderer2> halfedgeRenderer_t = lua.new_usertype<HalfedgeRenderer2>("HalfedgeRenderer");
 
 			halfedgeRenderer_t["visible"] = sol::property(
-				&HalfedgeRenderer::getVisible,
-				&HalfedgeRenderer::setVisible
+				&HalfedgeRenderer2::getVisible,
+				&HalfedgeRenderer2::setVisible
 			);
 			halfedgeRenderer_t["inside_color"] = sol::property(
-				&HalfedgeRenderer::getEdgeInsideColor,
-				&HalfedgeRenderer::setEdgeInsideColor
+				&HalfedgeRenderer2::getEdgeInsideColor,
+				&HalfedgeRenderer2::setEdgeInsideColor
 			);
 			halfedgeRenderer_t["outside_color"] = sol::property(
-				&HalfedgeRenderer::getEdgeOutsideColor,
-				&HalfedgeRenderer::setEdgeOutsideColor
+				&HalfedgeRenderer2::getEdgeOutsideColor,
+				&HalfedgeRenderer2::setEdgeOutsideColor
 			);
 			halfedgeRenderer_t["size"] = sol::property(
-				&HalfedgeRenderer::getEdgeSize,
-				&HalfedgeRenderer::setEdgeSize
+				&HalfedgeRenderer2::getEdgeSize,
+				&HalfedgeRenderer2::setEdgeSize
 			);
 
 			sol::usertype<IRenderer> meshRenderer_t = lua.new_usertype<IRenderer>("MeshRenderer");

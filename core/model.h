@@ -5,7 +5,7 @@
 #include "renderer.h"
 #include "color_mode.h"
 #include "point_set_renderer.h"
-#include "halfedge_renderer.h"
+#include "halfedge_renderer_2.h"
 
 #include "../include/glm/glm.hpp"
 #include "../include/json.hpp"
@@ -639,9 +639,9 @@ struct Model {
         return *static_cast<PointSetRenderer*>(_renderers.at("point_renderer").get());
     }
 
-    std::shared_ptr<HalfedgeRenderer> getEdges() {
+    std::shared_ptr<HalfedgeRenderer2> getEdges() {
         if (_renderers.contains("edge_renderer"))
-            return  std::static_pointer_cast<HalfedgeRenderer>(_renderers.at("edge_renderer"));
+            return  std::static_pointer_cast<HalfedgeRenderer2>(_renderers.at("edge_renderer"));
             
         return nullptr;
     }
