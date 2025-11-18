@@ -104,20 +104,15 @@ void SurfaceRenderer::init() {
 	std::cout << "vertex attrib setup..." << std::endl;
 	#endif
 
-	GLuint pLoc = glGetAttribLocation(shader.id, "p");
 	GLuint p0Loc = glGetAttribLocation(shader.id, "p0");
 	GLuint p1Loc = glGetAttribLocation(shader.id, "p1");
 	GLuint p2Loc = glGetAttribLocation(shader.id, "p2");
-	GLuint p3Loc = glGetAttribLocation(shader.id, "p3");
 	GLuint facetIndexLocation = glGetAttribLocation(shader.id, "facetIndex");
 	GLuint vertexIndexLocation = glGetAttribLocation(shader.id, "vertexIndex");
 	GLuint localIndexLocation = glGetAttribLocation(shader.id, "localIndex");
 
 	glBindVertexArray(VAO);
 	glBindBuffer(GL_ARRAY_BUFFER, VBO);
-
-	glEnableVertexAttribArray(pLoc);
-	glVertexAttribPointer(pLoc, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)offsetof(Vertex, p));
 
 	glEnableVertexAttribArray(p0Loc);
 	glVertexAttribPointer(p0Loc, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)offsetof(Vertex, p0));
@@ -127,9 +122,6 @@ void SurfaceRenderer::init() {
 
 	glEnableVertexAttribArray(p2Loc);
 	glVertexAttribPointer(p2Loc, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)offsetof(Vertex, p2));
-
-	glEnableVertexAttribArray(p3Loc);
-	glVertexAttribPointer(p3Loc, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)offsetof(Vertex, p3));
 
 	glEnableVertexAttribArray(facetIndexLocation);
 	glVertexAttribIPointer(facetIndexLocation, 1, GL_INT, sizeof(Vertex), (void*)offsetof(Vertex, facetIndex));

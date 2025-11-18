@@ -23,21 +23,10 @@ struct SurfaceRenderer : public IRenderer {
 	struct Vertex {
 		int vertexIndex;
 		int localIndex;
-		glm::vec3 p;
 		glm::vec3 p0;
 		glm::vec3 p1;
 		glm::vec3 p2;
-		glm::vec3 p3;
 		int facetIndex;
-	};
-
-	// Test
-	struct Vertex2 {
-		int vertexIndex;
-		int facetIndex;
-		glm::vec3 p;
-		glm::vec3 b;
-		glm::vec3 h;
 	};
 
 	SurfaceRenderer(Surface &m) : 
