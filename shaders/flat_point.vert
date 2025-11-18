@@ -66,9 +66,9 @@ void main()
 	// vec3 pos = aPos;
 
 
-	vec3 pos = aPos + dot(normal, viewDir) * viewDir * r3;
+	// vec3 pos = aPos + dot(normal, viewDir) * viewDir * r3;
 	// vec3 pos = aPos + normal * r3;
-	// vec3 pos = aPos + dot(normal, viewDir) * normal * r3;
+	vec3 pos = aPos + dot(normal, viewDir) * normal * r3;
 
 
 	gl_Position = projection * view * model * vec4(pos, 1.0);
