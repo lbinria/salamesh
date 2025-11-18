@@ -76,10 +76,10 @@ void main()
     // Update depth according to radius
     gl_FragDepth = gl_FragCoord.z - 0.00005 * N.z;
 
-    // inside = uColorInside, outside = uColorOutside
-    // vec4 col = mix(uColorOutside, uColorInside, t);
+    
+    // vec3 col = mix(uColorOutside, uColorInside, t);
     float light = 1. - dot(N, vec3(0.35,0.45,1.)) /** .5 + .5*/;
-    vec3 col = mix(uColorOutside, uColorInside, t) * (light * 0.5 + 0.25);
+    vec3 col = mix(uColorOutside, uColorInside, t) * (light * 0.5 + 0.5);
     
     // Highlight
     float highlightVal = texelFetch(highlightBuf, FragHalfedgeIndex).x;

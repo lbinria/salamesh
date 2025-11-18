@@ -4,10 +4,10 @@ bool TriModel::load(const std::string path) {
 	// TODO check if the model failed to read in ultimaille, else there is side effects ! 
 	
 	// Load the mesh
-	_surfaceAttributes = read_by_extension(path, _tri);
+	_surfaceAttributes = read_by_extension(path, _m);
 	_path = path;
 
-	if (_tri.nfacets() <= 0)
+	if (_m.nfacets() <= 0)
 		return false;
 
 	// Extract name
@@ -67,5 +67,5 @@ void TriModel::saveAs(const std::string path) const {
 		corner_attrs
 	);
 
-	write_by_extension(path, _tri, attributes);
+	write_by_extension(path, _m, attributes);
 }
