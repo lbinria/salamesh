@@ -5,8 +5,11 @@
 #include <string>
 #include "model.h"
 #include "point_set_renderer.h"
-#include "halfedge_renderer.h"
+#include "halfedge_renderer_2.h"
 #include "quad_renderer.h"
+#include "bbox_renderer.h"
+#include "clipping_renderer.h"
+
 #include "color_mode.h"
 #include "helpers.h"
 
@@ -19,10 +22,13 @@ struct QuadModel final : public Model {
 	// using Model::Model;
 
 	QuadModel() : 
-		_quad(), 
+		_m(), 
 		Model::Model({
-			{"mesh_renderer", std::make_shared<QuadRenderer>(_quad)}, 
-			{"point_renderer", std::make_shared<PointSetRenderer>(_quad.points) }
+			{"mesh_renderer", std::make_shared<QuadRenderer>(_m)}, 
+			{"point_renderer", std::make_shared<PointSetRenderer>(_m.points) },
+			{"edge_renderer", std::make_shared<HalfedgeRenderer2>(_m) },
+            {"bbox_renderer", std::make_shared<BBoxRenderer>(_m.points) },
+            {"zclipping_renderer", std::make_shared<ClippingRenderer>(_m.points) }
 		})
 		{}
 
@@ -35,15 +41,15 @@ struct QuadModel final : public Model {
 	void saveAs(const std::string path) const override;
 
 
-	Quads& getQuads() { return _quad; }
+	Quads& getQuads() { return _m; }
 	SurfaceAttributes& getSurfaceAttributes() { return _surfaceAttributes; }
 
 	int nverts() const override {
-		return _quad.nverts();
+		return _m.nverts();
 	}
 
 	int nfacets() const override {
-		return _quad.nfacets();
+		return _m.nfacets();
 	} 
 
 	int ncells() const override {
@@ -51,14 +57,14 @@ struct QuadModel final : public Model {
 	}
 
 	int ncorners() const override {
-		return _quad.ncorners();
+		return _m.ncorners();
 	}
 
 	std::tuple<glm::vec3, glm::vec3> bbox() override {
 		glm::vec3 min = glm::vec3(FLT_MAX);
 		glm::vec3 max = glm::vec3(-FLT_MAX);
 
-		for (auto &v : _quad.iter_vertices()) {
+		for (auto &v : _m.iter_vertices()) {
 			glm::vec3 p = sl::um2glm(v.pos());
 			min = glm::min(min, p);
 			max = glm::max(max, p);
@@ -80,7 +86,7 @@ struct QuadModel final : public Model {
 	private:
 
 	// Mesh
-	Quads _quad;
+	Quads _m;
 	SurfaceAttributes _surfaceAttributes;
 
 };

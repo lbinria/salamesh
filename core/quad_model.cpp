@@ -4,10 +4,10 @@ bool QuadModel::load(const std::string path) {
 	// TODO check if the model failed to read in ultimaille, else there is side effects ! 
 	
 	// Load the mesh
-	_surfaceAttributes = read_by_extension(path, _quad);
+	_surfaceAttributes = read_by_extension(path, _m);
 	_path = path;
 
-	if (_quad.nfacets() <= 0)
+	if (_m.nfacets() <= 0)
 		return false;
 
 	// Extract name
@@ -67,5 +67,5 @@ void QuadModel::saveAs(const std::string path) const {
 		corner_attrs
 	);
 
-	write_by_extension(path, _quad, attributes);
+	write_by_extension(path, _m, attributes);
 }

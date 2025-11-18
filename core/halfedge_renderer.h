@@ -11,7 +11,6 @@
 #include "../include/json.hpp"
 using json = nlohmann::json;
 
-
 #include "../include/glm/glm.hpp"
 
 using namespace UM;
