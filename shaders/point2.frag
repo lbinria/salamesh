@@ -13,6 +13,10 @@ in vec3 fragWorldPos;
 
 uniform vec3 pointColor;
 
+flat in vec3 fragViewDir;
+
+uniform bool is_light_enabled;
+uniform bool is_light_follow_view;
 
 uniform bool is_clipping_enabled = false;
 uniform vec3 clipping_plane_normal; // (a, b, c)
@@ -91,7 +95,7 @@ void main()
     }
 
     // Light
-    col = col * dot(N, vec3(0.0, 0.0, 1.0));
+    // col = col * dot(N, vec3(0.0, 0.0, 1.0));
 
     // Highlight
     float highlightVal = texelFetch(highlightBuf, FragVertexIndex).x;
@@ -103,6 +107,19 @@ void main()
         vec3 hlColor = mix(hoverColor, selectColor, t);
         // Mix with current point color (80%)
         col = mix(col, hlColor, .8);
+    }
+
+    // Diffuse light
+    if (is_light_enabled) {
+        vec3 dirLight;
+
+        if (is_light_follow_view)
+            dirLight = fragViewDir;
+        else
+            dirLight = vec3(-0.5f, -0.8f, 0.2f);
+        
+        float diffuse = max((1.f - dot(N, dirLight)) * .75f + .25f /* ambiant */, 0.f);
+        col = col * diffuse;
     }
 
     FragVertexIndexOut = vec4(encode_id(FragVertexIndex), 1.);

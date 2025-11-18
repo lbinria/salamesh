@@ -13,6 +13,7 @@ layout (std140, binding = 0) uniform Matrices
 
 flat out int FragVertexIndex;
 out vec3 fragWorldPos;
+flat out vec3 fragViewDir;
 
 
 uniform mat4 model;
@@ -77,6 +78,7 @@ void main()
 		pointZ = (ndc3.z * 0.5 + 0.5);
 	/*}*/
 
+    fragViewDir = -vec3(view[0][2], view[1][2], view[2][2]);
 	fragWorldPos = pos;
 	FragVertexIndex = vertexIndex;
 }

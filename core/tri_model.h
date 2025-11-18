@@ -21,7 +21,7 @@ struct TriModel final : public Model {
         _m(), 
         Model::Model({
             {"mesh_renderer", std::make_shared<TriRenderer>(_m)}, 
-            {"point_renderer", std::make_shared<PointSetRenderer>(&_m) },
+            {"point_renderer", std::make_shared<PointSetRenderer>(_m.points) },
             {"edge_renderer", std::make_shared<SurfaceHalfedgeRenderer>(_m) },
             {"bbox_renderer", std::make_shared<BBoxRenderer>(_m.points) },
             {"zclipping_renderer", std::make_shared<ClippingRenderer>(_m.points) }
