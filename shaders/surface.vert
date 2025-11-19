@@ -20,6 +20,8 @@ layout (std140, binding = 0) uniform Matrices
 out vec3 fragBary;
 out vec3 fragNormal;
 out vec3 fragHeights;
+flat out vec3 flatFragHeights;
+
 flat out int fragFacetIndex;
 
 flat out vec3 fragViewDir;
@@ -89,6 +91,7 @@ void main()
    
    fragHeights = vec3(0);
    fragHeights[localIndex] = heights[(localIndex + 1) % 3];
+   flatFragHeights = fragHeights;
 
 
    fragBary = bary;
