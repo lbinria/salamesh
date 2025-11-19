@@ -10,6 +10,7 @@ layout(location = 4) out vec4 fragMeshIndexOut;
 in vec3 fragBary;
 in vec3 fragNormal;
 in vec3 fragHeights;
+flat in vec3 flatFragHeights;
 
 flat in vec3 fragViewDir;
 
@@ -141,9 +142,15 @@ void main()
 
 
     // Wireframe
-    if (fragHeights.y < meshSize || fragHeights.z < meshSize || fragHeights.x < meshSize) {
-        col = vec3(0,0,0);
-    }
+    // if (fragHeights.x < meshSize || fragHeights.y < meshSize || fragHeights.z < meshSize) {
+    //     // col = vec3(0,0,0);
+    //     col =  vec3(0,0,0);
+    // }
+    float f1 = 1. - smoothstep(flatFragHeights.x - meshSize, flatFragHeights.x, flatFragHeights.x - fragHeights.x);
+    float f2 = 1. - smoothstep(flatFragHeights.y - meshSize, flatFragHeights.y, flatFragHeights.y - fragHeights.y);
+    float f3 = 1. - smoothstep(flatFragHeights.z - meshSize, flatFragHeights.z, flatFragHeights.z - fragHeights.z);
+    col *= f1 * f2 * f3;
+
 
     // Outputs
     fragFacetIndexOut = vec4(encode_id(fragFacetIndex), 1.);
