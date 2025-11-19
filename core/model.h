@@ -120,7 +120,10 @@ struct Model {
 
         setInvertClipping(j["invert_clipping"].get<bool>());
 
-        setSelectedAttr(j["selected_attr"].get<int>());
+        int selectedAttr = j["selected_attr"].get<int>();
+        if (selectedAttr >= 0)
+            setSelectedAttr(selectedAttr);
+            
         setSelectedColormap(j["selected_colormap"].get<int>());
         setVisible(j["visible"].get<bool>());
 
@@ -677,7 +680,7 @@ struct Model {
     std::shared_ptr<Model> parent;
 
     std::vector<Attribute> attrs;
-    int selectedAttr = 0;
+    int selectedAttr = -1;
 
 
 
