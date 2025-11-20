@@ -277,6 +277,17 @@ void MyApp::init() {
 // Continuous update
 void MyApp::update(float dt) {
 	
+	if (!isUIHovered)
+		updateCamera(dt);
+
+	for (auto &component : components) {
+		component->update(dt);
+	}
+
+}
+
+void MyApp::updateCamera(float dt) {
+
 	float speed = 0.01f;
 	if (countModels() > 0) {
 		speed = getCurrentModel().getRadius() * 0.5f * dt;
@@ -314,10 +325,6 @@ void MyApp::update(float dt) {
 			if (trackball)
 				trackball->movePan(st.mouse.delta);
 		}
-	}
-
-	for (auto &component : components) {
-		component->update(dt);
 	}
 
 }
@@ -632,6 +639,8 @@ void MyApp::draw_gui() {
 
 	// ImGui::End();
 
+	isUIHovered = ImGui::IsAnyItemHovered() || ImGui::IsWindowHovered(ImGuiHoveredFlags_AnyWindow);
+
 }
 
 void MyApp::key_event(int key, int scancode, int action, int mods) {
@@ -671,6 +680,8 @@ void MyApp::key_event(int key, int scancode, int action, int mods) {
 }
 
 void MyApp::mouse_scroll(double xoffset, double yoffset) {
+	if (isUIHovered)
+		return;
 
 	// Maybe move to a cameracontroller class
 	if (!getCamera().isLocked()) {

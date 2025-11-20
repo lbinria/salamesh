@@ -20,6 +20,7 @@ struct MyApp : App {
 	int getIndexOfModel(std::string name) override;
 	void computeFarPlane();
 
+	void updateCamera(float dt);
 
 	// Override lifecycle functions
 	void init() override;
@@ -44,5 +45,7 @@ struct MyApp : App {
 	void TopModePanel(int &currentMode, const std::vector<std::pair<std::string, ImTextureID>>& icons, ImVec2 iconSize = ImVec2(28,28));
 
 	private:
+
+	bool isUIHovered = false;
 
 };
