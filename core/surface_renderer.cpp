@@ -126,8 +126,8 @@ void SurfaceRenderer::init() {
 	glEnableVertexAttribArray(facetIndexLocation);
 	glVertexAttribIPointer(facetIndexLocation, 1, GL_INT, sizeof(Vertex), (void*)offsetof(Vertex, facetIndex));
 
-	glEnableVertexAttribArray(vertexIndexLocation);
-	glVertexAttribIPointer(vertexIndexLocation, 1, GL_INT, sizeof(Vertex), (void*)offsetof(Vertex, vertexIndex));
+	// glEnableVertexAttribArray(vertexIndexLocation);
+	// glVertexAttribIPointer(vertexIndexLocation, 1, GL_INT, sizeof(Vertex), (void*)offsetof(Vertex, vertexIndex));
 
 	glEnableVertexAttribArray(localIndexLocation);
 	glVertexAttribIPointer(localIndexLocation, 1, GL_INT, sizeof(Vertex), (void*)offsetof(Vertex, localIndex));

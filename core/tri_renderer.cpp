@@ -16,7 +16,7 @@ void TriRenderer::push() {
 			auto p = v.pos();
 
 			vertices[f * 3 + lv] = { 
-				.vertexIndex = v,
+				// .vertexIndex = v,
 				.localIndex = lv,
 				.p0 = glm::vec3(p0.x, p0.y, p0.z),
 				.p1 = glm::vec3(p1.x, p1.y, p1.z),
@@ -25,9 +25,6 @@ void TriRenderer::push() {
 			};
 		}
 	}
-
-	shader.use();
-	shader.setInt("nvertsPerFacet", 3);
 
 	SurfaceRenderer::push(vertices);
 

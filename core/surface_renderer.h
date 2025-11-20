@@ -21,7 +21,7 @@ using namespace UM;
 struct SurfaceRenderer : public IRenderer {
 	
 	struct Vertex {
-		int vertexIndex;
+		// int vertexIndex;
 		int localIndex;
 		glm::vec3 p0;
 		glm::vec3 p1;

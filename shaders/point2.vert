@@ -42,41 +42,26 @@ void main()
 	vec2 screenPos = (ndc.xy * 0.5 + 0.5) * viewport;
 
 
-	// // If pointSize is a world space measure, compute pointSize in pixel
-	// if (pointSizeUnit == 1) {
-	// 	vec4 pp = view * model * vec4(pos, 1.0);
-	// 	vec4 posOff = projection * (pp + vec4(vec3(pointSize), 0.));
+	// Add offset
+	screenPos += vec2(gl_PointSize * 0.5);
+	// Back to NDC
+	vec2 ndc2 = screenPos / viewport * 2.0 - 1.0;
+	// Reconstruct clip z and w roughly by lerping
+	float clipW = gl_Position.w;
+	float clipZ = gl_Position.z;
+	// Inverse of perspective division, return to clip space
+	vec4 clipNPos = vec4(ndc2 * clipW, clipZ, clipW);
+	// Back to world space
+	vec4 worldNPos = inverse(projection * view * model) * clipNPos;
+	
 
-	// 	vec4 ndcOff = posOff / gl_Position.w;
-	// 	vec2 screenPosOff = (ndcOff.xy * 0.5 + 0.5) * viewport;
-	// 	float pointSizeInPixels = length(screenPosOff - screenPos);
-	// 	gl_PointSize = pointSizeInPixels * sizeScale;
-
-
-	// 	// pointZ = pointSize * .5;
-	// } /*else if (pointSizeUnit == 0) {*/
-
-		// Add offset
-		screenPos += vec2(gl_PointSize * 0.5);
-		// Back to NDC
-		vec2 ndc2 = screenPos / viewport * 2.0 - 1.0;
-		// Reconstruct clip z and w roughly by lerping
-		float clipW = gl_Position.w;
-		float clipZ = gl_Position.z;
-		// Inverse of perspective division, return to clip space
-		vec4 clipNPos = vec4(ndc2 * clipW, clipZ, clipW);
-		// Back to world space
-		vec4 worldNPos = inverse(projection * view * model) * clipNPos;
-		
-
-		float d = length(worldNPos.xyz - pos);
-		worldNPos.z -= d;
-		// To clip space
-		vec4 clipNPos2 = projection * view * model * worldNPos;
-		// Perspective division
-		vec3 ndc3 = clipNPos2.xyz / clipNPos2.w;
-		pointZ = (ndc3.z * 0.5 + 0.5);
-	/*}*/
+	float d = length(worldNPos.xyz - pos);
+	worldNPos.z -= d;
+	// To clip space
+	vec4 clipNPos2 = projection * view * model * worldNPos;
+	// Perspective division
+	vec3 ndc3 = clipNPos2.xyz / clipNPos2.w;
+	pointZ = (ndc3.z * 0.5 + 0.5);
 
     fragViewDir = -vec3(view[0][2], view[1][2], view[2][2]);
 	fragWorldPos = pos;
