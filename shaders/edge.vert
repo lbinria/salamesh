@@ -14,10 +14,7 @@ layout (std140, binding = 0) uniform Matrices
 };
 
 uniform mat4 model;
-// uniform vec2 uViewport = vec2(2500.0, 1440.0); // viewport size in pixels
 uniform float uThickness = 10.0; // in pixels
-
-
 
 out vec2 vLocalUV; // (u,v) in [0..1] for fragment
 flat out int FragHalfedgeIndex;
@@ -26,17 +23,6 @@ flat out int FragHalfedgeIndex;
 
 void main()
 {
-    // vec3 a = aP0;
-    // vec3 b = aP1;
-    // vec3 d = vec3(normalize(b - a));
-    // vec3 aux = vec3(-d.y, d.x, 0.);
-    // vec3 perp = cross(d, aux);
-    // vec3 corner = mix(a, b, aEnd) + perp * aSide * 0.02;
-    // gl_Position = projection * view * model * vec4(corner, 1.);
-
-
-
-
     // 1) World→view→clip for both endpoints
     vec4 c0 = projection * view * model * vec4(aP0, 1.0);
     vec4 c1 = projection * view * model * vec4(aP1, 1.0);
