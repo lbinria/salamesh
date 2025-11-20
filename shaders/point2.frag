@@ -7,13 +7,6 @@ layout(depth_less) out float gl_FragDepth;
 layout(location = 0) out vec4 FragColor;
 layout(location = 3) out vec4 FragVertexIndexOut;
 
-layout (std140, binding = 0) uniform Matrices
-{
-	mat4 view;
-	mat4 projection;
-	vec2 viewport;
-};
-
 flat in int FragVertexIndex;
 
 in vec3 fragWorldPos;
@@ -42,14 +35,7 @@ uniform samplerBuffer attrBuf;
 uniform samplerBuffer filterBuf;
 uniform samplerBuffer highlightBuf;
 
-flat in vec3 world2;
-
-
-float worldPosToDepth(vec3 worldPos) {
-    vec4 clip = projection * view * vec4(worldPos, 1.0);
-    float ndc_z = clip.z / clip.w;           // range typically [-1,1]
-    return ndc_z * 0.5 + 0.5;                // fragCoord.z range [0,1]
-}
+flat in float depthZ;
 
 vec3 encode_id(int id) {
     int r = id & 0x000000FF;
@@ -90,9 +76,7 @@ void main()
     }
 
     // Compute sphere radius in frag coords unit
-    float depthA = gl_FragCoord.z;
-    float depthB = worldPosToDepth(world2);
-    float deltaDepth = abs(depthA - depthB);
+    float deltaDepth = abs(gl_FragCoord.z - depthZ);
 
     // Compute normal using point coordinates and radius as Z
     vec3 N = vec3(V.x, -V.y, sqrt(oneMinusR2));
