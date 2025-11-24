@@ -7,6 +7,7 @@
 #include <random>
 #include <sstream>
 #include <iomanip>
+#include <optional>
 
 struct TriangleInspector : public Component {
 
@@ -22,8 +23,70 @@ struct TriangleInspector : public Component {
 		lineRenderer.clean();
 	}
 
+	void setupModel() {
+
+		isModelSetup = false;
+
+		// Get current model and check it's a triangle mesh
+		auto &model = app.getCurrentModel();
+		if (model.getModelType() != Model::ModelType::TRI) {
+			return;
+		}
+
+		auto &triModel = model.as<TriModel>();
+		auto &m = triModel.getTriangles();
+
+		// Setup gfx
+		auto &pointRenderer = triModel.getPoints();
+		pointRenderer.setVisible(true);
+		pointRenderer.setColorMode(ColorMode::COLOR);
+		pointRenderer.setHoverColor(glm::vec3(1.f, 1.f, 1.f));
+		pointRenderer.setSelectColor(glm::vec3(0.88f, 0.06f, 0.01f));
+
+		auto &meshRenderer = triModel.getMesh();
+		meshRenderer.setVisible(true);
+		// Highlights
+		meshRenderer.setHoverColor(glm::vec3(1.f, 1.f, 1.f));
+		meshRenderer.setSelectColor(glm::vec3(1.f, 0.06f, 0.51f));
+		// Gfx
+		meshRenderer.setVisible(true);
+		meshRenderer.setColorMode(ColorMode::COLOR);
+		meshRenderer.setColor(glm::vec3(1.f, 1.f, 1.f));
+		meshRenderer.setMeshSize(0.5f);
+
+		auto edgeRenderer = triModel.getEdges();
+		if (edgeRenderer) {
+			edgeRenderer->setVisible(false);
+		}
+
+
+		// Setup bboxes
+
+		auto radiuses = getRadiuses(triModel);
+
+		std::vector<BBox3> bboxes;
+		for (auto &v : m.iter_vertices()) {
+			BBox3 bb;
+			// bb.add(v.pos());
+			bb.add(v.pos() - vec3{radiuses[v], radiuses[v], radiuses[v]});
+			bb.add(v.pos() + vec3{radiuses[v], radiuses[v], radiuses[v]});
+			bboxes.push_back(bb);
+		}
+
+		hbbox.init(bboxes);
+
+		isModelSetup = true;
+	}
+
 	void modelLoaded(const std::string &path) override {}
 
+	void onSelectedModelChange(int idx) override {
+		// Save gfx state for restoring ?
+		if (isNavHere())
+			setupModel();
+	}
+
+	
 
 	// Get the radius of a point in world-space cartesian coordinates
 	// Given its point size in pixel screen-space coordinates
@@ -54,7 +117,7 @@ struct TriangleInspector : public Component {
 		// worldPosOff = glm::unProject(screen, vm, p, viewport);
 
 		// ---- 4. Compute distance between point and offset point in world-space cartesian coordinates ----
-		return glm::length(glm::vec3(worldPosOff) - worldPos);
+		return glm::distance(glm::vec3(worldPosOff), worldPos);
 	}
 
 	// Check if nav path is "overlapping_vertices"
@@ -69,7 +132,6 @@ struct TriangleInspector : public Component {
 		}
 
 
-
 		ImGui::Begin("Triangle diagnostic");
 
 		// Check for degenerated
@@ -79,15 +141,7 @@ struct TriangleInspector : public Component {
 			return true;
 		}
 
-		// Get current model and check it's a triangle mesh
-		auto &model = app.getCurrentModel();
-		if (model.getModelType() != Model::ModelType::TRI) {
-			ImGui::End();
-			return true;
-		}
 
-		auto &triModel = model.as<TriModel>();
-		auto &m = triModel.getTriangles();
 
 		bool isNav = isNavHere();
 
@@ -101,18 +155,7 @@ struct TriangleInspector : public Component {
 			if (app.getNavigationPath().front() == "diagnostic" && app.getNavigationPath().back() != "overlapping_vertices") {
 				app.addNavigationPath("overlapping_vertices");
 
-				// Setup gfx
-				triModel.getPoints().setVisible(true);
-				triModel.getPoints().setHoverColor(glm::vec3(1.f, 1.f, 1.f));
-				triModel.getPoints().setSelectColor(glm::vec3(0.88f, 0.06f, 0.01f));
-
-				auto &meshRenderer = triModel.getMesh();
-				// Highlights
-				meshRenderer.setHoverColor(glm::vec3(1.f, 1.f, 1.f));
-				meshRenderer.setSelectColor(glm::vec3(1.f, 0.06f, 0.51f));
-				// Gfx
-				meshRenderer.setColor(glm::vec3(1.f, 1.f, 1.f));
-				meshRenderer.setMeshSize(0.5f);
+				setupModel();
 
 			}
 
@@ -123,12 +166,205 @@ struct TriangleInspector : public Component {
 			ImGui::PopItemFlag();
 			ImGui::PopStyleVar();
 		}
+
+		if (!isNavHere()) {
+			ImGui::End();
+			return true;
+		}
 		
+		// float pointSize = triModel.getPoints().getPointSize();
+
+		// // Compute PVM matrix
+		// glm::mat4 modelMat = glm::mat4(1.0f);
+		// modelMat = glm::translate(modelMat, model.getPosition());
+		// auto pvm = app.getCamera().getProjectionMatrix() * app.getCamera().getViewMatrix() * modelMat;
+		// glm::vec2 viewport = { app.getScreenWidth(), app.getScreenHeight() };
+		
+		// lineRenderer.clearLines();
+
+		// // Compute radius of points in 3D from point size
+		// std::vector<float> radiuses(m.nverts());
+		// for (auto &v : m.iter_vertices()) {
+		// 	radiuses[v] = getRadius(pvm, sl::um2glm(v.pos()), pointSize, viewport);
+
+		// 	// Push lines for debug
+		// 	lineRenderer.addLine({sl::um2glm(v.pos()), sl::um2glm(v.pos()) + glm::vec3(radiuses[v], 0.f, 0.f), {1.f, 0.f, 0.f}});
+		// 	lineRenderer.addLine({sl::um2glm(v.pos()), sl::um2glm(v.pos()) + glm::vec3(-radiuses[v], 0.f, 0.f), {1.f, 0.f, 0.f}});
+		// 	lineRenderer.addLine({sl::um2glm(v.pos()), sl::um2glm(v.pos()) + glm::vec3(0.f, radiuses[v], 0.f), {1.f, 0.f, 0.f}});
+		// 	lineRenderer.addLine({sl::um2glm(v.pos()), sl::um2glm(v.pos()) + glm::vec3(0.f, -radiuses[v], 0.f), {1.f, 0.f, 0.f}});
+		// 	lineRenderer.addLine({sl::um2glm(v.pos()), sl::um2glm(v.pos()) + glm::vec3(0.f, 0.f, radiuses[v]), {1.f, 0.f, 0.f}});
+		// 	lineRenderer.addLine({sl::um2glm(v.pos()), sl::um2glm(v.pos()) + glm::vec3(0.f, 0.f, -radiuses[v]), {1.f, 0.f, 0.f}});
+		// }
+
+		// lineRenderer.push();
+
+
+		// // Highlight degenerated points
+		// PointAttribute<float> pointHl;
+		// pointHl.bind("_highlight", triModel.getSurfaceAttributes(), triModel.getTriangles());
+		// pointHl.fill(0.f);
+
+		// // Highlight degenerated facets
+		// FacetAttribute<float> facetHl;
+		// facetHl.bind("_highlight", triModel.getSurfaceAttributes(), triModel.getTriangles());
+		// facetHl.fill(0.f);
+
+		// std::vector<std::set<long>> pointOverlaps(m.nverts());
+		// int nOverlaps = 0;
+
+
+
+		// for (auto &a : m.iter_vertices()) {
+			
+		// 	BBox3 bbox;
+		// 	bbox.add(a.pos() - vec3{radiuses[a], radiuses[a], radiuses[a]});
+		// 	bbox.add(a.pos() + vec3{radiuses[a], radiuses[a], radiuses[a]});
+		// 	std::vector<int> results;
+		// 	hbbox.intersect(bbox, results);
+
+		// 	if (results.size() <= 1)
+		// 		continue;
+
+		// 	bool isOverlaps = false;
+		// 	for (auto &b : results) {
+		// 		if (b == a) continue;
+
+		// 		pointHl[a] = 1.f;
+		// 		pointHl[b] = 1.f;
+		// 		pointOverlaps[a].insert(b);
+		// 		pointOverlaps[b].insert(a);
+		// 		isOverlaps = true;
+		// 	}
+			
+		// 	if (isOverlaps)
+		// 		++nOverlaps;
+
+		// }
+
+
+		// triModel.setHighlight(ElementKind::POINTS_ELT);
+
+
+		if (isNav) {
+
+			// Get current model and check it's a triangle mesh
+			auto &model = app.getCurrentModel();
+			if (model.getModelType() != Model::ModelType::TRI) {
+				ImGui::End();
+				return true;
+			}
+
+			auto &triModel = model.as<TriModel>();
+			auto &m = triModel.getTriangles();
+
+			float newPointSize = model.getPoints().getPointSize();
+			if (ImGui::SliderFloat("Threshold (point size)", &newPointSize, 0, 50.f)) {
+				model.getPoints().setPointSize(newPointSize);
+			}
+			ImGui::Text("Overlaps number: %i", nOverlaps);
+		}
+
+		ImGui::End();
+
+
+		// auto st = app.getInputState();
+		// if (st.mouse.dblButtons[0] && st.vertex.anyHovered()) {
+		// 	auto v = st.vertex.getAllHovered().front();
+		// 	if (pointHl[v] >= .5f) {
+		// 		// Goto
+		// 		auto p = sl::um2glm(m.vertex(v).pos());
+		// 		auto b = p;
+		// 		// Search for bary
+		// 		int i = 1;
+		// 		for (auto &vOver : pointOverlaps[v]) {
+		// 			b += sl::um2glm(m.vertex(vOver).pos());
+		// 			++i;
+		// 		}
+		// 		b /= i;
+
+		// 		// auto eyeP = p - radiuses[v] * 2.f;
+		// 		auto eyeP = b - glm::distance(p, b) * 2.f;
+		// 		app.getCamera().setEye(eyeP);
+		// 		app.getCamera().lookAt(b);
+		// 	}
+		// }
+
+
+		// static int tooltipOpen = -1;
+		// static ImVec2 tooltipPos;
+
+
+		// if (st.vertex.anyHovered()) {
+		// 	auto v = st.vertex.getAllHovered().front();
+
+		// 	ImGui::BeginTooltip();
+		// 	ImGui::Text("Vertex %ld", v);
+
+		// 	if (pointHl[v] >= .5f) {
+		// 		ImGui::Text("--- Overlaps ---");
+		// 		for (long vi : pointOverlaps[v]) {
+		// 			ImGui::Text("vertex %ld", vi);
+		// 		}
+		// 	}
+
+		// 	ImGui::EndTooltip();
+		// }
+
+		// else if (st.facet.anyHovered()) {
+		// 	auto f = st.facet.getAllHovered().front();
+
+		// 	ImGui::BeginTooltip();
+		// 	ImGui::Text("Facet %ld", f);
+
+		// 	for (int lv = 0; lv < 3; ++lv) {
+		// 		int v = m.facet(f).vertex(lv);
+		// 		ImGui::Text("- vertex %i", v);
+		// 	}
+
+		// 	ImGui::EndTooltip();
+
+		// }
+
+		return true;
+	}
+	
+	std::vector<float> getRadiuses(TriModel &triModel) {
+		auto &m = triModel.getTriangles();
 		float pointSize = triModel.getPoints().getPointSize();
 
 		// Compute PVM matrix
 		glm::mat4 modelMat = glm::mat4(1.0f);
-		modelMat = glm::translate(modelMat, model.getPosition());
+		modelMat = glm::translate(modelMat, triModel.getPosition());
+		auto pvm = app.getCamera().getProjectionMatrix() * app.getCamera().getViewMatrix() * modelMat;
+		glm::vec2 viewport = { app.getScreenWidth(), app.getScreenHeight() };
+
+		std::vector<float> radiuses(m.nverts());
+		for (auto &v : m.iter_vertices()) {
+			radiuses[v] = getRadius(pvm, sl::um2glm(v.pos()), pointSize, viewport);
+		}
+
+		return  radiuses;
+	}
+
+	void update(float dt) {
+
+		// Check that nav path is "diagnostic/overlapping_vertices"
+		if (!isNavHere() || !app.hasModels() || !isModelSetup)
+			return;
+
+		auto &model = app.getCurrentModel();
+		if (model.getModelType() != Model::ModelType::TRI) {
+			return;
+		}
+
+		auto &triModel = model.as<TriModel>();
+		auto &m = triModel.getTriangles();
+
+		float pointSize = triModel.getPoints().getPointSize();
+
+		// Compute PVM matrix
+		glm::mat4 modelMat = glm::mat4(1.0f);
+		modelMat = glm::translate(modelMat, triModel.getPosition());
 		auto pvm = app.getCamera().getProjectionMatrix() * app.getCamera().getViewMatrix() * modelMat;
 		glm::vec2 viewport = { app.getScreenWidth(), app.getScreenHeight() };
 		
@@ -149,22 +385,6 @@ struct TriangleInspector : public Component {
 		}
 
 		lineRenderer.push();
-		
-
-		// Beuurk !
-		if (!once) {
-
-			std::vector<BBox3> bboxes;
-			for (auto &v : m.iter_vertices()) {
-				BBox3 bb;
-				bb.add(v.pos());
-				bboxes.push_back(bb);
-			}
-
-			hbbox.init(bboxes);
-
-			once = true;
-		}
 
 
 		// Highlight degenerated points
@@ -178,31 +398,8 @@ struct TriangleInspector : public Component {
 		facetHl.fill(0.f);
 
 		std::vector<std::set<long>> pointOverlaps(m.nverts());
-		int nOverlaps = 0;
+		nOverlaps = 0;
 
-		// for (auto &f : m.iter_facets()) {
-			
-		// 	for (int lv = 0; lv < 3; ++lv) {
-		// 		auto a = f.vertex(lv);
-		// 		auto b = f.vertex((lv + 1) % 3);
-
-		// 		auto pA = sl::um2glm(a.pos());
-		// 		auto pB = sl::um2glm(b.pos());
-
-		// 		if (glm::distance(pA, pB) < radiuses[a] + radiuses[b]) {
-		// 			// facetHl[f] = 1.f;
-		// 			pointHl[a] = 1.f;
-		// 			pointHl[b] = 1.f;
-
-		// 			pointOverlaps[a].push_back(b);
-		// 			pointOverlaps[b].push_back(a);
-		// 			++nOverlaps;
-		// 		}
-		// 	}
-
-		// 	facetHl[f] = .5f;
-
-		// }
 
 
 		for (auto &a : m.iter_vertices()) {
@@ -236,87 +433,6 @@ struct TriangleInspector : public Component {
 		triModel.setHighlight(ElementKind::POINTS_ELT);
 
 
-		if (isNav) {
-			float newPointSize = model.getPoints().getPointSize();
-			if (ImGui::SliderFloat("Threshold (point size)", &newPointSize, 0, 50.f)) {
-				model.getPoints().setPointSize(newPointSize);
-			}
-			ImGui::Text("Overlaps number: %i", nOverlaps);
-		}
-
-		ImGui::End();
-
-
-		auto st = app.getInputState();
-		if (st.mouse.dblButtons[0] && st.vertex.anyHovered()) {
-			auto v = st.vertex.getAllHovered().front();
-			if (pointHl[v] >= .5f) {
-				// Goto
-				auto p = sl::um2glm(m.vertex(v).pos());
-				auto b = p;
-				// Search for bary
-				int i = 1;
-				for (auto &vOver : pointOverlaps[v]) {
-					b += sl::um2glm(m.vertex(vOver).pos());
-					++i;
-				}
-				b /= i;
-
-				// auto eyeP = p - radiuses[v] * 2.f;
-				auto eyeP = b - glm::distance(p, b) * 2.f;
-				app.getCamera().setEye(eyeP);
-				app.getCamera().lookAt(b);
-			}
-		}
-
-
-		static int tooltipOpen = -1;
-		static ImVec2 tooltipPos;
-
-
-		if (st.vertex.anyHovered()) {
-			auto v = st.vertex.getAllHovered().front();
-
-			ImGui::BeginTooltip();
-			ImGui::Text("Vertex %ld", v);
-
-			if (pointHl[v] >= .5f) {
-				ImGui::Text("--- Overlaps ---");
-				for (long vi : pointOverlaps[v]) {
-					ImGui::Text("vertex %ld", vi);
-				}
-			}
-
-			ImGui::EndTooltip();
-		}
-
-		else if (st.facet.anyHovered()) {
-			auto f = st.facet.getAllHovered().front();
-
-			ImGui::BeginTooltip();
-			ImGui::Text("Facet %ld", f);
-
-			for (int lv = 0; lv < 3; ++lv) {
-				int v = m.facet(f).vertex(lv);
-				ImGui::Text("- vertex %i", v);
-			}
-
-			ImGui::EndTooltip();
-
-		}
-
-		return true;
-	}
-	
-
-
-	void update(float dt) {
-
-		// Check that nav path is "diagnostic"
-		if (app.getNavigationPath().size() == 0 || app.getNavigationPath().front() != "diagnostic") {
-			return;
-		}
-
 		glm::vec3 p{0};
 		lineRenderer.render(p);
 
@@ -333,8 +449,9 @@ struct TriangleInspector : public Component {
 	private:
 	IApp &app;
 
-	bool once = false;
+	bool isModelSetup = false;
 	double eps = 0.001;
+	int nOverlaps = 0;
 
 	LineRenderer lineRenderer;
 	HBoxes3 hbbox;

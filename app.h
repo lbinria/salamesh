@@ -163,6 +163,7 @@ struct App : public IApp {
         }
 
         selectedModel = selected;
+        notifySelectedModelChange(selected);
     }
 
     int getSelectedModel() override {
@@ -234,6 +235,12 @@ struct App : public IApp {
     void notifyNavigationPathChange(std::vector<std::string> &oldNavPath, std::vector<std::string>& newNavPath) {
         for (auto &c : components) {
             c->navigationPathChanged(oldNavPath, newNavPath);
+        }
+    }
+
+    void notifySelectedModelChange(int idx) {
+        for (auto &c : components) {
+            c->onSelectedModelChange(idx);
         }
     }
 

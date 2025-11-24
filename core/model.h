@@ -264,7 +264,13 @@ struct Model {
     void setSelectedAttr(int idx) {
 
         // Check attrs size
-        if (idx < 0 || idx >= attrs.size()) {
+
+        // Under 0, no selection
+        if (idx < 0) {
+            return;
+        }
+
+        if (idx >= attrs.size()) {
             throw std::runtime_error(
                 "Selected attribute index out of bound: " + 
                 std::to_string(idx) + ", model has " + 
@@ -680,7 +686,7 @@ struct Model {
     std::shared_ptr<Model> parent;
 
     std::vector<Attribute> attrs;
-    int selectedAttr = -1;
+    int selectedAttr = 0;
 
 
 

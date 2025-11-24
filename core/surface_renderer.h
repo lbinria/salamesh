@@ -35,6 +35,7 @@ struct SurfaceRenderer : public IRenderer {
 		{
 			shader.use();
 			shader.setFloat3("color", {0.8f, 0.f, 0.2f});
+			// shader.setFloat3("color", {0.8f, 0.75f, 0.82f});
 		}
 
 	void init();
