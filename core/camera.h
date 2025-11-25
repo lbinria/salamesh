@@ -134,6 +134,7 @@ struct Camera {
         // updateViewMatrix();
     }
 
+    // TODO here use box of copied camera 
     void copy(Camera &c, std::tuple<glm::vec3, glm::vec3> box) {
         lookAtBox(box);
         setEye(c.getEye());

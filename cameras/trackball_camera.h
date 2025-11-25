@@ -14,46 +14,16 @@ struct TrackBallCamera : public Camera {
 
         auto c = (min + max) * .5f;
 
-        // wx > wy
+        float bound = wh.x > wh.y ? half.x : half.y;
+
         float aspect = _screen.x / _screen.y;
 
-
         return {
-            -half.x * aspect * zoomFactor, 
-            half.x * aspect * zoomFactor, 
-            -half.y * zoomFactor, 
-            half.y * zoomFactor
+            -bound * aspect * zoomFactor,
+            bound * aspect * zoomFactor,
+            -bound * zoomFactor,
+            bound * zoomFactor
         };
-
-        // return {
-        //     min.x, 
-        //     max.x, 
-        //     min.y, 
-        //     max.y
-        // };
-
-
-        // if (wh.x > wh.y) {
-        //     float aspect = _screen.y / _screen.x;
-            
-        //     return {
-        //         min.x * zoomFactor, 
-        //         max.x * zoomFactor, 
-        //         min.x * aspect * zoomFactor, 
-        //         max.x * aspect * zoomFactor
-        //     };
-
-        // } else {
-        //     float aspect = _screen.x / _screen.y;
-            
-        //     return {
-        //         min.y * aspect * zoomFactor, 
-        //         max.y * aspect * zoomFactor, 
-        //         min.y * zoomFactor, 
-        //         max.y * zoomFactor
-        //     };
-
-        // }
     }
 
     void updateProjectionMatrix() override {
@@ -67,15 +37,17 @@ struct TrackBallCamera : public Camera {
         auto [min, max] = box;
         auto c = (min + max) * .5f;
 
+        // Setup view matrix
         m_eye = {c.x, c.y, c.z + glm::length(max - min)};
         m_lookAt = c;
+        m_viewMatrix = glm::lookAt(m_eye, m_lookAt, m_upVector);
 
         // m_eye = {0,0,glm::length(max - min)};
         // m_lookAt = {0,0,-1};
 
         _box = box;
 
-        updateViewMatrix();
+        // Setup proj matrix
         updateProjectionMatrix();
     }
 
@@ -119,7 +91,7 @@ struct TrackBallCamera : public Camera {
         // Create quaternion from axis, angle for rotation
         auto q = glm::angleAxis(angle, glm::normalize(ax));
         
-        // Translate view 
+        // Translate view to origin for pivot
         auto [min, max] = _box;
         auto c = (min + max) * .5f;
         glm::mat4 T(1.f);
@@ -131,6 +103,7 @@ struct TrackBallCamera : public Camera {
         m_viewMatrix[1] = q * m_viewMatrix[1];
         m_viewMatrix[2] = q * m_viewMatrix[2];
 
+        // Translate view back
         T = glm::mat4{1.f};
         T = glm::translate(T, -c);
         m_viewMatrix *= T;
@@ -167,6 +140,7 @@ struct TrackBallCamera : public Camera {
         glm::vec3 right = getRightVector();
         glm::vec3 up = getUpVector();
 
+        // TODO maybe refactor by m_viewMatrix = glm::translate(m_viewMatrix, v)
         glm::mat4 T(1.f);
         T = glm::translate(T, right * offset.x + up * -offset.y);
         m_viewMatrix = m_viewMatrix * T;
@@ -175,15 +149,16 @@ struct TrackBallCamera : public Camera {
     }
 
     void moveRight(float speed) override {
-        if (m_lock)
-            return;
-
-        m_eye += getRightVector() * speed * 2.f;
-        updateViewMatrix();
+        movePan({speed * 500.f, 0});
     }
 
-    void moveForward(float speed) override {}
-    void moveUp(float speed) override {}
+    void moveForward(float speed) override {
+        zoom(speed * 10.f);
+    }
+
+    void moveUp(float speed) override {
+        movePan({0, speed * 500.f});
+    }
 
     void zoom(float delta) {
         // fine-tuned using desmos graph with formula: (1/\ (1+\exp(-(x-c)/w)))*m*2
