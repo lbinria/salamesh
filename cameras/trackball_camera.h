@@ -94,9 +94,8 @@ struct TrackBallCamera : public Camera {
         // Translate view to origin for pivot
         auto [min, max] = _box;
         auto c = (min + max) * .5f;
-        glm::mat4 T(1.f);
-        T = glm::translate(T, c);
-        m_viewMatrix *= T;
+
+        m_viewMatrix = glm::translate(m_viewMatrix, c);
 
         // Rotate view
         m_viewMatrix[0] = q * m_viewMatrix[0];
@@ -104,10 +103,7 @@ struct TrackBallCamera : public Camera {
         m_viewMatrix[2] = q * m_viewMatrix[2];
 
         // Translate view back
-        T = glm::mat4{1.f};
-        T = glm::translate(T, -c);
-        m_viewMatrix *= T;
-
+        m_viewMatrix = glm::translate(m_viewMatrix, -c);
 
 
         // // Just update to know where is the camera
@@ -140,10 +136,7 @@ struct TrackBallCamera : public Camera {
         glm::vec3 right = getRightVector();
         glm::vec3 up = getUpVector();
 
-        // TODO maybe refactor by m_viewMatrix = glm::translate(m_viewMatrix, v)
-        glm::mat4 T(1.f);
-        T = glm::translate(T, right * offset.x + up * -offset.y);
-        m_viewMatrix = m_viewMatrix * T;
+        m_viewMatrix = glm::translate(m_viewMatrix, right * offset.x + up * -offset.y);
 
         m_eye = glm::inverse(m_viewMatrix)[3];
     }
