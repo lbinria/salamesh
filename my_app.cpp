@@ -66,16 +66,18 @@ bool MyApp::loadModel(const std::string& filename) {
 
 	// Setup default clipping plane
 	model->setupClipping();
-
-	// Current camera look at the model
-	auto modelPos = model->getPosition();
-	getCamera().lookAtBox(model->bbox());
 	
+	auto bbox = model->bbox();
+
 	models.push_back(std::move(model));
-	setSelectedModel(models.size() - 1);
 
 	// Update cameras far planes
 	computeFarPlane();
+
+	// Current camera look at the model
+	getCamera().lookAtBox(bbox);
+	
+	setSelectedModel(models.size() - 1);
 
 	// Notify components
 	for (auto &c : components) {
@@ -162,10 +164,10 @@ void MyApp::init() {
 
 	{
 		// Create cameras
-		auto arcball_camera = std::make_shared<ArcBallCamera>("Arcball");
+		// auto arcball_camera = std::make_shared<ArcBallCamera>("Arcball");
 		auto trackball_camera = std::make_shared<TrackBallCamera>("Trackball");
 		auto descent_camera = std::make_shared<DescentCamera>("Descent");
-		cameras.push_back(std::move(arcball_camera));
+		// cameras.push_back(std::move(arcball_camera));
 		cameras.push_back(std::move(trackball_camera));
 		cameras.push_back(std::move(descent_camera));
 	}

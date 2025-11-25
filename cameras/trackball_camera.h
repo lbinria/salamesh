@@ -10,28 +10,50 @@ struct TrackBallCamera : public Camera {
 
         auto [min, max] = _box;
         auto wh = max - min;
+        auto half = wh / 2.f;
 
-        if (wh.x > wh.y) {
-            float aspect = _screen.y / _screen.x;
+        auto c = (min + max) * .5f;
+
+        // wx > wy
+        float aspect = _screen.x / _screen.y;
+
+
+        return {
+            -half.x * aspect * zoomFactor, 
+            half.x * aspect * zoomFactor, 
+            -half.y * zoomFactor, 
+            half.y * zoomFactor
+        };
+
+        // return {
+        //     min.x, 
+        //     max.x, 
+        //     min.y, 
+        //     max.y
+        // };
+
+
+        // if (wh.x > wh.y) {
+        //     float aspect = _screen.y / _screen.x;
             
-            return {
-                min.x * zoomFactor, 
-                max.x * zoomFactor, 
-                min.x * aspect * zoomFactor, 
-                max.x * aspect * zoomFactor
-            };
+        //     return {
+        //         min.x * zoomFactor, 
+        //         max.x * zoomFactor, 
+        //         min.x * aspect * zoomFactor, 
+        //         max.x * aspect * zoomFactor
+        //     };
 
-        } else {
-            float aspect = _screen.x / _screen.y;
+        // } else {
+        //     float aspect = _screen.x / _screen.y;
             
-            return {
-                min.y * aspect * zoomFactor, 
-                max.y * aspect * zoomFactor, 
-                min.y * zoomFactor, 
-                max.y * zoomFactor
-            };
+        //     return {
+        //         min.y * aspect * zoomFactor, 
+        //         max.y * aspect * zoomFactor, 
+        //         min.y * zoomFactor, 
+        //         max.y * zoomFactor
+        //     };
 
-        }
+        // }
     }
 
     void updateProjectionMatrix() override {
@@ -40,13 +62,18 @@ struct TrackBallCamera : public Camera {
     }
 
     void lookAtBox(std::tuple<glm::vec3, glm::vec3> box) override {
-        _box = box;
-        auto [min, max] = box;
-        auto c = (max + min) * .5f;
-
         _zoomFactor = 1.f;
-        m_eye = {c.x, c.y, c.z + glm::length(max - min) * 2.f};
+
+        auto [min, max] = box;
+        auto c = (min + max) * .5f;
+
+        m_eye = {c.x, c.y, c.z + glm::length(max - min)};
         m_lookAt = c;
+
+        // m_eye = {0,0,glm::length(max - min)};
+        // m_lookAt = {0,0,-1};
+
+        _box = box;
 
         updateViewMatrix();
         updateProjectionMatrix();
@@ -91,27 +118,36 @@ struct TrackBallCamera : public Camera {
 
         // Create quaternion from axis, angle for rotation
         auto q = glm::angleAxis(angle, glm::normalize(ax));
+        
+        // Translate view 
+        auto [min, max] = _box;
+        auto c = (min + max) * .5f;
+        glm::mat4 T(1.f);
+        T = glm::translate(T, c);
+        m_viewMatrix *= T;
+
         // Rotate view
         m_viewMatrix[0] = q * m_viewMatrix[0];
         m_viewMatrix[1] = q * m_viewMatrix[1];
         m_viewMatrix[2] = q * m_viewMatrix[2];
 
-        // Just update to know where is the camera
-        glm::vec4 position(m_eye.x, m_eye.y, m_eye.z, 1);
-        glm::vec4 pivot(m_lookAt.x, m_lookAt.y, m_lookAt.z, 1);
-        position = (q * (position - pivot)) + pivot;
-        m_eye = position;
+        T = glm::mat4{1.f};
+        T = glm::translate(T, -c);
+        m_viewMatrix *= T;
 
 
-        // // Update translation T = -R^T*eye
-        // m_viewMatrix[3] = glm::vec4(-glm::dot(glm::vec3(m_viewMatrix[0]), m_eye), -glm::dot(glm::vec3(m_viewMatrix[1]), m_eye), -glm::dot(glm::vec3(m_viewMatrix[2]), m_eye), 1.0f);
 
+        // // Just update to know where is the camera
+        // glm::vec4 position(m_eye.x, m_eye.y, m_eye.z, 1);
+        // glm::vec4 pivot(m_lookAt.x, m_lookAt.y, m_lookAt.z, 1);
+        // position = (q * (position - pivot)) + pivot;
+        // m_eye = position;
 
-        auto cameraMatrix = glm::inverse(m_viewMatrix);
-        auto camPos = cameraMatrix[3];
-        // m_eye = camPos;
-        std::cout << "eye: " << m_eye.x << ", " << m_eye.y << ", " << m_eye.z <<  std::endl;
-        std::cout << "cam pos: " << camPos.x << ", " << camPos.y << ", " << camPos.z << ", " << camPos.w << std::endl;
+        // auto cameraMatrix = glm::inverse(m_viewMatrix);
+        // auto camPos = cameraMatrix[3];
+        // // m_eye = camPos;
+        // std::cout << "eye: " << m_eye.x << ", " << m_eye.y << ", " << m_eye.z <<  std::endl;
+        // std::cout << "cam pos: " << camPos.x << ", " << camPos.y << ", " << camPos.z << ", " << camPos.w << std::endl;
 
     }
 
@@ -134,6 +170,8 @@ struct TrackBallCamera : public Camera {
         glm::mat4 T(1.f);
         T = glm::translate(T, right * offset.x + up * -offset.y);
         m_viewMatrix = m_viewMatrix * T;
+
+        m_eye = glm::inverse(m_viewMatrix)[3];
     }
 
     void moveRight(float speed) override {
