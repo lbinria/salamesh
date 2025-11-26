@@ -787,8 +787,7 @@ std::set<long> App::pick(double xPos, double yPos, int radius) {
 	return pickIDs;
 }
 
-
-float App::computeSceneDiameter() {
+std::tuple<glm::vec3, glm::vec3> App::computeSceneBBox() {
 	glm::vec3 min{std::numeric_limits<float>::max()};
 	glm::vec3 max{-std::numeric_limits<float>::max()};
 	for (auto &m : models) {
@@ -796,6 +795,12 @@ float App::computeSceneDiameter() {
 		min = glm::min(min, cmin);
 		max = glm::max(max, cmax);
 	}
+	
+	return std::make_tuple(min, max);
+}
+
+float App::computeSceneDiameter() {
+	auto [min, max] = computeSceneBBox();
 	return glm::length(max - min);
 }
 

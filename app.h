@@ -129,6 +129,7 @@ struct App : public IApp {
         cull = enabled; 
     }
 
+    std::tuple<glm::vec3, glm::vec3> computeSceneBBox();
 	float computeSceneDiameter();
 
     // Accessors
@@ -281,7 +282,7 @@ struct App : public IApp {
 
     // TODO set as protected
     std::vector<std::shared_ptr<Camera>> cameras;
-    // TODO rename
+    
     int selectedCamera = 0;
 
     protected:
@@ -292,7 +293,7 @@ struct App : public IApp {
     
     std::vector<std::shared_ptr<Model>> models;
     std::vector<std::unique_ptr<RenderSurface>> renderSurfaces;
-    // TODO rename! selected_model
+    
     int selectedModel = 0;
 
     // glm::mat4 projection;

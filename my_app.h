@@ -37,8 +37,8 @@ struct MyApp : App {
 	void mouse_move(double x, double y) override;
 
     // States functions
-    void save_state(const std::string filename);
-    void load_state(const std::string filename);
+    void saveState(const std::string filename);
+    void loadState(const std::string filename);
 
 	void loadState(json &j, const std::string path);
 

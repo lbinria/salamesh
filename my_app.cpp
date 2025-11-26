@@ -92,7 +92,7 @@ void MyApp::computeFarPlane() {
 	auto diameter = computeSceneDiameter();
 
 	for (auto &c : cameras) {
-		c->setFarPlane(diameter * 5.f /* .5f is an arbitrary value... */);
+		c->setFarPlane(diameter * 5.f /* 5.f is an arbitrary value... */);
 	}
 }
 
@@ -250,18 +250,6 @@ void MyApp::init() {
 		}
 	}
 
-	// // Load scripts from args
-	// for (auto s : args.scripts) {
-	// 	if (!fs::exists(s) || !fs::is_regular_file(s)) {
-	// 		std::cerr << "Script path given as a command line argument does not exist or is not a file: " << s << std::endl;
-	// 		continue;
-	// 	}
-	// 	std::cout << "load script: " << s << std::endl;
-	// 	auto script = std::make_unique<LuaScript>(*this, s);
-	// 	script->init();
-	// 	components.push_back(std::move(script));
-	// }
-
 	// ----- TEST -----
 	// TODO remove just for testing manually add components
 	auto layoutComp = std::make_unique<TriangleDiagnosticLayout>(*this);
@@ -411,9 +399,7 @@ void MyApp::TopModePanel(int &currentMode, const std::vector<std::pair<std::stri
 
 		// Use ImageButton for texture icons; if you have a font icon, use ImGui::Button with Text
 		ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2(0,0));
-		// ImGui::PushStyleColor(ImGuiCol_Button, ImVec4(0,0,0,0));
-		// ImGui::PushStyleColor(ImGuiCol_ButtonHovered, ImVec4(0,0,0,0));
-		// ImGui::PushStyleColor(ImGuiCol_ButtonActive, ImVec4(0,0,0,0));
+
 		if (ImGui::ImageButton(("btn_mode_" + std::to_string(i)).c_str(), icons[i].second, iconSize, ImVec2(0,0), ImVec2(1,1))) {
 			currentMode = i; // select mode
 			setNavigationPath({icons[i].first});
@@ -457,12 +443,16 @@ void MyApp::draw_gui() {
 				ImGuiFileDialog::Instance()->OpenDialog("SaveModelAs", "Save as", ".geogram,.mesh,.obj", config);
 			}
 
+			if (ImGui::MenuItem("Clear scene")) {
+				clearScene();
+			}
+
 			if (ImGui::MenuItem("Save state")) {
-				save_state("state.json");
+				saveState("state.json");
 			}
 
 			if (ImGui::MenuItem("Load state")) {
-				load_state("state.json");
+				loadState("state.json");
 			}
 
 			if (ImGui::MenuItem("Quit")) {
@@ -739,7 +729,7 @@ void MyApp::mouse_move(double x, double y) {
 }
 
 // TODO move to App class
-void MyApp::save_state(const std::string filename) {
+void MyApp::saveState(const std::string filename) {
 
 	json j;
 
@@ -777,6 +767,9 @@ void MyApp::clearScene() {
 	// TODO clean all scenes properly !
 	models.clear();
 	cameras.clear();
+
+	selectedCamera = 0;
+	selectedModel = 0;
 }
 
 void MyApp::loadState(json &j, const std::string path) {
@@ -823,7 +816,7 @@ void MyApp::loadState(json &j, const std::string path) {
 }
 
 // TODO move to App class
-void MyApp::load_state(const std::string filename) {
+void MyApp::loadState(const std::string filename) {
 
 	std::ifstream ifs(filename);
 	if (!ifs.is_open()) {
