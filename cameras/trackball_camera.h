@@ -106,17 +106,19 @@ struct TrackBallCamera : public Camera {
         m_viewMatrix = glm::translate(m_viewMatrix, -c);
 
 
-        // // Just update to know where is the camera
+        // Just update to know where is the camera
         // glm::vec4 position(m_eye.x, m_eye.y, m_eye.z, 1);
         // glm::vec4 pivot(m_lookAt.x, m_lookAt.y, m_lookAt.z, 1);
         // position = (q * (position - pivot)) + pivot;
         // m_eye = position;
 
-        // auto cameraMatrix = glm::inverse(m_viewMatrix);
-        // auto camPos = cameraMatrix[3];
-        // // m_eye = camPos;
+        auto cameraMatrix = glm::inverse(m_viewMatrix);
+        auto camPos = cameraMatrix[3];
+        
         // std::cout << "eye: " << m_eye.x << ", " << m_eye.y << ", " << m_eye.z <<  std::endl;
         // std::cout << "cam pos: " << camPos.x << ", " << camPos.y << ", " << camPos.z << ", " << camPos.w << std::endl;
+
+        m_eye = camPos;
 
     }
 
@@ -182,8 +184,6 @@ struct TrackBallCamera : public Camera {
             glm::vec3{jBox[0], jBox[1], jBox[2]},
             glm::vec3{jBox[3], jBox[4], jBox[5]}
         );
-
-        updateProjectionMatrix();
     }
 
     std::string getType() override { return "TrackBallCamera"; }

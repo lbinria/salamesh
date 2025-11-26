@@ -19,6 +19,9 @@ struct MyApp : App {
 	std::shared_ptr<Model> getModelByName(std::string name) override;
 	int getIndexOfModel(std::string name) override;
 	void computeFarPlane();
+	void focus(int modelIdx);
+
+	void clearScene();
 
 	void updateCamera(float dt);
 

@@ -40,6 +40,7 @@ struct Camera {
 
     virtual void updateProjectionMatrix() = 0;
 
+    // TODO remove from camera move into specific camera if needed
     void updateViewMatrix()
     {
         m_viewMatrix = glm::lookAt(m_eye, m_lookAt, m_upVector);
@@ -65,12 +66,13 @@ struct Camera {
     void setFarPlane(float val) { farPlane = val; }
 
 
-
     glm::vec3 getEye() const { return m_eye; }
+    // TODO maybe make private
     void setEye(glm::vec3 eye) { m_eye = std::move(eye); updateViewMatrix(); }
 
     glm::vec3 getLookAt() const { return m_lookAt; }
 
+    // TODO maybe make private
     void lookAt(glm::vec3 lookAt) {
         m_lookAt = lookAt;
         updateViewMatrix();
@@ -106,7 +108,14 @@ struct Camera {
             m_viewMatrix[3][0], m_viewMatrix[3][1], m_viewMatrix[3][2], m_viewMatrix[3][3]
         });
 
-        j["look_at"] = json::array({m_lookAt.x, m_lookAt.y, m_lookAt.z});
+        j["proj"] = json::array({
+            m_projectionMatrix[0][0], m_projectionMatrix[0][1], m_projectionMatrix[0][2], m_projectionMatrix[0][3],
+            m_projectionMatrix[1][0], m_projectionMatrix[1][1], m_projectionMatrix[1][2], m_projectionMatrix[1][3],
+            m_projectionMatrix[2][0], m_projectionMatrix[2][1], m_projectionMatrix[2][2], m_projectionMatrix[2][3],
+            m_projectionMatrix[3][0], m_projectionMatrix[3][1], m_projectionMatrix[3][2], m_projectionMatrix[3][3]
+        });
+
+        // j["look_at"] = json::array({m_lookAt.x, m_lookAt.y, m_lookAt.z});
         j["type"] = getType();
         doSaveState(j);
     }
@@ -122,16 +131,23 @@ struct Camera {
             jView[12].get<float>(), jView[13].get<float>(), jView[14].get<float>(), jView[15].get<float>()
         );
 
+        auto &jProj = j["proj"];
+        m_projectionMatrix = glm::mat4(
+            jProj[0].get<float>(), jProj[1].get<float>(), jProj[2].get<float>(), jProj[3].get<float>(),
+            jProj[4].get<float>(), jProj[5].get<float>(), jProj[6].get<float>(), jProj[7].get<float>(),
+            jProj[8].get<float>(), jProj[9].get<float>(), jProj[10].get<float>(), jProj[11].get<float>(),
+            jProj[12].get<float>(), jProj[13].get<float>(), jProj[14].get<float>(), jProj[15].get<float>()
+        );
+
         // Extract position from view matrix
         glm::mat4 c = glm::inverse(m_viewMatrix);
         m_eye = glm::vec3(c[3]);
-
-        auto &jLookAt = j["look_at"];
-        m_lookAt = glm::vec3(jLookAt[0], jLookAt[1], jLookAt[2]);
+        // Extract look at from view matrix
+        // auto &jLookAt = j["look_at"];
+        // m_lookAt = glm::vec3(jLookAt[0], jLookAt[1], jLookAt[2]);
+        m_lookAt = {m_viewMatrix[0][2], m_viewMatrix[1][2], m_viewMatrix[2][2]};
 
         doLoadState(j);
-
-        // updateViewMatrix();
     }
 
     // TODO here use box of copied camera 

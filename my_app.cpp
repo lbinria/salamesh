@@ -54,8 +54,9 @@ bool MyApp::loadModel(const std::string& filename) {
 	model->setName(std::filesystem::path(filename).stem().string() + std::to_string(models.size()));
 
 	model->setMeshIndex(models.size());
-	model->setLight(true);
 
+	// Setup default gfx
+	model->setLight(true);
 	model->getMesh().setMeshShrink(0.f);
 	model->getMesh().setMeshSize(0.0f);
 	model->setColorMode(ColorMode::COLOR);
@@ -66,27 +67,25 @@ bool MyApp::loadModel(const std::string& filename) {
 
 	// Setup default clipping plane
 	model->setupClipping();
-	
-	auto bbox = model->bbox();
 
 	models.push_back(std::move(model));
 
 	// Update cameras far planes
 	computeFarPlane();
 
-	// Current camera look at the model
-	getCamera().lookAtBox(bbox);
-	
-	setSelectedModel(models.size() - 1);
-
 	// Notify components
 	for (auto &c : components) {
 		c->modelLoaded(filename);
 	}
 
-	Commands::get().add_command("app.loadModel(" + filename + ")");
-
 	return true;
+}
+
+void MyApp::focus(int modelIdx) {
+	auto &model = models[modelIdx];
+
+	setSelectedModel(modelIdx);
+	getCamera().lookAtBox(model->bbox());
 }
 
 void MyApp::computeFarPlane() {
@@ -206,6 +205,10 @@ void MyApp::init() {
 			}
 		}
 	}
+
+	// Focus last loaded model
+	if (models.size() > 0)
+		focus(models.size() - 1);
 
 	// Components loading...
 
@@ -493,6 +496,10 @@ void MyApp::draw_gui() {
 				std::cout << "read model..." << std::endl;
 				loadModel(fullpath);
 			}
+
+			// Focus last loaded model
+			if (models.size() > 0)
+				focus(models.size() - 1);
 		}
 		
 		// close
@@ -766,11 +773,15 @@ void MyApp::save_state(const std::string filename) {
 	std::cout << "State saved to: " << filename << std::endl;
 }
 
-void MyApp::loadState(json &j, const std::string path) {
-	// Clear scene
-	// TODO make a function to clean all scenes properly !
+void MyApp::clearScene() {
+	// TODO clean all scenes properly !
 	models.clear();
 	cameras.clear();
+}
+
+void MyApp::loadState(json &j, const std::string path) {
+
+	clearScene();
 
 	// Load cameras states
 	for (auto &jCamera : j["cameras"]) {
