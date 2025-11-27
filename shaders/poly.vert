@@ -31,10 +31,9 @@ flat out int fragFacetIndex;
 
 flat out vec3 fragViewDir;
 
-flat out int fragCornerIndex;
 out vec3 fragBarycentric;
-flat out vec2 fragV1Pos;
-flat out vec2 fragV2Pos;
+flat out int fragCornerIndex;
+
 
 out vec3 fragWorldPos;
 
@@ -97,7 +96,9 @@ void main()
    fragHeights[localIndex] = h;
    flatFragHeights = fragHeights;
    
-
+   fragBarycentric = vec3(0.);
+   fragBarycentric[localIndex] = 1.;
+   fragCornerIndex = cornerIndex;
 
    fragBary = p0;
    fragNormal = n;
@@ -106,20 +107,6 @@ void main()
 
    fragWorldPos = world;
 
-   // Compute 2D pos of vertex
-   vec4 clip1 = pvm * vec4(p1, 1.0); 
-   vec2 ndc1 = clip1.xy / clip1.w;
-   vec2 scr1 = (ndc1 * 0.5 + 0.5) * viewport;
-   fragV1Pos = scr1;
-
-   vec4 clip2 = pvm * vec4(p2, 1.0); 
-   vec2 ndc2 = clip2.xy / clip2.w;
-   vec2 scr2 = (ndc2 * 0.5 + 0.5) * viewport;
-   fragV2Pos = scr2;
-
-   fragBarycentric = vec3(0.);
-   fragBarycentric[localIndex] = 1.;
-   fragCornerIndex = cornerIndex;
 
    fragViewDir = -vec3(view[0][2], view[1][2], view[2][2]);
 }

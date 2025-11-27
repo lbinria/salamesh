@@ -15,11 +15,9 @@ flat in vec3 flatFragHeights;
 
 flat in vec3 fragViewDir;
 
-in vec3 fragBarycentric;
-flat in vec2 fragV1Pos;
-flat in vec2 fragV2Pos;
-
 in vec3 fragWorldPos;
+
+in vec3 fragBarycentric;
 
 uniform bool is_light_enabled;
 uniform bool is_light_follow_view;
@@ -127,13 +125,9 @@ void main()
 
 
         if (attrElement == 2) {
-            
-            vec2 fragVPos = localI == 1 ? fragV1Pos : fragV2Pos;
-
-            float d = length(gl_FragCoord.xy - fragVPos);
-            if (d < 15) {
+            // if (length(fragBarycentric) > 0.9)
+            if (fragBarycentric[localI] > 0.66)
                 col = vec3(attrCol);
-            }
         } else {
 
             // Transparency
