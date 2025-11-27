@@ -10,25 +10,9 @@ void PolyRenderer::init() {
 	glGenVertexArrays(1, &VAO);
 	glGenBuffers(1, &VBO);
 
-	GLbitfield flags = GL_MAP_WRITE_BIT | GL_MAP_PERSISTENT_BIT | GL_MAP_COHERENT_BIT;
-
-	// glGenBuffers(1, &bufAttr);
-	// glBindBuffer(GL_TEXTURE_BUFFER, bufAttr);
-	// glBufferStorage(GL_TEXTURE_BUFFER, _m.nfacets() * sizeof(float), nullptr, flags);
-	// // Map once and keep pointer (not compatible for MacOS... because need OpenGL >= 4.6 i think)
-	// ptrAttr = (float*)glMapBufferRange(GL_TEXTURE_BUFFER, 0, _m.nfacets() * sizeof(float), flags);
-
-	// glGenTextures(1, &texAttr);
-	// glActiveTexture(GL_TEXTURE0 + 2); 
-	// glBindTexture(GL_TEXTURE_BUFFER, texAttr);
-	// glTexBuffer(GL_TEXTURE_BUFFER, GL_R32F, bufAttr);
-
+	// For the moment don't use persistent mapped memory
 	sl::createTBO(bufAttr, texAttr, 2);
-
-
-	// For the moment don't use persistent mapped memory
 	sl::createTBO(bufHighlight, texHighlight, 3);
-	// For the moment don't use persistent mapped memory
 	sl::createTBO(bufFilter, texFilter, 4);
 	
 	glActiveTexture(GL_TEXTURE0 + 2);
@@ -43,7 +27,6 @@ void PolyRenderer::init() {
 	glBindBuffer(GL_TEXTURE_BUFFER, 0);
 
 	shader.use();
-	// shader.setInt("bary", 1);
 	shader.setInt("attributeData", 2);
 	shader.setInt("highlightBuf", 3);
 	shader.setInt("filterBuf", 4);

@@ -23,6 +23,7 @@ struct SurfaceRenderer : public IRenderer {
 	struct Vertex {
 		// int vertexIndex;
 		int localIndex;
+		int cornerIndex;
 		glm::vec3 p0;
 		glm::vec3 p1;
 		glm::vec3 p2;
@@ -34,8 +35,7 @@ struct SurfaceRenderer : public IRenderer {
 		_m(m)
 		{
 			shader.use();
-			shader.setFloat3("color", {0.8f, 0.f, 0.2f});
-			// shader.setFloat3("color", {0.8f, 0.75f, 0.82f});
+			shader.setFloat3("color", {0.71f, 0.71f, 0.71f});
 		}
 
 	void init();

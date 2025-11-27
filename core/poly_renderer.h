@@ -37,7 +37,7 @@ struct PolyRenderer : public IRenderer {
 		_m(m)
 		{
 			shader.use();
-			shader.setFloat3("color", {0.8f, 0.f, 0.2f});
+			shader.setFloat3("color", {0.71f, 0.71f, 0.71f});
 		}
 
 

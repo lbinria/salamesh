@@ -8,7 +8,7 @@
 
 namespace sl {
 
-	void createTBO(GLuint &buf, GLuint &tex, int texId, GLenum internalFormat = GL_R32F) {
+	inline void createTBO(GLuint &buf, GLuint &tex, int texId, GLenum internalFormat = GL_R32F) {
 		glGenBuffers(1, &buf);
 		glGenTextures(1, &tex);
 		glBindBuffer(GL_TEXTURE_BUFFER, buf);

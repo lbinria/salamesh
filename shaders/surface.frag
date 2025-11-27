@@ -125,8 +125,7 @@ void main()
 
 
         if (attrElement == 2) {
-            // if (length(fragBarycentric) > 0.9)
-            if (fragBarycentric[localI] > 0.66)
+            if (fragBarycentric[localI] > 0.666 /* hell number ! :japanese_ogre: */)
                 col = vec3(attrCol);
         } else {
 

@@ -6,8 +6,10 @@ layout (location = 2) in vec3 p1;
 layout (location = 3) in vec3 p2;
 // Indexes of the primitive this vertices belongs to
 // layout (location = 5) in int vertexIndex;
-layout (location = 6) in int facetIndex;
-layout (location = 7) in int localIndex;
+layout (location = 4) in int facetIndex;
+layout (location = 5) in int localIndex;
+layout (location = 6) in int cornerIndex;
+
 
 layout (std140, binding = 0) uniform Matrices
 {
@@ -25,6 +27,9 @@ flat out vec3 flatFragHeights;
 flat out int fragFacetIndex;
 
 flat out vec3 fragViewDir;
+
+out vec3 fragBarycentric;
+flat out int fragCornerIndex;
 
 
 out vec3 fragWorldPos;
@@ -97,6 +102,10 @@ void main()
    fragNormal = n;
    fragFacetIndex = facetIndex;
    fragWorldPos = sp;
+
+   fragBarycentric = vec3(0.);
+   fragBarycentric[localIndex] = 1.;
+   fragCornerIndex = cornerIndex;
 
    fragViewDir = -vec3(view[0][2], view[1][2], view[2][2]);
 }
