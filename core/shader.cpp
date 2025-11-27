@@ -89,7 +89,7 @@ Shader::Shader(const char * vertexShaderPath, const char * fragmentShaderPath, c
 	glGetProgramiv(id, GL_LINK_STATUS, &success);
 	if(!success) {
 		glGetProgramInfoLog(id, 512, NULL, infoLog);
-		std::cout << "Failed to create shader program.\n" << infoLog << std::endl;
+		std::cout << "Failed to create shader program. \"" << vertexShaderPath << "\" \"" << fragmentShaderPath << "\"\n" << infoLog << std::endl;
 	}
 
 
@@ -168,7 +168,7 @@ Shader::Shader(const char * vertexShaderPath, const char * fragmentShaderPath) {
 	glGetProgramiv(id, GL_LINK_STATUS, &success);
 	if(!success) {
 		glGetProgramInfoLog(id, 512, NULL, infoLog);
-		std::cout << "Failed to create shader program.\n" << infoLog << std::endl;
+		std::cout << "Failed to create shader program. \"" << vertexShaderPath << "\" \"" << fragmentShaderPath << "\"\n" << infoLog << std::endl;
 	}
 
 

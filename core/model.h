@@ -236,6 +236,8 @@ struct Model {
             type = ElementType::INT_ELT;
         } else if (auto a = dynamic_cast<AttributeContainer<bool>*>(container.ptr.get())) {
             type = ElementType::BOOL_ELT;
+        } else if (auto a = dynamic_cast<AttributeContainer<vec2>*>(container.ptr.get())) {
+            type = ElementType::VEC2_ELT;
         } else {
             throw std::runtime_error("Unknown attribute type for container: " + container.name);
         }
@@ -317,6 +319,8 @@ struct Model {
             return ElementType::INT_ELT;
         } else if constexpr (std::is_same_v<T, bool>) {
             return ElementType::BOOL_ELT;
+        } else if constexpr (std::is_same_v<T, vec2>) {
+            return ElementType::VEC2_ELT;
         } else {
             throw std::runtime_error("Unknown attribute type for container: " + attr.getName());
         }

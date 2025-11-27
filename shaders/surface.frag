@@ -1,6 +1,7 @@
 #version 440 core
 
 // Primitive indexation
+flat in int fragCornerIndex;
 flat in int fragFacetIndex;
 
 layout(location = 0) out vec4 FragColor;
@@ -13,6 +14,10 @@ in vec3 fragHeights;
 flat in vec3 flatFragHeights;
 
 flat in vec3 fragViewDir;
+
+in vec3 fragBarycentric;
+flat in vec2 fragV1Pos;
+flat in vec2 fragV2Pos;
 
 in vec3 fragWorldPos;
 
@@ -57,7 +62,6 @@ void main()
     // Initialize color to black
     vec3 col = color;
 
-
     // Check if cell is filtered
     bool isFiltered = texelFetch(filterBuf, fragFacetIndex).x >= .5;
     if (isFiltered) {
@@ -88,27 +92,57 @@ void main()
 
     /* --- CLIPPING END --- */
 
-    /* --- FILTER END --- */
-
-    if (colorMode == 1 && attrElement == 8) {
+    if (colorMode == 1 && (attrElement == 2 || attrElement == 8)) {
 
         int primitiveIndex;
+        
+        // Which triangle vertex is the nearest ?
+        int localI = 0;
+
+        if (fragBarycentric.y > fragBarycentric.x && fragBarycentric.y > fragBarycentric.z) {
+            localI = 1;
+        } else if (fragBarycentric.z > fragBarycentric.x && fragBarycentric.z > fragBarycentric.y) {
+            localI = 2;
+        } else {
+            if (fragBarycentric.y > fragBarycentric.z)
+                localI = 1;
+            else
+                localI = 2;
+        }
+
+        int cornerIdx = fragCornerIndex + localI;
+
+        // Corner attribute
+        if (attrElement == 2)
+            primitiveIndex = cornerIdx;
         // Cell facet attribute
-        primitiveIndex = fragFacetIndex;
-
-        // float fragAttrVal = texelFetch(attributeData, primitiveIndex).x;
-        // col = vec3(texture(fragColorMap, clamp((fragAttrVal - attrRange.x) / (attrRange.y - attrRange.x), 0., 1.)));
-
+        else if (attrElement == 8)
+            primitiveIndex = fragFacetIndex;
         
         float range = attrRange.y - attrRange.x;
         float rangeRepeat = range / attrRepeat;
         float fragAttrVal = mod(texelFetch(attributeData, primitiveIndex).x - attrRange.x, rangeRepeat + 1);
         vec4 attrCol = texture(fragColorMap, clamp(fragAttrVal / rangeRepeat, 0., 1.));
 
-        if (attrCol.a > 0.)
-            col = vec3(attrCol);
-        else {
-            discard;
+
+
+        if (attrElement == 2) {
+            
+            vec2 fragVPos = localI == 1 ? fragV1Pos : fragV2Pos;
+
+            float d = length(gl_FragCoord.xy - fragVPos);
+            if (d < 15) {
+                col = vec3(attrCol);
+            }
+        } else {
+
+            // Transparency
+            if (attrCol.a > 0.)
+                col = vec3(attrCol);
+            else {
+                discard;
+            }
+
         }
     }
     

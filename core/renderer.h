@@ -258,7 +258,9 @@ struct IRenderer {
 		shader.setFloat2("attrRange", glm::vec2(min, max));
 
 		// Update sample
-		std::memcpy(ptrAttr, data.data(), data.size() * sizeof(float));
+		// std::memcpy(ptrAttr, data.data(), data.size() * sizeof(float));
+		glBindBuffer(GL_TEXTURE_BUFFER, bufAttr);
+		glBufferData(GL_TEXTURE_BUFFER, data.size() * sizeof(float), data.data(), GL_DYNAMIC_DRAW);
 	}
 
 	void setHighlight(int idx, float val) {

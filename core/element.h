@@ -15,7 +15,8 @@ enum ElementKind {
 enum ElementType {
 	DOUBLE_ELT,
 	INT_ELT,
-	BOOL_ELT
+	BOOL_ELT,
+	VEC2_ELT
 };
 
 static std::string elementKindToString(ElementKind e) {
@@ -36,6 +37,7 @@ static std::string elementTypeToString(ElementType t) {
 		case ElementType::DOUBLE_ELT: return "double";
 		case ElementType::INT_ELT: return "int";
 		case ElementType::BOOL_ELT: return "bool";
+		case ElementType::VEC2_ELT: return "vec2";
 		default: return "unknown";
 	}
 }

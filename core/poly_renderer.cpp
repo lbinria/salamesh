@@ -12,16 +12,18 @@ void PolyRenderer::init() {
 
 	GLbitfield flags = GL_MAP_WRITE_BIT | GL_MAP_PERSISTENT_BIT | GL_MAP_COHERENT_BIT;
 
-	glGenBuffers(1, &bufAttr);
-	glBindBuffer(GL_TEXTURE_BUFFER, bufAttr);
-	glBufferStorage(GL_TEXTURE_BUFFER, _m.nfacets() * sizeof(float), nullptr, flags);
-	// Map once and keep pointer (not compatible for MacOS... because need OpenGL >= 4.6 i think)
-	ptrAttr = (float*)glMapBufferRange(GL_TEXTURE_BUFFER, 0, _m.nfacets() * sizeof(float), flags);
+	// glGenBuffers(1, &bufAttr);
+	// glBindBuffer(GL_TEXTURE_BUFFER, bufAttr);
+	// glBufferStorage(GL_TEXTURE_BUFFER, _m.nfacets() * sizeof(float), nullptr, flags);
+	// // Map once and keep pointer (not compatible for MacOS... because need OpenGL >= 4.6 i think)
+	// ptrAttr = (float*)glMapBufferRange(GL_TEXTURE_BUFFER, 0, _m.nfacets() * sizeof(float), flags);
 
-	glGenTextures(1, &texAttr);
-	glActiveTexture(GL_TEXTURE0 + 2); 
-	glBindTexture(GL_TEXTURE_BUFFER, texAttr);
-	glTexBuffer(GL_TEXTURE_BUFFER, GL_R32F, bufAttr);
+	// glGenTextures(1, &texAttr);
+	// glActiveTexture(GL_TEXTURE0 + 2); 
+	// glBindTexture(GL_TEXTURE_BUFFER, texAttr);
+	// glTexBuffer(GL_TEXTURE_BUFFER, GL_R32F, bufAttr);
+
+	sl::createTBO(bufAttr, texAttr, 2);
 
 
 	// For the moment don't use persistent mapped memory
@@ -63,6 +65,10 @@ void PolyRenderer::init() {
 	GLuint localIndexLoc = glGetAttribLocation(shader.id, "localIndex");
 	glEnableVertexAttribArray(localIndexLoc);
 	glVertexAttribIPointer(localIndexLoc, 1, GL_INT, sizeof(Vertex), (void*)offsetof(Vertex, localIndex));
+
+	GLuint cornerIndexLoc = glGetAttribLocation(shader.id, "cornerIndex");
+	glEnableVertexAttribArray(cornerIndexLoc);
+	glVertexAttribIPointer(cornerIndexLoc, 1, GL_INT, sizeof(Vertex), (void*)offsetof(Vertex, cornerIndex));
 
 	GLuint facetIndexLoc = glGetAttribLocation(shader.id, "facetIndex");
 	glEnableVertexAttribArray(facetIndexLoc);
@@ -107,6 +113,7 @@ void PolyRenderer::push() {
 	}
 	nverts = 3 * ntri /* 3 points per tri, n tri per facet */;
 
+	int cornerOff = 0;
 	std::vector<Vertex> vertices;
 	for (auto &f : _m.iter_facets()) {
 
@@ -141,14 +148,18 @@ void PolyRenderer::push() {
 
 				// Retrieve vertex id (0 is always the barycenter => no vertex associated)
 				int v = i == 0 ? -1 : f.vertex((lv + (i - 1)) % nv);
+				// Compute corner index
+				// int cornerIdx = i == 0 ? -1 : cornerOff + (lv + (i - 1)) % f.size();
+				int cornerIdx = cornerOff + (lv + 1) % f.size();
 
 				auto p = verts[i];
 				auto p1 = verts[1];
 				auto p2 = verts[2];
 
-				vertices.push_back({ 
+				vertices.push_back({
 					.vertexIndex = v, // useless i think
 					.localIndex = i,
+					.cornerIndex = cornerIdx,
 					.facetIndex = f,
 					.p = glm::vec3(p.x, p.y, p.z),
 					.p0 = bary,
@@ -158,6 +169,8 @@ void PolyRenderer::push() {
 				});
 			}
 		}
+
+		cornerOff += f.size();
 	}
 
 	PolyRenderer::push(vertices);

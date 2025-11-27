@@ -23,6 +23,7 @@ struct PolyRenderer : public IRenderer {
 	struct Vertex {
 		int vertexIndex;
 		int localIndex;
+		int cornerIndex;
 		int facetIndex;
 		glm::vec3 p;
 		glm::vec3 p0;
@@ -46,7 +47,7 @@ struct PolyRenderer : public IRenderer {
 
 	void push() override;
 
-	int getRenderElementKind() override { return ElementKind::FACETS; }
+	int getRenderElementKind() override { return ElementKind::FACETS | ElementKind::CORNERS; }
 
 
 	protected:
