@@ -80,9 +80,6 @@ void SurfaceRenderer::render(glm::vec3 &position) {
 	glActiveTexture(GL_TEXTURE0);
 	glBindTexture(GL_TEXTURE_1D, texColorMap);
 
-	// glActiveTexture(GL_TEXTURE0 + 1);
-	// glBindTexture(GL_TEXTURE_BUFFER, texBary);
-
 	glActiveTexture(GL_TEXTURE0 + 2);
 	glBindTexture(GL_TEXTURE_BUFFER, texAttr);
 
@@ -121,7 +118,6 @@ void SurfaceRenderer::clean() {
 	// }
 
 	glDeleteBuffers(1, &bufBary);
-	// glDeleteTextures(1, &texBary);
 	glDeleteBuffers(1, &bufAttr);
 	glDeleteTextures(1, &texAttr);
 	glDeleteBuffers(1, &bufHighlight);

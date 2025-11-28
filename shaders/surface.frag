@@ -95,20 +95,32 @@ void main()
         int primitiveIndex;
         
         // Which triangle vertex is the nearest ?
-        int localI = 0;
+        // Use barycentric coordinates to get the closest point of the current fragment
+        int curPointIdx = 0;
 
-        if (fragBarycentric.y > fragBarycentric.x && fragBarycentric.y > fragBarycentric.z) {
-            localI = 1;
-        } else if (fragBarycentric.z > fragBarycentric.x && fragBarycentric.z > fragBarycentric.y) {
-            localI = 2;
+        // if (fragBarycentric.y > fragBarycentric.x && fragBarycentric.y > fragBarycentric.z) {
+        //     localI = 1;
+        // } else if (fragBarycentric.z > fragBarycentric.x && fragBarycentric.z > fragBarycentric.y) {
+        //     localI = 2;
+        // } else {
+        //     if (fragBarycentric.y > fragBarycentric.z)
+        //         localI = 1;
+        //     else
+        //         localI = 2;
+        // }
+
+        // Triangles
+        if (fragBarycentric.x > fragBarycentric.y && fragBarycentric.x > fragBarycentric.z) {
+            curPointIdx = 0;
+        } else if (fragBarycentric.y > fragBarycentric.x && fragBarycentric.y > fragBarycentric.z) {
+            curPointIdx = 1;
         } else {
-            if (fragBarycentric.y > fragBarycentric.z)
-                localI = 1;
-            else
-                localI = 2;
+            curPointIdx = 2;
         }
 
-        int cornerIdx = fragCornerIndex + localI;
+        // Get the current corner index by using the "provoking" vertex corner index
+        // plus the current point index
+        int cornerIdx = fragCornerIndex + curPointIdx;
 
         // Corner attribute
         if (attrElement == 2)
@@ -125,7 +137,9 @@ void main()
 
 
         if (attrElement == 2) {
-            if (fragBarycentric[localI] > 0.666 /* hell number ! :japanese_ogre: */)
+            // Check distance from point is lesser than 0.333 
+            // (a value of 1. means fragment is on point, a value of 0. means the furthest)
+            if (fragBarycentric[curPointIdx] > 0.666 /* hell number ! :japanese_ogre: */)
                 col = vec3(attrCol);
         } else {
 
