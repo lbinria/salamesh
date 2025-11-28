@@ -59,10 +59,10 @@ struct IRenderer {
 		shader.setInt("attrElement", element);
 	}
 
-	void setAttrRange(glm::vec2 range) {
-		shader.use();
-		shader.setFloat2("attrRange", range);
-	}
+	// void setAttrRange(glm::vec2 range) {
+	// 	shader.use();
+	// 	shader.setFloat2("attrRange", range);
+	// }
 
 	int getAttrRepeat() {
 		return attrRepeat;

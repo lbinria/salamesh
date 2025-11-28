@@ -267,7 +267,7 @@ struct TriangleInspector : public Component {
 		ImGui::End();
 
 
-		// auto st = app.getInputState();
+		auto st = app.getInputState();
 		// if (st.mouse.dblButtons[0] && st.vertex.anyHovered()) {
 		// 	auto v = st.vertex.getAllHovered().front();
 		// 	if (pointHl[v] >= .5f) {
@@ -324,6 +324,22 @@ struct TriangleInspector : public Component {
 		// 	ImGui::EndTooltip();
 
 		// }
+
+
+		if (st.edge.anyHovered()) {
+			ImGui::BeginTooltip();
+			auto e = st.edge.getAllHovered().front();
+			ImGui::Text("Edge %ld", e);
+
+
+			auto &triModel = app.getCurrentModel().as<TriModel>();
+			CornerAttribute<double> ca;
+			ca.bind("corner_id", triModel.getSurfaceAttributes(), triModel.getTriangles());
+			
+			ImGui::Text("Value %s", std::to_string(ca[e]).c_str());
+
+			ImGui::EndTooltip();
+		}
 
 		return true;
 	}

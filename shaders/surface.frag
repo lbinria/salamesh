@@ -117,6 +117,12 @@ void main()
         } else {
             curPointIdx = 2;
         }
+        // if (fragBarycentric.x > 0.666)
+        //     curPointIdx = 0;
+        // else if (fragBarycentric.y > 0.666)
+        //     curPointIdx = 1;
+        // else if (fragBarycentric.z > 0.666)
+        //     curPointIdx = 2;
 
         // Get the current corner index by using the "provoking" vertex corner index
         // plus the current point index
@@ -129,10 +135,17 @@ void main()
         else if (attrElement == 8)
             primitiveIndex = fragFacetIndex;
         
+        
         float range = attrRange.y - attrRange.x;
         float rangeRepeat = range / attrRepeat;
-        float fragAttrVal = mod(texelFetch(attributeData, primitiveIndex).x - attrRange.x, rangeRepeat + 1);
-        vec4 attrCol = texture(fragColorMap, clamp(fragAttrVal / rangeRepeat, 0., 1.));
+        float attrVal = texelFetch(attributeData, primitiveIndex).x;
+        float remapVal = (mod(attrVal - attrRange.x, rangeRepeat + 1)) / rangeRepeat;
+        vec4 attrCol = texture(fragColorMap, clamp(remapVal, 0., 1.));
+
+        // float range = attrRange.y - attrRange.x;
+        // float attrVal = texelFetch(attributeData, primitiveIndex).x;
+        // float remapVal = (attrVal - attrRange.x) / range;
+        // vec4 attrCol = texture(fragColorMap, clamp(remapVal, 0., 1.));
 
 
 
