@@ -11,22 +11,8 @@ void HalfedgeRenderer::init() {
 
 	// For the moment don't use persistent mapped memory
 	sl::createTBO(bufAttr, texAttr, 2);
-
-
-	glGenBuffers(1, &bufHighlight);
-	glGenTextures(1, &texHighlight);
-	glBindBuffer(GL_TEXTURE_BUFFER, bufHighlight);
-	glActiveTexture(GL_TEXTURE0 + 3); 
-	glBindTexture(GL_TEXTURE_BUFFER, texHighlight);
-	glTexBuffer(GL_TEXTURE_BUFFER, GL_R32F, bufHighlight);
-
-	// For the moment don't use persistent mapped memory
-	glGenBuffers(1, &bufFilter);
-	glGenTextures(1, &texFilter);
-	glBindBuffer(GL_TEXTURE_BUFFER, bufFilter);
-	glActiveTexture(GL_TEXTURE0 + 4); 
-	glBindTexture(GL_TEXTURE_BUFFER, texFilter);
-	glTexBuffer(GL_TEXTURE_BUFFER, GL_R32F, bufFilter);
+	sl::createTBO(bufHighlight, texHighlight, 3);
+	sl::createTBO(bufFilter, texFilter, 4);
 
 	// WTF ?
 	glActiveTexture(GL_TEXTURE0 + 2);
@@ -46,25 +32,11 @@ void HalfedgeRenderer::init() {
 	shader.setInt("filterBuf", 4);
 
 	// VBO
-	GLuint halfedgeIndexLoc = glGetAttribLocation(shader.id, "halfedgeIndex");
-	glEnableVertexAttribArray(halfedgeIndexLoc);
-	glVertexAttribIPointer(halfedgeIndexLoc, 1, GL_INT, sizeof(LineVert), (void*)offsetof(LineVert, halfedgeIndex));
-
-	GLuint p0Loc = glGetAttribLocation(shader.id, "aP0");
-	glEnableVertexAttribArray(p0Loc);
-	glVertexAttribPointer(p0Loc, 3, GL_FLOAT, GL_FALSE, sizeof(LineVert), (void*)offsetof(LineVert, P0));
-
-	GLuint p1Loc = glGetAttribLocation(shader.id, "aP1");
-	glEnableVertexAttribArray(p1Loc);
-	glVertexAttribPointer(p1Loc, 3, GL_FLOAT, GL_FALSE, sizeof(LineVert), (void*)offsetof(LineVert, P1));
-
-	GLuint sideLoc = glGetAttribLocation(shader.id, "aSide");
-	glEnableVertexAttribArray(sideLoc);
-	glVertexAttribPointer(sideLoc, 1, GL_FLOAT, GL_FALSE, sizeof(LineVert), (void*)offsetof(LineVert, side));
-
-	GLuint endLoc = glGetAttribLocation(shader.id, "aEnd");
-	glEnableVertexAttribArray(endLoc);
-	glVertexAttribPointer(endLoc, 1, GL_FLOAT, GL_FALSE, sizeof(LineVert), (void*)offsetof(LineVert, end));
+	sl::createVBOInteger(shader.id, "halfedgeIndex", sizeof(LineVert), (void*)offsetof(LineVert, halfedgeIndex));
+	sl::createVBOVec3(shader.id, "aP0", sizeof(LineVert), (void*)offsetof(LineVert, P0));
+	sl::createVBOVec3(shader.id, "aP1", sizeof(LineVert), (void*)offsetof(LineVert, P1));
+	sl::createVBOFloat(shader.id, "aSide", sizeof(LineVert), (void*)offsetof(LineVert, side));
+	sl::createVBOFloat(shader.id, "aEnd", sizeof(LineVert), (void*)offsetof(LineVert, end));
 
 }
 

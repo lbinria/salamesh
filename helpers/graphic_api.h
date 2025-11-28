@@ -17,4 +17,22 @@ namespace sl {
 		glTexBuffer(GL_TEXTURE_BUFFER, internalFormat, buf);
 	}
 
+	inline void createVBOFloat(GLuint shaderId, const GLchar *name, GLsizei stride, const void *ptr) {
+		GLuint sideLoc = glGetAttribLocation(shaderId, name);
+		glEnableVertexAttribArray(sideLoc);
+		glVertexAttribPointer(sideLoc, 1, GL_FLOAT, GL_FALSE, stride, ptr);
+	}
+
+	inline void createVBOInteger(GLuint shaderId, const GLchar *name, GLsizei stride, const void *ptr) {
+		GLuint halfedgeIndexLoc = glGetAttribLocation(shaderId, name);
+		glEnableVertexAttribArray(halfedgeIndexLoc);
+		glVertexAttribIPointer(halfedgeIndexLoc, 1, GL_INT, stride, ptr);
+	}
+
+	inline void createVBOVec3(GLuint shaderId, const GLchar *name, GLsizei stride, const void *ptr) {
+		GLuint p0Loc = glGetAttribLocation(shaderId, name);
+		glEnableVertexAttribArray(p0Loc);
+		glVertexAttribPointer(p0Loc, 3, GL_FLOAT, GL_FALSE, stride, ptr);
+	}
+
 }
