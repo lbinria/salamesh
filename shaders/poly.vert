@@ -40,7 +40,7 @@ out vec3 fragWorldPos;
 
 uniform float meshShrink;
 
-
+flat out int surfaceType; /* 0 => triangle, 1 => polygon */
 
 void main()
 {
@@ -109,4 +109,6 @@ void main()
 
 
    fragViewDir = -vec3(view[0][2], view[1][2], view[2][2]);
+
+   surfaceType = 1;
 }

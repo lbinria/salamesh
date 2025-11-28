@@ -38,6 +38,7 @@ uniform mat4 model;
 
 uniform float meshShrink;
 
+flat out int surfaceType; /* 0 => triangle, 1 => polygon */
 
 
 void main()
@@ -108,4 +109,6 @@ void main()
    fragCornerIndex = cornerIndex;
 
    fragViewDir = -vec3(view[0][2], view[1][2], view[2][2]);
+
+   surfaceType = 0;
 }

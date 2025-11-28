@@ -47,6 +47,8 @@ uniform vec3 color;
 
 uniform int meshIndex;
 
+flat in int surfaceType;
+
 vec3 encode_id(int id) {
     int r = id & 0x000000FF;
     int g = (id & 0x0000FF00) >> 8;
@@ -98,31 +100,32 @@ void main()
         // Use barycentric coordinates to get the closest point of the current fragment
         int curPointIdx = 0;
 
-        // if (fragBarycentric.y > fragBarycentric.x && fragBarycentric.y > fragBarycentric.z) {
-        //     localI = 1;
-        // } else if (fragBarycentric.z > fragBarycentric.x && fragBarycentric.z > fragBarycentric.y) {
-        //     localI = 2;
-        // } else {
-        //     if (fragBarycentric.y > fragBarycentric.z)
-        //         localI = 1;
-        //     else
-        //         localI = 2;
-        // }
-
-        // Triangles
-        if (fragBarycentric.x > fragBarycentric.y && fragBarycentric.x > fragBarycentric.z) {
-            curPointIdx = 0;
-        } else if (fragBarycentric.y > fragBarycentric.x && fragBarycentric.y > fragBarycentric.z) {
-            curPointIdx = 1;
+        // In polygons, the point 0 is the barycenter, we never want display any corner on it
+        // Only the points 1 & 2 (y, z) components are useful
+        if (surfaceType == 0) {
+            // Triangles
+            if (fragBarycentric.x > fragBarycentric.y && fragBarycentric.x > fragBarycentric.z) {
+                curPointIdx = 0;
+            } else if (fragBarycentric.y > fragBarycentric.x && fragBarycentric.y > fragBarycentric.z) {
+                curPointIdx = 1;
+            } else {
+                curPointIdx = 2;
+            }
         } else {
-            curPointIdx = 2;
+            if (fragBarycentric.y > fragBarycentric.x && fragBarycentric.y > fragBarycentric.z) {
+                curPointIdx = 1;
+            } else if (fragBarycentric.z > fragBarycentric.x && fragBarycentric.z > fragBarycentric.y) {
+                curPointIdx = 2;
+            } else {
+                if (fragBarycentric.y > fragBarycentric.z)
+                    curPointIdx = 1;
+                else
+                    curPointIdx = 2;
+            }
         }
-        // if (fragBarycentric.x > 0.666)
-        //     curPointIdx = 0;
-        // else if (fragBarycentric.y > 0.666)
-        //     curPointIdx = 1;
-        // else if (fragBarycentric.z > 0.666)
-        //     curPointIdx = 2;
+
+
+
 
         // Get the current corner index by using the "provoking" vertex corner index
         // plus the current point index
@@ -141,11 +144,6 @@ void main()
         float attrVal = texelFetch(attributeData, primitiveIndex).x;
         float remapVal = (mod(attrVal - attrRange.x, rangeRepeat + 1)) / rangeRepeat;
         vec4 attrCol = texture(fragColorMap, clamp(remapVal, 0., 1.));
-
-        // float range = attrRange.y - attrRange.x;
-        // float attrVal = texelFetch(attributeData, primitiveIndex).x;
-        // float remapVal = (attrVal - attrRange.x) / range;
-        // vec4 attrCol = texture(fragColorMap, clamp(remapVal, 0., 1.));
 
 
 
