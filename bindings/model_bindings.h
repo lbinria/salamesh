@@ -110,6 +110,11 @@ namespace bindings {
 				&IRenderer::setMeshShrink
 			);
 
+			meshRenderer_t["corner_visible"] = sol::property(
+				&IRenderer::getCornerVisible,
+				&IRenderer::setCornerVisible
+			);
+
 			meshRenderer_t["attr_repeat"] = sol::property(
 				&IRenderer::getAttrRepeat,
 				&IRenderer::setAttrRepeat

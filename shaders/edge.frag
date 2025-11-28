@@ -37,8 +37,13 @@ vec3 encode_id(int id) {
     return vec3(r / 255.f, g / 255.f, b / 255.f); 
 }
 
-void displayAttributes() {
-
+float sdfEquilateralTriangle(vec2 p) {
+    float k = sqrt(3.);
+    p.x = abs(p.x) - 1.0;
+    p.y = p.y + 1.0 / k;
+    if (p.x+k*p.y > 0) p = vec2(p.x - k*p.y, -k*p.x-p.y) / 2.;
+    p.x -= clamp(p.x, -2., 0.);
+    return -length(p)*sign(p.y);
 }
 
 void main()
@@ -55,6 +60,9 @@ void main()
 
     // optional hard discard of outside
     if(t<0.01) discard;
+
+    // if (sdfEquilateralTriangle(vLocalUV) < 0)
+    //     discard;
 
     // vLocalUV is between (0,0) - (1,1) in a square
     // We want to discard outside of circle

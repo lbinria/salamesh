@@ -135,7 +135,7 @@ struct IRenderer {
 
 	void setLight(bool enabled) {
 		shader.use();
-		shader.setFloat("is_light_enabled", enabled);
+		shader.setFloat("is_light_enabled", enabled); // TODO set int here !
 	}
 
 	void setLightFollowView(bool follow) {
@@ -188,6 +188,16 @@ struct IRenderer {
 		shader.use();
 		shader.setFloat("meshShrink", val);
 		meshShrink = val;
+	}
+
+	bool getCornerVisible() const {
+		return isCornerVisible;
+	}
+
+	void setCornerVisible(bool val) {
+		shader.use();
+		shader.setInt("isCornerVisible", val);
+		isCornerVisible = val;
 	}
 
 	void setSelectedColormap(int idx) {
@@ -355,6 +365,7 @@ struct IRenderer {
 	glm::vec3 selectColor{0.f, 0.22f, 1.f};
 	float meshSize = 0.01f;
 	float meshShrink = 0.f;
+	bool isCornerVisible = true;
 	int attrRepeat = 1;
 
 	unsigned int VAO, VBO; // Buffers

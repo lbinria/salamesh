@@ -245,7 +245,14 @@ function draw_model_properties(model, view)
 					print("Change edge outside color: " .. tostring(new_edge_outside_color))
 					cur_model.edges.outside_color = new_edge_outside_color
 				end
-			end 
+			end
+			
+			local sel_corner_visible, new_corner_visible = imgui.Checkbox("Show corners", cur_model.mesh.corner_visible)
+			if (sel_corner_visible) then 
+				print("Change corner visibility: " .. tostring(new_corner_visible))
+				cur_model.mesh.corner_visible = new_corner_visible
+			end
+
 		end
 
 		if (imgui.CollapsingHeader("Attributes##" .. cur_model.name .. "_properties_attributes")) then 

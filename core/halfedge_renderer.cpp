@@ -1,5 +1,6 @@
 #include "halfedge_renderer.h"
 #include "../helpers/graphic_api.h"
+#include "helpers.h"
 
 void HalfedgeRenderer::init() {
 
@@ -37,6 +38,7 @@ void HalfedgeRenderer::init() {
 	sl::createVBOVec3(shader.id, "aP1", sizeof(LineVert), (void*)offsetof(LineVert, P1));
 	sl::createVBOFloat(shader.id, "aSide", sizeof(LineVert), (void*)offsetof(LineVert, side));
 	sl::createVBOFloat(shader.id, "aEnd", sizeof(LineVert), (void*)offsetof(LineVert, end));
+	sl::createVBOVec3(shader.id, "bary", sizeof(LineVert), (void*)offsetof(LineVert, bary));
 
 }
 
@@ -89,6 +91,14 @@ void SurfaceHalfedgeRenderer::push() {
 
 	for (auto &f : _m.iter_facets()) {
 		int facetSize = _m.facet_size(f);
+
+		vec3 b;
+		for (int lv = 0; lv < f.size(); ++lv) {
+			b += f.vertex(lv).pos();
+		}
+		b /= f.size();
+		glm::vec3 bary = sl::um2glm(b);
+
 		for (int i = 0; i < facetSize; ++i) {
 			
 			auto v0 = f.vertex(i);
@@ -99,10 +109,10 @@ void SurfaceHalfedgeRenderer::push() {
 			int halfedgeIdx = f * facetSize + i;
 
 			// build the 4 “corner” vertices
-			LineVert lv0{halfedgeIdx, glm::vec3(p0.x, p0.y, p0.z), glm::vec3(p1.x, p1.y, p1.z), -1.0f, 0.0f};  // corner: start, left side
-			LineVert lv1{halfedgeIdx, glm::vec3(p0.x, p0.y, p0.z), glm::vec3(p1.x, p1.y, p1.z), +1.0f, 0.0f};  // corner: start, right side
-			LineVert lv2{halfedgeIdx, glm::vec3(p0.x, p0.y, p0.z), glm::vec3(p1.x, p1.y, p1.z), -1.0f, 1.0f};  // corner: end,   left side
-			LineVert lv3{halfedgeIdx, glm::vec3(p0.x, p0.y, p0.z), glm::vec3(p1.x, p1.y, p1.z), +1.0f, 1.0f};  // corner: end,   right side
+			LineVert lv0{halfedgeIdx, glm::vec3(p0.x, p0.y, p0.z), glm::vec3(p1.x, p1.y, p1.z), -1.0f, 0.0f, bary};  // corner: start, left side
+			LineVert lv1{halfedgeIdx, glm::vec3(p0.x, p0.y, p0.z), glm::vec3(p1.x, p1.y, p1.z), +1.0f, 0.0f, bary};  // corner: start, right side
+			LineVert lv2{halfedgeIdx, glm::vec3(p0.x, p0.y, p0.z), glm::vec3(p1.x, p1.y, p1.z), -1.0f, 1.0f, bary};  // corner: end,   left side
+			LineVert lv3{halfedgeIdx, glm::vec3(p0.x, p0.y, p0.z), glm::vec3(p1.x, p1.y, p1.z), +1.0f, 1.0f, bary};  // corner: end,   right side
 
 			vertices.push_back(lv0);
 			vertices.push_back(lv1);

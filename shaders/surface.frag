@@ -45,6 +45,8 @@ uniform samplerBuffer highlightBuf;
 uniform int colorMode = 0;
 uniform vec3 color;
 
+uniform bool isCornerVisible;
+
 uniform int meshIndex;
 
 flat in int surfaceType;
@@ -65,53 +67,22 @@ int getCurrentPointIdx(vec3 b) {
     }
 }
 
-int getCurrentPointIdx2(vec3 b) {
-    if (b[1] > b[2])
-        return 1;
-    else 
-        return 2;
+vec4 getAttributeColor(int index) {
+    float range = attrRange.y - attrRange.x;
+    float rangeRepeat = range / attrRepeat;
+    float attrVal = texelFetch(attributeData, index).x;
+    float remapVal = (mod(attrVal - attrRange.x, rangeRepeat + 1)) / rangeRepeat;
+    return texture(fragColorMap, clamp(remapVal, 0., 1.));
 }
 
-void main()
-{
+void attributeCompute(inout vec3 col) {
+    if (colorMode != 1)
+        return;
 
-    // Initialize color to black
-    vec3 col = color;
+    vec4 attrCol = vec4(0.);
 
-    // Check if cell is filtered
-    bool isFiltered = texelFetch(filterBuf, fragFacetIndex).x >= .5;
-    if (isFiltered) {
-        discard;
-    }
-
-    /* --- CLIPPING --- */
-
-   // Calculate the distance from the cell barycenter to the plane
-   if (is_clipping_enabled) {
-    vec3 ref_point;
-    if (clipping_mode == 0) {
-        // Use the barycenter of the facets to exclude facets
-        // that are behind the clipping plane
-        ref_point = fragBary;
-    } else if (clipping_mode == 1) {
-        // Use the fragment world position (interpolated) to exclude fragments
-        // that are behind the clipping plane
-        ref_point = fragWorldPos;
-    }
-
-      float distance = dot(clipping_plane_normal, ref_point - clipping_plane_point) / length(clipping_plane_normal);
-      
-      if ((invert_clipping == 0 && distance < 0.0) || (invert_clipping == 1 && distance >= 0.0)) {
-         discard;
-      }
-   }
-
-    /* --- CLIPPING END --- */
-
-    if (colorMode == 1 && (attrElement == 2 || attrElement == 8)) {
-
-        int primitiveIndex;
-        
+    // Corner attribute
+    if (attrElement == 2 && isCornerVisible) {
         // Which triangle vertex is the nearest ?
         // Use barycentric coordinates to get the closest point of the current fragment
         int curPointIdx = getCurrentPointIdx(fragBarycentric);
@@ -137,46 +108,57 @@ void main()
         // Get the current corner index by using the "provoking" vertex corner index
         // plus the current point index
         int cornerIdx = fragCornerIndex + curPointIdx + curPointOff;
+        attrCol = getAttributeColor(cornerIdx);
 
+        // Check distance from point is lesser than 0.333 
+        // (as we use bary coords: a value of 1. means fragment is on point, a value of 0. means the furthest)
+        if (fragBarycentric[curPointIdx] > 0.666 /* hell number ! :japanese_ogre: */)
+            col = vec3(attrCol);
+    }
+    // Cell facet attribute
+    else if (attrElement == 8) {
+        attrCol = getAttributeColor(fragFacetIndex);
 
-
-
-
-        // Corner attribute
-        if (attrElement == 2)
-            primitiveIndex = cornerIdx;
-        // Cell facet attribute
-        else if (attrElement == 8)
-            primitiveIndex = fragFacetIndex;
-        
-        
-        float range = attrRange.y - attrRange.x;
-        float rangeRepeat = range / attrRepeat;
-        float attrVal = texelFetch(attributeData, primitiveIndex).x;
-        float remapVal = (mod(attrVal - attrRange.x, rangeRepeat + 1)) / rangeRepeat;
-        vec4 attrCol = texture(fragColorMap, clamp(remapVal, 0., 1.));
-
-
-
-        if (attrElement == 2) {
-            // Check distance from point is lesser than 0.333 
-            // (as we use bary coords: a value of 1. means fragment is on point, a value of 0. means the furthest)
-            if (fragBarycentric[curPointIdx] > 0.666 /* hell number ! :japanese_ogre: */)
-                col = vec3(attrCol);
-        } else {
-
-            // Transparency
-            if (attrCol.a > 0.)
-                col = vec3(attrCol);
-            else {
-                discard;
-            }
-
+        // Transparency
+        if (attrCol.a > 0.)
+            col = vec3(attrCol);
+        else {
+            discard;
         }
     }
-    
+}
 
+void _filter(inout vec3 col) {
+    // Check if cell is filtered
+    bool isFiltered = texelFetch(filterBuf, fragFacetIndex).x >= .5;
+    if (isFiltered) {
+        discard;
+    }
+}
 
+void clip(inout vec3 col) {
+   // Calculate the distance from the cell barycenter to the plane
+   if (is_clipping_enabled) {
+    vec3 ref_point;
+    if (clipping_mode == 0) {
+        // Use the barycenter of the facets to exclude facets
+        // that are behind the clipping plane
+        ref_point = fragBary;
+    } else if (clipping_mode == 1) {
+        // Use the fragment world position (interpolated) to exclude fragments
+        // that are behind the clipping plane
+        ref_point = fragWorldPos;
+    }
+
+      float distance = dot(clipping_plane_normal, ref_point - clipping_plane_point) / length(clipping_plane_normal);
+      
+      if ((invert_clipping == 0 && distance < 0.0) || (invert_clipping == 1 && distance >= 0.0)) {
+         discard;
+      }
+   }
+}
+
+void highlight(inout vec3 col) {
     // Highlight
     float highlightVal = texelFetch(highlightBuf, fragFacetIndex).x;
 
@@ -189,7 +171,9 @@ void main()
         // Mix with current point color (80%)
         col = mix(col, hlColor, .8);
     }
+}
 
+void shading(inout vec3 col) {
     // Diffuse light
     if (is_light_enabled) {
         vec3 dirLight;
@@ -202,18 +186,26 @@ void main()
         float diffuse = max((1.f - dot(dirLight, fragNormal)) * .5f + .45f /* ambiant */, 0.f);
         col = col * diffuse;
     }
+}
 
-
-    // Wireframe
-    // if (fragHeights.x < meshSize || fragHeights.y < meshSize || fragHeights.z < meshSize) {
-    //     // col = vec3(0,0,0);
-    //     col =  vec3(0,0,0);
-    // }
+void wireframe(inout vec3 col) {
     float f1 = 1. - smoothstep(flatFragHeights.x - meshSize, flatFragHeights.x, flatFragHeights.x - fragHeights.x);
     float f2 = 1. - smoothstep(flatFragHeights.y - meshSize, flatFragHeights.y, flatFragHeights.y - fragHeights.y);
     float f3 = 1. - smoothstep(flatFragHeights.z - meshSize, flatFragHeights.z, flatFragHeights.z - fragHeights.z);
     col *= f1 * f2 * f3;
+}
 
+void main()
+{
+
+    vec3 col = color;
+
+    _filter(col);
+    clip(col);
+    attributeCompute(col);
+    highlight(col);
+    shading(col);
+    wireframe(col);
 
     // Outputs
     fragFacetIndexOut = vec4(encode_id(fragFacetIndex), 1.);

@@ -5,6 +5,7 @@ layout (location = 1) in vec3 aP1;
 layout (location = 2) in float aSide;
 layout (location = 3) in float aEnd;
 layout (location = 4) in int halfedgeIndex;
+layout (location = 5) in vec3 bary;
 
 layout (std140, binding = 0) uniform Matrices
 {
@@ -23,9 +24,20 @@ flat out int FragHalfedgeIndex;
 
 void main()
 {
+
+    vec3 d = aP1 - aP0;
+
+    vec3 p0 = aP0 - (aP0 - bary) * 0.2;
+    vec3 p1 = aP1 - (aP1 - bary) * 0.2;
+
+    p0 += d * 0.1;
+    p1 -= d * 0.1;
+
     // 1) World→view→clip for both endpoints
-    vec4 c0 = projection * view * model * vec4(aP0, 1.0);
-    vec4 c1 = projection * view * model * vec4(aP1, 1.0);
+    vec4 c0 = projection * view * model * vec4(p0, 1.0);
+    vec4 c1 = projection * view * model * vec4(p1, 1.0);
+    // vec4 c0 = projection * view * model * vec4(aP0, 1.0);
+    // vec4 c1 = projection * view * model * vec4(aP1, 1.0);
 
     // 2) NDC
     vec2 ndc0 = c0.xy / c0.w;

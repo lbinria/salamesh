@@ -23,6 +23,7 @@ struct HalfedgeRenderer : public IRenderer {
 		glm::vec3 P1;
 		float side;
 		float end;
+		glm::vec3 bary;
 	};
 
 	using IRenderer::IRenderer;
