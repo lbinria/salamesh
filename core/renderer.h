@@ -350,7 +350,7 @@ struct IRenderer {
 
 	bool visible = true;
 
-	glm::vec3 color{0.8f, 0.f, 0.2f};
+	glm::vec3 color{0.71f, 0.71f, 0.71f};
 	glm::vec3 hoverColor{1.f, 1.f, 1.f};
 	glm::vec3 selectColor{0.f, 0.22f, 1.f};
 	float meshSize = 0.01f;
