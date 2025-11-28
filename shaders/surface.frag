@@ -56,6 +56,22 @@ vec3 encode_id(int id) {
     return vec3(r / 255.f, g / 255.f, b / 255.f); 
 }
 
+// Return the nearest vertex of triangle index
+// from barycentric coordinates
+int getCurrentPointIdx(vec3 b) {
+    for (int i = 0; i < 3; i++) {
+        if (b[i] > b[(i + 1) % 3] && b[i] > b[(i + 2) % 3])
+            return i;
+    }
+}
+
+int getCurrentPointIdx2(vec3 b) {
+    if (b[1] > b[2])
+        return 1;
+    else 
+        return 2;
+}
+
 void main()
 {
 
@@ -98,38 +114,33 @@ void main()
         
         // Which triangle vertex is the nearest ?
         // Use barycentric coordinates to get the closest point of the current fragment
-        int curPointIdx = 0;
+        int curPointIdx = getCurrentPointIdx(fragBarycentric);
 
-        // In polygons, the point 0 is the barycenter, we never want display any corner on it
-        // Only the points 1 & 2 (y, z) components are useful
-        if (surfaceType == 0) {
-            // Triangles
-            if (fragBarycentric.x > fragBarycentric.y && fragBarycentric.x > fragBarycentric.z) {
-                curPointIdx = 0;
-            } else if (fragBarycentric.y > fragBarycentric.x && fragBarycentric.y > fragBarycentric.z) {
-                curPointIdx = 1;
-            } else {
-                curPointIdx = 2;
-            }
-        } else {
-            if (fragBarycentric.y > fragBarycentric.x && fragBarycentric.y > fragBarycentric.z) {
-                curPointIdx = 1;
-            } else if (fragBarycentric.z > fragBarycentric.x && fragBarycentric.z > fragBarycentric.y) {
-                curPointIdx = 2;
-            } else {
+        int curPointOff = 0;
+        // Polygon case
+        if (surfaceType == 1) {
+            // In polygons, the point 0 is the barycenter
+            // we never want display any corner on it, so snap to other vertices
+            // Only the points 1 & 2 (y, z) components represent real corners
+            if (curPointIdx == 0) {
                 if (fragBarycentric.y > fragBarycentric.z)
                     curPointIdx = 1;
-                else
+                else 
                     curPointIdx = 2;
             }
+            // In polygon
+            // Point 1 => localVertex = 0
+            // Point 2 => localVertex = 1
+            curPointOff = -1;
         }
-
-
-
-
+        
         // Get the current corner index by using the "provoking" vertex corner index
         // plus the current point index
-        int cornerIdx = fragCornerIndex + curPointIdx;
+        int cornerIdx = fragCornerIndex + curPointIdx + curPointOff;
+
+
+
+
 
         // Corner attribute
         if (attrElement == 2)
@@ -149,7 +160,7 @@ void main()
 
         if (attrElement == 2) {
             // Check distance from point is lesser than 0.333 
-            // (a value of 1. means fragment is on point, a value of 0. means the furthest)
+            // (as we use bary coords: a value of 1. means fragment is on point, a value of 0. means the furthest)
             if (fragBarycentric[curPointIdx] > 0.666 /* hell number ! :japanese_ogre: */)
                 col = vec3(attrCol);
         } else {

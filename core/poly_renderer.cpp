@@ -127,13 +127,13 @@ void PolyRenderer::push() {
 			// Three points of current triangle
 			vec3 verts[3] = {vec3(bary.x, bary.y, bary.z) , f.vertex(lv).pos(), f.vertex((lv + 1) % nv).pos()};
 
+			// Compute first corner index of the triangle
+			int firstCornerIdx = cornerOff + lv % f.size();
+
 			for (int i = 0; i < 3; ++i) {
 
 				// Retrieve vertex id (0 is always the barycenter => no vertex associated)
 				int v = i == 0 ? -1 : f.vertex((lv + (i - 1)) % nv);
-				// Compute corner index
-				// int cornerIdx = i == 0 ? -1 : cornerOff + (lv + (i - 1)) % f.size();
-				int cornerIdx = cornerOff + (lv + 1) % f.size();
 
 				auto p = verts[i];
 				auto p1 = verts[1];
@@ -142,7 +142,7 @@ void PolyRenderer::push() {
 				vertices.push_back({
 					.vertexIndex = v, // useless i think
 					.localIndex = i,
-					.cornerIndex = cornerIdx,
+					.cornerIndex = firstCornerIdx,
 					.facetIndex = f,
 					.p = glm::vec3(p.x, p.y, p.z),
 					.p0 = bary,

@@ -7,7 +7,6 @@ layout (location = 2) in vec3 p1;
 layout (location = 3) in vec3 p2; 
 layout (location = 4) in vec3 n;
 // Indexes of the primitive this vertices belongs to
-layout (location = 5) in int vertexIndex;
 layout (location = 6) in int localIndex;
 layout (location = 7) in int cornerIndex;
 layout (location = 8) in int facetIndex;
@@ -26,7 +25,6 @@ out vec3 fragBary;
 out vec3 fragNormal;
 out vec3 fragHeights;
 flat out vec3 flatFragHeights;
-out float fragVertexIndex;
 flat out int fragFacetIndex;
 
 flat out vec3 fragViewDir;
@@ -103,7 +101,6 @@ void main()
    fragBary = p0;
    fragNormal = n;
    fragFacetIndex = facetIndex;
-   fragVertexIndex = vertexIndex;
 
    fragWorldPos = world;
 

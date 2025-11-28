@@ -18,10 +18,12 @@ uniform vec3 selectColor = vec3(0., 0.22, 1.);
 
 uniform sampler1D fragColorMap;
 uniform vec2 attrRange = vec2(0.f, 1.f);
+uniform int attrRepeat = 1;
 uniform samplerBuffer attrBuf;
-
 uniform samplerBuffer filterBuf;
 uniform samplerBuffer highlightBuf;
+uniform int attrElement;
+
 
 in vec2 vLocalUV;  // u in [0..1] across thickness, v in [0..1] along length
 
@@ -33,6 +35,10 @@ vec3 encode_id(int id) {
     int g = (id & 0x0000FF00) >> 8;
     int b = (id & 0x00FF0000) >> 16;
     return vec3(r / 255.f, g / 255.f, b / 255.f); 
+}
+
+void displayAttributes() {
+
 }
 
 void main()
@@ -72,6 +78,16 @@ void main()
     float light = 1. - dot(N, vec3(0.35,0.45,1.)) /** .5 + .5*/;
     vec3 col = mix(uColorOutside, uColorInside, t) * (light * 0.5 + 0.5);
     
+    // Attributes
+    if (colorMode == 1 && attrElement == 2) {
+        float range = attrRange.y - attrRange.x;
+        float rangeRepeat = range / attrRepeat;
+        float attrVal = texelFetch(attrBuf, FragHalfedgeIndex).x;
+        float remapVal = (mod(attrVal - attrRange.x, rangeRepeat + 1)) / rangeRepeat;
+        vec4 attrCol = texture(fragColorMap, clamp(remapVal, 0., 1.));
+        col = vec3(attrCol);
+    }
+
     // Highlight
     float highlightVal = texelFetch(highlightBuf, FragHalfedgeIndex).x;
 

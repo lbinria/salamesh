@@ -1,4 +1,5 @@
 #include "halfedge_renderer.h"
+#include "../helpers/graphic_api.h"
 
 void HalfedgeRenderer::init() {
 
@@ -8,8 +9,10 @@ void HalfedgeRenderer::init() {
 	glBindVertexArray(VAO);
 	glBindBuffer(GL_ARRAY_BUFFER, VBO);
 
-	
 	// For the moment don't use persistent mapped memory
+	sl::createTBO(bufAttr, texAttr, 2);
+
+
 	glGenBuffers(1, &bufHighlight);
 	glGenTextures(1, &texHighlight);
 	glBindBuffer(GL_TEXTURE_BUFFER, bufHighlight);
@@ -26,6 +29,9 @@ void HalfedgeRenderer::init() {
 	glTexBuffer(GL_TEXTURE_BUFFER, GL_R32F, bufFilter);
 
 	// WTF ?
+	glActiveTexture(GL_TEXTURE0 + 2);
+	glBindTexture(GL_TEXTURE_BUFFER, texAttr);
+
 	glActiveTexture(GL_TEXTURE0 + 3);
 	glBindTexture(GL_TEXTURE_BUFFER, texHighlight);
 
@@ -35,7 +41,7 @@ void HalfedgeRenderer::init() {
 	glBindBuffer(GL_TEXTURE_BUFFER, 0);
 	
 	shader.use();
-	// shader.setInt("attrBuf", 2);
+	shader.setInt("attrBuf", 2);
 	shader.setInt("highlightBuf", 3);
 	shader.setInt("filterBuf", 4);
 
@@ -69,6 +75,9 @@ void HalfedgeRenderer::render(glm::vec3 &position) {
 
 	glBindVertexArray(VAO);
 
+	glActiveTexture(GL_TEXTURE0 + 2);
+	glBindTexture(GL_TEXTURE_BUFFER, texAttr);
+
 	glActiveTexture(GL_TEXTURE0 + 3);
 	glBindTexture(GL_TEXTURE_BUFFER, texHighlight);
 
@@ -90,7 +99,14 @@ void HalfedgeRenderer::clean() {
 	glDeleteVertexArrays(1, &VAO);
 	glDeleteBuffers(1, &VBO);
 
-	// TODO clean buffers, textures, unmap ptr...
+	glDeleteBuffers(1, &bufBary);
+	glDeleteBuffers(1, &bufAttr);
+	glDeleteTextures(1, &texAttr);
+	glDeleteBuffers(1, &bufHighlight);
+	glDeleteTextures(1, &texHighlight);
+	glDeleteBuffers(1, &bufFilter);
+	glDeleteTextures(1, &texFilter);
+	glBindBuffer(GL_TEXTURE_BUFFER, 0);
 
 	shader.clean();
 }
