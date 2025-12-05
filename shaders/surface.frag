@@ -2,6 +2,7 @@
 
 // Primitive indexation
 flat in int fragCornerIndex;
+flat in int fragCornerOff;
 flat in int fragFacetIndex;
 
 layout(location = 0) out vec4 FragColor;
@@ -51,6 +52,8 @@ uniform int meshIndex;
 
 flat in int surfaceType;
 
+uniform samplerBuffer nvertsPerFacetBuf;
+
 vec3 encode_id(int id) {
     int r = id & 0x000000FF;
     int g = (id & 0x0000FF00) >> 8;
@@ -75,14 +78,8 @@ vec4 getAttributeColor(int index) {
     return texture(fragColorMap, clamp(remapVal, 0., 1.));
 }
 
-void attributeCompute(inout vec3 col) {
-    if (colorMode != 1)
-        return;
-
-    vec4 attrCol = vec4(0.);
-
-    // Corner attribute
-    if (attrElement == 2 && isCornerVisible) {
+void showCornerAttributes(inout vec3 col) {
+    if (isCornerVisible) {
         // Which triangle vertex is the nearest ?
         // Use barycentric coordinates to get the closest point of the current fragment
         int curPointIdx = getCurrentPointIdx(fragBarycentric);
@@ -103,17 +100,134 @@ void attributeCompute(inout vec3 col) {
             // Point 1 => localVertex = 0
             // Point 2 => localVertex = 1
             curPointOff = -1;
+
+
         }
         
+        // Get number of vertex for facet
+        int nvertsPerFacet = surfaceType == 0 ? 3 : int(texelFetch(nvertsPerFacetBuf, fragFacetIndex).x);
+
         // Get the current corner index by using the "provoking" vertex corner index
         // plus the current point index
-        int cornerIdx = fragCornerIndex + curPointIdx + curPointOff;
-        attrCol = getAttributeColor(cornerIdx);
+        // int cornerIdx = fragCornerIndex + curPointIdx + curPointOff;
+        int cornerIdx = fragCornerOff + (fragCornerIndex + curPointIdx + curPointOff) % nvertsPerFacet;
+        vec4 attrCol = getAttributeColor(cornerIdx);
 
         // Check distance from point is lesser than 0.333 
         // (as we use bary coords: a value of 1. means fragment is on point, a value of 0. means the furthest)
         if (fragBarycentric[curPointIdx] > 0.666 /* hell number ! :japanese_ogre: */)
             col = vec3(attrCol);
+    } else {
+
+        
+        // Init corners colors
+        vec4 p0Col = vec4(0.);
+        vec4 p1Col = vec4(0.);
+        vec4 p2Col = vec4(0.);
+
+        if (surfaceType == 0) {
+            // Surface is a tri
+            p0Col = getAttributeColor(fragCornerIndex);
+            p1Col = getAttributeColor(fragCornerIndex + 1);
+            p2Col = getAttributeColor(fragCornerIndex + 2);
+
+        } else {
+            // Get number of vertex for facet
+            int nvertsPerFacet = int(texelFetch(nvertsPerFacetBuf, fragFacetIndex).x);
+
+            // Surface is a polygon, p0 is bary
+            // So color of bary is the average of the colors of all corners
+            p0Col = vec4(0.);
+            for (int lc = 0; lc < nvertsPerFacet; ++lc)
+                p0Col += getAttributeColor(fragCornerOff + (fragCornerIndex + lc) % nvertsPerFacet);
+
+            p0Col /= nvertsPerFacet;
+
+            p1Col = getAttributeColor(fragCornerOff + fragCornerIndex);
+            p2Col = getAttributeColor(fragCornerOff + ((fragCornerIndex + 1) % nvertsPerFacet));
+        }
+
+        // Compute color from barycentric coords
+        col = fragBarycentric.x * p0Col.xyz + fragBarycentric.y * p1Col.xyz + fragBarycentric.z * p2Col.xyz;
+    }
+}
+
+void attributeCompute(inout vec3 col) {
+    if (colorMode != 1)
+        return;
+
+    vec4 attrCol = vec4(0.);
+
+    // // Corner attribute
+    // if (attrElement == 2 && isCornerVisible) {
+    //     // Which triangle vertex is the nearest ?
+    //     // Use barycentric coordinates to get the closest point of the current fragment
+    //     int curPointIdx = getCurrentPointIdx(fragBarycentric);
+
+    //     int curPointOff = 0;
+    //     // Polygon case
+    //     if (surfaceType == 1) {
+    //         // In polygons, the point 0 is the barycenter
+    //         // we never want display any corner on it, so snap to other vertices
+    //         // Only the points 1 & 2 (y, z) components represent real corners
+    //         if (curPointIdx == 0) {
+    //             if (fragBarycentric.y > fragBarycentric.z)
+    //                 curPointIdx = 1;
+    //             else 
+    //                 curPointIdx = 2;
+    //         }
+    //         // In polygon
+    //         // Point 1 => localVertex = 0
+    //         // Point 2 => localVertex = 1
+    //         curPointOff = -1;
+
+
+    //     }
+        
+    //     // Get the current corner index by using the "provoking" vertex corner index
+    //     // plus the current point index
+    //     int cornerIdx = fragCornerIndex + curPointIdx + curPointOff;
+    //     attrCol = getAttributeColor(cornerIdx);
+
+    //     // Check distance from point is lesser than 0.333 
+    //     // (as we use bary coords: a value of 1. means fragment is on point, a value of 0. means the furthest)
+    //     if (fragBarycentric[curPointIdx] > 0.666 /* hell number ! :japanese_ogre: */)
+    //         col = vec3(attrCol);
+    // }
+    // else if (attrElement == 2) {
+
+    //     // Get number of vertex for facet
+    //     int nvertsPerFacet = int(texelFetch(nvertsPerFacetBuf, fragFacetIndex).x);
+        
+    //     // Init corners colors
+    //     vec4 p0Col = vec4(0.);
+    //     vec4 p1Col = vec4(0.);
+    //     vec4 p2Col = vec4(0.);
+
+    //     if (surfaceType == 0) {
+    //         // Surface is a tri
+    //         p0Col = getAttributeColor(fragCornerIndex);
+    //         p1Col = getAttributeColor(fragCornerIndex + 1);
+    //         p2Col = getAttributeColor(fragCornerIndex + 2);
+
+    //     } else {
+    //         // Surface is a polygon, p0 is bary
+    //         // So color of bary is the average of the colors of all corners
+    //         p0Col = vec4(0.);
+    //         for (int lc = 0; lc < nvertsPerFacet; ++lc)
+    //             p0Col += getAttributeColor(fragCornerIndex + lc);
+
+    //         p0Col /= nvertsPerFacet;
+
+    //         p1Col = getAttributeColor(fragCornerIndex);
+    //         p2Col = getAttributeColor(fragCornerIndex + 1);
+    //     }
+
+    //     // Compute color from barycentric coords
+    //     col = fragBarycentric.x * p0Col.xyz + fragBarycentric.y * p1Col.xyz + fragBarycentric.z * p2Col.xyz;
+    // }
+    if (attrElement == 2) {
+        showCornerAttributes(col);
     }
     // Cell facet attribute
     else if (attrElement == 8) {

@@ -14,6 +14,7 @@ void PolyRenderer::init() {
 	sl::createTBO(bufAttr, texAttr, 2);
 	sl::createTBO(bufHighlight, texHighlight, 3);
 	sl::createTBO(bufFilter, texFilter, 4);
+	sl::createTBO(bufNVertsPerFacet, texNVertsPerFacet, 5);
 	
 	glActiveTexture(GL_TEXTURE0 + 2);
 	glBindTexture(GL_TEXTURE_BUFFER, texAttr);
@@ -24,12 +25,16 @@ void PolyRenderer::init() {
 	glActiveTexture(GL_TEXTURE0 + 4);
 	glBindTexture(GL_TEXTURE_BUFFER, texFilter);
 
+	glActiveTexture(GL_TEXTURE0 + 5);
+	glBindTexture(GL_TEXTURE_BUFFER, texNVertsPerFacet);
+
 	glBindBuffer(GL_TEXTURE_BUFFER, 0);
 
 	shader.use();
 	shader.setInt("attributeData", 2);
 	shader.setInt("highlightBuf", 3);
 	shader.setInt("filterBuf", 4);
+	shader.setInt("nvertsPerFacetBuf", 5);
 
 	#ifdef _DEBUG
 	std::cout << "vertex attrib setup..." << std::endl;
@@ -52,6 +57,10 @@ void PolyRenderer::init() {
 	GLuint cornerIndexLoc = glGetAttribLocation(shader.id, "cornerIndex");
 	glEnableVertexAttribArray(cornerIndexLoc);
 	glVertexAttribIPointer(cornerIndexLoc, 1, GL_INT, sizeof(Vertex), (void*)offsetof(Vertex, cornerIndex));
+
+	GLuint cornerOffLoc = glGetAttribLocation(shader.id, "cornerOff");
+	glEnableVertexAttribArray(cornerOffLoc);
+	glVertexAttribIPointer(cornerOffLoc, 1, GL_INT, sizeof(Vertex), (void*)offsetof(Vertex, cornerOff));
 
 	GLuint facetIndexLoc = glGetAttribLocation(shader.id, "facetIndex");
 	glEnableVertexAttribArray(facetIndexLoc);
@@ -88,11 +97,14 @@ void PolyRenderer::init() {
 
 void PolyRenderer::push() {
  
+	std::vector<float> nVertsPerFacet(_m.nfacets());
+
 	// Compute number of triangles needed to represent a facet
 	int ntri = 0;
 	for (auto &f : _m.iter_facets()) {
 		int nvertsFacet = f.size();
 		ntri += nvertsFacet;
+		nVertsPerFacet[f] = static_cast<float>(nvertsFacet);
 	}
 	nverts = 3 * ntri /* 3 points per tri, n tri per facet */;
 
@@ -128,7 +140,7 @@ void PolyRenderer::push() {
 			vec3 verts[3] = {vec3(bary.x, bary.y, bary.z) , f.vertex(lv).pos(), f.vertex((lv + 1) % nv).pos()};
 
 			// Compute first corner index of the triangle
-			int firstCornerIdx = cornerOff + lv % f.size();
+			int firstCornerIdx = cornerOff + lv;
 
 			for (int i = 0; i < 3; ++i) {
 
@@ -142,7 +154,9 @@ void PolyRenderer::push() {
 				vertices.push_back({
 					.vertexIndex = v, // useless i think
 					.localIndex = i,
-					.cornerIndex = firstCornerIdx,
+					// .cornerIndex = firstCornerIdx,
+					.cornerIndex = lv,
+					.cornerOff = cornerOff,
 					.facetIndex = f,
 					.p = glm::vec3(p.x, p.y, p.z),
 					.p0 = bary,
@@ -158,6 +172,9 @@ void PolyRenderer::push() {
 
 	PolyRenderer::push(vertices);
 
+	// Write buffer
+	glBindBuffer(GL_TEXTURE_BUFFER, bufNVertsPerFacet);
+	glBufferData(GL_TEXTURE_BUFFER, nVertsPerFacet.size() * sizeof(float), nVertsPerFacet.data(), GL_STATIC_DRAW);
 }
 
 void PolyRenderer::render(glm::vec3 &position) {
@@ -181,6 +198,9 @@ void PolyRenderer::render(glm::vec3 &position) {
 
 	glActiveTexture(GL_TEXTURE0 + 4);
 	glBindTexture(GL_TEXTURE_BUFFER, texFilter);
+
+	glActiveTexture(GL_TEXTURE0 + 5);
+	glBindTexture(GL_TEXTURE_BUFFER, texNVertsPerFacet);
 
 	glm::mat4 model = glm::mat4(1.0f);
 	model = glm::translate(model, position);
@@ -217,6 +237,8 @@ void PolyRenderer::clean() {
 	glDeleteTextures(1, &texHighlight);
 	glDeleteBuffers(1, &bufFilter);
 	glDeleteTextures(1, &texFilter);
+	glDeleteBuffers(1, &bufNVertsPerFacet);
+	glDeleteTextures(1, &texNVertsPerFacet);
 	glBindBuffer(GL_TEXTURE_BUFFER, 0);
 
 	// Clean shader

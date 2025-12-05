@@ -24,6 +24,7 @@ struct PolyRenderer : public IRenderer {
 		int vertexIndex;
 		int localIndex;
 		int cornerIndex;
+		int cornerOff;
 		int facetIndex;
 		glm::vec3 p;
 		glm::vec3 p0;
@@ -61,6 +62,9 @@ struct PolyRenderer : public IRenderer {
 	}
 
 	private:
+
+	unsigned int bufNVertsPerFacet; 
+	unsigned int texNVertsPerFacet;
 
 	void doLoadState(json &j) override {}
 	void doSaveState(json &j) const override {}

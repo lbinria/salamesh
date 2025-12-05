@@ -30,6 +30,7 @@ flat out vec3 fragViewDir;
 
 out vec3 fragBarycentric;
 flat out int fragCornerIndex;
+flat out int fragCornerOff;
 
 
 out vec3 fragWorldPos;
@@ -107,6 +108,7 @@ void main()
    fragBarycentric = vec3(0.);
    fragBarycentric[localIndex] = 1.;
    fragCornerIndex = cornerIndex;
+   fragCornerOff = facetIndex * 3;
 
    fragViewDir = -vec3(view[0][2], view[1][2], view[2][2]);
 

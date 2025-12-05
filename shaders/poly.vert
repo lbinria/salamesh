@@ -9,7 +9,8 @@ layout (location = 4) in vec3 n;
 // Indexes of the primitive this vertices belongs to
 layout (location = 6) in int localIndex;
 layout (location = 7) in int cornerIndex;
-layout (location = 8) in int facetIndex;
+layout (location = 8) in int cornerOff;
+layout (location = 9) in int facetIndex;
 
 uniform mat4 model;
 
@@ -31,6 +32,7 @@ flat out vec3 fragViewDir;
 
 out vec3 fragBarycentric;
 flat out int fragCornerIndex;
+flat out int fragCornerOff;
 
 
 out vec3 fragWorldPos;
@@ -39,6 +41,8 @@ out vec3 fragWorldPos;
 uniform float meshShrink;
 
 flat out int surfaceType; /* 0 => triangle, 1 => polygon */
+
+
 
 void main()
 {
@@ -97,6 +101,7 @@ void main()
    fragBarycentric = vec3(0.);
    fragBarycentric[localIndex] = 1.;
    fragCornerIndex = cornerIndex;
+   fragCornerOff = cornerOff;
 
    fragBary = p0;
    fragNormal = n;
