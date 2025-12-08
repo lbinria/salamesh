@@ -16,6 +16,7 @@ void HalfedgeRenderer::init() {
 	sl::createTBO(bufFilter, texFilter, 4);
 
 	// // WTF ?
+	// I comment below, it seems works... if something goes wrong uncomment
 	// glActiveTexture(GL_TEXTURE0 + 2);
 	// glBindTexture(GL_TEXTURE_BUFFER, texAttr);
 

@@ -38,29 +38,12 @@ void SurfaceRenderer::init() {
 	glBindVertexArray(VAO);
 	glBindBuffer(GL_ARRAY_BUFFER, VBO);
 
-	GLuint p0Loc = glGetAttribLocation(shader.id, "p0");
-	glEnableVertexAttribArray(p0Loc);
-	glVertexAttribPointer(p0Loc, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)offsetof(Vertex, p0));
-
-	GLuint p1Loc = glGetAttribLocation(shader.id, "p1");
-	glEnableVertexAttribArray(p1Loc);
-	glVertexAttribPointer(p1Loc, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)offsetof(Vertex, p1));
-
-	GLuint p2Loc = glGetAttribLocation(shader.id, "p2");
-	glEnableVertexAttribArray(p2Loc);
-	glVertexAttribPointer(p2Loc, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)offsetof(Vertex, p2));
-
-	GLuint facetIndexLoc = glGetAttribLocation(shader.id, "facetIndex");
-	glEnableVertexAttribArray(facetIndexLoc);
-	glVertexAttribIPointer(facetIndexLoc, 1, GL_INT, sizeof(Vertex), (void*)offsetof(Vertex, facetIndex));
-
-	GLuint localIndexLoc = glGetAttribLocation(shader.id, "localIndex");
-	glEnableVertexAttribArray(localIndexLoc);
-	glVertexAttribIPointer(localIndexLoc, 1, GL_INT, sizeof(Vertex), (void*)offsetof(Vertex, localIndex));
-
-	GLuint cornerIndexLoc = glGetAttribLocation(shader.id, "cornerIndex");
-	glEnableVertexAttribArray(cornerIndexLoc);
-	glVertexAttribIPointer(cornerIndexLoc, 1, GL_INT, sizeof(Vertex), (void*)offsetof(Vertex, cornerIndex));
+	sl::createVBOVec3(shader.id, "p0", sizeof(Vertex), (void*)offsetof(Vertex, p0));
+	sl::createVBOVec3(shader.id, "p1", sizeof(Vertex), (void*)offsetof(Vertex, p1));
+	sl::createVBOVec3(shader.id, "p2", sizeof(Vertex), (void*)offsetof(Vertex, p2));
+	sl::createVBOInteger(shader.id, "facetIndex", sizeof(Vertex), (void*)offsetof(Vertex, facetIndex));
+	sl::createVBOInteger(shader.id, "localIndex", sizeof(Vertex), (void*)offsetof(Vertex, localIndex));
+	sl::createVBOInteger(shader.id, "cornerIndex", sizeof(Vertex), (void*)offsetof(Vertex, cornerIndex));
 	
 	std::chrono::steady_clock::time_point end = std::chrono::steady_clock::now();
 

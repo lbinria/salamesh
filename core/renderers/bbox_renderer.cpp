@@ -1,4 +1,5 @@
 #include "bbox_renderer.h"
+#include "../../helpers/graphic_api.h"
 #include "../helpers.h"
 
 void BBoxRenderer::init() {
@@ -12,9 +13,7 @@ void BBoxRenderer::init() {
 	shader.use();
 
 	// VBO
-	GLuint pLoc = glGetAttribLocation(shader.id, "p");
-	glEnableVertexAttribArray(pLoc);
-	glVertexAttribPointer(pLoc, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)offsetof(Vertex, p));
+	sl::createVBOVec3(shader.id, "p", sizeof(Vertex), (void*)offsetof(Vertex, p));
 
 }
 
