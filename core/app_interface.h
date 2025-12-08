@@ -9,7 +9,7 @@ struct IApp {
 
     virtual void screenshot(const std::string& filename) = 0;
 
-    virtual int addModel(std::string name) = 0;
+    virtual int addModel(std::string name, MeshType type) = 0;
     virtual void removeModel(int idx) = 0;
     virtual bool removeModel(std::string name) = 0;
     virtual bool loadModel(const std::string& filename) = 0;

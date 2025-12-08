@@ -552,6 +552,26 @@ void App::clean() {
 		glDeleteTextures(1, &colormaps2D[i]);
 }
 
+std::unique_ptr<Model> App::makeModel(MeshType type) {
+	switch (type)
+	{
+	case MeshType::TRI_MESH:
+		return std::make_unique<TriModel>();
+	case MeshType::QUAD_MESH:
+		return std::make_unique<QuadModel>();
+	case MeshType::POLYGON_MESH:
+		return std::make_unique<PolyModel>();
+	case MeshType::TET_MESH:
+		return std::make_unique<TetModel>();
+	case MeshType::HEX_MESH:
+		return std::make_unique<HexModel>();
+	case MeshType::POLYLINE_MESH:
+	case MeshType::PYRAMID_MESH:
+	case MeshType::PRISM_MESH:
+		throw std::runtime_error("makeModel " + std::to_string(type) + " not implemented.");
+	}
+}
+
 bool App::loadModel(const std::string& filename) {
 
 	// TODO please do something more intelligent here, should deduce mesh type !
@@ -631,9 +651,9 @@ void App::focus(int modelIdx) {
 	getCamera().lookAtBox(model->bbox());
 }
 
-// TODO add model, can be other model than HexModel & must recompute far plane on loading
-int App::addModel(std::string name) {
-	auto model = std::make_unique<HexModel>();
+// TODO add model must recompute far plane on loading
+int App::addModel(std::string name, MeshType type) {
+	auto model = makeModel(type);
 	model->setName(name);
 	model->setMeshIndex(models.size());
 

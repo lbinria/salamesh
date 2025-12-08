@@ -73,8 +73,8 @@ namespace bindings {
 
 			app_type.set_function("load_model", &IApp::loadModel);
 			
-			app_type.set_function("add_model", [](IApp &self, std::string name) {
-				return self.addModel(name) + 1;
+			app_type.set_function("add_model", [](IApp &self, std::string name, int type) {
+				return self.addModel(name, (MeshType)type) + 1;
 			});
 
 			app_type.set_function("remove_model", sol::overload(

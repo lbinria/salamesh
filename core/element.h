@@ -1,6 +1,18 @@
 #pragma once 
 #include <string>
 
+enum MeshType {
+	POLYLINE_MESH,
+	TRI_MESH,
+	QUAD_MESH,
+	POLYGON_MESH,
+	TET_MESH,
+	HEX_MESH,
+	PYRAMID_MESH,
+	PRISM_MESH,
+	HYBRID_MESH,
+};
+
 enum ElementKind {
 	POINTS_ELT = 1,
 	CORNERS_ELT = 2,
