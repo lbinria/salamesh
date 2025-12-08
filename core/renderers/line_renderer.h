@@ -1,17 +1,16 @@
 #pragma once
 
 #include "renderer.h"
-#include "color_mode.h"
-
-#include "shader.h"
+#include "../color_mode.h"
+#include "../shader.h"
 
 #include <vector>
 #include <ultimaille/all.h>
 
-#include "../include/json.hpp"
+#include "../../include/json.hpp"
 using json = nlohmann::json;
 
-#include "../include/glm/glm.hpp"
+#include "../../include/glm/glm.hpp"
 
 using namespace UM;
 

@@ -1,6 +1,6 @@
 #include "halfedge_renderer.h"
-#include "../helpers/graphic_api.h"
-#include "helpers.h"
+#include "../../helpers/graphic_api.h"
+#include "../helpers.h"
 
 void HalfedgeRenderer::init() {
 

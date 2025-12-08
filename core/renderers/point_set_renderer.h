@@ -8,11 +8,11 @@ using json = nlohmann::json;
 
 #include <ultimaille/all.h>
 
-#include "color_mode.h"
+#include "../color_mode.h"
 
 #include "renderer.h"
 
-#include "shader.h"
+#include "../shader.h"
 
 using namespace UM;
 

@@ -6,16 +6,16 @@
 
 #include <ultimaille/all.h>
 
-#include "../include/glm/glm.hpp"
-#include "../include/glm/gtc/matrix_transform.hpp"
-#include "../include/glm/gtc/type_ptr.hpp"
+#include "../../include/glm/glm.hpp"
+#include "../../include/glm/gtc/matrix_transform.hpp"
+#include "../../include/glm/gtc/type_ptr.hpp"
 
 #include "../include/json.hpp"
 using json = nlohmann::json;
 
 #include "renderer.h"
-#include "model.h"
-#include "element.h"
+#include "../model.h"
+#include "../element.h"
 using namespace UM;
 
 struct SurfaceRenderer : public IRenderer {

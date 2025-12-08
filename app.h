@@ -33,8 +33,6 @@
 
 #include "core/shader.h"
 
-#include "core/hex_renderer.h"
-
 #include "core/tri_model.h"
 #include "core/quad_model.h"
 #include "core/tet_model.h"

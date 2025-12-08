@@ -2,10 +2,10 @@
 
 #include "element.h"
 #include "attribute.h"
-#include "renderer.h"
+#include "renderers/renderer.h"
 #include "color_mode.h"
-#include "point_set_renderer.h"
-#include "halfedge_renderer.h"
+#include "renderers/point_set_renderer.h"
+#include "renderers/halfedge_renderer.h"
 
 #include "../include/glm/glm.hpp"
 #include "../include/json.hpp"

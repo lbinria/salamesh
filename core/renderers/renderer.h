@@ -1,12 +1,12 @@
 #pragma once
 
-#include "color_mode.h"
-#include "element.h"
-#include "shader.h"
-#include "attribute.h"
-#include "../include/glm/glm.hpp"
+#include "../color_mode.h"
+#include "../element.h"
+#include "../shader.h"
+#include "../attribute.h"
+#include "../../include/glm/glm.hpp"
 
-#include "../include/json.hpp"
+#include "../../include/json.hpp"
 using json = nlohmann::json;
 
 

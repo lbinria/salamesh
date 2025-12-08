@@ -20,23 +20,25 @@ set(SOURCES
     attribute.h
     element.h
     input_states.h 
-    renderer.h
     model.h
     camera.h
 
     shader.cpp shader.h 
-    line_renderer.cpp line_renderer.h
-    point_set_renderer.cpp point_set_renderer.h
-    halfedge_renderer.cpp halfedge_renderer.h
-    bbox_renderer.cpp bbox_renderer.h
-    clipping_renderer.cpp clipping_renderer.h
-    surface_renderer.cpp surface_renderer.h
-    volume_renderer.cpp volume_renderer.h
-    tri_renderer.cpp tri_renderer.h
-    quad_renderer.cpp quad_renderer.h
-    poly_renderer.cpp poly_renderer.h
-    tet_renderer.cpp tet_renderer.h
-    hex_renderer.cpp hex_renderer.h
+
+    renderers/renderer.h
+    renderers/line_renderer.cpp renderers/line_renderer.h
+    renderers/point_set_renderer.cpp renderers/point_set_renderer.h
+    renderers/halfedge_renderer.cpp renderers/halfedge_renderer.h
+    renderers/bbox_renderer.cpp renderers/bbox_renderer.h
+    renderers/clipping_renderer.cpp renderers/clipping_renderer.h
+    renderers/surface_renderer.cpp renderers/surface_renderer.h
+    renderers/volume_renderer.cpp renderers/volume_renderer.h
+    renderers/tri_renderer.cpp renderers/tri_renderer.h
+    renderers/quad_renderer.cpp renderers/quad_renderer.h
+    renderers/poly_renderer.cpp renderers/poly_renderer.h
+    renderers/tet_renderer.cpp renderers/tet_renderer.h
+    renderers/hex_renderer.cpp renderers/hex_renderer.h
+
     tri_model.cpp tri_model.h
     quad_model.cpp quad_model.h
     poly_model.cpp poly_model.h

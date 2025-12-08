@@ -1,5 +1,5 @@
 #include "line_renderer.h"
-#include "helpers.h"
+#include "../helpers.h"
 
 void LineRenderer::init() {
 

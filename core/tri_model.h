@@ -4,11 +4,11 @@
 #include <ultimaille/all.h>
 #include <string>
 #include "model.h"
-#include "point_set_renderer.h"
-#include "halfedge_renderer.h"
-#include "tri_renderer.h"
-#include "bbox_renderer.h"
-#include "clipping_renderer.h"
+#include "renderers/point_set_renderer.h"
+#include "renderers/halfedge_renderer.h"
+#include "renderers/tri_renderer.h"
+#include "renderers/bbox_renderer.h"
+#include "renderers/clipping_renderer.h"
 #include "color_mode.h"
 #include "helpers.h"
 

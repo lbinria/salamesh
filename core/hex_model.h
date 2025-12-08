@@ -4,11 +4,11 @@
 #include <ultimaille/all.h>
 #include <string>
 #include "model.h"
-#include "point_set_renderer.h"
-#include "halfedge_renderer.h"
-#include "hex_renderer.h"
-#include "bbox_renderer.h"
-#include "clipping_renderer.h"
+#include "renderers/point_set_renderer.h"
+#include "renderers/halfedge_renderer.h"
+#include "renderers/hex_renderer.h"
+#include "renderers/bbox_renderer.h"
+#include "renderers/clipping_renderer.h"
 
 #include "color_mode.h"
 #include "helpers.h"
@@ -68,37 +68,6 @@ struct HexModel final : public Model {
 
         return {min, max};
     }
-
-    // // TODO filter anything else than cell !
-    // void setFilter(int idx, bool filter) override {
-    //     _meshRenderer->setFilter(idx, filter);
-
-    //     // TODO it works but... not very efficient !
-    //     Volume::Cell c(_m, idx);
-    //     for (int lc = 0; lc < 8; ++lc) {
-    //         auto corner = c.corner(lc);
-    //         auto v = corner.vertex();
-    //         // Retrieve all cells attached to this point to see whether filtered
-    //         bool allFiltered = true;
-    //         // #pragma omp parallel for
-    //         for (int i = 0; i < _m.cells.size(); ++i) {
-    //             if (_m.cells[i] != v)
-    //                 continue;
-                
-    //             int ci = i / 8;
-    //             if (_meshRenderer->getFilterPtr()[ci] <= 0) {
-    //                 allFiltered = false;
-    //                 break;
-    //             }
-    //         }
-
-    //         _pointSetRenderer.setFilter(v, allFiltered);
-    //         // _pointSetRenderer.setHighlight(v, 0.1f);
-    //     }
-
-        
-    // }
-
 
     // TODO its the same as tet_model, refact !
     void updateLayer(IRenderer::Layer layer) {
