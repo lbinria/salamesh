@@ -339,12 +339,12 @@ struct Model {
     ElementKind umAttributeKind2ElementKind(AttributeBase::TYPE kind) {
         switch (kind) {
             case AttributeBase::POINTS: return ElementKind::POINTS_ELT;
-            case AttributeBase::EDGES: return ElementKind::EDGES;
-            case AttributeBase::FACETS: return ElementKind::FACETS;
-            case AttributeBase::CORNERS: return ElementKind::CORNERS;
-            case AttributeBase::CELLS: return ElementKind::CELLS;
-            case AttributeBase::CELLFACETS: return ElementKind::CELL_FACETS;
-            case AttributeBase::CELLCORNERS: return ElementKind::CELL_CORNERS;
+            case AttributeBase::EDGES: return ElementKind::EDGES_ELT;
+            case AttributeBase::FACETS: return ElementKind::FACETS_ELT;
+            case AttributeBase::CORNERS: return ElementKind::CORNERS_ELT;
+            case AttributeBase::CELLS: return ElementKind::CELLS_ELT;
+            case AttributeBase::CELLFACETS: return ElementKind::CELL_FACETS_ELT;
+            case AttributeBase::CELLCORNERS: return ElementKind::CELL_CORNERS_ELT;
             default: throw std::runtime_error("Unknown attribute kind for binding: " + std::to_string(kind));
         }
     }
@@ -359,11 +359,11 @@ struct Model {
     //             return bindAttr<T>(name, EdgeAttribute<T>());
     //         case ElementKind::FACETS:
     //             return bindAttr<T>(name, FacetAttribute<T>());
-    //         case ElementKind::CELL_FACETS:
+    //         case ElementKind::CELL_FACETS_ELT:
     //             return bindAttr<T>(name, CellFacetAttribute<T>());
     //         case ElementKind::CORNERS:
     //             return bindAttr<T>(name, CornerAttribute<T>());
-    //         case ElementKind::CELL_CORNERS:
+    //         case ElementKind::CELL_CORNERS_ELT:
     //             return bindAttr<T>(name, CellCornerAttribute<T>());
     //         case ElementKind::CELLS:
     //             return bindAttr<T>(name, CellAttribute<T>());
@@ -441,9 +441,9 @@ struct Model {
 
     void unsetHighlights() {
         // Unset all
-        unsetHighlight(ElementKind::CELLS);
-        unsetHighlight(ElementKind::FACETS);
-        unsetHighlight(ElementKind::EDGES);
+        unsetHighlight(ElementKind::CELLS_ELT);
+        unsetHighlight(ElementKind::FACETS_ELT);
+        unsetHighlight(ElementKind::EDGES_ELT);
         unsetHighlight(ElementKind::POINTS_ELT);
     }
 
@@ -454,12 +454,12 @@ struct Model {
     void unsetFilters() {
         // Unset all
         unsetFilter(ElementKind::POINTS_ELT);
-        unsetFilter(ElementKind::CORNERS);
-        unsetFilter(ElementKind::EDGES);
-        unsetFilter(ElementKind::FACETS);
-        unsetFilter(ElementKind::CELLS);
-        unsetFilter(ElementKind::CELL_FACETS);
-        unsetFilter(ElementKind::CELL_CORNERS);
+        unsetFilter(ElementKind::CORNERS_ELT);
+        unsetFilter(ElementKind::EDGES_ELT);
+        unsetFilter(ElementKind::FACETS_ELT);
+        unsetFilter(ElementKind::CELLS_ELT);
+        unsetFilter(ElementKind::CELL_FACETS_ELT);
+        unsetFilter(ElementKind::CELL_CORNERS_ELT);
     }
 
     void setLayer(ElementKind kind, IRenderer::Layer layer) {
@@ -478,19 +478,19 @@ struct Model {
         // Prepare a vector of zeros of the size of the element kind to unset
         std::vector<float> zeros;
         switch (kind) {
-            case ElementKind::CELLS: {
+            case ElementKind::CELLS_ELT: {
                 zeros.resize(ncells(), 0.f);
                 break;
             }
-            case ElementKind::CELL_FACETS:
-            case ElementKind::FACETS: {
+            case ElementKind::CELL_FACETS_ELT:
+            case ElementKind::FACETS_ELT: {
                 zeros.resize(nfacets(), 0.f);
                 break;
             }
-            case ElementKind::EDGES: {
+            case ElementKind::EDGES_ELT: {
                 // TODO implement nedges()
                 break;
-            } case ElementKind::CORNERS: {
+            } case ElementKind::CORNERS_ELT: {
                 zeros.resize(ncorners(), 0.f);
                 break;
             }

@@ -48,7 +48,7 @@ struct PolyRenderer : public IRenderer {
 
 	void push() override;
 
-	int getRenderElementKind() override { return ElementKind::FACETS | ElementKind::CORNERS; }
+	int getRenderElementKind() override { return ElementKind::FACETS_ELT | ElementKind::CORNERS_ELT; }
 
 
 	protected:

@@ -86,7 +86,7 @@ struct TriModel final : public Model {
                 data = layerAttr.ptr->data;
                 break;
             }
-            case ElementKind::CORNERS: 
+            case ElementKind::CORNERS_ELT: 
             {
                 CornerAttribute<float> layerAttr;
                 if (!layerAttr.bind(selectedAttr.attrName, _surfaceAttributes, _m))
@@ -95,7 +95,7 @@ struct TriModel final : public Model {
                 data = layerAttr.ptr->data;
                 break;
             }
-            case ElementKind::FACETS:
+            case ElementKind::FACETS_ELT:
             {
                 FacetAttribute<float> layerAttr;
                 if (!layerAttr.bind(selectedAttr.attrName, _surfaceAttributes, _m))

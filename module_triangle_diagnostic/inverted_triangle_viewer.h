@@ -139,7 +139,7 @@ struct InvertedTriangleViewer : public Component {
 		}
 
 		nInverted = n;
-		triModel.setHighlight(ElementKind::CORNERS);
+		triModel.setHighlight(ElementKind::CORNERS_ELT);
 
 	}
 

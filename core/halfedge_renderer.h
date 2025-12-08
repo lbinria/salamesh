@@ -33,7 +33,7 @@ struct HalfedgeRenderer : public IRenderer {
 	void render(glm::vec3 &position);
 	void clean();
 
-	int getRenderElementKind() override { return ElementKind::EDGES | ElementKind::CORNERS; }
+	int getRenderElementKind() override { return ElementKind::EDGES_ELT | ElementKind::CORNERS_ELT; }
 
 	// Rename to getThickness
 	float getEdgeSize() const {

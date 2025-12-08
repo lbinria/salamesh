@@ -1,15 +1,14 @@
 #pragma once 
 #include <string>
 
-// TODO rename other adding _ELT
 enum ElementKind {
 	POINTS_ELT = 1,
-	CORNERS = 2,
-	EDGES = 4,
-	FACETS = 8,
-	CELLS = 16,
-	CELL_FACETS = 32,
-	CELL_CORNERS = 64
+	CORNERS_ELT = 2,
+	EDGES_ELT = 4,
+	FACETS_ELT = 8,
+	CELLS_ELT = 16,
+	CELL_FACETS_ELT = 32,
+	CELL_CORNERS_ELT = 64
 };
 
 enum ElementType {
@@ -22,12 +21,12 @@ enum ElementType {
 static std::string elementKindToString(ElementKind e) {
 	switch (e) {
 		case ElementKind::POINTS_ELT: return "points";
-		case ElementKind::EDGES: return "edges";
-		case ElementKind::FACETS: return "facets";
-		case ElementKind::CELL_FACETS: return "cell_facets";
-		case ElementKind::CORNERS: return "corners";
-		case ElementKind::CELL_CORNERS: return "cell_corners";
-		case ElementKind::CELLS: return "cells";
+		case ElementKind::EDGES_ELT: return "edges";
+		case ElementKind::FACETS_ELT: return "facets";
+		case ElementKind::CELL_FACETS_ELT: return "cell_facets";
+		case ElementKind::CORNERS_ELT: return "corners";
+		case ElementKind::CELL_CORNERS_ELT: return "cell_corners";
+		case ElementKind::CELLS_ELT: return "cells";
 		default: return "unknown";
 	}
 }

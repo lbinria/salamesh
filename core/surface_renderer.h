@@ -44,7 +44,7 @@ struct SurfaceRenderer : public IRenderer {
 
 	virtual void push() override = 0;
 
-	int getRenderElementKind() override { return ElementKind::FACETS | ElementKind::CORNERS; }
+	int getRenderElementKind() override { return ElementKind::FACETS_ELT | ElementKind::CORNERS_ELT; }
 
 
 	protected:

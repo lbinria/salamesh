@@ -22,10 +22,10 @@ bool QuadModel::load(const std::string path) {
 		addAttr(ElementKind::POINTS_ELT, a);
 	}
 	for (auto &a : _surfaceAttributes.facets) {
-		addAttr(ElementKind::FACETS, a);
+		addAttr(ElementKind::FACETS_ELT, a);
 	}
 	for (auto &a : _surfaceAttributes.corners) {
-		addAttr(ElementKind::CORNERS, a);
+		addAttr(ElementKind::CORNERS_ELT, a);
 	}
 
 	init();
@@ -54,9 +54,9 @@ void QuadModel::saveAs(const std::string path) const {
 
 		if (kind == ElementKind::POINTS_ELT) {
 			point_attrs.push_back(NamedContainer(name, container));
-		} else if (kind == ElementKind::FACETS) {
+		} else if (kind == ElementKind::FACETS_ELT) {
 			facet_attrs.push_back(NamedContainer(name, container));
-		} else if (kind == ElementKind::CORNERS) {
+		} else if (kind == ElementKind::CORNERS_ELT) {
 			corner_attrs.push_back(NamedContainer(name, container));
 		}
 	}

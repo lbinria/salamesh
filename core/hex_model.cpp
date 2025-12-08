@@ -24,13 +24,13 @@ bool HexModel::load(const std::string path) {
 		addAttr(ElementKind::POINTS_ELT, a);
 	}
 	for (auto a : _volumeAttributes.cell_corners) {
-		addAttr(ElementKind::CELL_CORNERS, a);
+		addAttr(ElementKind::CELL_CORNERS_ELT, a);
 	}
 	for (auto a : _volumeAttributes.cell_facets) {
-		addAttr(ElementKind::CELL_FACETS, a);
+		addAttr(ElementKind::CELL_FACETS_ELT, a);
 	}
 	for (auto a : _volumeAttributes.cells) {
-		addAttr(ElementKind::CELLS, a);
+		addAttr(ElementKind::CELLS_ELT, a);
 	}
 
 	init();
@@ -60,11 +60,11 @@ void HexModel::saveAs(const std::string path) const {
 
 		if (kind == ElementKind::POINTS_ELT) {
 			point_attrs.push_back(NamedContainer(name, container));
-		} else if (kind == ElementKind::CELL_CORNERS) {
+		} else if (kind == ElementKind::CELL_CORNERS_ELT) {
 			cell_corner_attrs.push_back(NamedContainer(name, container));
-		} else if (kind == ElementKind::CELL_FACETS) {
+		} else if (kind == ElementKind::CELL_FACETS_ELT) {
 			cell_facet_attrs.push_back(NamedContainer(name, container));
-		} else if (kind == ElementKind::CELLS) {
+		} else if (kind == ElementKind::CELLS_ELT) {
 			cell_attrs.push_back(NamedContainer(name, container));
 		}
 	}

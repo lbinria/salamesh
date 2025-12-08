@@ -110,13 +110,13 @@ struct InputState {
 		{
 		case ElementKind::POINTS_ELT:
 			return vertex;
-		case ElementKind::EDGES:
+		case ElementKind::EDGES_ELT:
 			return edge;
-		case ElementKind::FACETS:
+		case ElementKind::FACETS_ELT:
 			return facet;
-		case ElementKind::CELLS:
+		case ElementKind::CELLS_ELT:
 			return cell;
-		case ElementKind::CELL_FACETS:
+		case ElementKind::CELL_FACETS_ELT:
 			return facet;
 		default:
 			throw new std::runtime_error("Unsupported primitive state: " + elementKindToString(kind));

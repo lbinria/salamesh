@@ -110,7 +110,7 @@ struct TetModel final : public Model {
         std::vector<float> data;
 
         switch (selectedAttr.elementKind) {
-            case ElementKind::CELLS:
+            case ElementKind::CELLS_ELT:
             {
                 CellAttribute<float> layerAttr;
                 if (!layerAttr.bind(selectedAttr.attrName, _volumeAttributes, _m))
@@ -119,7 +119,7 @@ struct TetModel final : public Model {
                 data = layerAttr.ptr->data;
                 break;
             }
-            case ElementKind::CELL_FACETS:
+            case ElementKind::CELL_FACETS_ELT:
             {
                 CellFacetAttribute<float> layerAttr;
                 if (!layerAttr.bind(selectedAttr.attrName, _volumeAttributes, _m))

@@ -301,7 +301,7 @@ struct App : public IApp {
     std::vector<std::unique_ptr<Component>> components;
 	InputState st;
 
-    // ElementKind pickMode = ElementKind::CELLS;
+    // ElementKind pickMode = ElementKind::CELLS_ELT;
 
 
     // TODO make private

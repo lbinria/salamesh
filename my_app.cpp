@@ -547,7 +547,7 @@ void MyApp::draw_gui() {
 
 	// if (ImGui::Button("Highlight cells")) {
 	// 	auto &model = getCurrentModel().as<HexModel>();
-	// 	model.setHighlightAttr("_highlight", ElementKind::CELLS);
+	// 	model.setHighlightAttr("_highlight", ElementKind::CELLS_ELT);
 	// 	CellAttribute<float> hl;
 	// 	hl.bind("_highlight", model.getVolumeAttributes(), model.getHexahedra());
 
@@ -563,7 +563,7 @@ void MyApp::draw_gui() {
 
 	// if (ImGui::Button("Highlight facets")) {
 	// 	auto &model = getCurrentModel().as<HexModel>();
-	// 	model.setHighlightAttr("_highlight", ElementKind::CELL_FACETS);
+	// 	model.setHighlightAttr("_highlight", ElementKind::CELL_FACETS_ELT);
 	// 	CellFacetAttribute<float> hl;
 	// 	hl.bind("_highlight", model.getVolumeAttributes(), model.getHexahedra());
 
@@ -611,7 +611,7 @@ void MyApp::draw_gui() {
 	// 		// model.updateHighlightAt(c);
 	// 	}
 
-	// 	model.setFilter(ElementKind::CELLS);
+	// 	model.setFilter(ElementKind::CELLS_ELT);
 	// }
 
 	// if (ImGui::Button("Filter points")) {
