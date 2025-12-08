@@ -76,16 +76,16 @@ namespace bindings {
 				&HalfedgeRenderer::setVisible
 			);
 			halfedgeRenderer_t["inside_color"] = sol::property(
-				&HalfedgeRenderer::getEdgeInsideColor,
-				&HalfedgeRenderer::setEdgeInsideColor
+				&HalfedgeRenderer::getInsideColor,
+				&HalfedgeRenderer::setInsideColor
 			);
 			halfedgeRenderer_t["outside_color"] = sol::property(
-				&HalfedgeRenderer::getEdgeOutsideColor,
-				&HalfedgeRenderer::setEdgeOutsideColor
+				&HalfedgeRenderer::getOutsideColor,
+				&HalfedgeRenderer::setOutsideColor
 			);
-			halfedgeRenderer_t["size"] = sol::property(
-				&HalfedgeRenderer::getEdgeSize,
-				&HalfedgeRenderer::setEdgeSize
+			halfedgeRenderer_t["thickness"] = sol::property(
+				&HalfedgeRenderer::getThickness,
+				&HalfedgeRenderer::setThickness
 			);
 
 			sol::usertype<IRenderer> meshRenderer_t = lua.new_usertype<IRenderer>("MeshRenderer");

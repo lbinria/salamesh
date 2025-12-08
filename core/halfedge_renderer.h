@@ -35,37 +35,31 @@ struct HalfedgeRenderer : public IRenderer {
 
 	int getRenderElementKind() override { return ElementKind::EDGES_ELT | ElementKind::CORNERS_ELT; }
 
-	// Rename to getThickness
-	float getEdgeSize() const {
+	float getThickness() const {
 		return edgeSize;
 	}
 
-	// Rename to setThickness
-	void setEdgeSize(float size) {
+	void setThickness(float size) {
 		shader.use();
-		shader.setFloat("uThickness", size);
+		shader.setFloat("thickness", size);
 		edgeSize = size;
 	}
 
-	// Rename to getInsideColor
-	glm::vec3 getEdgeInsideColor() const {
+	glm::vec3 getInsideColor() const {
 		return edgeInsideColor;
 	}
 
-	// Rename to setInsideColor
-	void setEdgeInsideColor(glm::vec3 color) {
+	void setInsideColor(glm::vec3 color) {
 		shader.use();
 		shader.setFloat3("uColorInside", color);
 		edgeInsideColor = color;
 	}
 
-	// Rename to getOutsideColor
-	glm::vec3 getEdgeOutsideColor() const {
+	glm::vec3 getOutsideColor() const {
 		return edgeOutsideColor;
 	}
 
-	// Rename to setOutsideColor
-	void setEdgeOutsideColor(glm::vec3 color) {
+	void setOutsideColor(glm::vec3 color) {
 		shader.use();
 		shader.setFloat3("uColorOutside", color);
 		edgeOutsideColor = color;
@@ -78,9 +72,9 @@ struct HalfedgeRenderer : public IRenderer {
 	glm::vec3 edgeOutsideColor;
 
 	void doLoadState(json &j) override {
-		setEdgeSize(j["edgeSize"].get<float>());
-		setEdgeInsideColor({j["edgeInsideColor"][0].get<float>(), j["edgeInsideColor"][1].get<float>(), j["edgeInsideColor"][2].get<float>()});
-		setEdgeOutsideColor({j["edgeOutsideColor"][0].get<float>(), j["edgeOutsideColor"][1].get<float>(), j["edgeOutsideColor"][2].get<float>()});
+		setThickness(j["edgeSize"].get<float>());
+		setInsideColor({j["edgeInsideColor"][0].get<float>(), j["edgeInsideColor"][1].get<float>(), j["edgeInsideColor"][2].get<float>()});
+		setOutsideColor({j["edgeOutsideColor"][0].get<float>(), j["edgeOutsideColor"][1].get<float>(), j["edgeOutsideColor"][2].get<float>()});
 	}
 
 	void doSaveState(json &j) const override {
@@ -96,9 +90,9 @@ struct SurfaceHalfedgeRenderer : public HalfedgeRenderer {
 	SurfaceHalfedgeRenderer(Surface &m) : 
 		HalfedgeRenderer(Shader("shaders/edge.vert", "shaders/edge.frag")),
 		_m(m) {
-			setEdgeSize(2.0f); // TODO here use a setting default edge size
-			setEdgeInsideColor({0.0, 0.97, 0.73}); // TODO here use a setting default edge inside color
-			setEdgeOutsideColor({0.0, 0.6, 0.45}); // TODO here use a setting default edge outside color
+			setThickness(2.0f);
+			setInsideColor({0.0, 0.97, 0.73});
+			setOutsideColor({0.0, 0.6, 0.45});
 		}
 
 	void push() override;
@@ -111,9 +105,9 @@ struct VolumeHalfedgeRenderer : public HalfedgeRenderer {
 	VolumeHalfedgeRenderer(Volume &m) : 
 		HalfedgeRenderer(Shader("shaders/edge.vert", "shaders/edge.frag")),
 		_m(m) {
-			setEdgeSize(2.0f); // TODO here use a setting default edge size
-			setEdgeInsideColor({0.0, 0.97, 0.73}); // TODO here use a setting default edge inside color
-			setEdgeOutsideColor({0.0, 0.6, 0.45}); // TODO here use a setting default edge outside color
+			setThickness(2.0f);
+			setInsideColor({0.0, 0.97, 0.73});
+			setOutsideColor({0.0, 0.6, 0.45});
 		}
 
 	void push() override;

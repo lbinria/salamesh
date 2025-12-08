@@ -228,10 +228,10 @@ function draw_model_properties(model, view)
 					cur_model.edges.visible = new_edge_visible
 				end
 
-				local sel_edge_size, new_edge_size = imgui.SliderFloat("Edge size", cur_model.edges.size, 0, 50)
-				if (sel_edge_size) then 
-					print("Change edge size: " .. tostring(new_edge_size))
-					cur_model.edges.size = new_edge_size
+				local sel_edge_thickness, new_edge_thickness = imgui.SliderFloat("Edge thickness", cur_model.edges.thickness, 0, 50)
+				if (sel_edge_thickness) then 
+					print("Change edge thickness: " .. tostring(new_edge_thickness))
+					cur_model.edges.thickness = new_edge_thickness
 				end
 
 				local sel_edge_inside_color, new_edge_inside_color = imgui.ColorEdit3("Edge inside color", cur_model.edges.inside_color)

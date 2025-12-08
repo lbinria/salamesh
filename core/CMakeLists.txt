@@ -16,7 +16,7 @@ endif(WIN32)
 
 set(SOURCES
     app_interface.h
-    component.h component.cpp
+    component.h
     attribute.h
     element.h
     input_states.h 

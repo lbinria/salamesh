@@ -15,7 +15,7 @@ layout (std140, binding = 0) uniform Matrices
 };
 
 uniform mat4 model;
-uniform float uThickness = 10.0; // in pixels
+uniform float thickness; // in pixels
 
 out vec2 vLocalUV; // (u,v) in [0..1] for fragment
 flat out int FragHalfedgeIndex;
@@ -52,7 +52,7 @@ void main()
     vec2 perp = vec2(-dir.y, dir.x);
 
     // 5) half thickness in pixels
-    float halfT = uThickness * 0.5;
+    float halfT = thickness * 0.5;
 
     // 6) pick endpoint and move it sideways
     vec2 base = mix(s0, s1, aEnd);      // if aEnd=0 → s0, if 1→ s1
