@@ -37,76 +37,6 @@ void App::quit() {
 	glfwSetWindowShouldClose(window, true);
 }
 
-static void load_texture_1d(const std::string &path, unsigned int & texture, int & width, int & height, int & nChannels) {
-	glGenTextures(1, &texture);
-	glBindTexture(GL_TEXTURE_1D, texture);
-
-	glTexParameteri(GL_TEXTURE_1D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);	
-	glTexParameteri(GL_TEXTURE_1D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-	glTexParameteri(GL_TEXTURE_1D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-	glTexParameteri(GL_TEXTURE_1D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-
-	unsigned char *new_data = stbi_load(path.c_str(), &width, &height, &nChannels, 0);
-	
-	if (!new_data) {
-		std::cout << "Failed to load texture" << std::endl;
-		return;
-	}
-
-	GLenum format = GL_RGB;
-	if (nChannels == 1)
-		format = GL_RED;
-	else if (nChannels == 3)
-		format = GL_RGB;
-	else if (nChannels == 4)
-		format = GL_RGBA;
-
-	std::cout << "Load: " << path << ", w: " << width << ", h: " << height << ", channels: " << nChannels << std::endl;
-	glTexImage1D(GL_TEXTURE_1D, 0, format, width, 0, format, GL_UNSIGNED_BYTE, new_data);
-	
-	// glGenerateMipmap(GL_TEXTURE_1D);
-	glActiveTexture(GL_TEXTURE0);
-	glBindTexture(GL_TEXTURE_1D, texture);
-	
-
-	stbi_image_free(new_data);
-}
-
-static void load_texture_2d(const std::string &path, unsigned int & texture, int & width, int & height, int & nChannels) {
-	glGenTextures(1, &texture);
-	glBindTexture(GL_TEXTURE_2D, texture);
-
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);	
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-
-	unsigned char *new_data = stbi_load(path.c_str(), &width, &height, &nChannels, 0);
-	
- 	if (!new_data) {
-		std::cerr << "Failed to load texture: " << path << std::endl;
-		return;
-	}
-
-	std::cout << "Loaded texture: " << path << std::endl;
-	std::cout << "w: " << width << ", h: " << height << ", channels: " << nChannels << std::endl;
-
-	GLenum format = GL_RGB;
-	if (nChannels == 1)
-		format = GL_RED;
-	else if (nChannels == 3)
-		format = GL_RGB;
-	else if (nChannels == 4)
-		format = GL_RGBA;
-
-	glTexImage2D(GL_TEXTURE_2D, 0, format, width, height, 0, format, GL_UNSIGNED_BYTE, new_data);
-
-	// glActiveTexture(GL_TEXTURE0);
-	glBindTexture(GL_TEXTURE_2D, texture);
-	
-	stbi_image_free(new_data);
-}
-
 static void key_callback(GLFWwindow* window, int key, int scancode, int action, int mods) {
     App* app = static_cast<App*>(glfwGetWindowUserPointer(window));
 	if (!app)
@@ -330,18 +260,18 @@ void App::setup() {
 
 	// Load colormap texture
 	int width, height, nrChannels;
-	load_texture_1d("assets/CET-R41px.png", colormaps[0], width, height, nrChannels);
-	load_texture_2d("assets/CET-R41px.png", colormaps2D[0], width, height, nrChannels);
-	load_texture_1d("assets/CET-L08px.png", colormaps[1], width, height, nrChannels);
-	load_texture_2d("assets/CET-L08px.png", colormaps2D[1], width, height, nrChannels);
+	sl::load_texture_1d("assets/CET-R41px.png", colormaps[0], width, height, nrChannels);
+	sl::load_texture_2d("assets/CET-R41px.png", colormaps2D[0], width, height, nrChannels);
+	sl::load_texture_1d("assets/CET-L08px.png", colormaps[1], width, height, nrChannels);
+	sl::load_texture_2d("assets/CET-L08px.png", colormaps2D[1], width, height, nrChannels);
 
-	load_texture_1d("assets/colormap_alpha.png", colormaps[2], width, height, nrChannels);
-	load_texture_2d("assets/colormap_alpha.png", colormaps2D[2], width, height, nrChannels);
+	sl::load_texture_1d("assets/colormap_alpha.png", colormaps[2], width, height, nrChannels);
+	sl::load_texture_2d("assets/colormap_alpha.png", colormaps2D[2], width, height, nrChannels);
 
 	// Load icons
 	int iconWidth, iconHeight, iconChannels;
-	load_texture_2d("assets/icons/Eye.png", eyeIcon, iconWidth, iconHeight, iconChannels);
-	load_texture_2d("assets/icons/BugAnt.png", bugAntIcon, iconWidth, iconHeight, iconChannels);
+	sl::load_texture_2d("assets/icons/Eye.png", eyeIcon, iconWidth, iconHeight, iconChannels);
+	sl::load_texture_2d("assets/icons/BugAnt.png", bugAntIcon, iconWidth, iconHeight, iconChannels);
 
 	auto renderSurface = std::make_unique<RenderSurface>(screenWidth, screenHeight);
 	renderSurface->setBackgroundColor({0.05, 0.1, 0.15});
@@ -355,13 +285,7 @@ void App::setup() {
 	// renderSurfaces.push_back(std::move(renderSurface2));
 
 	// Init UBO
-	glGenBuffers(1, &uboMatrices);
-
-	// Setup UBO
-	glBindBuffer(GL_UNIFORM_BUFFER, uboMatrices);
-	glBufferData(GL_UNIFORM_BUFFER, sizeof(UBOMatrices), nullptr, GL_DYNAMIC_DRAW);
-	glBindBuffer(GL_UNIFORM_BUFFER, 0);
-	glBindBufferRange(GL_UNIFORM_BUFFER, 0, uboMatrices, 0, sizeof(UBOMatrices));
+	sl::createUBO(uboMatrices, sizeof(UBOMatrices));
 
 
 	glViewport(0, 0, screenWidth, screenHeight);
@@ -440,9 +364,8 @@ void App::start()
 			projection,
 			{getScreenWidth(), getScreenHeight()}
 		};
-		glBindBuffer(GL_UNIFORM_BUFFER, uboMatrices);
-		glBufferData(GL_UNIFORM_BUFFER, sizeof(UBOMatrices), &mats, GL_DYNAMIC_DRAW);
-		glBindBuffer(GL_UNIFORM_BUFFER, 0);
+		
+		sl::updateUBOData(uboMatrices, sizeof(UBOMatrices), &mats);
 
 		getRenderSurface().bind();
 		getRenderSurface().clear();

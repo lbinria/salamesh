@@ -27,6 +27,7 @@
 
 #include "include/stb_image.h"
 #include "include/stb_image_write.h"
+#include "helpers/graphic_api.h"
 
 #include <iostream>
 #include <cmath>
