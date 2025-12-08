@@ -12,16 +12,6 @@ struct MyApp : App {
 
 	MyApp(Args args) : App(args) {}
 
-    bool loadModel(const std::string& filename) override;
-    int addModel(std::string name) override;
-    void removeModel(int idx) override;
-    bool removeModel(std::string name) override;
-	std::shared_ptr<Model> getModelByName(std::string name) override;
-	int getIndexOfModel(std::string name) override;
-	void computeFarPlane();
-	void focus(int modelIdx);
-
-	void clearScene();
 
 	void updateCamera(float dt);
 
@@ -36,11 +26,7 @@ struct MyApp : App {
 	void mouse_button(int button, int action, int mods) override;
 	void mouse_move(double x, double y) override;
 
-    // States functions
-    void saveState(const std::string filename);
-    void loadState(const std::string filename);
 
-	void loadState(json &j, const std::string path);
 
 	virtual std::unique_ptr<Camera> makeCamera(std::string type) override;
 

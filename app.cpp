@@ -552,6 +552,140 @@ void App::clean() {
 		glDeleteTextures(1, &colormaps2D[i]);
 }
 
+bool App::loadModel(const std::string& filename) {
+
+	// TODO please do something more intelligent here, should deduce mesh type !
+
+	bool success = false;
+
+	std::unique_ptr<Model> model;
+	model = std::make_unique<TriModel>();
+
+	success = model->load(filename);
+
+	if (!success) {
+		model = std::make_unique<QuadModel>();
+		success = model->load(filename);
+	}
+
+	if (!success) {
+		model = std::make_unique<PolyModel>();
+		success = model->load(filename);
+	}
+
+	if (!success) {
+		model = std::make_unique<TetModel>();
+		success = model->load(filename);
+	}
+
+	if (!success) {
+		model = std::make_unique<HexModel>();
+		success = model->load(filename);
+	}
+
+	if (!success)
+		return false;
+
+	model->setName(std::filesystem::path(filename).stem().string() + std::to_string(models.size()));
+
+	model->setMeshIndex(models.size());
+
+	// Setup default gfx
+	model->setLight(true);
+	model->getMesh().setMeshShrink(0.f);
+	model->getMesh().setMeshSize(0.0f);
+	model->setColorMode(ColorMode::COLOR);
+	
+	auto edges = model->getEdges();
+	if (edges)
+		edges->setVisible(false);
+
+	// Setup default clipping plane
+	model->setupClipping();
+
+	models.push_back(std::move(model));
+
+	// Update cameras far planes
+	computeFarPlane();
+
+	// Notify components
+	for (auto &c : components) {
+		c->modelLoaded(filename);
+	}
+
+	return true;
+}
+
+void App::computeFarPlane() {
+	auto diameter = computeSceneDiameter();
+
+	for (auto &c : cameras) {
+		c->setFarPlane(diameter * 5.f /* 5.f is an arbitrary value... */);
+	}
+}
+
+void App::focus(int modelIdx) {
+	auto &model = models[modelIdx];
+
+	setSelectedModel(modelIdx);
+	getCamera().lookAtBox(model->bbox());
+}
+
+// TODO add model, can be other model than HexModel & must recompute far plane on loading
+int App::addModel(std::string name) {
+	auto model = std::make_unique<HexModel>();
+	model->setName(name);
+	model->setMeshIndex(models.size());
+
+	// 
+	// model->loadCallback = ([this](Model&, const std::string) -> bool {
+	// 	this->computeFarPlane();
+	// 	this->component->modelLoaded(blabla)
+	// });
+
+	models.push_back(std::move(model));
+	return models.size() - 1;
+}
+
+void App::removeModel(int idx) {
+	models.erase(models.begin() + idx);
+
+	// Update mesh indexes
+	for (int i = idx; i < models.size(); ++i) {
+		auto &m = models[i];
+		m->setMeshIndex(i);
+	}
+}
+
+bool App::removeModel(std::string name) {
+	for (int i = 0; i < models.size(); ++i) {
+		auto &m = models[i];
+		if (m->getName() == name) {
+			removeModel(i);
+			return true;
+		}
+	}
+
+	return false;
+}
+
+std::shared_ptr<Model> App::getModelByName(std::string name) {
+	for (auto &m : models) {
+		if (m->getName() == name)
+			return m;
+	}
+	return nullptr;
+}
+
+int App::getIndexOfModel(std::string name) {
+	for (int i = 0; i < models.size(); ++i) {
+		auto &m = models[i];
+		if (m->getName() == name)
+			return i;
+	}
+	return -1;
+}
+
 long App::pick_edge(double x, double y) {
 	if (!st.cell.anyHovered() && !st.facet.anyHovered())
 		return -1;
@@ -767,6 +901,111 @@ float App::computeSceneDiameter() {
 	auto [min, max] = computeSceneBBox();
 	return glm::length(max - min);
 }
+
+void App::saveState(const std::string filename) {
+
+	json j;
+
+	// Save app states
+	j["header"]["type"] = "state";
+	j["cull_mode"] = cull_mode;
+	j["selected_model"] = selectedModel;
+	j["selected_camera"] = selectedCamera;
+	j["models"] = json::array();
+	j["cameras"] = json::array();
+
+	// Save models states
+	for (int i = 0; i < models.size(); ++i) {		
+		models[i]->saveState(j["models"][i]);
+	}
+
+	// Save cameras states
+	for (int i = 0; i < cameras.size(); ++i) {
+		cameras[i]->saveState(j["cameras"][i]);
+	}
+
+	std::ofstream ofs(filename);
+	if (!ofs.is_open()) {
+		std::cerr << "Failed to open file for saving state: " << filename << std::endl;
+		return;
+	}
+
+	ofs << j.dump(4); // Pretty print with 4 spaces indentation
+	ofs.close();
+
+	std::cout << "State saved to: " << filename << std::endl;
+}
+
+void App::clearScene() {
+	// TODO clean all scenes properly !
+	models.clear();
+	cameras.clear();
+
+	selectedCamera = 0;
+	selectedModel = 0;
+}
+
+void App::loadState(json &j, const std::string path) {
+
+	clearScene();
+
+	// Load cameras states
+	for (auto &jCamera : j["cameras"]) {
+		auto type = jCamera["type"].get<std::string>();
+		auto camera = makeCamera(type);
+		if (camera) {
+			camera->loadState(jCamera);
+			cameras.push_back(std::move(camera));
+		}
+	}
+
+	// Load models states
+	for (auto &jModel : j["models"]) {
+		// Concatenate state.json file path with model path
+		// in order to search the mesh file relatively to the state.json file
+		std::string modelRelPath = jModel["path"];
+		auto modelPath = 
+			std::filesystem::path(path).remove_filename() / 
+			std::filesystem::path(modelRelPath);
+		
+		// Try to load the model mesh
+		if (!loadModel(modelPath.string()))
+			continue;
+		
+		// Get last added model
+		auto &model = models.back();
+		// Load state into last loaded model
+		model->loadState(jModel);
+
+		// TODO! recompute cameras far / near
+	}
+
+	// Load app state
+	cull_mode = j["cull_mode"].get<int>();
+	setSelectedModel(j["selected_model"].get<int>());
+	setSelectedCamera(j["selected_camera"].get<int>());
+
+	std::cout << "State loaded successfully." << std::endl;
+}
+
+void App::loadState(const std::string filename) {
+
+	std::ifstream ifs(filename);
+	if (!ifs.is_open()) {
+		std::cerr << "Failed to open file for loading state: " << filename << std::endl;
+		return;
+	}
+
+	json j;
+	ifs >> j;
+	ifs.close();
+
+	std::cout << "Load state from: " << filename << std::endl;
+
+	loadState(j, filename);
+}
+
+
 
 void App::processInput(GLFWwindow *window) {
 

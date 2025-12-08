@@ -39,6 +39,8 @@
 #include "core/quad_model.h"
 #include "core/tet_model.h"
 #include "core/hex_model.h"
+#include "core/poly_model.h"
+
 
 #include "render_surface.h"
 
@@ -103,6 +105,23 @@ struct App : public IApp {
 
     void unproject(int x, int y, float depth, glm::vec3 &p);
     glm::vec3 pickPoint(double x, double y);
+
+    bool loadModel(const std::string& filename) override;
+    int addModel(std::string name) override;
+    void removeModel(int idx) override;
+    bool removeModel(std::string name) override;
+	std::shared_ptr<Model> getModelByName(std::string name) override;
+	int getIndexOfModel(std::string name) override;
+	void focus(int modelIdx);
+
+    void computeFarPlane();
+
+	void clearScene();
+
+    // States functions
+    void saveState(const std::string filename);
+    void loadState(const std::string filename);
+	void loadState(json &j, const std::string path);
 
     long pick(double xPos, double yPos);
     std::set<long> pick(double xPos, double yPos, int radius);
