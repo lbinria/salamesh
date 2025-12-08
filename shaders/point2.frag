@@ -31,6 +31,7 @@ uniform int colorMode = 0;
 uniform sampler1D fragColorMap;
 uniform vec2 attrRange = vec2(0.f, 1.f);
 uniform samplerBuffer attrBuf;
+uniform int attrElement;
 
 uniform samplerBuffer filterBuf;
 uniform samplerBuffer highlightBuf;
@@ -84,7 +85,7 @@ void main()
     gl_FragDepth = gl_FragCoord.z - deltaDepth * N.z;
     
     // Attribute color mode !
-    if (colorMode != 0) {
+    if (colorMode != 0 && attrElement == 1) {
         // TODO add repeat / transparency colormaps
         float fragAttrVal = texelFetch(attrBuf, FragVertexIndex).x;
         col = vec3(texture(fragColorMap, clamp((fragAttrVal - attrRange.x) / (attrRange.y - attrRange.x), 0., 1.)));

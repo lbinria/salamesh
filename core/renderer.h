@@ -24,7 +24,7 @@ struct IRenderer {
 	};
 
 
-	// Should overwrite which element renderer is rendering
+	// User must overwrite which element(s) are supported for rendering
 	virtual int getRenderElementKind() = 0;
 
 	virtual void init() = 0;
@@ -58,11 +58,6 @@ struct IRenderer {
 		shader.use();
 		shader.setInt("attrElement", element);
 	}
-
-	// void setAttrRange(glm::vec2 range) {
-	// 	shader.use();
-	// 	shader.setFloat2("attrRange", range);
-	// }
 
 	int getAttrRepeat() {
 		return attrRepeat;
@@ -212,10 +207,10 @@ struct IRenderer {
 	}
 
 
-	void setAttribute(ContainerBase *ga, int element) {
+	void setAttribute(ContainerBase *ga) {
 		// Set attribute element to shader
-		shader.use();
-		shader.setInt("attrElement", element);
+		// shader.use();
+		// shader.setInt("attrElement", element);
 
 		// Prepare data
 		std::vector<float> converted_attribute_data;
@@ -258,6 +253,7 @@ struct IRenderer {
 		return std::make_tuple(min, max);
 	}
 
+	// TODO make private
 	void setAttribute(std::vector<float> data) {
 
 		// Get range (min-max)
@@ -365,7 +361,7 @@ struct IRenderer {
 	glm::vec3 selectColor{0.f, 0.22f, 1.f};
 	float meshSize = 0.01f;
 	float meshShrink = 0.f;
-	bool isCornerVisible = true;
+	bool isCornerVisible = false;
 	int attrRepeat = 1;
 
 	unsigned int VAO, VBO; // Buffers

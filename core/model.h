@@ -285,8 +285,9 @@ struct Model {
         ElementKind kind = attrs[idx].kind;
 
         for (auto const &[k, r] : _renderers) {
+            r->setAttrElement(kind);
             if (r->isRenderElement(kind)) {
-                r->setAttribute(attrs[idx].ptr.get(), kind);
+                r->setAttribute(attrs[idx].ptr.get());
             }
         }
     }

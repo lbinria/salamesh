@@ -15,17 +15,17 @@ void HalfedgeRenderer::init() {
 	sl::createTBO(bufHighlight, texHighlight, 3);
 	sl::createTBO(bufFilter, texFilter, 4);
 
-	// WTF ?
-	glActiveTexture(GL_TEXTURE0 + 2);
-	glBindTexture(GL_TEXTURE_BUFFER, texAttr);
+	// // WTF ?
+	// glActiveTexture(GL_TEXTURE0 + 2);
+	// glBindTexture(GL_TEXTURE_BUFFER, texAttr);
 
-	glActiveTexture(GL_TEXTURE0 + 3);
-	glBindTexture(GL_TEXTURE_BUFFER, texHighlight);
+	// glActiveTexture(GL_TEXTURE0 + 3);
+	// glBindTexture(GL_TEXTURE_BUFFER, texHighlight);
 
-	glActiveTexture(GL_TEXTURE0 + 4);
-	glBindTexture(GL_TEXTURE_BUFFER, texFilter);
+	// glActiveTexture(GL_TEXTURE0 + 4);
+	// glBindTexture(GL_TEXTURE_BUFFER, texFilter);
 
-	glBindBuffer(GL_TEXTURE_BUFFER, 0);
+	// glBindBuffer(GL_TEXTURE_BUFFER, 0);
 	
 	shader.use();
 	shader.setInt("attrBuf", 2);
