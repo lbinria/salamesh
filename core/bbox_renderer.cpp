@@ -111,8 +111,5 @@ void BBoxRenderer::clean() {
 	// Clean up
 	glDeleteVertexArrays(1, &VAO);
 	glDeleteBuffers(1, &VBO);
-
-	// TODO clean buffers, textures, unmap ptr...
-
 	shader.clean();
 }

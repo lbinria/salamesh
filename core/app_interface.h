@@ -45,12 +45,6 @@ struct IApp {
     virtual int getScreenHeight() const = 0;
     virtual double getScreenAspectRatio() const = 0;
 
-    // virtual glm::vec3 pickPoint(long x, long y) = 0;
-    virtual long pick_vertex(double x, double y) = 0;
-    virtual long pick_edge(double x, double y) = 0;
-    virtual long pick_facet(double x, double y) = 0;
-    virtual long pick_cell(double x, double y) = 0;
-    virtual long pick_mesh(double x, double y) = 0;
 
     virtual std::vector<unsigned int> getColorMaps2D() = 0;
 

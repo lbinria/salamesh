@@ -107,11 +107,8 @@ struct App : public IApp {
     long pick(double xPos, double yPos);
     std::set<long> pick(double xPos, double yPos, int radius);
 
-    long pick_vertex(double x, double y) override;
-    long pick_edge(double x, double y) override;
-    long pick_facet(double x, double y) override;
-    long pick_cell(double x, double y) override;
-    long pick_mesh(double x, double y) override;
+    long pick_edge(double x, double y);
+    long pick_mesh(double x, double y);
     std::vector<long> pick_vertices(double x, double y, int radius);
     std::vector<long> pick_facets(double x, double y, int radius);
     std::vector<long> pick_cells(double x, double y, int radius);
@@ -280,39 +277,30 @@ struct App : public IApp {
     }
 
 
-    // TODO set as protected
-    std::vector<std::shared_ptr<Camera>> cameras;
-    
-    int selectedCamera = 0;
-
     protected:
     Args args;
 
     GLFWwindow* window;
     glm::vec3 backgroundColor{0.05, 0.1, 0.15};
     
+    std::vector<std::shared_ptr<Camera>> cameras;
     std::vector<std::shared_ptr<Model>> models;
     std::vector<std::unique_ptr<RenderSurface>> renderSurfaces;
     
+    int selectedCamera = 0;
     int selectedModel = 0;
-
-    // glm::mat4 projection;
 
     std::vector<std::unique_ptr<Component>> components;
 	InputState st;
-
-    // ElementKind pickMode = ElementKind::CELLS_ELT;
-
-
-    // TODO make private
-    int cull_mode = GL_BACK;
-    bool cull = true;
 
     bool renderSurfaceWindowHovered = false;
 
     unsigned int eyeIcon = 0;
     unsigned int bugAntIcon = 0;
-    
+
+    int cull_mode = GL_BACK;
+    bool cull = true;
+
     private:
 
     // Current navigation path of the app

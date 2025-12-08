@@ -580,42 +580,6 @@ long App::pick_edge(double x, double y) {
 	return model->pick_edge(p, h);
 }
 
-long App::pick_vertex(double x, double y) {
-	if (!hasModels())
-		return -1;
-
-	glBindFramebuffer(GL_READ_FRAMEBUFFER, getRenderSurface().fbo);
-	glReadBuffer(GL_COLOR_ATTACHMENT3);
-	long id = pick(x, y);
-	glBindFramebuffer(GL_READ_FRAMEBUFFER, 0);
-	// TODO getCurrentModel is false !!!! when picking is current picking model instead
-	return id >= 0 && id < getCurrentModel().nverts() ? id : -1;
-}
-
-long App::pick_facet(double x, double y) {
-	if (!hasModels())
-		return -1;
-
-	glBindFramebuffer(GL_READ_FRAMEBUFFER, getRenderSurface().fbo);
-	glReadBuffer(GL_COLOR_ATTACHMENT1);
-	long id = pick(x, y);
-	glBindFramebuffer(GL_READ_FRAMEBUFFER, 0);
-	// TODO getCurrentModel is false !!!! when picking is current picking model instead
-	return id >= 0 && id < getCurrentModel().nfacets() ? id : -1;
-}
-
-long App::pick_cell(double x, double y) {
-	if (!hasModels())
-		return -1;
-
-	glBindFramebuffer(GL_READ_FRAMEBUFFER, getRenderSurface().fbo);
-	glReadBuffer(GL_COLOR_ATTACHMENT2);
-	long id = pick(x, y);
-	glBindFramebuffer(GL_READ_FRAMEBUFFER, 0);
-	// TODO getCurrentModel is false !!!! when picking is current picking model instead
-	return id >= 0 && id < getCurrentModel().ncells() ? id : -1;
-}
-
 long App::pick_mesh(double x, double y) {
 	glBindFramebuffer(GL_READ_FRAMEBUFFER, getRenderSurface().fbo);
 	glReadBuffer(GL_COLOR_ATTACHMENT4);
