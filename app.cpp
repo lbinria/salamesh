@@ -568,8 +568,10 @@ std::unique_ptr<Model> App::makeModel(MeshType type) {
 	case MeshType::POLYLINE_MESH:
 	case MeshType::PYRAMID_MESH:
 	case MeshType::PRISM_MESH:
-		throw std::runtime_error("makeModel " + std::to_string(type) + " not implemented.");
+		throw std::runtime_error("makeModel for type: " + std::to_string(type) + " not implemented.");
 	}
+
+	throw std::runtime_error("makeModel for type: " + std::to_string(type) + " not implemented.");
 }
 
 bool App::loadModel(const std::string& filename) {

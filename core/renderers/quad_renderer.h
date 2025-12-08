@@ -11,7 +11,6 @@
 #include "../../include/glm/gtc/type_ptr.hpp"
 
 
-#include "../model.h"
 #include "../element.h"
 #include "surface_renderer.h"
 #include "poly_renderer.h"

@@ -11,7 +11,6 @@
 #include "../../include/glm/gtc/type_ptr.hpp"
 
 #include "volume_renderer.h"
-#include "../model.h"
 #include "../element.h"
 #include "../shader.h"
 

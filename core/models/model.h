@@ -1,14 +1,14 @@
 #pragma once
 
-#include "element.h"
-#include "attribute.h"
-#include "renderers/renderer.h"
-#include "color_mode.h"
-#include "renderers/point_set_renderer.h"
-#include "renderers/halfedge_renderer.h"
+#include "../element.h"
+#include "../attribute.h"
+#include "../renderers/renderer.h"
+#include "../color_mode.h"
+#include "../renderers/point_set_renderer.h"
+#include "../renderers/halfedge_renderer.h"
 
-#include "../include/glm/glm.hpp"
-#include "../include/json.hpp"
+#include "../../include/glm/glm.hpp"
+#include "../../include/json.hpp"
 
 #include <ultimaille/all.h>
 

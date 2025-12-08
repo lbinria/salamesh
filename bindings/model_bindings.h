@@ -2,7 +2,7 @@
 #define SOL_ALL_SAFETIES_ON 1
 #include <sol/sol.hpp>
 #include "../core/app_interface.h"
-#include "../core/model.h"
+#include "../core/models/model.h"
 #include "../core/attribute.h"
 
 namespace bindings {

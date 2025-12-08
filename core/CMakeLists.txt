@@ -20,7 +20,6 @@ set(SOURCES
     attribute.h
     element.h
     input_states.h 
-    model.h
     camera.h
 
     shader.cpp shader.h 
@@ -39,11 +38,12 @@ set(SOURCES
     renderers/tet_renderer.cpp renderers/tet_renderer.h
     renderers/hex_renderer.cpp renderers/hex_renderer.h
 
-    tri_model.cpp tri_model.h
-    quad_model.cpp quad_model.h
-    poly_model.cpp poly_model.h
-    tet_model.cpp tet_model.h
-    hex_model.cpp hex_model.h
+    models/model.h
+    models/tri_model.cpp models/tri_model.h
+    models/quad_model.cpp models/quad_model.h
+    models/poly_model.cpp models/poly_model.h
+    models/tet_model.cpp models/tet_model.h
+    models/hex_model.cpp models/hex_model.h
 
   # some include files to build with the lib
   ../include/stb_include.cpp 

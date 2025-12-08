@@ -10,7 +10,6 @@
 #include "../../include/glm/gtc/matrix_transform.hpp"
 #include "../../include/glm/gtc/type_ptr.hpp"
 
-#include "../model.h"
 #include "surface_renderer.h"
 #include "../element.h"
 #include "../shader.h"

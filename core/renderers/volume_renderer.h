@@ -14,7 +14,6 @@
 using json = nlohmann::json;
 
 #include "renderer.h"
-#include "../model.h"
 #include "../element.h"
 
 using namespace UM;

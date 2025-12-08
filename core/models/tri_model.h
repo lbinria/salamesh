@@ -1,16 +1,16 @@
 #pragma once
 
-#include "../include/json.hpp"
+#include "../../include/json.hpp"
 #include <ultimaille/all.h>
 #include <string>
 #include "model.h"
-#include "renderers/point_set_renderer.h"
-#include "renderers/halfedge_renderer.h"
-#include "renderers/tri_renderer.h"
-#include "renderers/bbox_renderer.h"
-#include "renderers/clipping_renderer.h"
-#include "color_mode.h"
-#include "helpers.h"
+#include "../renderers/point_set_renderer.h"
+#include "../renderers/halfedge_renderer.h"
+#include "../renderers/tri_renderer.h"
+#include "../renderers/bbox_renderer.h"
+#include "../renderers/clipping_renderer.h"
+#include "../color_mode.h"
+#include "../helpers.h"
 
 using namespace UM;
 using json = nlohmann::json;
