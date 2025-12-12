@@ -1,6 +1,7 @@
 #pragma once
 
 #include "../element.h"
+#include "../layer.h"
 #include "../attribute.h"
 #include "../renderers/renderer.h"
 #include "../color_mode.h"
@@ -180,15 +181,15 @@ struct Model {
     }
 
     void updateHighlights() {
-        updateLayer(IRenderer::Layer::HIGHLIGHT);
+        updateLayer(Layer::HIGHLIGHT);
     }
 
     // The same as TetModel
     void updateFilters() {
-        updateLayer(IRenderer::Layer::FILTER);
+        updateLayer(Layer::FILTER);
     }
 
-    virtual void updateLayer(IRenderer::Layer layer) = 0;
+    virtual void updateLayer(Layer layer) = 0;
 
     void render() {
         if (!visible)
@@ -410,7 +411,7 @@ struct Model {
     // }
 
     void setHighlightAttr(std::string name, ElementKind kind) {
-        setLayerAttr(name, kind, IRenderer::Layer::HIGHLIGHT);
+        setLayerAttr(name, kind, Layer::HIGHLIGHT);
     }
 
     // AttrSelection getFilterAttr() const {
@@ -418,25 +419,25 @@ struct Model {
     // }
 
     void setFilterAttr(std::string name, ElementKind kind) {
-        setLayerAttr(name, kind, IRenderer::Layer::FILTER);
+        setLayerAttr(name, kind, Layer::FILTER);
     }
 
     // Choose which attribute to bind to layer
-    void setLayerAttr(std::string name, ElementKind kind, IRenderer::Layer layer) {
+    void setLayerAttr(std::string name, ElementKind kind, Layer layer) {
         selectedAttrByLayer[layer].attrName = name;
         setLayer(kind, layer);
     }
 
     void setHighlight(ElementKind kind) {
-        setLayer(kind, IRenderer::Layer::HIGHLIGHT);
+        setLayer(kind, Layer::HIGHLIGHT);
     }
 
     void setFilter(ElementKind kind) {
-        setLayer(kind, IRenderer::Layer::FILTER);
+        setLayer(kind, Layer::FILTER);
     }
 
     void unsetHighlight(ElementKind kind) {
-        unsetLayer(kind, IRenderer::Layer::HIGHLIGHT);
+        unsetLayer(kind, Layer::HIGHLIGHT);
     }
 
     void unsetHighlights() {
@@ -448,7 +449,7 @@ struct Model {
     }
 
     void unsetFilter(ElementKind kind) {
-        unsetLayer(kind, IRenderer::Layer::FILTER);
+        unsetLayer(kind, Layer::FILTER);
     }
 
     void unsetFilters() {
@@ -462,7 +463,7 @@ struct Model {
         unsetFilter(ElementKind::CELL_CORNERS_ELT);
     }
 
-    void setLayer(ElementKind kind, IRenderer::Layer layer) {
+    void setLayer(ElementKind kind, Layer layer) {
         selectedAttrByLayer[layer].elementKind = kind;
 
         for (auto const &[k, r] : _renderers) {
@@ -474,7 +475,7 @@ struct Model {
         updateLayer(layer);
     }
 
-    void unsetLayer(ElementKind kind, IRenderer::Layer layer) {
+    void unsetLayer(ElementKind kind, Layer layer) {
         // Prepare a vector of zeros of the size of the element kind to unset
         std::vector<float> zeros;
         switch (kind) {
@@ -695,9 +696,9 @@ struct Model {
 
 
 
-    std::map<IRenderer::Layer, AttrSelection> selectedAttrByLayer{
-        { IRenderer::Layer::HIGHLIGHT, {"_highlight", ElementKind::POINTS_ELT} },
-        { IRenderer::Layer::FILTER, {"_filter", ElementKind::POINTS_ELT} },
+    std::map<Layer, AttrSelection> selectedAttrByLayer{
+        { Layer::HIGHLIGHT, {"_highlight", ElementKind::POINTS_ELT} },
+        { Layer::FILTER, {"_filter", ElementKind::POINTS_ELT} },
     };
 
     bool isLightEnabled = true;

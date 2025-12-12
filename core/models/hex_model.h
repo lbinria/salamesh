@@ -11,6 +11,7 @@
 #include "../renderers/clipping_renderer.h"
 
 #include "../color_mode.h"
+#include "../layer.h"
 #include "../helpers.h"
 
 using namespace UM;
@@ -70,7 +71,7 @@ struct HexModel final : public Model {
     }
 
     // TODO its the same as tet_model, refact !
-    void updateLayer(IRenderer::Layer layer) {
+    void updateLayer(Layer layer) {
 
         auto &selectedAttr = selectedAttrByLayer[layer];
         

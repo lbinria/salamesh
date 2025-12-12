@@ -12,6 +12,7 @@
 #include "../renderers/clipping_renderer.h"
 
 #include "../color_mode.h"
+#include "../layer.h"
 #include "../helpers.h"
 
 using namespace UM;
@@ -72,7 +73,7 @@ struct PolyModel final : public Model {
 	}
 
 	// TODO implement this !!!
-	void updateLayer(IRenderer::Layer layer) {
+	void updateLayer(Layer layer) {
 
 	}
 

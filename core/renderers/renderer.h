@@ -2,6 +2,8 @@
 
 #include "../color_mode.h"
 #include "../element.h"
+#include "../layer.h"
+
 #include "../shader.h"
 #include "../attribute.h"
 #include "../../include/glm/glm.hpp"
@@ -11,12 +13,6 @@ using json = nlohmann::json;
 
 
 struct IRenderer {
-
-	enum Layer {
-		COLORMAP,
-		HIGHLIGHT,
-		FILTER
-	};
 
 	enum ClippingMode {
 		CELL = 0,

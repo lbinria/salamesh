@@ -10,6 +10,7 @@
 #include "../renderers/bbox_renderer.h"
 #include "../renderers/clipping_renderer.h"
 #include "../color_mode.h"
+#include "../layer.h"
 #include "../helpers.h"
 
 using namespace UM;
@@ -70,7 +71,7 @@ struct TriModel final : public Model {
         return {min, max};
     }
 
-    void updateLayer(IRenderer::Layer layer) {
+    void updateLayer(Layer layer) {
 
         auto &selectedAttr = selectedAttrByLayer[layer];
 
@@ -105,7 +106,11 @@ struct TriModel final : public Model {
                 break;
             }
             default:
-                std::cerr << "Warning: HexModel::updateFilters() only supports highlight on cells, cell facets or points." << std::endl;
+                std::cerr << "Warning: TriModel::updateLayer() on " 
+                    << elementKindToString(selectedAttr.elementKind) 
+                    << " with layer " 
+                    << layerToString(layer) 
+                    << " is not supported.." << std::endl;
                 return;
         }
 
