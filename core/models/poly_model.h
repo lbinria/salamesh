@@ -76,10 +76,36 @@ struct PolyModel final : public Model {
 
 	}
 
-	// TODO implements this !!!
-	long pick_edge(glm::vec3 p0, int f) override {
-		return -1;
-	}
+    long pick_edge(glm::vec3 p0, int f) override {
+        // Search nearest edge
+        double min_d = std::numeric_limits<double>().max();
+        long found_e = -1;
+        
+		auto fc = _m.facet(f);
+		int size = fc.size();
+
+        for (int lv = 0; lv < size; ++lv) {
+            
+        	// Get global indices of vertex on edge extremities
+        	auto v0 = fc.vertex(lv % size);
+        	auto v1 = fc.vertex((lv + 1) % size);
+
+        	// Get points from current edge
+        	vec3 p1 = _m.points[v0];
+        	vec3 p2 = _m.points[v1];
+        	vec3 b = (p1 + p2) * .5;
+        	// Compute dist from picked point to bary of edge points
+        	double d = (vec3(p0.x, p0.y, p0.z) - b).norm(); // TODO maybe use norm2 will give the same result
+
+        	// Keep min dist
+        	if (d < min_d) {
+        		min_d = d;
+        		found_e = f * size + lv;
+        	}
+        }
+
+        return found_e;
+    }
 
 	private:
 

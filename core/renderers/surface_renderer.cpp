@@ -35,6 +35,7 @@ void SurfaceRenderer::init() {
 	#endif
 
 
+	// TODO below ??? needeed ??? i don't think !
 	glBindVertexArray(VAO);
 	glBindBuffer(GL_ARRAY_BUFFER, VBO);
 
