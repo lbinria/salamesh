@@ -176,20 +176,24 @@ struct Model {
 
         // Push highlight and filter attributes if they exist
         // TODO here update all layers in foreach
-        updateHighlights();
-        updateFilters();
+        for (auto [k, isActivated] : activatedLayers) {
+            if (!isActivated) 
+                continue;
+
+            auto [layer, kind] = k;
+            updateLayer(layer, kind);
+        }
     }
 
-    void updateHighlights() {
-        updateLayer(Layer::HIGHLIGHT);
+    void updateHighlights(ElementKind kind) {
+        updateLayer(Layer::HIGHLIGHT, kind);
     }
 
-    // The same as TetModel
-    void updateFilters() {
-        updateLayer(Layer::FILTER);
+    void updateFilters(ElementKind kind) {
+        updateLayer(Layer::FILTER, kind);
     }
 
-    virtual void updateLayer(Layer layer) = 0;
+    virtual void updateLayer(Layer layer, ElementKind kind) = 0;
 
     void render() {
         if (!visible)
@@ -223,10 +227,6 @@ struct Model {
         auto [bmin, bmax] = bbox();
         return glm::length(bmax - bmin) / 2.f;
     }
-
-
-    // virtual void setFilter(int idx, bool filter) = 0;
-
 
     void addAttr(ElementKind kind, NamedContainer &container) {
         
@@ -351,29 +351,6 @@ struct Model {
         }
     }
 
-    // template<typename T>
-    // Attribute bindAttr(std::string name, ElementKind kind) {
-    //     switch (kind) {
-    //         case ElementKind::POINTS:
-    //             PointAttribute<T> pa;
-    //             return bindAttr<T>(name, pa);
-    //         case ElementKind::EDGES:
-    //             return bindAttr<T>(name, EdgeAttribute<T>());
-    //         case ElementKind::FACETS:
-    //             return bindAttr<T>(name, FacetAttribute<T>());
-    //         case ElementKind::CELL_FACETS_ELT:
-    //             return bindAttr<T>(name, CellFacetAttribute<T>());
-    //         case ElementKind::CORNERS:
-    //             return bindAttr<T>(name, CornerAttribute<T>());
-    //         case ElementKind::CELL_CORNERS_ELT:
-    //             return bindAttr<T>(name, CellCornerAttribute<T>());
-    //         case ElementKind::CELLS:
-    //             return bindAttr<T>(name, CellAttribute<T>());
-    //         default:
-    //             throw std::runtime_error("Unknown element kind for binding attribute: " + elementKindToString(kind));
-    //     }
-    // }
-
     template<typename T>
     Attribute bindAttr(std::string name, GenericAttribute<T> &attr) {
         
@@ -407,26 +384,25 @@ struct Model {
         selectedColormap = idx;
     }
 
-    // AttrSelection getHighlightAttr() const {
-    //     return selectedAttrByLayer[IRenderer::Layer::HIGHLIGHT];
-    // }
+    // Choose which attribute to bind to layer / kind
+    void setLayerAttr(std::string name, Layer layer, ElementKind kind) {
+        attrNameByLayerAndKind[{layer, kind}] = name;
+    }
+
+    std::string getLayerAttr(Layer layer, ElementKind kind) {
+        std::tuple<Layer, ElementKind> k = {layer, kind};
+        if (attrNameByLayerAndKind.contains(k))
+            return attrNameByLayerAndKind[k];
+        
+        return defaultAttrName(layer);
+    }
 
     void setHighlightAttr(std::string name, ElementKind kind) {
-        setLayerAttr(name, kind, Layer::HIGHLIGHT);
+        setLayerAttr(name, Layer::HIGHLIGHT, kind);
     }
-
-    // AttrSelection getFilterAttr() const {
-    //     return selectedAttrByLayer[IRenderer::Layer::FILTER];
-    // }
 
     void setFilterAttr(std::string name, ElementKind kind) {
-        setLayerAttr(name, kind, Layer::FILTER);
-    }
-
-    // Choose which attribute to bind to layer
-    void setLayerAttr(std::string name, ElementKind kind, Layer layer) {
-        selectedAttrByLayer[layer].attrName = name;
-        setLayer(kind, layer);
+        setLayerAttr(name, Layer::FILTER, kind);
     }
 
     void setHighlight(ElementKind kind) {
@@ -465,8 +441,6 @@ struct Model {
     }
 
     void setLayer(ElementKind kind, Layer layer) {
-        // TODO here useless !!!
-        selectedAttrByLayer[layer].elementKind = kind;
 
         for (auto const &[k, r] : _renderers) {
             if (r->isRenderElement(kind)) {
@@ -474,7 +448,9 @@ struct Model {
             }
         }
 
-        updateLayer(layer);
+        updateLayer(layer, kind);
+
+        activatedLayers[{layer, kind}] = true;
     }
 
     void unsetLayer(ElementKind kind, Layer layer) {
@@ -511,6 +487,8 @@ struct Model {
                 r->setLayer(zeros, layer);
             }
         }
+
+        activatedLayers[{layer, kind}] = false;
     }
 
 
@@ -698,18 +676,6 @@ struct Model {
     std::vector<Attribute> attrs;
     int selectedAttr = 0;
 
-
-
-    std::map<Layer, AttrSelection> selectedAttrByLayer{
-        { Layer::HIGHLIGHT, {"_highlight", ElementKind::POINTS_ELT} },
-        { Layer::FILTER, {"_filter", ElementKind::POINTS_ELT} },
-    };
-
-    // std::map<Layer, std::string> selectedAttrByLayer{
-    //     { Layer::HIGHLIGHT, "_highlight" },
-    //     { Layer::FILTER, "_filter" },
-    // };
-
     bool isLightEnabled = true;
     bool isLightFollowView = false;
 
@@ -726,4 +692,8 @@ struct Model {
     // Renderers
     std::map<std::string, std::shared_ptr<IRenderer>> _renderers;
 
+    private:
+    
+    std::map<std::tuple<Layer, ElementKind>, std::string> attrNameByLayerAndKind;
+    std::map<std::tuple<Layer, ElementKind>, bool> activatedLayers;
 };

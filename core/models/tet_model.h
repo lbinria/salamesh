@@ -108,17 +108,17 @@ struct TetModel final : public Model {
 
 
     // TODO its the same as hex_model, refact !
-    void updateLayer(Layer layer) {
+    void updateLayer(Layer layer, ElementKind kind) {
 
-        auto &selectedAttr = selectedAttrByLayer[layer];
+        auto attrName = getLayerAttr(layer, kind);
         
         std::vector<float> data;
 
-        switch (selectedAttr.elementKind) {
+        switch (kind) {
             case ElementKind::CELLS_ELT:
             {
                 CellAttribute<float> layerAttr;
-                if (!layerAttr.bind(selectedAttr.attrName, _volumeAttributes, _m))
+                if (!layerAttr.bind(attrName, _volumeAttributes, _m))
                     return;
                 
                 data = layerAttr.ptr->data;
@@ -127,7 +127,7 @@ struct TetModel final : public Model {
             case ElementKind::CELL_FACETS_ELT:
             {
                 CellFacetAttribute<float> layerAttr;
-                if (!layerAttr.bind(selectedAttr.attrName, _volumeAttributes, _m))
+                if (!layerAttr.bind(attrName, _volumeAttributes, _m))
                     return;
                 
                 data = layerAttr.ptr->data;
@@ -136,19 +136,23 @@ struct TetModel final : public Model {
             case ElementKind::POINTS_ELT:
             {
                 PointAttribute<float> layerAttr;
-                if (!layerAttr.bind(selectedAttr.attrName, _volumeAttributes, _m))
+                if (!layerAttr.bind(attrName, _volumeAttributes, _m))
                     return;
                 
                 data = layerAttr.ptr->data;
                 break;
             }
             default:
-                std::cerr << "Warning: HexModel::updateFilters() only supports highlight on cells, cell facets or points." << std::endl;
+                std::cerr << "Warning: TetModel::updateLayer() on " 
+                    << elementKindToString(kind) 
+                    << " with layer " 
+                    << layerToString(layer) 
+                    << " is not supported.." << std::endl;
                 return;
         }
 
         for (auto const &[k, r] : _renderers) {
-            if (r->isRenderElement(selectedAttr.elementKind)) {
+            if (r->isRenderElement(kind)) {
                 r->setLayer(data, layer);
             }
         }

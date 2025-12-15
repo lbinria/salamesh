@@ -77,7 +77,7 @@ struct PolyModel final : public Model {
 	}
 
 	// TODO implement this !!!
-	void updateLayer(Layer layer) {
+	void updateLayer(Layer layer, ElementKind kind) {
 
 	}
 

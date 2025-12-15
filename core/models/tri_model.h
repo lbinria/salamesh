@@ -75,18 +75,17 @@ struct TriModel final : public Model {
         return {min, max};
     }
 
-    // TODO must pass element kind as parameter !
-    void updateLayer(Layer layer) {
+    void updateLayer(Layer layer, ElementKind kind) {
 
-        auto &selectedAttr = selectedAttrByLayer[layer];
+        auto attrName = getLayerAttr(layer, kind);
 
         std::vector<float> data;
 
-        switch (selectedAttr.elementKind) {
+        switch (kind) {
             case ElementKind::POINTS_ELT:
             {
                 PointAttribute<float> layerAttr;
-                if (!layerAttr.bind(selectedAttr.attrName, _surfaceAttributes, _m))
+                if (!layerAttr.bind(attrName, _surfaceAttributes, _m))
                     return;
 
                 data = layerAttr.ptr->data;
@@ -95,7 +94,7 @@ struct TriModel final : public Model {
             case ElementKind::CORNERS_ELT: 
             {
                 CornerAttribute<float> layerAttr;
-                if (!layerAttr.bind(selectedAttr.attrName, _surfaceAttributes, _m))
+                if (!layerAttr.bind(attrName, _surfaceAttributes, _m))
                     return;
 
                 data = layerAttr.ptr->data;
@@ -104,7 +103,7 @@ struct TriModel final : public Model {
             case ElementKind::FACETS_ELT:
             {
                 FacetAttribute<float> layerAttr;
-                if (!layerAttr.bind(selectedAttr.attrName, _surfaceAttributes, _m))
+                if (!layerAttr.bind(attrName, _surfaceAttributes, _m))
                     return;
 
                 data = layerAttr.ptr->data;
@@ -112,7 +111,7 @@ struct TriModel final : public Model {
             }
             default:
                 std::cerr << "Warning: TriModel::updateLayer() on " 
-                    << elementKindToString(selectedAttr.elementKind) 
+                    << elementKindToString(kind) 
                     << " with layer " 
                     << layerToString(layer) 
                     << " is not supported.." << std::endl;
@@ -120,7 +119,7 @@ struct TriModel final : public Model {
         }
 
         for (auto const &[k, r] : _renderers) {
-            if (r->isRenderElement(selectedAttr.elementKind)) {
+            if (r->isRenderElement(kind)) {
                 r->setLayer(data, layer);
             }
         }
