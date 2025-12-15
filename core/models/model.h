@@ -211,6 +211,7 @@ struct Model {
     virtual int nfacets() const = 0; 
     virtual int ncells() const = 0; 
     virtual int ncorners() const = 0; 
+    virtual int nhalfedges() const = 0;
     virtual std::tuple<glm::vec3, glm::vec3> bbox() = 0;
 
     glm::vec3 getCenter() {
@@ -464,6 +465,7 @@ struct Model {
     }
 
     void setLayer(ElementKind kind, Layer layer) {
+        // TODO here useless !!!
         selectedAttrByLayer[layer].elementKind = kind;
 
         for (auto const &[k, r] : _renderers) {
@@ -489,9 +491,11 @@ struct Model {
                 break;
             }
             case ElementKind::EDGES_ELT: {
-                // TODO implement nedges()
+                zeros.resize(nhalfedges(), 0.f);
                 break;
-            } case ElementKind::CORNERS_ELT: {
+            } 
+            case ElementKind::CORNERS_ELT: 
+            case ElementKind::CELL_CORNERS_ELT: {
                 zeros.resize(ncorners(), 0.f);
                 break;
             }
@@ -700,6 +704,11 @@ struct Model {
         { Layer::HIGHLIGHT, {"_highlight", ElementKind::POINTS_ELT} },
         { Layer::FILTER, {"_filter", ElementKind::POINTS_ELT} },
     };
+
+    // std::map<Layer, std::string> selectedAttrByLayer{
+    //     { Layer::HIGHLIGHT, "_highlight" },
+    //     { Layer::FILTER, "_filter" },
+    // };
 
     bool isLightEnabled = true;
     bool isLightFollowView = false;

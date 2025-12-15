@@ -58,6 +58,10 @@ struct TriModel final : public Model {
         return _m.ncorners();
     }
 
+	int nhalfedges() const override {
+		return _m.ncorners();
+	}
+
     std::tuple<glm::vec3, glm::vec3> bbox() override {
         glm::vec3 min = glm::vec3(FLT_MAX);
         glm::vec3 max = glm::vec3(-FLT_MAX);
@@ -71,6 +75,7 @@ struct TriModel final : public Model {
         return {min, max};
     }
 
+    // TODO must pass element kind as parameter !
     void updateLayer(Layer layer) {
 
         auto &selectedAttr = selectedAttrByLayer[layer];

@@ -57,6 +57,10 @@ struct HexModel final : public Model {
         return _m.ncorners();
     }
 
+    int nhalfedges() const override {
+        return _m.ncells() * 24;
+    }
+
     std::tuple<glm::vec3, glm::vec3> bbox() override {
         glm::vec3 min = glm::vec3(FLT_MAX);
         glm::vec3 max = glm::vec3(-FLT_MAX);
