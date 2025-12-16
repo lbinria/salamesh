@@ -1,7 +1,8 @@
 #pragma once 
 #include <string>
 
-enum MeshType {
+enum ModelType {
+	POINTSET = 0,
 	POLYLINE_MESH,
 	TRI_MESH,
 	QUAD_MESH,
@@ -30,17 +31,18 @@ enum ElementType {
 	VEC2_ELT
 };
 
-static std::string meshTypeToString(MeshType t) {
+static std::string modelTypeToString(ModelType t) {
 	switch (t) {
-		case MeshType::POLYLINE_MESH: return "polyline";
-		case MeshType::TRI_MESH: return "tri";
-		case MeshType::QUAD_MESH: return "quad";
-		case MeshType::POLYGON_MESH: return "polygon";
-		case MeshType::TET_MESH: return "tet";
-		case MeshType::HEX_MESH: return "hex";
-		case MeshType::PYRAMID_MESH: return "pyramid";
-		case MeshType::PRISM_MESH: return "prism";
-		case MeshType::HYBRID_MESH: return "hybrid";
+		case ModelType::POINTSET: return "pointset";
+		case ModelType::POLYLINE_MESH: return "polyline";
+		case ModelType::TRI_MESH: return "tri";
+		case ModelType::QUAD_MESH: return "quad";
+		case ModelType::POLYGON_MESH: return "polygon";
+		case ModelType::TET_MESH: return "tet";
+		case ModelType::HEX_MESH: return "hex";
+		case ModelType::PYRAMID_MESH: return "pyramid";
+		case ModelType::PRISM_MESH: return "prism";
+		case ModelType::HYBRID_MESH: return "hybrid";
 		default: return "unknown";
 	}
 }

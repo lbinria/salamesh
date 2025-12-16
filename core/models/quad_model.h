@@ -32,7 +32,7 @@ struct QuadModel final : public Model {
 
 
 	ModelType getModelType() const override {
-		return ModelType::QUAD;
+		return ModelType::QUAD_MESH;
 	}
 
 	bool load(const std::string path) override;

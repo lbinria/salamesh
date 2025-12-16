@@ -474,22 +474,22 @@ void App::clean() {
 		glDeleteTextures(1, &colormaps2D[i]);
 }
 
-std::unique_ptr<Model> App::makeModel(MeshType type) {
+std::unique_ptr<Model> App::makeModel(ModelType type) {
 	switch (type)
 	{
-	case MeshType::TRI_MESH:
+	case ModelType::TRI_MESH:
 		return std::make_unique<TriModel>();
-	case MeshType::QUAD_MESH:
+	case ModelType::QUAD_MESH:
 		return std::make_unique<QuadModel>();
-	case MeshType::POLYGON_MESH:
+	case ModelType::POLYGON_MESH:
 		return std::make_unique<PolyModel>();
-	case MeshType::TET_MESH:
+	case ModelType::TET_MESH:
 		return std::make_unique<TetModel>();
-	case MeshType::HEX_MESH:
+	case ModelType::HEX_MESH:
 		return std::make_unique<HexModel>();
-	case MeshType::POLYLINE_MESH:
-	case MeshType::PYRAMID_MESH:
-	case MeshType::PRISM_MESH:
+	case ModelType::POLYLINE_MESH:
+	case ModelType::PYRAMID_MESH:
+	case ModelType::PRISM_MESH:
 		throw std::runtime_error("makeModel for type: " + std::to_string(type) + " not implemented.");
 	}
 
@@ -576,7 +576,7 @@ void App::focus(int modelIdx) {
 }
 
 // TODO add model must recompute far plane on loading
-int App::addModel(std::string name, MeshType type) {
+int App::addModel(std::string name, ModelType type) {
 	auto model = makeModel(type);
 	model->setName(name);
 	model->setMeshIndex(models.size());
@@ -648,9 +648,9 @@ long App::pick_edge(double x, double y) {
 	// int h = st.cell.anyHovered() ? st.cell.getHovered() : st.facet.getHovered();
 
 	int h;
-	if (st.cell.anyHovered() && (model->getModelType() == Model::ModelType::HEX || model->getModelType() == Model::ModelType::TET))
+	if (st.cell.anyHovered() && (model->getModelType() == ModelType::HEX_MESH || model->getModelType() == ModelType::TET_MESH))
 		h = st.cell.getHovered();
-	else if (st.facet.anyHovered() && (model->getModelType() == Model::ModelType::TRI || model->getModelType() == Model::ModelType::QUAD))
+	else if (st.facet.anyHovered() && (model->getModelType() == ModelType::TRI_MESH || model->getModelType() == ModelType::QUAD_MESH))
 		h = st.facet.getHovered();
 	else 
 		return -1;

@@ -31,7 +31,7 @@ struct HexModel final : public Model {
         {}
 
     ModelType getModelType() const override {
-        return ModelType::HEX;
+        return ModelType::HEX_MESH;
     }
 
 

@@ -29,7 +29,7 @@ struct TriangleInspector : public Component {
 
 		// Get current model and check it's a triangle mesh
 		auto &model = app.getCurrentModel();
-		if (model.getModelType() != Model::ModelType::TRI) {
+		if (model.getModelType() != ModelType::TRI_MESH) {
 			return;
 		}
 
@@ -249,7 +249,7 @@ struct TriangleInspector : public Component {
 
 			// Get current model and check it's a triangle mesh
 			auto &model = app.getCurrentModel();
-			if (model.getModelType() != Model::ModelType::TRI) {
+			if (model.getModelType() != ModelType::TRI_MESH) {
 				ImGui::End();
 				return true;
 			}
@@ -369,7 +369,7 @@ struct TriangleInspector : public Component {
 			return;
 
 		auto &model = app.getCurrentModel();
-		if (model.getModelType() != Model::ModelType::TRI) {
+		if (model.getModelType() != ModelType::TRI_MESH) {
 			return;
 		}
 

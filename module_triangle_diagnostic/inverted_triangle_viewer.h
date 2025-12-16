@@ -1,6 +1,7 @@
 #pragma once 
 #include "../core/app_interface.h"
 #include "../core/component.h"
+#include "../core/element.h"
 #include "../core/helpers.h"
 
 #include <string>
@@ -61,7 +62,7 @@ struct InvertedTriangleViewer : public Component {
 			// Get current model and check it's a triangle mesh
 			auto &model = app.getCurrentModel();
 
-			if (model.getModelType() != Model::ModelType::TRI)
+			if (model.getModelType() != ModelType::TRI_MESH)
 				return true;
 
 			auto &triModel = model.as<TriModel>();
@@ -106,7 +107,7 @@ struct InvertedTriangleViewer : public Component {
 		// Get current model and check it's a triangle mesh
 		auto &model = app.getCurrentModel();
 
-		if (model.getModelType() != Model::ModelType::TRI)
+		if (model.getModelType() != ModelType::TRI_MESH)
 			return;
 
 		auto &triModel = model.as<TriModel>();

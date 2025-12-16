@@ -31,7 +31,7 @@ struct TriModel final : public Model {
 
 
     ModelType getModelType() const override {
-        return ModelType::TRI;
+        return ModelType::TRI_MESH;
     }
 
 

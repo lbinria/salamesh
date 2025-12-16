@@ -105,9 +105,9 @@ struct App : public IApp {
     void unproject(int x, int y, float depth, glm::vec3 &p);
     glm::vec3 pickPoint(double x, double y);
 
-    std::unique_ptr<Model> makeModel(MeshType type);
+    std::unique_ptr<Model> makeModel(ModelType type);
     bool loadModel(const std::string& filename) override;
-    int addModel(std::string name, MeshType type) override;
+    int addModel(std::string name, ModelType type) override;
     void removeModel(int idx) override;
     bool removeModel(std::string name) override;
 	std::shared_ptr<Model> getModelByName(std::string name) override;

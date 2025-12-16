@@ -24,21 +24,6 @@ struct Model {
         ElementKind elementKind;
     };
 
-    // TODO see if i keep this ! because list can be dynamic if we create curtom models
-    // as a collection of renderers...
-    enum ModelType {
-        POINTSET = 0,
-        POLYLINE = 1,
-        TRI = 2,
-        QUAD = 3,
-        POLYGON = 4,
-        TET = 4,
-        HEX = 5,
-        PYRAMID = 6,
-        PRISM = 7,
-        HYBRID = 8 
-    };
-
     std::function<bool(Model& /*self*/, const std::string /*path*/)> loadCallback;
 
     Model(std::map<std::string, std::shared_ptr<IRenderer>> renderers) :
