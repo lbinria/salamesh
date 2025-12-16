@@ -30,6 +30,21 @@ enum ElementType {
 	VEC2_ELT
 };
 
+static std::string meshTypeToString(MeshType t) {
+	switch (t) {
+		case MeshType::POLYLINE_MESH: return "polyline";
+		case MeshType::TRI_MESH: return "tri";
+		case MeshType::QUAD_MESH: return "quad";
+		case MeshType::POLYGON_MESH: return "polygon";
+		case MeshType::TET_MESH: return "tet";
+		case MeshType::HEX_MESH: return "hex";
+		case MeshType::PYRAMID_MESH: return "pyramid";
+		case MeshType::PRISM_MESH: return "prism";
+		case MeshType::HYBRID_MESH: return "hybrid";
+		default: return "unknown";
+	}
+}
+
 static std::string elementKindToString(ElementKind e) {
 	switch (e) {
 		case ElementKind::POINTS_ELT: return "points";

@@ -24,14 +24,19 @@ struct Model {
         ElementKind elementKind;
     };
 
+    // TODO see if i keep this ! because list can be dynamic if we create curtom models
+    // as a collection of renderers...
     enum ModelType {
         POINTSET = 0,
         POLYLINE = 1,
         TRI = 2,
         QUAD = 3,
+        POLYGON = 4,
         TET = 4,
         HEX = 5,
-        HYBRID = 6 
+        PYRAMID = 6,
+        PRISM = 7,
+        HYBRID = 8 
     };
 
     std::function<bool(Model& /*self*/, const std::string /*path*/)> loadCallback;
@@ -419,10 +424,13 @@ struct Model {
 
     void unsetHighlights() {
         // Unset all
-        unsetHighlight(ElementKind::CELLS_ELT);
-        unsetHighlight(ElementKind::FACETS_ELT);
-        unsetHighlight(ElementKind::EDGES_ELT);
         unsetHighlight(ElementKind::POINTS_ELT);
+        unsetHighlight(ElementKind::CORNERS_ELT);
+        unsetHighlight(ElementKind::EDGES_ELT);
+        unsetHighlight(ElementKind::FACETS_ELT);
+        unsetHighlight(ElementKind::CELLS_ELT);
+        unsetHighlight(ElementKind::CELL_FACETS_ELT);
+        unsetHighlight(ElementKind::CELL_CORNERS_ELT);
     }
 
     void unsetFilter(ElementKind kind) {

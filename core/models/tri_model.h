@@ -19,7 +19,7 @@ using json = nlohmann::json;
 struct TriModel final : public Model {
 
 	TriModel() : 
-        _m(), 
+        _m(),
         Model::Model({
             {"mesh_renderer", std::make_shared<TriRenderer>(_m)}, 
             {"point_renderer", std::make_shared<PointSetRenderer>(_m.points) },
@@ -75,56 +75,6 @@ struct TriModel final : public Model {
         return {min, max};
     }
 
-    void updateLayer(Layer layer, ElementKind kind) {
-
-        auto attrName = getLayerAttr(layer, kind);
-
-        std::vector<float> data;
-
-        switch (kind) {
-            case ElementKind::POINTS_ELT:
-            {
-                PointAttribute<float> layerAttr;
-                if (!layerAttr.bind(attrName, _surfaceAttributes, _m))
-                    return;
-
-                data = layerAttr.ptr->data;
-                break;
-            }
-            case ElementKind::CORNERS_ELT: 
-            {
-                CornerAttribute<float> layerAttr;
-                if (!layerAttr.bind(attrName, _surfaceAttributes, _m))
-                    return;
-
-                data = layerAttr.ptr->data;
-                break;
-            }
-            case ElementKind::FACETS_ELT:
-            {
-                FacetAttribute<float> layerAttr;
-                if (!layerAttr.bind(attrName, _surfaceAttributes, _m))
-                    return;
-
-                data = layerAttr.ptr->data;
-                break;
-            }
-            default:
-                std::cerr << "Warning: TriModel::updateLayer() on " 
-                    << elementKindToString(kind) 
-                    << " with layer " 
-                    << layerToString(layer) 
-                    << " is not supported.." << std::endl;
-                return;
-        }
-
-        for (auto const &[k, r] : _renderers) {
-            if (r->isRenderElement(kind)) {
-                r->setLayer(data, layer);
-            }
-        }
-    }
-
     long pick_edge(glm::vec3 p0, int f) override {
         // Search nearest edge
         double min_d = std::numeric_limits<double>().max();
@@ -158,5 +108,58 @@ struct TriModel final : public Model {
     // Mesh
     Triangles _m;
     SurfaceAttributes _surfaceAttributes;
+
+    template<typename T> 
+    std::optional<std::vector<double>> getAttrData(std::string attrName) {
+        T layerAttr;
+        if (!layerAttr.bind(attrName, _surfaceAttributes, _m))
+            return std::nullopt;
+
+        return layerAttr.ptr->data;
+    }
+
+    // Maybe move to surfacemodel ? eventually merge with setLayer
+    void updateLayer(Layer layer, ElementKind kind) {
+
+        auto attrName = getLayerAttr(layer, kind);
+
+        std::optional<std::vector<double>> data_opt;
+
+        switch (kind) {
+            case ElementKind::POINTS_ELT: {
+                data_opt = getAttrData<PointAttribute<double>>(attrName);
+                break;
+            }
+            case ElementKind::CORNERS_ELT:
+            case ElementKind::EDGES_ELT: {
+                data_opt = getAttrData<CornerAttribute<double>>(attrName);
+                break;
+            }
+            case ElementKind::FACETS_ELT: {
+                data_opt = getAttrData<FacetAttribute<double>>(attrName);
+                break;
+            }
+            default:
+                std::cerr << "Warning: Model::updateLayer() on " 
+                    << elementKindToString(kind) 
+                    << " with layer " 
+                    << layerToString(layer) 
+                    << " is not supported.." << std::endl;
+                return;
+        }
+
+        if (!data_opt.has_value())
+            return;
+
+        // double to float
+        std::vector<float> data(data_opt.value().size());
+        std::transform(data_opt.value().begin(),data_opt.value().end(), data.begin(), [](auto v) { return static_cast<float>(v); });
+
+        for (auto const &[k, r] : _renderers) {
+            if (r->isRenderElement(kind)) {
+                r->setLayer(data, layer);
+            }
+        }
+    }
 
 };

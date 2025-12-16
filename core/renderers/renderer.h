@@ -65,14 +65,6 @@ struct IRenderer {
 		shader.setInt("attrRepeat", attrRepeat);
 	}
 
-	void setHighlightElement(ElementKind element) {
-		setLayerElement(element, Layer::HIGHLIGHT);
-	}
-
-	void setFilterElement(ElementKind element) {
-		setLayerElement(element, Layer::FILTER);
-	}
-
 	void setLayerElement(ElementKind element, Layer layer) {
 		switch (layer)
 		{

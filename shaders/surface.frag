@@ -42,6 +42,9 @@ uniform int attrElement;
 
 uniform samplerBuffer filterBuf;
 uniform samplerBuffer highlightBuf;
+uniform int highlightElement;
+uniform int filterElement;
+
 
 uniform int colorMode = 0;
 uniform vec3 color;
@@ -161,7 +164,7 @@ void attributeCompute(inout vec3 col) {
     if (attrElement == 2) {
         showCornerAttributes(col);
     }
-    // Cell facet attribute
+    // Facet attribute
     else if (attrElement == 8) {
         attrCol = getAttributeColor(fragFacetIndex);
 
@@ -205,6 +208,10 @@ void clip(inout vec3 col) {
 }
 
 void highlight(inout vec3 col) {
+    // Only highlight facets
+    if (highlightElement != 8)
+        return;
+
     // Highlight
     float highlightVal = texelFetch(highlightBuf, fragFacetIndex).x;
 

@@ -406,6 +406,218 @@ void MyApp::draw_gui() {
 	}
 
 
+	// Test set layers
+	ImGui::Begin("Test");
+
+	if (countModels() > 0) {
+
+	
+		auto &model = getCurrentModel().as<TriModel>();
+
+
+		if (ImGui::Button("Bump")) {
+			auto &m = model.getTriangles();
+
+			const double SCALE = 0.01;
+
+			for (auto &v : m.iter_vertices()) {
+
+				// Generate between 0-1
+				auto r = vec3(rand() / double(RAND_MAX), rand() / double(RAND_MAX), rand() / double(RAND_MAX));
+				v.pos() += r * SCALE;
+			}
+
+			// Update modification
+			model.push();
+		}
+
+		ImGui::Text("Highlight:");
+
+		if (ImGui::Button("Unset all highlights")) {
+			model.unsetHighlights();
+		}
+
+		if (ImGui::Button("Highlight facets")) {
+			auto &m = model.getTriangles();
+			FacetAttribute<double> hl;
+			hl.bind("_highlight", model.getSurfaceAttributes(), m);
+
+			for (auto &f : m.iter_facets()) {
+				float r = rand() / float(RAND_MAX);
+
+				if (r > .5f)
+					hl[f] = 1.f;
+				else 
+					hl[f] = 0.f;
+			}
+
+			model.setHighlight(ElementKind::FACETS_ELT);
+		}
+
+		if (ImGui::Button("Unset highlight facets")) {
+			model.unsetHighlight(ElementKind::FACETS_ELT);
+		}
+
+		if (ImGui::Button("Highlight edge")) {
+			auto &m = model.getTriangles();
+			CornerAttribute<double> hl;
+			hl.bind("_highlight", model.getSurfaceAttributes(), m);
+
+			for (auto &h : m.iter_halfedges()) {
+				float r = rand() / float(RAND_MAX);
+
+				if (r > .5f)
+					hl[h] = 1.f;
+				else 
+					hl[h] = 0.f;
+			}
+
+			model.setHighlight(ElementKind::EDGES_ELT);
+		}
+
+		if (ImGui::Button("Unset highlight edges")) {
+			model.unsetHighlight(ElementKind::EDGES_ELT);
+		}
+
+		if (ImGui::Button("Highlight corner")) {
+			auto &m = model.getTriangles();
+			CornerAttribute<double> hl;
+			hl.bind("_highlight", model.getSurfaceAttributes(), m);
+
+			for (auto &h : m.iter_halfedges()) {
+				float r = rand() / float(RAND_MAX);
+
+				if (r > .5f)
+					hl[h] = 1.f;
+				else 
+					hl[h] = 0.f;
+			}
+
+			model.setHighlight(ElementKind::CORNERS_ELT);
+		}
+
+		if (ImGui::Button("Unset highlight corners")) {
+			model.unsetHighlight(ElementKind::CORNERS_ELT);
+		}
+
+		if (ImGui::Button("Highlight point")) {
+			auto &m = model.getTriangles();
+			PointAttribute<double> hl;
+			hl.bind("_highlight", model.getSurfaceAttributes(), m);
+
+			for (auto &v : m.iter_vertices()) {
+				float r = rand() / float(RAND_MAX);
+
+				if (r > .5f)
+					hl[v] = 1.f;
+				else 
+					hl[v] = 0.f;
+			}
+
+			model.setHighlight(ElementKind::POINTS_ELT);
+		}
+
+		if (ImGui::Button("Unset highlight points")) {
+			model.unsetHighlight(ElementKind::POINTS_ELT);
+		}
+
+		ImGui::Text("Filter:");
+
+		if (ImGui::Button("Unset all filters")) {
+			model.unsetFilters();
+		}
+
+		if (ImGui::Button("Filter facets")) {
+			auto &m = model.getTriangles();
+			FacetAttribute<double> hl;
+			hl.bind("_filter", model.getSurfaceAttributes(), m);
+
+			for (auto &f : m.iter_facets()) {
+				float r = rand() / float(RAND_MAX);
+
+				if (r > .5f)
+					hl[f] = 1.f;
+				else 
+					hl[f] = 0.f;
+			}
+
+			model.setFilter(ElementKind::FACETS_ELT);
+		}
+
+		if (ImGui::Button("Unset filter facets")) {
+			model.unsetFilter(ElementKind::FACETS_ELT);
+		}
+
+		if (ImGui::Button("Filter edge")) {
+			auto &m = model.getTriangles();
+			CornerAttribute<double> hl;
+			hl.bind("_filter", model.getSurfaceAttributes(), m);
+
+			for (auto &h : m.iter_halfedges()) {
+				float r = rand() / float(RAND_MAX);
+
+				if (r > .5f)
+					hl[h] = 1.f;
+				else 
+					hl[h] = 0.f;
+			}
+
+			model.setFilter(ElementKind::EDGES_ELT);
+		}
+
+		if (ImGui::Button("Unset filter edges")) {
+			model.unsetFilter(ElementKind::EDGES_ELT);
+		}
+
+		if (ImGui::Button("Filter corner")) {
+			auto &m = model.getTriangles();
+			CornerAttribute<double> hl;
+			hl.bind("_filter", model.getSurfaceAttributes(), m);
+
+			for (auto &h : m.iter_halfedges()) {
+				float r = rand() / float(RAND_MAX);
+
+				if (r > .5f)
+					hl[h] = 1.f;
+				else 
+					hl[h] = 0.f;
+			}
+
+			model.setFilter(ElementKind::CORNERS_ELT);
+		}
+
+		if (ImGui::Button("Unset filter corners")) {
+			model.unsetFilter(ElementKind::CORNERS_ELT);
+		}
+
+		if (ImGui::Button("Filter points")) {
+			auto &m = model.getTriangles();
+			PointAttribute<double> hl;
+			hl.bind("_filter", model.getSurfaceAttributes(), m);
+
+			for (auto &v : m.iter_vertices()) {
+				float r = rand() / float(RAND_MAX);
+
+				if (r > .5f)
+					hl[v] = 1.f;
+				else 
+					hl[v] = 0.f;
+			}
+
+			model.setFilter(ElementKind::POINTS_ELT);
+		}
+
+		if (ImGui::Button("Unset filter points")) {
+			model.unsetFilter(ElementKind::POINTS_ELT);
+		}
+
+
+	}
+
+	ImGui::End();
+
+
+
 
 	isUIHovered = ImGui::IsAnyItemHovered() || ImGui::IsWindowHovered(ImGuiHoveredFlags_AnyWindow);
 

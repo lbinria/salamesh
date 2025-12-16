@@ -325,8 +325,7 @@ void App::setup() {
 
 }
 
-void App::start()
-{
+void App::start() {
 
 	Shader screenShader("shaders/screen.vert", "shaders/screen.frag");
 	screenShader.use();
