@@ -477,19 +477,19 @@ void App::clean() {
 std::unique_ptr<Model> App::makeModel(ModelType type) {
 	switch (type)
 	{
-	case ModelType::TRI_MESH:
+	case ModelType::TRI_MODEL:
 		return std::make_unique<TriModel>();
-	case ModelType::QUAD_MESH:
+	case ModelType::QUAD_MODEL:
 		return std::make_unique<QuadModel>();
-	case ModelType::POLYGON_MESH:
+	case ModelType::POLYGON_MODEL:
 		return std::make_unique<PolyModel>();
-	case ModelType::TET_MESH:
+	case ModelType::TET_MODEL:
 		return std::make_unique<TetModel>();
-	case ModelType::HEX_MESH:
+	case ModelType::HEX_MODEL:
 		return std::make_unique<HexModel>();
-	case ModelType::POLYLINE_MESH:
-	case ModelType::PYRAMID_MESH:
-	case ModelType::PRISM_MESH:
+	case ModelType::POLYLINE_MODEL:
+	case ModelType::PYRAMID_MODEL:
+	case ModelType::PRISM_MODEL:
 		throw std::runtime_error("makeModel for type: " + std::to_string(type) + " not implemented.");
 	}
 
@@ -648,9 +648,9 @@ long App::pick_edge(double x, double y) {
 	// int h = st.cell.anyHovered() ? st.cell.getHovered() : st.facet.getHovered();
 
 	int h;
-	if (st.cell.anyHovered() && (model->getModelType() == ModelType::HEX_MESH || model->getModelType() == ModelType::TET_MESH))
+	if (st.cell.anyHovered() && (model->getModelType() == ModelType::HEX_MODEL || model->getModelType() == ModelType::TET_MODEL))
 		h = st.cell.getHovered();
-	else if (st.facet.anyHovered() && (model->getModelType() == ModelType::TRI_MESH || model->getModelType() == ModelType::QUAD_MESH))
+	else if (st.facet.anyHovered() && (model->getModelType() == ModelType::TRI_MODEL || model->getModelType() == ModelType::QUAD_MODEL))
 		h = st.facet.getHovered();
 	else 
 		return -1;

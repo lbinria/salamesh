@@ -62,7 +62,7 @@ struct InvertedTriangleViewer : public Component {
 			// Get current model and check it's a triangle mesh
 			auto &model = app.getCurrentModel();
 
-			if (model.getModelType() != ModelType::TRI_MESH)
+			if (model.getModelType() != ModelType::TRI_MODEL)
 				return true;
 
 			auto &triModel = model.as<TriModel>();
@@ -107,7 +107,7 @@ struct InvertedTriangleViewer : public Component {
 		// Get current model and check it's a triangle mesh
 		auto &model = app.getCurrentModel();
 
-		if (model.getModelType() != ModelType::TRI_MESH)
+		if (model.getModelType() != ModelType::TRI_MODEL)
 			return;
 
 		auto &triModel = model.as<TriModel>();

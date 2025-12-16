@@ -31,7 +31,7 @@ struct TriModel final : public Model {
 
 
     ModelType getModelType() const override {
-        return ModelType::TRI_MESH;
+        return ModelType::TRI_MODEL;
     }
 
 
@@ -142,6 +142,8 @@ struct TriModel final : public Model {
             default:
                 std::cerr << "Warning: Model::updateLayer() on " 
                     << elementKindToString(kind) 
+                    << " of "
+                    << modelTypeToString(getModelType())
                     << " with layer " 
                     << layerToString(layer) 
                     << " is not supported.." << std::endl;

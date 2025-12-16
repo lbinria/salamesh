@@ -2,16 +2,16 @@
 #include <string>
 
 enum ModelType {
-	POINTSET = 0,
-	POLYLINE_MESH,
-	TRI_MESH,
-	QUAD_MESH,
-	POLYGON_MESH,
-	TET_MESH,
-	HEX_MESH,
-	PYRAMID_MESH,
-	PRISM_MESH,
-	HYBRID_MESH,
+	POINTSET_MODEL = 0,
+	POLYLINE_MODEL,
+	TRI_MODEL,
+	QUAD_MODEL,
+	POLYGON_MODEL,
+	TET_MODEL,
+	HEX_MODEL,
+	PYRAMID_MODEL,
+	PRISM_MODEL,
+	HYBRID_MODEL,
 };
 
 enum ElementKind {
@@ -33,16 +33,16 @@ enum ElementType {
 
 static std::string modelTypeToString(ModelType t) {
 	switch (t) {
-		case ModelType::POINTSET: return "pointset";
-		case ModelType::POLYLINE_MESH: return "polyline";
-		case ModelType::TRI_MESH: return "tri";
-		case ModelType::QUAD_MESH: return "quad";
-		case ModelType::POLYGON_MESH: return "polygon";
-		case ModelType::TET_MESH: return "tet";
-		case ModelType::HEX_MESH: return "hex";
-		case ModelType::PYRAMID_MESH: return "pyramid";
-		case ModelType::PRISM_MESH: return "prism";
-		case ModelType::HYBRID_MESH: return "hybrid";
+		case ModelType::POINTSET_MODEL: return "pointset";
+		case ModelType::POLYLINE_MODEL: return "polyline";
+		case ModelType::TRI_MODEL: return "tri";
+		case ModelType::QUAD_MODEL: return "quad";
+		case ModelType::POLYGON_MODEL: return "polygon";
+		case ModelType::TET_MODEL: return "tet";
+		case ModelType::HEX_MODEL: return "hex";
+		case ModelType::PYRAMID_MODEL: return "pyramid";
+		case ModelType::PRISM_MODEL: return "prism";
+		case ModelType::HYBRID_MODEL: return "hybrid";
 		default: return "unknown";
 	}
 }

@@ -33,7 +33,7 @@ struct PolyModel final : public Model {
 
 
 	ModelType getModelType() const override {
-		return ModelType::POLYGON_MESH;
+		return ModelType::POLYGON_MODEL;
 	}
 
 	bool load(const std::string path) override;

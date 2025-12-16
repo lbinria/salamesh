@@ -32,7 +32,7 @@ struct TetModel final : public Model {
         {}
 
     ModelType getModelType() const override {
-        return ModelType::TET_MESH;
+        return ModelType::TET_MODEL;
     }
 
 
