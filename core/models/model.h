@@ -183,7 +183,6 @@ struct Model {
         updateLayer(Layer::FILTER, kind);
     }
 
-    virtual void updateLayer(Layer layer, ElementKind kind) = 0;
 
     void render() {
         if (!visible)
@@ -684,6 +683,9 @@ struct Model {
 
     // Renderers
     std::map<std::string, std::shared_ptr<IRenderer>> _renderers;
+
+    virtual void updateLayer(Layer layer, ElementKind kind) = 0;
+
 
     private:
     

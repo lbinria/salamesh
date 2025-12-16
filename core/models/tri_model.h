@@ -119,7 +119,7 @@ struct TriModel final : public Model {
     }
 
     // Maybe move to surfacemodel ? eventually merge with setLayer
-    void updateLayer(Layer layer, ElementKind kind) {
+    void updateLayer(Layer layer, ElementKind kind) override {
 
         auto attrName = getLayerAttr(layer, kind);
 

@@ -75,11 +75,6 @@ struct QuadModel final : public Model {
 		return {min, max};
 	}
 
-	// TODO implement this !!!
-	void updateLayer(Layer layer, ElementKind kind) {
-
-	}
-
     long pick_edge(glm::vec3 p0, int f) override {
         // Search nearest edge
         double min_d = std::numeric_limits<double>().max();
@@ -113,5 +108,61 @@ struct QuadModel final : public Model {
 	// Mesh
 	Quads _m;
 	SurfaceAttributes _surfaceAttributes;
+
+	template<typename T> 
+	std::optional<std::vector<double>> getAttrData(std::string attrName) {
+		T layerAttr;
+		if (!layerAttr.bind(attrName, _surfaceAttributes, _m))
+			return std::nullopt;
+
+		return layerAttr.ptr->data;
+	}
+
+	// TODO same as TriModel... refactor
+	// Maybe move to surfacemodel ? eventually merge with setLayer
+	void updateLayer(Layer layer, ElementKind kind) override {
+
+		auto attrName = getLayerAttr(layer, kind);
+
+		std::optional<std::vector<double>> data_opt;
+
+		switch (kind) {
+			case ElementKind::POINTS_ELT: {
+				data_opt = getAttrData<PointAttribute<double>>(attrName);
+				break;
+			}
+			case ElementKind::CORNERS_ELT:
+			case ElementKind::EDGES_ELT: {
+				data_opt = getAttrData<CornerAttribute<double>>(attrName);
+				break;
+			}
+			case ElementKind::FACETS_ELT: {
+				data_opt = getAttrData<FacetAttribute<double>>(attrName);
+				break;
+			}
+			default:
+				std::cerr << "Warning: Model::updateLayer() on " 
+					<< elementKindToString(kind) 
+					<< " of "
+					<< modelTypeToString(getModelType())
+					<< " with layer " 
+					<< layerToString(layer) 
+					<< " is not supported.." << std::endl;
+				return;
+		}
+
+		if (!data_opt.has_value())
+			return;
+
+		// double to float
+		std::vector<float> data(data_opt.value().size());
+		std::transform(data_opt.value().begin(),data_opt.value().end(), data.begin(), [](auto v) { return static_cast<float>(v); });
+
+		for (auto const &[k, r] : _renderers) {
+			if (r->isRenderElement(kind)) {
+				r->setLayer(data, layer);
+			}
+		}
+	}
 
 };
