@@ -441,8 +441,12 @@ void MyApp::draw_gui() {
 			// auto &model = getCurrentModel().as<TriModel>();
 			// auto &m = model.getTriangles();
 
-			auto &model = getCurrentModel().as<QuadModel>();
-			auto &m = model.getQuads();
+			// auto &model = getCurrentModel().as<QuadModel>();
+			// auto &m = model.getQuads();
+
+			auto &model = getCurrentModel().as<PolyModel>();
+			auto &m = model.getPolygons();
+
 			FacetAttribute<double> hl;
 			hl.bind("_highlight", model.getSurfaceAttributes(), m);
 
