@@ -3,7 +3,7 @@
 #include "../../include/json.hpp"
 #include <ultimaille/all.h>
 #include <string>
-#include "model.h"
+#include "surface_model.h"
 #include "../renderers/point_set_renderer.h"
 #include "../renderers/halfedge_renderer.h"
 #include "../renderers/quad_renderer.h"
@@ -17,11 +17,11 @@
 using namespace UM;
 using json = nlohmann::json;
 
-struct QuadModel final : public Model {
+struct QuadModel final : public SurfaceModel {
 
 	QuadModel() : 
 		_m(), 
-		Model::Model({
+		SurfaceModel::SurfaceModel({
 			{"mesh_renderer", std::make_shared<QuadRenderer>(_m)}, 
 			{"point_renderer", std::make_shared<PointSetRenderer>(_m.points) },
 			{"edge_renderer", std::make_shared<SurfaceHalfedgeRenderer>(_m) },
@@ -40,129 +40,132 @@ struct QuadModel final : public Model {
 
 
 	Quads& getQuads() { return _m; }
-	SurfaceAttributes& getSurfaceAttributes() { return _surfaceAttributes; }
+    Surface& getSurface() override { return _m; }
+    const Surface& getSurface() const override { return _m; }
 
-	int nverts() const override {
-		return _m.nverts();
-	}
+	// SurfaceAttributes& getSurfaceAttributes() { return _surfaceAttributes; }
 
-	int nfacets() const override {
-		return _m.nfacets();
-	} 
+	// int nverts() const override {
+	// 	return _m.nverts();
+	// }
 
-	int ncells() const override {
-		return 0;
-	}
+	// int nfacets() const override {
+	// 	return _m.nfacets();
+	// } 
 
-	int ncorners() const override {
-		return _m.ncorners();
-	}
+	// int ncells() const override {
+	// 	return 0;
+	// }
 
-	int nhalfedges() const override {
-		return _m.ncorners();
-	}
+	// int ncorners() const override {
+	// 	return _m.ncorners();
+	// }
 
-	std::tuple<glm::vec3, glm::vec3> bbox() override {
-		glm::vec3 min = glm::vec3(FLT_MAX);
-		glm::vec3 max = glm::vec3(-FLT_MAX);
+	// int nhalfedges() const override {
+	// 	return _m.ncorners();
+	// }
 
-		for (auto &v : _m.iter_vertices()) {
-			glm::vec3 p = sl::um2glm(v.pos());
-			min = glm::min(min, p);
-			max = glm::max(max, p);
-		}
+	// std::tuple<glm::vec3, glm::vec3> bbox() override {
+	// 	glm::vec3 min = glm::vec3(FLT_MAX);
+	// 	glm::vec3 max = glm::vec3(-FLT_MAX);
 
-		return {min, max};
-	}
+	// 	for (auto &v : _m.iter_vertices()) {
+	// 		glm::vec3 p = sl::um2glm(v.pos());
+	// 		min = glm::min(min, p);
+	// 		max = glm::max(max, p);
+	// 	}
 
-    long pick_edge(glm::vec3 p0, int f) override {
-        // Search nearest edge
-        double min_d = std::numeric_limits<double>().max();
-        long found_e = -1;
+	// 	return {min, max};
+	// }
+
+    // long pick_edge(glm::vec3 p0, int f) override {
+    //     // Search nearest edge
+    //     double min_d = std::numeric_limits<double>().max();
+    //     long found_e = -1;
         
-        for (int lv = 0; lv < 4; ++lv) {
+    //     for (int lv = 0; lv < 4; ++lv) {
             
-        	// Get global indices of vertex on edge extremities
-        	auto v0 = _m.facet(f).vertex(lv % 4);
-        	auto v1 = _m.facet(f).vertex((lv + 1) % 4);
+    //     	// Get global indices of vertex on edge extremities
+    //     	auto v0 = _m.facet(f).vertex(lv % 4);
+    //     	auto v1 = _m.facet(f).vertex((lv + 1) % 4);
 
-        	// Get points from current edge
-        	vec3 p1 = _m.points[v0];
-        	vec3 p2 = _m.points[v1];
-        	vec3 b = (p1 + p2) * .5;
-        	// Compute dist from picked point to bary of edge points
-        	double d = (vec3(p0.x, p0.y, p0.z) - b).norm(); // TODO maybe use norm2 will give the same result
+    //     	// Get points from current edge
+    //     	vec3 p1 = _m.points[v0];
+    //     	vec3 p2 = _m.points[v1];
+    //     	vec3 b = (p1 + p2) * .5;
+    //     	// Compute dist from picked point to bary of edge points
+    //     	double d = (vec3(p0.x, p0.y, p0.z) - b).norm(); // TODO maybe use norm2 will give the same result
 
-        	// Keep min dist
-        	if (d < min_d) {
-        		min_d = d;
-        		found_e = f * 4 + lv;
-        	}
-        }
+    //     	// Keep min dist
+    //     	if (d < min_d) {
+    //     		min_d = d;
+    //     		found_e = f * 4 + lv;
+    //     	}
+    //     }
 
-        return found_e;
-    }
+    //     return found_e;
+    // }
 
 	private:
 
 	// Mesh
 	Quads _m;
-	SurfaceAttributes _surfaceAttributes;
+	// SurfaceAttributes _surfaceAttributes;
 
-	template<typename T> 
-	std::optional<std::vector<double>> getAttrData(std::string attrName) {
-		T layerAttr;
-		if (!layerAttr.bind(attrName, _surfaceAttributes, _m))
-			return std::nullopt;
+	// template<typename T> 
+	// std::optional<std::vector<double>> getAttrData(std::string attrName) {
+	// 	T layerAttr;
+	// 	if (!layerAttr.bind(attrName, _surfaceAttributes, _m))
+	// 		return std::nullopt;
 
-		return layerAttr.ptr->data;
-	}
+	// 	return layerAttr.ptr->data;
+	// }
 
-	// TODO same as TriModel... refactor
-	// Maybe move to surfacemodel ? eventually merge with setLayer
-	void updateLayer(Layer layer, ElementKind kind) override {
+	// // TODO same as TriModel... refactor
+	// // Maybe move to surfacemodel ? eventually merge with setLayer
+	// void updateLayer(Layer layer, ElementKind kind) override {
 
-		auto attrName = getLayerAttr(layer, kind);
+	// 	auto attrName = getLayerAttr(layer, kind);
 
-		std::optional<std::vector<double>> data_opt;
+	// 	std::optional<std::vector<double>> data_opt;
 
-		switch (kind) {
-			case ElementKind::POINTS_ELT: {
-				data_opt = getAttrData<PointAttribute<double>>(attrName);
-				break;
-			}
-			case ElementKind::CORNERS_ELT:
-			case ElementKind::EDGES_ELT: {
-				data_opt = getAttrData<CornerAttribute<double>>(attrName);
-				break;
-			}
-			case ElementKind::FACETS_ELT: {
-				data_opt = getAttrData<FacetAttribute<double>>(attrName);
-				break;
-			}
-			default:
-				std::cerr << "Warning: Model::updateLayer() on " 
-					<< elementKindToString(kind) 
-					<< " of "
-					<< modelTypeToString(getModelType())
-					<< " with layer " 
-					<< layerToString(layer) 
-					<< " is not supported.." << std::endl;
-				return;
-		}
+	// 	switch (kind) {
+	// 		case ElementKind::POINTS_ELT: {
+	// 			data_opt = getAttrData<PointAttribute<double>>(attrName);
+	// 			break;
+	// 		}
+	// 		case ElementKind::CORNERS_ELT:
+	// 		case ElementKind::EDGES_ELT: {
+	// 			data_opt = getAttrData<CornerAttribute<double>>(attrName);
+	// 			break;
+	// 		}
+	// 		case ElementKind::FACETS_ELT: {
+	// 			data_opt = getAttrData<FacetAttribute<double>>(attrName);
+	// 			break;
+	// 		}
+	// 		default:
+	// 			std::cerr << "Warning: Model::updateLayer() on " 
+	// 				<< elementKindToString(kind) 
+	// 				<< " of "
+	// 				<< modelTypeToString(getModelType())
+	// 				<< " with layer " 
+	// 				<< layerToString(layer) 
+	// 				<< " is not supported.." << std::endl;
+	// 			return;
+	// 	}
 
-		if (!data_opt.has_value())
-			return;
+	// 	if (!data_opt.has_value())
+	// 		return;
 
-		// double to float
-		std::vector<float> data(data_opt.value().size());
-		std::transform(data_opt.value().begin(),data_opt.value().end(), data.begin(), [](auto v) { return static_cast<float>(v); });
+	// 	// double to float
+	// 	std::vector<float> data(data_opt.value().size());
+	// 	std::transform(data_opt.value().begin(),data_opt.value().end(), data.begin(), [](auto v) { return static_cast<float>(v); });
 
-		for (auto const &[k, r] : _renderers) {
-			if (r->isRenderElement(kind)) {
-				r->setLayer(data, layer);
-			}
-		}
-	}
+	// 	for (auto const &[k, r] : _renderers) {
+	// 		if (r->isRenderElement(kind)) {
+	// 			r->setLayer(data, layer);
+	// 		}
+	// 	}
+	// }
 
 };

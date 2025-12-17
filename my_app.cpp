@@ -438,9 +438,11 @@ void MyApp::draw_gui() {
 		}
 
 		if (ImGui::Button("Highlight facets")) {
-			auto &model = getCurrentModel().as<TriModel>();
-			auto &m = model.getTriangles();
-			// auto &m = model.getQuads();
+			// auto &model = getCurrentModel().as<TriModel>();
+			// auto &m = model.getTriangles();
+
+			auto &model = getCurrentModel().as<QuadModel>();
+			auto &m = model.getQuads();
 			FacetAttribute<double> hl;
 			hl.bind("_highlight", model.getSurfaceAttributes(), m);
 
