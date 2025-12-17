@@ -39,6 +39,7 @@ set(SOURCES
     renderers/hex_renderer.cpp renderers/hex_renderer.h
 
     models/model.h
+    models/surface_model.cpp models/surface_model.h
     models/tri_model.cpp models/tri_model.h
     models/quad_model.cpp models/quad_model.h
     models/poly_model.cpp models/poly_model.h
