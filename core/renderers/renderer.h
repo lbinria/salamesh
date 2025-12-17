@@ -257,63 +257,46 @@ struct IRenderer {
 		glBufferData(GL_TEXTURE_BUFFER, data.size() * sizeof(float), data.data(), GL_DYNAMIC_DRAW);
 	}
 
-	void setHighlight(int idx, float val) {
-		// ptrHighlight[idx] = highlight;
-		// highlightBuffer.ptr[idx] = highlight;
-		glBindBuffer(GL_TEXTURE_BUFFER, bufHighlight);
-		glBufferSubData(GL_TEXTURE_BUFFER, idx * sizeof(float), sizeof(float), &val);
-	}
-
-	void setHighlight(std::vector<float> data) {
-		// std::memcpy(ptrHighlight, highlights.data(), highlights.size() * sizeof(float));
-		// std::memcpy(highlightBuffer.ptr, highlights.data(), highlights.size() * sizeof(float));
-		glBindBuffer(GL_TEXTURE_BUFFER, bufHighlight);
+	// Put data to buffer
+	void setBuf(unsigned int buf, std::vector<float> data) {
+		glBindBuffer(GL_TEXTURE_BUFFER, buf);
 		glBufferData(GL_TEXTURE_BUFFER, data.size() * sizeof(float), data.data(), GL_DYNAMIC_DRAW);
 	}
 
-	void setFilter(int idx, float val) {
-		// ptrFilter[idx] = filter ? 1.f : 0.f;
-		glBindBuffer(GL_TEXTURE_BUFFER, bufFilter);
+	// Put data chunk to buffer
+	void setBuf(unsigned int buf, int idx, float val) {
+		glBindBuffer(GL_TEXTURE_BUFFER, buf);
 		glBufferSubData(GL_TEXTURE_BUFFER, idx * sizeof(float), sizeof(float), &val);
 	}
 
-	// TODO not tested !
-	// Maybe protected ?
-	void setFilter(std::vector<float> data) {
-		// std::vector<float> f_filters(filters.size());
-		// std::transform(filters.begin(), filters.end(), f_filters.begin(), [](bool filter) { return filter ? 1.f : 0.f; });
-		// std::memcpy(ptrFilter, f_filters.data(), f_filters.size() * sizeof(float));
-		glBindBuffer(GL_TEXTURE_BUFFER, bufFilter);
-		glBufferData(GL_TEXTURE_BUFFER, data.size() * sizeof(float), data.data(), GL_DYNAMIC_DRAW);
+	// Obtain buffer that matches with requested layer
+	unsigned int getLayerBuffer(Layer layer) {
+		switch (layer)
+		{
+		case Layer::HIGHLIGHT:
+			return bufHighlight;
+			break;
+		case Layer::FILTER:
+			return bufFilter;
+		// Should never happen
+		default:
+			throw std::runtime_error(
+				"getLayerBuffer for layer: " + 
+				layerToString(layer) + 
+				" is not implemented."
+			);
+		}
 	}
 
 	
 	void setLayer(int idx, float val, Layer layer) {
-		switch (layer)
-		{
-		case Layer::HIGHLIGHT:
-			setHighlight(idx, val);
-			break;
-		case Layer::FILTER:
-			setFilter(idx, val);
-			break;
-		default:
-			break;
-		}
+		unsigned int buf = getLayerBuffer(layer);
+		setBuf(buf, idx, val);
 	}
 
 	void setLayer(std::vector<float> data, Layer layer) {
-		switch (layer)
-		{
-		case Layer::HIGHLIGHT:
-			setHighlight(data);
-			break;
-		case Layer::FILTER:
-			setFilter(data);
-			break;
-		default:
-			break;
-		}
+		unsigned int buf = getLayerBuffer(layer);
+		setBuf(buf, data);
 	}
 
 	void loadState(json &j) {
