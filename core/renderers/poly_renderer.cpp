@@ -187,9 +187,6 @@ void PolyRenderer::render(glm::vec3 &position) {
 	glActiveTexture(GL_TEXTURE0);
 	glBindTexture(GL_TEXTURE_1D, texColorMap);
 
-	// glActiveTexture(GL_TEXTURE0 + 1);
-	// glBindTexture(GL_TEXTURE_BUFFER, texBary);
-
 	glActiveTexture(GL_TEXTURE0 + 2);
 	glBindTexture(GL_TEXTURE_BUFFER, texAttr);
 
@@ -230,7 +227,6 @@ void PolyRenderer::clean() {
 	// 	ptrFilter = nullptr;
 	// }
 
-	glDeleteBuffers(1, &bufBary);
 	glDeleteBuffers(1, &bufAttr);
 	glDeleteTextures(1, &texAttr);
 	glDeleteBuffers(1, &bufHighlight);

@@ -68,6 +68,7 @@ struct IRenderer {
 	void setLayerElement(ElementKind element, Layer layer) {
 		switch (layer)
 		{
+		// TODO important complete
 		case Layer::HIGHLIGHT:
 			shader.use();
 			shader.setInt("highlightElement", element);
@@ -76,8 +77,13 @@ struct IRenderer {
 			shader.use();
 			shader.setInt("filterElement", element);
 			break;
+		// Should never happen
 		default:
-			break;
+			throw std::runtime_error(
+				"setLayerElement for layer: " + 
+				layerToString(layer) + 
+				" is not implemented."
+			);
 		}
 	}
 
@@ -273,6 +279,7 @@ struct IRenderer {
 	unsigned int getLayerBuffer(Layer layer) {
 		switch (layer)
 		{
+		// TODO important complete !!!!
 		case Layer::HIGHLIGHT:
 			return bufHighlight;
 			break;
@@ -336,8 +343,8 @@ struct IRenderer {
 	int attrRepeat = 1;
 
 	unsigned int VAO, VBO; // Buffers
-	unsigned int bufBary, bufHighlight, bufAttr, bufFilter; // Sample buffers
-	unsigned int texColorMap, texBary, texHighlight, texAttr, texFilter; // Textures
+	unsigned int bufHighlight, bufAttr, bufFilter; // Sample buffers
+	unsigned int texColorMap, texHighlight, texAttr, texFilter; // Textures
 
 	float *ptrAttr;
 	// float *ptrHighlight;

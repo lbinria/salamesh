@@ -101,7 +101,6 @@ void SurfaceRenderer::clean() {
 	// 	ptrFilter = nullptr;
 	// }
 
-	glDeleteBuffers(1, &bufBary);
 	glDeleteBuffers(1, &bufAttr);
 	glDeleteTextures(1, &texAttr);
 	glDeleteBuffers(1, &bufHighlight);

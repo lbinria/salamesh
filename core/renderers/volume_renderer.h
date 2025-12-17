@@ -88,7 +88,9 @@ struct VolumeRenderer : public IRenderer {
 	}
 
 	private:
-	
+
+	unsigned int bufBary, texBary;
+
 	void doLoadState(json &j) override {}
 	void doSaveState(json &j) const override {}
 
