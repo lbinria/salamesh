@@ -10,6 +10,17 @@ bool PolyModel::load(const std::string path) {
 	if (_m.nfacets() <= 0)
 		return false;
 
+	// All triangles / all quads ?
+	bool allTri = true, allQuad = true;
+	for (auto &f : _m.iter_facets()) {
+		allTri &= f.size() == 3;
+		allQuad &= f.size() == 4;
+	}
+
+	if (allTri || allQuad) {
+		return false;
+	}
+
 	// Extract name
 	if (_name.empty()) {
 		std::filesystem::path p(path);

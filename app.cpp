@@ -503,17 +503,17 @@ bool App::loadModel(const std::string& filename) {
 	bool success = false;
 
 	std::unique_ptr<Model> model;
-	model = std::make_unique<TriModel>();
+	model = std::make_unique<PolyModel>();
 
 	success = model->load(filename);
 
 	if (!success) {
-		model = std::make_unique<QuadModel>();
+		model = std::make_unique<TriModel>();
 		success = model->load(filename);
 	}
 
 	if (!success) {
-		model = std::make_unique<PolyModel>();
+		model = std::make_unique<QuadModel>();
 		success = model->load(filename);
 	}
 
