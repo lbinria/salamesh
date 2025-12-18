@@ -38,9 +38,9 @@ namespace sl {
 		std::cout << "Load: " << path << ", w: " << width << ", h: " << height << ", channels: " << nChannels << std::endl;
 		glTexImage1D(GL_TEXTURE_1D, 0, format, width, 0, format, GL_UNSIGNED_BYTE, new_data);
 		
-		// glGenerateMipmap(GL_TEXTURE_1D);
-		glActiveTexture(GL_TEXTURE0);
-		glBindTexture(GL_TEXTURE_1D, texture);
+		// TODO remove comments seems useless
+		// glActiveTexture(GL_TEXTURE0);
+		// glBindTexture(GL_TEXTURE_1D, texture);
 		
 
 		stbi_image_free(new_data);
@@ -75,8 +75,8 @@ namespace sl {
 
 		glTexImage2D(GL_TEXTURE_2D, 0, format, width, height, 0, format, GL_UNSIGNED_BYTE, new_data);
 
-		// glActiveTexture(GL_TEXTURE0);
-		glBindTexture(GL_TEXTURE_2D, texture);
+		// TODO remove comments seems useless
+		// glBindTexture(GL_TEXTURE_2D, texture);
 		
 		stbi_image_free(new_data);
 	}

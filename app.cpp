@@ -260,12 +260,11 @@ void App::setup() {
 
 	// Load colormap texture
 	int width, height, nrChannels;
-	sl::load_texture_1d("assets/CET-R41px.png", colormaps[0], width, height, nrChannels);
+	// sl::load_texture_1d("assets/CET-R41px.png", colormaps[0], width, height, nrChannels);
 	sl::load_texture_2d("assets/CET-R41px.png", colormaps2D[0], width, height, nrChannels);
-	sl::load_texture_1d("assets/CET-L08px.png", colormaps[1], width, height, nrChannels);
+	// sl::load_texture_1d("assets/CET-L08px.png", colormaps[1], width, height, nrChannels);
 	sl::load_texture_2d("assets/CET-L08px.png", colormaps2D[1], width, height, nrChannels);
-
-	sl::load_texture_1d("assets/colormap_alpha.png", colormaps[2], width, height, nrChannels);
+	// sl::load_texture_1d("assets/colormap_alpha.png", colormaps[2], width, height, nrChannels);
 	sl::load_texture_2d("assets/colormap_alpha.png", colormaps2D[2], width, height, nrChannels);
 
 	// Load icons
@@ -374,7 +373,7 @@ void App::start() {
 
 		// Render scene
 		for (auto &model : models) {
-			model->setTexture(colormaps[model->getSelectedColormap()]);
+			model->setTexture(colormaps2D[model->getSelectedColormap()]);
 			model->render();
 		}
 
@@ -468,8 +467,8 @@ void App::clean() {
 		rs->clean();
 
 	// Clear textures
-	for (int i = 0; i < IM_ARRAYSIZE(colormaps); ++i)
-		glDeleteTextures(1, &colormaps[i]);
+	// for (int i = 0; i < IM_ARRAYSIZE(colormaps); ++i)
+	// 	glDeleteTextures(1, &colormaps[i]);
 	for (int i = 0; i < IM_ARRAYSIZE(colormaps2D); ++i)
 		glDeleteTextures(1, &colormaps2D[i]);
 }

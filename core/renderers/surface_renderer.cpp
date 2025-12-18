@@ -62,7 +62,7 @@ void SurfaceRenderer::render(glm::vec3 &position) {
 	glBindVertexArray(VAO);
 
 	glActiveTexture(GL_TEXTURE0);
-	glBindTexture(GL_TEXTURE_1D, texColorMap);
+	glBindTexture(GL_TEXTURE_2D, texColorMap);
 
 	glActiveTexture(GL_TEXTURE0 + 2);
 	glBindTexture(GL_TEXTURE_BUFFER, texAttr);

@@ -34,7 +34,8 @@ uniform int invert_clipping = 0; // 0: normal, 1: inverted
 uniform vec3 hoverColor = vec3(1.,1.,1.);
 uniform vec3 selectColor = vec3(0., 0.22, 1.);
 
-uniform sampler1D fragColorMap;
+// uniform sampler1D fragColorMap;
+uniform sampler2D fragColorMap;
 uniform vec2 attrRange = vec2(0.f, 1.f);
 uniform int attrRepeat = 1;
 uniform samplerBuffer attributeData;
@@ -78,7 +79,9 @@ vec4 getAttributeColor(int index) {
     float rangeRepeat = range / attrRepeat;
     float attrVal = texelFetch(attributeData, index).x;
     float remapVal = (mod(attrVal - attrRange.x, rangeRepeat + 1)) / rangeRepeat;
-    return texture(fragColorMap, clamp(remapVal, 0., 1.));
+    // return texture(fragColorMap, clamp(remapVal, 0., 1.));
+    float x = clamp(remapVal, 0., 1.);
+    return texture(fragColorMap, vec2(x, 0.));
 }
 
 void showCornerAttributes(inout vec3 col) {

@@ -85,7 +85,7 @@ struct App : public IApp {
     unsigned int screenWidth;
     unsigned int screenHeight;
 
-    unsigned int colormaps[3];
+    // unsigned int colormaps[3];
     unsigned int colormaps2D[3];
 
 
