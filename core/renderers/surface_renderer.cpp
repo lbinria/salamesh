@@ -13,6 +13,7 @@ void SurfaceRenderer::init() {
 	sl::createTBO(bufHighlight, texHighlight, 3);
 	sl::createTBO(bufFilter, texFilter, 4);
 
+	// TODO seems useless
 	// Set up texture units		
 	glActiveTexture(GL_TEXTURE0 + 2);
 	glBindTexture(GL_TEXTURE_BUFFER, texAttr);
@@ -86,20 +87,6 @@ void SurfaceRenderer::clean() {
 	// Clean up
 	glDeleteVertexArrays(1, &VAO);
 	glDeleteBuffers(1, &VBO);
-
-	// Unmap highlight
-	// if (ptrHighlight) {
-	// 	glBindBuffer(GL_TEXTURE_BUFFER, bufHighlight);
-	// 	glUnmapBuffer(GL_TEXTURE_BUFFER);
-	// 	ptrHighlight = nullptr;
-	// }
-
-	// Unmap filter
-	// if (ptrFilter) {
-	// 	glBindBuffer(GL_TEXTURE_BUFFER, bufFilter);
-	// 	glUnmapBuffer(GL_TEXTURE_BUFFER);
-	// 	ptrFilter = nullptr;
-	// }
 
 	glDeleteBuffers(1, &bufAttr);
 	glDeleteTextures(1, &texAttr);

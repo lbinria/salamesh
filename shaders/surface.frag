@@ -34,7 +34,6 @@ uniform int invert_clipping = 0; // 0: normal, 1: inverted
 uniform vec3 hoverColor = vec3(1.,1.,1.);
 uniform vec3 selectColor = vec3(0., 0.22, 1.);
 
-// uniform sampler1D fragColorMap;
 uniform sampler2D fragColorMap;
 uniform vec2 attrRange = vec2(0.f, 1.f);
 uniform int attrRepeat = 1;

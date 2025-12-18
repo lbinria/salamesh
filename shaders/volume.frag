@@ -32,7 +32,7 @@ uniform int invert_clipping = 0; // 0: normal, 1: inverted
 uniform vec3 hoverColor = vec3(1.,1.,1.);
 uniform vec3 selectColor = vec3(0., 0.22, 1.);
 
-uniform sampler1D fragColorMap;
+uniform sampler2D fragColorMap;
 uniform vec2 attrRange = vec2(0.f, 1.f);
 uniform samplerBuffer attributeData;
 uniform int attrElement;
@@ -113,7 +113,8 @@ void main()
 
         // TODO add repeat / transparency colormaps
         float fragAttrVal = texelFetch(attributeData, primitiveIndex).x;
-        col = vec3(texture(fragColorMap, clamp((fragAttrVal - attrRange.x) / (attrRange.y - attrRange.x), 0., 1.)));
+        float x = clamp((fragAttrVal - attrRange.x) / (attrRange.y - attrRange.x), 0., 1.);
+        col = vec3(texture(fragColorMap, vec2(x, 0.)));
     }
     
 

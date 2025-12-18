@@ -28,7 +28,7 @@ uniform vec3 selectColor = vec3(0., 0.22, 1.);
 
 uniform int colorMode = 0;
 
-uniform sampler1D fragColorMap;
+uniform sampler2D fragColorMap;
 uniform vec2 attrRange = vec2(0.f, 1.f);
 uniform samplerBuffer attrBuf;
 uniform int attrElement;
@@ -88,7 +88,8 @@ void main()
     if (colorMode != 0 && attrElement == 1) {
         // TODO add repeat / transparency colormaps
         float fragAttrVal = texelFetch(attrBuf, FragVertexIndex).x;
-        col = vec3(texture(fragColorMap, clamp((fragAttrVal - attrRange.x) / (attrRange.y - attrRange.x), 0., 1.)));
+        float x = clamp((fragAttrVal - attrRange.x) / (attrRange.y - attrRange.x), 0., 1.);
+        col = vec3(texture(fragColorMap, vec2(x, 0.)));
     }
 
     // Highlight
