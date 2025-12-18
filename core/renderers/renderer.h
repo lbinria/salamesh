@@ -211,36 +211,56 @@ struct IRenderer {
 		shader.setInt("meshIndex", index);
 	}
 
+	// TODO make private
+	template<typename T, int nDims>
+	void map(std::vector<T>& data, int selectedDim, std::vector<float>& result) {
 
-	void setAttribute(ContainerBase *ga) {
-		// Set attribute element to shader
-		// shader.use();
-		// shader.setInt("attrElement", element);
+		if constexpr (nDims == 1) {
+			result.resize(data.size());
+			for (int i = 0; i < data.size(); ++i) {
+				result[i] = static_cast<float>(data[i]);
+			}
+		} else {
+			// YOu can refactor this !
+			if (selectedDim == -1) {
+				// Inline data
+				result.resize(data.size() * nDims);
+				for (int i = 0; i < data.size(); ++i) {
+					for (int d = 0; d < nDims; ++d) {
+						result[i * nDims + d] = static_cast<float>(data[i][d]);
+					}
+				}
+			} else {
+				result.resize(data.size());
+				for (int i = 0; i < data.size(); ++i) {
+					result[i] = static_cast<float>(data[i][selectedDim]);
+				}
+			}
+		}
+	}
+
+	void setAttribute(Attribute& attr) {
+
+		ContainerBase *ga = attr.ptr.get();
 
 		// Prepare data
 		std::vector<float> converted_attribute_data;
 
 		// Transform data
 		if (auto a = dynamic_cast<AttributeContainer<double>*>(ga)) {
-
-			converted_attribute_data.resize(a->data.size());
-			std::transform(a->data.begin(), a->data.end(), converted_attribute_data.begin(), [](double x) { return static_cast<float>(x);});
-
+			map<double, 1>(a->data, attr.selectedDim, converted_attribute_data);
 		} else if (auto a = dynamic_cast<AttributeContainer<float>*>(ga)) {
-			
-			converted_attribute_data.resize(a->data.size());
-			std::transform(a->data.begin(), a->data.end(), converted_attribute_data.begin(), [](auto x) { return static_cast<float>(x);});
-
+			map<float, 1>(a->data, attr.selectedDim, converted_attribute_data);
 		} else if (auto a = dynamic_cast<AttributeContainer<int>*>(ga)) {
-			
-			converted_attribute_data.resize(a->data.size());
-			std::transform(a->data.begin(), a->data.end(), converted_attribute_data.begin(), [](auto x) { return static_cast<float>(x);});
-
+			map<int, 1>(a->data, attr.selectedDim, converted_attribute_data);
 		} else if (auto a = dynamic_cast<AttributeContainer<bool>*>(ga)) {
-
-			converted_attribute_data.resize(a->data.size());
-			std::transform(a->data.begin(), a->data.end(), converted_attribute_data.begin(), [](auto x) { return static_cast<float>(x);});
-
+			map<bool, 1>(a->data, attr.selectedDim, converted_attribute_data);
+		} else if (auto a = dynamic_cast<AttributeContainer<vec2>*>(ga)) {
+			map<vec2, 2>(a->data, attr.selectedDim, converted_attribute_data);
+		} else if (auto a = dynamic_cast<AttributeContainer<vec3>*>(ga)) {
+			map<vec3, 3>(a->data, attr.selectedDim, converted_attribute_data);
+		} else {
+			throw std::runtime_error("Attribute type is not supported in `Renderer::setAttribute`.");
 		}
 
 		// Set attribute data to shader

@@ -322,7 +322,11 @@ function draw_model_properties(model, view)
 					if (imgui.BeginCombo("##combo_attribute_selection", cur_model.attrs[cur_model.selected_attr].name)) then
 						for n = 1, #cur_model.attrs do
 							local is_selected = n == cur_model.selected_attr
-							local label = cur_model.attrs[n].name .. " (" .. elementKindToString(cur_model.attrs[n].kind) .. ")" .. " (" .. elementTypeToString(cur_model.attrs[n].type) .. ")"
+							local label = cur_model.attrs[n].name 
+							.. " (" .. elementKindToString(cur_model.attrs[n].kind) .. ")" 
+							.. " (" .. elementTypeToString(cur_model.attrs[n].type) .. ")"
+							.. " (" .. tostring(cur_model.attrs[n].dim) .. ")"
+
 							if (imgui.Selectable(label, is_selected)) then
 								cur_model.selected_attr = n
 

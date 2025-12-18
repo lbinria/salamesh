@@ -14,6 +14,7 @@ struct Attribute {
 	ElementKind kind;
 	ElementType type;
 	std::shared_ptr<ContainerBase> ptr;
+	int selectedDim = -1; // -1 means select all dimensions
 
 	std::string getName() const { return name; }
 	ElementKind getKind() const { return kind; }
@@ -35,6 +36,16 @@ struct Attribute {
 	template<typename T>
 	Container<T> getContainer() const {
 		return Container<T>(ptr);
+	}
+
+	int getDims() {
+		switch (type)
+		{
+		case ElementType::VEC2_ELT:
+			return 2;
+		default:
+			return 1;
+		}
 	}
 
 };

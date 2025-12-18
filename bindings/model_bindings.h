@@ -32,6 +32,7 @@ namespace bindings {
 				c[i] = value;
 			};
 
+			// TODO complete to access attribute data
 			// sol::usertype<Attribute::Container<bool>> attr_bool_container_t = lua.new_usertype<Attribute::Container<bool>>("AttributeContainerBool");
 			
 			// attr_bool_container_t[sol::meta_function::index] = [](Attribute::Container<bool>& c, int i) {
@@ -47,10 +48,13 @@ namespace bindings {
 				"name", sol::readonly_property(&Attribute::getName),
 				"kind", sol::readonly_property(&Attribute::getKind),
 				"type", sol::readonly_property(&Attribute::getType),
+				"dim", sol::readonly_property(&Attribute::getDims),
 				"ptr", sol::readonly_property(&Attribute::getPtr),
 				"double_container", sol::readonly_property(&Attribute::getContainer<double>),
 				"int_container", sol::readonly_property(&Attribute::getContainer<int>),
-				"bool_container", sol::readonly_property(&Attribute::getContainer<bool>)
+				"bool_container", sol::readonly_property(&Attribute::getContainer<bool>),
+				"vec2_container", sol::readonly_property(&Attribute::getContainer<vec2>),
+				"vec3_container", sol::readonly_property(&Attribute::getContainer<vec3>)
 			);
 
 
@@ -150,12 +154,6 @@ namespace bindings {
 				&Model::getWorldPosition
 			);
 
-			// model_t["bbox"] = sol::readonly_property(
-			// 	&Model::bbox
-			// );
-			// model_t["bbox"] = sol::readonly_property([](Model& m) {
-			// 	return sol::as_table(m.bbox());
-			// });
 			model_t["bbox"] = sol::readonly_property([](Model& m, sol::this_state s) {
 				sol::state_view lua(s);
 				auto [minv, maxv] = m.bbox();
@@ -183,6 +181,10 @@ namespace bindings {
 				&Model::ncorners
 			);
 
+			model_t["nhalfedges"] = sol::readonly_property(
+				&Model::nhalfedges
+			);
+
 			model_t["ncells"] = sol::readonly_property(
 				&Model::ncells
 			);
@@ -197,11 +199,6 @@ namespace bindings {
 				&Model::getLightFollowView,
 				&Model::setLightFollowView
 			);
-
-			// model_t["clipping_mode"] = sol::property(
-			// 	&Model::getClippingMode,
-			// 	&Model::setClippingMode
-			// );
 
 			model_t["clipping_mode"] = sol::property([](Model &self) {
 				return self.getClippingMode() + 1;
@@ -229,7 +226,7 @@ namespace bindings {
 				&Model::setInvertClipping
 			);
 
-			model_t.set_function("setupClipping", &Model::setupClipping);
+			model_t.set_function("setup_clipping", &Model::setupClipping);
 
 			model_t["clipping_mode_strings"] = sol::readonly_property(&Model::getClippingModeStrings);
 

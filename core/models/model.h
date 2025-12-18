@@ -229,11 +229,13 @@ struct Model {
             type = ElementType::BOOL_ELT;
         } else if (auto a = dynamic_cast<AttributeContainer<vec2>*>(container.ptr.get())) {
             type = ElementType::VEC2_ELT;
+            attrs.emplace_back(container.name + "[0]", kind, ElementType::DOUBLE_ELT, container.ptr, 0);
+            attrs.emplace_back(container.name + "[1]", kind, ElementType::DOUBLE_ELT, container.ptr, 1);
         } else {
             throw std::runtime_error("Unknown attribute type for container: " + container.name);
         }
 
-        attrs.emplace_back(container.name, kind, type, container.ptr);
+        attrs.emplace_back(container.name, kind, type, container.ptr, -1);
     }
 
 
@@ -278,7 +280,7 @@ struct Model {
         for (auto const &[k, r] : _renderers) {
             r->setAttrElement(kind);
             if (r->isRenderElement(kind)) {
-                r->setAttribute(attrs[idx].ptr.get());
+                r->setAttribute(attrs[idx]);
             }
         }
     }
