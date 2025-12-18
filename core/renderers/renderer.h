@@ -68,7 +68,18 @@ struct IRenderer {
 	void setLayerElement(ElementKind element, Layer layer) {
 		switch (layer)
 		{
-		// TODO important complete
+		case Layer::COLORMAP_0:
+			shader.use();
+			shader.setInt("colormapElement0", element);
+			break;
+		case Layer::COLORMAP_1:
+			shader.use();
+			shader.setInt("colormapElement1", element);
+			break;
+		case Layer::COLORMAP_2:
+			shader.use();
+			shader.setInt("colormapElement2", element);
+			break;
 		case Layer::HIGHLIGHT:
 			shader.use();
 			shader.setInt("highlightElement", element);
@@ -77,7 +88,7 @@ struct IRenderer {
 			shader.use();
 			shader.setInt("filterElement", element);
 			break;
-		// Should never happen
+		// Should never happen (except if all the case aren't covered)
 		default:
 			throw std::runtime_error(
 				"setLayerElement for layer: " + 
@@ -279,13 +290,17 @@ struct IRenderer {
 	unsigned int getLayerBuffer(Layer layer) {
 		switch (layer)
 		{
-		// TODO important complete !!!!
+		case Layer::COLORMAP_0:
+			return bufColormap0;
+		case Layer::COLORMAP_1:
+			return bufColormap1;
+		case Layer::COLORMAP_2:
+			return bufColormap2;
 		case Layer::HIGHLIGHT:
 			return bufHighlight;
-			break;
 		case Layer::FILTER:
 			return bufFilter;
-		// Should never happen
+		// Should never happen (except if all the case aren't covered)
 		default:
 			throw std::runtime_error(
 				"getLayerBuffer for layer: " + 
@@ -343,8 +358,8 @@ struct IRenderer {
 	int attrRepeat = 1;
 
 	unsigned int VAO, VBO; // Buffers
-	unsigned int bufHighlight, bufAttr, bufFilter; // Sample buffers
-	unsigned int texColorMap, texHighlight, texAttr, texFilter; // Textures
+	unsigned int bufAttr, bufColormap0, bufColormap1, bufColormap2, bufHighlight, bufFilter; // Sample buffers
+	unsigned int texAttr, texColorMap, texColormap0, texColormap1, texColormap2, texHighlight, texFilter; // Textures
 
 	float *ptrAttr;
 	// float *ptrHighlight;
