@@ -258,11 +258,11 @@ void App::setup() {
 		std::cerr << "Warning: your GPU supports only " << maxDrawBuffers << " draw buffers, some features may not work." << std::endl;
 	}
 
-	// Load colormap texture
-	int width, height, nrChannels;
-	sl::load_texture_2d("assets/CET-R41px.png", colormaps2D[0], width, height, nrChannels);
-	sl::load_texture_2d("assets/CET-L08px.png", colormaps2D[1], width, height, nrChannels);
-	sl::load_texture_2d("assets/colormap_alpha.png", colormaps2D[2], width, height, nrChannels);
+	// Load default colormap textures
+	addColormap("CET-R41", "assets/CET-R41px.png");
+	addColormap("CET-L08", "assets/CET-L08px.png");
+	addColormap("alpha", "assets/colormap_alpha.png");
+	addColormap("alpha2", "assets/colormap_alpha.png");
 
 	// Load icons
 	int iconWidth, iconHeight, iconChannels;
@@ -370,7 +370,7 @@ void App::start() {
 
 		// Render scene
 		for (auto &model : models) {
-			model->setTexture(colormaps2D[model->getSelectedColormap()]);
+			model->setTexture(colormaps[model->getSelectedColormap()]);
 			model->render();
 		}
 
@@ -464,10 +464,8 @@ void App::clean() {
 		rs->clean();
 
 	// Clear textures
-	// for (int i = 0; i < IM_ARRAYSIZE(colormaps); ++i)
-	// 	glDeleteTextures(1, &colormaps[i]);
-	for (int i = 0; i < IM_ARRAYSIZE(colormaps2D); ++i)
-		glDeleteTextures(1, &colormaps2D[i]);
+	for (int i = 0; i < colormaps.size(); ++i)
+		glDeleteTextures(1, &colormaps[i]);
 }
 
 std::unique_ptr<Model> App::makeModel(ModelType type) {
@@ -624,6 +622,12 @@ int App::getIndexOfModel(std::string name) {
 			return i;
 	}
 	return -1;
+}
+
+void App::addColormap(const std::string name, const std::string filename) {
+	int width, height, nrChannels;
+	colormaps.resize(colormaps.size() + 1);
+	sl::load_texture_2d(filename, colormaps[colormaps.size() - 1], width, height, nrChannels);
 }
 
 long App::pick_edge(double x, double y) {

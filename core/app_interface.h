@@ -29,7 +29,7 @@ struct IApp {
     virtual int getSelectedModel() = 0;
     virtual void setSelectedModel(int selected) = 0;
     virtual Model& getCurrentModel() = 0;
-
+    virtual void addColormap(const std::string name, const std::string filename) = 0;
 
 
     virtual std::vector<std::shared_ptr<Camera>>& getCameras() = 0;

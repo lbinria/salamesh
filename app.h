@@ -85,8 +85,7 @@ struct App : public IApp {
     unsigned int screenWidth;
     unsigned int screenHeight;
 
-    // unsigned int colormaps[3];
-    unsigned int colormaps2D[4];
+    std::vector<unsigned int> colormaps;
 
 
 
@@ -105,6 +104,7 @@ struct App : public IApp {
     void unproject(int x, int y, float depth, glm::vec3 &p);
     glm::vec3 pickPoint(double x, double y);
 
+    // TODO to protected
     std::unique_ptr<Model> makeModel(ModelType type);
     bool loadModel(const std::string& filename) override;
     int addModel(std::string name, ModelType type) override;
@@ -113,6 +113,8 @@ struct App : public IApp {
 	std::shared_ptr<Model> getModelByName(std::string name) override;
 	int getIndexOfModel(std::string name) override;
 	void focus(int modelIdx);
+
+    void addColormap(const std::string name, const std::string filename) override;
 
     void computeFarPlane();
 
@@ -227,9 +229,9 @@ struct App : public IApp {
 
     InputState& getInputState() override { return st; }
 
-    
+    // TODO rename getColormaps
     std::vector<unsigned int> getColorMaps2D() override {
-        return {colormaps2D[0], colormaps2D[1], colormaps2D[2], colormaps2D[3]};
+        return colormaps;
     }
 
     int getScreenWidth() const { return screenWidth; }
