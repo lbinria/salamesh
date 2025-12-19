@@ -35,5 +35,5 @@ struct Shader {
     void setFloat2(const std::string &name, glm::vec2 value) const;
     void setFloat3(const std::string &name, glm::vec3 value) const;
     void setMat4(const std::string &name, glm::mat4 value) const;
-
+    void setFloat2AtIndex(const std::string &name, int i, glm::vec2 value) const;
 };

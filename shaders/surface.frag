@@ -36,9 +36,11 @@ uniform vec3 selectColor = vec3(0., 0.22, 1.);
 
 uniform sampler2D fragColorMap;
 uniform vec2 attrRange = vec2(0.f, 1.f);
+// uniform vec2[3] attrRanges;
 uniform int attrRepeat = 1;
 uniform samplerBuffer attributeData;
 uniform int attrElement;
+uniform int attrNDims;
 
 uniform samplerBuffer filterBuf;
 uniform samplerBuffer highlightBuf;
@@ -76,12 +78,46 @@ int getCurrentPointIdx(vec3 b) {
 vec4 getAttributeColor(int index) {
     float range = attrRange.y - attrRange.x;
     float rangeRepeat = range / attrRepeat;
-    float attrVal = texelFetch(attributeData, index).x;
-    float remapVal = (mod(attrVal - attrRange.x, rangeRepeat + 1)) / rangeRepeat;
-    // return texture(fragColorMap, clamp(remapVal, 0., 1.));
-    float x = clamp(remapVal, 0., 1.);
-    return texture(fragColorMap, vec2(x, 0.));
+
+    vec2 coords = vec2(0.);
+    for (int d = 0; d < attrNDims; d++) {
+
+        float attrVal = texelFetch(attributeData, index * attrNDims + d).x;
+        float remapVal = (mod(attrVal - attrRange.x, rangeRepeat + 1)) / rangeRepeat;
+        // float remapVal = attrVal;
+        float v = clamp(remapVal, 0., 1.);
+        coords[d] = v;
+    }
+    
+    return texture(fragColorMap, coords);
 }
+
+// vec4 getAttributeColor(int index) {
+
+
+//     vec2 coords = vec2(0.);
+//     for (int d = 0; d < attrNDims; d++) {
+//         float range = attrRanges[d].y - attrRanges[d].x;
+//         float rangeRepeat = range / attrRepeat;
+//         float attrVal = texelFetch(attributeData, index * attrNDims + d).x;
+//         // float remapVal = (mod(attrVal - attrRanges[d].x, rangeRepeat + 1)) / rangeRepeat;
+//         float remapVal = attrVal;
+//         float v = clamp(remapVal, 0., 1.);
+//         coords[d] = v;
+//     }
+    
+//     return texture(fragColorMap, coords);
+// }
+
+// vec4 getAttributeColor(int index) {
+//     float range = attrRange.y - attrRange.x;
+//     float rangeRepeat = range / attrRepeat;
+//     float attrVal = texelFetch(attributeData, index).x;
+//     float remapVal = (mod(attrVal - attrRange.x, rangeRepeat + 1)) / rangeRepeat;
+
+//     float x = clamp(remapVal, 0., 1.);
+//     return texture(fragColorMap, vec2(x, 0.));
+// }
 
 void showCornerAttributes(inout vec3 col) {
     if (isCornerVisible) {

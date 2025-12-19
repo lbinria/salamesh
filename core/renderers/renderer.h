@@ -244,42 +244,28 @@ struct IRenderer {
 		ContainerBase *ga = attr.ptr.get();
 
 		// Prepare data
-		std::vector<float> converted_attribute_data;
+		std::vector<float> data;
 
 		// Transform data
 		if (auto a = dynamic_cast<AttributeContainer<double>*>(ga)) {
-			map<double, 1>(a->data, attr.selectedDim, converted_attribute_data);
+			map<double, 1>(a->data, attr.selectedDim, data);
 		} else if (auto a = dynamic_cast<AttributeContainer<float>*>(ga)) {
-			map<float, 1>(a->data, attr.selectedDim, converted_attribute_data);
+			map<float, 1>(a->data, attr.selectedDim, data);
 		} else if (auto a = dynamic_cast<AttributeContainer<int>*>(ga)) {
-			map<int, 1>(a->data, attr.selectedDim, converted_attribute_data);
+			map<int, 1>(a->data, attr.selectedDim, data);
 		} else if (auto a = dynamic_cast<AttributeContainer<bool>*>(ga)) {
-			map<bool, 1>(a->data, attr.selectedDim, converted_attribute_data);
+			map<bool, 1>(a->data, attr.selectedDim, data);
 		} else if (auto a = dynamic_cast<AttributeContainer<vec2>*>(ga)) {
-			map<vec2, 2>(a->data, attr.selectedDim, converted_attribute_data);
+			map<vec2, 2>(a->data, attr.selectedDim, data);
 		} else if (auto a = dynamic_cast<AttributeContainer<vec3>*>(ga)) {
-			map<vec3, 3>(a->data, attr.selectedDim, converted_attribute_data);
+			map<vec3, 3>(a->data, attr.selectedDim, data);
 		} else {
 			throw std::runtime_error("Attribute type is not supported in `Renderer::setAttribute`.");
 		}
 
-		// Set attribute data to shader
-		setAttribute(converted_attribute_data);
-	}
-
-	std::tuple<float, float> getRange(std::vector<float>& data) {
-		float min = std::numeric_limits<float>::max(); 
-		float max = std::numeric_limits<float>::min();
-		for (auto x : data) {
-			min = std::min(min, x);
-			max = std::max(max, x);
-		}
-
-		return std::make_tuple(min, max);
-	}
-
-	// TODO make private
-	void setAttribute(std::vector<float> data) {
+		// Update attribute dimensions
+		shader.use();
+		shader.setInt("attrNDims", attr.getDims());
 
 		// Get range (min-max)
 		auto [min, max] = getRange(data);
@@ -288,10 +274,34 @@ struct IRenderer {
 		shader.use();
 		shader.setFloat2("attrRange", glm::vec2(min, max));
 
-		// Update sample
-		// std::memcpy(ptrAttr, data.data(), data.size() * sizeof(float));
+		// for (int d = 0; d < attr.getDims(); ++d) {
+		// 	auto [min, max] = getRange(data, d, attr.getDims());
+		// 	// Update min/max
+		// 	shader.use();
+		// 	shader.setFloat2AtIndex("attrRanges", d, glm::vec2(min, max));
+		// }
+
+		// Update buffer
 		glBindBuffer(GL_TEXTURE_BUFFER, bufAttr);
 		glBufferData(GL_TEXTURE_BUFFER, data.size() * sizeof(float), data.data(), GL_DYNAMIC_DRAW);
+	}
+
+	std::tuple<float, float> getRange(std::vector<float>& data, int dim = 0, int nDims = 1) {
+		float min = std::numeric_limits<float>::max(); 
+		float max = std::numeric_limits<float>::min();
+		for (int i = dim; i < data.size(); i+=nDims) {
+			auto x = data[i];
+			min = std::min(min, x);
+			max = std::max(max, x);
+		}
+
+		return std::make_tuple(min, max);
+	}
+
+	// TODO make private or merge with setAttribute above
+	void setAttribute(std::vector<float> data) {
+
+
 	}
 
 	// Put data to buffer

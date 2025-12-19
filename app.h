@@ -86,7 +86,7 @@ struct App : public IApp {
     unsigned int screenHeight;
 
     // unsigned int colormaps[3];
-    unsigned int colormaps2D[3];
+    unsigned int colormaps2D[4];
 
 
 
@@ -229,7 +229,7 @@ struct App : public IApp {
 
     
     std::vector<unsigned int> getColorMaps2D() override {
-        return {colormaps2D[0], colormaps2D[1], colormaps2D[2]};
+        return {colormaps2D[0], colormaps2D[1], colormaps2D[2], colormaps2D[3]};
     }
 
     int getScreenWidth() const { return screenWidth; }

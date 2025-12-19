@@ -267,6 +267,9 @@ void App::setup() {
 	// sl::load_texture_1d("assets/colormap_alpha.png", colormaps[2], width, height, nrChannels);
 	sl::load_texture_2d("assets/colormap_alpha.png", colormaps2D[2], width, height, nrChannels);
 
+	sl::load_texture_2d("assets/interior_tiles_diff_1k.png", colormaps2D[3], width, height, nrChannels);
+
+
 	// Load icons
 	int iconWidth, iconHeight, iconChannels;
 	sl::load_texture_2d("assets/icons/Eye.png", eyeIcon, iconWidth, iconHeight, iconChannels);
