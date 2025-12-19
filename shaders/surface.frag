@@ -83,10 +83,12 @@ vec4 getAttributeColor(int index) {
     for (int d = 0; d < attrNDims; d++) {
 
         float attrVal = texelFetch(attributeData, index * attrNDims + d).x;
-        float remapVal = (mod(attrVal - attrRange.x, rangeRepeat + 1)) / rangeRepeat;
-        // float remapVal = attrVal;
+        // TODO uncomment for colormap but comment for texture....
+        // float remapVal = (mod(attrVal - attrRange.x, rangeRepeat + 1)) / rangeRepeat;
+        float remapVal = attrVal;
         float v = clamp(remapVal, 0., 1.);
         coords[d] = v;
+
     }
     
     return texture(fragColorMap, coords);

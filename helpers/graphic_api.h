@@ -55,6 +55,7 @@ namespace sl {
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 
+		stbi_set_flip_vertically_on_load(1);
 		unsigned char *new_data = stbi_load(path.c_str(), &width, &height, &nChannels, 0);
 		
 		if (!new_data) {

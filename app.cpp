@@ -260,15 +260,9 @@ void App::setup() {
 
 	// Load colormap texture
 	int width, height, nrChannels;
-	// sl::load_texture_1d("assets/CET-R41px.png", colormaps[0], width, height, nrChannels);
 	sl::load_texture_2d("assets/CET-R41px.png", colormaps2D[0], width, height, nrChannels);
-	// sl::load_texture_1d("assets/CET-L08px.png", colormaps[1], width, height, nrChannels);
 	sl::load_texture_2d("assets/CET-L08px.png", colormaps2D[1], width, height, nrChannels);
-	// sl::load_texture_1d("assets/colormap_alpha.png", colormaps[2], width, height, nrChannels);
 	sl::load_texture_2d("assets/colormap_alpha.png", colormaps2D[2], width, height, nrChannels);
-
-	sl::load_texture_2d("assets/interior_tiles_diff_1k.png", colormaps2D[3], width, height, nrChannels);
-
 
 	// Load icons
 	int iconWidth, iconHeight, iconChannels;
