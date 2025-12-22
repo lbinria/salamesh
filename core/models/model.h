@@ -653,6 +653,10 @@ struct Model {
         return _renderers;
     }
 
+    std::shared_ptr<IRenderer> getRenderer(const std::string name) const {
+        return _renderers.at(name);
+    }
+
     // TODO maybe remove that later, using screen RBO to get edge ?
     virtual long pick_edge(glm::vec3 p0, int c) = 0;
 

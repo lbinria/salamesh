@@ -438,11 +438,6 @@ void MyApp::draw_gui() {
 		}
 
 		if (ImGui::Button("Highlight facets")) {
-			// auto &model = getCurrentModel().as<TriModel>();
-			// auto &m = model.getTriangles();
-
-			// auto &model = getCurrentModel().as<QuadModel>();
-			// auto &m = model.getQuads();
 
 			auto &model = getCurrentModel().as<PolyModel>();
 			auto &m = model.getPolygons();
@@ -452,11 +447,7 @@ void MyApp::draw_gui() {
 
 			for (auto &f : m.iter_facets()) {
 				float r = rand() / float(RAND_MAX);
-
-				if (r > .5f)
-					hl[f] = 1.f;
-				else 
-					hl[f] = 0.f;
+				hl[f] = std::round(r);
 			}
 
 			model.setHighlight(ElementKind::FACETS_ELT);
@@ -473,11 +464,7 @@ void MyApp::draw_gui() {
 
 			for (auto &h : m.iter_halfedges()) {
 				float r = rand() / float(RAND_MAX);
-
-				if (r > .5f)
-					hl[h] = 1.f;
-				else 
-					hl[h] = 0.f;
+				hl[h] = std::round(r);
 			}
 
 			model.setHighlight(ElementKind::EDGES_ELT);
@@ -494,11 +481,7 @@ void MyApp::draw_gui() {
 
 			for (auto &h : m.iter_halfedges()) {
 				float r = rand() / float(RAND_MAX);
-
-				if (r > .5f)
-					hl[h] = 1.f;
-				else 
-					hl[h] = 0.f;
+				hl[h] = std::round(r);
 			}
 
 			model.setHighlight(ElementKind::CORNERS_ELT);
@@ -515,11 +498,7 @@ void MyApp::draw_gui() {
 
 			for (auto &v : m.iter_vertices()) {
 				float r = rand() / float(RAND_MAX);
-
-				if (r > .5f)
-					hl[v] = 1.f;
-				else 
-					hl[v] = 0.f;
+				hl[v] = std::round(r);
 			}
 
 			model.setHighlight(ElementKind::POINTS_ELT);
@@ -542,11 +521,7 @@ void MyApp::draw_gui() {
 
 			for (auto &f : m.iter_facets()) {
 				float r = rand() / float(RAND_MAX);
-
-				if (r > .5f)
-					hl[f] = 1.f;
-				else 
-					hl[f] = 0.f;
+				hl[f] = std::round(r);
 			}
 
 			model.setFilter(ElementKind::FACETS_ELT);
@@ -563,11 +538,7 @@ void MyApp::draw_gui() {
 
 			for (auto &h : m.iter_halfedges()) {
 				float r = rand() / float(RAND_MAX);
-
-				if (r > .5f)
-					hl[h] = 1.f;
-				else 
-					hl[h] = 0.f;
+				hl[h] = std::round(r);
 			}
 
 			model.setFilter(ElementKind::EDGES_ELT);
@@ -584,11 +555,7 @@ void MyApp::draw_gui() {
 
 			for (auto &h : m.iter_halfedges()) {
 				float r = rand() / float(RAND_MAX);
-
-				if (r > .5f)
-					hl[h] = 1.f;
-				else 
-					hl[h] = 0.f;
+				hl[h] = std::round(r);
 			}
 
 			model.setFilter(ElementKind::CORNERS_ELT);
@@ -605,11 +572,7 @@ void MyApp::draw_gui() {
 
 			for (auto &v : m.iter_vertices()) {
 				float r = rand() / float(RAND_MAX);
-
-				if (r > .5f)
-					hl[v] = 1.f;
-				else 
-					hl[v] = 0.f;
+				hl[v] = std::round(r);
 			}
 
 			model.setFilter(ElementKind::POINTS_ELT);
