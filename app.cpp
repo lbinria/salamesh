@@ -262,7 +262,7 @@ void App::setup() {
 	addColormap("CET-R41", "assets/CET-R41px.png");
 	addColormap("CET-L08", "assets/CET-L08px.png");
 	addColormap("alpha", "assets/colormap_alpha.png");
-	addColormap("alpha2", "assets/colormap_alpha.png");
+	addColormap("cat", "/home/tex/Models/cat/Cat_diffuse.jpg");
 
 	// Load icons
 	int iconWidth, iconHeight, iconChannels;
@@ -370,7 +370,7 @@ void App::start() {
 
 		// Render scene
 		for (auto &model : models) {
-			model->setTexture(colormaps[model->getSelectedColormap()]);
+			model->setTexture(colormaps[model->getSelectedColormap()].tex);
 			model->render();
 		}
 
@@ -465,7 +465,7 @@ void App::clean() {
 
 	// Clear textures
 	for (int i = 0; i < colormaps.size(); ++i)
-		glDeleteTextures(1, &colormaps[i]);
+		glDeleteTextures(1, &colormaps[i].tex);
 }
 
 std::unique_ptr<Model> App::makeModel(ModelType type) {
@@ -626,8 +626,30 @@ int App::getIndexOfModel(std::string name) {
 
 void App::addColormap(const std::string name, const std::string filename) {
 	int width, height, nrChannels;
+	
+	Colormap cm{
+		name,
+		0,
+		0,
+		0
+	};
+
+	sl::load_texture_2d(filename, cm.tex, width, height, nrChannels);
+
+	cm.width = width;
+	cm.height = height;
+
 	colormaps.resize(colormaps.size() + 1);
-	sl::load_texture_2d(filename, colormaps[colormaps.size() - 1], width, height, nrChannels);
+	colormaps[colormaps.size() - 1] = cm;
+}
+
+void App::removeColormap(const std::string name) {
+	for (int i = 0; i < colormaps.size(); ++i) {
+		if (colormaps[i].name == name) {
+			colormaps.erase(colormaps.begin() + i);
+			return;
+		}
+	}
 }
 
 long App::pick_edge(double x, double y) {

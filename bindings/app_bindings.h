@@ -35,6 +35,14 @@ namespace bindings {
 			lua.set_function("elementKindToString", &elementKindToString);
 			lua.set_function("elementTypeToString", &elementTypeToString);
 
+			sol::usertype<Colormap> colormap_t = lua.new_usertype<Colormap>("Colormap", 
+				sol::constructors<Colormap()>(),
+				"name", sol::readonly_property(&Colormap::name),
+				"width", sol::readonly_property(&Colormap::width),
+				"height", sol::readonly_property(&Colormap::height),
+				"tex", sol::readonly_property(&Colormap::tex)
+			);
+
 			// App bindings
 			lua["app"] = &app;
 			sol::usertype<IApp> app_type = lua.new_usertype<IApp>("IApp");

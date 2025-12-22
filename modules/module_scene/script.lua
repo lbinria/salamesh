@@ -297,7 +297,7 @@ function draw_model_properties(model, view)
 						end
 
 						-- Display the image after the text
-						imgui.Image(app.colormaps[i], colormap_size)
+						imgui.Image(app.colormaps[i].tex, colormap_size)
 
 						imgui.PopID()
 					end
@@ -305,8 +305,15 @@ function draw_model_properties(model, view)
 					imgui.EndCombo()
 				end
 
+
+				local selected_cm = app.colormaps[cur_model.selected_colormap + 1]
+				if selected_cm.height > 1 then 
+					local h = selected_cm.height / selected_cm.width * 320
+					colormap_size = imgui.ImVec2(320, h)
+				end
+
 				imgui.Image(
-					app.colormaps[cur_model.selected_colormap + 1], 
+					selected_cm.tex, 
 					colormap_size
 				)
 

@@ -87,7 +87,7 @@ struct App : public IApp {
 
     // TODO here need a Colormap struct {unsigned int tex; int w; int h; string name}
     // display color map in good format for 2D in the UI
-    std::vector<unsigned int> colormaps;
+    std::vector<Colormap> colormaps;
 
 
 
@@ -117,6 +117,7 @@ struct App : public IApp {
 	void focus(int modelIdx);
 
     void addColormap(const std::string name, const std::string filename) override;
+    void removeColormap(const std::string name) override;
 
     void computeFarPlane();
 
@@ -231,7 +232,7 @@ struct App : public IApp {
 
     InputState& getInputState() override { return st; }
 
-    std::vector<unsigned int> getColormaps() override {
+    std::vector<Colormap> getColormaps() override {
         return colormaps;
     }
 
