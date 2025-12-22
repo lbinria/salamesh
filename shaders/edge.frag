@@ -23,6 +23,7 @@ uniform samplerBuffer attrBuf;
 uniform samplerBuffer filterBuf;
 uniform samplerBuffer highlightBuf;
 uniform int attrElement;
+uniform int attrNDims;
 
 
 in vec2 vLocalUV;  // u in [0..1] across thickness, v in [0..1] along length
@@ -44,6 +45,34 @@ float sdfEquilateralTriangle(vec2 p) {
     if (p.x+k*p.y > 0) p = vec2(p.x - k*p.y, -k*p.x-p.y) / 2.;
     p.x -= clamp(p.x, -2., 0.);
     return -length(p)*sign(p.y);
+}
+
+// vec4 getAttributeColor(int index) {
+//     float range = attrRange.y - attrRange.x;
+//     float rangeRepeat = range / attrRepeat;
+//     float attrVal = texelFetch(attrBuf, FragHalfedgeIndex).x;
+//     float remapVal = (mod(attrVal - attrRange.x, rangeRepeat + 1)) / rangeRepeat;
+//     float x = clamp(remapVal, 0., 1.);
+//     vec4 attrCol = texture(fragColorMap, vec2(x, 0.));
+//     return attrCol;
+// }
+
+vec4 getAttributeColor(int index) {
+    float range = attrRange.y - attrRange.x;
+    float rangeRepeat = range / attrRepeat;
+
+    vec2 coords = vec2(0.);
+    for (int d = 0; d < attrNDims; d++) {
+
+        float attrVal = texelFetch(attrBuf, index * attrNDims + d).x;
+        // TODO uncomment for colormap but comment for texture....
+        float remapVal = (mod(attrVal - attrRange.x, rangeRepeat + 1)) / rangeRepeat;
+        // float remapVal = attrVal;
+        float v = clamp(remapVal, 0., 1.);
+        coords[d] = v;
+    }
+    
+    return texture(fragColorMap, coords);
 }
 
 void main()
@@ -88,13 +117,7 @@ void main()
     
     // Attributes
     if (colorMode == 1 && attrElement == 2) {
-        float range = attrRange.y - attrRange.x;
-        float rangeRepeat = range / attrRepeat;
-        float attrVal = texelFetch(attrBuf, FragHalfedgeIndex).x;
-        float remapVal = (mod(attrVal - attrRange.x, rangeRepeat + 1)) / rangeRepeat;
-        float x = clamp(remapVal, 0., 1.);
-        vec4 attrCol = texture(fragColorMap, vec2(x, 0.));
-        col = vec3(attrCol);
+        col = getAttributeColor(FragHalfedgeIndex).xyz;
     }
 
     // Highlight
