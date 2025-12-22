@@ -297,7 +297,7 @@ function draw_model_properties(model, view)
 						end
 
 						-- Display the image after the text
-						imgui.Image(app.colormaps_2d[i], colormap_size)
+						imgui.Image(app.colormaps[i], colormap_size)
 
 						imgui.PopID()
 					end
@@ -306,7 +306,7 @@ function draw_model_properties(model, view)
 				end
 
 				imgui.Image(
-					app.colormaps_2d[cur_model.selected_colormap + 1], 
+					app.colormaps[cur_model.selected_colormap + 1], 
 					colormap_size
 				)
 

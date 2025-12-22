@@ -85,6 +85,8 @@ struct App : public IApp {
     unsigned int screenWidth;
     unsigned int screenHeight;
 
+    // TODO here need a Colormap struct {unsigned int tex; int w; int h; string name}
+    // display color map in good format for 2D in the UI
     std::vector<unsigned int> colormaps;
 
 
@@ -229,8 +231,7 @@ struct App : public IApp {
 
     InputState& getInputState() override { return st; }
 
-    // TODO rename getColormaps
-    std::vector<unsigned int> getColorMaps2D() override {
+    std::vector<unsigned int> getColormaps() override {
         return colormaps;
     }
 

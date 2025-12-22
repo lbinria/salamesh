@@ -46,7 +46,7 @@ struct IApp {
     virtual double getScreenAspectRatio() const = 0;
 
 
-    virtual std::vector<unsigned int> getColorMaps2D() = 0;
+    virtual std::vector<unsigned int> getColormaps() = 0;
 
     virtual std::vector<std::string> getNavigationPath() = 0;
     virtual void setNavigationPath(std::vector<std::string> path) = 0;

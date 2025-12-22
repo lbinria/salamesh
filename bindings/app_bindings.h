@@ -69,7 +69,7 @@ namespace bindings {
 			// 	&IApp::setPickMode
 			// );
 
-			app_type["colormaps_2d"] = sol::readonly_property(&IApp::getColorMaps2D);
+			app_type["colormaps"] = sol::readonly_property(&IApp::getColormaps);
 
 			app_type.set_function("load_model", &IApp::loadModel);
 			
