@@ -904,6 +904,7 @@ void App::saveState(const std::string filename) {
 
 void App::clearScene() {
 	// TODO clean all scenes properly !
+	// TODO CLEAN ALL MODELS TO FREE GPU MEMORY !
 	models.clear();
 	cameras.clear();
 

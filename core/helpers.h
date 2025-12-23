@@ -2,6 +2,8 @@
 
 #include <ultimaille/all.h>
 #include "../include/glm/glm.hpp"
+#include <string>
+#include <cctype>
 
 namespace sl {
 
@@ -27,6 +29,22 @@ namespace sl {
 
 	inline UM::vec4 glm2um(glm::vec4 v) {
 		return {v.x, v.y, v.z, v.w};
+	}
+
+	inline void toLower(std::string &s) {
+		std::transform(s.begin(), s.end(), s.begin(), [](unsigned char c) { return std::tolower(c); });
+	}
+
+	inline std::tuple<float, float> getRange(std::vector<float>& data, int dim = 0, int nDims = 1) {
+		float min = std::numeric_limits<float>::max(); 
+		float max = std::numeric_limits<float>::min();
+		for (int i = dim; i < data.size(); i+=nDims) {
+			auto x = data[i];
+			min = std::min(min, x);
+			max = std::max(max, x);
+		}
+
+		return std::make_tuple(min, max);
 	}
 
 }

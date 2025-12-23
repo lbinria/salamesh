@@ -38,12 +38,14 @@ uniform sampler2D fragColorMap;
 uniform vec2 attrRange = vec2(0.f, 1.f);
 // uniform vec2[3] attrRanges;
 uniform int attrRepeat = 1;
-uniform samplerBuffer attributeData;
+uniform samplerBuffer attrBuf;
 uniform int attrElement;
 uniform int attrNDims;
 
 uniform samplerBuffer filterBuf;
 uniform samplerBuffer highlightBuf;
+
+
 uniform int highlightElement;
 uniform int filterElement;
 
@@ -58,6 +60,14 @@ uniform int meshIndex;
 flat in int surfaceType;
 
 uniform samplerBuffer nvertsPerFacetBuf;
+
+uniform samplerBuffer colormap0Buf;
+uniform samplerBuffer colormap1Buf;
+uniform samplerBuffer colormap2Buf;
+uniform vec2 attrRange0;
+uniform vec2 attrRange1;
+uniform vec2 attrRange2;
+
 
 vec3 encode_id(int id) {
     int r = id & 0x000000FF;
@@ -75,6 +85,48 @@ int getCurrentPointIdx(vec3 b) {
     }
 }
 
+float fetchLayer(int idx, int layer) {
+    if (layer == 0) return texelFetch(colormap0Buf, idx).x;
+    if (layer == 1) return texelFetch(colormap1Buf, idx).x;
+    if (layer == 2) return texelFetch(colormap2Buf, idx).x;
+    if (layer == 3) return texelFetch(highlightBuf, idx).x;
+    if (layer == 4) return texelFetch(filterBuf, idx).x;
+    return 0.;
+}
+
+vec2 getLayerRange(int layer) {
+    if (layer == 0) return attrRange0;
+    if (layer == 1) return attrRange1;
+    if (layer == 2) return attrRange2;
+    return vec2(0.);
+}
+
+vec4 getAttributeColor2(int idx, int layer) {
+    vec2 range = getLayerRange(layer);
+    
+    float rangeLength = range.y - range.x;
+    float rangeRepeat = rangeLength / attrRepeat;
+
+    // vec2 coords = vec2(0.);
+    // for (int d = 0; d < attrNDims; d++) {
+
+    //     float attrVal = fetch(idx * attrNDims + d, bufIdx).x;
+    //     // TODO uncomment for colormap but comment for texture....
+    //     float remapVal = (mod(attrVal - attrRange.x, rangeRepeat + 1)) / rangeRepeat;
+    //     // float remapVal = attrVal;
+    //     float v = clamp(remapVal, 0., 1.);
+    //     coords[d] = v;
+    // }
+    
+    // return texture(fragColorMap, coords);
+
+    float attrVal = fetchLayer(idx, layer).x;
+    // float remapVal = (mod(attrVal - range.x, rangeRepeat + 1)) / rangeRepeat;
+    float remapVal = (attrVal - range.x) / rangeLength;
+    float v = clamp(remapVal, 0., 1.);
+    return texture(fragColorMap, vec2(v, 0.));
+}
+
 vec4 getAttributeColor(int index) {
     float range = attrRange.y - attrRange.x;
     float rangeRepeat = range / attrRepeat;
@@ -82,10 +134,10 @@ vec4 getAttributeColor(int index) {
     vec2 coords = vec2(0.);
     for (int d = 0; d < attrNDims; d++) {
 
-        float attrVal = texelFetch(attributeData, index * attrNDims + d).x;
+        float attrVal = texelFetch(attrBuf, index * attrNDims + d).x;
         // TODO uncomment for colormap but comment for texture....
-        // float remapVal = (mod(attrVal - attrRange.x, rangeRepeat + 1)) / rangeRepeat;
-        float remapVal = attrVal;
+        float remapVal = (mod(attrVal - attrRange.x, rangeRepeat + 1)) / rangeRepeat;
+        // float remapVal = attrVal;
         float v = clamp(remapVal, 0., 1.);
         coords[d] = v;
 
@@ -101,7 +153,7 @@ vec4 getAttributeColor(int index) {
 //     for (int d = 0; d < attrNDims; d++) {
 //         float range = attrRanges[d].y - attrRanges[d].x;
 //         float rangeRepeat = range / attrRepeat;
-//         float attrVal = texelFetch(attributeData, index * attrNDims + d).x;
+//         float attrVal = texelFetch(attrBuf, index * attrNDims + d).x;
 //         // float remapVal = (mod(attrVal - attrRanges[d].x, rangeRepeat + 1)) / rangeRepeat;
 //         float remapVal = attrVal;
 //         float v = clamp(remapVal, 0., 1.);
@@ -114,7 +166,7 @@ vec4 getAttributeColor(int index) {
 // vec4 getAttributeColor(int index) {
 //     float range = attrRange.y - attrRange.x;
 //     float rangeRepeat = range / attrRepeat;
-//     float attrVal = texelFetch(attributeData, index).x;
+//     float attrVal = texelFetch(attrBuf, index).x;
 //     float remapVal = (mod(attrVal - attrRange.x, rangeRepeat + 1)) / rangeRepeat;
 
 //     float x = clamp(remapVal, 0., 1.);
@@ -217,6 +269,21 @@ void attributeCompute(inout vec3 col) {
     }
 }
 
+void showColormap(inout vec3 col, int layer) {
+    if (colorMode != 1)
+        return;
+
+    vec4 attrCol = getAttributeColor2(fragFacetIndex, layer);
+
+    // Transparency
+    if (attrCol.a > 0.)
+        // col = mix(col, attrCol.xyz, .5);
+        col = attrCol.xyz;
+    else {
+        discard;
+    }
+}
+
 void _filter(inout vec3 col) {
     // Check if cell is filtered
     bool isFiltered = texelFetch(filterBuf, fragFacetIndex).x >= .5;
@@ -296,6 +363,7 @@ void main()
     _filter(col);
     clip(col);
     attributeCompute(col);
+    showColormap(col, 0);
     highlight(col);
     shading(col);
     wireframe(col);

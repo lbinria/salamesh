@@ -3,11 +3,11 @@
 #include "element.h"
 
 enum Layer {
-		COLORMAP_0,
-		COLORMAP_1,
-		COLORMAP_2,
-		HIGHLIGHT,
-		FILTER
+		COLORMAP_0 = 0,
+		COLORMAP_1 = 1,
+		COLORMAP_2 = 2,
+		HIGHLIGHT = 3,
+		FILTER = 4
 	};
 
 static std::string layerToString(Layer l) {

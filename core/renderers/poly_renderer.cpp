@@ -16,6 +16,12 @@ void PolyRenderer::init() {
 	sl::createTBO(bufFilter, texFilter, 4);
 	sl::createTBO(bufNVertsPerFacet, texNVertsPerFacet, 5);
 	
+	sl::createTBO(bufColormap0, texColormap0, 6);
+	sl::createTBO(bufColormap1, texColormap1, 7);
+	sl::createTBO(bufColormap2, texColormap2, 8);
+
+
+	// TODO seems useless below
 	glActiveTexture(GL_TEXTURE0 + 2);
 	glBindTexture(GL_TEXTURE_BUFFER, texAttr);
 
@@ -28,6 +34,16 @@ void PolyRenderer::init() {
 	glActiveTexture(GL_TEXTURE0 + 5);
 	glBindTexture(GL_TEXTURE_BUFFER, texNVertsPerFacet);
 
+	glActiveTexture(GL_TEXTURE0 + 6);
+	glBindTexture(GL_TEXTURE_BUFFER, texColormap0);
+
+	glActiveTexture(GL_TEXTURE0 + 7);
+	glBindTexture(GL_TEXTURE_BUFFER, texColormap1);
+
+	glActiveTexture(GL_TEXTURE0 + 8);
+	glBindTexture(GL_TEXTURE_BUFFER, texColormap2);
+
+
 	glBindBuffer(GL_TEXTURE_BUFFER, 0);
 
 	shader.use();
@@ -36,6 +52,9 @@ void PolyRenderer::init() {
 	shader.setInt("filterBuf", 4);
 	shader.setInt("nvertsPerFacetBuf", 5);
 
+	shader.setInt("colormap0Buf", 6);
+	shader.setInt("colormap1Buf", 7);
+	shader.setInt("colormap2Buf", 8);
 	#ifdef _DEBUG
 	std::cout << "vertex attrib setup..." << std::endl;
 	#endif
@@ -199,6 +218,15 @@ void PolyRenderer::render(glm::vec3 &position) {
 	glActiveTexture(GL_TEXTURE0 + 5);
 	glBindTexture(GL_TEXTURE_BUFFER, texNVertsPerFacet);
 
+	glActiveTexture(GL_TEXTURE0 + 6);
+	glBindTexture(GL_TEXTURE_BUFFER, texColormap0);
+
+	glActiveTexture(GL_TEXTURE0 + 7);
+	glBindTexture(GL_TEXTURE_BUFFER, texColormap1);
+
+	glActiveTexture(GL_TEXTURE0 + 8);
+	glBindTexture(GL_TEXTURE_BUFFER, texColormap2);
+
 	glm::mat4 model = glm::mat4(1.0f);
 	model = glm::translate(model, position);
 	
@@ -213,20 +241,6 @@ void PolyRenderer::clean() {
 	glDeleteVertexArrays(1, &VAO);
 	glDeleteBuffers(1, &VBO);
 
-	// Unmap highlight
-	// if (ptrHighlight) {
-	// 	glBindBuffer(GL_TEXTURE_BUFFER, bufHighlight);
-	// 	glUnmapBuffer(GL_TEXTURE_BUFFER);
-	// 	ptrHighlight = nullptr;
-	// }
-
-	// Unmap filter
-	// if (ptrFilter) {
-	// 	glBindBuffer(GL_TEXTURE_BUFFER, bufFilter);
-	// 	glUnmapBuffer(GL_TEXTURE_BUFFER);
-	// 	ptrFilter = nullptr;
-	// }
-
 	glDeleteBuffers(1, &bufAttr);
 	glDeleteTextures(1, &texAttr);
 	glDeleteBuffers(1, &bufHighlight);
@@ -235,6 +249,12 @@ void PolyRenderer::clean() {
 	glDeleteTextures(1, &texFilter);
 	glDeleteBuffers(1, &bufNVertsPerFacet);
 	glDeleteTextures(1, &texNVertsPerFacet);
+	glDeleteBuffers(1, &bufColormap0);
+	glDeleteTextures(1, &texColormap0);
+	glDeleteBuffers(1, &bufColormap1);
+	glDeleteTextures(1, &texColormap1);
+	glDeleteBuffers(1, &bufColormap2);
+	glDeleteTextures(1, &texColormap2);
 	glBindBuffer(GL_TEXTURE_BUFFER, 0);
 
 	// Clean shader

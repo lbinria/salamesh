@@ -231,6 +231,11 @@ struct Model {
             type = ElementType::VEC2_ELT;
             attrs.emplace_back(container.name + "[0]", kind, ElementType::DOUBLE_ELT, container.ptr, 0);
             attrs.emplace_back(container.name + "[1]", kind, ElementType::DOUBLE_ELT, container.ptr, 1);
+        } else if (auto a = dynamic_cast<AttributeContainer<vec3>*>(container.ptr.get())) {
+            type = ElementType::VEC3_ELT;
+            attrs.emplace_back(container.name + "[0]", kind, ElementType::DOUBLE_ELT, container.ptr, 0);
+            attrs.emplace_back(container.name + "[1]", kind, ElementType::DOUBLE_ELT, container.ptr, 1);
+            attrs.emplace_back(container.name + "[2]", kind, ElementType::DOUBLE_ELT, container.ptr, 2);
         } else {
             throw std::runtime_error("Unknown attribute type for container: " + container.name);
         }
@@ -315,6 +320,8 @@ struct Model {
             return ElementType::BOOL_ELT;
         } else if constexpr (std::is_same_v<T, vec2>) {
             return ElementType::VEC2_ELT;
+        } else if constexpr (std::is_same_v<T, vec3>) {
+            return ElementType::VEC3_ELT;
         } else {
             throw std::runtime_error("Unknown attribute type for container: " + attr.getName());
         }
@@ -388,6 +395,7 @@ struct Model {
         return defaultAttrName(layer);
     }
 
+    // TODO inline following functions
     void setHighlightAttr(std::string name, ElementKind kind) {
         setLayerAttr(name, Layer::HIGHLIGHT, kind);
     }
@@ -402,6 +410,18 @@ struct Model {
 
     void setFilter(ElementKind kind) {
         setLayer(kind, Layer::FILTER);
+    }
+
+    inline void setColormap0(ElementKind kind) {
+        setLayer(kind, Layer::COLORMAP_0);
+    }
+
+    inline void setColormap1(ElementKind kind) {
+        setLayer(kind, Layer::COLORMAP_1);
+    }
+
+    inline void setColormap2(ElementKind kind) {
+        setLayer(kind, Layer::COLORMAP_2);
     }
 
     void unsetHighlight(ElementKind kind) {
@@ -432,6 +452,27 @@ struct Model {
         unsetFilter(ElementKind::CELLS_ELT);
         unsetFilter(ElementKind::CELL_FACETS_ELT);
         unsetFilter(ElementKind::CELL_CORNERS_ELT);
+    }
+
+    void unsetColormap0(ElementKind kind) {
+        unsetLayer(kind, Layer::COLORMAP_0);
+    }
+
+    void unsetColormaps0() {
+        // Unset all
+        unsetColormap0(ElementKind::POINTS_ELT);
+        unsetColormap0(ElementKind::CORNERS_ELT);
+        unsetColormap0(ElementKind::EDGES_ELT);
+        unsetColormap0(ElementKind::FACETS_ELT);
+        unsetColormap0(ElementKind::CELLS_ELT);
+        unsetColormap0(ElementKind::CELL_FACETS_ELT);
+        unsetColormap0(ElementKind::CELL_CORNERS_ELT);
+    }
+
+    void unsetColormaps(ElementKind kind) {
+        unsetColormaps0();
+        // unsetColormaps1();
+        // unsetColormaps2();
     }
 
     void setLayer(ElementKind kind, Layer layer) {
@@ -485,6 +526,16 @@ struct Model {
         activatedLayers[{layer, kind}] = false;
     }
 
+    // void applyRangeLayer(ElementKind kind, Layer layer) {
+    //     // Compute range here
+
+    //     // If renderer is rendering this kind of element, apply range
+    //     for (auto const &[k ,r] : _renderers) {
+    //         if (r->isRenderElement(kind)) {
+    //             r->setAttrRange();
+    //         }
+    //     }
+    // }
 
 
 
@@ -691,7 +742,6 @@ struct Model {
     std::map<std::string, std::shared_ptr<IRenderer>> _renderers;
 
     virtual void updateLayer(Layer layer, ElementKind kind) = 0;
-
 
     private:
     

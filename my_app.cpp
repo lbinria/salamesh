@@ -44,7 +44,9 @@ void MyApp::init() {
 	// Check for files given in args (is it models, scripts ?)
 	std::set<std::string> accepted{".obj", ".mesh", ".geogram"};
 	for (auto &p : args.paths) {
-		if (accepted.contains(p.extension().string())) {
+		std::string ext = p.extension().string();
+		sl::toLower(ext);
+		if (accepted.contains(ext)) {
 			loadModel(p.string());
 		}
 		else if (p.extension() == ".lua") {
@@ -297,7 +299,7 @@ void MyApp::draw_gui() {
 				config.path = ".";
 				config.countSelectionMax = -1;
 				// config.flags = ImGuiFileDialogFlags_Mul
-				ImGuiFileDialog::Instance()->OpenDialog("ChooseFileDlgKey", "Choose File", "All supported mesh files {.geogram, .mesh, .obj},.geogram,.mesh,.obj,.json", config);
+				ImGuiFileDialog::Instance()->OpenDialog("ChooseFileDlgKey", "Choose File", "All supported mesh files {.geogram, .mesh, .obj, .OBJ},.geogram,.mesh,.obj,.json,.GEOGRAM,.MESH,.OBJ,.JSON", config);
 			}
 
 			if (ImGui::MenuItem("Save model as")) {
@@ -418,7 +420,7 @@ void MyApp::draw_gui() {
 		if (ImGui::Button("Bump")) {
 			auto &m = model.getTriangles();
 
-			const double SCALE = 0.01;
+			const double SCALE = model.getRadius() * 0.015;
 
 			for (auto &v : m.iter_vertices()) {
 
@@ -429,6 +431,30 @@ void MyApp::draw_gui() {
 
 			// Update modification
 			model.push();
+		}
+
+		ImGui::Text("Colormaps:");
+
+		if (ImGui::Button("Unset colormaps 0 facets")) {
+			model.unsetColormap0(ElementKind::FACETS_ELT);
+		}
+
+		if (ImGui::Button("Set colormap 0 facets")) {
+
+			auto &model = getCurrentModel().as<PolyModel>();
+			auto &m = model.getPolygons();
+			
+			model.setLayerAttr("my_attribute_0", Layer::COLORMAP_0, ElementKind::FACETS_ELT);
+
+			FacetAttribute<double> hl;
+			hl.bind("my_attribute_0", model.getSurfaceAttributes(), m);
+
+			for (auto &f : m.iter_facets()) {
+				int r = (rand() / float(RAND_MAX)) * 10000;
+				hl[f] = r;
+			}
+
+			model.setColormap0(ElementKind::FACETS_ELT);
 		}
 
 		ImGui::Text("Highlight:");

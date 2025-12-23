@@ -41,6 +41,8 @@ struct Attribute {
 	int getDims() {
 		switch (type)
 		{
+		case ElementType::VEC3_ELT:
+			return 3;
 		case ElementType::VEC2_ELT:
 			return 2;
 		default:

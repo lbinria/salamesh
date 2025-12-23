@@ -28,7 +28,8 @@ enum ElementType {
 	DOUBLE_ELT,
 	INT_ELT,
 	BOOL_ELT,
-	VEC2_ELT
+	VEC2_ELT,
+	VEC3_ELT
 };
 
 static std::string modelTypeToString(ModelType t) {
@@ -66,6 +67,7 @@ static std::string elementTypeToString(ElementType t) {
 		case ElementType::INT_ELT: return "int";
 		case ElementType::BOOL_ELT: return "bool";
 		case ElementType::VEC2_ELT: return "vec2";
+		case ElementType::VEC3_ELT: return "vec3";
 		default: return "unknown";
 	}
 }

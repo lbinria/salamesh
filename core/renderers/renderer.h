@@ -11,6 +11,7 @@
 #include "../../include/json.hpp"
 using json = nlohmann::json;
 
+#include "../helpers.h"
 
 struct IRenderer {
 
@@ -268,7 +269,7 @@ struct IRenderer {
 		shader.setInt("attrNDims", attr.getDims());
 
 		// Get range (min-max)
-		auto [min, max] = getRange(data);
+		auto [min, max] = sl::getRange(data);
 
 		// Update min/max
 		shader.use();
@@ -286,22 +287,11 @@ struct IRenderer {
 		glBufferData(GL_TEXTURE_BUFFER, data.size() * sizeof(float), data.data(), GL_DYNAMIC_DRAW);
 	}
 
-	std::tuple<float, float> getRange(std::vector<float>& data, int dim = 0, int nDims = 1) {
-		float min = std::numeric_limits<float>::max(); 
-		float max = std::numeric_limits<float>::min();
-		for (int i = dim; i < data.size(); i+=nDims) {
-			auto x = data[i];
-			min = std::min(min, x);
-			max = std::max(max, x);
-		}
 
-		return std::make_tuple(min, max);
-	}
-
-	// TODO make private or merge with setAttribute above
-	void setAttribute(std::vector<float> data) {
-
-
+	void setLayerRange(Layer layer, float min, float max) {
+		// Update min/max
+		shader.use();
+		shader.setFloat2("attrRange" + std::to_string(int(layer)), glm::vec2(min, max));
 	}
 
 	// Put data to buffer

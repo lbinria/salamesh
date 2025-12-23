@@ -103,7 +103,8 @@ struct SurfaceModel : public Model {
 	virtual Surface& getSurface() = 0;
 	virtual const Surface& getSurface() const = 0;
 
-	// Maybe move to surfacemodel ? eventually merge with setLayer
+	// TODO be able to have other attribute types than double
+	// TODO move data recuperation into a function in model.h to move data range set
 	void updateLayer(Layer layer, ElementKind kind) override {
 
 		auto attrName = getLayerAttr(layer, kind);
@@ -140,10 +141,13 @@ struct SurfaceModel : public Model {
 
 		// double to float
 		std::vector<float> data(data_opt.value().size());
-		std::transform(data_opt.value().begin(),data_opt.value().end(), data.begin(), [](auto v) { return static_cast<float>(v); });
+		std::transform(data_opt.value().begin(), data_opt.value().end(), data.begin(), [](auto v) { return static_cast<float>(v); });
+
+		auto [min, max] = sl::getRange(data);
 
 		for (auto const &[k, r] : _renderers) {
 			if (r->isRenderElement(kind)) {
+				r->setLayerRange(layer, min, max);
 				r->setLayer(data, layer);
 			}
 		}
