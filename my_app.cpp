@@ -457,6 +457,32 @@ void MyApp::draw_gui() {
 			model.setColormap0(ElementKind::FACETS_ELT);
 		}
 
+		if (ImGui::Button("Unset colormaps 1 facets")) {
+			model.unsetColormap1(ElementKind::FACETS_ELT);
+		}
+
+		if (ImGui::Button("Set colormap 1 facets")) {
+
+			auto &model = getCurrentModel().as<PolyModel>();
+			auto &m = model.getPolygons();
+			
+
+			FacetAttribute<double> hl;
+			hl.bind("my_attribute_1", model.getSurfaceAttributes(), m);
+
+			for (auto &f : m.iter_facets()) {
+				Triangle3 t = f;
+				auto b = t.bary_verts();
+				if (b.y > 0.25f) {
+					hl[f] = 1.f;
+				}
+			}
+			
+			model.setSelectedColormap1(2);
+			model.setColormap1Attr("my_attribute_1", ElementKind::FACETS_ELT);
+			model.setColormap1(ElementKind::FACETS_ELT);
+		}
+
 		ImGui::Text("Highlight:");
 
 		if (ImGui::Button("Unset all highlights")) {

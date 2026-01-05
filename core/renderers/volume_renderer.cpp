@@ -45,25 +45,25 @@ void VolumeRenderer::init() {
 	// // Map once and keep pointer (not compatible for MacOS... because need OpenGL >= 4.6 i think)
 	// ptrFilter = (float*)glMapBufferRange(GL_TEXTURE_BUFFER, 0, _m.ncells() * sizeof(float), flags);
 
-	// glGenTextures(1, &texFilter);
+	// glGenTextures(1, &tboFilter);
 	// glActiveTexture(GL_TEXTURE0 + 4); 
-	// glBindTexture(GL_TEXTURE_BUFFER, texFilter);
+	// glBindTexture(GL_TEXTURE_BUFFER, tboFilter);
 	// glTexBuffer(GL_TEXTURE_BUFFER, GL_R32F, bufFilter);
 
 	// For the moment don't use persistent mapped memory
 	glGenBuffers(1, &bufHighlight);
-	glGenTextures(1, &texHighlight);
+	glGenTextures(1, &tboHighlight);
 	glBindBuffer(GL_TEXTURE_BUFFER, bufHighlight);
 	glActiveTexture(GL_TEXTURE0 + 3); 
-	glBindTexture(GL_TEXTURE_BUFFER, texHighlight);
+	glBindTexture(GL_TEXTURE_BUFFER, tboHighlight);
 	glTexBuffer(GL_TEXTURE_BUFFER, GL_R32F, bufHighlight);
 
 	// For the moment don't use persistent mapped memory
 	glGenBuffers(1, &bufFilter);
-	glGenTextures(1, &texFilter);
+	glGenTextures(1, &tboFilter);
 	glBindBuffer(GL_TEXTURE_BUFFER, bufFilter);
 	glActiveTexture(GL_TEXTURE0 + 4); 
-	glBindTexture(GL_TEXTURE_BUFFER, texFilter);
+	glBindTexture(GL_TEXTURE_BUFFER, tboFilter);
 	glTexBuffer(GL_TEXTURE_BUFFER, GL_R32F, bufFilter);
 
 
@@ -83,10 +83,10 @@ void VolumeRenderer::init() {
 	glBindTexture(GL_TEXTURE_BUFFER, texAttr);
 
 	glActiveTexture(GL_TEXTURE0 + 3);
-	glBindTexture(GL_TEXTURE_BUFFER, texHighlight);
+	glBindTexture(GL_TEXTURE_BUFFER, tboHighlight);
 
 	glActiveTexture(GL_TEXTURE0 + 4);
-	glBindTexture(GL_TEXTURE_BUFFER, texFilter);
+	glBindTexture(GL_TEXTURE_BUFFER, tboFilter);
 
 	glBindBuffer(GL_TEXTURE_BUFFER, 0);
 
@@ -160,10 +160,10 @@ void VolumeRenderer::render(glm::vec3 &position) {
 	glBindTexture(GL_TEXTURE_BUFFER, texAttr);
 
 	glActiveTexture(GL_TEXTURE0 + 3);
-	glBindTexture(GL_TEXTURE_BUFFER, texHighlight);
+	glBindTexture(GL_TEXTURE_BUFFER, tboHighlight);
 
 	glActiveTexture(GL_TEXTURE0 + 4);
-	glBindTexture(GL_TEXTURE_BUFFER, texFilter);
+	glBindTexture(GL_TEXTURE_BUFFER, tboFilter);
 
 	glm::mat4 model = glm::mat4(1.0f);
 	model = glm::translate(model, position);
@@ -199,9 +199,9 @@ void VolumeRenderer::clean() {
 	glDeleteBuffers(1, &bufAttr);
 	glDeleteTextures(1, &texAttr);
 	glDeleteBuffers(1, &bufHighlight);
-	glDeleteTextures(1, &texHighlight);
+	glDeleteTextures(1, &tboHighlight);
 	glDeleteBuffers(1, &bufFilter);
-	glDeleteTextures(1, &texFilter);
+	glDeleteTextures(1, &tboFilter);
 	glBindBuffer(GL_TEXTURE_BUFFER, 0);
 
 	// Clean shader

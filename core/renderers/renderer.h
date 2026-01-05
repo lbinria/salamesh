@@ -35,6 +35,10 @@ struct IRenderer {
 
 	void setTexture(unsigned int tex) { texColorMap = tex; }
 
+	void setColormap0Texture(unsigned int tex) { texColormap0 = tex; }
+	void setColormap1Texture(unsigned int tex) { texColormap1 = tex; }
+	void setColormap2Texture(unsigned int tex) { texColormap2 = tex; }
+
 	void setVisible(bool v) {
 		visible = v;
 	}
@@ -66,7 +70,7 @@ struct IRenderer {
 		shader.setInt("attrRepeat", attrRepeat);
 	}
 
-	void setLayerElement(ElementKind element, Layer layer) {
+	void setLayerElement(int element, Layer layer) {
 		switch (layer)
 		{
 		case Layer::COLORMAP_0:
@@ -201,10 +205,10 @@ struct IRenderer {
 		isCornerVisible = val;
 	}
 
-	void setSelectedColormap(int idx) {
-		shader.use();
-		shader.setInt("colormap", idx);
-	}
+	// void setSelectedColormap(int idx) {
+		// shader.use();
+		// shader.setInt("colormap", idx);
+	// }
 
 	// Only on mesh
 	void setMeshIndex(int index) {
@@ -379,7 +383,7 @@ struct IRenderer {
 
 	unsigned int VAO, VBO; // Buffers
 	unsigned int bufAttr, bufColormap0, bufColormap1, bufColormap2, bufHighlight, bufFilter; // Sample buffers
-	unsigned int texAttr, texColorMap, texColormap0, texColormap1, texColormap2, texHighlight, texFilter; // Textures
+	unsigned int texAttr, texColorMap, texColormap0, texColormap1, texColormap2, tboColormap0, tboColormap1, tboColormap2, tboHighlight, tboFilter; // Textures
 
 	float *ptrAttr;
 	// float *ptrHighlight;

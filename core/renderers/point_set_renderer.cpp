@@ -12,8 +12,8 @@ void PointSetRenderer::init() {
 	
 	// For the moment don't use persistent mapped memory
 	sl::createTBO(bufAttr, texAttr, 2);
-	sl::createTBO(bufHighlight, texHighlight, 3);
-	sl::createTBO(bufFilter, texFilter, 4);
+	sl::createTBO(bufHighlight, tboHighlight, 3);
+	sl::createTBO(bufFilter, tboFilter, 4);
 
 	shader.use();
 	shader.setInt("attrBuf", 2);
@@ -89,9 +89,9 @@ void PointSetRenderer::render(glm::vec3 &position) {
 	glActiveTexture(GL_TEXTURE0 + 2);
 	glBindTexture(GL_TEXTURE_BUFFER, texAttr);
 	glActiveTexture(GL_TEXTURE0 + 3);
-	glBindTexture(GL_TEXTURE_BUFFER, texHighlight);
+	glBindTexture(GL_TEXTURE_BUFFER, tboHighlight);
 	glActiveTexture(GL_TEXTURE0 + 4);
-	glBindTexture(GL_TEXTURE_BUFFER, texFilter);
+	glBindTexture(GL_TEXTURE_BUFFER, tboFilter);
 
 
 	glm::mat4 model = glm::mat4(1.0f);
@@ -112,9 +112,9 @@ void PointSetRenderer::clean() {
 	glDeleteBuffers(1, &bufAttr);
 	glDeleteTextures(1, &texAttr);
 	glDeleteBuffers(1, &bufHighlight);
-	glDeleteTextures(1, &texHighlight);
+	glDeleteTextures(1, &tboHighlight);
 	glDeleteBuffers(1, &bufFilter);
-	glDeleteTextures(1, &texFilter);
+	glDeleteTextures(1, &tboFilter);
 	glBindBuffer(GL_TEXTURE_BUFFER, 0);
 
 	// Clean shader

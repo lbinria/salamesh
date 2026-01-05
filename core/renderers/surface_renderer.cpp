@@ -10,12 +10,12 @@ void SurfaceRenderer::init() {
 
 	// For the moment don't use persistent mapped memory
 	sl::createTBO(bufAttr, texAttr, 1);
-	sl::createTBO(bufHighlight, texHighlight, 2);
-	sl::createTBO(bufFilter, texFilter, 3);
+	sl::createTBO(bufHighlight, tboHighlight, 2);
+	sl::createTBO(bufFilter, tboFilter, 3);
 
-	sl::createTBO(bufColormap0, texColormap0, 4);
-	sl::createTBO(bufColormap1, texColormap1, 5);
-	sl::createTBO(bufColormap2, texColormap2, 6);
+	sl::createTBO(bufColormap0, tboColormap0, 4);
+	sl::createTBO(bufColormap1, tboColormap1, 5);
+	sl::createTBO(bufColormap2, tboColormap2, 6);
 
 	// TODO seems useless
 	// Set up texture units		
@@ -23,29 +23,34 @@ void SurfaceRenderer::init() {
 	glBindTexture(GL_TEXTURE_BUFFER, texAttr);
 
 	glActiveTexture(GL_TEXTURE0 + 2);
-	glBindTexture(GL_TEXTURE_BUFFER, texHighlight);
+	glBindTexture(GL_TEXTURE_BUFFER, tboHighlight);
 
 	glActiveTexture(GL_TEXTURE0 + 3);
-	glBindTexture(GL_TEXTURE_BUFFER, texFilter);
+	glBindTexture(GL_TEXTURE_BUFFER, tboFilter);
 
 	glActiveTexture(GL_TEXTURE0 + 4);
-	glBindTexture(GL_TEXTURE_BUFFER, texColormap0);
+	glBindTexture(GL_TEXTURE_BUFFER, tboColormap0);
 
 	glActiveTexture(GL_TEXTURE0 + 5);
-	glBindTexture(GL_TEXTURE_BUFFER, texColormap1);
+	glBindTexture(GL_TEXTURE_BUFFER, tboColormap1);
 
 	glActiveTexture(GL_TEXTURE0 + 6);
-	glBindTexture(GL_TEXTURE_BUFFER, texColormap2);
+	glBindTexture(GL_TEXTURE_BUFFER, tboColormap2);
 
 	glBindBuffer(GL_TEXTURE_BUFFER, 0);
 
 	shader.use();
-	shader.setInt("attrBuf", 1);
-	shader.setInt("highlightBuf", 2);
-	shader.setInt("filterBuf", 3);
-	shader.setInt("colormap0Buf", 4);
-	shader.setInt("colormap1Buf", 5);
-	shader.setInt("colormap2Buf", 6);
+	shader.setInt("colormap", 0);
+	shader.setInt("colormap0", 1);
+	shader.setInt("colormap1", 2);
+	shader.setInt("colormap2", 3);
+
+	shader.setInt("attrBuf", 4);
+	shader.setInt("highlightBuf", 5);
+	shader.setInt("filterBuf", 6);
+	shader.setInt("colormap0Buf", 7);
+	shader.setInt("colormap1Buf", 8);
+	shader.setInt("colormap2Buf", 9);
 
 	#ifdef _DEBUG
 	std::cout << "vertex attrib setup..." << std::endl;
@@ -82,22 +87,31 @@ void SurfaceRenderer::render(glm::vec3 &position) {
 	glBindTexture(GL_TEXTURE_2D, texColorMap);
 
 	glActiveTexture(GL_TEXTURE0 + 1);
-	glBindTexture(GL_TEXTURE_BUFFER, texAttr);
+	glBindTexture(GL_TEXTURE_2D, texColormap0);
 
 	glActiveTexture(GL_TEXTURE0 + 2);
-	glBindTexture(GL_TEXTURE_BUFFER, texHighlight);
+	glBindTexture(GL_TEXTURE_2D, texColormap1);
 
 	glActiveTexture(GL_TEXTURE0 + 3);
-	glBindTexture(GL_TEXTURE_BUFFER, texFilter);
+	glBindTexture(GL_TEXTURE_2D, texColormap2);
 
 	glActiveTexture(GL_TEXTURE0 + 4);
-	glBindTexture(GL_TEXTURE_BUFFER, texColormap0);
+	glBindTexture(GL_TEXTURE_BUFFER, texAttr);
 
 	glActiveTexture(GL_TEXTURE0 + 5);
-	glBindTexture(GL_TEXTURE_BUFFER, texColormap1);
+	glBindTexture(GL_TEXTURE_BUFFER, tboHighlight);
 
 	glActiveTexture(GL_TEXTURE0 + 6);
-	glBindTexture(GL_TEXTURE_BUFFER, texColormap2);
+	glBindTexture(GL_TEXTURE_BUFFER, tboFilter);
+
+	glActiveTexture(GL_TEXTURE0 + 7);
+	glBindTexture(GL_TEXTURE_BUFFER, tboColormap0);
+
+	glActiveTexture(GL_TEXTURE0 + 8);
+	glBindTexture(GL_TEXTURE_BUFFER, tboColormap1);
+
+	glActiveTexture(GL_TEXTURE0 + 9);
+	glBindTexture(GL_TEXTURE_BUFFER, tboColormap2);
 
 
 
@@ -118,15 +132,15 @@ void SurfaceRenderer::clean() {
 	glDeleteBuffers(1, &bufAttr);
 	glDeleteTextures(1, &texAttr);
 	glDeleteBuffers(1, &bufHighlight);
-	glDeleteTextures(1, &texHighlight);
+	glDeleteTextures(1, &tboHighlight);
 	glDeleteBuffers(1, &bufFilter);
-	glDeleteTextures(1, &texFilter);
+	glDeleteTextures(1, &tboFilter);
 	glDeleteBuffers(1, &bufColormap0);
-	glDeleteTextures(1, &texColormap0);
+	glDeleteTextures(1, &tboColormap0);
 	glDeleteBuffers(1, &bufColormap1);
-	glDeleteTextures(1, &texColormap1);
+	glDeleteTextures(1, &tboColormap1);
 	glDeleteBuffers(1, &bufColormap2);
-	glDeleteTextures(1, &texColormap2);
+	glDeleteTextures(1, &tboColormap2);
 	glBindBuffer(GL_TEXTURE_BUFFER, 0);
 
 	// Clean shader

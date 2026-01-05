@@ -290,6 +290,59 @@ struct Model {
         }
     }
 
+    // TODO refactor ALL below using array please
+
+    int getSelectedAttr0() const {
+        return selectedAttr0;
+    }
+
+    void setSelectedAttr0(int idx) {
+        // Under 0, no selection
+        if (idx < 0 || idx >= attrs.size())
+            return;
+
+        selectedAttr0 = idx;
+        auto attrName = attrs[idx].name;
+        ElementKind kind = attrs[idx].kind;
+
+        setColormap0Attr(attrName, kind);
+        setColormap0(kind);
+    }
+
+    int getSelectedAttr1() const {
+        return selectedAttr0;
+    }
+
+    void setSelectedAttr1(int idx) {
+        // Under 0, no selection
+        if (idx < 0 || idx >= attrs.size())
+            return;
+
+        selectedAttr1 = idx;
+        auto attrName = attrs[idx].name;
+        ElementKind kind = attrs[idx].kind;
+
+        setColormap1Attr(attrName, kind);
+        setColormap1(kind);
+    }
+
+    int getSelectedAttr2() const {
+        return selectedAttr0;
+    }
+
+    void setSelectedAttr2(int idx) {
+        // Under 0, no selection
+        if (idx < 0 || idx >= attrs.size())
+            return;
+
+        selectedAttr2 = idx;
+        auto attrName = attrs[idx].name;
+        ElementKind kind = attrs[idx].kind;
+
+        setColormap2Attr(attrName, kind);
+        setColormap2(kind);
+    }
+
     void setSelectedAttr(std::string name, ElementKind kind) {
 
         // Search attribute by name
@@ -371,15 +424,38 @@ struct Model {
         return a;
     }
 
+    // TODO remove
     int getSelectedColormap() const {
         return selectedColormap;
     }
 
+    // TODO remove
     void setSelectedColormap(int idx) {
-        for (auto const &[k, r] : _renderers)
-            r->setSelectedColormap(idx);
-            
         selectedColormap = idx;
+    }
+
+    void setSelectedColormap0(int idx) {
+        selectedColormap0 = idx;
+    }
+
+    void setSelectedColormap1(int idx) {
+        selectedColormap1 = idx;
+    }
+
+    void setSelectedColormap2(int idx) {
+        selectedColormap2 = idx;
+    }
+
+    int getSelectedColormap0() const {
+        return selectedColormap0;
+    }
+
+    int getSelectedColormap1() const {
+        return selectedColormap1;
+    }
+
+    int getSelectedColormap2() const {
+        return selectedColormap2;
     }
 
     // Choose which attribute to bind to layer / kind
@@ -470,6 +546,14 @@ struct Model {
         unsetLayer(kind, Layer::COLORMAP_0);
     }
 
+    void unsetColormap1(ElementKind kind) {
+        unsetLayer(kind, Layer::COLORMAP_1);
+    }
+
+    void unsetColormap2(ElementKind kind) {
+        unsetLayer(kind, Layer::COLORMAP_2);
+    }
+
     void unsetColormaps0() {
         // Unset all
         unsetColormap0(ElementKind::POINTS_ELT);
@@ -481,10 +565,32 @@ struct Model {
         unsetColormap0(ElementKind::CELL_CORNERS_ELT);
     }
 
+    void unsetColormaps1() {
+        // Unset all
+        unsetColormap1(ElementKind::POINTS_ELT);
+        unsetColormap1(ElementKind::CORNERS_ELT);
+        unsetColormap1(ElementKind::EDGES_ELT);
+        unsetColormap1(ElementKind::FACETS_ELT);
+        unsetColormap1(ElementKind::CELLS_ELT);
+        unsetColormap1(ElementKind::CELL_FACETS_ELT);
+        unsetColormap1(ElementKind::CELL_CORNERS_ELT);
+    }
+
+    void unsetColormaps2() {
+        // Unset all
+        unsetColormap1(ElementKind::POINTS_ELT);
+        unsetColormap1(ElementKind::CORNERS_ELT);
+        unsetColormap1(ElementKind::EDGES_ELT);
+        unsetColormap1(ElementKind::FACETS_ELT);
+        unsetColormap1(ElementKind::CELLS_ELT);
+        unsetColormap1(ElementKind::CELL_FACETS_ELT);
+        unsetColormap1(ElementKind::CELL_CORNERS_ELT);
+    }
+
     void unsetColormaps(ElementKind kind) {
         unsetColormaps0();
-        // unsetColormaps1();
-        // unsetColormaps2();
+        unsetColormaps1();
+        unsetColormaps2();
     }
 
     void setLayer(ElementKind kind, Layer layer) {
@@ -532,25 +638,12 @@ struct Model {
         for (auto const &[k ,r] : _renderers) {
             if (r->isRenderElement(kind)) {
                 r->setLayer(zeros, layer);
+                r->setLayerElement(-1, layer); // element -1 means => deactivate layer
             }
         }
 
         activatedLayers[{layer, kind}] = false;
     }
-
-    // void applyRangeLayer(ElementKind kind, Layer layer) {
-    //     // Compute range here
-
-    //     // If renderer is rendering this kind of element, apply range
-    //     for (auto const &[k ,r] : _renderers) {
-    //         if (r->isRenderElement(kind)) {
-    //             r->setAttrRange();
-    //         }
-    //     }
-    // }
-
-
-
 
     glm::vec3 getPosition() const {
         return position;
@@ -585,9 +678,25 @@ struct Model {
     }
 
     // Renderer functions
+    // TODO to remove
     void setTexture(unsigned int tex) {
         for (auto const &[k, r] : _renderers)
             r->setTexture(tex);
+    }
+
+    void setColormap0Texture(unsigned int tex) {
+        for (auto const &[k, r] : _renderers)
+            r->setColormap0Texture(tex);
+    }
+
+    void setColormap1Texture(unsigned int tex) {
+        for (auto const &[k, r] : _renderers)
+            r->setColormap1Texture(tex);
+    }
+
+    void setColormap2Texture(unsigned int tex) {
+        for (auto const &[k, r] : _renderers)
+            r->setColormap2Texture(tex);
     }
 
     int getColorMode() const {
@@ -737,6 +846,11 @@ struct Model {
     std::vector<Attribute> attrs;
     int selectedAttr = 0;
 
+    int selectedAttr0 = 0;
+    int selectedAttr1 = 0;
+    int selectedAttr2 = 0;
+
+
     bool isLightEnabled = true;
     bool isLightFollowView = false;
 
@@ -749,6 +863,11 @@ struct Model {
     ColorMode colorMode = ColorMode::COLOR;
     
     int selectedColormap = 0;
+
+    // TODO to array
+    int selectedColormap0 = 0;
+    int selectedColormap1 = 0;
+    int selectedColormap2 = 0;
 
     // Renderers
     std::map<std::string, std::shared_ptr<IRenderer>> _renderers;

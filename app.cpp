@@ -371,6 +371,9 @@ void App::start() {
 		// Render scene
 		for (auto &model : models) {
 			model->setTexture(colormaps[model->getSelectedColormap()].tex);
+			model->setColormap0Texture(colormaps[model->getSelectedColormap0()].tex);
+			model->setColormap1Texture(colormaps[model->getSelectedColormap1()].tex);
+			model->setColormap2Texture(colormaps[model->getSelectedColormap2()].tex);
 			model->render();
 		}
 

@@ -34,7 +34,11 @@ uniform int invert_clipping = 0; // 0: normal, 1: inverted
 uniform vec3 hoverColor = vec3(1.,1.,1.);
 uniform vec3 selectColor = vec3(0., 0.22, 1.);
 
-uniform sampler2D fragColorMap;
+uniform sampler2D colormap;
+uniform sampler2D colormap0;
+uniform sampler2D colormap1;
+uniform sampler2D colormap2;
+
 uniform vec2 attrRange = vec2(0.f, 1.f);
 // uniform vec2[3] attrRanges;
 uniform int attrRepeat = 1;
@@ -67,9 +71,9 @@ uniform vec2 attrRange0;
 uniform vec2 attrRange1;
 uniform vec2 attrRange2;
 
-uniform int colormapElement0;
-uniform int colormapElement1;
-uniform int colormapElement2;
+uniform int colormapElement0 = -1;
+uniform int colormapElement1 = -1;
+uniform int colormapElement2 = -1;
 
 uniform samplerBuffer nvertsPerFacetBuf;
 
@@ -98,6 +102,13 @@ float fetchLayer(int idx, int layer) {
     return 0.;
 }
 
+vec4 fetchColormap(int layer, vec2 coords) {
+    if (layer == 0) return texture(colormap0, coords);
+    if (layer == 1) return texture(colormap1, coords);
+    if (layer == 2) return texture(colormap2, coords);
+    return vec4(0.);
+}
+
 vec2 getLayerRange(int layer) {
     if (layer == 0) return attrRange0;
     if (layer == 1) return attrRange1;
@@ -111,7 +122,7 @@ int getSelectedAttrElement(int layer) {
     if (layer == 2) return colormapElement2;
     if (layer == 3) return highlightElement;
     if (layer == 4) return filterElement;
-    return 0;
+    return -1;
 }
 
 vec4 getAttributeColor2(int idx, int layer) {
@@ -131,13 +142,15 @@ vec4 getAttributeColor2(int idx, int layer) {
     //     coords[d] = v;
     // }
     
-    // return texture(fragColorMap, coords);
+    // return texture(colormap, coords);
 
     float attrVal = fetchLayer(idx, layer).x;
     // float remapVal = (mod(attrVal - range.x, rangeRepeat + 1)) / rangeRepeat;
     float remapVal = (attrVal - range.x) / rangeLength;
     float v = clamp(remapVal, 0., 1.);
-    return texture(fragColorMap, vec2(v, 0.));
+    
+    // return texture(colormap, vec2(v, 0.));
+    return fetchColormap(layer, vec2(v, 0.));
 }
 
 vec4 getAttributeColor(int index) {
@@ -156,7 +169,7 @@ vec4 getAttributeColor(int index) {
 
     }
     
-    return texture(fragColorMap, coords);
+    return texture(colormap, coords);
 }
 
 void showCornerAttributes(inout vec3 col) {
@@ -263,6 +276,9 @@ vec4 showColormap(int layer) {
         // TODO implement
         return vec4(0., 0., 0., 1.);
     }
+    else if (kind == -1 /* Layer deactivated */) {
+        return vec4(0.);
+    }
 
     return vec4(1., 0., 0., 1.);
 }
@@ -357,10 +373,10 @@ void main()
 
         if (c0.a > 0.)
             c = c0;
-        // if (c1.a > 0.)
-        //     c = mix(c, c1, .5);
-        // if (c2.a > 0.)
-        //     c = mix(c, c2, .5);
+        if (c1.a > 0.)
+            c = mix(c, c1, .5);
+        if (c2.a > 0.)
+            c = mix(c, c2, .5);
 
         if (c.a <= 0.)
             discard;

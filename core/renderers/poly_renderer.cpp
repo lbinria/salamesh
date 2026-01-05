@@ -12,11 +12,11 @@ void PolyRenderer::init() {
 
 	// For the moment don't use persistent mapped memory
 	sl::createTBO(bufAttr, texAttr, 1);
-	sl::createTBO(bufHighlight, texHighlight, 2);
-	sl::createTBO(bufFilter, texFilter, 3);	
-	sl::createTBO(bufColormap0, texColormap0, 4);
-	sl::createTBO(bufColormap1, texColormap1, 5);
-	sl::createTBO(bufColormap2, texColormap2, 6);
+	sl::createTBO(bufHighlight, tboHighlight, 2);
+	sl::createTBO(bufFilter, tboFilter, 3);	
+	sl::createTBO(bufColormap0, tboColormap0, 4);
+	sl::createTBO(bufColormap1, tboColormap1, 5);
+	sl::createTBO(bufColormap2, tboColormap2, 6);
 	sl::createTBO(bufNVertsPerFacet, texNVertsPerFacet, 7);
 
 
@@ -25,19 +25,19 @@ void PolyRenderer::init() {
 	glBindTexture(GL_TEXTURE_BUFFER, texAttr);
 
 	glActiveTexture(GL_TEXTURE0 + 2);
-	glBindTexture(GL_TEXTURE_BUFFER, texHighlight);
+	glBindTexture(GL_TEXTURE_BUFFER, tboHighlight);
 
 	glActiveTexture(GL_TEXTURE0 + 3);
-	glBindTexture(GL_TEXTURE_BUFFER, texFilter);
+	glBindTexture(GL_TEXTURE_BUFFER, tboFilter);
 
 	glActiveTexture(GL_TEXTURE0 + 4);
-	glBindTexture(GL_TEXTURE_BUFFER, texColormap0);
+	glBindTexture(GL_TEXTURE_BUFFER, tboColormap0);
 
 	glActiveTexture(GL_TEXTURE0 + 5);
-	glBindTexture(GL_TEXTURE_BUFFER, texColormap1);
+	glBindTexture(GL_TEXTURE_BUFFER, tboColormap1);
 
 	glActiveTexture(GL_TEXTURE0 + 6);
-	glBindTexture(GL_TEXTURE_BUFFER, texColormap2);
+	glBindTexture(GL_TEXTURE_BUFFER, tboColormap2);
 
 	glActiveTexture(GL_TEXTURE0 + 7);
 	glBindTexture(GL_TEXTURE_BUFFER, texNVertsPerFacet);
@@ -208,19 +208,19 @@ void PolyRenderer::render(glm::vec3 &position) {
 	glBindTexture(GL_TEXTURE_BUFFER, texAttr);
 
 	glActiveTexture(GL_TEXTURE0 + 2);
-	glBindTexture(GL_TEXTURE_BUFFER, texHighlight);
+	glBindTexture(GL_TEXTURE_BUFFER, tboHighlight);
 
 	glActiveTexture(GL_TEXTURE0 + 3);
-	glBindTexture(GL_TEXTURE_BUFFER, texFilter);
+	glBindTexture(GL_TEXTURE_BUFFER, tboFilter);
 
 	glActiveTexture(GL_TEXTURE0 + 4);
-	glBindTexture(GL_TEXTURE_BUFFER, texColormap0);
+	glBindTexture(GL_TEXTURE_BUFFER, tboColormap0);
 
 	glActiveTexture(GL_TEXTURE0 + 5);
-	glBindTexture(GL_TEXTURE_BUFFER, texColormap1);
+	glBindTexture(GL_TEXTURE_BUFFER, tboColormap1);
 
 	glActiveTexture(GL_TEXTURE0 + 6);
-	glBindTexture(GL_TEXTURE_BUFFER, texColormap2);
+	glBindTexture(GL_TEXTURE_BUFFER, tboColormap2);
 
 	glActiveTexture(GL_TEXTURE0 + 7);
 	glBindTexture(GL_TEXTURE_BUFFER, texNVertsPerFacet);
@@ -242,17 +242,17 @@ void PolyRenderer::clean() {
 	glDeleteBuffers(1, &bufAttr);
 	glDeleteTextures(1, &texAttr);
 	glDeleteBuffers(1, &bufHighlight);
-	glDeleteTextures(1, &texHighlight);
+	glDeleteTextures(1, &tboHighlight);
 	glDeleteBuffers(1, &bufFilter);
-	glDeleteTextures(1, &texFilter);
+	glDeleteTextures(1, &tboFilter);
 	glDeleteBuffers(1, &bufNVertsPerFacet);
 	glDeleteTextures(1, &texNVertsPerFacet);
 	glDeleteBuffers(1, &bufColormap0);
-	glDeleteTextures(1, &texColormap0);
+	glDeleteTextures(1, &tboColormap0);
 	glDeleteBuffers(1, &bufColormap1);
-	glDeleteTextures(1, &texColormap1);
+	glDeleteTextures(1, &tboColormap1);
 	glDeleteBuffers(1, &bufColormap2);
-	glDeleteTextures(1, &texColormap2);
+	glDeleteTextures(1, &tboColormap2);
 	glBindBuffer(GL_TEXTURE_BUFFER, 0);
 
 	// Clean shader
