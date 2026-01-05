@@ -11,50 +11,48 @@ void PolyRenderer::init() {
 	glGenBuffers(1, &VBO);
 
 	// For the moment don't use persistent mapped memory
-	sl::createTBO(bufAttr, texAttr, 2);
-	sl::createTBO(bufHighlight, texHighlight, 3);
-	sl::createTBO(bufFilter, texFilter, 4);
-	sl::createTBO(bufNVertsPerFacet, texNVertsPerFacet, 5);
-	
-	sl::createTBO(bufColormap0, texColormap0, 6);
-	sl::createTBO(bufColormap1, texColormap1, 7);
-	sl::createTBO(bufColormap2, texColormap2, 8);
+	sl::createTBO(bufAttr, texAttr, 1);
+	sl::createTBO(bufHighlight, texHighlight, 2);
+	sl::createTBO(bufFilter, texFilter, 3);	
+	sl::createTBO(bufColormap0, texColormap0, 4);
+	sl::createTBO(bufColormap1, texColormap1, 5);
+	sl::createTBO(bufColormap2, texColormap2, 6);
+	sl::createTBO(bufNVertsPerFacet, texNVertsPerFacet, 7);
 
 
 	// TODO seems useless below
-	glActiveTexture(GL_TEXTURE0 + 2);
+	glActiveTexture(GL_TEXTURE0 + 1);
 	glBindTexture(GL_TEXTURE_BUFFER, texAttr);
 
-	glActiveTexture(GL_TEXTURE0 + 3);
+	glActiveTexture(GL_TEXTURE0 + 2);
 	glBindTexture(GL_TEXTURE_BUFFER, texHighlight);
 
-	glActiveTexture(GL_TEXTURE0 + 4);
+	glActiveTexture(GL_TEXTURE0 + 3);
 	glBindTexture(GL_TEXTURE_BUFFER, texFilter);
 
-	glActiveTexture(GL_TEXTURE0 + 5);
-	glBindTexture(GL_TEXTURE_BUFFER, texNVertsPerFacet);
-
-	glActiveTexture(GL_TEXTURE0 + 6);
+	glActiveTexture(GL_TEXTURE0 + 4);
 	glBindTexture(GL_TEXTURE_BUFFER, texColormap0);
 
-	glActiveTexture(GL_TEXTURE0 + 7);
+	glActiveTexture(GL_TEXTURE0 + 5);
 	glBindTexture(GL_TEXTURE_BUFFER, texColormap1);
 
-	glActiveTexture(GL_TEXTURE0 + 8);
+	glActiveTexture(GL_TEXTURE0 + 6);
 	glBindTexture(GL_TEXTURE_BUFFER, texColormap2);
 
+	glActiveTexture(GL_TEXTURE0 + 7);
+	glBindTexture(GL_TEXTURE_BUFFER, texNVertsPerFacet);
 
 	glBindBuffer(GL_TEXTURE_BUFFER, 0);
 
 	shader.use();
-	shader.setInt("attributeData", 2);
-	shader.setInt("highlightBuf", 3);
-	shader.setInt("filterBuf", 4);
-	shader.setInt("nvertsPerFacetBuf", 5);
+	shader.setInt("attributeData", 1);
+	shader.setInt("highlightBuf", 2);
+	shader.setInt("filterBuf", 3);
+	shader.setInt("colormap0Buf", 4);
+	shader.setInt("colormap1Buf", 5);
+	shader.setInt("colormap2Buf", 6);
+	shader.setInt("nvertsPerFacetBuf", 7);
 
-	shader.setInt("colormap0Buf", 6);
-	shader.setInt("colormap1Buf", 7);
-	shader.setInt("colormap2Buf", 8);
 	#ifdef _DEBUG
 	std::cout << "vertex attrib setup..." << std::endl;
 	#endif
@@ -206,26 +204,26 @@ void PolyRenderer::render(glm::vec3 &position) {
 	glActiveTexture(GL_TEXTURE0);
 	glBindTexture(GL_TEXTURE_2D, texColorMap);
 
-	glActiveTexture(GL_TEXTURE0 + 2);
+	glActiveTexture(GL_TEXTURE0 + 1);
 	glBindTexture(GL_TEXTURE_BUFFER, texAttr);
 
-	glActiveTexture(GL_TEXTURE0 + 3);
+	glActiveTexture(GL_TEXTURE0 + 2);
 	glBindTexture(GL_TEXTURE_BUFFER, texHighlight);
 
-	glActiveTexture(GL_TEXTURE0 + 4);
+	glActiveTexture(GL_TEXTURE0 + 3);
 	glBindTexture(GL_TEXTURE_BUFFER, texFilter);
 
-	glActiveTexture(GL_TEXTURE0 + 5);
-	glBindTexture(GL_TEXTURE_BUFFER, texNVertsPerFacet);
-
-	glActiveTexture(GL_TEXTURE0 + 6);
+	glActiveTexture(GL_TEXTURE0 + 4);
 	glBindTexture(GL_TEXTURE_BUFFER, texColormap0);
 
-	glActiveTexture(GL_TEXTURE0 + 7);
+	glActiveTexture(GL_TEXTURE0 + 5);
 	glBindTexture(GL_TEXTURE_BUFFER, texColormap1);
 
-	glActiveTexture(GL_TEXTURE0 + 8);
+	glActiveTexture(GL_TEXTURE0 + 6);
 	glBindTexture(GL_TEXTURE_BUFFER, texColormap2);
+
+	glActiveTexture(GL_TEXTURE0 + 7);
+	glBindTexture(GL_TEXTURE_BUFFER, texNVertsPerFacet);
 
 	glm::mat4 model = glm::mat4(1.0f);
 	model = glm::translate(model, position);

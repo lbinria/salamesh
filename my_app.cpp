@@ -444,7 +444,6 @@ void MyApp::draw_gui() {
 			auto &model = getCurrentModel().as<PolyModel>();
 			auto &m = model.getPolygons();
 			
-			model.setLayerAttr("my_attribute_0", Layer::COLORMAP_0, ElementKind::FACETS_ELT);
 
 			FacetAttribute<double> hl;
 			hl.bind("my_attribute_0", model.getSurfaceAttributes(), m);
@@ -453,7 +452,8 @@ void MyApp::draw_gui() {
 				int r = (rand() / float(RAND_MAX)) * 10000;
 				hl[f] = r;
 			}
-
+			
+			model.setColormap0Attr("my_attribute_0", ElementKind::FACETS_ELT);
 			model.setColormap0(ElementKind::FACETS_ELT);
 		}
 

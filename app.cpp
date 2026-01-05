@@ -903,8 +903,10 @@ void App::saveState(const std::string filename) {
 }
 
 void App::clearScene() {
-	// TODO clean all scenes properly !
-	// TODO CLEAN ALL MODELS TO FREE GPU MEMORY !
+	// Clean models and renderers
+	for (auto &m : models)
+		m->clean();
+
 	models.clear();
 	cameras.clear();
 

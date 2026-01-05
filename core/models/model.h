@@ -395,15 +395,27 @@ struct Model {
         return defaultAttrName(layer);
     }
 
-    // TODO inline following functions
-    void setHighlightAttr(std::string name, ElementKind kind) {
+    inline void setColormap0Attr(std::string name, ElementKind kind) {
+        setLayerAttr(name, Layer::COLORMAP_0, kind);
+    }
+
+    inline void setColormap1Attr(std::string name, ElementKind kind) {
+        setLayerAttr(name, Layer::COLORMAP_1, kind);
+    }
+
+    inline void setColormap2Attr(std::string name, ElementKind kind) {
+        setLayerAttr(name, Layer::COLORMAP_2, kind);
+    }
+
+    inline void setHighlightAttr(std::string name, ElementKind kind) {
         setLayerAttr(name, Layer::HIGHLIGHT, kind);
     }
 
-    void setFilterAttr(std::string name, ElementKind kind) {
+    inline void setFilterAttr(std::string name, ElementKind kind) {
         setLayerAttr(name, Layer::FILTER, kind);
     }
 
+    // TODO inline following functions
     void setHighlight(ElementKind kind) {
         setLayer(kind, Layer::HIGHLIGHT);
     }
