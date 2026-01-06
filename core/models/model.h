@@ -467,7 +467,7 @@ struct Model {
         attrNameByLayerAndKind[{layer, kind}] = name;
     }
 
-    std::string getLayerAttr(Layer layer, ElementKind kind) {
+    std::string getLayerAttrName(Layer layer, ElementKind kind) {
         std::tuple<Layer, ElementKind> k = {layer, kind};
         if (attrNameByLayerAndKind.contains(k))
             return attrNameByLayerAndKind[k];
@@ -870,7 +870,7 @@ struct Model {
 	virtual std::vector<std::pair<ElementKind, NamedContainer>> getAttributeContainers() = 0;
 
     // TODO maybe move into helper
-	std::optional<std::vector<float>> getAttrData(std::string attrName, ElementKind kind, int selectedDim = -1) {
+	std::optional<std::tuple<std::vector<float>, int>> getAttrData(std::string attrName, ElementKind kind, int selectedDim = -1) {
 
 		auto containers = getAttributeContainers();
 
@@ -892,22 +892,25 @@ struct Model {
 
 	void updateLayer(Layer layer, ElementKind kind) {
 
-		auto attrName = getLayerAttr(layer, kind);
+		auto attrName = getLayerAttrName(layer, kind);
 
 		// TODO important add selectedDim
-		std::optional<std::vector<float>> data_opt = getAttrData(attrName, kind);
+		auto data_opt = getAttrData(attrName, kind);
 
 		// Silent when no data ?
 		// If no data => it means that attr name wasn't found
 		if (!data_opt.has_value())
 			return;
 
-		auto [min, max] = sl::getRange(data_opt.value());
+        auto [data, nDims] = data_opt.value();
+
+		auto [min, max] = sl::getRange(data);
 
 		for (auto const &[k, r] : _renderers) {
 			if (r->isRenderElement(kind)) {
 				r->setLayerRange(layer, min, max);
-				r->setLayer(data_opt.value(), layer);
+                r->setLayerNDims(layer, nDims);
+				r->setLayer(data, layer);
 			}
 		}
 	}

@@ -21,37 +21,43 @@ void PolyRenderer::init() {
 
 
 	// TODO seems useless below
-	glActiveTexture(GL_TEXTURE0 + 1);
-	glBindTexture(GL_TEXTURE_BUFFER, texAttr);
+	// glActiveTexture(GL_TEXTURE0 + 1);
+	// glBindTexture(GL_TEXTURE_BUFFER, texAttr);
 
-	glActiveTexture(GL_TEXTURE0 + 2);
-	glBindTexture(GL_TEXTURE_BUFFER, tboHighlight);
+	// glActiveTexture(GL_TEXTURE0 + 2);
+	// glBindTexture(GL_TEXTURE_BUFFER, tboHighlight);
 
-	glActiveTexture(GL_TEXTURE0 + 3);
-	glBindTexture(GL_TEXTURE_BUFFER, tboFilter);
+	// glActiveTexture(GL_TEXTURE0 + 3);
+	// glBindTexture(GL_TEXTURE_BUFFER, tboFilter);
 
-	glActiveTexture(GL_TEXTURE0 + 4);
-	glBindTexture(GL_TEXTURE_BUFFER, tboColormap0);
+	// glActiveTexture(GL_TEXTURE0 + 4);
+	// glBindTexture(GL_TEXTURE_BUFFER, tboColormap0);
 
-	glActiveTexture(GL_TEXTURE0 + 5);
-	glBindTexture(GL_TEXTURE_BUFFER, tboColormap1);
+	// glActiveTexture(GL_TEXTURE0 + 5);
+	// glBindTexture(GL_TEXTURE_BUFFER, tboColormap1);
 
-	glActiveTexture(GL_TEXTURE0 + 6);
-	glBindTexture(GL_TEXTURE_BUFFER, tboColormap2);
+	// glActiveTexture(GL_TEXTURE0 + 6);
+	// glBindTexture(GL_TEXTURE_BUFFER, tboColormap2);
 
-	glActiveTexture(GL_TEXTURE0 + 7);
-	glBindTexture(GL_TEXTURE_BUFFER, texNVertsPerFacet);
+	// glActiveTexture(GL_TEXTURE0 + 7);
+	// glBindTexture(GL_TEXTURE_BUFFER, texNVertsPerFacet);
 
-	glBindBuffer(GL_TEXTURE_BUFFER, 0);
+	// glBindBuffer(GL_TEXTURE_BUFFER, 0);
 
 	shader.use();
-	shader.setInt("attributeData", 1);
-	shader.setInt("highlightBuf", 2);
-	shader.setInt("filterBuf", 3);
-	shader.setInt("colormap0Buf", 4);
-	shader.setInt("colormap1Buf", 5);
-	shader.setInt("colormap2Buf", 6);
-	shader.setInt("nvertsPerFacetBuf", 7);
+	shader.setInt("colormap", 0);
+	shader.setInt("colormap0", 1);
+	shader.setInt("colormap1", 2);
+	shader.setInt("colormap2", 3);
+
+	shader.setInt("attributeData", 4);
+	shader.setInt("highlightBuf", 5);
+	shader.setInt("filterBuf", 6);
+	shader.setInt("colormap0Buf", 7);
+	shader.setInt("colormap1Buf", 8);
+	shader.setInt("colormap2Buf", 9);
+
+	shader.setInt("nvertsPerFacetBuf", 10);
 
 	#ifdef _DEBUG
 	std::cout << "vertex attrib setup..." << std::endl;
@@ -205,24 +211,33 @@ void PolyRenderer::render(glm::vec3 &position) {
 	glBindTexture(GL_TEXTURE_2D, texColorMap);
 
 	glActiveTexture(GL_TEXTURE0 + 1);
-	glBindTexture(GL_TEXTURE_BUFFER, texAttr);
+	glBindTexture(GL_TEXTURE_2D, texColormap0);
 
 	glActiveTexture(GL_TEXTURE0 + 2);
-	glBindTexture(GL_TEXTURE_BUFFER, tboHighlight);
+	glBindTexture(GL_TEXTURE_2D, texColormap1);
 
 	glActiveTexture(GL_TEXTURE0 + 3);
-	glBindTexture(GL_TEXTURE_BUFFER, tboFilter);
+	glBindTexture(GL_TEXTURE_2D, texColormap2);
 
 	glActiveTexture(GL_TEXTURE0 + 4);
-	glBindTexture(GL_TEXTURE_BUFFER, tboColormap0);
+	glBindTexture(GL_TEXTURE_BUFFER, texAttr);
 
 	glActiveTexture(GL_TEXTURE0 + 5);
-	glBindTexture(GL_TEXTURE_BUFFER, tboColormap1);
+	glBindTexture(GL_TEXTURE_BUFFER, tboHighlight);
 
 	glActiveTexture(GL_TEXTURE0 + 6);
-	glBindTexture(GL_TEXTURE_BUFFER, tboColormap2);
+	glBindTexture(GL_TEXTURE_BUFFER, tboFilter);
 
 	glActiveTexture(GL_TEXTURE0 + 7);
+	glBindTexture(GL_TEXTURE_BUFFER, tboColormap0);
+
+	glActiveTexture(GL_TEXTURE0 + 8);
+	glBindTexture(GL_TEXTURE_BUFFER, tboColormap1);
+
+	glActiveTexture(GL_TEXTURE0 + 9);
+	glBindTexture(GL_TEXTURE_BUFFER, tboColormap2);
+
+	glActiveTexture(GL_TEXTURE0 + 10);
 	glBindTexture(GL_TEXTURE_BUFFER, texNVertsPerFacet);
 
 	glm::mat4 model = glm::mat4(1.0f);

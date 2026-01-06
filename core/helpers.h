@@ -74,9 +74,10 @@ namespace sl {
 		}
 	}
 
-	inline std::vector<float> getContainerData(ContainerBase *ga, int selectedDim) {
+	inline std::tuple<std::vector<float>, int> getContainerData(ContainerBase *ga, int selectedDim) {
 		// Prepare data
 		std::vector<float> data;
+		int nDims = 1;
 
 		// Transform data
 		if (auto a = dynamic_cast<AttributeContainer<double>*>(ga)) {
@@ -89,13 +90,15 @@ namespace sl {
 			mapSingleDim<bool>(a->data, data);
 		} else if (auto a = dynamic_cast<AttributeContainer<vec2>*>(ga)) {
 			mapManyDims<vec2, 2>(a->data, selectedDim, data);
+			nDims = 2;
 		} else if (auto a = dynamic_cast<AttributeContainer<vec3>*>(ga)) {
 			mapManyDims<vec3, 3>(a->data, selectedDim, data);
+			nDims = 3;
 		} else {
 			throw std::runtime_error("Attribute type is not supported in `getContainerData`.");
 		}
 		
-		return data;
+		return {data, nDims};
 	}
 
 }

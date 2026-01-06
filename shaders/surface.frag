@@ -127,6 +127,14 @@ int getLayerRepeat(int layer) {
     if (layer == 0) return attrRepeat0;
     if (layer == 1) return attrRepeat1;
     if (layer == 2) return attrRepeat2;
+    return 1;
+}
+
+int getLayerDims(int layer) {
+    if (layer == 0) return attrNDims0;
+    if (layer == 1) return attrNDims1;
+    if (layer == 2) return attrNDims2;
+    return 1;
 }
 
 int getSelectedAttrElement(int layer) {
@@ -139,30 +147,38 @@ int getSelectedAttrElement(int layer) {
 }
 
 vec4 getAttributeColor2(int idx, int layer) {
+
     vec2 range = getLayerRange(layer);
-    
+    int nRepeat = getLayerRepeat(layer);
+    int nDims = getLayerDims(layer);
+    // bool autorange = getLayerAutorange(layer);
+
     float rangeLength = range.y - range.x;
-    float rangeRepeat = rangeLength / getLayerRepeat(layer);
+    float rangeRepeat = rangeLength / nRepeat;
 
-    // vec2 coords = vec2(0.);
-    // for (int d = 0; d < attrNDims; d++) {
 
-    //     float attrVal = fetch(idx * attrNDims + d, bufIdx).x;
-    //     // TODO uncomment for colormap but comment for texture....
-    //     float remapVal = (mod(attrVal - attrRange.x, rangeRepeat + 1)) / rangeRepeat;
-    //     // float remapVal = attrVal;
-    //     float v = clamp(remapVal, 0., 1.);
-    //     coords[d] = v;
-    // }
+    vec2 coords = vec2(0.);
+    for (int d = 0; d < nDims; d++) {
+
+        float val = fetchLayer(idx * nDims + d, layer).x;
+        if (nDims == 1) {
+            // Apply range
+            // val = (mod(attrVal - attrRange.x, rangeRepeat + 1)) / rangeRepeat;
+            val = (val - range.x) / rangeLength;
+        }
+        
+        float v = clamp(val, 0., 1.);
+        coords[d] = v;
+    }
     
-    // return texture(colormap, coords);
+    return fetchColormap(layer, coords);
 
-    float attrVal = fetchLayer(idx, layer).x;
-    // float remapVal = (mod(attrVal - range.x, rangeRepeat + 1)) / rangeRepeat;
-    float remapVal = (attrVal - range.x) / rangeLength;
-    float v = clamp(remapVal, 0., 1.);
+    // float attrVal = fetchLayer(idx, layer).x;
+    // // float remapVal = (mod(attrVal - range.x, rangeRepeat + 1)) / rangeRepeat;
+    // float remapVal = (attrVal - range.x) / rangeLength;
+    // float v = clamp(remapVal, 0., 1.);
     
-    return fetchColormap(layer, vec2(v, 0.));
+    // return fetchColormap(layer, vec2(v, 0.));
 }
 
 // vec4 getAttributeColor(int index) {

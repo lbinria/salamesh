@@ -281,8 +281,12 @@ struct IRenderer {
 	}
 
 
+	void setLayerNDims(Layer layer, int nDims) {
+		shader.use();
+		shader.setInt("attrNDims" + std::to_string(int(layer)), nDims);
+	}
+
 	void setLayerRange(Layer layer, float min, float max) {
-		// Update min/max
 		shader.use();
 		shader.setFloat2("attrRange" + std::to_string(int(layer)), glm::vec2(min, max));
 	}
