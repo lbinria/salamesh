@@ -458,6 +458,8 @@ struct Model {
         return selectedColormap2;
     }
 
+    // virtual Attribute getAttribute(std::string name, ElementKind kind) = 0;
+
     // Choose which attribute to bind to layer / kind
     void setLayerAttr(std::string name, Layer layer, ElementKind kind) {
         attrNameByLayerAndKind[{layer, kind}] = name;
@@ -556,35 +558,26 @@ struct Model {
 
     void unsetColormaps0() {
         // Unset all
-        unsetColormap0(ElementKind::POINTS_ELT);
-        unsetColormap0(ElementKind::CORNERS_ELT);
-        unsetColormap0(ElementKind::EDGES_ELT);
-        unsetColormap0(ElementKind::FACETS_ELT);
-        unsetColormap0(ElementKind::CELLS_ELT);
-        unsetColormap0(ElementKind::CELL_FACETS_ELT);
-        unsetColormap0(ElementKind::CELL_CORNERS_ELT);
+        for (int i = 0; i < 7; ++i) {
+            int kind = 1 << i;
+            unsetColormap0((ElementKind)kind);
+        }
     }
 
     void unsetColormaps1() {
         // Unset all
-        unsetColormap1(ElementKind::POINTS_ELT);
-        unsetColormap1(ElementKind::CORNERS_ELT);
-        unsetColormap1(ElementKind::EDGES_ELT);
-        unsetColormap1(ElementKind::FACETS_ELT);
-        unsetColormap1(ElementKind::CELLS_ELT);
-        unsetColormap1(ElementKind::CELL_FACETS_ELT);
-        unsetColormap1(ElementKind::CELL_CORNERS_ELT);
+        for (int i = 0; i < 7; ++i) {
+            int kind = 1 << i;
+            unsetColormap1((ElementKind)kind);
+        }
     }
 
     void unsetColormaps2() {
         // Unset all
-        unsetColormap1(ElementKind::POINTS_ELT);
-        unsetColormap1(ElementKind::CORNERS_ELT);
-        unsetColormap1(ElementKind::EDGES_ELT);
-        unsetColormap1(ElementKind::FACETS_ELT);
-        unsetColormap1(ElementKind::CELLS_ELT);
-        unsetColormap1(ElementKind::CELL_FACETS_ELT);
-        unsetColormap1(ElementKind::CELL_CORNERS_ELT);
+        for (int i = 0; i < 7; ++i) {
+            int kind = 1 << i;
+            unsetColormap2((ElementKind)kind);
+        }
     }
 
     void unsetColormaps(ElementKind kind) {
@@ -877,5 +870,6 @@ struct Model {
     private:
     
     std::map<std::tuple<Layer, ElementKind>, std::string> attrNameByLayerAndKind;
+    // std::map<std::tuple<Layer, ElementKind>, Attribute> attrNameByLayerAndKind;
     std::map<std::tuple<Layer, ElementKind>, bool> activatedLayers;
 };

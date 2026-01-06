@@ -351,6 +351,63 @@ function draw_model_properties(model, view)
 				end
 
 
+				imgui.Text("Colormap 0")
+
+				local items = {"Item1", "Item2", "Item3", "Item4"}
+				local colormap_size = imgui.ImVec2(320, 35)
+
+				if (imgui.BeginCombo("##combo_colormaps0_selection", items[cur_model.selected_colormap0 + 1])) then
+					-- Display items in the popup
+					for i = 1, #items do
+						local is_selected = (cur_model.selected_colormap0 + 1) == i
+						-- Create a unique ID for each item to prevent conflicts
+						imgui.PushID(i)
+
+						-- Calculate total width including spacing
+						-- local total_width = imgui.CalcTextSize(items[i]).x + colormap_size.x + 10.0
+
+						-- Display the item with both text and image
+						if (imgui.Selectable(items[i], is_selected)) then
+							cur_model.selected_colormap0 = i - 1
+						end
+
+						-- Display the image after the text
+						imgui.Image(app.colormaps[i].tex, colormap_size)
+
+						imgui.PopID()
+					end
+
+					imgui.EndCombo()
+				end
+
+				imgui.Text("Attribute 0")
+
+				if (#cur_model.attrs > 0) then
+					-- local attr_name, attr_element = cur_model.attrs[1]
+					local attr_name = cur_model.attrs[1].name
+					local attr_element = cur_model.attrs[1].kind
+					-- local attr_name, attr_element = cur_model.get_attr(1);
+					-- print("first attr:" .. attr_name)
+					-- print("second attr:" .. attr_element)
+					if (imgui.BeginCombo("##combo_attribute0_selection", cur_model.attrs[cur_model.selected_attr0].name)) then
+						for n = 1, #cur_model.attrs do
+							local is_selected = n == cur_model.selected_attr0
+							local label = cur_model.attrs[n].name 
+							.. " (" .. elementKindToString(cur_model.attrs[n].kind) .. ")" 
+							.. " (" .. elementTypeToString(cur_model.attrs[n].type) .. ")"
+							.. " (" .. tostring(cur_model.attrs[n].dim) .. ")"
+
+							if (imgui.Selectable(label, is_selected)) then
+								cur_model.selected_attr0 = n
+
+								-- print("set attr: " .. cur_model.attrs[n][1] .. ":" .. cur_model.attrs[n][2] .. ":" .. cur_model.attrs[n][3])
+							end
+						end
+						imgui.EndCombo()
+					end
+				end
+
+
 			end 
 
 		end

@@ -279,6 +279,7 @@ namespace bindings {
 				self.setSelectedAttr2(selected - 1);
 			});
 
+			// TODO here change implementation by managing index offset from lua to C++ +1 / -1
 			model_t["selected_colormap"] = sol::property(
 				&Model::getSelectedColormap,
 				&Model::setSelectedColormap
