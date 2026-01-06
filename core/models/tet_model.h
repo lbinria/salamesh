@@ -75,89 +75,6 @@ struct TetModel final : public Model {
         return {min, max};
     }
 
-
-    // // TODO filter anything else than cell !
-    // void setFilter(int idx, bool filter) override {
-    //     _meshRenderer->setFilter(idx, filter);
-
-    //     // TODO it works but... not very efficient !
-    //     Volume::Cell c(_m, idx);
-    //     for (int lc = 0; lc < 8; ++lc) {
-    //         auto corner = c.corner(lc);
-    //         auto v = corner.vertex();
-    //         // Retrieve all cells attached to this point to see whether filtered
-    //         bool allFiltered = true;
-    //         // #pragma omp parallel for
-    //         for (int i = 0; i < _m.cells.size(); ++i) {
-    //             if (_m.cells[i] != v)
-    //                 continue;
-                
-    //             int ci = i / 8;
-    //             if (_meshRenderer->getFilterPtr()[ci] <= 0) {
-    //                 allFiltered = false;
-    //                 break;
-    //             }
-    //         }
-
-    //         _pointSetRenderer.setFilter(v, allFiltered);
-    //         // _pointSetRenderer.setHighlight(v, 0.1f);
-    //     }
-
-        
-    // }
-
-
-    // TODO its the same as hex_model, refact !
-    void updateLayer(Layer layer, ElementKind kind) {
-
-        auto attrName = getLayerAttr(layer, kind);
-        
-        std::vector<float> data;
-
-        switch (kind) {
-            case ElementKind::CELLS_ELT:
-            {
-                CellAttribute<float> layerAttr;
-                if (!layerAttr.bind(attrName, _volumeAttributes, _m))
-                    return;
-                
-                data = layerAttr.ptr->data;
-                break;
-            }
-            case ElementKind::CELL_FACETS_ELT:
-            {
-                CellFacetAttribute<float> layerAttr;
-                if (!layerAttr.bind(attrName, _volumeAttributes, _m))
-                    return;
-                
-                data = layerAttr.ptr->data;
-                break;
-            }
-            case ElementKind::POINTS_ELT:
-            {
-                PointAttribute<float> layerAttr;
-                if (!layerAttr.bind(attrName, _volumeAttributes, _m))
-                    return;
-                
-                data = layerAttr.ptr->data;
-                break;
-            }
-            default:
-                std::cerr << "Warning: TetModel::updateLayer() on " 
-                    << elementKindToString(kind) 
-                    << " with layer " 
-                    << layerToString(layer) 
-                    << " is not supported.." << std::endl;
-                return;
-        }
-
-        for (auto const &[k, r] : _renderers) {
-            if (r->isRenderElement(kind)) {
-                r->setLayer(data, layer);
-            }
-        }
-    }
-
     long pick_edge(glm::vec3 p0, int c) override {
         // Search nearest edge
         double min_d = std::numeric_limits<double>().max();
@@ -190,6 +107,24 @@ struct TetModel final : public Model {
 
         return found_e;
     }
+
+    protected:
+
+    // TODO refactor into volume_model
+	std::vector<std::pair<ElementKind, NamedContainer>> getAttributeContainers() override {
+		std::vector<std::pair<ElementKind, NamedContainer>> containers;
+		
+		for (auto &c : _volumeAttributes.points)
+			containers.push_back({ElementKind::POINTS_ELT, c});
+		for (auto &c : _volumeAttributes.cell_corners)
+			containers.push_back({ElementKind::CELL_CORNERS_ELT, c});
+		for (auto &c : _volumeAttributes.cell_facets)
+			containers.push_back({ElementKind::CELL_FACETS_ELT, c});
+		for (auto &c : _volumeAttributes.cells)
+			containers.push_back({ElementKind::CELLS_ELT, c});
+
+		return containers;
+	}
 
     private:
 

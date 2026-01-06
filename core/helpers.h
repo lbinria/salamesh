@@ -47,4 +47,55 @@ namespace sl {
 		return std::make_tuple(min, max);
 	}
 
+	template<typename T>
+	inline void mapSingleDim(std::vector<T>& data, std::vector<float>& result) {
+		result.resize(data.size());
+		for (int i = 0; i < data.size(); ++i) {
+			result[i] = static_cast<float>(data[i]);
+		}
+	}
+
+	template<typename T, int nDims>
+	void mapManyDims(std::vector<T>& data, int selectedDim, std::vector<float>& result) {
+		// YOu can refactor this !
+		if (selectedDim == -1) {
+			// Inline data
+			result.resize(data.size() * nDims);
+			for (int i = 0; i < data.size(); ++i) {
+				for (int d = 0; d < nDims; ++d) {
+					result[i * nDims + d] = static_cast<float>(data[i][d]);
+				}
+			}
+		} else {
+			result.resize(data.size());
+			for (int i = 0; i < data.size(); ++i) {
+				result[i] = static_cast<float>(data[i][selectedDim]);
+			}
+		}
+	}
+
+	inline std::vector<float> getContainerData(ContainerBase *ga, int selectedDim) {
+		// Prepare data
+		std::vector<float> data;
+
+		// Transform data
+		if (auto a = dynamic_cast<AttributeContainer<double>*>(ga)) {
+			mapSingleDim<double>(a->data, data);
+		} else if (auto a = dynamic_cast<AttributeContainer<float>*>(ga)) {
+			mapSingleDim<float>(a->data, data);
+		} else if (auto a = dynamic_cast<AttributeContainer<int>*>(ga)) {
+			mapSingleDim<int>(a->data, data);
+		} else if (auto a = dynamic_cast<AttributeContainer<bool>*>(ga)) {
+			mapSingleDim<bool>(a->data, data);
+		} else if (auto a = dynamic_cast<AttributeContainer<vec2>*>(ga)) {
+			mapManyDims<vec2, 2>(a->data, selectedDim, data);
+		} else if (auto a = dynamic_cast<AttributeContainer<vec3>*>(ga)) {
+			mapManyDims<vec3, 3>(a->data, selectedDim, data);
+		} else {
+			throw std::runtime_error("Attribute type is not supported in `getContainerData`.");
+		}
+		
+		return data;
+	}
+
 }

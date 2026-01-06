@@ -74,57 +74,6 @@ struct HexModel final : public Model {
         return {min, max};
     }
 
-    // TODO its the same as tet_model, refact !
-    void updateLayer(Layer layer, ElementKind kind) {
-
-        auto attrName = getLayerAttr(layer, kind);
-        
-        std::vector<float> data;
-
-        switch (kind) {
-            case ElementKind::CELLS_ELT:
-            {
-                CellAttribute<float> layerAttr;
-                if (!layerAttr.bind(attrName, _volumeAttributes, _m))
-                    return;
-                
-                data = layerAttr.ptr->data;
-                break;
-            }
-            case ElementKind::CELL_FACETS_ELT:
-            {
-                CellFacetAttribute<float> layerAttr;
-                if (!layerAttr.bind(attrName, _volumeAttributes, _m))
-                    return;
-                
-                data = layerAttr.ptr->data;
-                break;
-            }
-            case ElementKind::POINTS_ELT:
-            {
-                PointAttribute<float> layerAttr;
-                if (!layerAttr.bind(attrName, _volumeAttributes, _m))
-                    return;
-                
-                data = layerAttr.ptr->data;
-                break;
-            }
-            default:
-                std::cerr << "Warning: HexModel::updateLayer() on " 
-                    << elementKindToString(kind) 
-                    << " with layer " 
-                    << layerToString(layer) 
-                    << " is not supported.." << std::endl;
-                return;
-        }
-
-        for (auto const &[k, r] : _renderers) {
-            if (r->isRenderElement(kind)) {
-                r->setLayer(data, layer);
-            }
-        }
-    }
-
     long pick_edge(glm::vec3 p0, int c) override {
 		// Search nearest edge
 		double min_d = std::numeric_limits<double>().max();
@@ -158,6 +107,24 @@ struct HexModel final : public Model {
 		return found_e;
     }
     
+    protected:
+
+    // TODO refactor into volume_model
+	std::vector<std::pair<ElementKind, NamedContainer>> getAttributeContainers() override {
+		std::vector<std::pair<ElementKind, NamedContainer>> containers;
+		
+		for (auto &c : _volumeAttributes.points)
+			containers.push_back({ElementKind::POINTS_ELT, c});
+		for (auto &c : _volumeAttributes.cell_corners)
+			containers.push_back({ElementKind::CELL_CORNERS_ELT, c});
+		for (auto &c : _volumeAttributes.cell_facets)
+			containers.push_back({ElementKind::CELL_FACETS_ELT, c});
+		for (auto &c : _volumeAttributes.cells)
+			containers.push_back({ElementKind::CELLS_ELT, c});
+
+		return containers;
+	}
+
     private:
 
     // Mesh

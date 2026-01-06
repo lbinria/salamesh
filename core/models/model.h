@@ -865,11 +865,53 @@ struct Model {
     // Renderers
     std::map<std::string, std::shared_ptr<IRenderer>> _renderers;
 
-    virtual void updateLayer(Layer layer, ElementKind kind) = 0;
+	virtual std::vector<std::pair<ElementKind, NamedContainer>> getAttributeContainers() = 0;
+
+    // TODO maybe move into helper
+	std::optional<std::vector<float>> getAttrData(std::string attrName, ElementKind kind, int selectedDim = -1) {
+
+		auto containers = getAttributeContainers();
+
+		for (auto &[k, c] : containers) {
+			if (k == kind && c.name == attrName) {
+				return sl::getContainerData(c.ptr.get(), selectedDim);
+			}
+		}
+
+		std::cerr << "Error: Model::getAttrData(). Attribute "
+			<< attrName 
+			<< " of kind "
+			<< elementKindToString(kind) 
+			<< " is not supported on "
+			<< modelTypeToString(getModelType())
+			<< std::endl;
+		return std::nullopt;
+	}
+
+	void updateLayer(Layer layer, ElementKind kind) {
+
+		auto attrName = getLayerAttr(layer, kind);
+
+		// TODO important add selectedDim
+		std::optional<std::vector<float>> data_opt = getAttrData(attrName, kind);
+
+		// Silent when no data ?
+		// If no data => it means that attr name wasn't found
+		if (!data_opt.has_value())
+			return;
+
+		auto [min, max] = sl::getRange(data_opt.value());
+
+		for (auto const &[k, r] : _renderers) {
+			if (r->isRenderElement(kind)) {
+				r->setLayerRange(layer, min, max);
+				r->setLayer(data_opt.value(), layer);
+			}
+		}
+	}
 
     private:
     
     std::map<std::tuple<Layer, ElementKind>, std::string> attrNameByLayerAndKind;
-    // std::map<std::tuple<Layer, ElementKind>, Attribute> attrNameByLayerAndKind;
     std::map<std::tuple<Layer, ElementKind>, bool> activatedLayers;
 };

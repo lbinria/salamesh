@@ -103,67 +103,19 @@ struct SurfaceModel : public Model {
 	virtual Surface& getSurface() = 0;
 	virtual const Surface& getSurface() const = 0;
 
-	// TODO be able to have other attribute types than double
-	// TODO move data recuperation into a function in model.h to move data range set
-	void updateLayer(Layer layer, ElementKind kind) override {
-
-		auto attrName = getLayerAttr(layer, kind);
-
-		std::optional<std::vector<double>> data_opt;
-
-		switch (kind) {
-			case ElementKind::POINTS_ELT: {
-				data_opt = getAttrData<PointAttribute<double>>(attrName);
-				break;
-			}
-			case ElementKind::CORNERS_ELT:
-			case ElementKind::EDGES_ELT: {
-				data_opt = getAttrData<CornerAttribute<double>>(attrName);
-				break;
-			}
-			case ElementKind::FACETS_ELT: {
-				data_opt = getAttrData<FacetAttribute<double>>(attrName);
-				break;
-			}
-			default:
-				std::cerr << "Warning: Model::updateLayer() on " 
-					<< elementKindToString(kind) 
-					<< " of "
-					<< modelTypeToString(getModelType())
-					<< " with layer " 
-					<< layerToString(layer) 
-					<< " is not supported.." << std::endl;
-				return;
+	std::vector<std::pair<ElementKind, NamedContainer>> getAttributeContainers() override {
+		std::vector<std::pair<ElementKind, NamedContainer>> containers;
+		
+		for (auto &c : _surfaceAttributes.points)
+			containers.push_back({ElementKind::POINTS_ELT, c});
+		for (auto &c : _surfaceAttributes.corners) {
+			containers.push_back({ElementKind::CORNERS_ELT, c});
+			containers.push_back({ElementKind::EDGES_ELT, c}); // TODO see pertinence
 		}
+		for (auto &c : _surfaceAttributes.facets)
+			containers.push_back({ElementKind::FACETS_ELT, c});
 
-		if (!data_opt.has_value())
-			return;
-
-		// double to float
-		std::vector<float> data(data_opt.value().size());
-		std::transform(data_opt.value().begin(), data_opt.value().end(), data.begin(), [](auto v) { return static_cast<float>(v); });
-
-		auto [min, max] = sl::getRange(data);
-
-		for (auto const &[k, r] : _renderers) {
-			if (r->isRenderElement(kind)) {
-				r->setLayerRange(layer, min, max);
-				r->setLayer(data, layer);
-			}
-		}
-	}
-
-
-
-	private:
-
-	template<typename T> 
-	std::optional<std::vector<double>> getAttrData(std::string attrName) {
-		T layerAttr;
-		if (!layerAttr.bind(attrName, _surfaceAttributes, getSurface()))
-			return std::nullopt;
-
-		return layerAttr.ptr->data;
+		return containers;
 	}
 
 };

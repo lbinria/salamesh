@@ -14,8 +14,6 @@
 #include "../element.h"
 #include "../shader.h"
 
-// TODO IMPORTANT see to bind mesh directly to the shader via buffermap and pointers
-
 using namespace UM;
 
 struct TriRenderer : public SurfaceRenderer {
