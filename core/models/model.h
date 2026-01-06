@@ -257,10 +257,12 @@ struct Model {
         attrs.clear();
     }
 
+    // TODO remove
     int getSelectedAttr() const {
         return selectedAttr;
     }
 
+    // TODO remove
     void setSelectedAttr(int idx) {
 
         // Check attrs size
