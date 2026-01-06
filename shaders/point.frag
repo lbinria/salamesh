@@ -1,72 +1,122 @@
 #version 440 core
 
+// Avoid the disable of earlier Depth-testing
+layout(depth_less) out float gl_FragDepth;
+
 // Color output
-out vec4 FragColor;
+layout(location = 0) out vec4 FragColor;
+layout(location = 3) out vec4 FragVertexIndexOut;
+
+flat in int FragVertexIndex;
+
+in vec3 fragWorldPos;
+
+uniform vec3 pointColor;
+
+flat in vec3 fragViewDir;
 
 uniform bool is_light_enabled;
+uniform bool is_light_follow_view;
 
-uniform mat4 inverse_projection_view_model;
-uniform mat4 model_view_projection_matrix;
+uniform bool is_clipping_enabled = false;
+uniform vec3 clipping_plane_normal; // (a, b, c)
+uniform vec3 clipping_plane_point;  // A point on the plane
+uniform int invert_clipping = 0; // 0: normal, 1: inverted
 
-// Point
-flat in vec3 pos_world_space;
-flat in float radius;
-flat in vec2 fragViewport;
+uniform vec3 hoverColor = vec3(1.,1.,1.);
+uniform vec3 selectColor = vec3(0., 0.22, 1.);
 
-struct Ray {
-    vec3 O; // Origin
-    vec3 V; // Direction vector
-};
+uniform int colorMode = 0;
 
-// Notes: GLUP.viewport = [x0,y0,width,height]
-// clip-space coordinates are in [-1,1] (not [0,1]) !
+uniform sampler2D fragColorMap;
+uniform vec2 attrRange = vec2(0.f, 1.f);
+uniform samplerBuffer attrBuf;
+uniform int attrElement;
 
-// Computes the ray that passes through the current fragment
-// The ray is in world space.
-Ray glup_primary_ray() {
-	vec4 near = vec4(
-		2.0 * ( (gl_FragCoord.x - 0.) / fragViewport.x - 0.5),
-		2.0 * ( (gl_FragCoord.y - 0.) / fragViewport.y - 0.5),
-		0.0, 1.0
-	);
-	near = inverse_projection_view_model * near;
-	vec4 far = near + inverse_projection_view_model[2];
-	near.xyz /= near.w;
-	far.xyz /= far.w;
-	return Ray(near.xyz, far.xyz-near.xyz);
-}
+uniform samplerBuffer filterBuf;
+uniform samplerBuffer highlightBuf;
 
-void glup_update_depth(in vec3 M_world_space) {
-    vec4 M_clip_space = model_view_projection_matrix * vec4(M_world_space,1.0);
-    float z = 0.5*(1.0 + M_clip_space.z/M_clip_space.w);
-    gl_FragDepth = (1.0-z)*gl_DepthRange.near + z*gl_DepthRange.far;
+flat in float depthZ;
+
+vec3 encode_id(int id) {
+    int r = id & 0x000000FF;
+    int g = (id & 0x0000FF00) >> 8;
+    int b = (id & 0x00FF0000) >> 16;
+    return vec3(r / 255.f, g / 255.f, b / 255.f); 
 }
 
 void main()
 {
-	vec3 col = vec3(0.f, 0.f, 0.f);
+    // Check whether point is filtered
+    bool isFiltered = texelFetch(filterBuf, FragVertexIndex).x > 0;
+    if (isFiltered)
+        discard;
 
-	Ray R = glup_primary_ray();
-	vec3 M,N;
 
-	vec3 D = R.O-pos_world_space;    
-	float a = dot(R.V,R.V);
-	float b = 2.0*dot(R.V,D);
-	float c = dot(D,D)-radius*radius;
-	float delta = b*b-4.0*a*c;
+    /* --- CLIPPING --- */
 
-	if (delta < 0.0) {
-		discard;
-	}
+   // Calculate the distance from the cell barycenter to the plane
+   if (is_clipping_enabled) {
+      float distance = dot(clipping_plane_normal, fragWorldPos - clipping_plane_point) / length(clipping_plane_normal);
+      
+      if ((invert_clipping == 0 && distance < 0.0) || (invert_clipping == 1 && distance >= 0.0)) {
+         discard;
+      }
+   }
 
-	float t = (-b-sqrt(delta))/(2.0*a);
-	M = R.O + t*R.V;
-	N = M-pos_world_space;
+    /* --- CLIPPING END --- */
 
-	// glup_update_depth(M);
 
-	col = vec3(1.f, 0.8f, 0.35f) /** (1. - dot(N, vec3(-0.5f, -0.8f, 0.2f)))*/;
-	// col = vec3(1.f, 1.f, 1.f) /** (1. - dot(N, vec3(-0.5f, -0.8f, 0.2f)))*/;
+    vec3 col = pointColor;
 
-	FragColor = vec4(col, 1.f);
+    // Check circle distance function
+    vec2 V = 2.0 * (gl_PointCoord - vec2(0.5, 0.5));
+    float oneMinusR2 = 1. - dot(V,V);
+    if (oneMinusR2 < 0.0) {
+        discard;
+    }
+
+    // Compute sphere radius in frag coords unit
+    float deltaDepth = abs(gl_FragCoord.z - depthZ);
+
+    // Compute normal using point coordinates and radius as Z
+    vec3 N = vec3(V.x, -V.y, sqrt(oneMinusR2));
+    // Update depth according to radius
+    gl_FragDepth = gl_FragCoord.z - deltaDepth * N.z;
+    
+    // Attribute color mode !
+    if (colorMode != 0 && attrElement == 1) {
+        // TODO add repeat / transparency colormaps
+        float fragAttrVal = texelFetch(attrBuf, FragVertexIndex).x;
+        float x = clamp((fragAttrVal - attrRange.x) / (attrRange.y - attrRange.x), 0., 1.);
+        col = vec3(texture(fragColorMap, vec2(x, 0.)));
+    }
+
+    // Highlight
+    float highlightVal = texelFetch(highlightBuf, FragVertexIndex).x;
+    if (highlightVal > 0) {
+        // Interpolate between hover / select colors according to highlight value
+        float t = highlightVal;
+        // Add condition if you want a hard switch between hover and select
+        t = step(0.5, highlightVal);
+        vec3 hlColor = mix(hoverColor, selectColor, t);
+        // Mix with current point color (80%)
+        col = mix(col, hlColor, .8);
+    }
+
+    // Diffuse light
+    if (is_light_enabled) {
+        vec3 dirLight;
+
+        if (is_light_follow_view)
+            dirLight = fragViewDir;
+        else
+            dirLight = vec3(-0.5f, -0.8f, 0.2f);
+        
+        float diffuse = max((1.f - dot(N, dirLight)) * .75f + .25f /* ambiant */, 0.f);
+        col = col * diffuse;
+    }
+
+    FragVertexIndexOut = vec4(encode_id(FragVertexIndex), 1.);
+    FragColor = vec4(col, 1.f);
 }

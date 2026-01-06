@@ -21,7 +21,8 @@ struct IRenderer {
 	};
 
 
-	// User must overwrite which element(s) are supported for rendering
+	// User must overwrite which element(s) are rendered by renderer
+	// It can render one or more primitives (ElementKind::POINTS_ELT, ...)
 	virtual int getRenderElementKind() = 0;
 
 	virtual void init() = 0;
@@ -55,11 +56,13 @@ struct IRenderer {
 		shader.setMat4("model", model);
 	}
 
+	// TODO to remove
 	void setAttrElement(int element) {
 		shader.use();
 		shader.setInt("attrElement", element);
 	}
 
+	// TODO to remove
 	int getAttrRepeat() {
 		return attrRepeat;
 	}
@@ -71,19 +74,15 @@ struct IRenderer {
 	}
 
 	void setLayerElement(int element, Layer layer) {
+		// I could refactor more, 
+		// but we won't understand anything after that
 		switch (layer)
 		{
 		case Layer::COLORMAP_0:
-			shader.use();
-			shader.setInt("colormapElement0", element);
-			break;
 		case Layer::COLORMAP_1:
-			shader.use();
-			shader.setInt("colormapElement1", element);
-			break;
 		case Layer::COLORMAP_2:
 			shader.use();
-			shader.setInt("colormapElement2", element);
+			shader.setInt("colormapElement[" + std::to_string(int(layer)) + "]", element);
 			break;
 		case Layer::HIGHLIGHT:
 			shader.use();
@@ -282,13 +281,15 @@ struct IRenderer {
 
 
 	void setLayerNDims(Layer layer, int nDims) {
+		// TODO check layer ? only works for colormaps...
 		shader.use();
-		shader.setInt("attrNDims" + std::to_string(int(layer)), nDims);
+		shader.setInt("attrNDims[" + std::to_string(int(layer)) + "]", nDims);
 	}
 
 	void setLayerRange(Layer layer, float min, float max) {
+		// TODO check layer ? only works for colormaps...
 		shader.use();
-		shader.setFloat2("attrRange" + std::to_string(int(layer)), glm::vec2(min, max));
+		shader.setFloat2("attrRange[" + std::to_string(int(layer)) + "]", glm::vec2(min, max));
 	}
 
 	// Put data to buffer

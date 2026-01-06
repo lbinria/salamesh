@@ -34,24 +34,17 @@ uniform int invert_clipping = 0; // 0: normal, 1: inverted
 uniform vec3 hoverColor = vec3(1.,1.,1.);
 uniform vec3 selectColor = vec3(0., 0.22, 1.);
 
-uniform sampler2D colormap;
+// uniform sampler2D colormap;
+// Note: cannot index samplerBuffer with dynamic indexing !
 uniform sampler2D colormap0;
 uniform sampler2D colormap1;
 uniform sampler2D colormap2;
 
-uniform vec2 attrRange = vec2(0.f, 1.f);
-// uniform vec2[3] attrRanges;
-uniform int attrRepeat = 1;
-uniform samplerBuffer attrBuf;
-uniform int attrElement;
-uniform int attrNDims;
-
-uniform samplerBuffer filterBuf;
-uniform samplerBuffer highlightBuf;
-
-
-uniform int highlightElement;
-uniform int filterElement;
+// uniform vec2 attrRange = vec2(0.f, 1.f);
+// uniform int attrRepeat = 1;
+// uniform samplerBuffer attrBuf;
+// uniform int attrElement;
+// uniform int attrNDims;
 
 
 uniform int colorMode = 0;
@@ -63,24 +56,20 @@ uniform int meshIndex;
 
 flat in int surfaceType;
 
+// Note: cannot index samplerBuffer with dynamic indexing !
+uniform samplerBuffer filterBuf;
+uniform samplerBuffer highlightBuf;
 uniform samplerBuffer colormap0Buf;
 uniform samplerBuffer colormap1Buf;
 uniform samplerBuffer colormap2Buf;
 
-uniform vec2 attrRange0;
-uniform vec2 attrRange1;
-uniform vec2 attrRange2;
-uniform int attrRepeat0 = 1;
-uniform int attrRepeat1 = 1;
-uniform int attrRepeat2 = 1;
-uniform int attrNDims0 = 1;
-uniform int attrNDims1 = 1;
-uniform int attrNDims2 = 1;
+uniform vec2 attrRange[3];
+uniform int attrRepeat[3] = {1, 1, 1};
+uniform int attrNDims[3] = {1, 1, 1};
 
-
-uniform int colormapElement0 = -1;
-uniform int colormapElement1 = -1;
-uniform int colormapElement2 = -1;
+uniform int colormapElement[3] = {-1, -1, -1};
+uniform int highlightElement;
+uniform int filterElement;
 
 uniform samplerBuffer nvertsPerFacetBuf;
 
@@ -116,42 +105,12 @@ vec4 fetchColormap(int layer, vec2 coords) {
     return vec4(0.);
 }
 
-vec2 getLayerRange(int layer) {
-    if (layer == 0) return attrRange0;
-    if (layer == 1) return attrRange1;
-    if (layer == 2) return attrRange2;
-    return vec2(0.);
-}
-
-int getLayerRepeat(int layer) {
-    if (layer == 0) return attrRepeat0;
-    if (layer == 1) return attrRepeat1;
-    if (layer == 2) return attrRepeat2;
-    return 1;
-}
-
-int getLayerDims(int layer) {
-    if (layer == 0) return attrNDims0;
-    if (layer == 1) return attrNDims1;
-    if (layer == 2) return attrNDims2;
-    return 1;
-}
-
-int getSelectedAttrElement(int layer) {
-    if (layer == 0) return colormapElement0;
-    if (layer == 1) return colormapElement1;
-    if (layer == 2) return colormapElement2;
-    if (layer == 3) return highlightElement;
-    if (layer == 4) return filterElement;
-    return -1;
-}
-
 vec4 getAttributeColor2(int idx, int layer) {
 
-    vec2 range = getLayerRange(layer);
-    int nRepeat = getLayerRepeat(layer);
-    int nDims = getLayerDims(layer);
-    // bool autorange = getLayerAutorange(layer);
+    vec2 range = attrRange[layer];
+    int nRepeat = attrRepeat[layer];
+    int nDims = attrNDims[layer];
+    // bool automap = getLayerAutomap(layer);
 
     float rangeLength = range.y - range.x;
     float rangeRepeat = rangeLength / nRepeat;
@@ -164,7 +123,7 @@ vec4 getAttributeColor2(int idx, int layer) {
         if (nDims == 1) {
             // Apply range
             // val = (mod(attrVal - attrRange.x, rangeRepeat + 1)) / rangeRepeat;
-            val = (val - range.x) / rangeLength;
+            val = (val - range.x) / rangeLength; // Simple auto map range version with no repeat
         }
         
         float v = clamp(val, 0., 1.);
@@ -276,30 +235,8 @@ vec4 showCornerAttributes(int layer) {
     }
 }
 
-// void attributeCompute(inout vec3 col) {
-//     if (colorMode != 1)
-//         return;
-
-//     vec4 attrCol = vec4(0.);
-
-//     if (attrElement == 2) {
-//         showCornerAttributes(col);
-//     }
-//     // Facet attribute
-//     else if (attrElement == 8) {
-//         attrCol = getAttributeColor2(fragFacetIndex, 0);
-
-//         // Transparency
-//         if (attrCol.a > 0.)
-//             col = vec3(attrCol);
-//         else {
-//             discard;
-//         }
-//     }
-// }
-
 vec4 showColormap(int layer) {
-    int kind = getSelectedAttrElement(layer);
+    int kind = colormapElement[layer];
     if (kind == 8 /* facets */)
         return getAttributeColor2(fragFacetIndex, layer);
     else if (kind == 2 /* corners */) {
@@ -313,11 +250,10 @@ vec4 showColormap(int layer) {
 }
 
 void _filter(inout vec3 col) {
-    // Check if cell is filtered
-    bool isFiltered = texelFetch(filterBuf, fragFacetIndex).x >= .5;
-    if (isFiltered) {
+    bool filtered = texelFetch(filterBuf, fragFacetIndex).x >= .5;
+
+    if (filtered)
         discard;
-    }
 }
 
 void clip(inout vec3 col) {
@@ -385,12 +321,10 @@ void wireframe(inout vec3 col) {
 
 void main()
 {
-
     vec3 col = color;
 
     _filter(col);
     clip(col);
-    // attributeCompute(col);
 
     if (colorMode == 1) {
         vec4 c0 = showColormap(0);

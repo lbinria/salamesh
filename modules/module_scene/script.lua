@@ -380,6 +380,35 @@ function draw_model_properties(model, view)
 					imgui.EndCombo()
 				end
 
+				imgui.Text("Colormap 1")
+
+				local items = {"Item1", "Item2", "Item3", "Item4"}
+				local colormap_size = imgui.ImVec2(320, 35)
+
+				if (imgui.BeginCombo("##combo_colormaps1_selection", items[cur_model.selected_colormap1 + 1])) then
+					-- Display items in the popup
+					for i = 1, #items do
+						local is_selected = (cur_model.selected_colormap1 + 1) == i
+						-- Create a unique ID for each item to prevent conflicts
+						imgui.PushID(i)
+
+						-- Calculate total width including spacing
+						-- local total_width = imgui.CalcTextSize(items[i]).x + colormap_size.x + 10.0
+
+						-- Display the item with both text and image
+						if (imgui.Selectable(items[i], is_selected)) then
+							cur_model.selected_colormap1 = i - 1
+						end
+
+						-- Display the image after the text
+						imgui.Image(app.colormaps[i].tex, colormap_size)
+
+						imgui.PopID()
+					end
+
+					imgui.EndCombo()
+				end
+
 				imgui.Text("Attribute 0")
 
 				if (#cur_model.attrs > 0) then
