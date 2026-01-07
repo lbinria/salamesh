@@ -173,11 +173,9 @@ struct Model {
 
         std::cout << "update attr" << std::endl;
 
-        if (colorMode == ColorMode::ATTRIBUTE) {
-            updateColormaps();
-        }
-
-        // TODO important update color map even if not color mode == Attribute
+        // if (colorMode == ColorMode::ATTRIBUTE) {
+        //     updateAttrs();
+        // }
 
         std::cout << "update hl / filter" << std::endl;
 
@@ -346,7 +344,7 @@ struct Model {
     }
 
     // TODO to protected
-    void updateColormaps() {
+    void updateAttrs() {
         setSelectedAttr0(selectedAttr0);
         setSelectedAttr1(selectedAttr1);
         setSelectedAttr2(selectedAttr2);

@@ -471,7 +471,8 @@ void MyApp::draw_gui() {
 			hl.bind("my_attribute_1", model.getSurfaceAttributes(), m);
 
 			for (auto &f : m.iter_facets()) {
-				Triangle3 t = f;
+				// Triangle3 t = f;
+				Poly3 t = f;
 				auto b = t.bary_verts();
 				if (b.y > 0.25f) {
 					hl[f] = 1.f;
