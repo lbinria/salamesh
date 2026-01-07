@@ -24,41 +24,42 @@ void PointSetRenderer::init() {
 	sl::createVBOInteger(shader.id, "vertexIndex", sizeof(Vertex), (void*)offsetof(Vertex, vertexIndex));
 	sl::createVBOVec3(shader.id, "aPos", sizeof(Vertex), (void*)offsetof(Vertex, position));
 	sl::createVBOFloat(shader.id, "sizeScale", sizeof(Vertex), (void*)offsetof(Vertex, size));
-	sl::createVBOVec3(shader.id, "normal", sizeof(Vertex), (void*)offsetof(Vertex, normal));
+	// sl::createVBOVec3(shader.id, "normal", sizeof(Vertex), (void*)offsetof(Vertex, normal));
 
 }
 
 void PointSetRenderer::push() {	
 
-	std::vector<glm::vec3> normals(ps.size(), glm::vec3(0.));
+	// // TODO clean remove that, not used anymore !
+	// std::vector<glm::vec3> normals(ps.size(), glm::vec3(0.));
 
-	if (_m) {
+	// if (_m) {
 
-		auto &m = *_m;
+	// 	auto &m = *_m;
 
-		for (auto &f : m.iter_facets()) {
+	// 	for (auto &f : m.iter_facets()) {
 
-			// Compute facet normal
-			int nbv = f.size();
+	// 		// Compute facet normal
+	// 		int nbv = f.size();
 
-			std::vector<vec3> pos(f.size());
-			for (int lv = 0; lv < f.size(); ++lv) {
-				pos[lv] = f.vertex(lv).pos();
-			}
-			auto n = UM::geo::normal(pos.data(), nbv);
+	// 		std::vector<vec3> pos(f.size());
+	// 		for (int lv = 0; lv < f.size(); ++lv) {
+	// 			pos[lv] = f.vertex(lv).pos();
+	// 		}
+	// 		auto n = UM::geo::normal(pos.data(), nbv);
 
-			// Set facet normal to all vertices of facet
-			for (int lv = 0; lv < f.size(); ++lv) {
-				auto v = f.vertex(lv);
-				normals[v] += glm::vec3(n.x, n.y, n.z);
-				normals[v] = glm::normalize(normals[v]);
-			}
-		}
+	// 		// Set facet normal to all vertices of facet
+	// 		for (int lv = 0; lv < f.size(); ++lv) {
+	// 			auto v = f.vertex(lv);
+	// 			normals[v] += glm::vec3(n.x, n.y, n.z);
+	// 			normals[v] = glm::normalize(normals[v]);
+	// 		}
+	// 	}
 
-		for (int i = 0; i < normals.size(); ++i) {
-			normals[i] = glm::normalize(normals[i]);
-		}
-	}
+	// 	for (int i = 0; i < normals.size(); ++i) {
+	// 		normals[i] = glm::normalize(normals[i]);
+	// 	}
+	// }
 
 	std::vector<Vertex> vertices(ps.size());
 	for (int i = 0; i < ps.size(); ++i) {
@@ -67,8 +68,8 @@ void PointSetRenderer::push() {
 		vertices[i] = { 
 			.vertexIndex = i,
 			.position = glm::vec3(v.x, v.y, v.z),
-			.size = 1.f,
-			.normal = normals[i]
+			.size = 1.f
+			// .normal = normals[i]
 		};
 	}
 

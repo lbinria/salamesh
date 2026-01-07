@@ -679,16 +679,17 @@ struct Model {
             r->setTexture(tex);
     }
 
+    // TODO maybe protected
     void setColormap0Texture(unsigned int tex) {
         for (auto const &[k, r] : _renderers)
             r->setColormap0Texture(tex);
     }
-
+    // TODO maybe protected
     void setColormap1Texture(unsigned int tex) {
         for (auto const &[k, r] : _renderers)
             r->setColormap1Texture(tex);
     }
-
+    // TODO maybe protected
     void setColormap2Texture(unsigned int tex) {
         for (auto const &[k, r] : _renderers)
             r->setColormap2Texture(tex);

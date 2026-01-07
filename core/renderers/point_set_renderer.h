@@ -22,7 +22,7 @@ struct PointSetRenderer : public IRenderer {
 		int vertexIndex;
 		glm::vec3 position;
 		float size;
-		glm::vec3 normal;
+		// glm::vec3 normal;
 	};
 
     PointSetRenderer(PointSet &ps) : 
@@ -61,7 +61,7 @@ struct PointSetRenderer : public IRenderer {
 
 
     PointSet &ps;
-    Surface *_m = nullptr;
+    // Surface *_m = nullptr;
 
 
     private:
