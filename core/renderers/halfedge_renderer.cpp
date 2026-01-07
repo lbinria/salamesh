@@ -15,10 +15,23 @@ void HalfedgeRenderer::init() {
 	sl::createTBO(bufHighlight, tboHighlight);
 	sl::createTBO(bufFilter, tboFilter);
 	
+	// TODO important DO THAT IN RENDERER ?
+	sl::createTBO(bufColormap0, tboColormap0);
+	sl::createTBO(bufColormap1, tboColormap1);
+	sl::createTBO(bufColormap2, tboColormap2);
+
 	shader.use();
-	shader.setInt("attrBuf", 2);
-	shader.setInt("highlightBuf", 3);
-	shader.setInt("filterBuf", 4);
+	shader.setInt("colormap", 0);
+	shader.setInt("colormap0", 1);
+	shader.setInt("colormap1", 2);
+	shader.setInt("colormap2", 3);
+
+	shader.setInt("attrBuf", 4);
+	shader.setInt("highlightBuf", 5);
+	shader.setInt("filterBuf", 6);
+	shader.setInt("colormap0Buf", 7);
+	shader.setInt("colormap1Buf", 8);
+	shader.setInt("colormap2Buf", 9);
 
 	// VBO
 	sl::createVBOInteger(shader.id, "halfedgeIndex", sizeof(LineVert), (void*)offsetof(LineVert, halfedgeIndex));
@@ -39,13 +52,33 @@ void HalfedgeRenderer::render(glm::vec3 &position) {
 
 	glActiveTexture(GL_TEXTURE0);
 	glBindTexture(GL_TEXTURE_2D, texColorMap);
+
+	glActiveTexture(GL_TEXTURE0 + 1);
+	glBindTexture(GL_TEXTURE_2D, texColormap0);
+
 	glActiveTexture(GL_TEXTURE0 + 2);
-	glBindTexture(GL_TEXTURE_BUFFER, texAttr);
+	glBindTexture(GL_TEXTURE_2D, texColormap1);
+
 	glActiveTexture(GL_TEXTURE0 + 3);
-	glBindTexture(GL_TEXTURE_BUFFER, tboHighlight);
+	glBindTexture(GL_TEXTURE_2D, texColormap2);
+
 	glActiveTexture(GL_TEXTURE0 + 4);
+	glBindTexture(GL_TEXTURE_BUFFER, texAttr);
+
+	glActiveTexture(GL_TEXTURE0 + 5);
+	glBindTexture(GL_TEXTURE_BUFFER, tboHighlight);
+
+	glActiveTexture(GL_TEXTURE0 + 6);
 	glBindTexture(GL_TEXTURE_BUFFER, tboFilter);
 
+	glActiveTexture(GL_TEXTURE0 + 7);
+	glBindTexture(GL_TEXTURE_BUFFER, tboColormap0);
+
+	glActiveTexture(GL_TEXTURE0 + 8);
+	glBindTexture(GL_TEXTURE_BUFFER, tboColormap1);
+
+	glActiveTexture(GL_TEXTURE0 + 9);
+	glBindTexture(GL_TEXTURE_BUFFER, tboColormap2);
 
 	setPosition(position);
 

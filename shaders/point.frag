@@ -28,11 +28,6 @@ uniform vec3 selectColor = vec3(0., 0.22, 1.);
 
 uniform int colorMode = 0;
 
-// uniform sampler2D fragColorMap;
-// uniform vec2 attrRange = vec2(0.f, 1.f);
-// uniform samplerBuffer attrBuf;
-// uniform int attrElement;
-
 // Note: cannot index samplerBuffer with dynamic indexing !
 uniform sampler2D colormap0;
 uniform sampler2D colormap1;

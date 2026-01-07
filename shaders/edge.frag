@@ -5,11 +5,8 @@ layout(depth_less) out float gl_FragDepth;
 
 // Color output
 layout(location = 0) out vec4 FragColor;
-layout(location = 3) out vec4 FragVertexIndexOut;
 
 flat in int FragHalfedgeIndex;
-
-uniform vec3 pointColor;
 
 uniform int colorMode = 0;
 
@@ -17,25 +14,87 @@ uniform vec3 hoverColor = vec3(1.,1.,1.);
 uniform vec3 selectColor = vec3(0., 0.22, 1.);
 
 uniform sampler2D fragColorMap;
-uniform vec2 attrRange = vec2(0.f, 1.f);
-uniform int attrRepeat = 1;
-uniform samplerBuffer attrBuf;
-uniform samplerBuffer filterBuf;
-uniform samplerBuffer highlightBuf;
-uniform int attrElement;
-uniform int attrNDims;
-
+// uniform vec2 attrRange = vec2(0.f, 1.f);
+// uniform int attrRepeat = 1;
+// uniform samplerBuffer attrBuf;
+// uniform samplerBuffer filterBuf;
+// uniform samplerBuffer highlightBuf;
+// uniform int attrElement;
+// uniform int attrNDims;
 
 in vec2 vLocalUV;  // u in [0..1] across thickness, v in [0..1] along length
 
 uniform vec3 uColorInside = vec3(0.0, 0.97, 0.73);
 uniform vec3 uColorOutside = vec3(0.0, 0.6, 0.45);
 
+// Note: cannot index samplerBuffer with dynamic indexing !
+uniform sampler2D colormap0;
+uniform sampler2D colormap1;
+uniform sampler2D colormap2;
+
+uniform samplerBuffer filterBuf;
+uniform samplerBuffer highlightBuf;
+uniform samplerBuffer colormap0Buf;
+uniform samplerBuffer colormap1Buf;
+uniform samplerBuffer colormap2Buf;
+
+uniform vec2 attrRange[3];
+uniform int attrRepeat[3] = {1, 1, 1};
+uniform int attrNDims[3] = {1, 1, 1};
+
+uniform int colormapElement[3] = {-1, -1, -1};
+uniform int highlightElement;
+uniform int filterElement;
+
 vec3 encode_id(int id) {
     int r = id & 0x000000FF;
     int g = (id & 0x0000FF00) >> 8;
     int b = (id & 0x00FF0000) >> 16;
     return vec3(r / 255.f, g / 255.f, b / 255.f); 
+}
+
+float fetchLayer(int idx, int layer) {
+    if (layer == 0) return texelFetch(colormap0Buf, idx).x;
+    if (layer == 1) return texelFetch(colormap1Buf, idx).x;
+    if (layer == 2) return texelFetch(colormap2Buf, idx).x;
+    if (layer == 3) return texelFetch(highlightBuf, idx).x;
+    if (layer == 4) return texelFetch(filterBuf, idx).x;
+    return 0.;
+}
+
+vec4 fetchColormap(int layer, vec2 coords) {
+    if (layer == 0) return texture(colormap0, coords);
+    if (layer == 1) return texture(colormap1, coords);
+    if (layer == 2) return texture(colormap2, coords);
+    return vec4(0.);
+}
+
+vec4 getLayerColor(int idx, int layer) {
+
+    vec2 range = attrRange[layer];
+    int nRepeat = attrRepeat[layer];
+    int nDims = attrNDims[layer];
+    // bool automap = getLayerAutomap(layer);
+
+    float rangeLength = range.y - range.x;
+    float rangeRepeat = rangeLength / nRepeat;
+
+
+    vec2 coords = vec2(0.);
+    for (int d = 0; d < nDims; d++) {
+
+        float val = fetchLayer(idx * nDims + d, layer).x;
+        if (nDims == 1) {
+            // Apply range
+            // val = (mod(attrVal - attrRange.x, rangeRepeat + 1)) / rangeRepeat;
+            val = (val - range.x) / rangeLength; // Simple auto map range version with no repeat
+        }
+        
+        float v = clamp(val, 0., 1.);
+        coords[d] = v;
+    }
+    
+    return fetchColormap(layer, coords);
 }
 
 float sdfEquilateralTriangle(vec2 p) {
@@ -47,41 +106,18 @@ float sdfEquilateralTriangle(vec2 p) {
     return -length(p)*sign(p.y);
 }
 
-// vec4 getAttributeColor(int index) {
-//     float range = attrRange.y - attrRange.x;
-//     float rangeRepeat = range / attrRepeat;
-//     float attrVal = texelFetch(attrBuf, FragHalfedgeIndex).x;
-//     float remapVal = (mod(attrVal - attrRange.x, rangeRepeat + 1)) / rangeRepeat;
-//     float x = clamp(remapVal, 0., 1.);
-//     vec4 attrCol = texture(fragColorMap, vec2(x, 0.));
-//     return attrCol;
-// }
+void _filter(inout vec3 col) {
+    bool filtered = texelFetch(filterBuf, FragHalfedgeIndex).x > 0;
 
-vec4 getAttributeColor(int index) {
-    float range = attrRange.y - attrRange.x;
-    float rangeRepeat = range / attrRepeat;
-
-    vec2 coords = vec2(0.);
-    for (int d = 0; d < attrNDims; d++) {
-
-        float attrVal = texelFetch(attrBuf, index * attrNDims + d).x;
-        // TODO uncomment for colormap but comment for texture....
-        float remapVal = (mod(attrVal - attrRange.x, rangeRepeat + 1)) / rangeRepeat;
-        // float remapVal = attrVal;
-        float v = clamp(remapVal, 0., 1.);
-        coords[d] = v;
-    }
-    
-    return texture(fragColorMap, coords);
+    if (filtered)
+        discard;
 }
 
-void main()
-{
-    // Check whether point is filtered
-    bool isFiltered = texelFetch(filterBuf, FragHalfedgeIndex).x > 0;
-    if (isFiltered)
-        discard;
+void clip(inout vec3 col) {
+    // TODO
+}
 
+vec4 trace(inout vec3 col) {
     // dist from border: center is u=0.5
     float d = abs(vLocalUV.x - 0.5) - 0.5;  
     float e = fwidth(d);
@@ -110,16 +146,10 @@ void main()
     // Update depth according to radius
     gl_FragDepth = gl_FragCoord.z - 0.00005 * N.z;
 
-    
-    // vec3 col = mix(uColorOutside, uColorInside, t);
-    float light = 1. - dot(N, vec3(0.35,0.45,1.)) /** .5 + .5*/;
-    vec3 col = mix(uColorOutside, uColorInside, t) * (light * 0.5 + 0.5);
-    
-    // Attributes
-    if (colorMode == 1 && attrElement == 2) {
-        col = getAttributeColor(FragHalfedgeIndex).xyz;
-    }
+    return vec4(N, t);
+}
 
+void highlight(inout vec3 col) {
     // Highlight
     float highlightVal = texelFetch(highlightBuf, FragHalfedgeIndex).x;
 
@@ -132,6 +162,63 @@ void main()
         // Mix with current point color (80%)
         col = mix(col, hlColor, .8);
     }
+}
+
+void shading(inout vec3 col, vec3 N, float t) {
+    float light = 1. - dot(N, vec3(0.35,0.45,1.)) /** .5 + .5*/;
+    col *= light * 0.5 + 0.5;
+}
+
+vec4 showColormap(int layer) {
+    int kind = colormapElement[layer];
+    
+    if (kind == 2 /* corners */) {
+        return getLayerColor(FragHalfedgeIndex, layer);
+    } 
+    
+    if (kind == -1 /* no element => layer deactivated */) {
+        return vec4(0.);
+    }
+
+    return vec4(1., 0., 0., 1.);
+}
+
+void main()
+{
+    vec3 col = uColorInside;
+    _filter(col);
+    clip(col);
+
+    vec4 Nt = trace(col);
+    vec3 N = vec3(Nt);
+    float t = Nt.w;
+
+    col = mix(uColorOutside, uColorInside, t);
+
+    // Attribute mode
+    if (colorMode == 1) {
+        vec4 c0 = showColormap(0);
+        vec4 c1 = showColormap(1);
+        vec4 c2 = showColormap(2);
+
+        // Blend
+        vec4 c = vec4(0.);
+
+        if (c0.a > 0.)
+            c = c0;
+        if (c1.a > 0.)
+            c = mix(c, c1, .5);
+        if (c2.a > 0.)
+            c = mix(c, c2, .5);
+
+        if (c.a <= 0.)
+            discard;
+        else 
+            col = c.xyz;
+    }
+
+    highlight(col);
+    shading(col, N, t);
 
     FragColor = vec4(col, 1.);
 }

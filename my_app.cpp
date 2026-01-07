@@ -483,6 +483,31 @@ void MyApp::draw_gui() {
 			model.setColormap1(ElementKind::FACETS_ELT);
 		}
 
+		if (ImGui::Button("Unset colormaps 1 points")) {
+			model.unsetColormap1(ElementKind::POINTS_ELT);
+		}
+
+		if (ImGui::Button("Set colormap 1 points")) {
+
+			auto &model = getCurrentModel().as<PolyModel>();
+			auto &m = model.getPolygons();
+			
+
+			PointAttribute<double> hl;
+			hl.bind("my_attribute_0", model.getSurfaceAttributes(), m);
+
+			for (auto &v : m.iter_vertices()) {
+				if (v.pos().y > 0.25f) {
+					hl[v] = 1.f;
+				} else {
+					hl[v] = 0.f;
+				}
+			}
+			
+			model.setColormap1Attr("my_attribute_0", ElementKind::POINTS_ELT);
+			model.setColormap1(ElementKind::POINTS_ELT);
+		}
+
 		ImGui::Text("Highlight:");
 
 		if (ImGui::Button("Unset all highlights")) {
