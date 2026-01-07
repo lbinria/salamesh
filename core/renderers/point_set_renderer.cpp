@@ -11,14 +11,14 @@ void PointSetRenderer::init() {
 
 	
 	// For the moment don't use persistent mapped memory
-	sl::createTBO(bufAttr, texAttr, 1);
-	sl::createTBO(bufHighlight, tboHighlight, 2);
-	sl::createTBO(bufFilter, tboFilter, 3);
+	sl::createTBO(bufAttr, texAttr);
+	sl::createTBO(bufHighlight, tboHighlight);
+	sl::createTBO(bufFilter, tboFilter);
 
 	// TODO important DO THAT IN RENDERER ?
-	sl::createTBO(bufColormap0, tboColormap0, 4);
-	sl::createTBO(bufColormap1, tboColormap1, 5);
-	sl::createTBO(bufColormap2, tboColormap2, 6);
+	sl::createTBO(bufColormap0, tboColormap0);
+	sl::createTBO(bufColormap1, tboColormap1);
+	sl::createTBO(bufColormap2, tboColormap2);
 
 	shader.use();
 	shader.setInt("colormap", 0);

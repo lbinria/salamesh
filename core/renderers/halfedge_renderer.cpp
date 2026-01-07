@@ -11,22 +11,9 @@ void HalfedgeRenderer::init() {
 	glBindBuffer(GL_ARRAY_BUFFER, VBO);
 
 	// For the moment don't use persistent mapped memory
-	sl::createTBO(bufAttr, texAttr, 2);
-	sl::createTBO(bufHighlight, tboHighlight, 3);
-	sl::createTBO(bufFilter, tboFilter, 4);
-
-	// // WTF ?
-	// I comment below, it seems works... if something goes wrong uncomment
-	// glActiveTexture(GL_TEXTURE0 + 2);
-	// glBindTexture(GL_TEXTURE_BUFFER, texAttr);
-
-	// glActiveTexture(GL_TEXTURE0 + 3);
-	// glBindTexture(GL_TEXTURE_BUFFER, tboHighlight);
-
-	// glActiveTexture(GL_TEXTURE0 + 4);
-	// glBindTexture(GL_TEXTURE_BUFFER, tboFilter);
-
-	// glBindBuffer(GL_TEXTURE_BUFFER, 0);
+	sl::createTBO(bufAttr, texAttr);
+	sl::createTBO(bufHighlight, tboHighlight);
+	sl::createTBO(bufFilter, tboFilter);
 	
 	shader.use();
 	shader.setInt("attrBuf", 2);

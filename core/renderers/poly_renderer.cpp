@@ -11,38 +11,13 @@ void PolyRenderer::init() {
 	glGenBuffers(1, &VBO);
 
 	// For the moment don't use persistent mapped memory
-	sl::createTBO(bufAttr, texAttr, 1);
-	sl::createTBO(bufHighlight, tboHighlight, 2);
-	sl::createTBO(bufFilter, tboFilter, 3);	
-	sl::createTBO(bufColormap0, tboColormap0, 4);
-	sl::createTBO(bufColormap1, tboColormap1, 5);
-	sl::createTBO(bufColormap2, tboColormap2, 6);
-	sl::createTBO(bufNVertsPerFacet, texNVertsPerFacet, 7);
-
-
-	// TODO seems useless below
-	// glActiveTexture(GL_TEXTURE0 + 1);
-	// glBindTexture(GL_TEXTURE_BUFFER, texAttr);
-
-	// glActiveTexture(GL_TEXTURE0 + 2);
-	// glBindTexture(GL_TEXTURE_BUFFER, tboHighlight);
-
-	// glActiveTexture(GL_TEXTURE0 + 3);
-	// glBindTexture(GL_TEXTURE_BUFFER, tboFilter);
-
-	// glActiveTexture(GL_TEXTURE0 + 4);
-	// glBindTexture(GL_TEXTURE_BUFFER, tboColormap0);
-
-	// glActiveTexture(GL_TEXTURE0 + 5);
-	// glBindTexture(GL_TEXTURE_BUFFER, tboColormap1);
-
-	// glActiveTexture(GL_TEXTURE0 + 6);
-	// glBindTexture(GL_TEXTURE_BUFFER, tboColormap2);
-
-	// glActiveTexture(GL_TEXTURE0 + 7);
-	// glBindTexture(GL_TEXTURE_BUFFER, texNVertsPerFacet);
-
-	// glBindBuffer(GL_TEXTURE_BUFFER, 0);
+	sl::createTBO(bufAttr, texAttr);
+	sl::createTBO(bufHighlight, tboHighlight);
+	sl::createTBO(bufFilter, tboFilter);	
+	sl::createTBO(bufColormap0, tboColormap0);
+	sl::createTBO(bufColormap1, tboColormap1);
+	sl::createTBO(bufColormap2, tboColormap2);
+	sl::createTBO(bufNVertsPerFacet, texNVertsPerFacet);
 
 	shader.use();
 	shader.setInt("colormap", 0);
