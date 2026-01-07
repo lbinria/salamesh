@@ -300,7 +300,7 @@ struct Model {
     }
 
     int getSelectedAttr1() const {
-        return selectedAttr0;
+        return selectedAttr1;
     }
 
     void setSelectedAttr1(int idx) {
@@ -323,7 +323,7 @@ struct Model {
     }
 
     int getSelectedAttr2() const {
-        return selectedAttr0;
+        return selectedAttr2;
     }
 
     void setSelectedAttr2(int idx) {
@@ -570,7 +570,7 @@ struct Model {
             case ElementKind::EDGES_ELT: {
                 zeros.resize(nhalfedges(), 0.f);
                 break;
-            } 
+            }
             case ElementKind::CORNERS_ELT: 
             case ElementKind::CELL_CORNERS_ELT: {
                 zeros.resize(ncorners(), 0.f);
