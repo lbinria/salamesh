@@ -13,13 +13,13 @@ struct Attribute {
 	std::string name;
 	ElementKind kind;
 	ElementType type;
-	std::shared_ptr<ContainerBase> ptr;
+	std::shared_ptr<ContainerBase> ptr; // TODO maybe remove !
 	int selectedDim = -1; // -1 means select all dimensions
 
 	std::string getName() const { return name; }
 	ElementKind getKind() const { return kind; }
 	ElementType getType() const { return type; }
-	std::shared_ptr<ContainerBase> getPtr() const { return ptr; }
+	// std::shared_ptr<ContainerBase> getPtr() const { return ptr; }
 
 	// This wrapper enable the modification of the attribute data for Lua
 	// In C++ there is no need to use this, just use regular UM Attribute after binding it to the model

@@ -13,7 +13,7 @@ void SurfaceRenderer::init() {
 	sl::createTBO(bufHighlight, tboHighlight);
 	sl::createTBO(bufFilter, tboFilter);
 
-	// TODO important DO THAT IN RENDERER ?
+	// TODO clean DO THAT IN RENDERER ?
 	sl::createTBO(bufColormap0, tboColormap0);
 	sl::createTBO(bufColormap1, tboColormap1);
 	sl::createTBO(bufColormap2, tboColormap2);

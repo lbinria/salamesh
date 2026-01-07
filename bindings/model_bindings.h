@@ -49,7 +49,7 @@ namespace bindings {
 				"kind", sol::readonly_property(&Attribute::getKind),
 				"type", sol::readonly_property(&Attribute::getType),
 				"dim", sol::readonly_property(&Attribute::getDims),
-				"ptr", sol::readonly_property(&Attribute::getPtr),
+				// "ptr", sol::readonly_property(&Attribute::getPtr),
 				"double_container", sol::readonly_property(&Attribute::getContainer<double>),
 				"int_container", sol::readonly_property(&Attribute::getContainer<int>),
 				"bool_container", sol::readonly_property(&Attribute::getContainer<bool>),

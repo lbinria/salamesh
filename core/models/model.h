@@ -52,12 +52,24 @@ struct Model {
     }
 
 
-    void saveState(json &j) const {
+    void saveState(json &j) /*const*/ {
         // Save current mesh state into a file
         auto now = std::chrono::system_clock::now();
         auto unix_timestamp = std::to_string(std::chrono::duration_cast<std::chrono::seconds>(now.time_since_epoch()).count());
         auto filename = _name + "_" + unix_timestamp + ".geogram";
+        
+        // Make copy of attributes
+        auto cpyAttrs = attrs;
+
+        clearAttrs();
+        auto containers = getAttributeContainers();
+        for (auto &[k, c] : containers)
+            addAttr(k, c);
+
         saveAs(filename);
+        
+        clearAttrs();
+        attrs = cpyAttrs;
 
         j["name"] = _name;
         j["path"] = filename;
@@ -76,6 +88,9 @@ struct Model {
         j["selected_attr1"] = selectedAttr1;
         j["selected_attr2"] = selectedAttr2;
         j["visible"] = visible;
+
+        j["attr_name_by_layer_and_kind"] = attrNameByLayerAndKind;
+        j["activated_layers"] = activatedLayers;
 
         for (auto &[k, r] : _renderers) {
             r->saveState(j["renderers"][k]);
@@ -115,21 +130,46 @@ struct Model {
 
         setInvertClipping(j["invert_clipping"].get<bool>());
 
-        int selectedAttr0 = j["selected_attr0"].get<int>();
-        if (selectedAttr0 >= 0)
-            setSelectedAttr0(selectedAttr0);
+        // int selectedAttr0 = j["selected_attr0"].get<int>();
+        // if (selectedAttr0 >= 0)
+        //     setSelectedAttr0(selectedAttr0);
 
-        int selectedAttr1 = j["selected_attr1"].get<int>();
-        if (selectedAttr1 >= 0)
-            setSelectedAttr1(selectedAttr1);
+        // int selectedAttr1 = j["selected_attr1"].get<int>();
+        // if (selectedAttr1 >= 0)
+        //     setSelectedAttr1(selectedAttr1);
 
-        int selectedAttr2 = j["selected_attr2"].get<int>();
-        if (selectedAttr2 >= 0)
-            setSelectedAttr2(selectedAttr2);
+        // int selectedAttr2 = j["selected_attr2"].get<int>();
+        // if (selectedAttr2 >= 0)
+        //     setSelectedAttr2(selectedAttr2);
+        selectedAttr0 = j["selected_attr0"].get<int>();
+        selectedAttr1 = j["selected_attr1"].get<int>();
+        selectedAttr2 = j["selected_attr2"].get<int>();
             
         setSelectedColormap0(j["selected_colormap0"].get<int>());
         setSelectedColormap1(j["selected_colormap1"].get<int>());
         setSelectedColormap2(j["selected_colormap2"].get<int>());
+
+        for (auto &j : j["attr_name_by_layer_and_kind"]) {
+            auto key = j[0];
+            Layer l = (Layer)key[0].get<int>();
+            ElementKind k = (ElementKind)key[1].get<int>();
+            auto attrName = j[1].get<std::string>();
+            attrNameByLayerAndKind[{l, k}] = attrName;
+        }
+
+        for (auto &j : j["activated_layers"]) {
+            auto key = j[0];
+            Layer l = (Layer)key[0].get<int>();
+            ElementKind k = (ElementKind)key[1].get<int>();
+            auto val = j[1].get<bool>();
+            if (val) {
+                setLayer(k, l);
+            }
+            // activatedLayers[{l, k}] = val;
+            // Set layers
+        }
+
+
 
         setVisible(j["visible"].get<bool>());
 
@@ -256,6 +296,19 @@ struct Model {
         }
 
         attrs.emplace_back(container.name, kind, type, container.ptr, -1);
+    }
+
+    void removeAttr(ElementKind kind, std::string name) {
+        int idx = -1;
+        for (int i = 0; i < attrs.size(); ++i) {
+            if (attrs[i].name == name) {
+                idx = i;
+                break;
+            }
+        }
+
+        if (idx > 0)
+            attrs.erase(attrs.begin() + idx);
     }
 
 
@@ -811,7 +864,7 @@ struct Model {
     // Renderers
     std::map<std::string, std::shared_ptr<IRenderer>> _renderers;
 
-	virtual std::vector<std::pair<ElementKind, NamedContainer>> getAttributeContainers() = 0;
+	virtual std::vector<std::pair<ElementKind, NamedContainer>> getAttributeContainers() const = 0;
 
     // TODO maybe move into helper
 	std::optional<std::tuple<std::vector<float>, int>> getAttrData(std::string attrName, ElementKind kind, int selectedDim = -1) {

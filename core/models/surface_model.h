@@ -103,7 +103,7 @@ struct SurfaceModel : public Model {
 	virtual Surface& getSurface() = 0;
 	virtual const Surface& getSurface() const = 0;
 
-	std::vector<std::pair<ElementKind, NamedContainer>> getAttributeContainers() override {
+	std::vector<std::pair<ElementKind, NamedContainer>> getAttributeContainers() const override {
 		std::vector<std::pair<ElementKind, NamedContainer>> containers;
 		
 		for (auto &c : _surfaceAttributes.points)

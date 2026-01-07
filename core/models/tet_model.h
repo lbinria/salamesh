@@ -111,7 +111,7 @@ struct TetModel final : public Model {
     protected:
 
     // TODO refactor into volume_model
-	std::vector<std::pair<ElementKind, NamedContainer>> getAttributeContainers() override {
+	std::vector<std::pair<ElementKind, NamedContainer>> getAttributeContainers() const override {
 		std::vector<std::pair<ElementKind, NamedContainer>> containers;
 		
 		for (auto &c : _volumeAttributes.points)

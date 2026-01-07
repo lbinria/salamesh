@@ -47,6 +47,12 @@ void TriModel::saveAs(const std::string path) const {
 	std::vector<NamedContainer> facet_attrs;
 	std::vector<NamedContainer> corner_attrs;
 	for (auto &a : attrs) {
+		// TODO do something more clear here !
+		// Do not save attributes 
+		// For example, attr : vec2 => attr[0], attr[1] aren't saved
+		if (a.selectedDim != -1)
+			continue;
+
 		std::string name = a.name;
 		ElementKind kind = a.kind;
 		auto &container = a.ptr;
