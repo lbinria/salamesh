@@ -13,31 +13,10 @@ void SurfaceRenderer::init() {
 	sl::createTBO(bufHighlight, tboHighlight, 2);
 	sl::createTBO(bufFilter, tboFilter, 3);
 
+	// TODO important DO THAT IN RENDERER ?
 	sl::createTBO(bufColormap0, tboColormap0, 4);
 	sl::createTBO(bufColormap1, tboColormap1, 5);
 	sl::createTBO(bufColormap2, tboColormap2, 6);
-
-	// // TODO seems useless
-	// // Set up texture units		
-	// glActiveTexture(GL_TEXTURE0 + 1);
-	// glBindTexture(GL_TEXTURE_BUFFER, texAttr);
-
-	// glActiveTexture(GL_TEXTURE0 + 2);
-	// glBindTexture(GL_TEXTURE_BUFFER, tboHighlight);
-
-	// glActiveTexture(GL_TEXTURE0 + 3);
-	// glBindTexture(GL_TEXTURE_BUFFER, tboFilter);
-
-	// glActiveTexture(GL_TEXTURE0 + 4);
-	// glBindTexture(GL_TEXTURE_BUFFER, tboColormap0);
-
-	// glActiveTexture(GL_TEXTURE0 + 5);
-	// glBindTexture(GL_TEXTURE_BUFFER, tboColormap1);
-
-	// glActiveTexture(GL_TEXTURE0 + 6);
-	// glBindTexture(GL_TEXTURE_BUFFER, tboColormap2);
-
-	// glBindBuffer(GL_TEXTURE_BUFFER, 0);
 
 	shader.use();
 	shader.setInt("colormap", 0);

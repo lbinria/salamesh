@@ -87,8 +87,7 @@ namespace sl {
 		glGenBuffers(1, &buf);
 		glGenTextures(1, &tex);
 		glBindBuffer(GL_TEXTURE_BUFFER, buf);
-		glActiveTexture(GL_TEXTURE0 + texId); 
-		glBindTexture(GL_TEXTURE_BUFFER, tex);
+		glBindTexture(GL_TEXTURE_BUFFER, tex); // Link tex to buf
 		glTexBuffer(GL_TEXTURE_BUFFER, internalFormat, buf);
 	}
 

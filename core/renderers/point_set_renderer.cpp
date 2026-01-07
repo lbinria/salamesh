@@ -11,55 +11,36 @@ void PointSetRenderer::init() {
 
 	
 	// For the moment don't use persistent mapped memory
-	sl::createTBO(bufAttr, texAttr, 2);
-	sl::createTBO(bufHighlight, tboHighlight, 3);
-	sl::createTBO(bufFilter, tboFilter, 4);
+	sl::createTBO(bufAttr, texAttr, 1);
+	sl::createTBO(bufHighlight, tboHighlight, 2);
+	sl::createTBO(bufFilter, tboFilter, 3);
+
+	// TODO important DO THAT IN RENDERER ?
+	sl::createTBO(bufColormap0, tboColormap0, 4);
+	sl::createTBO(bufColormap1, tboColormap1, 5);
+	sl::createTBO(bufColormap2, tboColormap2, 6);
 
 	shader.use();
-	shader.setInt("attrBuf", 2);
-	shader.setInt("highlightBuf", 3);
-	shader.setInt("filterBuf", 4);
+	shader.setInt("colormap", 0);
+	shader.setInt("colormap0", 1);
+	shader.setInt("colormap1", 2);
+	shader.setInt("colormap2", 3);
+
+	shader.setInt("attrBuf", 4);
+	shader.setInt("highlightBuf", 5);
+	shader.setInt("filterBuf", 6);
+	shader.setInt("colormap0Buf", 7);
+	shader.setInt("colormap1Buf", 8);
+	shader.setInt("colormap2Buf", 9);
 
 	// VBO
 	sl::createVBOInteger(shader.id, "vertexIndex", sizeof(Vertex), (void*)offsetof(Vertex, vertexIndex));
 	sl::createVBOVec3(shader.id, "aPos", sizeof(Vertex), (void*)offsetof(Vertex, position));
 	sl::createVBOFloat(shader.id, "sizeScale", sizeof(Vertex), (void*)offsetof(Vertex, size));
-	// sl::createVBOVec3(shader.id, "normal", sizeof(Vertex), (void*)offsetof(Vertex, normal));
 
 }
 
 void PointSetRenderer::push() {	
-
-	// // TODO clean remove that, not used anymore !
-	// std::vector<glm::vec3> normals(ps.size(), glm::vec3(0.));
-
-	// if (_m) {
-
-	// 	auto &m = *_m;
-
-	// 	for (auto &f : m.iter_facets()) {
-
-	// 		// Compute facet normal
-	// 		int nbv = f.size();
-
-	// 		std::vector<vec3> pos(f.size());
-	// 		for (int lv = 0; lv < f.size(); ++lv) {
-	// 			pos[lv] = f.vertex(lv).pos();
-	// 		}
-	// 		auto n = UM::geo::normal(pos.data(), nbv);
-
-	// 		// Set facet normal to all vertices of facet
-	// 		for (int lv = 0; lv < f.size(); ++lv) {
-	// 			auto v = f.vertex(lv);
-	// 			normals[v] += glm::vec3(n.x, n.y, n.z);
-	// 			normals[v] = glm::normalize(normals[v]);
-	// 		}
-	// 	}
-
-	// 	for (int i = 0; i < normals.size(); ++i) {
-	// 		normals[i] = glm::normalize(normals[i]);
-	// 	}
-	// }
 
 	std::vector<Vertex> vertices(ps.size());
 	for (int i = 0; i < ps.size(); ++i) {
@@ -87,12 +68,33 @@ void PointSetRenderer::render(glm::vec3 &position) {
 
 	glActiveTexture(GL_TEXTURE0);
 	glBindTexture(GL_TEXTURE_2D, texColorMap);
+
+	glActiveTexture(GL_TEXTURE0 + 1);
+	glBindTexture(GL_TEXTURE_2D, texColormap0);
+
 	glActiveTexture(GL_TEXTURE0 + 2);
-	glBindTexture(GL_TEXTURE_BUFFER, texAttr);
+	glBindTexture(GL_TEXTURE_2D, texColormap1);
+
 	glActiveTexture(GL_TEXTURE0 + 3);
-	glBindTexture(GL_TEXTURE_BUFFER, tboHighlight);
+	glBindTexture(GL_TEXTURE_2D, texColormap2);
+
 	glActiveTexture(GL_TEXTURE0 + 4);
+	glBindTexture(GL_TEXTURE_BUFFER, texAttr);
+
+	glActiveTexture(GL_TEXTURE0 + 5);
+	glBindTexture(GL_TEXTURE_BUFFER, tboHighlight);
+
+	glActiveTexture(GL_TEXTURE0 + 6);
 	glBindTexture(GL_TEXTURE_BUFFER, tboFilter);
+
+	glActiveTexture(GL_TEXTURE0 + 7);
+	glBindTexture(GL_TEXTURE_BUFFER, tboColormap0);
+
+	glActiveTexture(GL_TEXTURE0 + 8);
+	glBindTexture(GL_TEXTURE_BUFFER, tboColormap1);
+
+	glActiveTexture(GL_TEXTURE0 + 9);
+	glBindTexture(GL_TEXTURE_BUFFER, tboColormap2);
 
 
 	glm::mat4 model = glm::mat4(1.0f);

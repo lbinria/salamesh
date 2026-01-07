@@ -28,13 +28,29 @@ uniform vec3 selectColor = vec3(0., 0.22, 1.);
 
 uniform int colorMode = 0;
 
-uniform sampler2D fragColorMap;
-uniform vec2 attrRange = vec2(0.f, 1.f);
-uniform samplerBuffer attrBuf;
-uniform int attrElement;
+// uniform sampler2D fragColorMap;
+// uniform vec2 attrRange = vec2(0.f, 1.f);
+// uniform samplerBuffer attrBuf;
+// uniform int attrElement;
+
+// Note: cannot index samplerBuffer with dynamic indexing !
+uniform sampler2D colormap0;
+uniform sampler2D colormap1;
+uniform sampler2D colormap2;
 
 uniform samplerBuffer filterBuf;
 uniform samplerBuffer highlightBuf;
+uniform samplerBuffer colormap0Buf;
+uniform samplerBuffer colormap1Buf;
+uniform samplerBuffer colormap2Buf;
+
+uniform vec2 attrRange[3];
+uniform int attrRepeat[3] = {1, 1, 1};
+uniform int attrNDims[3] = {1, 1, 1};
+
+uniform int colormapElement[3] = {-1, -1, -1};
+uniform int highlightElement;
+uniform int filterElement;
 
 flat in float depthZ;
 
@@ -45,16 +61,30 @@ vec3 encode_id(int id) {
     return vec3(r / 255.f, g / 255.f, b / 255.f); 
 }
 
-void main()
-{
-    // Check whether point is filtered
-    bool isFiltered = texelFetch(filterBuf, FragVertexIndex).x > 0;
-    if (isFiltered)
+float fetchLayer(int idx, int layer) {
+    if (layer == 0) return texelFetch(colormap0Buf, idx).x;
+    if (layer == 1) return texelFetch(colormap1Buf, idx).x;
+    if (layer == 2) return texelFetch(colormap2Buf, idx).x;
+    if (layer == 3) return texelFetch(highlightBuf, idx).x;
+    if (layer == 4) return texelFetch(filterBuf, idx).x;
+    return 0.;
+}
+
+vec4 fetchColormap(int layer, vec2 coords) {
+    if (layer == 0) return texture(colormap0, coords);
+    if (layer == 1) return texture(colormap1, coords);
+    if (layer == 2) return texture(colormap2, coords);
+    return vec4(0.);
+}
+
+void _filter(inout vec3 col) {
+    bool filtered = texelFetch(filterBuf, FragVertexIndex).x > 0;
+
+    if (filtered)
         discard;
+}
 
-
-    /* --- CLIPPING --- */
-
+void clip(inout vec3 col) {
    // Calculate the distance from the cell barycenter to the plane
    if (is_clipping_enabled) {
       float distance = dot(clipping_plane_normal, fragWorldPos - clipping_plane_point) / length(clipping_plane_normal);
@@ -63,12 +93,9 @@ void main()
          discard;
       }
    }
+}
 
-    /* --- CLIPPING END --- */
-
-
-    vec3 col = pointColor;
-
+vec3 trace(inout vec3 col) {
     // Check circle distance function
     vec2 V = 2.0 * (gl_PointCoord - vec2(0.5, 0.5));
     float oneMinusR2 = 1. - dot(V,V);
@@ -83,15 +110,11 @@ void main()
     vec3 N = vec3(V.x, -V.y, sqrt(oneMinusR2));
     // Update depth according to radius
     gl_FragDepth = gl_FragCoord.z - deltaDepth * N.z;
-    
-    // Attribute color mode !
-    if (colorMode != 0 && attrElement == 1) {
-        // TODO add repeat / transparency colormaps
-        float fragAttrVal = texelFetch(attrBuf, FragVertexIndex).x;
-        float x = clamp((fragAttrVal - attrRange.x) / (attrRange.y - attrRange.x), 0., 1.);
-        col = vec3(texture(fragColorMap, vec2(x, 0.)));
-    }
 
+    return N;
+}
+
+void highlight(inout vec3 col) {
     // Highlight
     float highlightVal = texelFetch(highlightBuf, FragVertexIndex).x;
     if (highlightVal > 0) {
@@ -103,7 +126,9 @@ void main()
         // Mix with current point color (80%)
         col = mix(col, hlColor, .8);
     }
+}
 
+void shading(vec3 N, inout vec3 col) {
     // Diffuse light
     if (is_light_enabled) {
         vec3 dirLight;
@@ -116,6 +141,82 @@ void main()
         float diffuse = max((1.f - dot(N, dirLight)) * .75f + .25f /* ambiant */, 0.f);
         col = col * diffuse;
     }
+}
+
+vec4 getLayerColor(int idx, int layer) {
+
+    vec2 range = attrRange[layer];
+    int nRepeat = attrRepeat[layer];
+    int nDims = attrNDims[layer];
+    // bool automap = getLayerAutomap(layer);
+
+    float rangeLength = range.y - range.x;
+    float rangeRepeat = rangeLength / nRepeat;
+
+
+    vec2 coords = vec2(0.);
+    for (int d = 0; d < nDims; d++) {
+
+        float val = fetchLayer(idx * nDims + d, layer).x;
+        if (nDims == 1) {
+            // Apply range
+            // val = (mod(attrVal - attrRange.x, rangeRepeat + 1)) / rangeRepeat;
+            val = (val - range.x) / rangeLength; // Simple auto map range version with no repeat
+        }
+        
+        float v = clamp(val, 0., 1.);
+        coords[d] = v;
+    }
+    
+    return fetchColormap(layer, coords);
+}
+
+vec4 showColormap(int layer) {
+    int kind = colormapElement[layer];
+    
+    if (kind == 1 /* points */) {
+        return getLayerColor(FragVertexIndex, layer);
+    } 
+    
+    if (kind == -1 /* no element => layer deactivated */) {
+        return vec4(0.);
+    }
+
+    return vec4(1., 0., 0., 1.);
+}
+
+
+void main()
+{
+    vec3 col = pointColor;
+    _filter(col);
+    clip(col);
+    vec3 N = trace(col);
+
+    // Attribute mode
+    if (colorMode == 1) {
+        vec4 c0 = showColormap(0);
+        vec4 c1 = showColormap(1);
+        vec4 c2 = showColormap(2);
+
+        // Blend
+        vec4 c = vec4(0.);
+
+        if (c0.a > 0.)
+            c = c0;
+        if (c1.a > 0.)
+            c = mix(c, c1, .5);
+        if (c2.a > 0.)
+            c = mix(c, c2, .5);
+
+        if (c.a <= 0.)
+            discard;
+        else 
+            col = c.xyz;
+    }
+
+    highlight(col);
+    shading(N, col);
 
     FragVertexIndexOut = vec4(encode_id(FragVertexIndex), 1.);
     FragColor = vec4(col, 1.f);
