@@ -13,15 +13,6 @@ uniform int colorMode = 0;
 uniform vec3 hoverColor = vec3(1.,1.,1.);
 uniform vec3 selectColor = vec3(0., 0.22, 1.);
 
-uniform sampler2D fragColorMap;
-// uniform vec2 attrRange = vec2(0.f, 1.f);
-// uniform int attrRepeat = 1;
-// uniform samplerBuffer attrBuf;
-// uniform samplerBuffer filterBuf;
-// uniform samplerBuffer highlightBuf;
-// uniform int attrElement;
-// uniform int attrNDims;
-
 in vec2 vLocalUV;  // u in [0..1] across thickness, v in [0..1] along length
 
 uniform vec3 uColorInside = vec3(0.0, 0.97, 0.73);

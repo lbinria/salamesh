@@ -255,12 +255,6 @@ namespace bindings {
 				return attrs_tbl;
 			});
 
-			model_t["selected_attr"] = sol::property([](Model &self) {
-				return self.getSelectedAttr() + 1;
-			}, [](Model &self, int selected) {
-				self.setSelectedAttr(selected - 1);
-			});
-
 			model_t["selected_attr0"] = sol::property([](Model &self) {
 				return self.getSelectedAttr0() + 1;
 			}, [](Model &self, int selected) {
@@ -295,25 +289,28 @@ namespace bindings {
 			
 
 			// TODO here change implementation by managing index offset from lua to C++ +1 / -1
-			model_t["selected_colormap"] = sol::property(
-				&Model::getSelectedColormap,
-				&Model::setSelectedColormap
-			);
+			// model_t["selected_colormap"] = sol::property(
+			// 	&Model::getSelectedColormap,
+			// 	&Model::setSelectedColormap
+			// );
 
-			model_t["selected_colormap0"] = sol::property(
-				&Model::getSelectedColormap0,
-				&Model::setSelectedColormap0
-			);
+			model_t["selected_colormap0"] = sol::property([](Model &self) {
+				return self.getSelectedColormap0() + 1;
+			}, [](Model &self, int selected) {
+				self.setSelectedColormap0(selected - 1);
+			});
 
-			model_t["selected_colormap1"] = sol::property(
-				&Model::getSelectedColormap1,
-				&Model::setSelectedColormap1
-			);
+			model_t["selected_colormap1"] = sol::property([](Model &self) {
+				return self.getSelectedColormap1() + 1;
+			}, [](Model &self, int selected) {
+				self.setSelectedColormap1(selected - 1);
+			});
 
-			model_t["selected_colormap2"] = sol::property(
-				&Model::getSelectedColormap2,
-				&Model::setSelectedColormap2
-			);
+			model_t["selected_colormap2"] = sol::property([](Model &self) {
+				return self.getSelectedColormap2() + 1;
+			}, [](Model &self, int selected) {
+				self.setSelectedColormap2(selected - 1);
+			});
 
 
 

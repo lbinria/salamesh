@@ -69,8 +69,12 @@ struct Model {
         j["clipping_plane_point"] = { clippingPlanePoint.x, clippingPlanePoint.y, clippingPlanePoint.z };
         j["clipping_plane_normal"] = { clippingPlaneNormal.x, clippingPlaneNormal.y, clippingPlaneNormal.z };
         j["invert_clipping"] = invertClipping;
-        j["selected_colormap"] = selectedColormap;
-        j["selected_attr"] = selectedAttr;
+        j["selected_colormap0"] = selectedColormap0;
+        j["selected_colormap1"] = selectedColormap1;
+        j["selected_colormap2"] = selectedColormap2;
+        j["selected_attr0"] = selectedAttr0;
+        j["selected_attr1"] = selectedAttr1;
+        j["selected_attr2"] = selectedAttr2;
         j["visible"] = visible;
 
         for (auto &[k, r] : _renderers) {
@@ -111,11 +115,22 @@ struct Model {
 
         setInvertClipping(j["invert_clipping"].get<bool>());
 
-        int selectedAttr = j["selected_attr"].get<int>();
-        if (selectedAttr >= 0)
-            setSelectedAttr(selectedAttr);
+        int selectedAttr0 = j["selected_attr0"].get<int>();
+        if (selectedAttr0 >= 0)
+            setSelectedAttr0(selectedAttr0);
+
+        int selectedAttr1 = j["selected_attr1"].get<int>();
+        if (selectedAttr1 >= 0)
+            setSelectedAttr1(selectedAttr1);
+
+        int selectedAttr2 = j["selected_attr2"].get<int>();
+        if (selectedAttr2 >= 0)
+            setSelectedAttr2(selectedAttr2);
             
-        setSelectedColormap(j["selected_colormap"].get<int>());
+        setSelectedColormap0(j["selected_colormap0"].get<int>());
+        setSelectedColormap1(j["selected_colormap1"].get<int>());
+        setSelectedColormap2(j["selected_colormap2"].get<int>());
+
         setVisible(j["visible"].get<bool>());
 
         // Load renderers state
@@ -159,8 +174,10 @@ struct Model {
         std::cout << "update attr" << std::endl;
 
         if (colorMode == ColorMode::ATTRIBUTE) {
-            updateAttr();
+            updateColormaps();
         }
+
+        // TODO important update color map even if not color mode == Attribute
 
         std::cout << "update hl / filter" << std::endl;
 
@@ -257,41 +274,6 @@ struct Model {
         attrs.clear();
     }
 
-    // TODO remove
-    int getSelectedAttr() const {
-        return selectedAttr;
-    }
-
-    // TODO remove
-    void setSelectedAttr(int idx) {
-
-        // Check attrs size
-
-        // Under 0, no selection
-        if (idx < 0) {
-            return;
-        }
-
-        if (idx >= attrs.size()) {
-            throw std::runtime_error(
-                "Selected attribute index out of bound: " + 
-                std::to_string(idx) + ", model has " + 
-                std::to_string(attrs.size()) + 
-                " attributes."
-            );
-        }
-
-        selectedAttr = idx;
-        ElementKind kind = attrs[idx].kind;
-
-        for (auto const &[k, r] : _renderers) {
-            r->setAttrElement(kind);
-            if (r->isRenderElement(kind)) {
-                r->setAttribute(attrs[idx]);
-            }
-        }
-    }
-
     // TODO refactor ALL below using array please
 
     int getSelectedAttr0() const {
@@ -300,8 +282,14 @@ struct Model {
 
     void setSelectedAttr0(int idx) {
         // Under 0, no selection
-        if (idx < 0 || idx >= attrs.size())
+        // TODO does it silent ?
+        if (idx >= attrs.size())
             return;
+
+        if (idx < 0) {
+            unsetColormaps0();
+            return;
+        }
 
         selectedAttr0 = idx;
         auto attrName = attrs[idx].name;
@@ -317,8 +305,14 @@ struct Model {
 
     void setSelectedAttr1(int idx) {
         // Under 0, no selection
-        if (idx < 0 || idx >= attrs.size())
+        // TODO does it silent ?
+        if (idx >= attrs.size())
             return;
+
+        if (idx < 0) {
+            unsetColormaps1();
+            return;
+        }
 
         selectedAttr1 = idx;
         auto attrName = attrs[idx].name;
@@ -334,8 +328,14 @@ struct Model {
 
     void setSelectedAttr2(int idx) {
         // Under 0, no selection
-        if (idx < 0 || idx >= attrs.size())
+        // TODO does it silent ?
+        if (idx >= attrs.size())
             return;
+
+        if (idx < 0) {
+            unsetColormaps2();
+            return;
+        }
 
         selectedAttr2 = idx;
         auto attrName = attrs[idx].name;
@@ -345,24 +345,11 @@ struct Model {
         setColormap2(kind);
     }
 
-    void setSelectedAttr(std::string name, ElementKind kind) {
-
-        // Search attribute by name
-        for (int i = 0; i < attrs.size(); ++i) {
-            const auto &attr = attrs[i];
-
-            if (attr.getName() == name && attr.getKind() == kind) {
-                setSelectedAttr(i);
-                return;
-            }
-        }
-
-        throw std::runtime_error("Attribute not found: " + name);
-    }
-
-    
-    void updateAttr() {
-        setSelectedAttr(selectedAttr);
+    // TODO to protected
+    void updateColormaps() {
+        setSelectedAttr0(selectedAttr0);
+        setSelectedAttr1(selectedAttr1);
+        setSelectedAttr2(selectedAttr2);
     }
 
     template<typename T>
@@ -404,38 +391,6 @@ struct Model {
         }
     }
 
-    template<typename T>
-    Attribute bindAttr(std::string name, GenericAttribute<T> &attr) {
-        
-        // Deduce kind of element
-        ElementKind kind = umAttributeKind2ElementKind(attr.kind());
-        // Deduce type of element from T 
-        ElementType type = deduceType(attr);
-
-        // Search if salamesh attribute already exists
-        auto opt_attr = findAttr(name, kind);
-        if (opt_attr.has_value()) {
-            auto &a = opt_attr.value();
-            a.ptr = attr.get_ptr();
-            return a;
-        }
-
-        // Does not exist, create a new attribute
-        Attribute a(name, kind, type, attr.get_ptr());
-        attrs.push_back(a);
-        return a;
-    }
-
-    // TODO remove
-    int getSelectedColormap() const {
-        return selectedColormap;
-    }
-
-    // TODO remove
-    void setSelectedColormap(int idx) {
-        selectedColormap = idx;
-    }
-
     void setSelectedColormap0(int idx) {
         selectedColormap0 = idx;
     }
@@ -459,8 +414,6 @@ struct Model {
     int getSelectedColormap2() const {
         return selectedColormap2;
     }
-
-    // virtual Attribute getAttribute(std::string name, ElementKind kind) = 0;
 
     // Choose which attribute to bind to layer / kind
     void setLayerAttr(std::string name, Layer layer, ElementKind kind) {
@@ -673,11 +626,6 @@ struct Model {
     }
 
     // Renderer functions
-    // TODO to remove
-    void setTexture(unsigned int tex) {
-        for (auto const &[k, r] : _renderers)
-            r->setTexture(tex);
-    }
 
     // TODO maybe protected
     void setColormap0Texture(unsigned int tex) {
@@ -840,7 +788,6 @@ struct Model {
     std::shared_ptr<Model> parent;
 
     std::vector<Attribute> attrs;
-    int selectedAttr = 0;
 
     int selectedAttr0 = 0;
     int selectedAttr1 = 0;
@@ -857,8 +804,6 @@ struct Model {
     bool invertClipping = false;
     
     ColorMode colorMode = ColorMode::COLOR;
-    
-    int selectedColormap = 0;
 
     // TODO to array
     int selectedColormap0 = 0;

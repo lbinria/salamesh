@@ -34,18 +34,10 @@ uniform int invert_clipping = 0; // 0: normal, 1: inverted
 uniform vec3 hoverColor = vec3(1.,1.,1.);
 uniform vec3 selectColor = vec3(0., 0.22, 1.);
 
-// uniform sampler2D colormap;
 // Note: cannot index samplerBuffer with dynamic indexing !
 uniform sampler2D colormap0;
 uniform sampler2D colormap1;
 uniform sampler2D colormap2;
-
-// uniform vec2 attrRange = vec2(0.f, 1.f);
-// uniform int attrRepeat = 1;
-// uniform samplerBuffer attrBuf;
-// uniform int attrElement;
-// uniform int attrNDims;
-
 
 uniform int colorMode = 0;
 uniform vec3 color;

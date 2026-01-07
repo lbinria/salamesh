@@ -34,7 +34,7 @@ struct IRenderer {
 		return (getRenderElementKind() & kind) == kind;
 	}
 
-	void setTexture(unsigned int tex) { texColorMap = tex; }
+	// void setTexture(unsigned int tex) { texColorMap = tex; }
 
 	void setColormap0Texture(unsigned int tex) { texColormap0 = tex; }
 	void setColormap1Texture(unsigned int tex) { texColormap1 = tex; }
@@ -210,76 +210,6 @@ struct IRenderer {
 		shader.use();
 		shader.setInt("meshIndex", index);
 	}
-
-	// TODO remove
-	template<typename T, int nDims>
-	void map(std::vector<T>& data, int selectedDim, std::vector<float>& result) {
-
-		if constexpr (nDims == 1) {
-			result.resize(data.size());
-			for (int i = 0; i < data.size(); ++i) {
-				result[i] = static_cast<float>(data[i]);
-			}
-		} else {
-			// YOu can refactor this !
-			if (selectedDim == -1) {
-				// Inline data
-				result.resize(data.size() * nDims);
-				for (int i = 0; i < data.size(); ++i) {
-					for (int d = 0; d < nDims; ++d) {
-						result[i * nDims + d] = static_cast<float>(data[i][d]);
-					}
-				}
-			} else {
-				result.resize(data.size());
-				for (int i = 0; i < data.size(); ++i) {
-					result[i] = static_cast<float>(data[i][selectedDim]);
-				}
-			}
-		}
-	}
-
-	// TODO remove
-	void setAttribute(Attribute& attr) {
-
-		ContainerBase *ga = attr.ptr.get();
-
-		// Prepare data
-		std::vector<float> data;
-
-		// Transform data
-		if (auto a = dynamic_cast<AttributeContainer<double>*>(ga)) {
-			map<double, 1>(a->data, attr.selectedDim, data);
-		} else if (auto a = dynamic_cast<AttributeContainer<float>*>(ga)) {
-			map<float, 1>(a->data, attr.selectedDim, data);
-		} else if (auto a = dynamic_cast<AttributeContainer<int>*>(ga)) {
-			map<int, 1>(a->data, attr.selectedDim, data);
-		} else if (auto a = dynamic_cast<AttributeContainer<bool>*>(ga)) {
-			map<bool, 1>(a->data, attr.selectedDim, data);
-		} else if (auto a = dynamic_cast<AttributeContainer<vec2>*>(ga)) {
-			map<vec2, 2>(a->data, attr.selectedDim, data);
-		} else if (auto a = dynamic_cast<AttributeContainer<vec3>*>(ga)) {
-			map<vec3, 3>(a->data, attr.selectedDim, data);
-		} else {
-			throw std::runtime_error("Attribute type is not supported in `Renderer::setAttribute`.");
-		}
-
-		// Update attribute dimensions
-		shader.use();
-		shader.setInt("attrNDims", attr.getDims());
-
-		// Get range (min-max)
-		auto [min, max] = sl::getRange(data);
-
-		// Update min/max
-		shader.use();
-		shader.setFloat2("attrRange", glm::vec2(min, max));
-
-		// Update buffer
-		glBindBuffer(GL_TEXTURE_BUFFER, bufAttr);
-		glBufferData(GL_TEXTURE_BUFFER, data.size() * sizeof(float), data.data(), GL_DYNAMIC_DRAW);
-	}
-
 
 	void setLayerNDims(Layer layer, int nDims) {
 		// TODO check layer ? only works for colormaps...
