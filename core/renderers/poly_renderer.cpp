@@ -215,12 +215,8 @@ void PolyRenderer::render(glm::vec3 &position) {
 	glActiveTexture(GL_TEXTURE0 + 10);
 	glBindTexture(GL_TEXTURE_BUFFER, texNVertsPerFacet);
 
-	glm::mat4 model = glm::mat4(1.0f);
-	model = glm::translate(model, position);
-	
-	// Draw	
-	shader.use();
-	shader.setMat4("model", model);
+	setPosition(position);
+
 	glDrawArrays(GL_TRIANGLES, 0, nverts);
 }
 

@@ -50,6 +50,7 @@ struct SurfaceRenderer : public IRenderer {
 
 	Surface &_m;
 
+	// TODO move to Renderer
 	void push(std::vector<Vertex> &vertices) {
 		glBindVertexArray(VAO);
 		glBindBuffer(GL_ARRAY_BUFFER, VBO);

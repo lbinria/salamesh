@@ -36,7 +36,6 @@ void SurfaceRenderer::init() {
 	#endif
 
 
-	// TODO below ??? needeed ??? i don't think !
 	glBindVertexArray(VAO);
 	glBindBuffer(GL_ARRAY_BUFFER, VBO);
 
@@ -92,14 +91,8 @@ void SurfaceRenderer::render(glm::vec3 &position) {
 	glActiveTexture(GL_TEXTURE0 + 9);
 	glBindTexture(GL_TEXTURE_BUFFER, tboColormap2);
 
+	setPosition(position);
 
-
-	glm::mat4 model = glm::mat4(1.0f);
-	model = glm::translate(model, position);
-	
-	// Draw	
-	shader.use();
-	shader.setMat4("model", model);
 	glDrawArrays(GL_TRIANGLES, 0, nverts);
 }
 

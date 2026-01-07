@@ -51,6 +51,7 @@ struct IRenderer {
 	IRenderer(Shader shader) : shader(std::move(shader)) {}
 
 	// TODO see list of shader function, some are specific to mesh_renderer...
+
 	void setModel(glm::mat4 model) {
 		shader.use();
 		shader.setMat4("model", model);
@@ -382,6 +383,14 @@ struct IRenderer {
 	float *ptrAttr;
 
 	int nverts = 0;
+
+	void setPosition(glm::vec3 &position) {
+		glm::mat4 model = glm::mat4(1.0f);
+		model = glm::translate(model, position);
+		// Set model to shader
+		shader.use();
+		shader.setMat4("model", model);
+	}
 
 	private:
 

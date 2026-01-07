@@ -165,12 +165,7 @@ void VolumeRenderer::render(glm::vec3 &position) {
 	glActiveTexture(GL_TEXTURE0 + 4);
 	glBindTexture(GL_TEXTURE_BUFFER, tboFilter);
 
-	glm::mat4 model = glm::mat4(1.0f);
-	model = glm::translate(model, position);
-	
-	// Draw	
-	shader.use();
-	shader.setMat4("model", model);
+	setPosition(position);
 
 	glDrawArrays(GL_TRIANGLES, 0, nverts);
 }
@@ -179,20 +174,6 @@ void VolumeRenderer::clean() {
 	// Clean up
 	glDeleteVertexArrays(1, &VAO);
 	glDeleteBuffers(1, &VBO);
-
-	// Unmap highlight
-	// if (ptrHighlight) {
-	// 	glBindBuffer(GL_TEXTURE_BUFFER, bufHighlight);
-	// 	glUnmapBuffer(GL_TEXTURE_BUFFER);
-	// 	ptrHighlight = nullptr;
-	// }
-
-	// // Unmap filter
-	// if (ptrFilter) {
-	// 	glBindBuffer(GL_TEXTURE_BUFFER, bufFilter);
-	// 	glUnmapBuffer(GL_TEXTURE_BUFFER);
-	// 	ptrFilter = nullptr;
-	// }
 
 	glDeleteBuffers(1, &bufBary);
 	glDeleteTextures(1, &texBary);
