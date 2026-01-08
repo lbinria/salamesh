@@ -131,7 +131,7 @@ struct App : public IApp {
     long pick(double xPos, double yPos);
     std::set<long> pick(double xPos, double yPos, int radius);
 
-    long pick_edge(double x, double y);
+    long pickEdge(double x, double y);
     long pick_mesh(double x, double y);
     std::vector<long> pick_vertices(double x, double y, int radius);
     std::vector<long> pick_facets(double x, double y, int radius);

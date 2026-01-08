@@ -825,7 +825,7 @@ struct Model {
     }
 
     // TODO maybe remove that later, using screen RBO to get edge ?
-    virtual long pick_edge(glm::vec3 p0, int c) = 0;
+    virtual long pickEdge(glm::vec3 p0, int c) = 0;
 
     protected:
     std::string _name;

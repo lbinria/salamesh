@@ -75,7 +75,7 @@ struct TetModel final : public Model {
         return {min, max};
     }
 
-    long pick_edge(glm::vec3 p0, int c) override {
+    long pickEdge(glm::vec3 p0, int c) override {
         // Search nearest edge
         double min_d = std::numeric_limits<double>().max();
         long found_e = -1;

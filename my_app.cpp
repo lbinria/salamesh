@@ -745,7 +745,7 @@ void MyApp::mouse_move(double x, double y) {
 
 
 	if (glm::dot(st.mouse.pos, st.mouse.lastPos) > 4) {
-		auto edge = pick_edge(x, y);
+		auto edge = pickEdge(x, y);
 		if (edge >= 0) 
 			st.edge.setHovered({edge});
 		else

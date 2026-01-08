@@ -654,7 +654,7 @@ void App::removeColormap(const std::string name) {
 	}
 }
 
-long App::pick_edge(double x, double y) {
+long App::pickEdge(double x, double y) {
 	if (!st.cell.anyHovered() && !st.facet.anyHovered())
 		return -1;
 
@@ -679,7 +679,7 @@ long App::pick_edge(double x, double y) {
 	else 
 		return -1;
 
-	return model->pick_edge(p, h);
+	return model->pickEdge(p, h);
 }
 
 long App::pick_mesh(double x, double y) {

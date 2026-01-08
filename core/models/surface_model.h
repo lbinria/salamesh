@@ -65,7 +65,7 @@ struct SurfaceModel : public Model {
 		return m.ncorners();
 	}
 
-	long pick_edge(glm::vec3 p0, int f) override {
+	long pickEdge(glm::vec3 p0, int f) override {
 		auto &m = getSurface();
 
 		// Search nearest edge
