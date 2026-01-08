@@ -368,7 +368,19 @@ function draw_model_properties(model, view)
 					-- local attr_name, attr_element = cur_model.get_attr(1);
 					-- print("first attr:" .. attr_name)
 					-- print("second attr:" .. attr_element)
-					if (imgui.BeginCombo("##combo_attribute0_selection", cur_model.attrs[cur_model.selected_attr0].name)) then
+					
+					local selName = "None" 
+					if cur_model.selected_attr0 > 0 then 
+						selName = cur_model.attrs[cur_model.selected_attr0].name
+					end
+
+					if (imgui.BeginCombo("##combo_attribute0_selection", selName)) then
+
+						local is_selected = cur_model.selected_attr0 == 0
+						if (imgui.Selectable("None", is_selected)) then
+							cur_model.selected_attr0 = 0
+						end
+
 						for n = 1, #cur_model.attrs do
 							local is_selected = n == cur_model.selected_attr0
 							local label = cur_model.attrs[n].name 
@@ -395,7 +407,19 @@ function draw_model_properties(model, view)
 					-- local attr_name, attr_element = cur_model.get_attr(1);
 					-- print("first attr:" .. attr_name)
 					-- print("second attr:" .. attr_element)
-					if (imgui.BeginCombo("##combo_attribute1_selection", cur_model.attrs[cur_model.selected_attr1].name)) then
+
+					local selName = "None" 
+					if cur_model.selected_attr1 > 0 then 
+						selName = cur_model.attrs[cur_model.selected_attr1].name
+					end
+
+					if (imgui.BeginCombo("##combo_attribute1_selection", selName)) then
+
+						local is_selected = cur_model.selected_attr1 == 0
+						if (imgui.Selectable("None", is_selected)) then
+							cur_model.selected_attr1 = 0
+						end
+
 						for n = 1, #cur_model.attrs do
 							local is_selected = n == cur_model.selected_attr1
 							local label = cur_model.attrs[n].name 

@@ -329,67 +329,22 @@ struct Model {
     void setSelectedAttr(int idx, ColormapLayer layer) {
         // Under 0, no selection
         // TODO does it silent ?
-        if (idx >= attrs.size())
+        if (idx >= static_cast<int>(attrs.size()))
             return;
+
+        selectedAttr[layer] = idx;
 
         if (idx < 0) {
             unsetColormaps(layer);
             return;
         }
 
-        selectedAttr[layer] = idx;
         auto attrName = attrs[idx].name;
         ElementKind kind = attrs[idx].kind;
 
         setColormapAttr(attrName, kind, layer);
         setColormap(kind, layer);
     }
-
-    // int getSelectedAttr1() const {
-    //     return selectedAttr[1];
-    // }
-
-    // void setSelectedAttr1(int idx) {
-    //     // Under 0, no selection
-    //     // TODO does it silent ?
-    //     if (idx >= attrs.size())
-    //         return;
-
-    //     if (idx < 0) {
-    //         unsetColormaps1();
-    //         return;
-    //     }
-
-    //     selectedAttr[1] = idx;
-    //     auto attrName = attrs[idx].name;
-    //     ElementKind kind = attrs[idx].kind;
-
-    //     setColormap1Attr(attrName, kind);
-    //     setColormap1(kind);
-    // }
-
-    // int getSelectedAttr2() const {
-    //     return selectedAttr[2];
-    // }
-
-    // void setSelectedAttr2(int idx) {
-    //     // Under 0, no selection
-    //     // TODO does it silent ?
-    //     if (idx >= attrs.size())
-    //         return;
-
-    //     if (idx < 0) {
-    //         unsetColormaps2();
-    //         return;
-    //     }
-
-    //     selectedAttr[2] = idx;
-    //     auto attrName = attrs[idx].name;
-    //     ElementKind kind = attrs[idx].kind;
-
-    //     setColormap2Attr(attrName, kind);
-    //     setColormap2(kind);
-    // }
 
     // TODO to protected
     void updateAttrs() {
