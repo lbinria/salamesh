@@ -66,7 +66,7 @@ struct InvertedTriangleViewer : public Component {
 				return true;
 
 			auto &triModel = model.as<TriModel>();
-			triModel.getEdges()->setVisible(true);
+			triModel.getEdgesRenderer()->setVisible(true);
 
 
 		}

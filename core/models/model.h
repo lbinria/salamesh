@@ -793,18 +793,18 @@ struct Model {
     }
 
     // Renderer getters
-    PointSetRenderer& getPoints() {
+    PointSetRenderer& getPointsRenderer() {
         return *static_cast<PointSetRenderer*>(_renderers.at("point_renderer").get());
     }
 
-    std::shared_ptr<HalfedgeRenderer> getEdges() {
+    std::shared_ptr<HalfedgeRenderer> getEdgesRenderer() {
         if (_renderers.contains("edge_renderer"))
             return  std::static_pointer_cast<HalfedgeRenderer>(_renderers.at("edge_renderer"));
             
         return nullptr;
     }
 
-    IRenderer& getMesh() const {
+    IRenderer& getMeshRenderer() const {
         // Warning, I do that here because I have the garantee that _meshRenderer is always initialized
         // If _meshRenderer is uninitialized, this will throw a segfault
         // (I don't want to transfer ownership)

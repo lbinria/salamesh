@@ -1,5 +1,6 @@
 #pragma once 
 #include <string>
+#include <ultimaille/all.h>
 
 enum ModelType {
 	POINTSET_MODEL = 0,
@@ -70,4 +71,27 @@ static std::string elementTypeToString(ElementType t) {
 		case ElementType::VEC3_ELT: return "vec3";
 		default: return "unknown";
 	}
+}
+
+// TODO maybe move elsewhere because it is dependent of ultimaille this is a "glue"
+template<typename TMesh>
+static ModelType getModelType() {
+	if constexpr (std::is_same_v<TMesh, UM::PointSet>)
+		return ModelType::POINTSET_MODEL;
+	else if constexpr (std::is_same_v<TMesh, UM::PolyLine>)
+		return ModelType::POLYLINE_MODEL;
+	else if constexpr (std::is_same_v<TMesh, UM::Triangles>)
+		return ModelType::TRI_MODEL;
+	else if constexpr (std::is_same_v<TMesh, UM::Quads>)
+		return ModelType::QUAD_MODEL;
+	else if constexpr (std::is_same_v<TMesh, UM::Polygons>)
+		return ModelType::POLYGON_MODEL;
+	else if constexpr (std::is_same_v<TMesh, UM::Tetrahedra>)
+		return ModelType::TRI_MODEL;
+	else if constexpr (std::is_same_v<TMesh, UM::Hexahedra>)
+		return ModelType::TRI_MODEL;
+	else if constexpr (std::is_same_v<TMesh, UM::Pyramids>)
+		return ModelType::TRI_MODEL;
+	else 
+		return ModelType::HYBRID_MODEL;
 }

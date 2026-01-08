@@ -37,13 +37,13 @@ struct TriangleInspector : public Component {
 		auto &m = triModel.getTriangles();
 
 		// Setup gfx
-		auto &pointRenderer = triModel.getPoints();
+		auto &pointRenderer = triModel.getPointsRenderer();
 		pointRenderer.setVisible(true);
 		pointRenderer.setColorMode(ColorMode::COLOR);
 		pointRenderer.setHoverColor(glm::vec3(1.f, 1.f, 1.f));
 		pointRenderer.setSelectColor(glm::vec3(0.88f, 0.06f, 0.01f));
 
-		auto &meshRenderer = triModel.getMesh();
+		auto &meshRenderer = triModel.getMeshRenderer();
 		meshRenderer.setVisible(true);
 		// Highlights
 		meshRenderer.setHoverColor(glm::vec3(1.f, 1.f, 1.f));
@@ -54,7 +54,7 @@ struct TriangleInspector : public Component {
 		meshRenderer.setColor(glm::vec3(1.f, 1.f, 1.f));
 		meshRenderer.setMeshSize(0.5f);
 
-		auto edgeRenderer = triModel.getEdges();
+		auto edgeRenderer = triModel.getEdgesRenderer();
 		if (edgeRenderer) {
 			edgeRenderer->setVisible(false);
 		}
@@ -172,7 +172,7 @@ struct TriangleInspector : public Component {
 			return true;
 		}
 		
-		// float pointSize = triModel.getPoints().getPointSize();
+		// float pointSize = triModel.getPointsRenderer().getPointSize();
 
 		// // Compute PVM matrix
 		// glm::mat4 modelMat = glm::mat4(1.0f);
@@ -257,9 +257,9 @@ struct TriangleInspector : public Component {
 			auto &triModel = model.as<TriModel>();
 			auto &m = triModel.getTriangles();
 
-			float newPointSize = model.getPoints().getPointSize();
+			float newPointSize = model.getPointsRenderer().getPointSize();
 			if (ImGui::SliderFloat("Threshold (point size)", &newPointSize, 0, 50.f)) {
-				model.getPoints().setPointSize(newPointSize);
+				model.getPointsRenderer().setPointSize(newPointSize);
 			}
 			ImGui::Text("Overlaps number: %i", nOverlaps);
 		}
@@ -346,7 +346,7 @@ struct TriangleInspector : public Component {
 	
 	std::vector<float> getRadiuses(TriModel &triModel) {
 		auto &m = triModel.getTriangles();
-		float pointSize = triModel.getPoints().getPointSize();
+		float pointSize = triModel.getPointsRenderer().getPointSize();
 
 		// Compute PVM matrix
 		glm::mat4 modelMat = glm::mat4(1.0f);
@@ -376,7 +376,7 @@ struct TriangleInspector : public Component {
 		auto &triModel = model.as<TriModel>();
 		auto &m = triModel.getTriangles();
 
-		float pointSize = triModel.getPoints().getPointSize();
+		float pointSize = triModel.getPointsRenderer().getPointSize();
 
 		// Compute PVM matrix
 		glm::mat4 modelMat = glm::mat4(1.0f);

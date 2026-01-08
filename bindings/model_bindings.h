@@ -231,9 +231,9 @@ namespace bindings {
 			model_t["clipping_mode_strings"] = sol::readonly_property(&Model::getClippingModeStrings);
 
 			// Renderers accesses
-			model_t["points"] = sol::readonly_property(&Model::getPoints);
-			model_t["edges"] = sol::readonly_property(&Model::getEdges);
-			model_t["mesh"] = sol::readonly_property(&Model::getMesh);
+			model_t["points"] = sol::readonly_property(&Model::getPointsRenderer);
+			model_t["edges"] = sol::readonly_property(&Model::getEdgesRenderer);
+			model_t["mesh"] = sol::readonly_property(&Model::getMeshRenderer);
 
 
 			// TODO here change implementation by managing index offset from lua to C++ +1 / -1

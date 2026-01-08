@@ -532,11 +532,11 @@ bool App::loadModel(const std::string& filename) {
 
 	// Setup default gfx
 	model->setLight(true);
-	model->getMesh().setMeshShrink(0.f);
-	model->getMesh().setMeshSize(0.0f);
+	model->getMeshRenderer().setMeshShrink(0.f);
+	model->getMeshRenderer().setMeshSize(0.0f);
 	model->setColorMode(ColorMode::COLOR);
 	
-	auto edges = model->getEdges();
+	auto edges = model->getEdgesRenderer();
 	if (edges)
 		edges->setVisible(false);
 
