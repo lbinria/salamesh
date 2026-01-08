@@ -36,8 +36,6 @@ struct TriModel final : public SurfaceModel {
 
 
 	bool load(const std::string path) override;
-	void saveAs(const std::string path) const override;
-
 
 	Triangles& getTriangles() { return _m; }
 	Surface& getSurface() override { return _m; }

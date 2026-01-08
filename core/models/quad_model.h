@@ -36,8 +36,6 @@ struct QuadModel final : public SurfaceModel {
 	}
 
 	bool load(const std::string path) override;
-	void saveAs(const std::string path) const override;
-
 
 	Quads& getQuads() { return _m; }
 	Surface& getSurface() override { return _m; }

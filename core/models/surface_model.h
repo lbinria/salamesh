@@ -21,6 +21,8 @@ struct SurfaceModel : public Model {
 	SurfaceModel(std::map<std::string, std::shared_ptr<IRenderer>> renderers, std::string name) : 
 	Model::Model(renderers, name) {}
 
+	void saveAs(const std::string path) const override;
+
 	std::tuple<glm::vec3, glm::vec3> bbox() override {
 		auto &m = getSurface();
 

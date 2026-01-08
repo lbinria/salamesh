@@ -37,8 +37,6 @@ struct PolyModel final : public SurfaceModel {
 	}
 
 	bool load(const std::string path) override;
-	void saveAs(const std::string path) const override;
-
 
 	Polygons& getPolygons() { return _m; }
 	Surface& getSurface() override { return _m; }
