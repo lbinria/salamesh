@@ -433,13 +433,65 @@ void MyApp::draw_gui() {
 			model.push();
 		}
 
-		ImGui::Text("Colormaps:");
+		ImGui::Text("Colormaps");
 
-		if (ImGui::Button("Unset colormaps 0 facets")) {
-			model.unsetColormap0(ElementKind::FACETS_ELT);
+		// Radio button approach
+		ImGui::Text("Select colormap layer:");
+		static int currentCmLayer = 0;
+		if (ImGui::RadioButton("Colormap 0", currentCmLayer == 0)) {
+			currentCmLayer = 0;
+		}
+		ImGui::SameLine();
+
+		if (ImGui::RadioButton("Colormap 1", currentCmLayer == 1)) {
+			currentCmLayer = 1;
+		}
+		ImGui::SameLine();
+
+		if (ImGui::RadioButton("Colormap 2", currentCmLayer == 2)) {
+			currentCmLayer = 2;
 		}
 
-		if (ImGui::Button("Set colormap 0 facets")) {
+		ImGui::Text("Select colormap element:");
+		static int currentElKind = 8;
+		if (ImGui::RadioButton("Points", currentElKind == 1)) {
+			currentElKind = 1;
+		}
+		ImGui::SameLine();
+
+		if (ImGui::RadioButton("Corners", currentElKind == 2)) {
+			currentElKind = 2;
+		}
+		ImGui::SameLine();
+
+		if (ImGui::RadioButton("Facets", currentElKind == 8)) {
+			currentElKind = 8;
+		}
+
+		ImGui::Text("Select colormap :");
+		static int currentCm = 0;
+		if (ImGui::RadioButton("0", currentCm == 0)) {
+			currentCm = 0;
+			model.setSelectedColormap(currentCm, static_cast<ColormapLayer>(currentCmLayer));
+		}
+		ImGui::SameLine();
+
+		if (ImGui::RadioButton("1", currentCm == 1)) {
+			currentCm = 1;
+			model.setSelectedColormap(currentCm, static_cast<ColormapLayer>(currentCmLayer));
+		}
+		ImGui::SameLine();
+
+		if (ImGui::RadioButton("2", currentCm == 2)) {
+			currentCm = 2;
+			model.setSelectedColormap(currentCm, static_cast<ColormapLayer>(currentCmLayer));
+		}
+
+		if (ImGui::Button("Unset")) {
+			model.unsetColormap(static_cast<ElementKind>(currentElKind), static_cast<ColormapLayer>(currentCmLayer));
+		}
+
+		if (ImGui::Button("Set rand")) {
 
 			auto &model = getCurrentModel().as<PolyModel>();
 			auto &m = model.getPolygons();
@@ -453,15 +505,12 @@ void MyApp::draw_gui() {
 				hl[f] = r;
 			}
 			
-			model.setColormap0Attr("my_attribute_0", ElementKind::FACETS_ELT);
-			model.setColormap0(ElementKind::FACETS_ELT);
+			model.setColormapAttr("my_attribute_0", static_cast<ElementKind>(currentElKind), static_cast<ColormapLayer>(currentCmLayer));
+			model.setColormap(static_cast<ElementKind>(currentElKind), static_cast<ColormapLayer>(currentCmLayer));
 		}
 
-		if (ImGui::Button("Unset colormaps 1 facets")) {
-			model.unsetColormap1(ElementKind::FACETS_ELT);
-		}
 
-		if (ImGui::Button("Set colormap 1 facets")) {
+		if (ImGui::Button("Set split")) {
 
 			auto &model = getCurrentModel().as<PolyModel>();
 			auto &m = model.getPolygons();
@@ -479,34 +528,8 @@ void MyApp::draw_gui() {
 				}
 			}
 			
-			model.setSelectedColormap1(2);
-			model.setColormap1Attr("my_attribute_1", ElementKind::FACETS_ELT);
-			model.setColormap1(ElementKind::FACETS_ELT);
-		}
-
-		if (ImGui::Button("Unset colormaps 1 points")) {
-			model.unsetColormap1(ElementKind::POINTS_ELT);
-		}
-
-		if (ImGui::Button("Set colormap 1 points")) {
-
-			auto &model = getCurrentModel().as<PolyModel>();
-			auto &m = model.getPolygons();
-			
-
-			PointAttribute<double> hl;
-			hl.bind("my_attribute_0", model.getSurfaceAttributes(), m);
-
-			for (auto &v : m.iter_vertices()) {
-				if (v.pos().y > 0.25f) {
-					hl[v] = 1.f;
-				} else {
-					hl[v] = 0.f;
-				}
-			}
-			
-			model.setColormap1Attr("my_attribute_0", ElementKind::POINTS_ELT);
-			model.setColormap1(ElementKind::POINTS_ELT);
+			model.setColormapAttr("my_attribute_1", static_cast<ElementKind>(currentElKind), static_cast<ColormapLayer>(currentCmLayer));
+			model.setColormap(static_cast<ElementKind>(currentElKind), static_cast<ColormapLayer>(currentCmLayer));
 		}
 
 		ImGui::Text("Highlight:");

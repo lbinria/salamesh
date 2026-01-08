@@ -256,60 +256,45 @@ namespace bindings {
 			});
 
 			model_t["selected_attr0"] = sol::property([](Model &self) {
-				return self.getSelectedAttr0() + 1;
+				return self.getSelectedAttr(ColormapLayer::COLORMAP_LAYER_0) + 1;
 			}, [](Model &self, int selected) {
-				self.setSelectedAttr0(selected - 1);
+				self.setSelectedAttr(selected - 1, ColormapLayer::COLORMAP_LAYER_0);
 			});
 
 			model_t["selected_attr1"] = sol::property([](Model &self) {
-				return self.getSelectedAttr1() + 1;
+				return self.getSelectedAttr(ColormapLayer::COLORMAP_LAYER_1) + 1;
 			}, [](Model &self, int selected) {
-				self.setSelectedAttr1(selected - 1);
+				self.setSelectedAttr(selected - 1, ColormapLayer::COLORMAP_LAYER_1);
 			});
 
 			model_t["selected_attr2"] = sol::property([](Model &self) {
-				return self.getSelectedAttr2() + 1;
+				return self.getSelectedAttr(ColormapLayer::COLORMAP_LAYER_2) + 1;
 			}, [](Model &self, int selected) {
-				self.setSelectedAttr2(selected - 1);
+				self.setSelectedAttr(selected - 1, ColormapLayer::COLORMAP_LAYER_2);
 			});
 
-
 			
-			model_t.set_function("set_colormap0_attr", &Model::setColormap0Attr);
-			model_t.set_function("set_colormap1_attr", &Model::setColormap1Attr);
-			model_t.set_function("set_colormap2_attr", &Model::setColormap2Attr);
-
-			model_t.set_function("set_colormap0", &Model::setColormap0);
-			model_t.set_function("set_colormap1", &Model::setColormap1);
-			model_t.set_function("set_colormap2", &Model::setColormap2);
+			model_t.set_function("set_colormap_attr", &Model::setColormapAttr);
+			model_t.set_function("set_colormap", &Model::setColormap);
+			model_t.set_function("unset_colormap", &Model::unsetColormap);
 			
-			model_t.set_function("unset_colormap0", &Model::unsetColormap0);
-			model_t.set_function("unset_colormap1", &Model::unsetColormap1);
-			model_t.set_function("unset_colormap2", &Model::unsetColormap2);
-			
-
-			// TODO here change implementation by managing index offset from lua to C++ +1 / -1
-			// model_t["selected_colormap"] = sol::property(
-			// 	&Model::getSelectedColormap,
-			// 	&Model::setSelectedColormap
-			// );
 
 			model_t["selected_colormap0"] = sol::property([](Model &self) {
-				return self.getSelectedColormap0() + 1;
+				return self.getSelectedColormap(ColormapLayer::COLORMAP_LAYER_0) + 1;
 			}, [](Model &self, int selected) {
-				self.setSelectedColormap0(selected - 1);
+				self.setSelectedColormap(selected - 1, ColormapLayer::COLORMAP_LAYER_0);
 			});
 
 			model_t["selected_colormap1"] = sol::property([](Model &self) {
-				return self.getSelectedColormap1() + 1;
+				return self.getSelectedColormap(ColormapLayer::COLORMAP_LAYER_1) + 1;
 			}, [](Model &self, int selected) {
-				self.setSelectedColormap1(selected - 1);
+				self.setSelectedColormap(selected - 1, ColormapLayer::COLORMAP_LAYER_1);
 			});
 
 			model_t["selected_colormap2"] = sol::property([](Model &self) {
-				return self.getSelectedColormap2() + 1;
+				return self.getSelectedColormap(ColormapLayer::COLORMAP_LAYER_2) + 1;
 			}, [](Model &self, int selected) {
-				self.setSelectedColormap2(selected - 1);
+				self.setSelectedColormap(selected - 1, ColormapLayer::COLORMAP_LAYER_2);
 			});
 
 

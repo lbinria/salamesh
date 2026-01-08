@@ -370,9 +370,9 @@ void App::start() {
 
 		// Render scene
 		for (auto &model : models) {
-			model->setColormap0Texture(colormaps[model->getSelectedColormap0()].tex);
-			model->setColormap1Texture(colormaps[model->getSelectedColormap1()].tex);
-			model->setColormap2Texture(colormaps[model->getSelectedColormap2()].tex);
+			model->setColormap0Texture(colormaps[model->getSelectedColormap(ColormapLayer::COLORMAP_LAYER_0)].tex);
+			model->setColormap1Texture(colormaps[model->getSelectedColormap(ColormapLayer::COLORMAP_LAYER_1)].tex);
+			model->setColormap2Texture(colormaps[model->getSelectedColormap(ColormapLayer::COLORMAP_LAYER_2)].tex);
 			model->render();
 		}
 

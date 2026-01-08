@@ -81,12 +81,13 @@ struct Model {
         j["clipping_plane_point"] = { clippingPlanePoint.x, clippingPlanePoint.y, clippingPlanePoint.z };
         j["clipping_plane_normal"] = { clippingPlaneNormal.x, clippingPlaneNormal.y, clippingPlaneNormal.z };
         j["invert_clipping"] = invertClipping;
-        j["selected_colormap0"] = selectedColormap0;
-        j["selected_colormap1"] = selectedColormap1;
-        j["selected_colormap2"] = selectedColormap2;
-        j["selected_attr0"] = selectedAttr0;
-        j["selected_attr1"] = selectedAttr1;
-        j["selected_attr2"] = selectedAttr2;
+        // TODO save directly as arrays
+        j["selected_colormap0"] = selectedColormap[0];
+        j["selected_colormap1"] = selectedColormap[1];
+        j["selected_colormap2"] = selectedColormap[2];
+        j["selected_attr0"] = selectedAttr[0];
+        j["selected_attr1"] = selectedAttr[1];
+        j["selected_attr2"] = selectedAttr[2];
         j["visible"] = visible;
 
         j["attr_name_by_layer_and_kind"] = attrNameByLayerAndKind;
@@ -130,24 +131,14 @@ struct Model {
 
         setInvertClipping(j["invert_clipping"].get<bool>());
 
-        // int selectedAttr0 = j["selected_attr0"].get<int>();
-        // if (selectedAttr0 >= 0)
-        //     setSelectedAttr0(selectedAttr0);
-
-        // int selectedAttr1 = j["selected_attr1"].get<int>();
-        // if (selectedAttr1 >= 0)
-        //     setSelectedAttr1(selectedAttr1);
-
-        // int selectedAttr2 = j["selected_attr2"].get<int>();
-        // if (selectedAttr2 >= 0)
-        //     setSelectedAttr2(selectedAttr2);
-        selectedAttr0 = j["selected_attr0"].get<int>();
-        selectedAttr1 = j["selected_attr1"].get<int>();
-        selectedAttr2 = j["selected_attr2"].get<int>();
+        // TODO load directly as array
+        selectedAttr[0] = j["selected_attr0"].get<int>();
+        selectedAttr[1] = j["selected_attr1"].get<int>();
+        selectedAttr[2] = j["selected_attr2"].get<int>();
             
-        setSelectedColormap0(j["selected_colormap0"].get<int>());
-        setSelectedColormap1(j["selected_colormap1"].get<int>());
-        setSelectedColormap2(j["selected_colormap2"].get<int>());
+        selectedColormap[0] = j["selected_colormap0"].get<int>();
+        selectedColormap[1] = j["selected_colormap1"].get<int>();
+        selectedColormap[2] = j["selected_colormap2"].get<int>();
 
         for (auto &j : j["attr_name_by_layer_and_kind"]) {
             auto key = j[0];
@@ -327,80 +318,83 @@ struct Model {
 
     // TODO refactor ALL below using array please
 
-    int getSelectedAttr0() const {
-        return selectedAttr0;
+    int getSelectedAttr(ColormapLayer colormapLayer) {
+        return selectedAttr[static_cast<int>(colormapLayer)];
     }
 
-    void setSelectedAttr0(int idx) {
+    // int getSelectedAttr0() const {
+    //     return selectedAttr[0];
+    // }
+
+    void setSelectedAttr(int idx, ColormapLayer layer) {
         // Under 0, no selection
         // TODO does it silent ?
         if (idx >= attrs.size())
             return;
 
         if (idx < 0) {
-            unsetColormaps0();
+            unsetColormaps(layer);
             return;
         }
 
-        selectedAttr0 = idx;
+        selectedAttr[layer] = idx;
         auto attrName = attrs[idx].name;
         ElementKind kind = attrs[idx].kind;
 
-        setColormap0Attr(attrName, kind);
-        setColormap0(kind);
+        setColormapAttr(attrName, kind, layer);
+        setColormap(kind, layer);
     }
 
-    int getSelectedAttr1() const {
-        return selectedAttr1;
-    }
+    // int getSelectedAttr1() const {
+    //     return selectedAttr[1];
+    // }
 
-    void setSelectedAttr1(int idx) {
-        // Under 0, no selection
-        // TODO does it silent ?
-        if (idx >= attrs.size())
-            return;
+    // void setSelectedAttr1(int idx) {
+    //     // Under 0, no selection
+    //     // TODO does it silent ?
+    //     if (idx >= attrs.size())
+    //         return;
 
-        if (idx < 0) {
-            unsetColormaps1();
-            return;
-        }
+    //     if (idx < 0) {
+    //         unsetColormaps1();
+    //         return;
+    //     }
 
-        selectedAttr1 = idx;
-        auto attrName = attrs[idx].name;
-        ElementKind kind = attrs[idx].kind;
+    //     selectedAttr[1] = idx;
+    //     auto attrName = attrs[idx].name;
+    //     ElementKind kind = attrs[idx].kind;
 
-        setColormap1Attr(attrName, kind);
-        setColormap1(kind);
-    }
+    //     setColormap1Attr(attrName, kind);
+    //     setColormap1(kind);
+    // }
 
-    int getSelectedAttr2() const {
-        return selectedAttr2;
-    }
+    // int getSelectedAttr2() const {
+    //     return selectedAttr[2];
+    // }
 
-    void setSelectedAttr2(int idx) {
-        // Under 0, no selection
-        // TODO does it silent ?
-        if (idx >= attrs.size())
-            return;
+    // void setSelectedAttr2(int idx) {
+    //     // Under 0, no selection
+    //     // TODO does it silent ?
+    //     if (idx >= attrs.size())
+    //         return;
 
-        if (idx < 0) {
-            unsetColormaps2();
-            return;
-        }
+    //     if (idx < 0) {
+    //         unsetColormaps2();
+    //         return;
+    //     }
 
-        selectedAttr2 = idx;
-        auto attrName = attrs[idx].name;
-        ElementKind kind = attrs[idx].kind;
+    //     selectedAttr[2] = idx;
+    //     auto attrName = attrs[idx].name;
+    //     ElementKind kind = attrs[idx].kind;
 
-        setColormap2Attr(attrName, kind);
-        setColormap2(kind);
-    }
+    //     setColormap2Attr(attrName, kind);
+    //     setColormap2(kind);
+    // }
 
     // TODO to protected
     void updateAttrs() {
-        setSelectedAttr0(selectedAttr0);
-        setSelectedAttr1(selectedAttr1);
-        setSelectedAttr2(selectedAttr2);
+        for (int l = 0; l < 3; ++l)
+            setSelectedAttr(selectedAttr[l], static_cast<ColormapLayer>(l));
     }
 
     template<typename T>
@@ -442,28 +436,12 @@ struct Model {
         }
     }
 
-    void setSelectedColormap0(int idx) {
-        selectedColormap0 = idx;
+    void setSelectedColormap(int idx, ColormapLayer layer) {
+        selectedColormap[static_cast<int>(layer)] = idx;
     }
 
-    void setSelectedColormap1(int idx) {
-        selectedColormap1 = idx;
-    }
-
-    void setSelectedColormap2(int idx) {
-        selectedColormap2 = idx;
-    }
-
-    int getSelectedColormap0() const {
-        return selectedColormap0;
-    }
-
-    int getSelectedColormap1() const {
-        return selectedColormap1;
-    }
-
-    int getSelectedColormap2() const {
-        return selectedColormap2;
+    int getSelectedColormap(ColormapLayer layer) const {
+        return selectedColormap[static_cast<int>(layer)];
     }
 
     // Choose which attribute to bind to layer / kind
@@ -479,16 +457,8 @@ struct Model {
         return defaultAttrName(layer);
     }
 
-    inline void setColormap0Attr(std::string name, ElementKind kind) {
-        setLayerAttr(name, Layer::COLORMAP_0, kind);
-    }
-
-    inline void setColormap1Attr(std::string name, ElementKind kind) {
-        setLayerAttr(name, Layer::COLORMAP_1, kind);
-    }
-
-    inline void setColormap2Attr(std::string name, ElementKind kind) {
-        setLayerAttr(name, Layer::COLORMAP_2, kind);
+    inline void setColormapAttr(std::string name, ElementKind kind, ColormapLayer layer) {
+        setLayerAttr(name, static_cast<Layer>(layer), kind);
     }
 
     inline void setHighlightAttr(std::string name, ElementKind kind) {
@@ -508,16 +478,8 @@ struct Model {
         setLayer(kind, Layer::FILTER);
     }
 
-    inline void setColormap0(ElementKind kind) {
-        setLayer(kind, Layer::COLORMAP_0);
-    }
-
-    inline void setColormap1(ElementKind kind) {
-        setLayer(kind, Layer::COLORMAP_1);
-    }
-
-    inline void setColormap2(ElementKind kind) {
-        setLayer(kind, Layer::COLORMAP_2);
+    inline void setColormap(ElementKind kind, ColormapLayer layer) {
+        setLayer(kind, static_cast<Layer>(layer));
     }
 
     void unsetHighlight(ElementKind kind) {
@@ -550,46 +512,31 @@ struct Model {
         unsetFilter(ElementKind::CELL_CORNERS_ELT);
     }
 
-    void unsetColormap0(ElementKind kind) {
-        unsetLayer(kind, Layer::COLORMAP_0);
+    void unsetColormap(ElementKind kind, ColormapLayer colormapLayer) {
+        unsetLayer(kind, static_cast<Layer>(colormapLayer));
     }
 
-    void unsetColormap1(ElementKind kind) {
-        unsetLayer(kind, Layer::COLORMAP_1);
-    }
-
-    void unsetColormap2(ElementKind kind) {
-        unsetLayer(kind, Layer::COLORMAP_2);
-    }
-
-    void unsetColormaps0() {
+    void unsetColormaps(ColormapLayer colormapLayer) {
         // Unset all
         for (int i = 0; i < 7; ++i) {
             int kind = 1 << i;
-            unsetColormap0((ElementKind)kind);
-        }
-    }
-
-    void unsetColormaps1() {
-        // Unset all
-        for (int i = 0; i < 7; ++i) {
-            int kind = 1 << i;
-            unsetColormap1((ElementKind)kind);
-        }
-    }
-
-    void unsetColormaps2() {
-        // Unset all
-        for (int i = 0; i < 7; ++i) {
-            int kind = 1 << i;
-            unsetColormap2((ElementKind)kind);
+            unsetColormap((ElementKind)kind, colormapLayer);
         }
     }
 
     void unsetColormaps(ElementKind kind) {
-        unsetColormaps0();
-        unsetColormaps1();
-        unsetColormaps2();
+        for (int l = 0; l < 3; ++l)
+            unsetColormap(kind, static_cast<ColormapLayer>(l));
+    }
+
+    void unsetColormaps() {
+        // Unset all
+        for (int l = 0; l < 3; ++l) {
+            for (int i = 0; i < 7; ++i) {
+                int kind = 1 << i;
+                unsetColormap((ElementKind)kind, static_cast<ColormapLayer>(l));
+            }
+        }
     }
 
     void setLayer(ElementKind kind, Layer layer) {
@@ -840,9 +787,7 @@ struct Model {
 
     std::vector<Attribute> attrs;
 
-    int selectedAttr0 = 0;
-    int selectedAttr1 = 0;
-    int selectedAttr2 = 0;
+    int selectedAttr[3] = {0, 0, 0};
 
 
     bool isLightEnabled = true;
@@ -857,9 +802,7 @@ struct Model {
     ColorMode colorMode = ColorMode::COLOR;
 
     // TODO to array
-    int selectedColormap0 = 0;
-    int selectedColormap1 = 0;
-    int selectedColormap2 = 0;
+    int selectedColormap[3] = {0, 0, 0};
 
     // Renderers
     std::map<std::string, std::shared_ptr<IRenderer>> _renderers;

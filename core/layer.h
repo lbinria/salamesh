@@ -2,13 +2,19 @@
 #include <string>
 #include "element.h"
 
+enum ColormapLayer {
+	COLORMAP_LAYER_0 = 0,
+	COLORMAP_LAYER_1 = 1,
+	COLORMAP_LAYER_2 = 2
+};
+
 enum Layer {
 		COLORMAP_0 = 0,
 		COLORMAP_1 = 1,
 		COLORMAP_2 = 2,
 		HIGHLIGHT = 3,
 		FILTER = 4
-	};
+};
 
 static std::string layerToString(Layer l) {
 	switch (l) {
