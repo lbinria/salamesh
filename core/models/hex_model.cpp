@@ -32,13 +32,11 @@ bool HexModel::load(const std::string path) {
 }
 
 void HexModel::saveAs(const std::string path) const {
-	// Save the mesh
+	// Check path validity
 	if (path.empty()) {
 		std::cerr << "Error: No path specified for saving the mesh." << std::endl;
 		return;
 	}
-
-	// TODO check path validity
 	
 	// Save attributes ! Convert back from salamesh attributes to NamedContainer vectors
 	std::vector<NamedContainer> point_attrs;
