@@ -29,14 +29,9 @@ bool PolyModel::load(const std::string path) {
 
 	clearAttrs();
 
-	for (auto &a : _surfaceAttributes.points) {
-		addAttr(ElementKind::POINTS_ELT, a);
-	}
-	for (auto &a : _surfaceAttributes.facets) {
-		addAttr(ElementKind::FACETS_ELT, a);
-	}
-	for (auto &a : _surfaceAttributes.corners) {
-		addAttr(ElementKind::CORNERS_ELT, a);
+	auto containers = getAttributeContainers();
+	for (auto &[k, c] : containers) {
+		addAttr(k, c);
 	}
 
 	init();

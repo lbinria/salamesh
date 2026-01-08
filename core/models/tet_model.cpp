@@ -19,17 +19,9 @@ bool TetModel::load(const std::string path) {
 
 	clearAttrs();
 
-	for (auto &a : _volumeAttributes.points) {
-		addAttr(ElementKind::POINTS_ELT, a);
-	}
-	for (auto a : _volumeAttributes.cell_corners) {
-		addAttr(ElementKind::CELL_CORNERS_ELT, a);
-	}
-	for (auto a : _volumeAttributes.cell_facets) {
-		addAttr(ElementKind::CELL_FACETS_ELT, a);
-	}
-	for (auto a : _volumeAttributes.cells) {
-		addAttr(ElementKind::CELLS_ELT, a);
+	auto containers = getAttributeContainers();
+	for (auto &[k, c] : containers) {
+		addAttr(k, c);
 	}
 
 	init();
