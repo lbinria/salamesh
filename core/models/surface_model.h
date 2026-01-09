@@ -7,7 +7,6 @@
 #include "../renderers/point_set_renderer.h"
 #include "../renderers/halfedge_renderer.h"
 #include "../renderers/tri_renderer.h"
-#include "../renderers/quad_renderer.h"
 #include "../renderers/poly_renderer.h"
 #include "../renderers/bbox_renderer.h"
 #include "../renderers/clipping_renderer.h"
@@ -32,7 +31,7 @@ namespace RendererSpecialization {
 
 	template<>
 	struct RendererSelector<UM::Quads> {
-		using type = QuadRenderer;
+		using type = PolyRenderer;
 	};
 
 	template<>

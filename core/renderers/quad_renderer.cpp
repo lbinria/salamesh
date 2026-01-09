@@ -1,1 +1,0 @@
-#include "quad_renderer.h"

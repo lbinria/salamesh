@@ -33,7 +33,6 @@ set(SOURCES
     renderers/surface_renderer.cpp renderers/surface_renderer.h
     renderers/volume_renderer.cpp renderers/volume_renderer.h
     renderers/tri_renderer.cpp renderers/tri_renderer.h
-    renderers/quad_renderer.cpp renderers/quad_renderer.h
     renderers/poly_renderer.cpp renderers/poly_renderer.h
     renderers/tet_renderer.cpp renderers/tet_renderer.h
     renderers/hex_renderer.cpp renderers/hex_renderer.h
