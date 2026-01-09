@@ -335,7 +335,7 @@ void main()
     _filter(col);
     clip(col);
 
-    // Attribute mode
+    // Show colormap data if activated
     vec4 c[3];
     c[0] = showColormap(0);
     c[1] = showColormap(1);

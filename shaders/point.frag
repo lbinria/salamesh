@@ -174,12 +174,24 @@ vec4 showColormap(int layer) {
     } 
     
     if (kind == -1 /* no element => layer deactivated */) {
-        return vec4(0.);
+        return vec4(0., 0., 0., -1.);
     }
 
     return vec4(1., 0., 0., 1.);
 }
 
+// Mix with alpha discard
+vec4 blendMix(vec4 c1, vec4 c2, float t) {
+    if (c1.a <= -1.)
+        return c2;
+    if (c2.a <= -1.)
+        return c1;
+    // Second term is equals to 0. => discard
+    if (c2.a <= 0.)
+        return vec4(0.);
+    // Else, mix colors
+    return mix(c1, c2, t);
+}
 
 void main()
 {
@@ -188,26 +200,20 @@ void main()
     clip(col);
     vec3 N = trace(col);
 
-    // Attribute mode
-    if (colorMode == 1) {
-        vec4 c0 = showColormap(0);
-        vec4 c1 = showColormap(1);
-        vec4 c2 = showColormap(2);
+    // Show colormap data if activated
+    vec4 c[3];
+    c[0] = showColormap(0);
+    c[1] = showColormap(1);
+    c[2] = showColormap(2);
 
-        // Blend
-        vec4 c = vec4(0.);
+    // Blend
+    vec4 b = blendMix(c[0], blendMix(c[1], c[2], .5), .5);
 
-        if (c0.a > 0.)
-            c = c0;
-        if (c1.a > 0.)
-            c = mix(c, c1, .5);
-        if (c2.a > 0.)
-            c = mix(c, c2, .5);
-
-        if (c.a <= 0.)
-            discard;
+    if (b.a > -1.) {
+        if (b.a > 0.)
+            col = b.rgb;
         else 
-            col = c.xyz;
+            discard;
     }
 
     highlight(col);

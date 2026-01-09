@@ -322,10 +322,6 @@ struct Model {
         return selectedAttr[static_cast<int>(colormapLayer)];
     }
 
-    // int getSelectedAttr0() const {
-    //     return selectedAttr[0];
-    // }
-
     void setSelectedAttr(int idx, ColormapLayer layer) {
         // Under 0, no selection
         // TODO does it silent ?
@@ -333,9 +329,9 @@ struct Model {
             return;
 
         selectedAttr[layer] = idx;
+        unsetColormaps(layer);
 
         if (idx < 0) {
-            unsetColormaps(layer);
             return;
         }
 
@@ -508,6 +504,11 @@ struct Model {
     }
 
     void unsetLayer(ElementKind kind, Layer layer) {
+        // Little optimisation, doesn't update data
+        // if layer isn't activated, no need to unset
+        if (!activatedLayers[{layer, kind}])
+            return;
+        
         // Prepare a vector of zeros of the size of the element kind to unset
         std::vector<float> zeros;
         switch (kind) {
