@@ -257,188 +257,163 @@ function draw_model_properties(model, view)
 
 		if (imgui.CollapsingHeader("Attributes##" .. cur_model.name .. "_properties_attributes")) then 
 
-			if (imgui.BeginCombo("##Color Mode", cur_model.color_mode_strings[cur_model.color_mode + 1])) then
-				for i = 1, #cur_model.color_mode_strings do
-					local is_selected = (i - 1) == app.pick_mode
-					if (imgui.Selectable(cur_model.color_mode_strings[i], is_selected)) then
-						print("Change color mode to: " .. cur_model.color_mode_strings[i])
-						cur_model.color_mode = i - 1
+			imgui.Text("Colormap 0")
 
-						if (cur_model.color_mode == 1) then
-							print("Change to attribute color mode")
-							-- Select first attribute by default, if there is any
-							if (#cur_model.attrs > 0) then 
-								cur_model.selected_attr0 = cur_model.selected_attr0
-							end
-						end
+			local items = {"Item1", "Item2", "Item3", "Item4"}
+			local colormap_size = imgui.ImVec2(320, 35)
 
+			if (imgui.BeginCombo("##combo_colormaps0_selection", items[cur_model.selected_colormap0])) then
+				-- Display items in the popup
+				for i = 1, #items do
+					local is_selected = cur_model.selected_colormap0 == i
+					-- Create a unique ID for each item to prevent conflicts
+					imgui.PushID(i)
+
+					-- Calculate total width including spacing
+					-- local total_width = imgui.CalcTextSize(items[i]).x + colormap_size.x + 10.0
+
+					-- Display the item with both text and image
+					if (imgui.Selectable(items[i], is_selected)) then
+						cur_model.selected_colormap0 = i
 					end
+
+					-- Display the image after the text
+					imgui.Image(app.colormaps[i].tex, colormap_size)
+
+					imgui.PopID()
 				end
+
 				imgui.EndCombo()
 			end
 
-			if (cur_model.color_mode == 1) then
+			local selected_cm = app.colormaps[cur_model.selected_colormap0]
+			if selected_cm.height > 1 then 
+				local h = selected_cm.height / selected_cm.width * 320
+				colormap_size = imgui.ImVec2(320, h)
+			end
 
-				imgui.Text("Colormap 0")
+			imgui.Image(
+				selected_cm.tex, 
+				colormap_size
+			)
 
-				local items = {"Item1", "Item2", "Item3", "Item4"}
-				local colormap_size = imgui.ImVec2(320, 35)
+			imgui.Text("Colormap 1")
 
-				if (imgui.BeginCombo("##combo_colormaps0_selection", items[cur_model.selected_colormap0])) then
-					-- Display items in the popup
-					for i = 1, #items do
-						local is_selected = cur_model.selected_colormap0 == i
-						-- Create a unique ID for each item to prevent conflicts
-						imgui.PushID(i)
+			local items = {"Item1", "Item2", "Item3", "Item4"}
+			local colormap_size = imgui.ImVec2(320, 35)
 
-						-- Calculate total width including spacing
-						-- local total_width = imgui.CalcTextSize(items[i]).x + colormap_size.x + 10.0
+			if (imgui.BeginCombo("##combo_colormaps1_selection", items[cur_model.selected_colormap1])) then
+				-- Display items in the popup
+				for i = 1, #items do
+					local is_selected = cur_model.selected_colormap1 == i
+					-- Create a unique ID for each item to prevent conflicts
+					imgui.PushID(i)
 
-						-- Display the item with both text and image
-						if (imgui.Selectable(items[i], is_selected)) then
-							cur_model.selected_colormap0 = i
-						end
+					-- Calculate total width including spacing
+					-- local total_width = imgui.CalcTextSize(items[i]).x + colormap_size.x + 10.0
 
-						-- Display the image after the text
-						imgui.Image(app.colormaps[i].tex, colormap_size)
-
-						imgui.PopID()
+					-- Display the item with both text and image
+					if (imgui.Selectable(items[i], is_selected)) then
+						cur_model.selected_colormap1 = i
 					end
 
+					-- Display the image after the text
+					imgui.Image(app.colormaps[i].tex, colormap_size)
+
+					imgui.PopID()
+				end
+
+				imgui.EndCombo()
+			end
+
+			local selected_cm = app.colormaps[cur_model.selected_colormap1]
+			if selected_cm.height > 1 then 
+				local h = selected_cm.height / selected_cm.width * 320
+				colormap_size = imgui.ImVec2(320, h)
+			end
+
+			imgui.Image(
+				selected_cm.tex, 
+				colormap_size
+			)
+
+			imgui.Text("Attribute 0")
+
+			if (#cur_model.attrs > 0) then
+				-- local attr_name, attr_element = cur_model.attrs[1]
+				local attr_name = cur_model.attrs[1].name
+				local attr_element = cur_model.attrs[1].kind
+				-- local attr_name, attr_element = cur_model.get_attr(1);
+				-- print("first attr:" .. attr_name)
+				-- print("second attr:" .. attr_element)
+				
+				local selName = "None" 
+				if cur_model.selected_attr0 > 0 then 
+					selName = cur_model.attrs[cur_model.selected_attr0].name
+				end
+
+				if (imgui.BeginCombo("##combo_attribute0_selection", selName)) then
+
+					local is_selected = cur_model.selected_attr0 == 0
+					if (imgui.Selectable("None", is_selected)) then
+						cur_model.selected_attr0 = 0
+					end
+
+					for n = 1, #cur_model.attrs do
+						local is_selected = n == cur_model.selected_attr0
+						local label = cur_model.attrs[n].name 
+						.. " (" .. elementKindToString(cur_model.attrs[n].kind) .. ")" 
+						.. " (" .. elementTypeToString(cur_model.attrs[n].type) .. ")"
+						.. " (" .. tostring(cur_model.attrs[n].dim) .. ")"
+
+						if (imgui.Selectable(label, is_selected)) then
+							cur_model.selected_attr0 = n
+
+							-- print("set attr: " .. cur_model.attrs[n][1] .. ":" .. cur_model.attrs[n][2] .. ":" .. cur_model.attrs[n][3])
+						end
+					end
 					imgui.EndCombo()
 				end
+			end
 
-				local selected_cm = app.colormaps[cur_model.selected_colormap0]
-				if selected_cm.height > 1 then 
-					local h = selected_cm.height / selected_cm.width * 320
-					colormap_size = imgui.ImVec2(320, h)
+			imgui.Text("Attribute 1")
+
+			if (#cur_model.attrs > 0) then
+				-- local attr_name, attr_element = cur_model.attrs[1]
+				local attr_name = cur_model.attrs[1].name
+				local attr_element = cur_model.attrs[1].kind
+				-- local attr_name, attr_element = cur_model.get_attr(1);
+				-- print("first attr:" .. attr_name)
+				-- print("second attr:" .. attr_element)
+
+				local selName = "None" 
+				if cur_model.selected_attr1 > 0 then 
+					selName = cur_model.attrs[cur_model.selected_attr1].name
 				end
 
-				imgui.Image(
-					selected_cm.tex, 
-					colormap_size
-				)
+				if (imgui.BeginCombo("##combo_attribute1_selection", selName)) then
 
-				imgui.Text("Colormap 1")
-
-				local items = {"Item1", "Item2", "Item3", "Item4"}
-				local colormap_size = imgui.ImVec2(320, 35)
-
-				if (imgui.BeginCombo("##combo_colormaps1_selection", items[cur_model.selected_colormap1])) then
-					-- Display items in the popup
-					for i = 1, #items do
-						local is_selected = cur_model.selected_colormap1 == i
-						-- Create a unique ID for each item to prevent conflicts
-						imgui.PushID(i)
-
-						-- Calculate total width including spacing
-						-- local total_width = imgui.CalcTextSize(items[i]).x + colormap_size.x + 10.0
-
-						-- Display the item with both text and image
-						if (imgui.Selectable(items[i], is_selected)) then
-							cur_model.selected_colormap1 = i
-						end
-
-						-- Display the image after the text
-						imgui.Image(app.colormaps[i].tex, colormap_size)
-
-						imgui.PopID()
+					local is_selected = cur_model.selected_attr1 == 0
+					if (imgui.Selectable("None", is_selected)) then
+						cur_model.selected_attr1 = 0
 					end
 
+					for n = 1, #cur_model.attrs do
+						local is_selected = n == cur_model.selected_attr1
+						local label = cur_model.attrs[n].name 
+						.. " (" .. elementKindToString(cur_model.attrs[n].kind) .. ")" 
+						.. " (" .. elementTypeToString(cur_model.attrs[n].type) .. ")"
+						.. " (" .. tostring(cur_model.attrs[n].dim) .. ")"
+
+						if (imgui.Selectable(label, is_selected)) then
+							cur_model.selected_attr1 = n
+
+							-- print("set attr: " .. cur_model.attrs[n][1] .. ":" .. cur_model.attrs[n][2] .. ":" .. cur_model.attrs[n][3])
+						end
+					end
 					imgui.EndCombo()
 				end
-
-				local selected_cm = app.colormaps[cur_model.selected_colormap1]
-				if selected_cm.height > 1 then 
-					local h = selected_cm.height / selected_cm.width * 320
-					colormap_size = imgui.ImVec2(320, h)
-				end
-
-				imgui.Image(
-					selected_cm.tex, 
-					colormap_size
-				)
-
-				imgui.Text("Attribute 0")
-
-				if (#cur_model.attrs > 0) then
-					-- local attr_name, attr_element = cur_model.attrs[1]
-					local attr_name = cur_model.attrs[1].name
-					local attr_element = cur_model.attrs[1].kind
-					-- local attr_name, attr_element = cur_model.get_attr(1);
-					-- print("first attr:" .. attr_name)
-					-- print("second attr:" .. attr_element)
-					
-					local selName = "None" 
-					if cur_model.selected_attr0 > 0 then 
-						selName = cur_model.attrs[cur_model.selected_attr0].name
-					end
-
-					if (imgui.BeginCombo("##combo_attribute0_selection", selName)) then
-
-						local is_selected = cur_model.selected_attr0 == 0
-						if (imgui.Selectable("None", is_selected)) then
-							cur_model.selected_attr0 = 0
-						end
-
-						for n = 1, #cur_model.attrs do
-							local is_selected = n == cur_model.selected_attr0
-							local label = cur_model.attrs[n].name 
-							.. " (" .. elementKindToString(cur_model.attrs[n].kind) .. ")" 
-							.. " (" .. elementTypeToString(cur_model.attrs[n].type) .. ")"
-							.. " (" .. tostring(cur_model.attrs[n].dim) .. ")"
-
-							if (imgui.Selectable(label, is_selected)) then
-								cur_model.selected_attr0 = n
-
-								-- print("set attr: " .. cur_model.attrs[n][1] .. ":" .. cur_model.attrs[n][2] .. ":" .. cur_model.attrs[n][3])
-							end
-						end
-						imgui.EndCombo()
-					end
-				end
-
-				imgui.Text("Attribute 1")
-
-				if (#cur_model.attrs > 0) then
-					-- local attr_name, attr_element = cur_model.attrs[1]
-					local attr_name = cur_model.attrs[1].name
-					local attr_element = cur_model.attrs[1].kind
-					-- local attr_name, attr_element = cur_model.get_attr(1);
-					-- print("first attr:" .. attr_name)
-					-- print("second attr:" .. attr_element)
-
-					local selName = "None" 
-					if cur_model.selected_attr1 > 0 then 
-						selName = cur_model.attrs[cur_model.selected_attr1].name
-					end
-
-					if (imgui.BeginCombo("##combo_attribute1_selection", selName)) then
-
-						local is_selected = cur_model.selected_attr1 == 0
-						if (imgui.Selectable("None", is_selected)) then
-							cur_model.selected_attr1 = 0
-						end
-
-						for n = 1, #cur_model.attrs do
-							local is_selected = n == cur_model.selected_attr1
-							local label = cur_model.attrs[n].name 
-							.. " (" .. elementKindToString(cur_model.attrs[n].kind) .. ")" 
-							.. " (" .. elementTypeToString(cur_model.attrs[n].type) .. ")"
-							.. " (" .. tostring(cur_model.attrs[n].dim) .. ")"
-
-							if (imgui.Selectable(label, is_selected)) then
-								cur_model.selected_attr1 = n
-
-								-- print("set attr: " .. cur_model.attrs[n][1] .. ":" .. cur_model.attrs[n][2] .. ":" .. cur_model.attrs[n][3])
-							end
-						end
-						imgui.EndCombo()
-					end
-				end
-
-
-			end 
+			end
 
 		end
 	-- end

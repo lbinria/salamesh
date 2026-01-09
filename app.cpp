@@ -534,7 +534,6 @@ bool App::loadModel(const std::string& filename) {
 	model->setLight(true);
 	model->getMeshRenderer().setMeshShrink(0.f);
 	model->getMeshRenderer().setMeshSize(0.0f);
-	model->setColorMode(ColorMode::COLOR);
 	
 	auto edges = model->getEdgesRenderer();
 	if (edges)

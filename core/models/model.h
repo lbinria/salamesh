@@ -4,7 +4,6 @@
 #include "../layer.h"
 #include "../attribute.h"
 #include "../renderers/renderer.h"
-#include "../color_mode.h"
 #include "../renderers/point_set_renderer.h"
 #include "../renderers/halfedge_renderer.h"
 
@@ -74,7 +73,6 @@ struct Model {
         j["name"] = _name;
         j["path"] = filename;
         j["position"] = { position.x, position.y, position.z };
-        j["color_mode"] = colorMode;
         j["is_light_enabled"] = isLightEnabled;
         j["is_light_follow_view"] = isLightFollowView;
         j["is_clipping"] = isClipping;
@@ -111,8 +109,6 @@ struct Model {
             j["position"][2].get<float>()
         );
         
-        setColorMode((ColorMode)j["color_mode"].get<int>());
-
         setLight(j["is_light_enabled"].get<bool>());
         setLightFollowView(j["is_light_follow_view"].get<bool>());
         setClipping(j["is_clipping"].get<bool>());
@@ -181,11 +177,6 @@ struct Model {
     void setName(std::string name) { _name = name; }
     std::string getPath() const { return _path; }
 
-    static constexpr const char* colorModeStrings[2] = {"Color", "Attribute"};
-    constexpr std::array<std::string_view, 2> getColorModeStrings() {
-        return {colorModeStrings[0], colorModeStrings[1]};
-    }
-
     static constexpr const char* clippingModeStrings[2] = {"Cell", "Std"};
     constexpr std::array<std::string_view, 2> getClippingModeStrings() {
         return {clippingModeStrings[0], clippingModeStrings[1]};
@@ -201,16 +192,7 @@ struct Model {
         for (auto const &[k, r] : _renderers)
             r->push();
 
-        std::cout << "update attr" << std::endl;
-
-        // if (colorMode == ColorMode::ATTRIBUTE) {
-        //     updateAttrs();
-        // }
-
-        std::cout << "update hl / filter" << std::endl;
-
         // Push highlight and filter attributes if they exist
-        // TODO here update all layers in foreach
         for (auto [k, isActivated] : activatedLayers) {
             if (!isActivated) 
                 continue;
@@ -609,17 +591,6 @@ struct Model {
             r->setColormap2Texture(tex);
     }
 
-    int getColorMode() const {
-        return colorMode;
-    }
-
-    void setColorMode(ColorMode mode) {
-        for (auto const &[k, r] : _renderers)
-            r->setColorMode(mode);
-
-        colorMode = mode;
-    }
-
     bool getLight() const {
         return isLightEnabled;
     }
@@ -767,9 +738,7 @@ struct Model {
     glm::vec3 clippingPlaneNormal{0.f, 0.f, 1.f};
     bool invertClipping = false;
     
-    ColorMode colorMode = ColorMode::COLOR;
 
-    // TODO to array
     int selectedColormap[3] = {0, 0, 0};
 
     // Renderers

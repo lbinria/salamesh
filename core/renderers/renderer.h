@@ -1,6 +1,5 @@
 #pragma once
 
-#include "../color_mode.h"
 #include "../element.h"
 #include "../layer.h"
 
@@ -101,11 +100,6 @@ struct IRenderer {
 				" is not implemented."
 			);
 		}
-	}
-
-	void setColorMode(ColorMode mode) {
-		shader.use();
-		shader.setInt("colorMode", mode);
 	}
 
 	glm::vec3 getColor() const {

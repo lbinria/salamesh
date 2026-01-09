@@ -1,7 +1,6 @@
 #pragma once
 
 #include "renderer.h"
-#include "../color_mode.h"
 
 #include "../shader.h"
 

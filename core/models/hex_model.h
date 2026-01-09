@@ -10,7 +10,6 @@
 #include "../renderers/bbox_renderer.h"
 #include "../renderers/clipping_renderer.h"
 
-#include "../color_mode.h"
 #include "../layer.h"
 #include "../helpers.h"
 

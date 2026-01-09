@@ -8,8 +8,6 @@ layout(location = 0) out vec4 FragColor;
 
 flat in int FragHalfedgeIndex;
 
-uniform int colorMode = 0;
-
 uniform vec3 hoverColor = vec3(1.,1.,1.);
 uniform vec3 selectColor = vec3(0., 0.22, 1.);
 
@@ -146,7 +144,7 @@ vec4 trace(inout vec3 col) {
 void highlight(inout vec3 col) {
     if (highlightElement == -1) 
         return;
-        
+
     // Highlight
     float highlightVal = texelFetch(highlightBuf, FragHalfedgeIndex).x;
 

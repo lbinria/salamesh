@@ -235,17 +235,6 @@ namespace bindings {
 			model_t["edges"] = sol::readonly_property(&Model::getEdgesRenderer);
 			model_t["mesh"] = sol::readonly_property(&Model::getMeshRenderer);
 
-
-			// TODO here change implementation by managing index offset from lua to C++ +1 / -1
-			model_t["color_mode_strings"] = sol::readonly_property(
-				&Model::getColorModeStrings
-			);
-
-			model_t["color_mode"] = sol::property(
-				&Model::getColorMode,
-				&Model::setColorMode
-			);
-
 			model_t["attrs"] = sol::readonly_property([&lua = lua](Model &self) {
 				sol::table attrs_tbl = lua.create_table();
 				for (auto &attr : self.getAttrs()) {

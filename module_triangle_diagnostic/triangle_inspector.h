@@ -37,9 +37,11 @@ struct TriangleInspector : public Component {
 		auto &m = triModel.getMesh();
 
 		// Setup gfx
+		triModel.unsetColormaps();
+
 		auto &pointRenderer = triModel.getPointsRenderer();
 		pointRenderer.setVisible(true);
-		pointRenderer.setColorMode(ColorMode::COLOR);
+		// pointRenderer.setColorMode(ColorMode::COLOR);
 		pointRenderer.setHoverColor(glm::vec3(1.f, 1.f, 1.f));
 		pointRenderer.setSelectColor(glm::vec3(0.88f, 0.06f, 0.01f));
 
@@ -50,7 +52,7 @@ struct TriangleInspector : public Component {
 		meshRenderer.setSelectColor(glm::vec3(1.f, 0.06f, 0.51f));
 		// Gfx
 		meshRenderer.setVisible(true);
-		meshRenderer.setColorMode(ColorMode::COLOR);
+		// meshRenderer.setColorMode(ColorMode::COLOR);
 		meshRenderer.setColor(glm::vec3(1.f, 1.f, 1.f));
 		meshRenderer.setMeshSize(0.5f);
 

@@ -39,7 +39,6 @@ uniform sampler2D colormap0;
 uniform sampler2D colormap1;
 uniform sampler2D colormap2;
 
-uniform int colorMode = 0;
 uniform vec3 color;
 
 uniform bool isCornerVisible;
