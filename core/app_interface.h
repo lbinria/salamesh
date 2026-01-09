@@ -14,18 +14,19 @@ struct Colormap {
 
 struct IApp {
 
-    virtual void screenshot(const std::string& filename) = 0;
+    virtual void screenshot(const std::string& filename, int targetWidth = -1, int targetHeight = -1) = 0;
 
     virtual int addModel(std::string name, ModelType type) = 0;
     virtual void removeModel(int idx) = 0;
     virtual bool removeModel(std::string name) = 0;
     virtual bool loadModel(const std::string& filename) = 0;
 
+    virtual void clearScene() = 0;
+
     virtual void setCullMode(int mode) = 0;
     virtual bool getCull() const = 0;
     virtual void setCull(bool enabled) = 0;
 
-    virtual Camera& getCamera() = 0;
     
     virtual std::vector<std::shared_ptr<Model>>& getModels() = 0;
     virtual std::shared_ptr<Model> getModelByName(std::string name) = 0;
@@ -39,7 +40,10 @@ struct IApp {
     virtual void addColormap(const std::string name, const std::string filename) = 0;
     virtual void removeColormap(const std::string name) = 0;
 
+    virtual void snapshot() = 0;
+    virtual void loadSnapshot() = 0;
 
+    virtual Camera& getCamera() = 0;
     virtual std::vector<std::shared_ptr<Camera>>& getCameras() = 0;
     virtual int countCameras() = 0;
     virtual void setSelectedCamera(int selected)= 0;

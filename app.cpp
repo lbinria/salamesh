@@ -6,31 +6,61 @@ struct UBOMatrices {
 	alignas(16) glm::vec2 viewport;
 };
 
-void App::screenshot(const std::string& filename) {
-    int width, height;
-    glfwGetWindowSize(window, &width, &height);
-    
-    // Allocate memory for pixel data
-    std::vector<unsigned char> pixels(width * height * 4);
-    
-    // Read pixels from front buffer
-    glPixelStorei(GL_PACK_ALIGNMENT, 1);
-    glReadBuffer(GL_FRONT);
-    glReadPixels(0, 0, width, height, GL_RGBA, GL_UNSIGNED_BYTE, pixels.data());
-    
-    // Flip the image vertically
-    std::vector<unsigned char> flipped_pixels(width * height * 4);
-    for(int y = 0; y < height; ++y) {
-        memcpy(
-            &flipped_pixels[y * width * 4],
-            &pixels[(height - 1 - y) * width * 4],
-            width * 4
-        );
+void App::screenshot(const std::string& filename, int targetWidth, int targetHeight) {
+	int width, height;
+	glfwGetWindowSize(window, &width, &height);
+
+	// Allocate memory for pixel data
+	std::vector<unsigned char> pixels(width * height * 4);
+
+	// Read pixels from front buffer
+	glPixelStorei(GL_PACK_ALIGNMENT, 1);
+	glReadBuffer(GL_FRONT);
+	glReadPixels(0, 0, width, height, GL_RGBA, GL_UNSIGNED_BYTE, pixels.data());
+
+	// Flip the image vertically
+	std::vector<unsigned char> flipped_pixels(width * height * 4);
+	for(int y = 0; y < height; ++y) {
+		memcpy(
+			&flipped_pixels[y * width * 4],
+			&pixels[(height - 1 - y) * width * 4],
+			width * 4
+		);
+	}
+
+	// No resize needed
+	// Save to PNG file
+	if (targetWidth == -1 && targetHeight == -1) {
+		stbi_write_png(filename.c_str(), width, height, 4, flipped_pixels.data(), 0);
+		return;
+	}
+
+	// Calculate target dimensions
+	int resizedWidth = targetWidth;
+	int resizedHeight = targetHeight;
+
+    // Maintain aspect ratio if only one dimension is specified
+    if (targetWidth == -1) {
+        float aspect = static_cast<float>(width) / height;
+        resizedWidth = static_cast<int>(resizedHeight * aspect);
+    }
+    if (targetHeight == -1) {
+        float aspect = static_cast<float>(height) / width;
+        resizedHeight = static_cast<int>(resizedWidth * aspect);
     }
 
-    // Save to PNG file
-	
-    stbi_write_png(filename.c_str(), width, height, 4, flipped_pixels.data(), 0);
+	// Resize buffer
+	std::vector<unsigned char> resizedPixels(resizedWidth * resizedHeight * 4);
+
+    // Resize using stb_image_resize
+    stbir_resize_uint8_srgb(
+        flipped_pixels.data(), width, height, 0,  // source image
+        resizedPixels.data(), resizedWidth, resizedHeight, 0,  // destination image
+        STBIR_RGBA  // number of channels
+    );
+
+	// Save resized image
+	stbi_write_png(filename.c_str(), resizedWidth, resizedHeight, 4, resizedPixels.data(), 0);
 }
 
 void App::quit() {
@@ -869,7 +899,57 @@ float App::computeSceneDiameter() {
 	return glm::length(max - min);
 }
 
+void App::snapshot() {
+	// Create dir snapshots
+	try {
+		if (!std::filesystem::exists("snapshots"))
+			fs::create_directory("snapshots");
+	} catch (const std::filesystem::filesystem_error &e) {
+		std::cerr << "Error creating directory: " << e.what() << " on snapshot." << std::endl;
+	}
+
+	auto now = std::chrono::system_clock::now();
+	auto unixTimestamp = std::to_string(std::chrono::duration_cast<std::chrono::seconds>(now.time_since_epoch()).count());
+	auto stateFilename = std::filesystem::path("snapshots") / ("state_" + unixTimestamp + ".json");
+	auto screenshotFilename = std::filesystem::path("snapshots") / ("state_" + unixTimestamp + ".jpg");
+	saveState(stateFilename);
+	screenshot(screenshotFilename, 256);
+}
+
+void App::loadSnapshot() {
+	if (!std::filesystem::exists("snapshots"))
+		std::cerr << "Warning: no snapshot." << std::endl;
+
+	int unixTimestamp = 0;
+	std::string filename = "";
+	try {
+		for (auto const& dir_entry : fs::directory_iterator("snapshots")) {
+			if (!fs::is_regular_file(dir_entry.path()) || 
+				dir_entry.path().extension() != ".json")
+				continue;
+
+			std::string name = dir_entry.path().stem();
+			std::string strUnixTimestamp = name.substr(name.find("_"), name.size() - 1);
+			int i = std::stoi(strUnixTimestamp);
+
+			if (i > unixTimestamp) {
+				unixTimestamp = i;
+				filename = dir_entry.path().filename();
+			}
+		}
+	}
+	catch (fs::filesystem_error const& ex) {
+		std::cout << "Error occurred during loading latest snapshot. " << ex.what() << std::endl;
+		return;
+	}
+
+	// Load
+	loadState(filename);
+}
+
 void App::saveState(const std::string filename) {
+
+	std::filesystem::path p = filename;
 
 	json j;
 
@@ -883,7 +963,7 @@ void App::saveState(const std::string filename) {
 
 	// Save models states
 	for (int i = 0; i < models.size(); ++i) {		
-		models[i]->saveState(j["models"][i]);
+		models[i]->saveState(p.parent_path(), j["models"][i]);
 	}
 
 	// Save cameras states

@@ -315,11 +315,13 @@ void MyApp::draw_gui() {
 			}
 
 			if (ImGui::MenuItem("Save state")) {
-				saveState("state.json");
+				// saveState("state.json");
+				snapshot();
 			}
 
 			if (ImGui::MenuItem("Load state")) {
-				loadState("state.json");
+				// loadState("state.json");
+				loadSnapshot();
 			}
 
 			if (ImGui::MenuItem("Quit")) {

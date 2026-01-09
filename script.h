@@ -8,6 +8,7 @@
 #include "core/component.h"
 #include "core/input_states.h"
 
+#include "bindings/fs_bindings.h"
 #include "bindings/imgui_bindings.h"
 #include "bindings/app_bindings.h"
 #include "bindings/glm_bindings.h"
@@ -67,6 +68,7 @@ struct LuaScript final : public Component {
 		lua.open_libraries(sol::lib::math);
 		lua.open_libraries(sol::lib::os);
 
+		bindings::FsBindings::loadBindings(lua);
 		bindings::ImGuiBindings::loadBindings(lua);
 		auto app_type = bindings::AppBindings::loadBindings(lua, app);
 		bindings::GlmBindings::loadBindings(lua, app);

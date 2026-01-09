@@ -1,7 +1,8 @@
 {
 	"modules": [
 		"modules/module_scene",
-		"modules/module_inspector"
+		"modules/module_inspector",
+		"modules/module_snapshots"
 	],
 	"scene": {
 		"background_color": "#ffffff"

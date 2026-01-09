@@ -51,11 +51,11 @@ struct Model {
     }
 
 
-    void saveState(json &j) /*const*/ {
+    void saveState(std::string dirPath, json &j) /*const*/ {
         // Save current mesh state into a file
         auto now = std::chrono::system_clock::now();
         auto unix_timestamp = std::to_string(std::chrono::duration_cast<std::chrono::seconds>(now.time_since_epoch()).count());
-        auto filename = _name + "_" + unix_timestamp + ".geogram";
+        auto filename = std::filesystem::path(dirPath) / (_name + "_" + unix_timestamp + ".geogram");
         
         // Make copy of attributes
         auto cpyAttrs = attrs;

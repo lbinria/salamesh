@@ -26,6 +26,7 @@
 
 
 #include "include/stb_image.h"
+#include "include/stb_image_resize2.h"
 #include "include/stb_image_write.h"
 #include "helpers/graphic_api.h"
 
@@ -97,7 +98,7 @@ struct App : public IApp {
 
 
     // Utils functions
-    void screenshot(const std::string& filename) override;
+    void screenshot(const std::string& filename, int targetWidth = -1, int targetHeight = -1) override;
     void quit();
     float getDepth(double x, double y);
 
@@ -119,9 +120,13 @@ struct App : public IApp {
 
     void computeFarPlane();
 
-	void clearScene();
+	void clearScene() override;
 
     // States functions
+    void snapshot() override;
+    void loadSnapshot() override;
+    // TODO move to IApp
+
     void saveState(const std::string filename);
     void loadState(const std::string filename);
 	void loadState(json &j, const std::string path);
