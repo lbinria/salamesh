@@ -491,6 +491,25 @@ void MyApp::draw_gui() {
 			model.unsetColormap(static_cast<ElementKind>(currentElKind), static_cast<ColormapLayer>(currentCmLayer));
 		}
 
+		if (ImGui::Button("Deactivate")) {
+			model.unsetLayer(static_cast<ElementKind>(currentElKind), static_cast<Layer>(currentCmLayer));
+		}
+		if (ImGui::Button("Activate")) {
+			model.setLayer(static_cast<ElementKind>(currentElKind), static_cast<Layer>(currentCmLayer), false);
+		}
+		if (ImGui::Button("Deactivate hl")) {
+			model.unsetLayer(static_cast<ElementKind>(currentElKind), Layer::HIGHLIGHT);
+		}
+		if (ImGui::Button("Activate hl")) {
+			model.setLayer(static_cast<ElementKind>(currentElKind), Layer::HIGHLIGHT, false);
+		}
+		if (ImGui::Button("Activate fl")) {
+			model.setLayer(static_cast<ElementKind>(currentElKind), Layer::FILTER, false);
+		}
+
+
+
+
 		if (ImGui::Button("Set rand")) {
 
 			auto &model = getCurrentModel().as<PolyModel>();

@@ -148,6 +148,7 @@ struct Model {
             attrNameByLayerAndKind[{l, k}] = attrName;
         }
 
+        // Set layers
         for (auto &j : j["activated_layers"]) {
             auto key = j[0];
             Layer l = (Layer)key[0].get<int>();
@@ -156,8 +157,6 @@ struct Model {
             if (val) {
                 setLayer(k, l);
             }
-            // activatedLayers[{l, k}] = val;
-            // Set layers
         }
 
 
@@ -420,95 +419,11 @@ struct Model {
         setLayerAttr(name, Layer::FILTER, kind);
     }
 
-    // TODO inline following functions
-    void setHighlight(ElementKind kind) {
-        setLayer(kind, Layer::HIGHLIGHT);
+    bool isLayerActivated(ElementKind kind, Layer layer) {
+        return activatedLayers[{layer, kind}];
     }
 
-    void setFilter(ElementKind kind) {
-        setLayer(kind, Layer::FILTER);
-    }
-
-    inline void setColormap(ElementKind kind, ColormapLayer layer) {
-        setLayer(kind, static_cast<Layer>(layer));
-    }
-
-    void unsetHighlight(ElementKind kind) {
-        unsetLayer(kind, Layer::HIGHLIGHT);
-    }
-
-    void unsetHighlights() {
-        // Unset all
-        unsetHighlight(ElementKind::POINTS_ELT);
-        unsetHighlight(ElementKind::CORNERS_ELT);
-        unsetHighlight(ElementKind::EDGES_ELT);
-        unsetHighlight(ElementKind::FACETS_ELT);
-        unsetHighlight(ElementKind::CELLS_ELT);
-        unsetHighlight(ElementKind::CELL_FACETS_ELT);
-        unsetHighlight(ElementKind::CELL_CORNERS_ELT);
-    }
-
-    void unsetFilter(ElementKind kind) {
-        unsetLayer(kind, Layer::FILTER);
-    }
-
-    void unsetFilters() {
-        // Unset all
-        unsetFilter(ElementKind::POINTS_ELT);
-        unsetFilter(ElementKind::CORNERS_ELT);
-        unsetFilter(ElementKind::EDGES_ELT);
-        unsetFilter(ElementKind::FACETS_ELT);
-        unsetFilter(ElementKind::CELLS_ELT);
-        unsetFilter(ElementKind::CELL_FACETS_ELT);
-        unsetFilter(ElementKind::CELL_CORNERS_ELT);
-    }
-
-    void unsetColormap(ElementKind kind, ColormapLayer colormapLayer) {
-        unsetLayer(kind, static_cast<Layer>(colormapLayer));
-    }
-
-    void unsetColormaps(ColormapLayer colormapLayer) {
-        // Unset all
-        for (int i = 0; i < 7; ++i) {
-            int kind = 1 << i;
-            unsetColormap((ElementKind)kind, colormapLayer);
-        }
-    }
-
-    void unsetColormaps(ElementKind kind) {
-        for (int l = 0; l < 3; ++l)
-            unsetColormap(kind, static_cast<ColormapLayer>(l));
-    }
-
-    void unsetColormaps() {
-        // Unset all
-        for (int l = 0; l < 3; ++l) {
-            for (int i = 0; i < 7; ++i) {
-                int kind = 1 << i;
-                unsetColormap((ElementKind)kind, static_cast<ColormapLayer>(l));
-            }
-        }
-    }
-
-    void setLayer(ElementKind kind, Layer layer) {
-
-        for (auto const &[k, r] : _renderers) {
-            if (r->isRenderElement(kind)) {
-                r->setLayerElement(kind, layer);
-            }
-        }
-
-        updateLayer(layer, kind);
-
-        activatedLayers[{layer, kind}] = true;
-    }
-
-    void unsetLayer(ElementKind kind, Layer layer) {
-        // Little optimisation, doesn't update data
-        // if layer isn't activated, no need to unset
-        if (!activatedLayers[{layer, kind}])
-            return;
-        
+    void resetLayer(ElementKind kind, Layer layer) {
         // Prepare a vector of zeros of the size of the element kind to unset
         std::vector<float> zeros;
         switch (kind) {
@@ -540,11 +455,108 @@ struct Model {
         for (auto const &[k ,r] : _renderers) {
             if (r->isRenderElement(kind)) {
                 r->setLayer(zeros, layer);
+            }
+        }
+    }
+
+    void setLayer(ElementKind kind, Layer layer, bool update = true) {
+
+        if (activatedLayers[{layer, kind}] && !update)
+            return;
+
+        for (auto const &[k, r] : _renderers) {
+            if (r->isRenderElement(kind)) {
+                r->setLayerElement(kind, layer);
+            }
+        }
+
+        if (update)
+            updateLayer(layer, kind);
+
+        activatedLayers[{layer, kind}] = true;
+    }
+
+    // TODO maybe reset parameter won't be used, so layer never need to be reseted in this context
+    void unsetLayer(ElementKind kind, Layer layer, bool reset = false) {
+        // Little optimisation, doesn't update data
+        // if layer isn't activated, no need to unset
+        if (!activatedLayers[{layer, kind}])
+            return;
+        
+        // Set requested layer data to zeros
+        if (reset)
+            resetLayer(kind, layer);
+
+        for (auto const &[k ,r] : _renderers) {
+            if (r->isRenderElement(kind)) {
                 r->setLayerElement(-1, layer); // element -1 means => deactivate layer
             }
         }
 
         activatedLayers[{layer, kind}] = false;
+    }
+
+    inline void setColormap(ElementKind kind, ColormapLayer layer, bool update = true) {
+        setLayer(kind, static_cast<Layer>(layer), update);
+    }
+
+    void unsetColormap(ElementKind kind, ColormapLayer colormapLayer) {
+        unsetLayer(kind, static_cast<Layer>(colormapLayer));
+    }
+
+    void unsetColormaps(ColormapLayer colormapLayer) {
+        // Unset all
+        for (int i = 0; i < 7; ++i) {
+            int kind = 1 << i;
+            unsetColormap((ElementKind)kind, colormapLayer);
+        }
+    }
+
+    void unsetColormaps(ElementKind kind) {
+        for (int l = 0; l < 3; ++l)
+            unsetColormap(kind, static_cast<ColormapLayer>(l));
+    }
+
+    void unsetColormaps() {
+        // Unset all
+        for (int l = 0; l < 3; ++l) {
+            for (int i = 0; i < 7; ++i) {
+                int kind = 1 << i;
+                unsetColormap((ElementKind)kind, static_cast<ColormapLayer>(l));
+            }
+        }
+    }
+
+    inline void setHighlight(ElementKind kind, bool update = true) {
+        setLayer(kind, Layer::HIGHLIGHT, update);
+    }
+
+    inline void unsetHighlight(ElementKind kind) {
+        unsetLayer(kind, Layer::HIGHLIGHT);
+    }
+
+    void unsetHighlights() {
+        // Unset all
+        for (int i = 0; i < 7; ++i) {
+            int kind = 1 << i;
+            unsetHighlight((ElementKind)kind);
+        }
+    }
+
+    inline void setFilter(ElementKind kind, bool update = true) {
+        setLayer(kind, Layer::FILTER, update);
+    }
+
+    inline void unsetFilter(ElementKind kind) {
+        unsetLayer(kind, Layer::FILTER);
+    }
+
+    void unsetFilters() {
+        // Unset all
+        for (int i = 0; i < 7; ++i) {
+            int kind = 1 << i;
+            unsetFilter((ElementKind)kind);
+        }
     }
 
     glm::vec3 getPosition() const {
@@ -743,7 +755,7 @@ struct Model {
 
     std::vector<Attribute> attrs;
 
-    int selectedAttr[3] = {0, 0, 0};
+    int selectedAttr[3] = {-1, -1, -1};
 
 
     bool isLightEnabled = true;

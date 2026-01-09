@@ -73,6 +73,9 @@ vec4 fetchColormap(int layer, vec2 coords) {
 }
 
 void _filter(inout vec3 col) {
+    if (filterElement == -1)
+        return;
+
     bool filtered = texelFetch(filterBuf, FragVertexIndex).x > 0;
 
     if (filtered)
@@ -110,6 +113,9 @@ vec3 trace(inout vec3 col) {
 }
 
 void highlight(inout vec3 col) {
+    if (highlightElement == -1)
+        return;
+
     // Highlight
     float highlightVal = texelFetch(highlightBuf, FragVertexIndex).x;
     if (highlightVal > 0) {

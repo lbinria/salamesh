@@ -34,11 +34,7 @@
 
 #include "core/shader.h"
 
-// #include "core/models/tri_model.h"
-// #include "core/models/quad_model.h"
-// #include "core/models/poly_model.h"
 #include "core/models/surface_model.h"
-
 #include "core/models/tet_model.h"
 #include "core/models/hex_model.h"
 

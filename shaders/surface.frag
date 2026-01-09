@@ -246,6 +246,9 @@ vec4 showColormap(int layer) {
 }
 
 void _filter(inout vec3 col) {
+    if (filterElement == -1)
+        return;
+        
     bool filtered = texelFetch(filterBuf, fragFacetIndex).x >= .5;
 
     if (filtered)

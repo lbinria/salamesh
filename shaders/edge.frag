@@ -98,6 +98,9 @@ float sdfEquilateralTriangle(vec2 p) {
 }
 
 void _filter(inout vec3 col) {
+    if (filterElement == -1)
+        return;
+
     bool filtered = texelFetch(filterBuf, FragHalfedgeIndex).x > 0;
 
     if (filtered)
@@ -141,6 +144,9 @@ vec4 trace(inout vec3 col) {
 }
 
 void highlight(inout vec3 col) {
+    if (highlightElement == -1) 
+        return;
+        
     // Highlight
     float highlightVal = texelFetch(highlightBuf, FragHalfedgeIndex).x;
 

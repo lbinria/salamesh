@@ -15,11 +15,13 @@
 #include "../layer.h"
 #include "../helpers.h"
 
-// Concept definition
+// Define concept to accept only types that are derived from Surface
 template<typename T>
 concept SurfaceDerived = std::is_base_of_v<Surface, std::remove_cv_t<T>> && 
 	!std::is_same_v<Surface, std::remove_cv_t<T>>;
 
+// This code allow selection of the Renderer type according to a given Surface type
+// It looks like to module functor in ocaml
 namespace RendererSpecialization {
 	template<typename T>
 	struct RendererSelector;
@@ -54,9 +56,6 @@ struct SurfaceModel : public Model {
 			{"zclipping_renderer", std::make_shared<ClippingRenderer>(_m.points) }
 		})
 		{}
-
-
-
 
 	ModelType getModelType() const override {
 		return modelTypeFromMeshType<TSurface>();
