@@ -75,7 +75,7 @@ static std::string elementTypeToString(ElementType t) {
 
 // TODO maybe move elsewhere because it is dependent of ultimaille this is a "glue"
 template<typename TMesh>
-static ModelType getModelType() {
+static ModelType modelTypeFromMeshType() {
 	if constexpr (std::is_same_v<TMesh, UM::PointSet>)
 		return ModelType::POINTSET_MODEL;
 	else if constexpr (std::is_same_v<TMesh, UM::PolyLine>)

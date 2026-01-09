@@ -7,21 +7,149 @@
 #include "../renderers/point_set_renderer.h"
 #include "../renderers/halfedge_renderer.h"
 #include "../renderers/tri_renderer.h"
+#include "../renderers/quad_renderer.h"
+#include "../renderers/poly_renderer.h"
 #include "../renderers/bbox_renderer.h"
 #include "../renderers/clipping_renderer.h"
 #include "../color_mode.h"
 #include "../layer.h"
 #include "../helpers.h"
 
+// Concept definition
+template<typename T>
+concept SurfaceDerived = std::is_base_of_v<Surface, std::remove_cv_t<T>> && 
+	!std::is_same_v<Surface, std::remove_cv_t<T>>;
+
+namespace RendererSpecialization {
+	template<typename T>
+	struct RendererSelector;
+
+	template<>
+	struct RendererSelector<UM::Triangles> {
+		using type = TriRenderer;
+	};
+
+	template<>
+	struct RendererSelector<UM::Quads> {
+		using type = QuadRenderer;
+	};
+
+	template<>
+	struct RendererSelector<UM::Polygons> {
+		using type = PolyRenderer;
+	};
+}
+
+template<SurfaceDerived TSurface>
 struct SurfaceModel : public Model {
 
-	SurfaceModel(std::map<std::string, std::shared_ptr<IRenderer>> renderers) :
-	Model::Model(renderers) {}
 
-	SurfaceModel(std::map<std::string, std::shared_ptr<IRenderer>> renderers, std::string name) : 
-	Model::Model(renderers, name) {}
 
-	void saveAs(const std::string path) const override;
+	// Explicit type extraction
+
+	// constexpr auto getRenderer() {
+	// 	if constexpr (std::is_same_v<TSurface, UM::Triangles>)
+	// 		return std::type_identity<TriRenderer>();
+	// 	if constexpr (std::is_same_v<TSurface, UM::Quads>)
+	// 		return std::type_identity<QuadRenderer>();
+	// 	if constexpr (std::is_same_v<TSurface, UM::Polygons>)
+	// 		return std::type_identity<PolyRenderer>();
+	// }
+	// using RendererType = decltype(getRenderer())::type;
+
+	// SurfaceModel(std::map<std::string, std::shared_ptr<IRenderer>> renderers) :
+	// Model::Model(renderers) {}
+
+	// SurfaceModel(std::map<std::string, std::shared_ptr<IRenderer>> renderers, std::string name) : 
+	// Model::Model(renderers, name) {}
+
+	SurfaceModel() : 
+		_m(),
+		Model::Model({
+			{"mesh_renderer", std::make_shared<typename RendererSpecialization::RendererSelector<TSurface>::type>(_m)}, 
+			// {"mesh_renderer", std::make_shared<decltype(getRenderer())::type>(_m)}, 
+			{"point_renderer", std::make_shared<PointSetRenderer>(_m.points) },
+			{"edge_renderer", std::make_shared<SurfaceHalfedgeRenderer>(_m) },
+			{"bbox_renderer", std::make_shared<BBoxRenderer>(_m.points) },
+			{"zclipping_renderer", std::make_shared<ClippingRenderer>(_m.points) }
+		})
+		{}
+
+
+
+
+	ModelType getModelType() const override {
+		return modelTypeFromMeshType<TSurface>();
+	}
+
+	bool load(const std::string path) override {
+		// TODO check if the model failed to read in ultimaille, else there is side effects ! 
+
+		// Load the mesh
+		_surfaceAttributes = read_by_extension(path, _m);
+		_path = path;
+
+		if (_m.nfacets() <= 0)
+			return false;
+
+		// Extract name
+		if (_name.empty()) {
+			std::filesystem::path p(path);
+			_name = p.stem().string();
+		}
+
+		clearAttrs();
+
+		auto containers = getAttributeContainers();
+		for (auto &[k, c] : containers) {
+			addAttr(k, c);
+		}
+
+		init();
+		push();
+
+		return true;
+	}
+
+	void saveAs(const std::string path) const override {
+		// Check path validity
+		if (path.empty()) {
+			std::cerr << "Error: No path specified for saving the mesh." << std::endl;
+			return;
+		}
+		
+		// Save attributes ! Convert back from salamesh attributes to NamedContainer vectors
+		std::vector<NamedContainer> point_attrs;
+		std::vector<NamedContainer> facet_attrs;
+		std::vector<NamedContainer> corner_attrs;
+		for (auto &a : attrs) {
+			// TODO do something more clear here !
+			// Do not save attributes 
+			// For example, attr : vec2 => attr[0], attr[1] aren't saved
+			if (a.selectedDim != -1)
+				continue;
+
+			std::string name = a.name;
+			ElementKind kind = a.kind;
+			auto &container = a.ptr;
+
+			if (kind == ElementKind::POINTS_ELT) {
+				point_attrs.push_back(NamedContainer(name, container));
+			} else if (kind == ElementKind::FACETS_ELT) {
+				facet_attrs.push_back(NamedContainer(name, container));
+			} else if (kind == ElementKind::CORNERS_ELT) {
+				corner_attrs.push_back(NamedContainer(name, container));
+			}
+		}
+
+		SurfaceAttributes attributes(
+			point_attrs,
+			facet_attrs,
+			corner_attrs
+		);
+
+		write_by_extension(path, getSurface(), attributes);
+	}
 
 	std::tuple<glm::vec3, glm::vec3> bbox() override {
 		auto &m = getSurface();
@@ -37,6 +165,10 @@ struct SurfaceModel : public Model {
 
 		return {min, max};
 	}
+
+	TSurface& getMesh() { return _m; }
+	Surface& getSurface() { return _m; }
+	const Surface& getSurface() const { return _m; }
 
 	SurfaceAttributes& getSurfaceAttributes() { return _surfaceAttributes; }
 	const SurfaceAttributes& getSurfaceAttributes() const { return _surfaceAttributes; }
@@ -102,8 +234,10 @@ struct SurfaceModel : public Model {
 
 	SurfaceAttributes _surfaceAttributes;
 
-	virtual Surface& getSurface() = 0;
-	virtual const Surface& getSurface() const = 0;
+	// virtual Surface& getSurface() = 0;
+	// virtual const Surface& getSurface() const = 0;
+	// Surface& getSurface() { return _m; }
+	// const Surface& getSurface() const { return _m; }
 
 	std::vector<std::pair<ElementKind, NamedContainer>> getAttributeContainers() const override {
 		std::vector<std::pair<ElementKind, NamedContainer>> containers;
@@ -120,4 +254,11 @@ struct SurfaceModel : public Model {
 		return containers;
 	}
 
+	private:
+	// Mesh
+	TSurface _m;
 };
+
+typedef SurfaceModel<Triangles> TriModel;
+typedef SurfaceModel<Quads> QuadModel;
+typedef SurfaceModel<Polygons> PolyModel;

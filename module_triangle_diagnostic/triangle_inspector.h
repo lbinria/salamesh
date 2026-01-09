@@ -34,7 +34,7 @@ struct TriangleInspector : public Component {
 		}
 
 		auto &triModel = model.as<TriModel>();
-		auto &m = triModel.getTriangles();
+		auto &m = triModel.getMesh();
 
 		// Setup gfx
 		auto &pointRenderer = triModel.getPointsRenderer();
@@ -201,12 +201,12 @@ struct TriangleInspector : public Component {
 
 		// // Highlight degenerated points
 		// PointAttribute<float> pointHl;
-		// pointHl.bind("_highlight", triModel.getSurfaceAttributes(), triModel.getTriangles());
+		// pointHl.bind("_highlight", triModel.getSurfaceAttributes(), triModel.getMesh());
 		// pointHl.fill(0.f);
 
 		// // Highlight degenerated facets
 		// FacetAttribute<float> facetHl;
-		// facetHl.bind("_highlight", triModel.getSurfaceAttributes(), triModel.getTriangles());
+		// facetHl.bind("_highlight", triModel.getSurfaceAttributes(), triModel.getMesh());
 		// facetHl.fill(0.f);
 
 		// std::vector<std::set<long>> pointOverlaps(m.nverts());
@@ -255,7 +255,7 @@ struct TriangleInspector : public Component {
 			}
 
 			auto &triModel = model.as<TriModel>();
-			auto &m = triModel.getTriangles();
+			auto &m = triModel.getMesh();
 
 			float newPointSize = model.getPointsRenderer().getPointSize();
 			if (ImGui::SliderFloat("Threshold (point size)", &newPointSize, 0, 50.f)) {
@@ -334,7 +334,7 @@ struct TriangleInspector : public Component {
 
 			auto &triModel = app.getCurrentModel().as<TriModel>();
 			CornerAttribute<double> ca;
-			ca.bind("corner_id", triModel.getSurfaceAttributes(), triModel.getTriangles());
+			ca.bind("corner_id", triModel.getSurfaceAttributes(), triModel.getMesh());
 			
 			ImGui::Text("Value %s", std::to_string(ca[e]).c_str());
 
@@ -345,7 +345,7 @@ struct TriangleInspector : public Component {
 	}
 	
 	std::vector<float> getRadiuses(TriModel &triModel) {
-		auto &m = triModel.getTriangles();
+		auto &m = triModel.getMesh();
 		float pointSize = triModel.getPointsRenderer().getPointSize();
 
 		// Compute PVM matrix
@@ -374,7 +374,7 @@ struct TriangleInspector : public Component {
 		}
 
 		auto &triModel = model.as<TriModel>();
-		auto &m = triModel.getTriangles();
+		auto &m = triModel.getMesh();
 
 		float pointSize = triModel.getPointsRenderer().getPointSize();
 
@@ -405,12 +405,12 @@ struct TriangleInspector : public Component {
 
 		// Highlight degenerated points
 		PointAttribute<float> pointHl;
-		pointHl.bind("_highlight", triModel.getSurfaceAttributes(), triModel.getTriangles());
+		pointHl.bind("_highlight", triModel.getSurfaceAttributes(), triModel.getMesh());
 		pointHl.fill(0.f);
 
 		// Highlight degenerated facets
 		FacetAttribute<float> facetHl;
-		facetHl.bind("_highlight", triModel.getSurfaceAttributes(), triModel.getTriangles());
+		facetHl.bind("_highlight", triModel.getSurfaceAttributes(), triModel.getMesh());
 		facetHl.fill(0.f);
 
 		std::vector<std::set<long>> pointOverlaps(m.nverts());

@@ -418,7 +418,7 @@ void MyApp::draw_gui() {
 
 
 		if (ImGui::Button("Bump")) {
-			auto &m = model.getTriangles();
+			auto &m = model.getMesh();
 
 			const double SCALE = model.getRadius() * 0.015;
 
@@ -494,7 +494,7 @@ void MyApp::draw_gui() {
 		if (ImGui::Button("Set rand")) {
 
 			auto &model = getCurrentModel().as<PolyModel>();
-			auto &m = model.getPolygons();
+			auto &m = model.getMesh();
 			
 
 			FacetAttribute<double> hl;
@@ -513,7 +513,7 @@ void MyApp::draw_gui() {
 		if (ImGui::Button("Set split")) {
 
 			auto &model = getCurrentModel().as<PolyModel>();
-			auto &m = model.getPolygons();
+			auto &m = model.getMesh();
 			
 
 			FacetAttribute<double> hl;
@@ -541,7 +541,7 @@ void MyApp::draw_gui() {
 		if (ImGui::Button("Highlight facets")) {
 
 			auto &model = getCurrentModel().as<PolyModel>();
-			auto &m = model.getPolygons();
+			auto &m = model.getMesh();
 
 			FacetAttribute<double> hl;
 			hl.bind("_highlight", model.getSurfaceAttributes(), m);
@@ -559,7 +559,7 @@ void MyApp::draw_gui() {
 		}
 
 		if (ImGui::Button("Highlight edge")) {
-			auto &m = model.getTriangles();
+			auto &m = model.getMesh();
 			CornerAttribute<double> hl;
 			hl.bind("_highlight", model.getSurfaceAttributes(), m);
 
@@ -576,7 +576,7 @@ void MyApp::draw_gui() {
 		}
 
 		if (ImGui::Button("Highlight corner")) {
-			auto &m = model.getTriangles();
+			auto &m = model.getMesh();
 			CornerAttribute<double> hl;
 			hl.bind("_highlight", model.getSurfaceAttributes(), m);
 
@@ -593,7 +593,7 @@ void MyApp::draw_gui() {
 		}
 
 		if (ImGui::Button("Highlight point")) {
-			auto &m = model.getTriangles();
+			auto &m = model.getMesh();
 			PointAttribute<double> hl;
 			hl.bind("_highlight", model.getSurfaceAttributes(), m);
 
@@ -616,7 +616,7 @@ void MyApp::draw_gui() {
 		}
 
 		if (ImGui::Button("Filter facets")) {
-			auto &m = model.getTriangles();
+			auto &m = model.getMesh();
 			FacetAttribute<double> hl;
 			hl.bind("_filter", model.getSurfaceAttributes(), m);
 
@@ -633,7 +633,7 @@ void MyApp::draw_gui() {
 		}
 
 		if (ImGui::Button("Filter edge")) {
-			auto &m = model.getTriangles();
+			auto &m = model.getMesh();
 			CornerAttribute<double> hl;
 			hl.bind("_filter", model.getSurfaceAttributes(), m);
 
@@ -650,7 +650,7 @@ void MyApp::draw_gui() {
 		}
 
 		if (ImGui::Button("Filter corner")) {
-			auto &m = model.getTriangles();
+			auto &m = model.getMesh();
 			CornerAttribute<double> hl;
 			hl.bind("_filter", model.getSurfaceAttributes(), m);
 
@@ -667,7 +667,7 @@ void MyApp::draw_gui() {
 		}
 
 		if (ImGui::Button("Filter points")) {
-			auto &m = model.getTriangles();
+			auto &m = model.getMesh();
 			PointAttribute<double> hl;
 			hl.bind("_filter", model.getSurfaceAttributes(), m);
 

@@ -40,9 +40,6 @@ set(SOURCES
 
     models/model.h
     models/surface_model.cpp models/surface_model.h
-    models/tri_model.cpp models/tri_model.h
-    models/quad_model.cpp models/quad_model.h
-    models/poly_model.cpp models/poly_model.h
     models/tet_model.cpp models/tet_model.h
     models/hex_model.cpp models/hex_model.h
 

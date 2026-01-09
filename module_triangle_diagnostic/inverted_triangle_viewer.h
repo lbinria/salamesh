@@ -111,7 +111,7 @@ struct InvertedTriangleViewer : public Component {
 			return;
 
 		auto &triModel = model.as<TriModel>();
-		auto &m = triModel.getTriangles();
+		auto &m = triModel.getMesh();
 
 		// Check for inverted triangles
 		// auto dir = sl::glm2um(app.getCamera().getViewDir());
