@@ -912,8 +912,8 @@ void App::snapshot() {
 	auto unixTimestamp = std::to_string(std::chrono::duration_cast<std::chrono::seconds>(now.time_since_epoch()).count());
 	auto stateFilename = std::filesystem::path("snapshots") / ("state_" + unixTimestamp + ".json");
 	auto screenshotFilename = std::filesystem::path("snapshots") / ("state_" + unixTimestamp + ".jpg");
-	saveState(stateFilename);
-	screenshot(screenshotFilename, 256);
+	saveState(stateFilename.string());
+	screenshot(screenshotFilename.string(), 256);
 }
 
 void App::loadSnapshot() {
@@ -928,13 +928,13 @@ void App::loadSnapshot() {
 				dir_entry.path().extension() != ".json")
 				continue;
 
-			std::string name = dir_entry.path().stem();
+			std::string name = dir_entry.path().stem().string();
 			std::string strUnixTimestamp = name.substr(name.find("_"), name.size() - 1);
 			int i = std::stoi(strUnixTimestamp);
 
 			if (i > unixTimestamp) {
 				unixTimestamp = i;
-				filename = dir_entry.path().filename();
+				filename = dir_entry.path().filename().string();
 			}
 		}
 	}
@@ -963,7 +963,7 @@ void App::saveState(const std::string filename) {
 
 	// Save models states
 	for (int i = 0; i < models.size(); ++i) {		
-		models[i]->saveState(p.parent_path(), j["models"][i]);
+		models[i]->saveState(p.parent_path().string(), j["models"][i]);
 	}
 
 	// Save cameras states

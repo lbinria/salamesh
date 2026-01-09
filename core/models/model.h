@@ -65,7 +65,7 @@ struct Model {
         for (auto &[k, c] : containers)
             addAttr(k, c);
 
-        saveAs(filename);
+        saveAs(filename.string());
         
         clearAttrs();
         attrs = cpyAttrs;
