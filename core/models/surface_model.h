@@ -43,26 +43,6 @@ namespace RendererSpecialization {
 template<SurfaceDerived TSurface>
 struct SurfaceModel : public Model {
 
-
-
-	// Explicit type extraction
-
-	// constexpr auto getRenderer() {
-	// 	if constexpr (std::is_same_v<TSurface, UM::Triangles>)
-	// 		return std::type_identity<TriRenderer>();
-	// 	if constexpr (std::is_same_v<TSurface, UM::Quads>)
-	// 		return std::type_identity<QuadRenderer>();
-	// 	if constexpr (std::is_same_v<TSurface, UM::Polygons>)
-	// 		return std::type_identity<PolyRenderer>();
-	// }
-	// using RendererType = decltype(getRenderer())::type;
-
-	// SurfaceModel(std::map<std::string, std::shared_ptr<IRenderer>> renderers) :
-	// Model::Model(renderers) {}
-
-	// SurfaceModel(std::map<std::string, std::shared_ptr<IRenderer>> renderers, std::string name) : 
-	// Model::Model(renderers, name) {}
-
 	SurfaceModel() : 
 		_m(),
 		Model::Model({
