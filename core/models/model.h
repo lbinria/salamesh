@@ -55,7 +55,8 @@ struct Model {
         // Save current mesh state into a file
         auto now = std::chrono::system_clock::now();
         auto unix_timestamp = std::to_string(std::chrono::duration_cast<std::chrono::seconds>(now.time_since_epoch()).count());
-        auto filename = std::filesystem::path(dirPath) / (_name + "_" + unix_timestamp + ".geogram");
+        auto filename = _name + "_" + unix_timestamp + ".geogram";
+        auto filepath = std::filesystem::path(dirPath) / filename;
         
         // Make copy of attributes
         auto cpyAttrs = attrs;
@@ -65,7 +66,7 @@ struct Model {
         for (auto &[k, c] : containers)
             addAttr(k, c);
 
-        saveAs(filename.string());
+        saveAs(filepath);
         
         clearAttrs();
         attrs = cpyAttrs;

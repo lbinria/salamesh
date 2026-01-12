@@ -947,6 +947,22 @@ void App::loadSnapshot() {
 	loadState(filename);
 }
 
+std::vector<std::vector<std::string>> App::listSnapshots() {
+	auto stateFiles = sl::listDirectory("snapshots", ".json");
+	auto jpgFiles = sl::listDirectory("snapshots", ".jpg");
+
+	std::sort(stateFiles.begin(), stateFiles.end(), std::greater<std::string>());
+	std::sort(jpgFiles.begin(), jpgFiles.end(), std::greater<std::string>());
+	int size = std::min(stateFiles.size(), jpgFiles.size());
+	
+	std::vector<std::vector<std::string>> snapshots;
+	for (int i = 0; i < size; ++i) {
+		snapshots.push_back({stateFiles[i], jpgFiles[i]});
+	}
+
+	return snapshots;
+}
+
 void App::saveState(const std::string filename) {
 
 	std::filesystem::path p = filename;

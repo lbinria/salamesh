@@ -42,6 +42,9 @@ struct IApp {
 
     virtual void snapshot() = 0;
     virtual void loadSnapshot() = 0;
+    virtual std::vector<std::vector<std::string>> listSnapshots() = 0;
+    virtual void saveState(const std::string filename) = 0;
+    virtual void loadState(const std::string filename) = 0;
 
     virtual Camera& getCamera() = 0;
     virtual std::vector<std::shared_ptr<Camera>>& getCameras() = 0;

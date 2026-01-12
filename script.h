@@ -65,8 +65,11 @@ struct LuaScript final : public Component {
 
 		lua.open_libraries(sol::lib::base);
 		lua.open_libraries(sol::lib::string);
+		lua.open_libraries(sol::lib::table);
 		lua.open_libraries(sol::lib::math);
 		lua.open_libraries(sol::lib::os);
+		lua.open_libraries(sol::lib::io);
+		lua.open_libraries(sol::lib::utf8);
 
 		bindings::FsBindings::loadBindings(lua);
 		bindings::ImGuiBindings::loadBindings(lua);

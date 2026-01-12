@@ -47,6 +47,12 @@ namespace bindings {
 			lua["app"] = &app;
 			sol::usertype<IApp> app_type = lua.new_usertype<IApp>("IApp");
 
+			app_type.set_function("load_state", &IApp::loadState);
+			app_type.set_function("save_state", &IApp::saveState);
+			app_type.set_function("snapshot", &IApp::snapshot);
+			app_type.set_function("load_snapshot", &IApp::loadSnapshot);
+			app_type.set_function("list_snapshots", &IApp::listSnapshots);
+
 			app_type["count_models"] = sol::readonly_property(&IApp::countModels);
 			app_type["has_models"] = sol::readonly_property(&IApp::hasModels);
 			app_type["models"] = sol::readonly_property(&IApp::getModels);

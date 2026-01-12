@@ -125,10 +125,12 @@ struct App : public IApp {
     // States functions
     void snapshot() override;
     void loadSnapshot() override;
+    std::vector<std::vector<std::string>> listSnapshots() override;
+    void saveState(const std::string filename) override;
+    void loadState(const std::string filename) override;
     // TODO move to IApp
 
-    void saveState(const std::string filename);
-    void loadState(const std::string filename);
+
 	void loadState(json &j, const std::string path);
 
     long pick(double xPos, double yPos);

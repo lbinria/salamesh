@@ -48,7 +48,9 @@ namespace bindings {
 				return ImGui::Button(label);
 			});
 
-
+			imgui.set_function("ImageButton", [](const char* label, ImTextureID user_texture_id, ImVec2 size) {
+				return ImGui::ImageButton(label, user_texture_id, size);
+			});
 
 			auto pf = imgui.set_function("Checkbox", [](const char* label, sol::object v, sol::this_state s) -> std::optional<std::tuple<bool, bool>> {
 				sol::state_view lua(s);
