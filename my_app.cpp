@@ -418,6 +418,25 @@ void MyApp::draw_gui() {
 	
 		auto &model = getCurrentModel().as<TriModel>();
 
+		if (ImGui::Button("PS")) {
+			PointSet ps;
+			PointSetRenderer psr(ps);
+			std::vector<glm::vec3> points;
+			for (int i = 0; i < 1000; ++i) {
+				points.push_back(glm::vec3(
+					rand() / static_cast<double>(RAND_MAX), 
+					rand() / static_cast<double>(RAND_MAX),
+					rand() / static_cast<double>(RAND_MAX))
+				);
+			}
+			psr.addPoints(points);
+			psr.push();
+			psr.setPointSize(2.f);
+			psr.setVisible(true);
+			// auto pointset = &getModelByName("test").as<Point;
+			// pointset.
+		}
+
 
 		if (ImGui::Button("Bump")) {
 			auto &m = model.getMesh();

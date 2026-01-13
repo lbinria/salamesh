@@ -23,47 +23,74 @@ struct PointSetRenderer : public IRenderer {
 		// glm::vec3 normal;
 	};
 
-    PointSetRenderer(PointSet &ps) : 
-        IRenderer(Shader("shaders/point.vert", "shaders/point.frag")),
-        ps(ps) {
-            setPointSize(4.0f); // TODO here use a setting default point size
-            setColor({0.23, 0.85, 0.66}); // TODO here use a setting default point color
-        }
+	PointSetRenderer(PointSet &ps) : 
+		IRenderer(Shader("shaders/point.vert", "shaders/point.frag")),
+		ps(ps) {
+			setPointSize(4.0f); // TODO here use a setting default point size
+			setColor({0.23, 0.85, 0.66}); // TODO here use a setting default point color
+		}
 
-    void init();
-    void push();
-    void render(glm::vec3 &position);
-    void clean();
+	void init();
+	void push();
+	void render(glm::vec3 &position);
+	void clean();
 
 	int getRenderElementKind() override { return ElementKind::POINTS_ELT; }
 
-    float getPointSize() const {
-        return pointSize;
-    }
+	void addPoint(glm::vec3 p) {
+		int off = ps.create_points(1);
+		ps[off] = sl::glm2um(p);
 
-    void setPointSize(float size) {
-        shader.use();
-        shader.setFloat("pointSize", size);
-        pointSize = size;
-    }
+		if (autoUpdate)
+			push();
+	}
 
-    glm::vec3 getColor() const {
-        return color;
-    }
-    
-    void setColor(glm::vec3 c) {
-        shader.use();
-        shader.setFloat3("pointColor", c);
-        color = c;
-    }
+	void addPoints(std::vector<glm::vec3> points) {
+		int off = ps.create_points(points.size());
+		for (int i = off; i < points.size() - 1; ++i)
+			ps[i] = sl::glm2um(points[i]);
 
+		if (autoUpdate)
+			push();
+	}
 
-    PointSet &ps;
-    // Surface *_m = nullptr;
+	void removePoints(std::vector<bool> toKill) {
+		ps.delete_points(toKill);
+
+		if (autoUpdate)
+			push();
+	}
+
+	float getPointSize() const {
+		return pointSize;
+	}
+
+	void setPointSize(float size) {
+		shader.use();
+		shader.setFloat("pointSize", size);
+		pointSize = size;
+	}
+
+	glm::vec3 getColor() const {
+		return color;
+	}
+
+	void setColor(glm::vec3 c) {
+		shader.use();
+		shader.setFloat3("pointColor", c);
+		color = c;
+	}
+
+	bool getAutoUpdate() { return autoUpdate; }
+	void setAutoUpdate(bool val) { autoUpdate = val; }
+
+	PointSet &ps;
 
 
     private:
     
+	bool autoUpdate = false;
+
     std::vector<glm::vec3> normals;
 
     float pointSize;
