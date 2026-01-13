@@ -56,7 +56,6 @@ namespace fs = std::filesystem;
 struct App : public IApp {
 
 
-
     App(Args args) : 
         args(args),
         screenWidth(1024), 
@@ -98,7 +97,7 @@ struct App : public IApp {
 
 
     // Utils functions
-    void screenshot(const std::string& filename, int targetWidth = -1, int targetHeight = -1) override;
+    Image screenshot(const std::string& filename, int targetWidth = -1, int targetHeight = -1) override;
     void quit();
     float getDepth(double x, double y);
 
@@ -123,9 +122,9 @@ struct App : public IApp {
 	void clearScene() override;
 
     // States functions
-    void snapshot() override;
+    Snapshot snapshot() override;
     void loadSnapshot() override;
-    std::vector<std::vector<std::string>> listSnapshots() override;
+    std::vector<Snapshot> listSnapshots() override;
     void saveState(const std::string filename) override;
     void loadState(const std::string filename) override;
     // TODO move to IApp

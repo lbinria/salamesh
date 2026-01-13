@@ -12,9 +12,28 @@ struct Colormap {
     unsigned int tex;
 };
 
+struct Image {
+    unsigned int texId;
+    int width, height, channels;
+    unsigned int getTexId() { return texId; }
+    int getWidth() { return width; }
+    int getHeight() { return height; }
+    int getChannels() { return channels; }
+};
+
+struct Snapshot {
+    std::string stateFilename;
+    std::string thumbFilename;
+    Image image;
+
+    std::string getStateFilename() { return stateFilename; }
+    std::string getThumbfilename() { return thumbFilename; }
+    Image getImage() { return image; }
+};
+
 struct IApp {
 
-    virtual void screenshot(const std::string& filename, int targetWidth = -1, int targetHeight = -1) = 0;
+    virtual Image screenshot(const std::string& filename, int targetWidth = -1, int targetHeight = -1) = 0;
 
     virtual int addModel(std::string name, ModelType type) = 0;
     virtual void removeModel(int idx) = 0;
@@ -40,9 +59,9 @@ struct IApp {
     virtual void addColormap(const std::string name, const std::string filename) = 0;
     virtual void removeColormap(const std::string name) = 0;
 
-    virtual void snapshot() = 0;
+    virtual Snapshot snapshot() = 0;
     virtual void loadSnapshot() = 0;
-    virtual std::vector<std::vector<std::string>> listSnapshots() = 0;
+    virtual std::vector<Snapshot> listSnapshots() = 0;
     virtual void saveState(const std::string filename) = 0;
     virtual void loadState(const std::string filename) = 0;
 

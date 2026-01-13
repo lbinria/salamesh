@@ -6,7 +6,7 @@ struct UBOMatrices {
 	alignas(16) glm::vec2 viewport;
 };
 
-void App::screenshot(const std::string& filename, int targetWidth, int targetHeight) {
+Image App::screenshot(const std::string& filename, int targetWidth, int targetHeight) {
 	int width, height;
 	glfwGetWindowSize(window, &width, &height);
 
@@ -32,7 +32,15 @@ void App::screenshot(const std::string& filename, int targetWidth, int targetHei
 	// Save to PNG file
 	if (targetWidth == -1 && targetHeight == -1) {
 		stbi_write_png(filename.c_str(), width, height, 4, flipped_pixels.data(), 0);
-		return;
+		unsigned int texId;
+		int w, h, c;
+		sl::load_texture_2d(filename.c_str(), texId, w, h, c);
+		return {
+			.texId = texId,
+			.width = w,
+			.height = h,
+			.channels = c
+		};
 	}
 
 	// Calculate target dimensions
@@ -61,6 +69,16 @@ void App::screenshot(const std::string& filename, int targetWidth, int targetHei
 
 	// Save resized image
 	stbi_write_png(filename.c_str(), resizedWidth, resizedHeight, 4, resizedPixels.data(), 0);
+
+	unsigned int texId;
+	int w, h, c;
+	sl::load_texture_2d(filename.c_str(), texId, w, h, c);
+	return {
+		.texId = texId,
+		.width = w,
+		.height = h,
+		.channels = c
+	};
 }
 
 void App::quit() {
@@ -899,7 +917,7 @@ float App::computeSceneDiameter() {
 	return glm::length(max - min);
 }
 
-void App::snapshot() {
+Snapshot App::snapshot() {
 	// Create dir snapshots
 	try {
 		if (!std::filesystem::exists("snapshots"))
@@ -913,7 +931,13 @@ void App::snapshot() {
 	auto stateFilename = std::filesystem::path("snapshots") / ("state_" + unixTimestamp + ".json");
 	auto screenshotFilename = std::filesystem::path("snapshots") / ("state_" + unixTimestamp + ".jpg");
 	saveState(stateFilename.string());
-	screenshot(screenshotFilename.string(), 256);
+	Image thumb = screenshot(screenshotFilename.string(), 256);
+
+	return Snapshot{
+		.stateFilename = stateFilename,
+		.thumbFilename = screenshotFilename,
+		.image = thumb
+	};
 }
 
 void App::loadSnapshot() {
@@ -947,17 +971,31 @@ void App::loadSnapshot() {
 	loadState(filename);
 }
 
-std::vector<std::vector<std::string>> App::listSnapshots() {
-	auto stateFiles = sl::listDirectory("snapshots", ".json");
-	auto jpgFiles = sl::listDirectory("snapshots", ".jpg");
+std::vector<Snapshot> App::listSnapshots() {
+	auto stateFilenames = sl::listDirectory("snapshots", ".json");
+	auto thumbFilenames = sl::listDirectory("snapshots", ".jpg");
 
-	std::sort(stateFiles.begin(), stateFiles.end(), std::greater<std::string>());
-	std::sort(jpgFiles.begin(), jpgFiles.end(), std::greater<std::string>());
-	int size = std::min(stateFiles.size(), jpgFiles.size());
+	std::sort(stateFilenames.begin(), stateFilenames.end(), std::greater<std::string>());
+	std::sort(thumbFilenames.begin(), thumbFilenames.end(), std::greater<std::string>());
+	int size = std::min(stateFilenames.size(), thumbFilenames.size());
 	
-	std::vector<std::vector<std::string>> snapshots;
+	std::vector<Snapshot> snapshots;
 	for (int i = 0; i < size; ++i) {
-		snapshots.push_back({stateFiles[i], jpgFiles[i]});
+
+		unsigned int tex;
+		int w, h, c;
+		sl::load_texture_2d(thumbFilenames[i], tex, w, h, c);
+		
+		snapshots.push_back({
+			.stateFilename = stateFilenames[i],
+			.thumbFilename = thumbFilenames[i],
+			.image = {
+				.texId = tex,
+				.width = w,
+				.height = h,
+				.channels = c
+			}
+		});
 	}
 
 	return snapshots;

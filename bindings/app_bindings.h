@@ -10,6 +10,23 @@ namespace bindings {
 
 		static sol::usertype<IApp> loadBindings(sol::state &lua, IApp &app) {
 
+			// Image type binding
+			sol::usertype<Image> image_t = lua.new_usertype<Image>("Image", 
+				sol::constructors<Image()>(),
+				"tex_id", sol::readonly_property(&Image::getTexId),
+				"width", sol::readonly_property(&Image::getWidth),
+				"height", sol::readonly_property(&Image::getHeight),
+				"channels", sol::readonly_property(&Image::getChannels)
+			);
+
+			// Snapshot type binding
+			sol::usertype<Snapshot> snapshot_t = lua.new_usertype<Snapshot>("Snapshot", 
+				sol::constructors<Snapshot()>(),
+				"state_filename", sol::readonly_property(&Snapshot::getStateFilename),
+				"thumb_filename", sol::readonly_property(&Snapshot::getThumbfilename),
+				"image", sol::readonly_property(&Snapshot::getImage)
+			);
+
 			// Input state binding
 			sol::usertype<InputState::PrimitiveState> primitive_state_t = lua.new_usertype<InputState::PrimitiveState>("PrimitiveState", 
 				sol::constructors<InputState::PrimitiveState()>(),
