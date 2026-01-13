@@ -35,7 +35,7 @@ Image App::screenshot(const std::string& filename, int targetWidth, int targetHe
 		unsigned int texId;
 		int w, h, c;
 		sl::load_texture_2d(filename.c_str(), texId, w, h, c);
-		return {
+		return Image{
 			.texId = texId,
 			.width = w,
 			.height = h,
@@ -73,7 +73,7 @@ Image App::screenshot(const std::string& filename, int targetWidth, int targetHe
 	unsigned int texId;
 	int w, h, c;
 	sl::load_texture_2d(filename.c_str(), texId, w, h, c);
-	return {
+	return Image{
 		.texId = texId,
 		.width = w,
 		.height = h,
@@ -986,7 +986,7 @@ std::vector<Snapshot> App::listSnapshots() {
 		int w, h, c;
 		sl::load_texture_2d(thumbFilenames[i], tex, w, h, c);
 		
-		snapshots.push_back({
+		snapshots.push_back(Snapshot{
 			.stateFilename = stateFilenames[i],
 			.thumbFilename = thumbFilenames[i],
 			.image = {

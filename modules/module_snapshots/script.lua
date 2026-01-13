@@ -1,9 +1,8 @@
 local snapshots = {}
 
 function init()
-	print("list snapshots")
+	-- Get snapshots
 	snapshots = app:list_snapshots()
-	print('ok')
 end
 
 function draw_gui() 
@@ -21,7 +20,7 @@ function draw_gui()
 end
 
 function key_event(key, scancode, action, mods)
-	print("key:" .. tostring(key) .. ", scancode: " .. tostring(scancode) .. ", action:" .. action .. ", mod: " .. tostring(mods))
+	-- print("key:" .. tostring(key) .. ", scancode: " .. tostring(scancode) .. ", action:" .. action .. ", mod: " .. tostring(mods))
 	-- On Ctrl+S save state
 	if key == 83 and mods == 2 and action == 1 then 
 		local snap = app:snapshot()
