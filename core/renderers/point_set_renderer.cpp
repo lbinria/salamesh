@@ -50,7 +50,6 @@ void PointSetRenderer::push() {
 			.vertexIndex = i,
 			.position = glm::vec3(v.x, v.y, v.z),
 			.size = 1.f
-			// .normal = normals[i]
 		};
 	}
 

@@ -933,11 +933,11 @@ Snapshot App::snapshot() {
 	saveState(stateFilename.string());
 	Image thumb = screenshot(screenshotFilename.string(), 256);
 
-	return Snapshot{
-		.stateFilename = stateFilename,
-		.thumbFilename = screenshotFilename,
-		.image = thumb
-	};
+	Snapshot s;
+	s.stateFilename = stateFilename.string();
+	s.thumbFilename = screenshotFilename.string();
+	s.image = thumb;
+	return s;
 }
 
 void App::loadSnapshot() {

@@ -20,7 +20,6 @@ struct PointSetRenderer : public IRenderer {
 		int vertexIndex;
 		glm::vec3 position;
 		float size;
-		// glm::vec3 normal;
 	};
 
 	PointSetRenderer(PointSet &ps) : 
@@ -90,8 +89,6 @@ struct PointSetRenderer : public IRenderer {
     private:
     
 	bool autoUpdate = false;
-
-    std::vector<glm::vec3> normals;
 
     float pointSize;
     glm::vec3 color;
