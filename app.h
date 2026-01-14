@@ -265,7 +265,7 @@ struct App : public IApp {
 
     void notifySelectedModelChange(int idx) {
         for (auto &c : components) {
-            c->onSelectedModelChange(idx);
+            c->selectedModelChanged(idx);
         }
     }
 

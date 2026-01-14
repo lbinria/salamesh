@@ -26,10 +26,9 @@ struct Component {
     virtual void key_event(int key, int scancode, int action, int mods) = 0;
 
     // App events
-    // TODO rename to onNavigationPathChange
     virtual void navigationPathChanged(const std::vector<std::string> &oldNavPath, const std::vector<std::string> &newNavPath) {};
-    // TODO rename to onModelLoad
+    
     virtual void modelLoaded(const std::string &path) {};
-    virtual void onSelectedModelChange(int idx) {};
+    virtual void selectedModelChanged(int idx) {};
     
 };

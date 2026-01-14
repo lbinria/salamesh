@@ -31,16 +31,22 @@ struct LuaScript final : public Component {
 		}
 
 		// Get the functions
+
+		// Lifecycle
 		init_func = lua.get<sol::protected_function>("init");
 		draw_gui_func = lua.get<sol::protected_function>("draw_gui");
 		update_func = lua.get<sol::protected_function>("update");
 		cleanup_func = lua.get<sol::protected_function>("cleanup");
 
+		// Input events
 		mouse_move_func = lua.get<sol::protected_function>("mouse_move");
 		mouse_button_func = lua.get<sol::protected_function>("mouse_button");
 		mouse_scroll_func = lua.get<sol::protected_function>("mouse_scroll");
 		key_event_func = lua.get<sol::protected_function>("key_event");
-		modelLoaded_func = lua.get<sol::protected_function>("modelLoaded");
+
+		navigationPathChanged_func = lua.get<sol::protected_function>("navigation_path_changed");
+		modelLoaded_func = lua.get<sol::protected_function>("model_loaded");
+		selectedModelChanged_func = lua.get<sol::protected_function>("selected_model_changed");
 
 		// Check whether functions exists
 		has_init = init_func.valid();
@@ -52,7 +58,9 @@ struct LuaScript final : public Component {
 		has_mouse_move = mouse_move_func.valid();
 		has_mouse_scroll = mouse_scroll_func.valid();
 		has_key_event = key_event_func.valid();
+		has_navigationPathChanged = navigationPathChanged_func.valid();
 		has_modelLoaded = modelLoaded_func.valid();
+		has_selectedModelChanged = selectedModelChanged_func.valid();
 	}
 
 
@@ -142,9 +150,19 @@ struct LuaScript final : public Component {
 
 	// App events
 
+	void navigationPathChanged(const std::vector<std::string> &oldNavPath, const std::vector<std::string> &newNavPath) override {
+		if (has_navigationPathChanged)
+			navigationPathChanged(oldNavPath, newNavPath);
+	}
+
 	void modelLoaded(const std::string &path) override {
 		if (has_modelLoaded)
 			modelLoaded_func(path);
+	}
+
+	void selectedModelChanged(int idx) override {
+		if (has_selectedModelChanged)
+			selectedModelChanged(idx);
 	}
 
 
@@ -167,7 +185,9 @@ struct LuaScript final : public Component {
 	sol::protected_function mouse_button_func;
 	sol::protected_function mouse_scroll_func;
 	sol::protected_function key_event_func;
+	sol::protected_function navigationPathChanged_func;
 	sol::protected_function modelLoaded_func;
+	sol::protected_function selectedModelChanged_func;
 
 
 	bool 
@@ -179,6 +199,8 @@ struct LuaScript final : public Component {
 		has_draw_gui, 
 		has_update, 
 		has_cleanup, 
-		has_modelLoaded;
+		has_navigationPathChanged,
+		has_modelLoaded,
+		has_selectedModelChanged;
 
 };

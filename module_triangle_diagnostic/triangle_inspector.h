@@ -82,7 +82,7 @@ struct TriangleInspector : public Component {
 
 	void modelLoaded(const std::string &path) override {}
 
-	void onSelectedModelChange(int idx) override {
+	void selectedModelChanged(int idx) override {
 		// Save gfx state for restoring ?
 		if (isNavHere())
 			setupModel();
