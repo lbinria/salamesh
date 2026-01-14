@@ -89,15 +89,29 @@ void MyApp::init() {
 			continue;
 		}
 
+		std::unique_ptr<LuaScript> script;
+		// Check for lua script
+		fs::path script_path = fs::path(m) / "script.lua";
+		if (fs::exists(script_path) && fs::is_regular_file(script_path)) {
+			std::cout << "load module: " << m << std::endl;
+			script = std::make_unique<LuaScript>(*this, script_path);
+		}
+
 		// Check for .so files
-        for (const auto& entry : fs::directory_iterator(m)) {
-            if (entry.is_regular_file() && (entry.path().extension() == ".so" || entry.path().extension() == ".dll")) {
-                std::cout << "Found .so file: " << entry.path().filename().string() << std::endl;
+		for (const auto& entry : fs::directory_iterator(m)) {
+			if (entry.is_regular_file() && (entry.path().extension() == ".so" || entry.path().extension() == ".dll")) {
+				std::cout << "load module: " << entry.path().filename().string() << std::endl;
 				// Load the shared library
 				ModuleLoader loader;
-				auto component = loader.load(entry.path().string(), *this);
+				// auto component = loader.load(entry.path().string(), *this);
+				std::unique_ptr<Component> component;
+
+				if (script) {
+					component = loader.load(entry.path().string(), *this, script->getState());
+				} else 
+					component = loader.load(entry.path().string(), *this);
+
 				if (component) {
-					// TODO see if init, I THINK IT  MUST BE INIT init is app init, but check module (collapse, painting before change)
 					// component->init();
 					components.push_back(std::move(component));
 				} else {
@@ -106,15 +120,14 @@ void MyApp::init() {
             }
         }
 
-		// Check for lua script
-		fs::path script_path = fs::path(m) / "script.lua";
-		if (fs::exists(script_path) && fs::is_regular_file(script_path)) {
-			std::cout << "load module: " << m << std::endl;
-			std::string script_path = m + "/script.lua";
-			auto script = std::make_unique<LuaScript>(*this, script_path);
-			script->init();
+		if (script)
 			components.push_back(std::move(script));
+
+		for (auto &component : components) {
+			component->init();
 		}
+
+
 	}
 
 	// ----- TEST -----

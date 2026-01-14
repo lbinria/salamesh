@@ -2,7 +2,8 @@
 	"modules": [
 		"modules/module_scene",
 		"modules/module_inspector",
-		"modules/module_snapshots"
+		"modules/module_snapshots",
+		"/home/tex/Projects/salamesh_plugin_partial/build"
 	],
 	"scene": {
 		"background_color": "#ffffff"

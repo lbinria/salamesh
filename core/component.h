@@ -13,17 +13,16 @@ struct Component {
     }
 
     // Lifecycle
-    virtual void init() = 0;
-    // virtual void setup() = 0;
-	virtual void cleanup() = 0;
-    virtual bool draw_gui(ImGuiContext* ctx) = 0;
-    virtual void update(float dt) = 0;
+    virtual void init() {};
+	virtual void cleanup() {};
+    virtual bool draw_gui(ImGuiContext* ctx) { return true; };
+    virtual void update(float dt) {};
 
     // Input events
-	virtual void mouse_move(double x, double y) = 0;
-	virtual void mouse_button(int button, int action, int mods) = 0;
-    virtual void mouse_scroll(double xoffset, double yoffset) = 0;
-    virtual void key_event(int key, int scancode, int action, int mods) = 0;
+	virtual void mouse_move(double x, double y) {};
+	virtual void mouse_button(int button, int action, int mods) {};
+    virtual void mouse_scroll(double xoffset, double yoffset) {};
+    virtual void key_event(int key, int scancode, int action, int mods) {};
 
     // App events
     virtual void navigationPathChanged(const std::vector<std::string> &oldNavPath, const std::vector<std::string> &newNavPath) {};

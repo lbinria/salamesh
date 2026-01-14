@@ -165,6 +165,7 @@ struct LuaScript final : public Component {
 			selectedModelChanged(idx);
 	}
 
+	sol::state& getState() { return lua; }
 
 	enum Status {
 		SCRIPT_STATUS_OK,
