@@ -12,6 +12,8 @@
 
 #include "core/app_interface.h"
 #include "helpers/args_manager.h"
+#include "helpers/settings_manager.h"
+#include "helpers/module_loader.h"
 
 #include "imgui.h"
 #include "imgui_internal.h"
@@ -88,7 +90,7 @@ struct App : public IApp {
     std::vector<Colormap> colormaps;
 
 
-
+    // TO protected
     void processInput(GLFWwindow *window);
 
     void setup();
@@ -127,8 +129,6 @@ struct App : public IApp {
     std::vector<Snapshot> listSnapshots() override;
     void saveState(const std::string filename) override;
     void loadState(const std::string filename) override;
-    // TODO move to IApp
-
 
 	void loadState(json &j, const std::string path);
 
@@ -304,33 +304,35 @@ struct App : public IApp {
     }
 
 
-    protected:
-    Args args;
+	protected:
+	Args args;
 
-    GLFWwindow* window;
-    glm::vec3 backgroundColor{0.05, 0.1, 0.15};
-    
-    std::vector<std::shared_ptr<Camera>> cameras;
-    std::vector<std::shared_ptr<Model>> models;
-    std::vector<std::unique_ptr<RenderSurface>> renderSurfaces;
-    
-    int selectedCamera = 0;
-    int selectedModel = 0;
+	GLFWwindow* window;
+	glm::vec3 backgroundColor{0.05, 0.1, 0.15};
 
-    std::vector<std::unique_ptr<Component>> components;
+	std::vector<std::shared_ptr<Camera>> cameras;
+	std::vector<std::shared_ptr<Model>> models;
+	std::vector<std::unique_ptr<RenderSurface>> renderSurfaces;
+
+	int selectedCamera = 0;
+	int selectedModel = 0;
+
+	std::vector<std::unique_ptr<Component>> components;
 	InputState st;
 
-    bool renderSurfaceWindowHovered = false;
+	bool renderSurfaceWindowHovered = false;
 
-    unsigned int eyeIcon = 0;
-    unsigned int bugAntIcon = 0;
+	unsigned int eyeIcon = 0;
+	unsigned int bugAntIcon = 0;
 
-    int cull_mode = GL_BACK;
-    bool cull = true;
+	int cull_mode = GL_BACK;
+	bool cull = true;
 
-    private:
+	void loadModules(Settings &settings);
 
-    // Current navigation path of the app
-    std::vector<std::string> navPath;
+	private:
+
+	// Current navigation path of the app
+	std::vector<std::string> navPath;
 
 };

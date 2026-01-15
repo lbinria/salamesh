@@ -1134,3 +1134,53 @@ void App::processInput(GLFWwindow *window) {
 		}
 	}
 }
+
+void App::loadModules(Settings &settings) {
+	for (auto m : settings.modules) {
+
+		if (!fs::exists(m)) {
+			std::cerr << "Module path does not exist: " << m << std::endl;
+			continue;
+		}
+
+		std::unique_ptr<LuaScript> script;
+		// Check for lua script
+		fs::path script_path = fs::path(m) / "script.lua";
+		if (fs::exists(script_path) && fs::is_regular_file(script_path)) {
+			std::cout << "load module: " << m << std::endl;
+			script = std::make_unique<LuaScript>(*this, script_path.string());
+		}
+
+		// Check for .so files
+		for (const auto& entry : fs::directory_iterator(m)) {
+			if (entry.is_regular_file() && (entry.path().extension() == ".so" || entry.path().extension() == ".dll")) {
+				std::cout << "load module: " << entry.path().filename().string() << std::endl;
+				// Load the shared library
+				ModuleLoader loader;
+				// auto component = loader.load(entry.path().string(), *this);
+				std::unique_ptr<Component> component;
+
+				if (script) {
+					component = loader.load(entry.path().string(), *this, script->getState());
+				} else 
+					component = loader.load(entry.path().string(), *this);
+
+				if (component) {
+					// component->init();
+					components.push_back(std::move(component));
+				} else {
+					std::cout << "Failed to load component from: " << entry.path().string() << std::endl;
+				}
+			}
+		}
+
+		if (script)
+			components.push_back(std::move(script));
+
+		for (auto &component : components) {
+			component->init();
+		}
+
+
+	}
+}

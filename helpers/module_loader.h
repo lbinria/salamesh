@@ -14,6 +14,9 @@
 #include "../core/app_interface.h"
 #include "../core/component.h"
 
+#define SOL_ALL_SAFETIES_ON 1
+#include <sol/sol.hpp>
+
 // TODO should I get deleter function to clean up ? and create a unload function ?
 
 struct ModuleLoader {
@@ -134,7 +137,7 @@ struct ModuleLoader {
 
 		std::cout << "opened." << std::endl;
 
-		Component* (*allocator)(IApp&, sol::state &lua);
+		Component* (*allocator)(IApp&, sol::state &);
 		allocator = (Component*(*)(IApp&, sol::state&))dlsym(handle, "allocator");
 		
 		if (!allocator) {
