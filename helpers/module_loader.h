@@ -22,7 +22,7 @@
 struct ModuleLoader {
 	
 	#ifdef WIN32
-	std::unique_ptr<Component> load(const std::string& path, IApp& app) {
+	std::unique_ptr<Script> load(const std::string& path, IApp& app) {
 		// Load the DLL
 		HMODULE handle = LoadLibrary(path.c_str());
 		
@@ -34,7 +34,7 @@ struct ModuleLoader {
 		std::cout << "Library opened." << std::endl;
 
 		// Define function pointer type
-		using AllocatorFunc = Component* (*)(IApp&);
+		using AllocatorFunc = Script* (*)(IApp&);
 		AllocatorFunc allocator = (AllocatorFunc)GetProcAddress(handle, "allocator");
 
 		if (!allocator) {
@@ -46,17 +46,17 @@ struct ModuleLoader {
 		std::cout << "Allocator function created." << std::endl;
 
 		// Allocate the component
-		Component* component = allocator(app);
+		Script* component = allocator(app);
 
-		std::cout << "Component allocated." << std::endl;
+		std::cout << "Script allocated." << std::endl;
 
 		// Optionally: free the library after usage or manage it with unique_ptr
 		// FreeLibrary(handle);  // Uncomment if you want to manage the library lifecycle
 
-		return std::unique_ptr<Component>(component);
+		return std::unique_ptr<Script>(component);
 	}
 
-	std::unique_ptr<Component> load(const std::string& path, IApp& app, sol::state &lua) {
+	std::unique_ptr<Script> load(const std::string& path, IApp& app, sol::state &lua) {
 		// Load the DLL
 		HMODULE handle = LoadLibrary(path.c_str());
 		
@@ -68,7 +68,7 @@ struct ModuleLoader {
 		std::cout << "Library opened." << std::endl;
 
 		// Define function pointer type
-		using AllocatorFunc = Component* (*)(IApp&, sol::state&);
+		using AllocatorFunc = Script* (*)(IApp&, sol::state&);
 		AllocatorFunc allocator = (AllocatorFunc)GetProcAddress(handle, "allocator");
 
 		if (!allocator) {
@@ -80,19 +80,19 @@ struct ModuleLoader {
 		std::cout << "Allocator function created." << std::endl;
 
 		// Allocate the component
-		Component* component = allocator(app, lua);
+		Script* component = allocator(app, lua);
 
-		std::cout << "Component allocated." << std::endl;
+		std::cout << "Script allocated." << std::endl;
 
 		// Optionally: free the library after usage or manage it with unique_ptr
 		// FreeLibrary(handle);  // Uncomment if you want to manage the library lifecycle
 
-		return std::unique_ptr<Component>(component);
+		return std::unique_ptr<Script>(component);
 	}
 
 	#else
 	
-	std::unique_ptr<Component> load(const std::string path, IApp &app) {
+	std::unique_ptr<Script> load(const std::string path, IApp &app) {
 
 		void *handle = dlopen(path.c_str(), RTLD_NOW);
 
@@ -105,8 +105,8 @@ struct ModuleLoader {
 
 		std::cout << "opened." << std::endl;
 
-		Component* (*allocator)(IApp&);
-		allocator = (Component*(*)(IApp&))dlsym(handle, "allocator");
+		Script* (*allocator)(IApp&);
+		allocator = (Script*(*)(IApp&))dlsym(handle, "allocator");
 		
 		if (!allocator) {
 			std::cout << "fail to allocator func." << std::endl;
@@ -115,16 +115,16 @@ struct ModuleLoader {
 		
 		std::cout << "func allocator created." << std::endl;
 
-		Component* component = (Component*)allocator(app);
+		Script* component = (Script*)allocator(app);
 
 		std::cout << "allocated." << std::endl;
 
 		// dlclose(handle);
 
-		return std::unique_ptr<Component>(component);
+		return std::unique_ptr<Script>(component);
 	}
 
-	std::unique_ptr<Component> load(const std::string path, IApp &app, sol::state &lua) {
+	std::unique_ptr<Script> load(const std::string path, IApp &app, sol::state &lua) {
 
 		void *handle = dlopen(path.c_str(), RTLD_NOW);
 
@@ -137,8 +137,8 @@ struct ModuleLoader {
 
 		std::cout << "opened." << std::endl;
 
-		Component* (*allocator)(IApp&, sol::state &);
-		allocator = (Component*(*)(IApp&, sol::state&))dlsym(handle, "allocator");
+		Script* (*allocator)(IApp&, sol::state &);
+		allocator = (Script*(*)(IApp&, sol::state&))dlsym(handle, "allocator");
 		
 		if (!allocator) {
 			std::cout << "fail to allocator func." << std::endl;
@@ -147,13 +147,13 @@ struct ModuleLoader {
 		
 		std::cout << "func allocator created." << std::endl;
 
-		Component* component = (Component*)allocator(app, lua);
+		Script* component = (Script*)allocator(app, lua);
 
 		std::cout << "allocated." << std::endl;
 
 		// dlclose(handle);
 
-		return std::unique_ptr<Component>(component);
+		return std::unique_ptr<Script>(component);
 	}
 
 	#endif

@@ -2,32 +2,36 @@
 
 #include "imgui.h"
 
-struct Component {
+struct Script {
 
-    const std::string id() const {
-        static thread_local unsigned long long counter = 0;
-        static auto now = std::chrono::high_resolution_clock::now().time_since_epoch().count();
-        std::stringstream ss;
-        ss << "component-" << now << "-" << counter++;
-        return ss.str();
-    }
+	Script(IApp &app) : app(app) {}
 
-    // Lifecycle
-    virtual void init() {};
+	const std::string id() const {
+		static thread_local unsigned long long counter = 0;
+		static auto now = std::chrono::high_resolution_clock::now().time_since_epoch().count();
+		std::stringstream ss;
+		ss << "component-" << now << "-" << counter++;
+		return ss.str();
+	}
+
+	// Lifecycle
+	virtual void init() {};
 	virtual void cleanup() {};
-    virtual bool draw_gui(ImGuiContext* ctx) { return true; };
-    virtual void update(float dt) {};
+	virtual bool draw_gui(ImGuiContext* ctx) { return true; };
+	virtual void update(float dt) {};
 
-    // Input events
+	// Input events
 	virtual void mouse_move(double x, double y) {};
 	virtual void mouse_button(int button, int action, int mods) {};
-    virtual void mouse_scroll(double xoffset, double yoffset) {};
-    virtual void key_event(int key, int scancode, int action, int mods) {};
+	virtual void mouse_scroll(double xoffset, double yoffset) {};
+	virtual void key_event(int key, int scancode, int action, int mods) {};
 
-    // App events
-    virtual void navigationPathChanged(const std::vector<std::string> &oldNavPath, const std::vector<std::string> &newNavPath) {};
-    
-    virtual void modelLoaded(const std::string &path) {};
-    virtual void selectedModelChanged(int idx) {};
-    
+	// App events
+	virtual void navigationPathChanged(const std::vector<std::string> &oldNavPath, const std::vector<std::string> &newNavPath) {};
+	
+	virtual void modelLoaded(const std::string &path) {};
+	virtual void selectedModelChanged(int idx) {};
+
+	protected:
+	IApp &app;
 };

@@ -12,9 +12,9 @@
 using json = nlohmann::json;
 
 
-struct TriangleDiagnosticLayout : public Component {
+struct TriangleDiagnosticLayout : public Script {
 
-	TriangleDiagnosticLayout(IApp &app) : app(app) {}
+	TriangleDiagnosticLayout(IApp &app) : Script(app) {}
 
 
 	// Lifecycle
@@ -56,9 +56,5 @@ struct TriangleDiagnosticLayout : public Component {
 	void navigationPathChanged(const std::vector<std::string> &oldNavPath, const std::vector<std::string> &newNavPath) override {
 
 	}
-
-
-	private:
-	IApp &app;
 
 };

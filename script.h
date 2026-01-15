@@ -15,9 +15,9 @@
 #include "bindings/camera_bindings.h"
 #include "bindings/model_bindings.h"
 
-struct LuaScript final : public Component {
+struct LuaScript final : public Script {
 
-	LuaScript(IApp &app, const std::string& script) {
+	LuaScript(IApp &app, const std::string& script) : Script(app) {
 
 		loadBindings(app);
 

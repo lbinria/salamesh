@@ -12,9 +12,9 @@
 using json = nlohmann::json;
 
 
-struct ViewComponent : public Component {
+struct ViewComponent : public Script {
 
-	ViewComponent(IApp &app) : app(app) {}
+	ViewComponent(IApp &app) : Script(app) {}
 
 
 	// Lifecycle
@@ -81,7 +81,6 @@ struct ViewComponent : public Component {
 
 
 	private:
-	IApp &app;
 	std::map<std::pair<std::string, std::string>, json> rendererStates;
 
 };

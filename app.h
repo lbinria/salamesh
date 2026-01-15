@@ -317,7 +317,7 @@ struct App : public IApp {
 	int selectedCamera = 0;
 	int selectedModel = 0;
 
-	std::vector<std::unique_ptr<Component>> components;
+	std::vector<std::unique_ptr<Script>> components;
 	InputState st;
 
 	bool renderSurfaceWindowHovered = false;
@@ -329,10 +329,16 @@ struct App : public IApp {
 	bool cull = true;
 
 	void loadModules(Settings &settings);
+	void loadModule(fs::path modulePath);
+	std::unique_ptr<LuaScript> loadScript(fs::path scriptPath);
+	void loadCppScript(fs::path scriptPath, sol::state& state);
+	void loadCppScript(fs::path scriptPath);
 
 	private:
 
 	// Current navigation path of the app
 	std::vector<std::string> navPath;
+
+
 
 };

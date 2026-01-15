@@ -9,9 +9,9 @@
 #include <iomanip>
 #include <optional>
 
-struct TriangleInspector : public Component {
+struct TriangleInspector : public Script {
 
-	TriangleInspector(IApp &app) : app(app) {}	
+	TriangleInspector(IApp &app) : Script(app) {}	
 
 	// Lifecycle
 	void init() {
@@ -465,7 +465,6 @@ struct TriangleInspector : public Component {
     // App events
 
 	private:
-	IApp &app;
 
 	bool isModelSetup = false;
 	double eps = 0.001;

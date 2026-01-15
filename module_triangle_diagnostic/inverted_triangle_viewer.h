@@ -16,9 +16,9 @@ using json = nlohmann::json;
 #include "imgui.h"
 #include "imgui_internal.h"
 
-struct InvertedTriangleViewer : public Component {
+struct InvertedTriangleViewer : public Script {
 
-	InvertedTriangleViewer(IApp &app) : app(app) {}
+	InvertedTriangleViewer(IApp &app) : Script(app) {}
 
 
 	// Lifecycle
@@ -157,7 +157,6 @@ struct InvertedTriangleViewer : public Component {
 
 	private:
 
-	IApp &app;
 	int nInverted = 0;
 
 };
