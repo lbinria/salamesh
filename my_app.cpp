@@ -51,7 +51,7 @@ void MyApp::init() {
 			std::cout << "load script: " << p.string() << std::endl;
 			auto script = std::make_unique<LuaScript>(*this, p.string());
 			script->init();
-			components.push_back(std::move(script));
+			scripts.push_back(std::move(script));
 		}
 		else if (p.extension() == ".json") {
 			// Check internal format of json file (state file, settings...)
@@ -83,7 +83,7 @@ void MyApp::init() {
 	loadModules(settings);
 	
 	// ----- TEST -----
-	// TODO remove just for testing manually add components
+	// TODO remove just for testing manually add scripts
 	auto layoutComp = std::make_unique<TriangleDiagnosticLayout>(*this);
 	auto viewComp = std::make_unique<ViewComponent>(*this);
 	auto triDiagnosticComp = std::make_unique<TriangleInspector>(*this);
@@ -93,10 +93,10 @@ void MyApp::init() {
 	viewComp->init();
 	triDiagnosticComp->init();
 	// invertedTriangleViewerComp->init();
-	components.push_back(std::move(layoutComp));
-	components.push_back(std::move(viewComp));
-	components.push_back(std::move(triDiagnosticComp));
-	// components.push_back(std::move(invertedTriangleViewerComp));
+	scripts.push_back(std::move(layoutComp));
+	scripts.push_back(std::move(viewComp));
+	scripts.push_back(std::move(triDiagnosticComp));
+	// scripts.push_back(std::move(invertedTriangleViewerComp));
 }
 
 // Continuous update
@@ -105,7 +105,7 @@ void MyApp::update(float dt) {
 	if (!isUIHovered)
 		updateCamera(dt);
 
-	for (auto &component : components) {
+	for (auto &component : scripts) {
 		component->update(dt);
 	}
 
@@ -350,7 +350,7 @@ void MyApp::draw_gui() {
 
 
 
-	for (auto &script : components) {
+	for (auto &script : scripts) {
 		// if (script->status == LuaScript::SCRIPT_STATUS_OK) {
 			bool success = script->draw_gui(ImGui::GetCurrentContext());
 			if (!success) {
@@ -730,7 +730,7 @@ void MyApp::key_event(int key, int scancode, int action, int mods) {
 			getCamera().copy(refCam, getCurrentModel().bbox());
 	}
 
-	for (auto &script : components) {
+	for (auto &script : scripts) {
 		script->key_event(key, scancode, action, mods);
 	}
 
@@ -748,14 +748,14 @@ void MyApp::mouse_scroll(double xoffset, double yoffset) {
 	else 
 		st.mouse.setCursorRadius(st.mouse.getCursorRadius() + static_cast<int>(yoffset));
 
-	for (auto &script : components) {
+	for (auto &script : scripts) {
 		script->mouse_scroll(xoffset, yoffset);
 	}
 }
 
 void MyApp::mouse_button(int button, int action, int mods) {
 
-	for (auto &script : components)
+	for (auto &script : scripts)
 		script->mouse_button(button, action, mods);
 }
 
@@ -780,7 +780,7 @@ void MyApp::mouse_move(double x, double y) {
 			st.edge.setHovered({});
 	}
 
-	for (auto &script : components) {
+	for (auto &script : scripts) {
 		script->mouse_move(x, y);
 	}
 

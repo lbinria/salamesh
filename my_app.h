@@ -1,7 +1,7 @@
 #pragma once 
 
 #include "app.h"
-#include "script.h"
+#include "lua_script.h"
 #include "helpers/args_manager.h"
 
 // JSON !!

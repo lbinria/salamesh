@@ -47,7 +47,7 @@
 #include "core/camera.h"
 
 
-#include "script.h"
+#include "lua_script.h"
 #include "commands.h"
 
 using namespace UM;
@@ -258,13 +258,13 @@ struct App : public IApp {
     virtual void key_event(int key, int scancode, int action, int mods) = 0;
 
     void notifyNavigationPathChange(std::vector<std::string> &oldNavPath, std::vector<std::string>& newNavPath) {
-        for (auto &c : components) {
+        for (auto &c : scripts) {
             c->navigationPathChanged(oldNavPath, newNavPath);
         }
     }
 
     void notifySelectedModelChange(int idx) {
-        for (auto &c : components) {
+        for (auto &c : scripts) {
             c->selectedModelChanged(idx);
         }
     }
@@ -317,7 +317,7 @@ struct App : public IApp {
 	int selectedCamera = 0;
 	int selectedModel = 0;
 
-	std::vector<std::unique_ptr<Script>> components;
+	std::vector<std::unique_ptr<Script>> scripts;
 	InputState st;
 
 	bool renderSurfaceWindowHovered = false;

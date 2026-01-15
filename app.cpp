@@ -503,7 +503,7 @@ void App::clean() {
 		model->clean();
 	}
 
-	for (auto &c : components) {
+	for (auto &c : scripts) {
 		c->cleanup();
 	}
 
@@ -595,8 +595,8 @@ bool App::loadModel(const std::string& filename) {
 	// Update cameras far planes
 	computeFarPlane();
 
-	// Notify components
-	for (auto &c : components) {
+	// Notify scripts
+	for (auto &c : scripts) {
 		c->modelLoaded(filename);
 	}
 
@@ -627,7 +627,7 @@ int App::addModel(std::string name, ModelType type) {
 	// 
 	// model->loadCallback = ([this](Model&, const std::string) -> bool {
 	// 	this->computeFarPlane();
-	// 	this->component->modelLoaded(blabla)
+	// 	this->script->modelLoaded(blabla)
 	// });
 
 	models.push_back(std::move(model));
@@ -1152,10 +1152,10 @@ void App::loadCppScript(fs::path scriptPath, sol::state& state) {
 	// Load the shared library
 	ModuleLoader loader;
 	
-	auto component = loader.load(scriptPath.string(), *this, state);
+	auto script = loader.load(scriptPath.string(), *this, state);
 
-	if (component) {
-		components.push_back(std::move(component));
+	if (script) {
+		scripts.push_back(std::move(script));
 	} else {
 		std::cout << "Failed to load C++ script at: " << scriptPath.string() << std::endl;
 	}
@@ -1166,10 +1166,10 @@ void App::loadCppScript(fs::path scriptPath) {
 	// Load the shared library
 	ModuleLoader loader;
 	
-	auto component = loader.load(scriptPath.string(), *this);
+	auto script = loader.load(scriptPath.string(), *this);
 
-	if (component) {
-		components.push_back(std::move(component));
+	if (script) {
+		scripts.push_back(std::move(script));
 	} else {
 		std::cout << "Failed to load C++ script at: " << scriptPath.string() << std::endl;
 	}
@@ -1197,10 +1197,10 @@ void App::loadModule(fs::path m) {
 
 	// Add scripts
 	if (script)
-		components.push_back(std::move(script));
+		scripts.push_back(std::move(script));
 
-	for (auto &component : components) {
-		component->init();
+	for (auto &script : scripts) {
+		script->init();
 	}
 }
 
