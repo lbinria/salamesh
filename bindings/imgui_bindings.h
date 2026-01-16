@@ -164,10 +164,6 @@ namespace bindings {
 			});
 
 			// Tabs
-			// imgui.set_function("BeginTabBar", [](const char* str_id, const ImGuiTabBarFlags flags) {
-			// 	return ImGui::BeginTabBar(str_id, flags);
-			// });
-
 			imgui.set_function("BeginTabBar", sol::overload(
 				[](const char* str_id) {
 					return ImGui::BeginTabBar(str_id);
@@ -181,9 +177,6 @@ namespace bindings {
 			imgui.set_function("EndTabBar", []() {
 				ImGui::EndTabBar();
 			});
-			// imgui.set_function("BeginTabItem", [](const char* label, bool* p_open, const ImGuiTabItemFlags flags) {
-			// 	return ImGui::BeginTabItem(label, p_open, flags);
-			// });
 			
 			imgui.set_function("BeginTabItem", sol::overload(
 				[](const char* label) {
@@ -207,6 +200,28 @@ namespace bindings {
 				}
 			));
 
+			// Menu
+			imgui.set_function("BeginMainMenuBar", []() {
+				return ImGui::BeginMainMenuBar();
+			});
+
+			imgui.set_function("EndMainMenuBar", []() {
+				return ImGui::EndMainMenuBar();
+			});
+
+			imgui.set_function("BeginMenu", [](const char* label) {
+				return ImGui::BeginMenu(label);
+			});
+
+			imgui.set_function("EndMenu", []() {
+				return ImGui::EndMenu();
+			});
+
+			imgui.set_function("MenuItem", [](const char* label) {
+				return ImGui::MenuItem(label);
+			});
+
+			// Layouts
 			imgui.set_function("SameLine", []() {
 				ImGui::SameLine();
 			});
@@ -217,6 +232,13 @@ namespace bindings {
 
 			imgui.set_function("SmallButton", [](const char* label) {
 				return ImGui::SmallButton(label);
+			});
+
+			imgui.set_function("OpenDialog", [](const char* vKey, const char* vTitle, const char* vFilters) {
+				IGFD::FileDialogConfig config;
+				config.path = ".";
+				config.countSelectionMax = -1;
+				ImGuiFileDialog::Instance()->OpenDialog(vKey, vTitle, vFilters, config);
 			});
 
 			lua["imgui"] = imgui;

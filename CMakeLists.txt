@@ -33,8 +33,6 @@ IF(WIN32)
 
   # Include the lib directory
   include_directories(${LUA_INCLUDE_DIR})
-  # Link against the Lua library
-  # find_library(LUA_LIBRARIES lua5.4 HINTS ${LUA_LIB_DIR})
   # Directly link the Lua library
   set(LUA_LIBRARIES "${LUA_LIB_DIR}/lua54.lib") # Change this to the actual library filename
 
@@ -51,7 +49,7 @@ IF(WIN32)
 	)
 
 ELSE()
-	# FIND_PACKAGE(OpenGL REQUIRED)
+	# find_package(OpenGL REQUIRED)
   find_package(glfw3 REQUIRED)
   find_package(Lua REQUIRED)
   set(OPENGL_FILES include/glad.c)
@@ -69,7 +67,6 @@ include(FetchContent)
 FetchContent_Declare(
   ultimaille
   GIT_REPOSITORY https://github.com/ssloy/ultimaille
-  # GIT_TAG        c6647c0
   GIT_TAG        6d50ee5
 )
 FetchContent_MakeAvailable(ultimaille)
@@ -122,10 +119,6 @@ add_executable(salamesh
   app.cpp app.h
   my_app.cpp my_app.h
 
-
-
-  # helpers/module_loader.h
-  # helpers/settings_manager.h
   cameras/arcball_camera.h
   cameras/trackball_camera.h
   cameras/descent_camera.h

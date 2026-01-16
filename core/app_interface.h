@@ -44,6 +44,9 @@ struct IApp {
 
 	virtual void clearScene() = 0;
 
+	virtual void showOpenModelDialog() = 0;
+	virtual void showSaveModelDialog() = 0;
+
 	virtual void setCullMode(int mode) = 0;
 	virtual bool getCull() const = 0;
 	virtual void setCull(bool enabled) = 0;

@@ -64,6 +64,12 @@ namespace bindings {
 			lua["app"] = &app;
 			sol::usertype<IApp> app_type = lua.new_usertype<IApp>("IApp");
 
+			app_type.set_function("clear_scene", &IApp::clearScene);
+			app_type.set_function("quit", &IApp::quit);
+
+			app_type.set_function("show_open_model_dialog", &IApp::showOpenModelDialog);
+			app_type.set_function("show_save_model_dialog", &IApp::showSaveModelDialog);
+
 			app_type.set_function("load_state", &IApp::loadState);
 			app_type.set_function("save_state", &IApp::saveState);
 			app_type.set_function("snapshot", &IApp::snapshot);

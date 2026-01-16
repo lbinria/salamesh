@@ -254,49 +254,6 @@ void MyApp::TopModePanel(int &currentMode, const std::vector<std::pair<std::stri
 }
 
 void MyApp::draw_gui() {
-
-	if (ImGui::BeginMainMenuBar()) {
-		if (ImGui::BeginMenu("File")) {
-			if (ImGui::MenuItem("Open model")) {
-
-				// open Dialog Simple
-				IGFD::FileDialogConfig config;
-				config.path = ".";
-				config.countSelectionMax = -1;
-				// config.flags = ImGuiFileDialogFlags_Mul
-				ImGuiFileDialog::Instance()->OpenDialog("ChooseFileDlgKey", "Choose File", "All supported mesh files {.geogram, .mesh, .obj, .OBJ},.geogram,.mesh,.obj,.json,.GEOGRAM,.MESH,.OBJ,.JSON", config);
-			}
-
-			if (ImGui::MenuItem("Save model as")) {
-				// open Dialog Simple
-				IGFD::FileDialogConfig config;
-				config.path = ".";
-				config.flags = ImGuiFileDialogFlags_ConfirmOverwrite;
-				ImGuiFileDialog::Instance()->OpenDialog("SaveModelAs", "Save as", ".geogram,.mesh,.obj", config);
-			}
-
-			if (ImGui::MenuItem("Clear scene")) {
-				clearScene();
-			}
-
-			if (ImGui::MenuItem("Save state")) {
-				// saveState("state.json");
-				snapshot();
-			}
-
-			if (ImGui::MenuItem("Load state")) {
-				// loadState("state.json");
-				loadSnapshot();
-			}
-
-			if (ImGui::MenuItem("Quit")) {
-				quit();
-			}
-			ImGui::EndMenu();
-		}
-		ImGui::EndMainMenuBar();
-	}
-
 	
 	static int currentMode = -1;
 	TopModePanel(currentMode, {{"view", (ImTextureID)eyeIcon}, {"diagnostic", (ImTextureID)bugAntIcon}});
@@ -304,7 +261,7 @@ void MyApp::draw_gui() {
 
 
 	// display
-	if (ImGuiFileDialog::Instance()->Display("ChooseFileDlgKey")) {
+	if (ImGuiFileDialog::Instance()->Display("OpenModelDlg")) {
 		if (ImGuiFileDialog::Instance()->IsOk()) { // action if OK
 
 			std::string directoryPath = ImGuiFileDialog::Instance()->GetCurrentPath();
@@ -331,7 +288,7 @@ void MyApp::draw_gui() {
 	}
 
 	// display save dialog
-	if (ImGuiFileDialog::Instance()->Display("SaveModelAs")) {
+	if (ImGuiFileDialog::Instance()->Display("SaveModelAsDlg")) {
 		if (ImGuiFileDialog::Instance()->IsOk()) { // action if OK
 			std::string filename = ImGuiFileDialog::Instance()->GetFilePathName();
 			std::string directoryPath = ImGuiFileDialog::Instance()->GetCurrentPath();

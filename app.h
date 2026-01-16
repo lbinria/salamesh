@@ -123,6 +123,9 @@ struct App : public IApp {
 
 	void clearScene() override;
 
+    void showOpenModelDialog() override;
+    void showSaveModelDialog() override;
+
     // States functions
     Snapshot snapshot() override;
     void loadSnapshot() override;

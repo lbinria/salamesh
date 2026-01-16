@@ -1,5 +1,6 @@
 {
 	"modules": [
+		"modules/module_menubar",
 		"modules/module_scene",
 		"modules/module_inspector",
 		"modules/module_snapshots",

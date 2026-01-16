@@ -915,6 +915,26 @@ float App::computeSceneDiameter() {
 	return glm::length(max - min);
 }
 
+void App::showOpenModelDialog() {
+	IGFD::FileDialogConfig config;
+	config.path = ".";
+	config.countSelectionMax = -1;
+	// config.flags = ImGuiFileDialogFlags_Mul
+	ImGuiFileDialog::Instance()->OpenDialog(
+		"OpenModelDlg", 
+		"Choose File", 
+		"All supported mesh files {.geogram, .mesh, .obj, .OBJ},.geogram,.mesh,.obj,.json,.GEOGRAM,.MESH,.OBJ,.JSON", 
+		config
+	);
+}
+
+void App::showSaveModelDialog() {
+	IGFD::FileDialogConfig config;
+	config.path = ".";
+	config.flags = ImGuiFileDialogFlags_ConfirmOverwrite;
+	ImGuiFileDialog::Instance()->OpenDialog("SaveModelAsDlg", "Save as", ".geogram,.mesh,.obj", config);
+}
+
 Snapshot App::snapshot() {
 	// Create dir snapshots
 	try {
