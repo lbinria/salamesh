@@ -17,6 +17,7 @@ endif(WIN32)
 set(SOURCES
     app_interface.h
     component.h
+    lua_script.h
     attribute.h
     element.h
     input_states.h 

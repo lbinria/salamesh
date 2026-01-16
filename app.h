@@ -47,7 +47,7 @@
 #include "core/camera.h"
 
 
-#include "lua_script.h"
+#include "core/lua_script.h"
 #include "commands.h"
 
 using namespace UM;

@@ -121,7 +121,6 @@ add_executable(salamesh
   main.cpp 
   app.cpp app.h
   my_app.cpp my_app.h
-  lua_script.h
 
 
 

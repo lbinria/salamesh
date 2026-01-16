@@ -4,16 +4,16 @@
 #include <optional>
 #include <imgui.h>
 
-#include "core/app_interface.h"
-#include "core/component.h"
-#include "core/input_states.h"
+#include "app_interface.h"
+#include "component.h"
+#include "input_states.h"
 
-#include "bindings/fs_bindings.h"
-#include "bindings/imgui_bindings.h"
-#include "bindings/app_bindings.h"
-#include "bindings/glm_bindings.h"
-#include "bindings/camera_bindings.h"
-#include "bindings/model_bindings.h"
+#include "../bindings/fs_bindings.h"
+#include "../bindings/imgui_bindings.h"
+#include "../bindings/app_bindings.h"
+#include "../bindings/glm_bindings.h"
+#include "../bindings/camera_bindings.h"
+#include "../bindings/model_bindings.h"
 
 struct LuaScript final : public Script {
 
