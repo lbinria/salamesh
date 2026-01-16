@@ -1060,11 +1060,14 @@ void App::clearScene() {
 	for (auto &m : models)
 		m->clean();
 
+	// TODO maybe clean modules ?
+
 	models.clear();
 	cameras.clear();
 
 	selectedCamera = 0;
 	selectedModel = 0;
+	// TODO selected color map... elements etc... layers...
 }
 
 void App::loadState(json &j, const std::string path) {
@@ -1198,7 +1201,7 @@ void App::loadModule(fs::path m) {
 	// Transform relative path to absolute 
 	// according to exe location
 	if (m.is_relative()) {
-		m = fs::path(sl::exePath(m));
+		m = fs::path(sl::exePath(m.string()));
 	}
 
 	if (!fs::exists(m)) {
