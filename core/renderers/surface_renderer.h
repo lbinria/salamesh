@@ -30,7 +30,7 @@ struct SurfaceRenderer : public IRenderer {
 	};
 
 	SurfaceRenderer(Surface &m) : 
-		IRenderer(Shader("shaders/surface.vert", "shaders/surface.frag")),
+		IRenderer(Shader(sl::shadersPath("surface.vert"), sl::shadersPath("surface.frag"))),
 		_m(m)
 		{
 			shader.use();

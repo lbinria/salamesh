@@ -10,7 +10,7 @@
 using json = nlohmann::json;
 
 struct Args {
-	std::string settings_path = "settings.json";
+	std::string settings_path = sl::exePath("settings.json");
 	std::vector<std::string> models = {};
 	std::vector<std::string> scripts = {};
 	std::vector<std::filesystem::path> paths = {};

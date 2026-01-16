@@ -19,7 +19,7 @@ void MyApp::init() {
 
 	std::cout << "Init" << std::endl;
 
-	Shader screenShader("shaders/screen.vert", "shaders/screen.frag");
+	Shader screenShader(sl::shadersPath("screen.vert"), sl::shadersPath("screen.frag"));
 	screenShader.use();
 	screenShader.setInt("screenTexture", 0);
 

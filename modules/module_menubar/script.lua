@@ -1,6 +1,6 @@
 function draw_gui()
-	if imgui.BeginMainMenuBar() then 
-		if imgui.BeginMenu("File") then 
+	if imgui.BeginMainMenuBar() then
+		if imgui.BeginMenu("File") then
 
 			if imgui.MenuItem("Open model") then 
 				app:show_open_model_dialog()

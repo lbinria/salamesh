@@ -307,15 +307,15 @@ void App::setup() {
 	}
 
 	// Load default colormap textures
-	addColormap("CET-R41", "assets/CET-R41px.png");
-	addColormap("CET-L08", "assets/CET-L08px.png");
-	addColormap("alpha", "assets/colormap_alpha.png");
-	addColormap("cat", "/home/tex/Models/cat/Cat_diffuse.jpg");
+	addColormap("CET-R41", sl::assetsPath("CET-R41px.png"));
+	addColormap("CET-L08", sl::assetsPath("CET-L08px.png"));
+	addColormap("alpha", sl::assetsPath("colormap_alpha.png"));
+	// addColormap("cat", "/home/tex/Models/cat/Cat_diffuse.jpg");
 
 	// Load icons
 	int iconWidth, iconHeight, iconChannels;
-	sl::load_texture_2d("assets/icons/Eye.png", eyeIcon, iconWidth, iconHeight, iconChannels);
-	sl::load_texture_2d("assets/icons/BugAnt.png", bugAntIcon, iconWidth, iconHeight, iconChannels);
+	sl::load_texture_2d(sl::assetsPath("icons/Eye.png"), eyeIcon, iconWidth, iconHeight, iconChannels);
+	sl::load_texture_2d(sl::assetsPath("icons/BugAnt.png"), bugAntIcon, iconWidth, iconHeight, iconChannels);
 
 	auto renderSurface = std::make_unique<RenderSurface>(screenWidth, screenHeight);
 	renderSurface->setBackgroundColor({0.05, 0.1, 0.15});
@@ -371,7 +371,7 @@ void App::setup() {
 
 void App::start() {
 
-	Shader screenShader("shaders/screen.vert", "shaders/screen.frag");
+	Shader screenShader(sl::shadersPath("screen.vert"), sl::shadersPath("screen.frag"));
 	screenShader.use();
 	screenShader.setInt("screenTexture", 0);
 
@@ -1194,8 +1194,15 @@ void App::loadCppScript(fs::path scriptPath) {
 }
 
 void App::loadModule(fs::path m) {
+
+	// Transform relative path to absolute 
+	// according to exe location
+	if (m.is_relative()) {
+		m = fs::path(sl::exePath(m));
+	}
+
 	if (!fs::exists(m)) {
-		std::cerr << "Module path does not exist: " << m << std::endl;
+		std::cerr << "Module at " << m << " not found." << std::endl;
 		return;
 	}
 
@@ -1223,8 +1230,9 @@ void App::loadModule(fs::path m) {
 }
 
 void App::loadModules(Settings &settings) {
-	for (auto m : settings.modules)
+	for (auto m : settings.modules) {
 		loadModule(m);
+	}
 }
 
 void App::key_event(int key, int scancode, int action, int mods) {

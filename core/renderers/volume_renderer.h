@@ -31,7 +31,7 @@ struct VolumeRenderer : public IRenderer {
 	};
 
 	VolumeRenderer(Volume &m) : 
-		IRenderer(Shader("shaders/volume.vert", "shaders/volume.frag")),
+		IRenderer(Shader(sl::shadersPath("volume.vert"), sl::shadersPath("volume.frag"))),
 		_m(m)
 		{
 			shader.use();

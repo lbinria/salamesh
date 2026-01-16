@@ -20,8 +20,8 @@ struct Shader {
     // Program id
     unsigned int id;
 
-    Shader(const char * vertexShaderPath, const char * fragmentShaderPath);
-    Shader(const char * vertexShaderPath, const char * fragmentShaderPath, const char * geometryShaderPath);
+    Shader(std::string vertexShaderPath, std::string fragmentShaderPath);
+    Shader(std::string vertexShaderPath, std::string fragmentShaderPath, std::string geometryShaderPath);
 
     // Activate shader
     void use();

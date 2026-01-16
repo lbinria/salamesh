@@ -22,7 +22,7 @@ struct ClippingRenderer : public IRenderer {
 	};
 
 	ClippingRenderer(PointSet &ps) : 
-		IRenderer(Shader("shaders/clipping.vert", "shaders/clipping.frag")),
+		IRenderer(Shader(sl::shadersPath("clipping.vert"), sl::shadersPath("clipping.frag"))),
 		ps(ps) {
 			visible = false;
 			// setColor(glm::vec3(1.0, 1.0, 1.0));

@@ -87,7 +87,7 @@ struct HalfedgeRenderer : public IRenderer {
 struct SurfaceHalfedgeRenderer : public HalfedgeRenderer {
 
 	SurfaceHalfedgeRenderer(Surface &m) : 
-		HalfedgeRenderer(Shader("shaders/edge.vert", "shaders/edge.frag")),
+		HalfedgeRenderer(Shader(sl::shadersPath("edge.vert"), sl::shadersPath("edge.frag"))),
 		_m(m) {
 			setThickness(2.0f);
 			setInsideColor({0.0, 0.97, 0.73});
@@ -102,7 +102,7 @@ struct SurfaceHalfedgeRenderer : public HalfedgeRenderer {
 struct VolumeHalfedgeRenderer : public HalfedgeRenderer {
 
 	VolumeHalfedgeRenderer(Volume &m) : 
-		HalfedgeRenderer(Shader("shaders/edge.vert", "shaders/edge.frag")),
+		HalfedgeRenderer(Shader(sl::shadersPath("edge.vert"), sl::shadersPath("edge.frag"))),
 		_m(m) {
 			setThickness(2.0f);
 			setInsideColor({0.0, 0.97, 0.73});

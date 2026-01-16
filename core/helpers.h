@@ -103,27 +103,39 @@ namespace sl {
 		return {data, nDims};
 	}
 
-		static std::vector<std::string> listDirectory(std::string dirPath, std::string ext = "") {
-			if (!fs::exists(dirPath))
-				return {};
-			
-			std::vector<std::string> filenames;
-			try {
-				for (auto const& dir_entry : fs::directory_iterator(dirPath)) {
-					if (!fs::is_regular_file(dir_entry.path()) || 
-						ext != "" && dir_entry.path().extension() != ext)
-						continue;
+	static std::vector<std::string> listDirectory(std::string dirPath, std::string ext = "") {
+		if (!fs::exists(dirPath))
+			return {};
+		
+		std::vector<std::string> filenames;
+		try {
+			for (auto const& dir_entry : fs::directory_iterator(dirPath)) {
+				if (!fs::is_regular_file(dir_entry.path()) || 
+					ext != "" && dir_entry.path().extension() != ext)
+					continue;
 
-					// std::string name = dir_entry.path().stem();
-					filenames.push_back(fs::absolute(dir_entry.path()).string());
-				}
+				// std::string name = dir_entry.path().stem();
+				filenames.push_back(fs::absolute(dir_entry.path()).string());
 			}
-			catch (const fs::filesystem_error & ex) {
-				// throw std::runtime_error("Error occurred during loading latest snapshot. " + ex.what());
-				throw std::runtime_error("Error occurred during loading latest snapshot.");
-			}
-
-			return filenames;
 		}
+		catch (const fs::filesystem_error & ex) {
+			// throw std::runtime_error("Error occurred during loading latest snapshot. " + ex.what());
+			throw std::runtime_error("Error occurred during loading latest snapshot.");
+		}
+
+		return filenames;
+	}
+
+	static std::string exePath(std::string filename) {
+		return std::filesystem::canonical("/proc/self/exe").parent_path().string() + "/" + filename;
+	}
+
+	static std::string shadersPath(std::string filename) {
+		return exePath("") + "shaders/" + filename;
+	}
+
+	static std::string assetsPath(std::string filename) {
+		return exePath("") + "assets/" + filename;
+	}
 
 }

@@ -1,6 +1,6 @@
 #include "shader.h"
 
-Shader::Shader(const char * vertexShaderPath, const char * fragmentShaderPath, const char * geometryShaderPath) {
+Shader::Shader(std::string vertexShaderPath, std::string fragmentShaderPath, std::string geometryShaderPath) {
 
     std::string vCode;
     std::string fCode;
@@ -15,9 +15,9 @@ Shader::Shader(const char * vertexShaderPath, const char * fragmentShaderPath, c
     gShaderFile.exceptions(std::ifstream::failbit | std::ifstream::badbit);
 
     try {
-        vShaderFile.open(vertexShaderPath);
-        fShaderFile.open(fragmentShaderPath);
-        gShaderFile.open(geometryShaderPath);
+        vShaderFile.open(vertexShaderPath.c_str());
+        fShaderFile.open(fragmentShaderPath.c_str());
+        gShaderFile.open(geometryShaderPath.c_str());
         std::stringstream vShaderStream, fShaderStream, gShaderStream;
         vShaderStream << vShaderFile.rdbuf();
         fShaderStream << fShaderFile.rdbuf();
@@ -101,7 +101,7 @@ Shader::Shader(const char * vertexShaderPath, const char * fragmentShaderPath, c
 
 }
 
-Shader::Shader(const char * vertexShaderPath, const char * fragmentShaderPath) {
+Shader::Shader(std::string vertexShaderPath, std::string fragmentShaderPath) {
     std::string vCode;
     std::string fCode;
 
@@ -112,8 +112,8 @@ Shader::Shader(const char * vertexShaderPath, const char * fragmentShaderPath) {
     fShaderFile.exceptions(std::ifstream::failbit | std::ifstream::badbit);
 
     try {
-        vShaderFile.open(vertexShaderPath);
-        fShaderFile.open(fragmentShaderPath);
+        vShaderFile.open(vertexShaderPath.c_str());
+        fShaderFile.open(fragmentShaderPath.c_str());
         std::stringstream vShaderStream, fShaderStream;
         vShaderStream << vShaderFile.rdbuf();
         fShaderStream << fShaderFile.rdbuf();

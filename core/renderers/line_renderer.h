@@ -27,7 +27,7 @@ struct LineRenderer : public IRenderer {
 	};
 
 	LineRenderer() : 
-		IRenderer(Shader("shaders/gizmo_line.vert", "shaders/gizmo_line.frag")) {
+		IRenderer(Shader(sl::shadersPath("gizmo_line.vert"), sl::shadersPath("gizmo_line.frag"))) {
 			
 		}
 

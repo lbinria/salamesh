@@ -20,7 +20,7 @@ struct BBoxRenderer : public IRenderer {
 	};
 
 	BBoxRenderer(PointSet &ps) : 
-		IRenderer(Shader("shaders/bbox.vert", "shaders/bbox.frag")),
+		IRenderer(Shader(sl::shadersPath("bbox.vert"), sl::shadersPath("bbox.frag"))),
 		ps(ps) {
 			setColor(glm::vec3(1.0, 1.0, 1.0));
 		}
