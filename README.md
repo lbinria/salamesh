@@ -2,8 +2,7 @@
 
 ![](logo.jpeg)
 
-A software base for building your meshing applications...
-
+A scientific mesh engine.
 Forge your own meshing application in the fire of salamesh.
 
 ## Installation
@@ -41,3 +40,15 @@ cd salamesh && cmake -B build`
 # Compile
 cd build &&  cmake --build . --parallel
 ```
+
+## Dependencies
+
+All dependencies sources are directly included except lua for Linux users.
+
+ - ImGui & ImGuiFileDialog-0.6.7 - User interface
+ - glfw - Windows & Inputs management
+ - glm - Linear algebra
+ - sol2 - Lua bindings
+ - stb_image - Loading / Writing images
+ - lua-5.4.2 - Lua Interop
+ - nlomann json - Json parser
