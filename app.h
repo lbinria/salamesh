@@ -100,7 +100,7 @@ struct App : public IApp {
 
     // Utils functions
     Image screenshot(const std::string& filename, int targetWidth = -1, int targetHeight = -1) override;
-    void quit();
+    void quit() override;
     float getDepth(double x, double y);
 
     void unproject(int x, int y, float depth, glm::vec3 &p);
