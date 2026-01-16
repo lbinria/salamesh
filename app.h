@@ -250,12 +250,12 @@ struct App : public IApp {
     virtual void draw_gui() = 0;
     // TODO add virtual void clean() = 0;
 
-    // To override event functions
-    virtual void mouse_move(double x, double y) = 0;
-    virtual void mouse_scroll(double xoffset, double yoffset) = 0;
-    virtual void mouse_button(int button, int action, int mods) = 0;
+    
+    void mouse_move(double x, double y);
+    void mouse_scroll(double xoffset, double yoffset);
+    void mouse_button(int button, int action, int mods);
     virtual void mouse_dbl_click() {}
-    virtual void key_event(int key, int scancode, int action, int mods) = 0;
+    void key_event(int key, int scancode, int action, int mods);
 
     void notifyNavigationPathChange(std::vector<std::string> &oldNavPath, std::vector<std::string>& newNavPath) {
         for (auto &c : scripts) {
@@ -333,6 +333,8 @@ struct App : public IApp {
 	std::unique_ptr<LuaScript> loadScript(fs::path scriptPath);
 	void loadCppScript(fs::path scriptPath, sol::state& state);
 	void loadCppScript(fs::path scriptPath);
+
+	bool isUIHovered = false;
 
 	private:
 

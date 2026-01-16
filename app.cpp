@@ -1208,3 +1208,89 @@ void App::loadModules(Settings &settings) {
 	for (auto m : settings.modules)
 		loadModule(m);
 }
+
+void App::key_event(int key, int scancode, int action, int mods) {
+	
+	bool ctrlPressed = (mods & GLFW_MOD_CONTROL) != 0;
+	if (ctrlPressed && key == GLFW_KEY_A && action == GLFW_PRESS) {
+		quit();
+	}
+	
+	if (key == GLFW_KEY_P && action == GLFW_PRESS) {
+		screenshot("screenshot.png");
+	}
+
+	if (key == GLFW_KEY_LEFT_CONTROL && action == GLFW_PRESS) {
+		getCamera().setLock(true);
+	} else if (key == GLFW_KEY_LEFT_CONTROL && action == GLFW_RELEASE) {
+		getCamera().setLock(false);
+	}
+
+	// Switch cameras with 1 and 2 keys
+	if (key == GLFW_KEY_1 && action == GLFW_PRESS) {
+		Camera &refCam = getCamera();
+		setSelectedCamera(0);
+		if (countModels() > 0)
+			getCamera().copy(refCam, getCurrentModel().bbox());
+	} else if (key == GLFW_KEY_2 && action == GLFW_PRESS) {
+		Camera &refCam = getCamera();
+		setSelectedCamera(1);
+		if (countModels() > 0)
+			getCamera().copy(refCam, getCurrentModel().bbox());
+	}
+
+	for (auto &script : scripts) {
+		script->key_event(key, scancode, action, mods);
+	}
+
+}
+
+void App::mouse_scroll(double xoffset, double yoffset) {
+	if (isUIHovered)
+		return;
+
+	// Maybe move to a cameracontroller class
+	if (!getCamera().isLocked()) {
+		st.mouse.scrollDelta = glm::vec2(xoffset, yoffset);
+		getCamera().zoom(st.mouse.scrollDelta.y);
+	}
+	else 
+		st.mouse.setCursorRadius(st.mouse.getCursorRadius() + static_cast<int>(yoffset));
+
+	for (auto &script : scripts) {
+		script->mouse_scroll(xoffset, yoffset);
+	}
+}
+
+void App::mouse_button(int button, int action, int mods) {
+
+	for (auto &script : scripts)
+		script->mouse_button(button, action, mods);
+}
+
+void App::mouse_move(double x, double y) {
+
+	long pick_mesh_id = pick_mesh(x, y);
+	if (pick_mesh_id >= 0)
+		st.mesh.setHovered({pick_mesh_id});
+	else 
+		st.mesh.setHovered({});
+
+	st.vertex.setHovered(pick_vertices(x, y, st.mouse.getCursorRadius()));
+	st.facet.setHovered(pick_facets(x, y, st.mouse.getCursorRadius()));
+	st.cell.setHovered(pick_cells(x, y, st.mouse.getCursorRadius()));
+
+
+	if (glm::dot(st.mouse.pos, st.mouse.lastPos) > 4) {
+		auto edge = pickEdge(x, y);
+		if (edge >= 0) 
+			st.edge.setHovered({edge});
+		else
+			st.edge.setHovered({});
+	}
+
+	for (auto &script : scripts) {
+		script->mouse_move(x, y);
+	}
+
+}
