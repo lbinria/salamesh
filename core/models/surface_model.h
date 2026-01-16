@@ -69,6 +69,19 @@ struct SurfaceModel : public Model {
 		if (_m.nfacets() <= 0)
 			return false;
 
+		// TODO see if necessary... we can load Triangles as Polygons, it works
+		// but there is maybe some optimisations for Triangles...
+		// Check if poly & only triangle, should be a triangle
+		if (getModelType() == ModelType::POLYGON_MODEL) {
+			bool onlyTri = true;
+			for (auto &f : _m.iter_facets()) {
+				if (f.size() != 3)
+					onlyTri = false;
+			}
+			if (onlyTri)
+				return false;
+		}
+
 		// Extract name
 		if (_name.empty()) {
 			std::filesystem::path p(path);

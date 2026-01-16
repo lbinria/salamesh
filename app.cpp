@@ -542,8 +542,6 @@ std::unique_ptr<Model> App::makeModel(ModelType type) {
 
 bool App::loadModel(const std::string& filename) {
 
-	// TODO please do something more intelligent here, should deduce mesh type !
-
 	bool success = false;
 
 	std::unique_ptr<Model> model;
@@ -721,7 +719,7 @@ long App::pickEdge(double x, double y) {
 	int h;
 	if (st.cell.anyHovered() && (model->getModelType() == ModelType::HEX_MODEL || model->getModelType() == ModelType::TET_MODEL))
 		h = st.cell.getHovered();
-	else if (st.facet.anyHovered() && (model->getModelType() == ModelType::TRI_MODEL || model->getModelType() == ModelType::QUAD_MODEL))
+	else if (st.facet.anyHovered() && (model->getModelType() == ModelType::TRI_MODEL || model->getModelType() == ModelType::QUAD_MODEL || model->getModelType() == ModelType::POLYGON_MODEL))
 		h = st.facet.getHovered();
 	else 
 		return -1;
