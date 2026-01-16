@@ -1,5 +1,5 @@
 #pragma once 
-#include "../core/component.h"
+#include "../core/script.h"
 #include "../core/helpers.h"
 #include "../core/renderers/line_renderer.h"
 

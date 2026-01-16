@@ -5,7 +5,7 @@
 #include <imgui.h>
 
 #include "app_interface.h"
-#include "component.h"
+#include "script.h"
 #include "input_states.h"
 
 #include "../bindings/fs_bindings.h"

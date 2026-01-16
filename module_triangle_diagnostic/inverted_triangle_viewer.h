@@ -1,6 +1,6 @@
 #pragma once 
 #include "../core/app_interface.h"
-#include "../core/component.h"
+#include "../core/script.h"
 #include "../core/element.h"
 #include "../core/helpers.h"
 

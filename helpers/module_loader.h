@@ -12,7 +12,7 @@
 #endif
 
 #include "../core/app_interface.h"
-#include "../core/component.h"
+#include "../core/script.h"
 
 #define SOL_ALL_SAFETIES_ON 1
 #include <sol/sol.hpp>
