@@ -76,6 +76,9 @@ namespace bindings {
 			app_type.set_function("load_snapshot", &IApp::loadSnapshot);
 			app_type.set_function("list_snapshots", &IApp::listSnapshots);
 
+			app_type["navigation_path"] = sol::property(&IApp::getNavigationPath, &IApp::setNavigationPath);
+			app_type["navigation_path_string"] = sol::readonly_property(&IApp::getNavigationPathString);
+
 			app_type["count_models"] = sol::readonly_property(&IApp::countModels);
 			app_type["has_models"] = sol::readonly_property(&IApp::hasModels);
 			app_type["models"] = sol::readonly_property(&IApp::getModels);

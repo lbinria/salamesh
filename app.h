@@ -275,11 +275,11 @@ struct App : public IApp {
 	virtual std::unique_ptr<Camera> makeCamera(std::string type) = 0;
 
 
-    std::vector<std::string> getNavigationPath() {
+    std::vector<std::string> getNavigationPath() override {
         return navPath;
     }
 
-    void setNavigationPath(std::vector<std::string> path) {
+    void setNavigationPath(std::vector<std::string> path) override {
         notifyNavigationPathChange(navPath, path);
         navPath = path;
     }
@@ -291,11 +291,11 @@ struct App : public IApp {
         navPath = newPath;
     }
 
-    void topNavigationPath() {
+    void topNavigationPath() override {
         navPath.erase(navPath.end() - 1);
     }
 
-    std::string getNavigationPathString() {
+    std::string getNavigationPathString() override {
         if (navPath.empty()) return {};
 
         std::ostringstream oss;

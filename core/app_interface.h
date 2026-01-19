@@ -87,9 +87,11 @@ struct IApp {
 
 	virtual std::vector<Colormap> getColormaps() = 0;
 
+	// Navigation
 	virtual std::vector<std::string> getNavigationPath() = 0;
 	virtual void setNavigationPath(std::vector<std::string> path) = 0;
 	virtual std::string getNavigationPathString() = 0;
 	virtual void addNavigationPath(std::string pathComponent) = 0;
+	virtual void topNavigationPath() = 0;
 
 };

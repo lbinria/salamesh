@@ -152,7 +152,48 @@ void MyApp::updateCamera(float dt) {
 		}
 	}
 
+
+	
 }
+
+
+// void SetupDockspace() {
+//     // Enable docking
+//     ImGuiIO& io = ImGui::GetIO();
+//     io.ConfigFlags |= ImGuiConfigFlags_DockingEnable;
+
+//     // Create a fullscreen dockspace
+//     ImGuiViewport* viewport = ImGui::GetMainViewport();
+//     ImGui::SetNextWindowPos(viewport->WorkPos);
+//     ImGui::SetNextWindowSize(viewport->WorkSize);
+//     ImGui::SetNextWindowViewport(viewport->ID);
+
+//     ImGuiWindowFlags window_flags = 
+//         ImGuiWindowFlags_NoDocking |
+//         ImGuiWindowFlags_NoTitleBar | 
+//         ImGuiWindowFlags_NoCollapse | 
+//         ImGuiWindowFlags_NoResize | 
+//         ImGuiWindowFlags_NoMove |
+//         ImGuiWindowFlags_NoBringToFrontOnFocus |
+//         ImGuiWindowFlags_NoNavFocus;
+
+//     ImGui::PushStyleVar(ImGuiStyleVar_WindowRounding, 0.0f);
+//     ImGui::PushStyleVar(ImGuiStyleVar_WindowBorderSize, 0.0f);
+//     ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(0.0f, 0.0f));
+    
+//     ImGui::Begin("Dockspace", nullptr, window_flags);
+    
+//     ImGui::PopStyleVar(3);
+
+//     // Create the dockspace
+//     ImGuiID dockspace_id = ImGui::GetID("MyDockspace");
+//     ImGui::DockSpace(dockspace_id, ImVec2(0.0f, 0.0f), 
+//         ImGuiDockNodeFlags_None);
+
+//     ImGui::End();
+// }
+
+
 
 
 void ModePanel(std::string modeStr) {
@@ -165,7 +206,7 @@ void ModePanel(std::string modeStr) {
 	const float margin = 32.0f;
 	ImGuiIO& io = ImGui::GetIO();
 	ImVec2 displaySize = io.DisplaySize;
-
+	
 	ImVec2 pos = ImVec2(margin, margin + 48.f);
 	ImVec2 size = ImVec2(displaySize.x - margin * 2.0f, 25.f);
 
@@ -253,11 +294,125 @@ void MyApp::TopModePanel(int &currentMode, const std::vector<std::pair<std::stri
 	ImGui::PopStyleColor(2);
 }
 
+void setupDock() {
+
+
+	ImGuiIO& io = ImGui::GetIO();
+	if (io.ConfigFlags & ImGuiConfigFlags_DockingEnable) {
+
+		ImGuiID dockspace_id = ImGui::GetID("MyDockspace");
+		ImGuiViewport* viewport = ImGui::GetMainViewport();
+		ImGui::DockSpaceOverViewport(dockspace_id, viewport, ImGuiDockNodeFlags_PassthruCentralNode);
+
+		// ImGui::DockSpace(dockspace_id, ImVec2(0.0f, 0.0f), ImGuiConfigFlags_DockingEnable);
+
+		static auto first_time = true;
+		if (first_time)
+		{
+			first_time = false;
+			// Clear out existing layout
+			ImGui::DockBuilderRemoveNode(dockspace_id);
+
+			ImGuiID top_bar_node = ImGui::DockBuilderAddNode(dockspace_id, ImGuiDockNodeFlags_NoTabBar);
+			ImGui::DockBuilderSetNodeSize(top_bar_node, ImVec2(viewport->WorkSize.x, 30.0f)); // Thin top 
+
+			ImGui::DockBuilderAddNode(dockspace_id, ImGuiDockNodeFlags_DockSpace);
+			ImGui::DockBuilderSetNodeSize(dockspace_id, ImGui::GetWindowSize());
+
+
+
+			// get id of main dock space area
+			ImGuiID dockspace_main_id = dockspace_id;
+			// Create a dock node for the right docked window
+			ImGuiID left = ImGui::DockBuilderSplitNode(dockspace_main_id, ImGuiDir_Left, 1.f, nullptr, &dockspace_main_id);
+			ImGuiID right = ImGui::DockBuilderSplitNode(dockspace_main_id, ImGuiDir_Right, 1.f, nullptr, &dockspace_main_id);
+			ImGuiID bot = ImGui::DockBuilderSplitNode(dockspace_main_id, ImGuiDir_Down, 0.2f, nullptr, &dockspace_main_id);
+			
+			ImGuiID top = ImGui::DockBuilderSplitNode(dockspace_main_id, ImGuiDir_Up, 0.2f, nullptr, &dockspace_main_id);
+
+
+
+			ImGuiID leftbot = ImGui::DockBuilderSplitNode(left, ImGuiDir_Down, 0.25f, nullptr, &left);
+
+			ImGui::DockBuilderDockWindow("Left Side Bar", leftbot);
+			ImGui::DockBuilderDockWindow("Right Side Bar", right);
+			ImGui::DockBuilderDockWindow("Bot Bar", bot);
+			ImGui::DockBuilderDockWindow("Top Bar", top);
+			    // Position the top bar at the top
+    		ImGui::DockBuilderDockWindow("TopBar", top_bar_node);
+    
+
+			ImGui::DockBuilderDockWindow("Scene", left);
+
+			ImGui::DockBuilderFinish(dockspace_id);
+		}
+
+
+		// ImGui::Begin("Content One");
+		// ImGui::Text("content one");
+		// ImGui::End();
+
+		// ImGui::Begin("Content Two");
+		// ImGui::Text("content two");
+		// ImGui::End();
+
+
+
+		ImGui::Begin("Left Side Bar");
+		ImGui::Text("side bar");
+		ImGui::End();
+
+		ImGui::Begin("Right Side Bar");
+		ImGui::Text("right side bar");
+		ImGui::End();
+
+		ImGui::Begin("Top Bar", nullptr, ImGuiWindowFlags_NoTitleBar);
+		ImGui::Text("top bar");
+		ImGui::End();
+
+		ImGui::Begin("Bot Bar");
+		ImGui::Text("bot bar");
+		ImGui::End();
+
+
+
+
+	}
+}
+
+
+
 void MyApp::draw_gui() {
-	
-	static int currentMode = -1;
-	TopModePanel(currentMode, {{"view", (ImTextureID)eyeIcon}, {"diagnostic", (ImTextureID)bugAntIcon}});
-	ModePanel(getNavigationPathString());
+
+
+	// setupDock();
+
+	// Set window position and size
+	ImGui::SetNextWindowPos(
+		ImVec2(0, ImGui::GetIO().DisplaySize.y - 30.f), 
+		ImGuiCond_Always
+	);
+	ImGui::SetNextWindowSize(
+		ImVec2(ImGui::GetIO().DisplaySize.x, 30.f)
+	);
+
+	ImGui::Begin("Foot_bar", nullptr, 
+		ImGuiWindowFlags_NoMove |           // Prevent window movement
+		ImGuiWindowFlags_NoResize |         // Prevent resizing
+		ImGuiWindowFlags_NoCollapse |       // Prevent collapsing
+		ImGuiWindowFlags_AlwaysAutoResize | // Automatically adjust size
+		ImGuiWindowFlags_NoTitleBar         // Remove default title bar (optional)
+	);
+
+	// draw_foot_bar()
+
+	ImGui::End();
+
+
+
+	// static int currentMode = -1;
+	// TopModePanel(currentMode, {{"view", (ImTextureID)eyeIcon}, {"diagnostic", (ImTextureID)bugAntIcon}});
+	// ModePanel(getNavigationPathString());
 
 
 	// display
