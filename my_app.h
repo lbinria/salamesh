@@ -23,6 +23,7 @@ struct MyApp : App {
 	virtual std::unique_ptr<Camera> makeCamera(std::string type) override;
 
 	// Move that in a layout component
+	void setupDock();
 	void TopModePanel(int &currentMode, const std::vector<std::pair<std::string, ImTextureID>>& icons, ImVec2 iconSize = ImVec2(28,28));
 
 	private:

@@ -35,6 +35,7 @@ struct LuaScript final : public Script {
 		// Lifecycle
 		init_func = lua.get<sol::protected_function>("init");
 		draw_gui_func = lua.get<sol::protected_function>("draw_gui");
+		layout_gui_func = lua.get<sol::protected_function>("layout_gui");
 		update_func = lua.get<sol::protected_function>("update");
 		cleanup_func = lua.get<sol::protected_function>("cleanup");
 
@@ -51,6 +52,7 @@ struct LuaScript final : public Script {
 		// Check whether functions exists
 		has_init = init_func.valid();
 		has_draw_gui = draw_gui_func.valid();
+		has_layout_gui = layout_gui_func.valid();
 		has_update = update_func.valid();
 		has_cleanup = cleanup_func.valid();
 
@@ -116,6 +118,29 @@ struct LuaScript final : public Script {
 		return true;
 	}
 
+	std::vector<std::pair<std::string, std::string>> layoutGui() override {
+		if (!has_layout_gui)
+			return {};
+
+		// TODO check result type and validity
+		sol::object result = layout_gui_func();
+		if (!result.is<sol::table>())
+			return {};
+
+		sol::table layout_table = result.as<sol::table>();
+        std::vector<std::pair<std::string, std::string>> layout_result;
+
+        // Iterate through the Lua table and convert to C++ vector of pairs
+        for (const auto& [key, value] : layout_table) {
+            // Ensure both key and value can be converted to strings
+            std::string str_key = key.as<std::string>();
+            std::string str_value = value.as<std::string>();
+            layout_result.emplace_back(str_key, str_value);
+        }
+
+        return layout_result;
+	}
+
 	void update(float dt) override {
 		if (has_update)
 			update_func(dt);
@@ -179,6 +204,7 @@ struct LuaScript final : public Script {
 	sol::state lua;
 	sol::protected_function init_func;
 	sol::protected_function draw_gui_func;
+	sol::protected_function layout_gui_func;
 	sol::protected_function update_func;
 	sol::protected_function cleanup_func;
 
@@ -198,6 +224,7 @@ struct LuaScript final : public Script {
 		has_mouse_scroll, 
 		has_key_event, 
 		has_draw_gui, 
+		has_layout_gui, 
 		has_update, 
 		has_cleanup, 
 		has_navigationPathChanged,

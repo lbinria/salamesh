@@ -419,6 +419,10 @@ function draw_model_properties(model, view)
 	-- end
 end
 
+function layout_gui() 
+	return {["Scene"] = "Left"}
+end
+
 function draw_gui()
 	imgui.Begin("Scene")
 

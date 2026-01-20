@@ -90,6 +90,73 @@ namespace bindings {
 				}
 			});
 
+			imgui.set_function("InputFloat", [](const char* label, sol::object v, sol::this_state s) -> std::optional<std::tuple<bool, int>> {
+				sol::state_view lua(s);
+
+				if (v.is<int>()) {
+					float val = v.as<float>();
+					bool sel = ImGui::InputFloat(label, &val);
+					return std::make_optional(std::make_tuple(sel, val));
+				} else {
+					return std::nullopt;
+				}
+			});
+
+			imgui.set_function("InputFloat2", [](const char* label, sol::object v, sol::this_state s) -> std::optional<std::tuple<bool, std::array<float, 2>>> {
+				sol::state_view lua(s);
+
+				if (v.is<sol::table>()) {
+					sol::table inputTable = v.as<sol::table>();
+					if (inputTable.size() == 2) {
+						std::array<float, 2> vals = {
+							inputTable[1].get<float>(),
+							inputTable[2].get<float>()
+						};
+					
+						bool sel = ImGui::InputFloat2(label, vals.data());
+						return std::make_optional(std::make_tuple(sel, vals));
+					}
+				}
+
+				return std::nullopt;
+			});
+
+			// imgui.set_function("InputFloat3", [](const char* label, sol::object v, sol::this_state s) -> std::optional<std::tuple<bool, std::array<float, 3>>> {
+			// 	sol::state_view lua(s);
+
+			// 	if (v.is<sol::table>()) {
+			// 		sol::table inputTable = v.as<sol::table>();
+			// 		if (inputTable.size() == 3) {
+			// 			std::array<float, 3> vals = {
+			// 				inputTable[1].get<float>(),
+			// 				inputTable[2].get<float>(),
+			// 				inputTable[3].get<float>()
+			// 			};
+					
+			// 			bool sel = ImGui::InputFloat2(label, vals.data());
+			// 			return std::make_optional(std::make_tuple(sel, vals));
+			// 		}
+			// 	}
+				
+			// 	return std::nullopt;
+			// });
+
+			imgui.set_function("InputFloat3", [](const char* label, sol::object v, sol::this_state s) -> std::optional<std::tuple<bool, std::array<float, 3>>> {
+				sol::state_view lua(s);
+
+				if (v.is<glm::vec3>()) {
+					auto p = v.as<glm::vec3>();
+					
+					std::array<float, 3> vals = {p.x, p.y, p.z};
+					bool sel = ImGui::InputFloat3(label, vals.data());
+					return std::make_optional(std::make_tuple(sel, vals));
+					
+				}
+				
+				return std::nullopt;
+			});
+
+
 			// Combo
 			imgui.set_function("BeginCombo", [](const char* label, const char* preview_value) {
 				return ImGui::BeginCombo(label, preview_value);
@@ -157,6 +224,14 @@ namespace bindings {
 			// Trees
 			imgui.set_function("TreeNode", [](const char* label) {
 				return ImGui::TreeNode(label);
+			});
+
+			imgui.set_function("TreeNodeEx", [](const char* label) {
+				ImGuiTreeNodeFlags node_flags = 
+					ImGuiTreeNodeFlags_Selected | 
+					ImGuiTreeNodeFlags_OpenOnArrow | 
+					ImGuiTreeNodeFlags_OpenOnDoubleClick;
+				return ImGui::TreeNodeEx(label, node_flags);
 			});
 
 			imgui.set_function("TreePop", []() {

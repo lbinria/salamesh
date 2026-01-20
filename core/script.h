@@ -19,6 +19,7 @@ struct Script {
 	virtual void cleanup() {};
 	virtual bool draw_gui(ImGuiContext* ctx) { return true; };
 	virtual void update(float dt) {};
+	virtual std::vector<std::pair<std::string, std::string>> layoutGui() { return {}; }
 
 	// Input events
 	virtual void mouse_move(double x, double y) {};
