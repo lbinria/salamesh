@@ -420,7 +420,7 @@ function draw_model_properties(model, view)
 end
 
 function layout_gui() 
-	return {["Scene"] = "Left"}
+	return {["Scene"] = "nav_bar"}
 end
 
 function draw_gui()

@@ -971,12 +971,12 @@ void App::loadSnapshot() {
 				continue;
 
 			std::string name = dir_entry.path().stem().string();
-			std::string strUnixTimestamp = name.substr(name.find("_"), name.size() - 1);
+			std::string strUnixTimestamp = name.substr(name.find("_") + 1, name.size() - 1);
 			int i = std::stoi(strUnixTimestamp);
 
 			if (i > unixTimestamp) {
 				unixTimestamp = i;
-				filename = dir_entry.path().filename().string();
+				filename = fs::absolute(dir_entry.path()).string();
 			}
 		}
 	}

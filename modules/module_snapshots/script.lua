@@ -5,6 +5,10 @@ function init()
 	snapshots = app:list_snapshots()
 end
 
+function layout_gui()
+	return {["Snapshots"] = "nav_bar"}
+end
+
 function draw_gui() 
 	imgui.Begin("Snapshots")
 

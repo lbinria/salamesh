@@ -390,8 +390,6 @@ void MyApp::setupDock() {
 		ImGuiViewport* viewport = ImGui::GetMainViewport();
 		ImGui::DockSpaceOverViewport(dockspace_id, viewport, ImGuiDockNodeFlags_PassthruCentralNode);
 
-		// ImGui::DockSpace(dockspace_id, ImVec2(0.0f, 0.0f), ImGuiConfigFlags_DockingEnable);
-
 		static auto first_time = true;
 		if (first_time)
 		{
@@ -410,26 +408,28 @@ void MyApp::setupDock() {
 			// get id of main dock space area
 			ImGuiID dockspace_main_id = dockspace_id;
 			// Create a dock node for the right docked window
-			ImGuiID bot = ImGui::DockBuilderSplitNode(dockspace_main_id, ImGuiDir_Down, 0.2f, nullptr, &dockspace_main_id);
-			ImGuiID left = ImGui::DockBuilderSplitNode(dockspace_main_id, ImGuiDir_Left, 1.f, nullptr, &dockspace_main_id);
-			ImGuiID right = ImGui::DockBuilderSplitNode(dockspace_main_id, ImGuiDir_Right, 1.f, nullptr, &dockspace_main_id);
+			ImGuiID navBar = ImGui::DockBuilderSplitNode(dockspace_main_id, ImGuiDir_Left, 1.f, nullptr, &dockspace_main_id);
+			ImGuiID toolBar = ImGui::DockBuilderSplitNode(dockspace_main_id, ImGuiDir_Right, 1.f, nullptr, &dockspace_main_id);
+			ImGuiID botBar = ImGui::DockBuilderSplitNode(dockspace_main_id, ImGuiDir_Down, 0.2f, nullptr, &dockspace_main_id);
 
-			ImGuiID leftbot = ImGui::DockBuilderSplitNode(left, ImGuiDir_Down, 0.25f, nullptr, &left);
+			ImGuiID leftbot = ImGui::DockBuilderSplitNode(navBar, ImGuiDir_Down, 0.25f, nullptr, &navBar);
 
-			ImGui::DockBuilderDockWindow("Bot Bar", bot);
-			ImGui::DockBuilderDockWindow("Left Side Bar", leftbot);
-			ImGui::DockBuilderDockWindow("Right Side Bar", right);
-			ImGui::DockBuilderDockWindow("Right Side Bar2", right);
-			// Position the top bar at the top
-			ImGui::DockBuilderDockWindow("TopBar", top_bar_node);
+			ImGui::DockBuilderDockWindow("Bot Bar", botBar);
+			// ImGui::DockBuilderDockWindow("Left Side Bar", leftbot);
+			// ImGui::DockBuilderDockWindow("Right Side Bar", toolBar);
+			// ImGui::DockBuilderDockWindow("Right Side Bar2", toolBar);
+			// // Position the top bar at the top
+			// ImGui::DockBuilderDockWindow("TopBar", top_bar_node);
 
 			for (auto &s : scripts) {
 				auto layout = s->layoutGui();
 				for (auto &l : layout) {
-					if (l.second == "Left")
-						ImGui::DockBuilderDockWindow(l.first.c_str(), left);
-					else if (l.second == "Bot")
-						ImGui::DockBuilderDockWindow(l.first.c_str(), bot);
+					if (l.second == "nav_bar")
+						ImGui::DockBuilderDockWindow(l.first.c_str(), navBar);
+					else if (l.second == "bot_bar")
+						ImGui::DockBuilderDockWindow(l.first.c_str(), botBar);
+					else if (l.second == "tool_bar")
+						ImGui::DockBuilderDockWindow(l.first.c_str(), toolBar);
 				}
 			}
 
@@ -439,24 +439,9 @@ void MyApp::setupDock() {
 		}
 
 
-		// ImGui::Begin("Left Side Bar");
-		// ImGui::Text("side bar");
-		// ImGui::End();
-
-		ImGui::Begin("Right Side Bar");
-		ImGui::Text("side bar");
-		ImGui::End();
-		ImGui::Begin("Right Side Bar2");
-		
-		ImGui::Text("side bar");
-		ImGui::End();
-
-
 		ImGui::Begin("Bot Bar");
 		ImGui::Text("bot bar");
 		ImGui::End();
-
-
 
 
 	}
