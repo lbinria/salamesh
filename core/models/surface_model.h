@@ -60,10 +60,15 @@ struct SurfaceModel : public Model {
 	}
 
 	bool load(const std::string path) override {
-		// TODO check if the model failed to read in ultimaille, else there is side effects ! 
-
+		
 		// Load the mesh
-		_surfaceAttributes = read_by_extension(path, _m);
+		try {
+			_surfaceAttributes = read_by_extension(path, _m);
+		} catch (std::runtime_error &ex) {
+			std::cerr << "Unable to read " << path << ": " << ex.what() << std::endl;
+			return false;
+		}
+
 		_path = path;
 
 		if (_m.nfacets() <= 0)
