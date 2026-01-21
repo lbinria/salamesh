@@ -102,14 +102,17 @@ namespace bindings {
 
 			app_type["input_state"] = sol::readonly_property(&IApp::getInputState);
 
-			// app_type["pick_mode_strings"] = sol::readonly_property(&IApp::getPickModeStrings);
-
-			// app_type["pick_mode"] = sol::property(
-			// 	&IApp::getPickMode,
-			// 	&IApp::setPickMode
-			// );
-
 			app_type["colormaps"] = sol::readonly_property(&IApp::getColormaps);
+			app_type.set_function("add_colormap", &IApp::addColormap);
+			app_type.set_function("remove_colormap", &IApp::removeColormap);
+			app_type.set_function("get_colormap", sol::overload(
+				[](IApp &self, int idx) {
+					return self.getColormap(idx);
+				},
+				[](IApp &self, const std::string name) {
+					return self.getColormap(name);
+				}
+			));
 
 			app_type.set_function("load_model", &IApp::loadModel);
 			

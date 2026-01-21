@@ -118,6 +118,10 @@ struct App : public IApp {
 
     void addColormap(const std::string name, const std::string filename) override;
     void removeColormap(const std::string name) override;
+    Colormap getColormap(const std::string name) override;
+    Colormap getColormap(int idx) override;
+
+
 
     void computeFarPlane();
 

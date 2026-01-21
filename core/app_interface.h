@@ -63,6 +63,8 @@ struct IApp {
 	virtual Model& getCurrentModel() = 0;
 	virtual void addColormap(const std::string name, const std::string filename) = 0;
 	virtual void removeColormap(const std::string name) = 0;
+	virtual Colormap getColormap(const std::string name) = 0;
+	virtual Colormap getColormap(int idx) = 0;
 
 	virtual Snapshot snapshot() = 0;
 	virtual void loadSnapshot() = 0;

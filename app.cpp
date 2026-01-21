@@ -750,6 +750,19 @@ void App::removeColormap(const std::string name) {
 	}
 }
 
+Colormap App::getColormap(const std::string name) {
+	for (int i = 0; i < colormaps.size(); ++i) {
+		if (colormaps[i].name == name) {
+			return colormaps[i];
+		}
+	}
+	throw std::runtime_error("Colormap " + name + " not found.");
+}
+
+Colormap App::getColormap(int idx) {
+	return colormaps[idx];
+}
+
 long App::pickEdge(double x, double y) {
 	if (!st.cell.anyHovered() && !st.facet.anyHovered())
 		return -1;
