@@ -507,14 +507,24 @@ void App::start() {
 		ImGui::NewFrame();
 	
 
-		// ImGui::Begin("Render");
 
+
+		// ImGui::Begin("Render");
 		// ImVec2 size = ImGui::GetWindowSize();
 		// renderSurfaceWindowHovered = ImGui::IsItemHovered();
 		// ImGui::Image((ImTextureID)renderSurfaces[1]->texColor, size, ImVec2(0.0f, 1.0f), ImVec2(1.0f, 0.0f));
 		// ImGui::End();
 
+
+
 		draw_gui();
+
+		// ImGui::Begin("Render");
+		// ImVec2 size = ImGui::GetWindowSize();
+		// auto s = getRenderSurface();
+		// s.resize(size.x, size.y);
+		// ImGui::Image((ImTextureID)s.texColor, size, ImVec2(0.0f, 1.0f), ImVec2(1.0f, 0.0f));
+		// ImGui::End();
 
 		// Render the ImGui frame
 		ImGui::Render();

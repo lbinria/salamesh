@@ -323,8 +323,6 @@ struct App : public IApp {
 	std::vector<std::unique_ptr<Script>> scripts;
 	InputState st;
 
-	bool renderSurfaceWindowHovered = false;
-
 	unsigned int eyeIcon = 0;
 	unsigned int bugAntIcon = 0;
 
