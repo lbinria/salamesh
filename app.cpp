@@ -191,37 +191,78 @@ void App::setup() {
 	
 	// Choose best monitor
 	GLFWmonitor* monitor = nullptr;
+	int res = 0;
 	for (int i = 0; i < monitorCount; ++i) {
 		GLFWmonitor* m = monitors[i];
-		int mx, my;
-		glfwGetMonitorPos(m, &mx, &my);
-		int mw, mh;
+		int mx, my, mw, mh;
 		glfwGetMonitorWorkarea(m, &mx, &my, &mw, &mh);
 
+		int curRes = mw * mh;
 		if (cx >= mx && cx <= mx + mw &&
-			cy >= my && cy <= my + mh) {
+			cy >= my && cy <= my + mh && res <= curRes) {
 			// The window center is within the monitor's work area
 			monitor = m;
-			break;
+			curRes = res;
+			// break;
 		}
 	}
 
-	const GLFWvidmode* mode = glfwGetVideoMode(monitor);
-	if (monitor)
-	{
-		// Switch to fullscreen on the primary monitor at its current video mode
-		glfwSetWindowMonitor(
-			window,
-			monitor,
-			0, 0,
-			mode->width,
-			mode->height,
-			mode->refreshRate
-		);
+	// int bestOverlapArea = 0;
+	// for (int i = 0; i < monitorCount; ++i) {
+	// 	GLFWmonitor* m = monitors[i];
+	// 	int mx, my, mw, mh;
+	// 	glfwGetMonitorWorkarea(m, &mx, &my, &mw, &mh);
 
-		// Set screen width and height to the monitor's resolution
-		screenWidth = mode->width;
-		screenHeight = mode->height;
+	// 	// Calculate overlap area
+	// 	int overlapLeft = std::max(wx, mx);
+	// 	int overlapTop = std::max(wy, my);
+	// 	int overlapRight = std::min(wx + ww, mx + mw);
+	// 	int overlapBottom = std::min(wy + wh, my + mh);
+
+	// 	int overlapWidth = std::max(0, overlapRight - overlapLeft);
+	// 	int overlapHeight = std::max(0, overlapBottom - overlapTop);
+	// 	int overlapArea = overlapWidth * overlapHeight;
+
+	// 	// Choose monitor with the largest window overlap
+	// 	if (overlapArea > bestOverlapArea) {
+	// 		monitor = m;
+	// 		bestOverlapArea = overlapArea;
+	// 	}
+	// }
+
+	const GLFWvidmode* mode = glfwGetVideoMode(monitor);
+	// if (monitor) {
+	// 	// Switch to fullscreen on the primary monitor at its current video mode
+	// 	glfwSetWindowMonitor(
+	// 		window,
+	// 		monitor,
+	// 		0, 0,
+	// 		mode->width,
+	// 		mode->height,
+	// 		mode->refreshRate
+	// 	);
+
+	// 	// Set screen width and height to the monitor's resolution
+	// 	screenWidth = mode->width;
+	// 	screenHeight = mode->height;
+	// }
+
+	if (monitor) {
+		// Calculate 80% of screen width and height
+		int windowWidth = static_cast<int>(mode->width * 0.8f);
+		int windowHeight = static_cast<int>(mode->height * 0.8f);
+
+		// Calculate the position to center the window
+		int posX = (mode->width - windowWidth) / 2;
+		int posY = (mode->height - windowHeight) / 2;
+
+		// Set window to 80% size and center it
+		glfwSetWindowPos(window, posX, posY);
+		glfwSetWindowSize(window, windowWidth, windowHeight);
+
+		// Update screen width and height if needed
+		screenWidth = windowWidth;
+		screenHeight = windowHeight;
 	}
 
 	std::cout << "Screen width: " << screenWidth << ", " << screenHeight << std::endl;
@@ -310,7 +351,7 @@ void App::setup() {
 	addColormap("CET-R41", sl::assetsPath("CET-R41px.png"));
 	addColormap("CET-L08", sl::assetsPath("CET-L08px.png"));
 	addColormap("alpha", sl::assetsPath("colormap_alpha.png"));
-	// addColormap("cat", "/home/tex/Models/cat/Cat_diffuse.jpg");
+	addColormap("cat", "/home/tex/Models/cat/Cat_diffuse.jpg");
 
 	// Load icons
 	int iconWidth, iconHeight, iconChannels;
