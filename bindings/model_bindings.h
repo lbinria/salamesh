@@ -11,6 +11,30 @@ namespace bindings {
 
 		static void loadBindings(sol::state &lua, sol::usertype<IApp>& app_type, IApp &app) {
 
+			lua.new_enum("ElementKind", 
+				"POINTS_ELT", ElementKind::POINTS_ELT,
+				"CORNERS_ELT", ElementKind::CORNERS_ELT,
+				"EDGES_ELT", ElementKind::EDGES_ELT,
+				"FACETS_ELT", ElementKind::FACETS_ELT,
+				"CELLS_ELT", ElementKind::CELLS_ELT,
+				"CELL_FACETS_ELT", ElementKind::CELL_FACETS_ELT,
+				"CELL_CORNERS_ELT", ElementKind::CELL_CORNERS_ELT
+			);
+
+			lua.new_enum("Layer", 
+				"COLORMAP_0", Layer::COLORMAP_0,
+				"COLORMAP_1", Layer::COLORMAP_1,
+				"COLORMAP_2", Layer::COLORMAP_2,
+				"HIGHLIGHT", Layer::HIGHLIGHT,
+				"FILTER", Layer::FILTER
+			);
+
+			lua.new_enum("ColormapLayer", 
+				"COLORMAP_LAYER_0", ColormapLayer::COLORMAP_LAYER_0,
+				"COLORMAP_LAYER_1", ColormapLayer::COLORMAP_LAYER_1,
+				"COLORMAP_LAYER_2", ColormapLayer::COLORMAP_LAYER_2
+			);
+
 			// Create container user types for different attribute types
 			sol::usertype<Attribute::Container<double>> attr_double_container_t = lua.new_usertype<Attribute::Container<double>>("AttributeContainerDouble");
 
@@ -125,6 +149,8 @@ namespace bindings {
 			);
 
 			sol::usertype<Model> model_t = lua.new_usertype<Model>("Model");
+
+			model_t.set_function("as_tri", &Model::as<TriModel>);
 
 			model_t.set_function("load", &Model::load);
 			model_t.set_function("save", &Model::save);
@@ -263,9 +289,7 @@ namespace bindings {
 			});
 
 			
-			model_t.set_function("set_colormap_attr", &Model::setColormapAttr);
-			model_t.set_function("set_colormap", &Model::setColormap);
-			model_t.set_function("unset_colormap", &Model::unsetColormap);
+
 			
 
 			model_t["selected_colormap0"] = sol::property([](Model &self) {
@@ -286,7 +310,33 @@ namespace bindings {
 				self.setSelectedColormap(selected - 1, ColormapLayer::COLORMAP_LAYER_2);
 			});
 
+			// Layers
+			// TODO miss some functions around layers !
+			model_t.set_function("set_colormap_attr", &Model::setColormapAttr);
+			model_t.set_function("set_colormap", &Model::setColormap);
+			model_t.set_function("unset_colormap", &Model::unsetColormap);
+			// TODO test
+			model_t.set_function("unset_colormaps", sol::overload(
+				[](Model &self) { self.unsetColormaps(); },
+				[](Model &self, ElementKind kind) { self.unsetColormaps(kind); },
+				[](Model &self, ColormapLayer layer) { self.unsetColormaps(layer); }
+			));
 
+
+			model_t.set_function("set_highlight_attr", &Model::setHighlightAttr);
+			model_t.set_function("set_highlight", &Model::setHighlight);
+			model_t.set_function("unset_highlight", &Model::unsetHighlight);
+			model_t.set_function("unset_highlights", &Model::unsetHighlights);
+
+			model_t.set_function("set_filter_attr", &Model::setFilterAttr);
+			model_t.set_function("set_filter", &Model::setFilter);
+			model_t.set_function("unset_filter", &Model::unsetFilter);
+			model_t.set_function("unset_filters", &Model::unsetFilters);
+
+
+			sol::usertype<TriModel> tri_model_t = lua.new_usertype<TriModel>("TriModel");
+			tri_model_t["surface_attributes"] = sol::readonly_property([](TriModel &self) -> SurfaceAttributes& { return self.getSurfaceAttributes(); });
+			tri_model_t["mesh"] = sol::readonly_property([](TriModel &self) -> Surface& { return self.getMesh(); });
 
 		}
 

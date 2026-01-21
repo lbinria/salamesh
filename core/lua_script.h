@@ -9,6 +9,7 @@
 #include "input_states.h"
 
 #include "../bindings/fs_bindings.h"
+#include "../bindings/um_bindings.h"
 #include "../bindings/imgui_bindings.h"
 #include "../bindings/app_bindings.h"
 #include "../bindings/glm_bindings.h"
@@ -87,6 +88,7 @@ struct LuaScript final : public Script {
 		bindings::GlmBindings::loadBindings(lua, app);
 		bindings::CameraBindings::loadBindings(lua, app_type, app);
 		bindings::ModelBindings::loadBindings(lua, app_type, app);
+		bindings::UMBindings::loadBindings(lua);
 	}
 
 	// Lifecycle
