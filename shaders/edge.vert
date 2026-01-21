@@ -19,7 +19,7 @@ uniform float thickness; // in pixels
 
 out vec2 vLocalUV; // (u,v) in [0..1] for fragment
 flat out int FragHalfedgeIndex;
-
+out vec3 fragWorldPos;
 
 
 void main()
@@ -71,5 +71,6 @@ void main()
     // //    u = side→ 0 at -1, 1 at +1  ;  v = along the segment
     vLocalUV = vec2( (aSide + 1.0)*0.5, aEnd );
 
+    fragWorldPos = aP0;
     FragHalfedgeIndex = halfedgeIndex;
 }

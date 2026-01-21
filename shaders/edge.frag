@@ -8,6 +8,12 @@ layout(location = 0) out vec4 FragColor;
 
 flat in int FragHalfedgeIndex;
 
+in vec3 fragWorldPos;
+uniform bool is_clipping_enabled = false;
+uniform vec3 clipping_plane_normal; // (a, b, c)
+uniform vec3 clipping_plane_point;  // A point on the plane
+uniform int invert_clipping = 0; // 0: normal, 1: inverted
+
 uniform vec3 hoverColor = vec3(1.,1.,1.);
 uniform vec3 selectColor = vec3(0., 0.22, 1.);
 
@@ -106,7 +112,14 @@ void _filter(inout vec3 col) {
 }
 
 void clip(inout vec3 col) {
-    // TODO
+   // Calculate the distance from the cell barycenter to the plane
+   if (is_clipping_enabled) {
+      float distance = dot(clipping_plane_normal, fragWorldPos - clipping_plane_point) / length(clipping_plane_normal);
+      
+      if ((invert_clipping == 0 && distance < 0.0) || (invert_clipping == 1 && distance >= 0.0)) {
+         discard;
+      }
+   }
 }
 
 vec4 trace(inout vec3 col) {
