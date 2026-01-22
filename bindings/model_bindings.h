@@ -334,6 +334,7 @@ namespace bindings {
 			model_t.set_function("unset_filters", &Model::unsetFilters);
 
 
+			// TODO do the same for other types of meshes
 			sol::usertype<TriModel> tri_model_t = lua.new_usertype<TriModel>("TriModel");
 			tri_model_t["surface_attributes"] = sol::readonly_property([](TriModel &self) -> SurfaceAttributes& { return self.getSurfaceAttributes(); });
 			tri_model_t["mesh"] = sol::readonly_property([](TriModel &self) -> Surface& { return self.getMesh(); });

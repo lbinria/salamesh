@@ -772,8 +772,17 @@ struct Model {
 
 		auto attrName = getLayerAttrName(layer, kind);
 
+		// Extract dim (hack here... extract from string)
+		int dim = -1;
+		auto lbrPos = attrName.find('[');
+		auto rbrPos = attrName.find(']');
+		if (lbrPos != std::string::npos && rbrPos != std::string::npos) {
+			dim = std::stoi(attrName.substr(lbrPos + 1, rbrPos - lbrPos));
+			attrName = attrName.substr(0, lbrPos);
+		}
+
 		// TODO important add selectedDim
-		auto data_opt = getAttrData(attrName, kind);
+		auto data_opt = getAttrData(attrName, kind, dim);
 
 		// Silent when no data ?
 		// If no data => it means that attr name wasn't found

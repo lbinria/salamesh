@@ -362,6 +362,7 @@ function draw_model_properties(model, view)
 					for n = 1, #cur_model.attrs do
 						local is_selected = n == cur_model.selected_attr0
 						local label = cur_model.attrs[n].name 
+						-- .. "[" .. tostring(cur_model.attrs[n].selected_dim) .. "]"
 						.. " (" .. elementKindToString(cur_model.attrs[n].kind) .. ")" 
 						.. " (" .. elementTypeToString(cur_model.attrs[n].type) .. ")"
 						.. " (" .. tostring(cur_model.attrs[n].dim) .. ")"
