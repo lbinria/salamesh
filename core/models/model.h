@@ -746,9 +746,33 @@ struct Model {
     std::map<std::string, std::shared_ptr<IRenderer>> _renderers;
 
 	virtual std::vector<std::pair<ElementKind, NamedContainer>> getAttributeContainers() const = 0;
+	
+	int getAttributeNDims(std::string attrName, ElementKind kind) {
+
+		// TODO refactor, factorize that
+		auto containers = getAttributeContainers();
+
+		for (auto &[k, c] : containers) {
+			if (k == kind && c.name == attrName) {
+				auto cb = c.ptr.get();
+				if (auto a = dynamic_cast<AttributeContainer<vec3>*>(cb)) {
+					return 3;
+				} else if (auto a = dynamic_cast<AttributeContainer<vec2>*>(cb)) {
+					return 2;
+				} else {
+					return 1;
+				}
+			}
+		}
+
+		return -1;
+
+
+	}
 
     // TODO maybe move into helper
-	std::optional<std::tuple<std::vector<float>, int>> getAttrData(std::string attrName, ElementKind kind, int selectedDim = -1) {
+	std::optional<std::vector<float>> getAttrData(std::string attrName, ElementKind kind, int selectedDim = -1) {
+
 
 		auto containers = getAttributeContainers();
 
@@ -772,24 +796,28 @@ struct Model {
 
 		auto attrName = getLayerAttrName(layer, kind);
 
-		// Extract dim (hack here... extract from string)
-		int dim = -1;
+		// TODO refactor, maybe move getNDims and ndim hacks out of updateLayer & pass as parameters
+		int nDims = getAttributeNDims(attrName, kind);
+
+		// Extract selectedDim (hack here... extract from string)
+		int selectedDim = -1;
 		auto lbrPos = attrName.find('[');
 		auto rbrPos = attrName.find(']');
+		// if attr[0] for example, we would like to see selectedDim=0, so nDims of attribute = 1
 		if (lbrPos != std::string::npos && rbrPos != std::string::npos) {
-			dim = std::stoi(attrName.substr(lbrPos + 1, rbrPos - lbrPos));
+			selectedDim = std::stoi(attrName.substr(lbrPos + 1, rbrPos - lbrPos));
 			attrName = attrName.substr(0, lbrPos);
+			nDims = 1;
 		}
 
-		// TODO important add selectedDim
-		auto data_opt = getAttrData(attrName, kind, dim);
+		auto data_opt = getAttrData(attrName, kind, selectedDim);
 
 		// Silent when no data ?
 		// If no data => it means that attr name wasn't found
 		if (!data_opt.has_value())
 			return;
 
-        auto [data, nDims] = data_opt.value();
+        auto data = data_opt.value();
 
 		auto [min, max] = sl::getRange(data);
 

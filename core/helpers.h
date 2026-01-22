@@ -59,7 +59,6 @@ namespace sl {
 
 	template<typename T, int nDims>
 	void mapManyDims(std::vector<T>& data, int selectedDim, std::vector<float>& result) {
-		// YOu can refactor this !
 		if (selectedDim == -1) {
 			// Inline data
 			result.resize(data.size() * nDims);
@@ -76,7 +75,7 @@ namespace sl {
 		}
 	}
 
-	inline std::tuple<std::vector<float>, int> getContainerData(ContainerBase *ga, int selectedDim) {
+	inline std::vector<float> getContainerData(ContainerBase *ga, int selectedDim) {
 		// TODO refactor, see if nDims should not be found elsewhere, probably before in Model::getAttrData
 		// Prepare data
 		std::vector<float> data;
@@ -93,15 +92,13 @@ namespace sl {
 			mapSingleDim<bool>(a->data, data);
 		} else if (auto a = dynamic_cast<AttributeContainer<vec2>*>(ga)) {
 			mapManyDims<vec2, 2>(a->data, selectedDim, data);
-			nDims = selectedDim == -1 ? 2 : 1;
 		} else if (auto a = dynamic_cast<AttributeContainer<vec3>*>(ga)) {
 			mapManyDims<vec3, 3>(a->data, selectedDim, data);
-			nDims = selectedDim == -1 ? 3 : 1;
 		} else {
 			throw std::runtime_error("Attribute type is not supported in `getContainerData`.");
 		}
 		
-		return {data, nDims};
+		return data;
 	}
 
 	static std::vector<std::string> listDirectory(std::string dirPath, std::string ext = "") {
