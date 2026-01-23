@@ -192,6 +192,7 @@ void App::setup() {
 	// Choose best monitor
 	GLFWmonitor* monitor = nullptr;
 	int res = 0;
+	int monitorX = 0, monitorY = 0;
 	for (int i = 0; i < monitorCount; ++i) {
 		GLFWmonitor* m = monitors[i];
 		int mx, my, mw, mh;
@@ -203,49 +204,12 @@ void App::setup() {
 			// The window center is within the monitor's work area
 			monitor = m;
 			curRes = res;
-			// break;
+			monitorX = mx;
+			monitorY = my;
 		}
 	}
 
-	// int bestOverlapArea = 0;
-	// for (int i = 0; i < monitorCount; ++i) {
-	// 	GLFWmonitor* m = monitors[i];
-	// 	int mx, my, mw, mh;
-	// 	glfwGetMonitorWorkarea(m, &mx, &my, &mw, &mh);
-
-	// 	// Calculate overlap area
-	// 	int overlapLeft = std::max(wx, mx);
-	// 	int overlapTop = std::max(wy, my);
-	// 	int overlapRight = std::min(wx + ww, mx + mw);
-	// 	int overlapBottom = std::min(wy + wh, my + mh);
-
-	// 	int overlapWidth = std::max(0, overlapRight - overlapLeft);
-	// 	int overlapHeight = std::max(0, overlapBottom - overlapTop);
-	// 	int overlapArea = overlapWidth * overlapHeight;
-
-	// 	// Choose monitor with the largest window overlap
-	// 	if (overlapArea > bestOverlapArea) {
-	// 		monitor = m;
-	// 		bestOverlapArea = overlapArea;
-	// 	}
-	// }
-
 	const GLFWvidmode* mode = glfwGetVideoMode(monitor);
-	// if (monitor) {
-	// 	// Switch to fullscreen on the primary monitor at its current video mode
-	// 	glfwSetWindowMonitor(
-	// 		window,
-	// 		monitor,
-	// 		0, 0,
-	// 		mode->width,
-	// 		mode->height,
-	// 		mode->refreshRate
-	// 	);
-
-	// 	// Set screen width and height to the monitor's resolution
-	// 	screenWidth = mode->width;
-	// 	screenHeight = mode->height;
-	// }
 
 	if (monitor) {
 		// Calculate 80% of screen width and height
@@ -253,8 +217,8 @@ void App::setup() {
 		int windowHeight = static_cast<int>(mode->height * 0.8f);
 
 		// Calculate the position to center the window
-		int posX = (mode->width - windowWidth) / 2;
-		int posY = (mode->height - windowHeight) / 2;
+		int posX = (mode->width - windowWidth) / 2 + monitorX;
+		int posY = (mode->height - windowHeight) / 2 + monitorY;
 
 		// Set window to 80% size and center it
 		glfwSetWindowPos(window, posX, posY);
@@ -352,6 +316,7 @@ void App::setup() {
 	addColormap("CET-L08", sl::assetsPath("CET-L08px.png"));
 	addColormap("alpha", sl::assetsPath("colormap_alpha.png"));
 	addColormap("cat", "/home/tex/Models/cat/Cat_diffuse.jpg");
+	addColormap("extended", sl::assetsPath("extended.png"));
 
 	// Load icons
 	int iconWidth, iconHeight, iconChannels;

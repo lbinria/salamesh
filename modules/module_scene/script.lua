@@ -259,7 +259,12 @@ function draw_model_properties(model, view)
 
 			imgui.Text("Colormap 0")
 
-			local items = {"Item1", "Item2", "Item3", "Item4"}
+			local colormaps = app.colormaps
+			local items = {}
+			for i = 1, #colormaps do 
+				table.insert(items, colormaps[i].name)
+			end
+
 			local colormap_size = imgui.ImVec2(320, 35)
 
 			if (imgui.BeginCombo("##combo_colormaps0_selection", items[cur_model.selected_colormap0])) then
@@ -299,7 +304,11 @@ function draw_model_properties(model, view)
 
 			imgui.Text("Colormap 1")
 
-			local items = {"Item1", "Item2", "Item3", "Item4"}
+			local colormaps = app.colormaps
+			local items = {}
+			for i = 1, #colormaps do 
+				table.insert(items, colormaps[i].name)
+			end
 			local colormap_size = imgui.ImVec2(320, 35)
 
 			if (imgui.BeginCombo("##combo_colormaps1_selection", items[cur_model.selected_colormap1])) then
