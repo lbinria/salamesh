@@ -35,37 +35,27 @@ namespace bindings {
 				"COLORMAP_LAYER_2", ColormapLayer::COLORMAP_LAYER_2
 			);
 
-			// Create container user types for different attribute types
-			sol::usertype<Attribute::Container<double>> attr_double_container_t = lua.new_usertype<Attribute::Container<double>>("AttributeContainerDouble");
+			// // Create container user types for different attribute types
+			// sol::usertype<Attribute::Container<double>> attr_double_container_t = lua.new_usertype<Attribute::Container<double>>("AttributeContainerDouble");
 
-			attr_double_container_t[sol::meta_function::index] = [](Attribute::Container<double>& c, int i) {
-				return c[i];
-			};
-
-			attr_double_container_t[sol::meta_function::new_index] = [](Attribute::Container<double>& c, int i, double value) {
-				c[i] = value;
-			};
-
-			sol::usertype<Attribute::Container<int>> attr_int_container_t = lua.new_usertype<Attribute::Container<int>>("AttributeContainerInt");
-
-			attr_int_container_t[sol::meta_function::index] = [](Attribute::Container<int>& c, int i) {
-				return c[i];
-			};
-
-			attr_int_container_t[sol::meta_function::new_index] = [](Attribute::Container<int>& c, int i, int value) {
-				c[i] = value;
-			};
-
-			// TODO complete to access attribute data
-			// sol::usertype<Attribute::Container<bool>> attr_bool_container_t = lua.new_usertype<Attribute::Container<bool>>("AttributeContainerBool");
-			
-			// attr_bool_container_t[sol::meta_function::index] = [](Attribute::Container<bool>& c, int i) {
+			// attr_double_container_t[sol::meta_function::index] = [](Attribute::Container<double>& c, int i) {
 			// 	return c[i];
 			// };
 
-			// attr_bool_container_t[sol::meta_function::new_index] = [](Attribute::Container<bool>& c, int i, bool value) {
+			// attr_double_container_t[sol::meta_function::new_index] = [](Attribute::Container<double>& c, int i, double value) {
 			// 	c[i] = value;
 			// };
+
+			// sol::usertype<Attribute::Container<int>> attr_int_container_t = lua.new_usertype<Attribute::Container<int>>("AttributeContainerInt");
+
+			// attr_int_container_t[sol::meta_function::index] = [](Attribute::Container<int>& c, int i) {
+			// 	return c[i];
+			// };
+
+			// attr_int_container_t[sol::meta_function::new_index] = [](Attribute::Container<int>& c, int i, int value) {
+			// 	c[i] = value;
+			// };
+
 
 			sol::usertype<Attribute> attr_t = lua.new_usertype<Attribute>("Attribute", 
 				sol::constructors<Attribute()>(),
