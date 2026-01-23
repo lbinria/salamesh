@@ -40,8 +40,29 @@ namespace bindings {
 			));
 
 			// Inputs
-			imgui.set_function("InputText", [](const char* label, char* buf, size_t buf_size) {
-				return ImGui::InputText(label, buf, buf_size);
+			// imgui.set_function("InputText", [](const char* label, char* buf, size_t buf_size) {
+			// 	return ImGui::InputText(label, buf, buf_size);
+			// });
+
+			// imgui.set_function("InputText", [](const char* label, sol::object v, sol::this_state s) -> std::optional<std::tuple<bool, std::string>> {
+			// 	sol::state_view lua(s);
+
+			// 	if (v.is<std::string>()) {
+			// 		auto strval = v.as<std::string>();
+			// 		bool sel = ImGui::InputText(label, strval.data(), 10);
+			// 		return std::make_optional(std::make_tuple(sel, strval));
+
+			// 	} else {
+			// 		return std::nullopt;
+			// 	}
+			// });
+
+			imgui.set_function("InputText", [](const char* label, std::string s, int len) -> std::optional<std::tuple<bool, std::string>> {
+				char *val = s.data();
+				bool sel = ImGui::InputText(label, val, len);
+				std::string newS = val;
+				return std::make_optional(std::make_tuple(sel, newS));
+
 			});
 
 			imgui.set_function("Button", [](const char* label) {

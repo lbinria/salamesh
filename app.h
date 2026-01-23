@@ -334,7 +334,7 @@ struct App : public IApp {
 	bool cull = true;
 
 	void loadModules(Settings &settings);
-	void loadModule(fs::path modulePath);
+	void loadModule(fs::path modulePath) override;
 	std::unique_ptr<LuaScript> loadScript(fs::path scriptPath);
 	void loadCppScript(fs::path scriptPath, sol::state& state);
 	void loadCppScript(fs::path scriptPath);

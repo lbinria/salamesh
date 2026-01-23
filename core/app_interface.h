@@ -96,4 +96,7 @@ struct IApp {
 	virtual void addNavigationPath(std::string pathComponent) = 0;
 	virtual void topNavigationPath() = 0;
 
+	// Modules
+	virtual void loadModule(fs::path modulePath) = 0;
+
 };
