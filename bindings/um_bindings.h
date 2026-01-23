@@ -27,6 +27,10 @@ namespace bindings {
 				self.bind(name, attr, m);
 			});
 
+			user_type.set_function("fill", [](TAttr<T> &self, T val) {
+				self.fill(val);
+			});
+
 			user_type[sol::meta_function::index] = [](TAttr<T>& self, int i) -> T {
 				return self[i];
 			};
@@ -41,6 +45,10 @@ namespace bindings {
 			
 			user_type.set_function("bind", [](TAttr<T> &self, std::string name, VolumeAttributes &attr, Volume &m) {
 				self.bind(name, attr, m);
+			});
+
+			user_type.set_function("fill", [](TAttr<T> &self, T val) {
+				self.fill(val);
 			});
 
 			user_type[sol::meta_function::index] = [](TAttr<T>& self, int i) -> T {
@@ -59,6 +67,10 @@ namespace bindings {
 				self.bind(name, attr, m);
 			});
 
+			user_type.set_function("fill", [](TAttr<T> &self, T val) {
+				self.fill(val);
+			});
+
 			user_type[sol::meta_function::index] = [](TAttr<T>& self, int i) -> T {
 				return self[i];
 			};
@@ -72,9 +84,8 @@ namespace bindings {
 		template<typename T, template<typename> class TAttr>
 		static sol::usertype<TAttr<T>> bindAttributeType(sol::state &lua, std::string strTypename) {
 			sol::usertype<TAttr<T>> user_type = lua.new_usertype<TAttr<T>>(strTypename,
-				sol::constructors<TAttr<T>()>()
+				sol::constructors<TAttr<T>(), TAttr<T>(T def)>()
 			);
-
 			return user_type;
 		}
 
