@@ -23,5 +23,6 @@ function filter()
 		fa[i] = 1.0
 	end
 	
-	app.model:set_filter(ElementKind.FACETS_ELT, true)
+	-- app.model:set_filter(ElementKind.FACETS_ELT, true)
+	tri_model:set_filter(ElementKind.FACETS_ELT, true)
 end

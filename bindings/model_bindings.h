@@ -325,9 +325,18 @@ namespace bindings {
 
 
 			// TODO do the same for other types of meshes
-			sol::usertype<TriModel> tri_model_t = lua.new_usertype<TriModel>("TriModel");
+			// & maybe refactor
+			auto tri_model_t = lua.new_usertype<TriModel>("TriModel", sol::base_classes, sol::bases<Model>());
 			tri_model_t["surface_attributes"] = sol::readonly_property([](TriModel &self) -> SurfaceAttributes& { return self.getSurfaceAttributes(); });
 			tri_model_t["mesh"] = sol::readonly_property([](TriModel &self) -> Surface& { return self.getMesh(); });
+
+			auto quad_model_t = lua.new_usertype<QuadModel>("QuadModel", sol::base_classes, sol::bases<Model>());
+			quad_model_t["surface_attributes"] = sol::readonly_property([](QuadModel &self) -> SurfaceAttributes& { return self.getSurfaceAttributes(); });
+			quad_model_t["mesh"] = sol::readonly_property([](QuadModel &self) -> Surface& { return self.getMesh(); });
+
+			auto poly_model_t = lua.new_usertype<PolyModel>("PolyModel", sol::base_classes, sol::bases<Model>());
+			poly_model_t["surface_attributes"] = sol::readonly_property([](PolyModel &self) -> SurfaceAttributes& { return self.getSurfaceAttributes(); });
+			poly_model_t["mesh"] = sol::readonly_property([](PolyModel &self) -> Surface& { return self.getMesh(); });
 
 		}
 
