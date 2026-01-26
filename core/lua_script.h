@@ -179,7 +179,7 @@ struct LuaScript final : public Script {
 
 	void navigationPathChanged(const std::vector<std::string> &oldNavPath, const std::vector<std::string> &newNavPath) override {
 		if (has_navigationPathChanged)
-			navigationPathChanged(oldNavPath, newNavPath);
+			navigationPathChanged_func(oldNavPath, newNavPath);
 	}
 
 	void modelLoaded(const std::string &path) override {
