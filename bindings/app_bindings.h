@@ -39,13 +39,32 @@ namespace bindings {
 				"has_changed", sol::readonly_property(&InputState::PrimitiveState::hasChanged)
 			);
 
+			sol::usertype<InputState::MouseState> mouse_state_t = lua.new_usertype<InputState::MouseState>("MouseState", 
+				sol::constructors<InputState::MouseState()>(),
+				"pos", sol::readonly_property(&InputState::MouseState::pos),
+				"last_pos", sol::readonly_property(&InputState::MouseState::lastPos),
+				"delta", sol::readonly_property(&InputState::MouseState::delta),
+				"buttons", sol::readonly_property(&InputState::MouseState::buttons),
+				"dbl_buttons", sol::readonly_property(&InputState::MouseState::dblButtons),
+				"last_clicks", sol::readonly_property(&InputState::MouseState::lastClicks),
+				"cursor_radius", sol::readonly_property(&InputState::MouseState::getCursorRadius),
+				"dbl_click_interval", sol::readonly_property(&InputState::MouseState::getDblClickInterval)
+			);
+
+			mouse_state_t.set_function("is_left_button", &InputState::MouseState::isLeftButton);
+			mouse_state_t.set_function("is_right_button", &InputState::MouseState::isRightButton);
+			mouse_state_t.set_function("is_middle_button", &InputState::MouseState::isMiddleButton);
+			mouse_state_t.set_function("is_button_pressed", &InputState::MouseState::isButtonPressed);
+			mouse_state_t.set_function("any_button_pressed", &InputState::MouseState::anyButtonPressed);
+
 			sol::usertype<InputState> input_state_t = lua.new_usertype<InputState>("InputState", 
 				sol::constructors<InputState(), InputState::PrimitiveState()>(),
 				"vertex", sol::readonly_property(&InputState::vertex),
 				"edge", sol::readonly_property(&InputState::edge),
 				"facet", sol::readonly_property(&InputState::facet),
 				"cell", sol::readonly_property(&InputState::cell),
-				"mesh", sol::readonly_property(&InputState::mesh)
+				"mesh", sol::readonly_property(&InputState::mesh),
+				"mouse", sol::readonly_property(&InputState::mouse)
 			);
 
 			// General functions 

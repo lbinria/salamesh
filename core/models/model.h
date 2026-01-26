@@ -52,13 +52,17 @@ struct Model {
 
 
     void saveState(std::string dirPath, json &j) /*const*/ {
+
+        // TODO maybe move saveAs geogram model into App::saveState, because model are loaded into App::loadState, not in Model::loadState
+
+
         // Save current mesh state into a file
         auto now = std::chrono::system_clock::now();
         auto unix_timestamp = std::to_string(std::chrono::duration_cast<std::chrono::seconds>(now.time_since_epoch()).count());
         auto filename = _name + "_" + unix_timestamp + ".geogram";
         auto filepath = std::filesystem::path(dirPath) / filename;
         
-        // Make copy of attributes
+        // Make copy of attributes, beurk ! :vomit:
         auto cpyAttrs = attrs;
 
         clearAttrs();

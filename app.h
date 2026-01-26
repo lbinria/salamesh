@@ -261,7 +261,6 @@ struct App : public IApp {
     void mouse_move(double x, double y);
     void mouse_scroll(double xoffset, double yoffset);
     void mouse_button(int button, int action, int mods);
-    virtual void mouse_dbl_click() {}
     void key_event(int key, int scancode, int action, int mods);
 
     void notifyNavigationPathChange(std::vector<std::string> &oldNavPath, std::vector<std::string>& newNavPath) {
