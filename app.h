@@ -296,7 +296,10 @@ struct App : public IApp {
     }
 
     void topNavigationPath() override {
-        navPath.erase(navPath.end() - 1);
+        auto newPath = navPath;
+        newPath.erase(newPath.end() - 1);
+        notifyNavigationPathChange(navPath, newPath);
+        navPath = newPath;
     }
 
     std::string getNavigationPathString() override {
