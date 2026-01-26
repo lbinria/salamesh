@@ -1284,18 +1284,18 @@ void App::key_event(int key, int scancode, int action, int mods) {
 		getCamera().setLock(false);
 	}
 
-	// Switch cameras with 1 and 2 keys
-	if (key == GLFW_KEY_1 && action == GLFW_PRESS) {
-		Camera &refCam = getCamera();
-		setSelectedCamera(0);
-		if (countModels() > 0)
-			getCamera().copy(refCam, getCurrentModel().bbox());
-	} else if (key == GLFW_KEY_2 && action == GLFW_PRESS) {
-		Camera &refCam = getCamera();
-		setSelectedCamera(1);
-		if (countModels() > 0)
-			getCamera().copy(refCam, getCurrentModel().bbox());
-	}
+	// // Switch cameras with 1 and 2 keys
+	// if (key == GLFW_KEY_1 && action == GLFW_PRESS) {
+	// 	Camera &refCam = getCamera();
+	// 	setSelectedCamera(0);
+	// 	if (countModels() > 0)
+	// 		getCamera().copy(refCam, getCurrentModel().bbox());
+	// } else if (key == GLFW_KEY_2 && action == GLFW_PRESS) {
+	// 	Camera &refCam = getCamera();
+	// 	setSelectedCamera(1);
+	// 	if (countModels() > 0)
+	// 		getCamera().copy(refCam, getCurrentModel().bbox());
+	// }
 
 	for (auto &script : scripts) {
 		script->key_event(key, scancode, action, mods);

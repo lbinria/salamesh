@@ -326,6 +326,14 @@ namespace bindings {
 				ImGui::Separator();
 			});
 
+			imgui.set_function("BeginDisabled", []() {
+				ImGui::BeginDisabled();
+			});
+
+			imgui.set_function("EndDisabled", []() {
+				ImGui::EndDisabled();
+			});
+
 			imgui.set_function("SmallButton", [](const char* label) {
 				return ImGui::SmallButton(label);
 			});

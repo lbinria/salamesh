@@ -147,6 +147,7 @@ namespace bindings {
 			// Navigation
 			app_type["navigation_path"] = sol::property(&IApp::getNavigationPath, &IApp::setNavigationPath);
 			app_type["navigation_path_string"] = sol::readonly_property(&IApp::getNavigationPathString);
+			app_type.set_function("add_navigation_path", &IApp::addNavigationPath);
 
 			// Modules
 			// app_type.set_function("load_module", &IApp::loadModule);
