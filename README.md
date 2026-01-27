@@ -60,3 +60,4 @@ All dependencies sources are directly included except lua for Linux users.
 
 ## API
 
+[API documentation here](api.md)
