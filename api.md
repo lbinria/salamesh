@@ -1,4 +1,8 @@
-# Application Bindings Documentation
+# API
+
+Caution: At the moment, this doc is totally generated and can not reflect the actual one.
+
+## App
 
 There is only one instance of App, it is already declared and accessible using `app` object.
 `app` is the root object of the core API.
@@ -77,3 +81,33 @@ There is only one instance of App, it is already declared and accessible using `
 | all_hovered | Read-only | Boolean | Whether all elements are hovered |
 | any_hovered | Read-only | Boolean | Whether any element is hovered |
 | has_changed | Read-only | Boolean | Whether state has changed |
+
+## ImGui
+
+| Function/Property Name | Type | Parameters | Description | Return Type |
+|------------------------|------|------------|-------------|-------------|
+| **Window Management** |||
+| `Begin` | Function | `(name: string)` | Begins an ImGui window | `bool` |
+| `End` | Function | None | Ends the current ImGui window | `void` |
+| **Text Rendering** |||
+| `Text` | Overloaded Function | `(text: string)` or `(format: string, ...args)` | Renders text | `void` |
+| `TextColored` | Overloaded Function | `(r,g,b,a: float, text: string)` or `(r,g,b,a: float, format: string, ...args)` | Renders colored text | `void` |
+
+| Function/Property Name | Type | Parameters | Description | Return Type |
+|------------------------|------|------------|-------------|-------------|
+| **Input Widgets** |||
+| `InputText` | Function | `(label: string, initial_string: string, max_length: int)` | Text input field | `{changed: bool, new_text: string}` |
+| `Button` | Function | `(label: string)` | Creates a button | `bool` |
+| `ImageButton` | Function | `(label: string, texture_id, size: ImVec2)` | Creates an image button | `bool` |
+| `Checkbox` | Function | `(label: string, initial_value: bool)` | Creates a checkbox | `{changed: bool, new_value: bool}` |
+| `SliderFloat` | Function | `(label: string, initial_value: float, min: float, max: float)` | Float slider | `{changed: bool, new_value: float}` |
+| `InputInt` | Function | `(label: string, initial_value: int)` | Integer input | `{changed: bool, new_value: int}` |
+| `InputFloat` | Function | `(label: string, initial_value: float)` | Float input | `{changed: bool, new_value: float}` |
+| `InputFloat2` | Function | `(label: string, initial_values: {float, float})` | 2D float input | `{changed: bool, new_values: [float, float]}` |
+| `InputFloat3` | Function | `(label: string, initial_value: vec3)` | 3D float input | `{changed: bool, new_values: [float, float, float]}` |
+| **Combo and Selection Widgets** |||
+| `BeginCombo` | Function | `(label: string, preview_value: string)` | Starts a combo box | `bool` |
+| `EndCombo` | Function | None | Ends a combo box | `void` |
+| `BeginListBox` | Overloaded Function | `(label: string)` or `(label: string, size: ImVec2)` | Starts a list box | `bool` |
+| `EndListBox` | Function | None | Ends a list box | `void` |
+| `Selectable` | Function | `(label: string, selected: bool)` | Creates a selectable item | `bool` |
