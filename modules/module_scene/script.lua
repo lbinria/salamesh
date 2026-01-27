@@ -372,8 +372,8 @@ function draw_model_properties(model, view)
 						local is_selected = n == cur_model.selected_attr0
 						local label = cur_model.attrs[n].name 
 						-- .. "[" .. tostring(cur_model.attrs[n].selected_dim) .. "]"
-						.. " (" .. elementKindToString(cur_model.attrs[n].kind) .. ")" 
-						.. " (" .. elementTypeToString(cur_model.attrs[n].type) .. ")"
+						.. " (" .. element_kind_to_string(cur_model.attrs[n].kind) .. ")" 
+						.. " (" .. element_type_to_string(cur_model.attrs[n].type) .. ")"
 						.. " (" .. tostring(cur_model.attrs[n].dim) .. ")"
 
 						if (imgui.Selectable(label, is_selected)) then

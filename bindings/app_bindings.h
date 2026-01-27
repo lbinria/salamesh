@@ -30,10 +30,7 @@ namespace bindings {
 			// Input state binding
 			sol::usertype<InputState::PrimitiveState> primitive_state_t = lua.new_usertype<InputState::PrimitiveState>("PrimitiveState", 
 				sol::constructors<InputState::PrimitiveState()>(),
-				"hovered", sol::property(
-					&InputState::PrimitiveState::getHovered,
-					&InputState::PrimitiveState::setHovered
-				),
+				"hovered", sol::readonly_property(&InputState::PrimitiveState::getHovered),
 				"all_hovered", sol::readonly_property(&InputState::PrimitiveState::getAllHovered),
 				"any_hovered", sol::readonly_property(&InputState::PrimitiveState::anyHovered),
 				"has_changed", sol::readonly_property(&InputState::PrimitiveState::hasChanged)
@@ -44,18 +41,36 @@ namespace bindings {
 				"pos", sol::readonly_property(&InputState::MouseState::pos),
 				"last_pos", sol::readonly_property(&InputState::MouseState::lastPos),
 				"delta", sol::readonly_property(&InputState::MouseState::delta),
-				"buttons", sol::readonly_property(&InputState::MouseState::buttons),
-				"dbl_buttons", sol::readonly_property(&InputState::MouseState::dblButtons),
-				"last_clicks", sol::readonly_property(&InputState::MouseState::lastClicks),
+				"buttons", sol::readonly_property([&lua](InputState::MouseState& ms) {
+					sol::table t = lua.create_table();
+					for (int i = 0; i < 8; ++i) {
+						t[i + 1] = ms.buttons[i];  // Lua uses 1-based indexing
+					}
+					return t;
+				}),
+				"dbl_buttons", sol::readonly_property([&lua](InputState::MouseState& ms) {
+					sol::table t = lua.create_table();
+					for (int i = 0; i < 8; ++i) {
+						t[i + 1] = ms.dblButtons[i];  // Lua uses 1-based indexing
+					}
+					return t;
+				}),
+				"last_clicks", sol::readonly_property([&lua](InputState::MouseState& ms) {
+					sol::table t = lua.create_table();
+					for (int i = 0; i < 8; ++i) {
+						t[i + 1] = ms.lastClicks[i];  // Lua uses 1-based indexing
+					}
+					return t;
+				}),
 				"cursor_radius", sol::readonly_property(&InputState::MouseState::getCursorRadius),
-				"dbl_click_interval", sol::readonly_property(&InputState::MouseState::getDblClickInterval)
-			);
+				"dbl_click_interval", sol::readonly_property(&InputState::MouseState::getDblClickInterval),
+				"is_left_button", sol::readonly_property(&InputState::MouseState::isLeftButton),
+				"is_right_button", sol::readonly_property(&InputState::MouseState::isRightButton),
+				"is_middle_button", sol::readonly_property(&InputState::MouseState::isMiddleButton),
+				"is_button_pressed", sol::readonly_property(&InputState::MouseState::isButtonPressed),
+				"any_button_pressed", sol::readonly_property(&InputState::MouseState::anyButtonPressed)
 
-			mouse_state_t.set_function("is_left_button", &InputState::MouseState::isLeftButton);
-			mouse_state_t.set_function("is_right_button", &InputState::MouseState::isRightButton);
-			mouse_state_t.set_function("is_middle_button", &InputState::MouseState::isMiddleButton);
-			mouse_state_t.set_function("is_button_pressed", &InputState::MouseState::isButtonPressed);
-			mouse_state_t.set_function("any_button_pressed", &InputState::MouseState::anyButtonPressed);
+			);
 
 			sol::usertype<InputState> input_state_t = lua.new_usertype<InputState>("InputState", 
 				sol::constructors<InputState(), InputState::PrimitiveState()>(),
@@ -67,9 +82,11 @@ namespace bindings {
 				"mouse", sol::readonly_property(&InputState::mouse)
 			);
 
+			input_state_t.set_function("get_primitive_state", &InputState::getPrimitiveState);
+
 			// General functions 
-			lua.set_function("elementKindToString", &elementKindToString);
-			lua.set_function("elementTypeToString", &elementTypeToString);
+			lua.set_function("element_kind_to_string", &elementKindToString);
+			lua.set_function("element_type_to_string", &elementTypeToString);
 
 			sol::usertype<Colormap> colormap_t = lua.new_usertype<Colormap>("Colormap", 
 				sol::constructors<Colormap()>(),
