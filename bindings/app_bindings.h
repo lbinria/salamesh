@@ -112,41 +112,6 @@ namespace bindings {
 			app_type.set_function("load_snapshot", &IApp::loadSnapshot);
 			app_type.set_function("list_snapshots", &IApp::listSnapshots);
 
-			app_type["count_models"] = sol::readonly_property(&IApp::countModels);
-			app_type["has_models"] = sol::readonly_property(&IApp::hasModels);
-			app_type["models"] = sol::readonly_property(&IApp::getModels);
-			app_type.set_function("getChildrenOf", &IApp::getChildrenOf);
-			app_type["model"] = sol::readonly_property(&IApp::getCurrentModel);
-
-			app_type["cameras"] = sol::readonly_property(&IApp::getCameras);
-			app_type["camera"] = sol::readonly_property(&IApp::getCamera);
-			
-			app_type["selected_model"] = sol::property([](IApp &self) {
-				return self.getSelectedModel() + 1;
-			}, [](IApp &self, int selected) {
-				self.setSelectedModel(selected - 1);
-			});
-
-			app_type["selected_camera"] = sol::property([](IApp &self) {
-				return self.getSelectedCamera() + 1;
-			}, [](IApp &self, int selected) {
-				self.setSelectedCamera(selected - 1);
-			});
-
-			app_type["input_state"] = sol::readonly_property(&IApp::getInputState);
-
-			app_type["colormaps"] = sol::readonly_property(&IApp::getColormaps);
-			app_type.set_function("add_colormap", &IApp::addColormap);
-			app_type.set_function("remove_colormap", &IApp::removeColormap);
-			app_type.set_function("get_colormap", sol::overload(
-				[](IApp &self, int idx) {
-					return self.getColormap(idx);
-				},
-				[](IApp &self, const std::string name) {
-					return self.getColormap(name);
-				}
-			));
-
 			app_type.set_function("load_model", &IApp::loadModel);
 			
 			app_type.set_function("add_model", [](IApp &self, std::string name, int type) {
@@ -168,6 +133,41 @@ namespace bindings {
 				int idx = self.getIndexOfModel(name);
 				return idx != -1 ? idx + 1 : -1;
 			});
+
+			app_type["count_models"] = sol::readonly_property(&IApp::countModels);
+			app_type["has_models"] = sol::readonly_property(&IApp::hasModels);
+			app_type["models"] = sol::readonly_property(&IApp::getModels);
+			app_type.set_function("getChildrenOf", &IApp::getChildrenOf);
+			app_type["model"] = sol::readonly_property(&IApp::getCurrentModel);
+
+			app_type["selected_model"] = sol::property([](IApp &self) {
+				return self.getSelectedModel() + 1;
+			}, [](IApp &self, int selected) {
+				self.setSelectedModel(selected - 1);
+			});
+
+			app_type["cameras"] = sol::readonly_property(&IApp::getCameras);
+			app_type["camera"] = sol::readonly_property(&IApp::getCamera);
+
+			app_type["selected_camera"] = sol::property([](IApp &self) {
+				return self.getSelectedCamera() + 1;
+			}, [](IApp &self, int selected) {
+				self.setSelectedCamera(selected - 1);
+			});
+
+			app_type["input_state"] = sol::readonly_property(&IApp::getInputState);
+
+			app_type["colormaps"] = sol::readonly_property(&IApp::getColormaps);
+			app_type.set_function("add_colormap", &IApp::addColormap);
+			app_type.set_function("remove_colormap", &IApp::removeColormap);
+			app_type.set_function("get_colormap", sol::overload(
+				[](IApp &self, int idx) {
+					return self.getColormap(idx);
+				},
+				[](IApp &self, const std::string name) {
+					return self.getColormap(name);
+				}
+			));
 			
 			app_type.set_function("screenshot", [&app = app](const std::string& filename) {
 				app.screenshot(filename);

@@ -41,10 +41,15 @@ cd salamesh && cmake -B build`
 cd build &&  cmake --build . --parallel
 ```
 
+### Archlinux
+
+`pacman -S glfw3`
+
 ## Dependencies
 
 All dependencies sources are directly included except lua for Linux users.
 
+ - Ultimaille - Mesh processing library
  - ImGui & ImGuiFileDialog-0.6.7 - User interface
  - glfw - Windows & Inputs management
  - glm - Linear algebra
@@ -52,3 +57,6 @@ All dependencies sources are directly included except lua for Linux users.
  - stb_image - Loading / Writing images
  - lua-5.4.2 - Lua Interop
  - nlomann json - Json parser
+
+## API
+

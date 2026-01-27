@@ -1,6 +1,58 @@
 # Application Bindings Documentation
 
+There is only one instance of App, it is already declared and accessible using `app` object.
+`app` is the root object of the core API.
+
+| Function/Property Name | Type | Parameters | Description | Return Type |
+|------------------------|------|------------|-------------|-------------|
+| **App functions** |||
+| `quit` | Function | None | Exits the application | `void` |
+| **Scene Management** |||
+| `clear_scene` | Function | None | Clears the current scene | `void` |
+| **Model Management** |||
+| `load_model` | Function | `(filename: string)` | Loads a model | `bool` |
+| `add_model` | Function | `(name: string, type: int)` | Adds a model with given name and type | `int` (index + 1) |
+| `remove_model` | Overloaded Function | `(idx: int)` or `(name: string)` | Removes a model by index or name | `void` or `bool` |
+| `get_model_by_name` | Function | `(name: string)` | Retrieves model by name | Model type |
+| `get_index_of_model` | Function | `(name: string)` | Gets model index (1-based) | `int` |
+| `count_models` | Read-only Property | None | Returns number of models | `int` |
+| `has_models` | Read-only Property | None | Checks if models exist | `bool` |
+| `models` | Read-only Property | None | Returns list of models | Model collection |
+| `getChildrenOf` | Function | Likely model-related | Gets children of a model | Model collection |
+| `model` | Read-only Property | None | Gets current model | Current model |
+| `selected_model` | Property | `(selected: int)` | Gets/sets selected model (1-based) | `int` |
+| **Camera Management** |||
+| `cameras` | Read-only Property | None | Returns camera collection | Camera collection |
+| `camera` | Read-only Property | None | Gets current camera | Current camera |
+| `selected_camera` | Property | `(selected: int)` | Gets/sets selected camera (1-based) | `int` |
+| `input_state` | Read-only Property | None | Gets current input state | Input state type |
+| **Colormaps Management** |||
+| `colormaps` | Read-only Property | None | Returns colormap collection | Colormap collection |
+| `add_colormap` | Function | Colormap parameters | Adds a colormap | `void` |
+| `remove_colormap` | Function | Colormap identifier | Removes a colormap | `void` |
+| `get_colormap` | Overloaded Function | `(idx: int)` or `(name: string)` | Gets a colormap | Colormap |
+| **States** |||
+| `load_state` | Function | `(filename: string)` | Loads a previously saved application state | `bool` |
+| `save_state` | Function | `(filename: string)` | Saves the current application state | `bool` |
+| `snapshot` | Function | None | Creates a snapshot of current state | `Snapshot` |
+| `load_snapshot` | Function | None | Loads a previously created snapshot | `void` |
+| `list_snapshots` | Function | None | Returns list of available snapshots | `List of Snapshot` |
+| `screenshot` | Function | `(filename: string)` | Takes a screenshot | `void` |
+| **Graphics** |||
+| `setCullMode` | Function | `(mode: int)` | Sets culling mode | `void` |
+| `cull_mode` | Write-only Property | `(mode: int)` | Sets culling mode | `void` |
+| `cull` | Property | None | Gets/sets culling | Cull state |
+| **Navigation** |||
+| `navigation_path` | Property | Path value | Gets/sets navigation path | Navigation path |
+| `navigation_path_string` | Read-only Property | None | Gets navigation path as string | `string` |
+| `add_navigation_path` | Function | Path parameters | Adds a navigation path | `void` |
+| **Dialogs** |||
+| `show_open_model_dialog` | Function | None | Displays dialog to open a model | `void` |
+| `show_save_model_dialog` | Function | None | Displays dialog to save a model | `void` |
+
 ## Type Bindings
+
+### Image 
 
 | Property | Access | Type | Description |
 |----------|--------|------|-------------|
@@ -9,11 +61,15 @@
 | height | Read-only | Integer | Image height |
 | channels | Read-only | Integer | Number of color channels |
 
+### Snapshot
+
 | Property | Access | Type | Description |
 |----------|--------|------|-------------|
 | state_filename | Read-only | String | Filename of the saved state |
 | thumb_filename | Read-only | String | Filename of the thumbnail |
 | image | Read-only | Image | Associated image object |
+
+### PrimitiveState
 
 | Property | Access | Type | Description |
 |----------|--------|------|-------------|
@@ -21,39 +77,3 @@
 | all_hovered | Read-only | Boolean | Whether all elements are hovered |
 | any_hovered | Read-only | Boolean | Whether any element is hovered |
 | has_changed | Read-only | Boolean | Whether state has changed |
-
-## App Functions
-
-### Scene Management
-
-| Function | Parameters | Return Type | Description |
-|----------|------------|-------------|-------------|
-| clear_scene | - | void | Clear the current scene |
-| quit | - | void | Close the application |
-
-### Dialogs
-
-| Function | Parameters | Return Type | Description |
-|----------|------------|-------------|-------------|
-| show_open_model_dialog | - | void | Open model file dialog |
-| show_save_model_dialog | - | void | Save model file dialog |
-
-### State Management
-
-| Function | Parameters | Return Type | Description |
-|----------|------------|-------------|-------------|
-| load_state | - | void | Load application state |
-| save_state | - | void | Save current application state |
-| snapshot | - | void | Create a snapshot |
-| load_snapshot | - | void | Load a previously saved snapshot |
-| list_snapshots | - | List of Snapshots | Retrieve available snapshots |
-
-### Model Management
-
-| Function | Parameters | Return Type | Description |
-|----------|------------|-------------|-------------|
-| load_model | (string filename) | void | Load a model from file |
-| add_model | (string name, int type) | int | Add a new model (returns 1-based index) |
-| remove_model | (int idx OR string name) | void/bool | Remove a model by index or name |
-| get_model_by_name | (string name) | Model | Retrieve model by name |
-| get_index_of_model | (string name) | int | Get 1-based index of model |
