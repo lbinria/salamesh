@@ -11,39 +11,38 @@
 
 namespace sl {
 
-	// TODO to return type bool
-	inline void load_texture_1d(const std::string &path, unsigned int & texture, int & width, int & height, int & nChannels) {
-		glGenTextures(1, &texture);
-		glBindTexture(GL_TEXTURE_1D, texture);
+	// // TODO to return type bool
+	// inline void load_texture_1d(const std::string &path, unsigned int & texture, int & width, int & height, int & nChannels) {
+	// 	glGenTextures(1, &texture);
+	// 	glBindTexture(GL_TEXTURE_1D, texture);
 
-		glTexParameteri(GL_TEXTURE_1D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);	
-		glTexParameteri(GL_TEXTURE_1D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-		glTexParameteri(GL_TEXTURE_1D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-		glTexParameteri(GL_TEXTURE_1D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+	// 	glTexParameteri(GL_TEXTURE_1D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);	
+	// 	glTexParameteri(GL_TEXTURE_1D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+	// 	glTexParameteri(GL_TEXTURE_1D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+	// 	glTexParameteri(GL_TEXTURE_1D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 
-		unsigned char *new_data = stbi_load(path.c_str(), &width, &height, &nChannels, 0);
+	// 	unsigned char *new_data = stbi_load(path.c_str(), &width, &height, &nChannels, 0);
 		
-		if (!new_data) {
-			std::cout << "Failed to load texture" << std::endl;
-			return;
-		}
+	// 	if (!new_data) {
+	// 		std::cout << "Failed to load texture" << std::endl;
+	// 		return;
+	// 	}
 
-		GLenum format = GL_RGB;
-		if (nChannels == 1)
-			format = GL_RED;
-		else if (nChannels == 3)
-			format = GL_RGB;
-		else if (nChannels == 4)
-			format = GL_RGBA;
+	// 	GLenum format = GL_RGB;
+	// 	if (nChannels == 1)
+	// 		format = GL_RED;
+	// 	else if (nChannels == 3)
+	// 		format = GL_RGB;
+	// 	else if (nChannels == 4)
+	// 		format = GL_RGBA;
 
-		std::cout << "Load: " << path << ", w: " << width << ", h: " << height << ", channels: " << nChannels << std::endl;
-		glTexImage1D(GL_TEXTURE_1D, 0, format, width, 0, format, GL_UNSIGNED_BYTE, new_data);
+	// 	std::cout << "Load: " << path << ", w: " << width << ", h: " << height << ", channels: " << nChannels << std::endl;
+	// 	glTexImage1D(GL_TEXTURE_1D, 0, format, width, 0, format, GL_UNSIGNED_BYTE, new_data);
 
-		stbi_image_free(new_data);
-	}
+	// 	stbi_image_free(new_data);
+	// }
 
-	// TODO to return type bool
-	inline void load_texture_2d(const std::string &path, unsigned int & texture, int & width, int & height, int & nChannels) {
+	inline bool load_texture_2d(const std::string &path, unsigned int & texture, int & width, int & height, int & nChannels) {
 		glGenTextures(1, &texture);
 		glBindTexture(GL_TEXTURE_2D, texture);
 
@@ -57,7 +56,7 @@ namespace sl {
 		
 		if (!new_data) {
 			std::cerr << "Failed to load texture: " << path << std::endl;
-			return;
+			return false;
 		}
 
 		std::cout << "Loaded texture: " << path << std::endl;
@@ -74,6 +73,8 @@ namespace sl {
 		glTexImage2D(GL_TEXTURE_2D, 0, format, width, height, 0, format, GL_UNSIGNED_BYTE, new_data);
 		
 		stbi_image_free(new_data);
+
+		return true;
 	}
 
 	// Buffers

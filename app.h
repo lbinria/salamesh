@@ -329,8 +329,7 @@ struct App : public IApp {
 	std::vector<std::unique_ptr<Script>> scripts;
 	InputState st;
 
-	unsigned int eyeIcon = 0;
-	unsigned int bugAntIcon = 0;
+	unsigned int eyeIcon, bugAntIcon;
 
 	int cull_mode = GL_BACK;
 	bool cull = true;

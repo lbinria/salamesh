@@ -325,8 +325,12 @@ void App::setup() {
 
 	// Load icons
 	int iconWidth, iconHeight, iconChannels;
-	sl::load_texture_2d(sl::assetsPath("icons/Eye.png"), eyeIcon, iconWidth, iconHeight, iconChannels);
-	sl::load_texture_2d(sl::assetsPath("icons/BugAnt.png"), bugAntIcon, iconWidth, iconHeight, iconChannels);
+	if (!sl::load_texture_2d(sl::assetsPath("icons/Eye.png"), eyeIcon, iconWidth, iconHeight, iconChannels)) {
+		std::cerr << "Unable to load Eye icon." << std::endl;
+	}
+	if (!sl::load_texture_2d(sl::assetsPath("icons/BugAnt.png"), bugAntIcon, iconWidth, iconHeight, iconChannels)) {
+		std::cerr << "Unable to load BugAnt icon." << std::endl;
+	}
 
 	auto renderSurface = std::make_unique<RenderSurface>(screenWidth, screenHeight);
 	renderSurface->setBackgroundColor({0.05, 0.1, 0.15});
@@ -983,7 +987,10 @@ void App::addColormap(const std::string name, const std::string filename) {
 		0
 	};
 
-	sl::load_texture_2d(filename, cm.tex, width, height, nrChannels);
+	if(!sl::load_texture_2d(filename, cm.tex, width, height, nrChannels)) {
+		std::cerr << "Unable to load colormap " << name << " at " << filename << "." << std::endl;
+		return;
+	}
 
 	cm.width = width;
 	cm.height = height;
@@ -1257,6 +1264,7 @@ Snapshot App::snapshot() {
 			fs::create_directory("snapshots");
 	} catch (const std::filesystem::filesystem_error &e) {
 		std::cerr << "Error creating directory: " << e.what() << " on snapshot." << std::endl;
+		// TODO quit here else side effects !
 	}
 
 	auto now = std::chrono::system_clock::now();
@@ -1317,7 +1325,10 @@ std::vector<Snapshot> App::listSnapshots() {
 
 		unsigned int tex;
 		int w, h, c;
-		sl::load_texture_2d(thumbFilenames[i], tex, w, h, c);
+		if (!sl::load_texture_2d(thumbFilenames[i], tex, w, h, c)) {
+			std::cerr << "Unable to load snapshot thumb " << thumbFilenames[i] << "." << std::endl;
+			continue;
+		}
 		
 		snapshots.push_back(Snapshot{
 			.stateFilename = stateFilenames[i],
