@@ -33,7 +33,7 @@ set(SOURCES
     renderers/line_renderer.cpp renderers/line_renderer.h
     renderers/point_set_renderer.cpp renderers/point_set_renderer.h
     renderers/halfedge_renderer.cpp renderers/halfedge_renderer.h
-    renderers/bbox_renderer.cpp renderers/bbox_renderer.h
+    renderers/bbox_renderer/bbox_renderer.cpp renderers/bbox_renderer/bbox_renderer.h
     renderers/clipping_renderer.cpp renderers/clipping_renderer.h
     renderers/surface_renderer.cpp renderers/surface_renderer.h
     renderers/volume_renderer.cpp renderers/volume_renderer.h
@@ -54,6 +54,10 @@ set(SOURCES
 
 include_directories(../include)
 
+# Copy renderers shaders
+message("Copying PLOP from ${PROJECT_SOURCE_DIR}/renderers/bbox_renderer/plop.txt too ${CMAKE_BINARY_DIR}/shaders")
+file(COPY ${PROJECT_SOURCE_DIR}/renderers/bbox_renderer/bbox.frag DESTINATION ${CMAKE_BINARY_DIR}/shaders)
+file(COPY ${PROJECT_SOURCE_DIR}/renderers/bbox_renderer/bbox.vert DESTINATION ${CMAKE_BINARY_DIR}/shaders)
 
 # Add the library
 add_library(salamesh_core ${SOURCES} ${JSON_SOURCES})

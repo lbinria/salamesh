@@ -7,7 +7,7 @@
 #include "../renderers/point_set_renderer.h"
 #include "../renderers/halfedge_renderer.h"
 #include "../renderers/hex_renderer.h"
-#include "../renderers/bbox_renderer.h"
+#include "../renderers/bbox_renderer/bbox_renderer.h"
 #include "../renderers/clipping_renderer.h"
 
 #include "../layer.h"
