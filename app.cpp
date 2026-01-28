@@ -10,6 +10,7 @@ struct UBOMatrices {
 	alignas(16) glm::vec2 viewport;
 };
 
+// TODO move to graphics
 Image App::screenshot(const std::string& filename, int targetWidth, int targetHeight) {
 	int width, height;
 	glfwGetWindowSize(window, &width, &height);
@@ -379,6 +380,67 @@ void App::setup() {
 
 }
 
+// TODO probably merge some with start function
+void App::init() {
+
+
+	std::cout << "Init" << std::endl;
+
+	{
+		// Create cameras
+		auto trackball_camera = std::make_shared<TrackBallCamera>("Trackball");
+		auto descent_camera = std::make_shared<DescentCamera>("Descent");
+		cameras.push_back(std::move(trackball_camera));
+		cameras.push_back(std::move(descent_camera));
+	}
+	
+	getRenderSurface().setCamera(cameras[0]);
+	// renderSurfaces[1]->setCamera(cameras[1]);
+
+	// Load model
+	// Check for files given in args (is it models, scripts ?)
+	std::set<std::string> accepted{".obj", ".mesh", ".geogram"};
+	for (auto &p : args.paths) {
+		std::string ext = p.extension().string();
+		sl::toLower(ext);
+		if (accepted.contains(ext)) {
+			loadModel(p.string());
+		}
+		else if (p.extension() == ".lua") {
+			std::cout << "load script: " << p.string() << std::endl;
+			auto script = std::make_unique<LuaScript>(*this, p.string());
+			script->init();
+			scripts.push_back(std::move(script));
+		}
+		else if (p.extension() == ".json") {
+			// Check internal format of json file (state file, settings...)
+			std::ifstream ifs(p);
+			if (!ifs.is_open()) {
+				std::cerr << "Failed to open file given as argument: " << p.string() << std::endl;
+				continue;;
+			}
+
+			json j;
+			ifs >> j;
+			ifs.close();
+
+			if (j["header"]["type"] == "state") {
+				loadState(j, p.string());
+			}
+		}
+	}
+
+	// Focus last loaded model
+	if (models.size() > 0)
+		focus(models.size() - 1);
+
+	// Load modules
+	Settings settings;
+	settings.load(args.settings_path);
+	loadModules(settings);
+
+}
+
 void App::start() {
 
 	Shader screenShader(sl::shadersPath("screen.vert"), sl::shadersPath("screen.frag"));
@@ -475,16 +537,11 @@ void App::start() {
 		
 		ImGui::NewFrame();
 	
-
-
-
 		// ImGui::Begin("Render");
 		// ImVec2 size = ImGui::GetWindowSize();
 		// renderSurfaceWindowHovered = ImGui::IsItemHovered();
 		// ImGui::Image((ImTextureID)renderSurfaces[1]->texColor, size, ImVec2(0.0f, 1.0f), ImVec2(1.0f, 0.0f));
 		// ImGui::End();
-
-
 
 		draw_gui();
 
@@ -571,6 +628,174 @@ void App::updateCamera(float dt) {
 
 
 	
+}
+
+void App::setupLayout() {
+
+
+	ImGuiIO& io = ImGui::GetIO();
+	if (io.ConfigFlags & ImGuiConfigFlags_DockingEnable) {
+
+		ImGuiID dockspace_id = ImGui::GetID("MyDockspace");
+		ImGuiViewport* viewport = ImGui::GetMainViewport();
+		ImGui::DockSpaceOverViewport(dockspace_id, viewport, ImGuiDockNodeFlags_PassthruCentralNode);
+
+		static auto first_time = true;
+		if (first_time)
+		{
+			first_time = false;
+			// Clear out existing layout
+			ImGui::DockBuilderRemoveNode(dockspace_id);
+
+			ImGuiID top_bar_node = ImGui::DockBuilderAddNode(dockspace_id, ImGuiDockNodeFlags_NoTabBar);
+			ImGui::DockBuilderSetNodeSize(top_bar_node, ImVec2(viewport->WorkSize.x, 30.0f)); // Thin top 
+
+			ImGui::DockBuilderAddNode(dockspace_id, ImGuiDockNodeFlags_DockSpace);
+			ImGui::DockBuilderSetNodeSize(dockspace_id, ImGui::GetWindowSize());
+
+
+
+			// get id of main dock space area
+			ImGuiID dockspace_main_id = dockspace_id;
+			// Create a dock node for the right docked window
+			ImGuiID navBar = ImGui::DockBuilderSplitNode(dockspace_main_id, ImGuiDir_Left, 1.f, nullptr, &dockspace_main_id);
+			ImGuiID toolBar = ImGui::DockBuilderSplitNode(dockspace_main_id, ImGuiDir_Right, 1.f, nullptr, &dockspace_main_id);
+			ImGuiID botBar = ImGui::DockBuilderSplitNode(dockspace_main_id, ImGuiDir_Down, 0.2f, nullptr, &dockspace_main_id);
+
+			ImGuiID leftbot = ImGui::DockBuilderSplitNode(navBar, ImGuiDir_Down, 0.25f, nullptr, &navBar);
+
+			ImGui::DockBuilderDockWindow("Bot Bar", botBar);
+			// ImGui::DockBuilderDockWindow("Left Side Bar", leftbot);
+			// ImGui::DockBuilderDockWindow("Right Side Bar", toolBar);
+			// ImGui::DockBuilderDockWindow("Right Side Bar2", toolBar);
+			// // Position the top bar at the top
+			// ImGui::DockBuilderDockWindow("TopBar", top_bar_node);
+
+			for (auto &s : scripts) {
+				auto layout = s->layoutGui();
+				for (auto &l : layout) {
+					if (l.second == "nav_bar")
+						ImGui::DockBuilderDockWindow(l.first.c_str(), navBar);
+					else if (l.second == "bot_bar")
+						ImGui::DockBuilderDockWindow(l.first.c_str(), botBar);
+					else if (l.second == "tool_bar")
+						ImGui::DockBuilderDockWindow(l.first.c_str(), toolBar);
+				}
+			}
+
+			// ImGui::DockBuilderDockWindow("Scene", left);
+
+			ImGui::DockBuilderFinish(dockspace_id);
+		}
+
+
+		ImGui::Begin("Bot Bar");
+		ImGui::Text("bot bar");
+		ImGui::End();
+
+
+	}
+}
+
+
+
+void App::draw_gui() {
+
+
+	setupLayout();
+
+	// Foot bar
+	ImGui::SetNextWindowPos(
+		ImVec2(0, ImGui::GetIO().DisplaySize.y - 30.f), 
+		ImGuiCond_Always
+	);
+	ImGui::SetNextWindowSize(
+		ImVec2(ImGui::GetIO().DisplaySize.x, 30.f)
+	);
+
+	ImGui::Begin("Foot_bar", nullptr, 
+		ImGuiWindowFlags_NoMove |           // Prevent window movement
+		ImGuiWindowFlags_AlwaysAutoResize | // Automatically adjust size
+		ImGuiWindowFlags_NoDecoration         // Remove default title bar (optional)
+	);
+
+	ImGui::Text(getNavigationPathString().c_str());
+
+	ImGui::End();
+
+	
+	// display
+	if (ImGuiFileDialog::Instance()->Display("OpenModelDlg")) {
+		if (ImGuiFileDialog::Instance()->IsOk()) { // action if OK
+
+			std::string directoryPath = ImGuiFileDialog::Instance()->GetCurrentPath();
+			std::cout << "directory path:" << directoryPath << std::endl;
+
+			auto selection = ImGuiFileDialog::Instance()->GetSelection();
+			
+			for (auto &kv : selection)
+			{
+				std::string filename = kv.first;
+				std::string fullpath = kv.second;
+				std::cout << "filename: " << filename << ", fullpath: " << fullpath << std::endl;
+				std::cout << "read model..." << std::endl;
+				loadModel(fullpath);
+			}
+
+			// Focus last loaded model
+			if (models.size() > 0)
+				focus(models.size() - 1);
+		}
+		
+		// close
+		ImGuiFileDialog::Instance()->Close();
+	}
+
+	// display save dialog
+	if (ImGuiFileDialog::Instance()->Display("SaveModelAsDlg")) {
+		if (ImGuiFileDialog::Instance()->IsOk()) { // action if OK
+			std::string filename = ImGuiFileDialog::Instance()->GetFilePathName();
+			std::string directoryPath = ImGuiFileDialog::Instance()->GetCurrentPath();
+			// action
+			std::cout << "file path:" << directoryPath << ", file path name: " << filename << std::endl;
+			std::cout << "save model..." << std::endl;
+			getCurrentModel().saveAs(filename);
+		}
+		
+		// close
+		ImGuiFileDialog::Instance()->Close();
+	}
+
+	
+	ImGui::GetBackgroundDrawList()->AddCircle(ImGui::GetMousePos(), st.mouse.getCursorRadius(), IM_COL32(225, 225, 255, 200), 0, 2);
+
+
+
+	for (auto &script : scripts) {
+		// if (script->status == LuaScript::SCRIPT_STATUS_OK) {
+			bool success = script->draw_gui(ImGui::GetCurrentContext());
+			if (!success) {
+
+				// Clear properly ImGui
+
+				// auto &io = ImGui::GetIO();
+				// bool last_error_recovery = io.ConfigErrorRecovery;
+				// io.ConfigErrorRecovery = false;
+				
+				// // ImGui::NewFrame();
+				// // ImGui::EndFrame();
+
+				// io.ConfigErrorRecovery = last_error_recovery;
+				// // Clean up commands
+				// auto draw_data = ImGui::GetDrawData();
+				// if (draw_data != nullptr)
+				// 	draw_data->Clear();
+
+			}
+		// }
+	}
+
+	_isUIHovered = ImGui::IsAnyItemHovered() || ImGui::IsWindowHovered(ImGuiHoveredFlags_AnyWindow);
 }
 
 void App::clean() {

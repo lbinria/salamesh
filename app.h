@@ -251,9 +251,9 @@ struct App : public IApp {
     double getScreenAspectRatio() const { return static_cast<double>(screenWidth) / screenHeight; }
 
     // To override lifecycle functions
-    virtual void init() = 0;
+    void init();
     void update(float dt);
-    virtual void draw_gui() = 0;
+    void draw_gui();
 
     
     void mouse_move(double x, double y);
@@ -341,6 +341,8 @@ struct App : public IApp {
 	std::unique_ptr<LuaScript> loadScript(fs::path scriptPath);
 	void loadCppScript(fs::path scriptPath, sol::state& state);
 	void loadCppScript(fs::path scriptPath);
+
+    void setupLayout();
 
     // TODO move to private
 	bool _isUIHovered = false;

@@ -1,4 +1,4 @@
-#include "my_app.h"
+#include "app.h"
 #include "helpers/args_manager.h"
 
 int main(int argc, char** argv) {
@@ -24,7 +24,7 @@ int main(int argc, char** argv) {
 		}
 	}
 	
-	MyApp app(args);
+	App app(args);
 	app.setup();
 	app.start();
 

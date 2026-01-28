@@ -316,3 +316,103 @@ namespace bindings {
 	}
 	
 }
+
+// TODO add some of functions below
+
+// void ModePanel(std::string modeStr) {
+// 	ImGuiWindowFlags flags = ImGuiWindowFlags_NoDecoration
+// 						| ImGuiWindowFlags_NoMove
+// 						| ImGuiWindowFlags_NoSavedSettings
+// 						| ImGuiWindowFlags_NoFocusOnAppearing
+// 						| ImGuiWindowFlags_NoNav;
+
+// 	const float margin = 32.0f;
+// 	ImGuiIO& io = ImGui::GetIO();
+// 	ImVec2 displaySize = io.DisplaySize;
+	
+// 	ImVec2 pos = ImVec2(margin, margin + 48.f);
+// 	ImVec2 size = ImVec2(displaySize.x - margin * 2.0f, 25.f);
+
+// 	ImGui::SetNextWindowPos(pos);
+// 	ImGui::SetNextWindowSize(size);
+// 	ImGui::SetNextWindowBgAlpha(0.0f); // fallback for some backends
+
+// 	ImGui::SetNextWindowDockID(0, ImGuiCond_Always); 
+
+// 	ImGui::Begin("##NavigationPathPanel", nullptr, flags);
+
+// 	ImGui::Text("Navigation path: %s", modeStr.c_str());
+
+// 	ImGui::End();
+// }
+
+// // call each frame after NewFrame() and before Render()
+// void MyApp::TopModePanel(int &currentMode, const std::vector<std::pair<std::string, ImTextureID>>& icons, ImVec2 iconSize) {
+// 	// Layout and appearance settings
+// 	const float panelHeight = 48.0f;
+// 	const float margin = 32.0f;
+// 	ImGuiIO& io = ImGui::GetIO();
+// 	ImVec2 displaySize = io.DisplaySize;
+
+// 	ImGuiWindowFlags flags = ImGuiWindowFlags_NoDecoration
+// 						| ImGuiWindowFlags_NoMove
+// 						| ImGuiWindowFlags_NoSavedSettings
+// 						| ImGuiWindowFlags_NoFocusOnAppearing
+// 						| ImGuiWindowFlags_NoNav;
+
+// 	ImVec2 pos = ImVec2(margin, margin);
+// 	ImVec2 size = ImVec2(displaySize.x - margin*2.0f, panelHeight);
+
+// 	ImGui::SetNextWindowPos(pos);
+// 	ImGui::SetNextWindowSize(size);
+// 	ImGui::SetNextWindowBgAlpha(0.0f); // fallback for some backends
+
+// 	ImGui::PushStyleColor(ImGuiCol_WindowBg, IM_COL32(0,0,0,0));    // fully transparent
+// 	ImGui::PushStyleColor(ImGuiCol_Border, IM_COL32(0,0,0,0));      // no border
+// 	ImGui::Begin("##TopModePanel", nullptr, flags);
+
+// 	// Optional rounded background with semi-transparency:
+// 	ImDrawList* dl = ImGui::GetWindowDrawList();
+// 	ImVec2 winMin = ImGui::GetWindowPos();
+// 	ImVec2 winMax = ImVec2(winMin.x + ImGui::GetWindowSize().x, winMin.y + ImGui::GetWindowSize().y);
+// 	float rounding = 8.0f;
+// 	// draw a subtle translucent rounded rect behind icons (customize color/alpha)
+// 	dl->AddRectFilled(winMin, ImVec2(winMax.x, winMax.y), IM_COL32(20,20,20,120), rounding);
+// 	dl->AddRect(winMin, ImVec2(winMax.x, winMax.y), IM_COL32(255,255,255,10), rounding);
+
+// 	// Icon buttons
+// 	ImGui::SetCursorPosY((panelHeight - iconSize.y) * 0.5f); // center vertically
+// 	for (int i = 0; i < (int)icons.size(); ++i) {
+// 		if (i > 0) ImGui::SameLine();
+
+// 		// highlight active mode
+// 		bool active = (currentMode == i);
+// 		if (active) {
+// 			ImGui::PushStyleColor(ImGuiCol_Button, IM_COL32(255,255,255,20));
+// 			ImGui::PushStyleColor(ImGuiCol_ButtonHovered, IM_COL32(255,255,255,200));
+// 			ImGui::PushStyleColor(ImGuiCol_ButtonActive, IM_COL32(255,255,255,230));
+// 		}
+
+// 		// Use ImageButton for texture icons; if you have a font icon, use ImGui::Button with Text
+// 		ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2(0,0));
+
+// 		if (ImGui::ImageButton(("btn_mode_" + std::to_string(i)).c_str(), icons[i].second, iconSize, ImVec2(0,0), ImVec2(1,1))) {
+// 			currentMode = i; // select mode
+// 			setNavigationPath({icons[i].first});
+// 		}
+// 		// ImGui::PopStyleColor(3);
+// 		ImGui::PopStyleVar();
+
+// 		if (active) ImGui::PopStyleColor(3);
+
+// 		if (ImGui::IsItemHovered()) {
+// 			ImGui::BeginTooltip();
+// 			ImGui::Text(icons[i].first.c_str());
+// 			ImGui::EndTooltip();
+// 		}
+
+// 	}
+
+// 	ImGui::End();
+// 	ImGui::PopStyleColor(2);
+// }
