@@ -1,8 +1,8 @@
 #include "app.h"
 
-#include "cameras/arcball_camera.h"
-#include "cameras/trackball_camera.h"
-#include "cameras/descent_camera.h"
+#include "core/cameras/arcball_camera.h"
+#include "core/cameras/trackball_camera.h"
+#include "core/cameras/descent_camera.h"
 
 struct UBOMatrices {
 	alignas(16) glm::mat4 view;

@@ -5,9 +5,9 @@
 #include "module_triangle_diagnostic/triangle_inspector.h"
 #include "module_triangle_diagnostic/inverted_triangle_viewer.h"
 
-#include "cameras/arcball_camera.h"
-#include "cameras/trackball_camera.h"
-#include "cameras/descent_camera.h"
+#include "core/cameras/arcball_camera.h"
+#include "core/cameras/trackball_camera.h"
+#include "core/cameras/descent_camera.h"
 
 
 #include <filesystem>

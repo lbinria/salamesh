@@ -119,9 +119,7 @@ add_executable(salamesh
   app.cpp app.h
   my_app.cpp my_app.h
 
-  cameras/arcball_camera.h
-  cameras/trackball_camera.h
-  cameras/descent_camera.h
+
   render_surface.cpp render_surface.h
 
   bindings/imgui_bindings.h bindings/imgui_bindings.cpp

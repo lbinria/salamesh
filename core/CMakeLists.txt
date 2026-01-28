@@ -21,9 +21,13 @@ set(SOURCES
     attribute.h
     element.h
     input_states.h 
-    camera.h
 
     shader.cpp shader.h 
+
+    cameras/camera.h
+    cameras/arcball_camera.h
+    cameras/trackball_camera.h
+    cameras/descent_camera.h
 
     renderers/renderer.h
     renderers/line_renderer.cpp renderers/line_renderer.h

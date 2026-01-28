@@ -1,5 +1,5 @@
 #pragma once
-#include "../core/camera.h"
+#include "camera.h"
 
 struct TrackBallCamera : public Camera {
 

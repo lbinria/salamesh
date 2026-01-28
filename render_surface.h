@@ -1,5 +1,5 @@
 #pragma once
-#include "core/camera.h"
+#include "core/cameras/camera.h"
 #include "core/shader.h"
 
 #include "../include/glm/glm.hpp"

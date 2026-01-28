@@ -3,7 +3,7 @@
 #include "models/model.h"
 #include "input_states.h"
 #include "element.h"
-#include "camera.h"
+#include "cameras/camera.h"
 #include <string>
 
 struct Colormap {

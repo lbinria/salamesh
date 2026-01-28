@@ -44,7 +44,7 @@
 
 #include "render_surface.h"
 
-#include "core/camera.h"
+#include "core/cameras/camera.h"
 
 
 #include "core/lua_script.h"

@@ -3,7 +3,7 @@
 */
 
 #pragma once
-#include "../core/camera.h"
+#include "camera.h"
 
 struct ArcBallCamera : public Camera {
 
