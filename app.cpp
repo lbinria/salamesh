@@ -1,5 +1,9 @@
 #include "app.h"
 
+#include "cameras/arcball_camera.h"
+#include "cameras/trackball_camera.h"
+#include "cameras/descent_camera.h"
+
 struct UBOMatrices {
 	alignas(16) glm::mat4 view;
 	alignas(16) glm::mat4 proj;
@@ -510,6 +514,63 @@ void App::start() {
 	glfwTerminate();
 
 	return;
+}
+
+// Continuous update
+void App::update(float dt) {
+	
+	if (!_isUIHovered)
+		updateCamera(dt);
+
+	for (auto &script : scripts) {
+		script->update(dt);
+	}
+
+}
+
+void App::updateCamera(float dt) {
+
+	float speed = 0.01f;
+	if (countModels() > 0) {
+		speed = getCurrentModel().getRadius() * 0.5f * dt;
+	}
+
+	if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS) {
+		getCamera().moveForward(speed);
+	} else if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS) {
+		getCamera().moveForward(-speed);
+	}
+	if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS) {
+		getCamera().moveRight(-speed);
+	} else if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS) {
+		getCamera().moveRight(speed);
+	}
+	if (glfwGetKey(window, GLFW_KEY_Q) == GLFW_PRESS) {
+		getCamera().moveUp(speed);
+	} else if (glfwGetKey(window, GLFW_KEY_E) == GLFW_PRESS) {
+		getCamera().moveUp(-speed);
+	}
+
+
+	if (st.mouse.isLeftButton()) {
+		// getCamera().move(st.mouse.delta);
+		getCamera().move(st.mouse.lastPos, st.mouse.pos);
+	}
+
+	if (st.mouse.isRightButton()) {
+		auto arcball = dynamic_cast<ArcBallCamera*>(&getCamera());
+		if (arcball) {
+			arcball->movePan(st.mouse.delta);
+		}
+		else {
+			auto trackball = dynamic_cast<TrackBallCamera*>(&getCamera());
+			if (trackball)
+				trackball->movePan(st.mouse.delta);
+		}
+	}
+
+
+	
 }
 
 void App::clean() {
@@ -1304,7 +1365,7 @@ void App::key_event(int key, int scancode, int action, int mods) {
 }
 
 void App::mouse_scroll(double xoffset, double yoffset) {
-	if (isUIHovered)
+	if (_isUIHovered)
 		return;
 
 	// Maybe move to a cameracontroller class
@@ -1351,4 +1412,23 @@ void App::mouse_move(double x, double y) {
 		script->mouse_move(x, y);
 	}
 
+}
+
+std::unique_ptr<Camera> App::makeCamera(std::string type) {
+	// Register cameras
+	if (type == "ArcBallCamera")
+		return std::make_unique<ArcBallCamera>();
+	else if (type == "DescentCamera")
+		return std::make_unique<DescentCamera>();
+	else if (type == "TrackBallCamera")
+		return std::make_unique<TrackBallCamera>();
+	else {
+		std::cerr 
+			<< "Unable to make camera of type " 
+			<< type 
+			<< ", maybe you should override `makeCamera` to add the construction of your custom camera class ?" 
+			<< std::endl;
+
+		return nullptr;
+	}
 }

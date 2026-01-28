@@ -87,212 +87,112 @@ void MyApp::init() {
 	auto layoutComp = std::make_unique<TriangleDiagnosticLayout>(*this);
 	auto viewComp = std::make_unique<ViewComponent>(*this);
 	auto triDiagnosticComp = std::make_unique<TriangleInspector>(*this);
-	// auto invertedTriangleViewerComp = std::make_unique<InvertedTriangleViewer>(*this);
 
 	layoutComp->init();
 	viewComp->init();
 	triDiagnosticComp->init();
-	// invertedTriangleViewerComp->init();
 	scripts.push_back(std::move(layoutComp));
 	scripts.push_back(std::move(viewComp));
 	scripts.push_back(std::move(triDiagnosticComp));
-	// scripts.push_back(std::move(invertedTriangleViewerComp));
 }
 
-// Continuous update
-void MyApp::update(float dt) {
+// void ModePanel(std::string modeStr) {
+// 	ImGuiWindowFlags flags = ImGuiWindowFlags_NoDecoration
+// 						| ImGuiWindowFlags_NoMove
+// 						| ImGuiWindowFlags_NoSavedSettings
+// 						| ImGuiWindowFlags_NoFocusOnAppearing
+// 						| ImGuiWindowFlags_NoNav;
+
+// 	const float margin = 32.0f;
+// 	ImGuiIO& io = ImGui::GetIO();
+// 	ImVec2 displaySize = io.DisplaySize;
 	
-	if (!isUIHovered)
-		updateCamera(dt);
+// 	ImVec2 pos = ImVec2(margin, margin + 48.f);
+// 	ImVec2 size = ImVec2(displaySize.x - margin * 2.0f, 25.f);
 
-	for (auto &component : scripts) {
-		component->update(dt);
-	}
+// 	ImGui::SetNextWindowPos(pos);
+// 	ImGui::SetNextWindowSize(size);
+// 	ImGui::SetNextWindowBgAlpha(0.0f); // fallback for some backends
 
-}
+// 	ImGui::SetNextWindowDockID(0, ImGuiCond_Always); 
 
-void MyApp::updateCamera(float dt) {
+// 	ImGui::Begin("##NavigationPathPanel", nullptr, flags);
 
-	float speed = 0.01f;
-	if (countModels() > 0) {
-		speed = getCurrentModel().getRadius() * 0.5f * dt;
-	}
+// 	ImGui::Text("Navigation path: %s", modeStr.c_str());
 
-	if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS) {
-		getCamera().moveForward(speed);
-	} else if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS) {
-		getCamera().moveForward(-speed);
-	}
-	if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS) {
-		getCamera().moveRight(-speed);
-	} else if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS) {
-		getCamera().moveRight(speed);
-	}
-	if (glfwGetKey(window, GLFW_KEY_Q) == GLFW_PRESS) {
-		getCamera().moveUp(speed);
-	} else if (glfwGetKey(window, GLFW_KEY_E) == GLFW_PRESS) {
-		getCamera().moveUp(-speed);
-	}
-
-
-	if (st.mouse.isLeftButton()) {
-		// getCamera().move(st.mouse.delta);
-		getCamera().move(st.mouse.lastPos, st.mouse.pos);
-	}
-
-	if (st.mouse.isRightButton()) {
-		auto arcball = dynamic_cast<ArcBallCamera*>(&getCamera());
-		if (arcball) {
-			arcball->movePan(st.mouse.delta);
-		}
-		else {
-			auto trackball = dynamic_cast<TrackBallCamera*>(&getCamera());
-			if (trackball)
-				trackball->movePan(st.mouse.delta);
-		}
-	}
-
-
-	
-}
-
-
-// void SetupDockspace() {
-//     // Enable docking
-//     ImGuiIO& io = ImGui::GetIO();
-//     io.ConfigFlags |= ImGuiConfigFlags_DockingEnable;
-
-//     // Create a fullscreen dockspace
-//     ImGuiViewport* viewport = ImGui::GetMainViewport();
-//     ImGui::SetNextWindowPos(viewport->WorkPos);
-//     ImGui::SetNextWindowSize(viewport->WorkSize);
-//     ImGui::SetNextWindowViewport(viewport->ID);
-
-//     ImGuiWindowFlags window_flags = 
-//         ImGuiWindowFlags_NoDocking |
-//         ImGuiWindowFlags_NoTitleBar | 
-//         ImGuiWindowFlags_NoCollapse | 
-//         ImGuiWindowFlags_NoResize | 
-//         ImGuiWindowFlags_NoMove |
-//         ImGuiWindowFlags_NoBringToFrontOnFocus |
-//         ImGuiWindowFlags_NoNavFocus;
-
-//     ImGui::PushStyleVar(ImGuiStyleVar_WindowRounding, 0.0f);
-//     ImGui::PushStyleVar(ImGuiStyleVar_WindowBorderSize, 0.0f);
-//     ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(0.0f, 0.0f));
-    
-//     ImGui::Begin("Dockspace", nullptr, window_flags);
-    
-//     ImGui::PopStyleVar(3);
-
-//     // Create the dockspace
-//     ImGuiID dockspace_id = ImGui::GetID("MyDockspace");
-//     ImGui::DockSpace(dockspace_id, ImVec2(0.0f, 0.0f), 
-//         ImGuiDockNodeFlags_None);
-
-//     ImGui::End();
+// 	ImGui::End();
 // }
 
+// // call each frame after NewFrame() and before Render()
+// void MyApp::TopModePanel(int &currentMode, const std::vector<std::pair<std::string, ImTextureID>>& icons, ImVec2 iconSize) {
+// 	// Layout and appearance settings
+// 	const float panelHeight = 48.0f;
+// 	const float margin = 32.0f;
+// 	ImGuiIO& io = ImGui::GetIO();
+// 	ImVec2 displaySize = io.DisplaySize;
 
+// 	ImGuiWindowFlags flags = ImGuiWindowFlags_NoDecoration
+// 						| ImGuiWindowFlags_NoMove
+// 						| ImGuiWindowFlags_NoSavedSettings
+// 						| ImGuiWindowFlags_NoFocusOnAppearing
+// 						| ImGuiWindowFlags_NoNav;
 
+// 	ImVec2 pos = ImVec2(margin, margin);
+// 	ImVec2 size = ImVec2(displaySize.x - margin*2.0f, panelHeight);
 
-void ModePanel(std::string modeStr) {
-	ImGuiWindowFlags flags = ImGuiWindowFlags_NoDecoration
-						| ImGuiWindowFlags_NoMove
-						| ImGuiWindowFlags_NoSavedSettings
-						| ImGuiWindowFlags_NoFocusOnAppearing
-						| ImGuiWindowFlags_NoNav;
+// 	ImGui::SetNextWindowPos(pos);
+// 	ImGui::SetNextWindowSize(size);
+// 	ImGui::SetNextWindowBgAlpha(0.0f); // fallback for some backends
 
-	const float margin = 32.0f;
-	ImGuiIO& io = ImGui::GetIO();
-	ImVec2 displaySize = io.DisplaySize;
-	
-	ImVec2 pos = ImVec2(margin, margin + 48.f);
-	ImVec2 size = ImVec2(displaySize.x - margin * 2.0f, 25.f);
+// 	ImGui::PushStyleColor(ImGuiCol_WindowBg, IM_COL32(0,0,0,0));    // fully transparent
+// 	ImGui::PushStyleColor(ImGuiCol_Border, IM_COL32(0,0,0,0));      // no border
+// 	ImGui::Begin("##TopModePanel", nullptr, flags);
 
-	ImGui::SetNextWindowPos(pos);
-	ImGui::SetNextWindowSize(size);
-	ImGui::SetNextWindowBgAlpha(0.0f); // fallback for some backends
+// 	// Optional rounded background with semi-transparency:
+// 	ImDrawList* dl = ImGui::GetWindowDrawList();
+// 	ImVec2 winMin = ImGui::GetWindowPos();
+// 	ImVec2 winMax = ImVec2(winMin.x + ImGui::GetWindowSize().x, winMin.y + ImGui::GetWindowSize().y);
+// 	float rounding = 8.0f;
+// 	// draw a subtle translucent rounded rect behind icons (customize color/alpha)
+// 	dl->AddRectFilled(winMin, ImVec2(winMax.x, winMax.y), IM_COL32(20,20,20,120), rounding);
+// 	dl->AddRect(winMin, ImVec2(winMax.x, winMax.y), IM_COL32(255,255,255,10), rounding);
 
-	ImGui::SetNextWindowDockID(0, ImGuiCond_Always); 
+// 	// Icon buttons
+// 	ImGui::SetCursorPosY((panelHeight - iconSize.y) * 0.5f); // center vertically
+// 	for (int i = 0; i < (int)icons.size(); ++i) {
+// 		if (i > 0) ImGui::SameLine();
 
-	ImGui::Begin("##NavigationPathPanel", nullptr, flags);
+// 		// highlight active mode
+// 		bool active = (currentMode == i);
+// 		if (active) {
+// 			ImGui::PushStyleColor(ImGuiCol_Button, IM_COL32(255,255,255,20));
+// 			ImGui::PushStyleColor(ImGuiCol_ButtonHovered, IM_COL32(255,255,255,200));
+// 			ImGui::PushStyleColor(ImGuiCol_ButtonActive, IM_COL32(255,255,255,230));
+// 		}
 
-	ImGui::Text("Navigation path: %s", modeStr.c_str());
+// 		// Use ImageButton for texture icons; if you have a font icon, use ImGui::Button with Text
+// 		ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2(0,0));
 
-	ImGui::End();
-}
+// 		if (ImGui::ImageButton(("btn_mode_" + std::to_string(i)).c_str(), icons[i].second, iconSize, ImVec2(0,0), ImVec2(1,1))) {
+// 			currentMode = i; // select mode
+// 			setNavigationPath({icons[i].first});
+// 		}
+// 		// ImGui::PopStyleColor(3);
+// 		ImGui::PopStyleVar();
 
-// call each frame after NewFrame() and before Render()
-void MyApp::TopModePanel(int &currentMode, const std::vector<std::pair<std::string, ImTextureID>>& icons, ImVec2 iconSize) {
-	// Layout and appearance settings
-	const float panelHeight = 48.0f;
-	const float margin = 32.0f;
-	ImGuiIO& io = ImGui::GetIO();
-	ImVec2 displaySize = io.DisplaySize;
+// 		if (active) ImGui::PopStyleColor(3);
 
-	ImGuiWindowFlags flags = ImGuiWindowFlags_NoDecoration
-						| ImGuiWindowFlags_NoMove
-						| ImGuiWindowFlags_NoSavedSettings
-						| ImGuiWindowFlags_NoFocusOnAppearing
-						| ImGuiWindowFlags_NoNav;
+// 		if (ImGui::IsItemHovered()) {
+// 			ImGui::BeginTooltip();
+// 			ImGui::Text(icons[i].first.c_str());
+// 			ImGui::EndTooltip();
+// 		}
 
-	ImVec2 pos = ImVec2(margin, margin);
-	ImVec2 size = ImVec2(displaySize.x - margin*2.0f, panelHeight);
+// 	}
 
-	ImGui::SetNextWindowPos(pos);
-	ImGui::SetNextWindowSize(size);
-	ImGui::SetNextWindowBgAlpha(0.0f); // fallback for some backends
-
-	ImGui::PushStyleColor(ImGuiCol_WindowBg, IM_COL32(0,0,0,0));    // fully transparent
-	ImGui::PushStyleColor(ImGuiCol_Border, IM_COL32(0,0,0,0));      // no border
-	ImGui::Begin("##TopModePanel", nullptr, flags);
-
-	// Optional rounded background with semi-transparency:
-	ImDrawList* dl = ImGui::GetWindowDrawList();
-	ImVec2 winMin = ImGui::GetWindowPos();
-	ImVec2 winMax = ImVec2(winMin.x + ImGui::GetWindowSize().x, winMin.y + ImGui::GetWindowSize().y);
-	float rounding = 8.0f;
-	// draw a subtle translucent rounded rect behind icons (customize color/alpha)
-	dl->AddRectFilled(winMin, ImVec2(winMax.x, winMax.y), IM_COL32(20,20,20,120), rounding);
-	dl->AddRect(winMin, ImVec2(winMax.x, winMax.y), IM_COL32(255,255,255,10), rounding);
-
-	// Icon buttons
-	ImGui::SetCursorPosY((panelHeight - iconSize.y) * 0.5f); // center vertically
-	for (int i = 0; i < (int)icons.size(); ++i) {
-		if (i > 0) ImGui::SameLine();
-
-		// highlight active mode
-		bool active = (currentMode == i);
-		if (active) {
-			ImGui::PushStyleColor(ImGuiCol_Button, IM_COL32(255,255,255,20));
-			ImGui::PushStyleColor(ImGuiCol_ButtonHovered, IM_COL32(255,255,255,200));
-			ImGui::PushStyleColor(ImGuiCol_ButtonActive, IM_COL32(255,255,255,230));
-		}
-
-		// Use ImageButton for texture icons; if you have a font icon, use ImGui::Button with Text
-		ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2(0,0));
-
-		if (ImGui::ImageButton(("btn_mode_" + std::to_string(i)).c_str(), icons[i].second, iconSize, ImVec2(0,0), ImVec2(1,1))) {
-			currentMode = i; // select mode
-			setNavigationPath({icons[i].first});
-		}
-		// ImGui::PopStyleColor(3);
-		ImGui::PopStyleVar();
-
-		if (active) ImGui::PopStyleColor(3);
-
-		if (ImGui::IsItemHovered()) {
-			ImGui::BeginTooltip();
-			ImGui::Text(icons[i].first.c_str());
-			ImGui::EndTooltip();
-		}
-
-	}
-
-	ImGui::End();
-	ImGui::PopStyleColor(2);
-}
+// 	ImGui::End();
+// 	ImGui::PopStyleColor(2);
+// }
 
 void MyApp::setupDock() {
 
@@ -388,12 +288,6 @@ void MyApp::draw_gui() {
 	ImGui::End();
 
 	
-
-	// static int currentMode = -1;
-	// TopModePanel(currentMode, {{"view", (ImTextureID)eyeIcon}, {"diagnostic", (ImTextureID)bugAntIcon}});
-	// ModePanel(getNavigationPathString());
-
-
 	// display
 	if (ImGuiFileDialog::Instance()->Display("OpenModelDlg")) {
 		if (ImGuiFileDialog::Instance()->IsOk()) { // action if OK
@@ -465,25 +359,6 @@ void MyApp::draw_gui() {
 		// }
 	}
 
-	isUIHovered = ImGui::IsAnyItemHovered() || ImGui::IsWindowHovered(ImGuiHoveredFlags_AnyWindow);
+	_isUIHovered = ImGui::IsAnyItemHovered() || ImGui::IsWindowHovered(ImGuiHoveredFlags_AnyWindow);
 
-}
-
-std::unique_ptr<Camera> MyApp::makeCamera(std::string type) {
-	// Register cameras
-	if (type == "ArcBallCamera")
-		return std::make_unique<ArcBallCamera>();
-	else if (type == "DescentCamera")
-		return std::make_unique<DescentCamera>();
-	else if (type == "TrackBallCamera")
-		return std::make_unique<TrackBallCamera>();
-	else {
-		std::cerr 
-			<< "Unable to make camera of type " 
-			<< type 
-			<< ", maybe you should override `makeCamera` to add the construction of your custom camera class ?" 
-			<< std::endl;
-
-		return nullptr;
-	}
 }

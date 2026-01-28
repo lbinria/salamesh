@@ -99,4 +99,5 @@ struct IApp {
 	// Modules
 	virtual void loadModule(fs::path modulePath) = 0;
 
+	virtual bool isUIHovered() const = 0;
 };

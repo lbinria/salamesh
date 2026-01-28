@@ -11,6 +11,7 @@
 
 namespace sl {
 
+	// TODO to return type bool
 	inline void load_texture_1d(const std::string &path, unsigned int & texture, int & width, int & height, int & nChannels) {
 		glGenTextures(1, &texture);
 		glBindTexture(GL_TEXTURE_1D, texture);
@@ -41,6 +42,7 @@ namespace sl {
 		stbi_image_free(new_data);
 	}
 
+	// TODO to return type bool
 	inline void load_texture_2d(const std::string &path, unsigned int & texture, int & width, int & height, int & nChannels) {
 		glGenTextures(1, &texture);
 		glBindTexture(GL_TEXTURE_2D, texture);

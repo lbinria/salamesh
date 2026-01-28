@@ -181,6 +181,8 @@ namespace bindings {
 		app_type["navigation_path_string"] = sol::readonly_property(&IApp::getNavigationPathString);
 		app_type.set_function("add_navigation_path", &IApp::addNavigationPath);
 
+		app_type["is_ui_hovered"] = sol::readonly_property(&IApp::isUIHovered);
+
 		// Modules
 		// app_type.set_function("load_module", &IApp::loadModule);
 	}

@@ -97,7 +97,6 @@ struct App : public IApp {
     void start();
     void clean();
 
-
     // Utils functions
     Image screenshot(const std::string& filename, int targetWidth = -1, int targetHeight = -1) override;
     void quit() override;
@@ -253,9 +252,8 @@ struct App : public IApp {
 
     // To override lifecycle functions
     virtual void init() = 0;
-    virtual void update(float dt) = 0;
+    void update(float dt);
     virtual void draw_gui() = 0;
-    // TODO add virtual void clean() = 0;
 
     
     void mouse_move(double x, double y);
@@ -275,7 +273,9 @@ struct App : public IApp {
         }
     }
 
-	virtual std::unique_ptr<Camera> makeCamera(std::string type) = 0;
+	void updateCamera(float dt);
+
+	virtual std::unique_ptr<Camera> makeCamera(std::string type);
 
 
     std::vector<std::string> getNavigationPath() override {
@@ -312,6 +312,7 @@ struct App : public IApp {
         return oss.str();
     }
 
+    bool isUIHovered() const override { return _isUIHovered; }
 
 	protected:
 	Args args;
@@ -341,7 +342,8 @@ struct App : public IApp {
 	void loadCppScript(fs::path scriptPath, sol::state& state);
 	void loadCppScript(fs::path scriptPath);
 
-	bool isUIHovered = false;
+    // TODO move to private
+	bool _isUIHovered = false;
 
 	private:
 
