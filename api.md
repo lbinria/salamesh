@@ -2,7 +2,7 @@
 
 Caution: At the moment, this doc is totally generated and can not reflect the actual one.
 
-## App
+### App
 
 There is only one instance of App, it is already declared and accessible using `app` object.
 `app` is the root object of the core API.
@@ -54,24 +54,26 @@ There is only one instance of App, it is already declared and accessible using `
 | `show_open_model_dialog` | Function | None | Displays dialog to open a model | `void` |
 | `show_save_model_dialog` | Function | None | Displays dialog to save a model | `void` |
 
-## Type Bindings
-
 ### Image 
 
-| Property | Access | Type | Description |
-|----------|--------|------|-------------|
-| tex_id | Read-only | Integer | Texture identifier |
-| width | Read-only | Integer | Image width |
-| height | Read-only | Integer | Image height |
-| channels | Read-only | Integer | Number of color channels |
+Represent image / texture data.
+
+| Function/Property Name | Type | Parameters | Return Type | Description |
+|------------------------|------|------------|-------------|-------------|
+| tex_id | Read-only Property | None | `int` | Texture identifier |
+| width | Read-only Property | None | `int` | Image width |
+| height | Read-only Property | None | `int` | Image height |
+| channels | Read-only Property | None | `int` | Number of color channels |
 
 ### Snapshot
 
-| Property | Access | Type | Description |
-|----------|--------|------|-------------|
-| state_filename | Read-only | String | Filename of the saved state |
-| thumb_filename | Read-only | String | Filename of the thumbnail |
-| image | Read-only | Image | Associated image object |
+A snapshot of the app state.
+
+| Function/Property Name | Type | Parameters | Return Type | Description |
+|------------------------|------|------------|-------------|-------------|
+| state_filename | Read-only Property | None | `string` | Filename of the saved state |
+| thumb_filename | Read-only Property | None | `string` | Filename of the thumbnail |
+| image | Read-only Property | None | `Image` | Associated image object |
 
 ### PrimitiveState
 

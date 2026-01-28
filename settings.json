@@ -5,7 +5,7 @@
 		"modules/module_scene",
 		"modules/module_inspector",
 		"modules/module_snapshots",
-		"/home/tex/Projects/salamesh_plugin_diag/build"
+		"/home/tex/Projects/salamesh_diagnostic_module/build"
 	],
 	"scene": {
 		"background_color": "#ffffff"

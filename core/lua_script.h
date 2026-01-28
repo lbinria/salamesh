@@ -8,6 +8,7 @@
 #include "script.h"
 #include "input_states.h"
 
+#include "../bindings/lua_binding.h"
 #include "../bindings/fs_bindings.h"
 #include "../bindings/um_bindings.h"
 #include "../bindings/imgui_bindings.h"
@@ -82,13 +83,19 @@ struct LuaScript final : public Script {
 		lua.open_libraries(sol::lib::io);
 		lua.open_libraries(sol::lib::utf8);
 
-		bindings::FsBindings::loadBindings(lua);
-		bindings::ImGuiBindings::loadBindings(lua);
-		auto app_type = bindings::AppBindings::loadBindings(lua, app);
-		bindings::GlmBindings::loadBindings(lua, app);
-		bindings::CameraBindings::loadBindings(lua, app_type, app);
-		bindings::ModelBindings::loadBindings(lua, app_type, app);
-		bindings::UMBindings::loadBindings(lua);
+
+		std::vector<std::unique_ptr<bindings::LuaBinding>> bindings;
+		bindings.push_back(std::make_unique<bindings::FsBindings>());
+		bindings.push_back(std::make_unique<bindings::ImGuiBindings>());
+		bindings.push_back(std::make_unique<bindings::AppBindings>());
+		bindings.push_back(std::make_unique<bindings::GlmBindings>());
+		bindings.push_back(std::make_unique<bindings::CameraBindings>());
+		bindings.push_back(std::make_unique<bindings::ModelBindings>());
+		bindings.push_back(std::make_unique<bindings::UMBindings>());
+
+		for (auto &b : bindings) {
+			b->loadBindings(lua, app);
+		}
 	}
 
 	// Lifecycle

@@ -1,3 +1,4 @@
+local val = 0
 function draw_gui()
 	-- imgui.Begin("Foot_bar")
 	-- imgui.Text(app.navigation_path_string)
@@ -11,18 +12,26 @@ function draw_gui()
 
 	-- end
 
+	imgui.Begin("yop !")
+	 
+	if imgui.Button("plop") then
+		filter()
+	end
+
+	imgui.End()
+
 end
 
--- function filter()
--- 	local tri_model = app.model:as_tri()
--- 	local fa = FacetAttributeDouble.new()
+function filter()
+	local tri_model = app.model:as_tri()
+	local fa = FacetAttributeDouble.new()
 	
--- 	fa:bind("_filter", tri_model.surface_attributes, tri_model.mesh)
+	fa:bind("_filter", tri_model.surface_attributes, tri_model.mesh)
 
--- 	for i=0,1000 do 
--- 		fa[i] = 1.0
--- 	end
+	for i=0,1000 do 
+		fa[i] = 1.0
+	end
 	
--- 	-- app.model:set_filter(ElementKind.FACETS_ELT, true)
--- 	tri_model:set_filter(ElementKind.FACETS_ELT, true)
--- end
+	-- app.model:set_filter(ElementKind.FACETS_ELT, true)
+	tri_model:set_filter(ElementKind.FACETS_ELT, true)
+end

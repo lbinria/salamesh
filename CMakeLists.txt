@@ -123,6 +123,15 @@ add_executable(salamesh
   cameras/trackball_camera.h
   cameras/descent_camera.h
   render_surface.cpp render_surface.h
+
+  bindings/imgui_bindings.h bindings/imgui_bindings.cpp
+  bindings/app_bindings.h bindings/app_bindings.cpp
+  bindings/camera_bindings.h bindings/camera_bindings.cpp
+  bindings/model_bindings.h bindings/model_bindings.cpp
+  bindings/glm_bindings.h bindings/glm_bindings.cpp
+  bindings/fs_bindings.h bindings/fs_bindings.cpp
+  bindings/um_bindings.h bindings/um_bindings.cpp
+
   # some include files to build with the executable
   include/stb_include.cpp 
   ${OPENGL_FILES}
