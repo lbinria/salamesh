@@ -1,5 +1,5 @@
 #include "bbox_renderer.h"
-#include "../../../helpers/graphic_api.h"
+#include "../../../core/graphic_api.h"
 #include "../../helpers.h"
 
 void BBoxRenderer::init() {

@@ -19,6 +19,7 @@ struct BBoxRenderer : public IRenderer {
 		glm::vec3 p;
 	};
 
+	// TODO get shader from renderer name
 	BBoxRenderer(PointSet &ps) : 
 		IRenderer(Shader(sl::shadersPath("bbox.vert"), sl::shadersPath("bbox.frag"))),
 		ps(ps) {

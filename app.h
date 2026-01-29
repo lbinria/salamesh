@@ -30,7 +30,7 @@
 #include "include/stb_image.h"
 #include "include/stb_image_resize2.h"
 #include "include/stb_image_write.h"
-#include "helpers/graphic_api.h"
+#include "core/graphic_api.h"
 
 #include <iostream>
 #include <cmath>

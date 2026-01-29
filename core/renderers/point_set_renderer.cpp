@@ -1,5 +1,5 @@
 #include "point_set_renderer.h"
-#include "../../helpers/graphic_api.h"
+#include "../../core/graphic_api.h"
 
 void PointSetRenderer::init() {
 

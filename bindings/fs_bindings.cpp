@@ -1,7 +1,7 @@
 #include "fs_bindings.h"
 
 #include <filesystem>
-#include "../helpers/graphic_api.h"
+#include "../core/graphic_api.h"
 #include "../core/helpers.h"
 
 namespace bindings {
