@@ -110,35 +110,74 @@ namespace bindings {
 		imgui.set_function("InputFloat2", [](const char* label, sol::object v, sol::this_state s) -> std::optional<std::tuple<bool, std::array<float, 2>>> {
 			sol::state_view lua(s);
 
-			if (v.is<sol::table>()) {
-				sol::table inputTable = v.as<sol::table>();
-				if (inputTable.size() == 2) {
-					std::array<float, 2> vals = {
-						inputTable[1].get<float>(),
-						inputTable[2].get<float>()
-					};
-				
-					bool sel = ImGui::InputFloat2(label, vals.data());
-					return std::make_optional(std::make_tuple(sel, vals));
-				}
-			}
+			std::array<float, 2> vals;
 
-			return std::nullopt;
+			if (v.is<glm::vec2>()) {
+				auto vec = v.as<glm::vec2>();
+				vals = {vec.x, vec.y};
+			} else if (v.is<sol::table>()) {
+				sol::table table = v.as<sol::table>();
+				vals = {
+					table.get_or(1, 0.0f),
+					table.get_or(2, 0.0f)
+				};
+			} else {
+				return std::nullopt;
+			}
+			
+			bool sel = ImGui::InputFloat2(label, vals.data());
+			
+			// If input was a table, update the original table
+			// If input was a glm::vec2, update the original vector
+			if (sel && v.is<sol::table>()) {
+				sol::table table = v.as<sol::table>();
+				table[1] = vals[0];
+				table[2] = vals[1];
+			} else if (sel && v.is<glm::vec2>()) {
+				auto& vec = v.as<glm::vec2>();
+				vec.x = vals[0];
+				vec.y = vals[1];
+			}
+			
+			return std::make_optional(std::make_tuple(sel, vals));
 		});
 
 		imgui.set_function("InputFloat3", [](const char* label, sol::object v, sol::this_state s) -> std::optional<std::tuple<bool, std::array<float, 3>>> {
 			sol::state_view lua(s);
 
+			std::array<float, 3> vals;
+
 			if (v.is<glm::vec3>()) {
-				auto p = v.as<glm::vec3>();
-				
-				std::array<float, 3> vals = {p.x, p.y, p.z};
-				bool sel = ImGui::InputFloat3(label, vals.data());
-				return std::make_optional(std::make_tuple(sel, vals));
-				
+				auto vec = v.as<glm::vec3>();
+				vals = {vec.x, vec.y, vec.z};
+			} else if (v.is<sol::table>()) {
+				sol::table table = v.as<sol::table>();
+				vals = {
+					table.get_or(1, 0.0f),
+					table.get_or(2, 0.0f),
+					table.get_or(3, 0.0f)
+				};
+			} else {
+				return std::nullopt;
 			}
 			
-			return std::nullopt;
+			bool sel = ImGui::InputFloat3(label, vals.data());
+			
+			// If input was a table, update the original table
+			// If input was a glm::vec3, update the original vector
+			if (sel && v.is<sol::table>()) {
+				sol::table table = v.as<sol::table>();
+				table[1] = vals[0];
+				table[2] = vals[1];
+				table[3] = vals[2];
+			} else if (sel && v.is<glm::vec3>()) {
+				auto& vec = v.as<glm::vec3>();
+				vec.x = vals[0];
+				vec.y = vals[1];
+				vec.z = vals[2];
+			}
+			
+			return std::make_optional(std::make_tuple(sel, vals));
 		});
 
 		imgui.set_function("SliderFloat", [](const char* label, sol::object v, float v_min, float v_max, sol::this_state s) -> std::optional<std::tuple<bool, float>> {
