@@ -42,7 +42,7 @@ set(SOURCES
     renderers/tet_renderer.cpp renderers/tet_renderer.h
     renderers/hex_renderer.cpp renderers/hex_renderer.h
 
-    models/model.h
+    models/model.h models/model.cpp
     models/surface_model.cpp models/surface_model.h
     models/tet_model.cpp models/tet_model.h
     models/hex_model.cpp models/hex_model.h

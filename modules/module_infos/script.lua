@@ -33,6 +33,18 @@ function draw_gui()
 		app:top_navigation_path()
 	end
 
+	if imgui.Button("Remove attr") then 
+		-- local attr0 = app.model:get_attr(0)
+		-- print(attr0.name)
+
+		-- local attr1 = app.model:get_attr(ElementKind.POINTS_ELT, "point_id")
+		-- print(attr1.name)
+
+		-- app.model:remove_attr(0)
+		-- app.model:remove_attr(ElementKind.FACETS_ELT, "facet_id")
+		app.model:clear_attrs()
+	end
+
 	imgui.End()
 
 end
@@ -72,7 +84,7 @@ function update(dt)
 	-- print(s)
 
 	
-	app.camera:move({0,0}, {1600.0 * dt, 0})
+	-- app.camera:move({0,0}, {1600.0 * dt, 0})
 
 
 end

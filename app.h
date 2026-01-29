@@ -295,6 +295,9 @@ struct App : public IApp {
     }
 
     void topNavigationPath() override {
+        if (navPath.size() <= 0)
+            return;
+
         auto newPath = navPath;
         newPath.erase(newPath.end() - 1);
         notifyNavigationPathChange(navPath, newPath);

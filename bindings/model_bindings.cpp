@@ -12,6 +12,19 @@ namespace bindings {
 
 	void ModelBindings::loadBindings(sol::state &lua, IApp &app) {
 
+		lua.new_enum("ModelType", 
+			"POINTSET_MODEL", ModelType::POINTSET_MODEL,
+			"POLYLINE_MODEL", ModelType::POLYLINE_MODEL,
+			"TRI_MODEL", ModelType::TRI_MODEL,
+			"QUAD_MODEL", ModelType::QUAD_MODEL,
+			"POLYGON_MODEL", ModelType::POLYGON_MODEL,
+			"TET_MODEL", ModelType::TET_MODEL,
+			"HEX_MODEL", ModelType::HEX_MODEL,
+			"PYRAMID_MODEL", ModelType::PYRAMID_MODEL,
+			"PRISM_MODEL", ModelType::PRISM_MODEL,
+			"HYBRID_MODEL", ModelType::HYBRID_MODEL
+		);
+
 		lua.new_enum("ElementKind", 
 			"POINTS_ELT", ElementKind::POINTS_ELT,
 			"CORNERS_ELT", ElementKind::CORNERS_ELT,
@@ -184,29 +197,24 @@ namespace bindings {
 		model_t.set_function("save", &Model::save);
 		model_t.set_function("save_as", &Model::saveAs);
 
-		model_t["name"] = sol::property(
-			&Model::getName,
-			&Model::setName
-		);
+		model_t.set_function("save_state", [](Model &self, std::string dirPath) {
+			json j;
+			self.saveState(dirPath, j);
+			return j;
+		});
 
-		model_t["parent"] = sol::property(
-			&Model::getParent,
-			&Model::setParent
-		);
+		model_t.set_function("load_state", [](Model &self, json &j) {
+			self.loadState(j);
+		});
 
-		model_t["visible"] = sol::property(
-			&Model::getVisible,
-			&Model::setVisible
-		);
+		model_t["name"] = sol::property(&Model::getName, &Model::setName);
+		model_t["path"] = sol::readonly_property(&Model::getPath);
+		model_t["parent"] = sol::property(&Model::getParent, &Model::setParent);
 
-		model_t["position"] = sol::property(
-			&Model::getPosition,
-			&Model::setPosition
-		);
-
-		model_t["world_position"] = sol::readonly_property(
-			&Model::getWorldPosition
-		);
+		model_t["visible"] = sol::property(&Model::getVisible, &Model::setVisible);
+		
+		model_t["position"] = sol::property(&Model::getPosition, &Model::setPosition);
+		model_t["world_position"] = sol::readonly_property(&Model::getWorldPosition);
 
 		model_t["bbox"] = sol::readonly_property([](Model& m, sol::this_state s) {
 			sol::state_view lua(s);
@@ -215,44 +223,18 @@ namespace bindings {
 			return t;
 		});
 
-		model_t["center"] = sol::readonly_property(
-			&Model::getCenter
-		);
+		model_t["center"] = sol::readonly_property(&Model::getCenter);
+		model_t["radius"] = sol::readonly_property(&Model::getRadius);
 
-		model_t["radius"] = sol::readonly_property(
-			&Model::getRadius
-		);
-
-		model_t["nverts"] = sol::readonly_property(
-			&Model::nverts
-		);
-
-		model_t["nfacets"] = sol::readonly_property(
-			&Model::nfacets
-		);
-
-		model_t["ncorners"] = sol::readonly_property(
-			&Model::ncorners
-		);
-
-		model_t["nhalfedges"] = sol::readonly_property(
-			&Model::nhalfedges
-		);
-
-		model_t["ncells"] = sol::readonly_property(
-			&Model::ncells
-		);
+		model_t["nverts"] = sol::readonly_property(&Model::nverts);
+		model_t["nfacets"] = sol::readonly_property(&Model::nfacets);
+		model_t["ncorners"] = sol::readonly_property(&Model::ncorners);
+		model_t["nhalfedges"] = sol::readonly_property(&Model::nhalfedges);
+		model_t["ncells"] = sol::readonly_property(&Model::ncells);
 
 
-		model_t["light"] = sol::property(
-			&Model::getLight,
-			&Model::setLight
-		);
-
-		model_t["is_light_follow_view"] = sol::property(
-			&Model::getLightFollowView,
-			&Model::setLightFollowView
-		);
+		model_t["light"] = sol::property(&Model::getLight, &Model::setLight);
+		model_t["is_light_follow_view"] = sol::property(&Model::getLightFollowView, &Model::setLightFollowView);
 
 		model_t["clipping_mode"] = sol::property([](Model &self) {
 			return self.getClippingMode() + 1;
@@ -260,10 +242,7 @@ namespace bindings {
 			self.setClippingMode(static_cast<IRenderer::ClippingMode>(selected - 1));
 		});
 
-		model_t["clipping"] = sol::property(
-			&Model::getClipping,
-			&Model::setClipping
-		);
+		model_t["clipping"] = sol::property(&Model::getClipping, &Model::setClipping);
 
 		model_t["clipping_plane_point"] = sol::property(
 			&Model::getClippingPlanePoint,
@@ -289,6 +268,27 @@ namespace bindings {
 		model_t["edges"] = sol::readonly_property(&Model::getEdgesRenderer);
 		model_t["mesh"] = sol::readonly_property(&Model::getMeshRenderer);
 
+		// TODO add add_attr it must bind UM attr to Model
+		// model_t.set_function("add_attr", &Model::addAttr);
+
+		model_t.set_function("remove_attr", sol::overload(
+			[](Model &self, int idx) {
+				return self.removeAttr(idx);
+			},
+			[](Model &self, ElementKind kind, std::string name) {
+				return self.removeAttr(kind, name);
+			}
+		));
+
+		model_t.set_function("get_attr", sol::overload(
+			[](Model &self, int idx) {
+				return self.getAttr(idx);
+			},
+			[](Model &self, ElementKind kind, std::string name) {
+				return self.getAttr(kind, name);
+			}
+		));
+
 		model_t["attrs"] = sol::readonly_property([&lua = lua](Model &self) {
 			sol::table attrs_tbl = lua.create_table();
 			for (auto &attr : self.getAttrs()) {
@@ -296,6 +296,16 @@ namespace bindings {
 				attrs_tbl.add(attr);
 			}
 			return attrs_tbl;
+		});
+
+		model_t.set_function("clear_attrs", &Model::clearAttrs);
+
+		model_t.set_function("set_selected_attr", [](Model &self, int idx, ColormapLayer layer) {
+			self.setSelectedAttr(idx - 1, layer);
+		});
+
+		model_t.set_function("get_selected_attr", [](Model &self, ColormapLayer layer) {
+			self.getSelectedAttr(layer) + 1;
 		});
 
 		model_t["selected_attr0"] = sol::property([](Model &self) {
@@ -315,10 +325,6 @@ namespace bindings {
 		}, [](Model &self, int selected) {
 			self.setSelectedAttr(selected - 1, ColormapLayer::COLORMAP_LAYER_2);
 		});
-
-		
-
-		
 
 		model_t["selected_colormap0"] = sol::property([](Model &self) {
 			return self.getSelectedColormap(ColormapLayer::COLORMAP_LAYER_0) + 1;
@@ -361,6 +367,8 @@ namespace bindings {
 		model_t.set_function("unset_filter", &Model::unsetFilter);
 		model_t.set_function("unset_filters", &Model::unsetFilters);
 
+
+		model_t["model_type"] = sol::readonly_property(&Model::getModelType);
 
 		// TODO do the same for other types of meshes
 		// & maybe refactor, we can add these properties directly to Model I think
