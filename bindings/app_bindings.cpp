@@ -96,8 +96,8 @@ namespace bindings {
 		lua["app"] = &app;
 		sol::usertype<IApp> app_type = lua.new_usertype<IApp>("IApp");
 
-		app_type.set_function("clear_scene", &IApp::clearScene);
 		app_type.set_function("quit", &IApp::quit);
+		app_type.set_function("clear_scene", &IApp::clearScene);
 
 		app_type.set_function("show_open_model_dialog", &IApp::showOpenModelDialog);
 		app_type.set_function("show_save_model_dialog", &IApp::showSaveModelDialog);
@@ -142,8 +142,9 @@ namespace bindings {
 			self.setSelectedModel(selected - 1);
 		});
 
-		app_type["cameras"] = sol::readonly_property(&IApp::getCameras);
 		app_type["camera"] = sol::readonly_property(&IApp::getCamera);
+		app_type["cameras"] = sol::readonly_property(&IApp::getCameras);
+		app_type["count_cameras"] = sol::readonly_property(&IApp::countCameras);
 
 		app_type["selected_camera"] = sol::property([](IApp &self) {
 			return self.getSelectedCamera() + 1;
@@ -164,22 +165,33 @@ namespace bindings {
 				return self.getColormap(name);
 			}
 		));
-		
-		app_type.set_function("screenshot", [&app = app](const std::string& filename) {
-			app.screenshot(filename);
-		});
+
+		app_type.set_function("screenshot", sol::overload(
+			[&app = app](const std::string& filename) {
+				app.screenshot(filename);
+			},
+			[&app = app](const std::string& filename, int targetWidth = -1, int targetHeight = -1) {
+				app.screenshot(filename, targetWidth, targetHeight);
+			}
+		));
 
 		app_type.set_function("setCullMode", [&app = app](int mode) {
 			app.setCullMode(mode);
 		});
 
-		app_type["cull_mode"] = sol::writeonly_property(&IApp::setCullMode);
-		app_type["cull"] = sol::property(&IApp::getCull, &IApp::setCull);
+
 
 		// Navigation
 		app_type["navigation_path"] = sol::property(&IApp::getNavigationPath, &IApp::setNavigationPath);
 		app_type["navigation_path_string"] = sol::readonly_property(&IApp::getNavigationPathString);
 		app_type.set_function("add_navigation_path", &IApp::addNavigationPath);
+		app_type.set_function("top_navigation_path", &IApp::topNavigationPath);
+
+		app_type["width"] = sol::readonly_property(&IApp::getWidth);
+		app_type["height"] = sol::readonly_property(&IApp::getHeight);
+		app_type["aspect_ratio"] = sol::readonly_property(&IApp::getAspectRatio);
+		app_type["cull_mode"] = sol::writeonly_property(&IApp::setCullMode);
+		app_type["cull"] = sol::property(&IApp::getCull, &IApp::setCull);
 
 		app_type["is_ui_hovered"] = sol::readonly_property(&IApp::isUIHovered);
 

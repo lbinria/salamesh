@@ -89,7 +89,7 @@ struct Camera {
         updateProjectionMatrix();
     }
     
-    void setScreenSize(float width, float height) {
+    void updateScreenSize(float width, float height) {
         _screen = {width, height}; 
         updateProjectionMatrix();
     }

@@ -1,3 +1,14 @@
+function init()
+	print("Screen width: " .. tostring(app.width))
+	print("Screen height: " .. tostring(app.height))
+	print("Screen aspect: " .. tostring(app.aspect_ratio))
+	print("Number of cameras: " .. tostring(app.count_cameras))
+
+
+	-- local j = app.camera:save_state()
+	-- app.camera:savus(j)
+end
+
 local val = 0
 function draw_gui()
 	-- imgui.Begin("Foot_bar")
@@ -18,6 +29,10 @@ function draw_gui()
 		filter()
 	end
 
+	if imgui.Button("top") then 
+		app:top_navigation_path()
+	end
+
 	imgui.End()
 
 end
@@ -34,4 +49,30 @@ function filter()
 	
 	-- app.model:set_filter(ElementKind.FACETS_ELT, true)
 	tri_model:set_filter(ElementKind.FACETS_ELT, true)
+end
+
+
+function update(dt)
+	-- local r = app.camera.right_vector
+	-- local u = app.camera.up_vector
+	-- local f = app.camera.view_dir
+	-- print("Right vector: (" .. r[1] .. "," .. r[2] .. "," .. r[3] .. ")")
+	-- print("Up vector: (" .. u[1] .. "," .. u[2] .. "," .. u[3] .. ")")
+	-- print("Forward vector: (" .. f[1] .. "," .. f[2] .. "," .. f[3] .. ")")
+	-- local proj = app.camera.view_matrix
+	-- print("Projection: ")
+	-- local s = "("
+	-- for i=1,4 do 
+	-- 	for j=1,4 do 
+	-- 		s = s .. proj[i][j] .. ","
+	-- 	end
+	-- 	s = s .."\n"
+	-- end 
+	-- s = s .. ")"
+	-- print(s)
+
+	
+	app.camera:move({0,0}, {1600.0 * dt, 0})
+
+
 end

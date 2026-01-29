@@ -136,7 +136,7 @@ void RenderSurface::resize(int w, int h) {
 
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
-	_camera->setScreenSize(width, height);
+	_camera->updateScreenSize(width, height);
 }
 
 void RenderSurface::clear() {

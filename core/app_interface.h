@@ -82,10 +82,12 @@ struct IApp {
 
 	virtual InputState& getInputState() = 0;
 
-	virtual int getScreenWidth() const = 0;
-	virtual int getScreenHeight() const = 0;
-	virtual double getScreenAspectRatio() const = 0;
+	// Window & rendersurface
+	virtual int getWidth() const = 0;
+	virtual int getHeight() const = 0;
+	virtual double getAspectRatio() const = 0;
 
+	
 
 	virtual std::vector<Colormap> getColormaps() = 0;
 

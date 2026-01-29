@@ -10,7 +10,6 @@ struct UBOMatrices {
 	alignas(16) glm::vec2 viewport;
 };
 
-// TODO move to graphics
 Image App::screenshot(const std::string& filename, int targetWidth, int targetHeight) {
 	int width, height;
 	glfwGetWindowSize(window, &width, &height);
@@ -234,7 +233,7 @@ void App::setup() {
 		screenHeight = windowHeight;
 	}
 
-	std::cout << "Screen width: " << screenWidth << ", " << screenHeight << std::endl;
+	std::cout << "Window size: " << screenWidth << ", " << screenHeight << std::endl;
 
 	glfwMakeContextCurrent(window);
     glfwSetWindowUserPointer(window, this);
@@ -481,7 +480,7 @@ void App::start() {
 		UBOMatrices mats{
 			view,
 			projection,
-			{getScreenWidth(), getScreenHeight()}
+			{getWidth(), getHeight()}
 		};
 		
 		sl::updateUBOData(uboMatrices, sizeof(UBOMatrices), &mats);
@@ -1550,11 +1549,9 @@ void App::loadModule(fs::path m) {
 	}
 
 	// Add scripts
-	if (script)
-		scripts.push_back(std::move(script));
-
-	for (auto &script : scripts) {
+	if (script) {
 		script->init();
+		scripts.push_back(std::move(script));
 	}
 }
 

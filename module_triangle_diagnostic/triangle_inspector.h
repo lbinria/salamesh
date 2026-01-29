@@ -180,7 +180,7 @@ struct TriangleInspector : public Script {
 		// glm::mat4 modelMat = glm::mat4(1.0f);
 		// modelMat = glm::translate(modelMat, model.getPosition());
 		// auto pvm = app.getCamera().getProjectionMatrix() * app.getCamera().getViewMatrix() * modelMat;
-		// glm::vec2 viewport = { app.getScreenWidth(), app.getScreenHeight() };
+		// glm::vec2 viewport = { app.getWidth(), app.getHeight() };
 		
 		// lineRenderer.clearLines();
 
@@ -355,7 +355,7 @@ struct TriangleInspector : public Script {
 		modelMat = glm::translate(modelMat, triModel.getPosition());
 		auto pvm = app.getCamera().getProjectionMatrix() * app.getCamera().getViewMatrix() * modelMat;
 		// TODO important here seems wrong, app.getSurface().width / app.getSurface().height
-		glm::vec2 viewport = { app.getScreenWidth(), app.getScreenHeight() };
+		glm::vec2 viewport = { app.getWidth(), app.getHeight() };
 
 		std::vector<float> radiuses(m.nverts());
 		for (auto &v : m.iter_vertices()) {
@@ -386,7 +386,7 @@ struct TriangleInspector : public Script {
 		modelMat = glm::translate(modelMat, triModel.getPosition());
 		auto pvm = app.getCamera().getProjectionMatrix() * app.getCamera().getViewMatrix() * modelMat;
 		// TODO important here seems wrong, app.getSurface().width / app.getSurface().height
-		glm::vec2 viewport = { app.getScreenWidth(), app.getScreenHeight() };
+		glm::vec2 viewport = { app.getWidth(), app.getHeight() };
 		
 		lineRenderer.clearLines();
 

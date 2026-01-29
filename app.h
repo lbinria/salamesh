@@ -81,6 +81,7 @@ struct App : public IApp {
     unsigned int quadVAO, quadVBO;
 
     // settings
+    // TODO rename to windowWidth, windowHeight
     unsigned int screenWidth;
     unsigned int screenHeight;
 
@@ -245,9 +246,9 @@ struct App : public IApp {
         return colormaps;
     }
 
-    int getScreenWidth() const { return screenWidth; }
-    int getScreenHeight() const { return screenHeight; }
-    double getScreenAspectRatio() const { return static_cast<double>(screenWidth) / screenHeight; }
+    int getWidth() const { return screenWidth; }
+    int getHeight() const { return screenHeight; }
+    double getAspectRatio() const { return static_cast<double>(screenWidth) / screenHeight; }
 
     // To override lifecycle functions
     void init();
