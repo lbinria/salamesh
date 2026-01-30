@@ -201,7 +201,7 @@ struct Model {
 		attrNameByLayerAndKind[{layer, kind}] = name;
 	}
 
-	std::string getLayerAttrName(Layer layer, ElementKind kind) {
+	std::string getLayerAttr(Layer layer, ElementKind kind) {
 		std::tuple<Layer, ElementKind> k = {layer, kind};
 		if (attrNameByLayerAndKind.contains(k))
 			return attrNameByLayerAndKind[k];
@@ -209,12 +209,24 @@ struct Model {
 		return defaultAttrName(layer);
 	}
 
+	inline std::string getColormapAttr(ElementKind kind, ColormapLayer layer) {
+		return getLayerAttr(static_cast<Layer>(layer), kind);
+	}
+
 	inline void setColormapAttr(std::string name, ElementKind kind, ColormapLayer layer) {
 		setLayerAttr(name, static_cast<Layer>(layer), kind);
 	}
 
+	inline std::string getHighlightAttr(ElementKind kind) {
+		return getLayerAttr(Layer::HIGHLIGHT, kind);
+	}
+
 	inline void setHighlightAttr(std::string name, ElementKind kind) {
 		setLayerAttr(name, Layer::HIGHLIGHT, kind);
+	}
+
+	inline std::string getFilterAttr(ElementKind kind) {
+		return getLayerAttr(Layer::HIGHLIGHT, kind);
 	}
 
 	inline void setFilterAttr(std::string name, ElementKind kind) {
@@ -548,7 +560,7 @@ struct Model {
 
 	void updateLayer(Layer layer, ElementKind kind) {
 
-		auto attrName = getLayerAttrName(layer, kind);
+		auto attrName = getLayerAttr(layer, kind);
 
 		// TODO refactor, maybe move getNDims and ndim hacks out of updateLayer & pass as parameters
 		int nDims = getAttributeNDims(attrName, kind);

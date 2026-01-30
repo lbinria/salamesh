@@ -267,6 +267,11 @@ namespace bindings {
 		model_t["points"] = sol::readonly_property(&Model::getPointsRenderer);
 		model_t["edges"] = sol::readonly_property(&Model::getEdgesRenderer);
 		model_t["mesh"] = sol::readonly_property(&Model::getMeshRenderer);
+		model_t["has_renderer"] = sol::readonly_property(&Model::hasRenderer);
+
+
+		// TODO add: getRenderers
+		// std::shared_ptr<IRenderer> getRenderer(const std::string name)
 
 		// TODO add add_attr it must bind UM attr to Model
 		// model_t.set_function("add_attr", &Model::addAttr);
@@ -300,12 +305,12 @@ namespace bindings {
 
 		model_t.set_function("clear_attrs", &Model::clearAttrs);
 
-		model_t.set_function("set_selected_attr", [](Model &self, int idx, ColormapLayer layer) {
-			self.setSelectedAttr(idx - 1, layer);
+		model_t.set_function("get_selected_attr", [](Model &self, ColormapLayer layer) {
+			return self.getSelectedAttr(layer) + 1;
 		});
 
-		model_t.set_function("get_selected_attr", [](Model &self, ColormapLayer layer) {
-			self.getSelectedAttr(layer) + 1;
+		model_t.set_function("set_selected_attr", [](Model &self, int idx, ColormapLayer layer) {
+			self.setSelectedAttr(idx - 1, layer);
 		});
 
 		model_t["selected_attr0"] = sol::property([](Model &self) {
@@ -324,6 +329,14 @@ namespace bindings {
 			return self.getSelectedAttr(ColormapLayer::COLORMAP_LAYER_2) + 1;
 		}, [](Model &self, int selected) {
 			self.setSelectedAttr(selected - 1, ColormapLayer::COLORMAP_LAYER_2);
+		});
+
+		model_t.set_function("get_selected_colormap", [](Model &self, ColormapLayer layer) {
+			return self.getSelectedColormap(layer) + 1;
+		});
+
+		model_t.set_function("set_selected_colormap", [](Model &self, int idx, ColormapLayer layer) {
+			self.setSelectedColormap(idx - 1, layer);
 		});
 
 		model_t["selected_colormap0"] = sol::property([](Model &self) {
@@ -345,25 +358,60 @@ namespace bindings {
 		});
 
 		// Layers
-		// TODO miss some functions around layers !
+		model_t.set_function("is_layer_activated", &Model::isLayerActivated);
+		model_t.set_function("reset_layer", &Model::resetLayer);
+
+
+		model_t.set_function("get_layer_attr", &Model::getLayerAttr);
+		model_t.set_function("set_layer_attr", &Model::setLayerAttr);
+
+		model_t.set_function("set_layer", 
+			[](Model &self, ElementKind kind, Layer layer, std::optional<bool> update) {
+				self.setLayer(kind, layer, update.value_or(true));
+			}
+		);
+
+		model_t.set_function("unset_layer", 
+			[](Model &self, ElementKind kind, Layer layer, std::optional<bool> reset) {
+				self.unsetLayer(kind, layer, reset.value_or(true));
+			}
+		);
+
+		
+		model_t.set_function("get_colormap_attr", &Model::getColormapAttr);
 		model_t.set_function("set_colormap_attr", &Model::setColormapAttr);
-		model_t.set_function("set_colormap", &Model::setColormap);
+		model_t.set_function("set_colormap", 
+			[](Model &self, ElementKind kind, ColormapLayer layer, std::optional<bool> update) {
+				self.setColormap(kind, layer, update.value_or(true));
+			}
+		);
+
 		model_t.set_function("unset_colormap", &Model::unsetColormap);
-		// TODO test
+		
 		model_t.set_function("unset_colormaps", sol::overload(
 			[](Model &self) { self.unsetColormaps(); },
 			[](Model &self, ElementKind kind) { self.unsetColormaps(kind); },
 			[](Model &self, ColormapLayer layer) { self.unsetColormaps(layer); }
 		));
 
-
+		model_t.set_function("get_highlight_attr", &Model::getHighlightAttr);
 		model_t.set_function("set_highlight_attr", &Model::setHighlightAttr);
-		model_t.set_function("set_highlight", &Model::setHighlight);
+		model_t.set_function("set_highlight", 
+			[](Model &self, ElementKind kind, std::optional<bool> update) {
+				self.setHighlight(kind, update.value_or(true));
+			}
+		);
+
 		model_t.set_function("unset_highlight", &Model::unsetHighlight);
 		model_t.set_function("unset_highlights", &Model::unsetHighlights);
 
+		model_t.set_function("get_filter_attr", &Model::getFilterAttr);
 		model_t.set_function("set_filter_attr", &Model::setFilterAttr);
-		model_t.set_function("set_filter", &Model::setFilter);
+		model_t.set_function("set_filter", 
+			[](Model &self, ElementKind kind, std::optional<bool> update) {
+				self.setFilter(kind, update.value_or(true));
+			}
+		);
 		model_t.set_function("unset_filter", &Model::unsetFilter);
 		model_t.set_function("unset_filters", &Model::unsetFilters);
 

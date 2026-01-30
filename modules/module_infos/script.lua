@@ -45,6 +45,11 @@ function draw_gui()
 		app.model:clear_attrs()
 	end
 
+	if imgui.Button("screeeeen") then 
+		app.screenshot("test0.png")
+		app.screenshot("test1.png", 400)
+	end
+
 	imgui.End()
 
 end

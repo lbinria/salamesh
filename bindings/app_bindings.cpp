@@ -166,14 +166,10 @@ namespace bindings {
 			}
 		));
 
-		app_type.set_function("screenshot", sol::overload(
-			[&app = app](const std::string& filename) {
-				app.screenshot(filename);
-			},
-			[&app = app](const std::string& filename, int targetWidth = -1, int targetHeight = -1) {
-				app.screenshot(filename, targetWidth, targetHeight);
+		app_type.set_function("screenshot", [&app = app](const std::string& filename, std::optional<int> targetWidth, std::optional<int> targetHeight) {
+				app.screenshot(filename, targetWidth.value_or(-1), targetHeight.value_or(-1));
 			}
-		));
+		);
 
 		app_type.set_function("setCullMode", [&app = app](int mode) {
 			app.setCullMode(mode);
