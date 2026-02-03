@@ -93,7 +93,8 @@ struct IApp {
 	virtual int getHeight() const = 0;
 	virtual double getAspectRatio() const = 0;
 
-	
+	virtual int getSurfaceWidth() const = 0;
+	virtual int getSurfaceHeight() const = 0;
 
 	virtual std::vector<Colormap> getColormaps() = 0;
 

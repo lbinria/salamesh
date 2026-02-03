@@ -15,12 +15,13 @@ struct TriangleInspector : public Script {
 
 	// Lifecycle
 	void init() {
-		lineRenderer.init();
+		// lineRenderer.init();
+		app.addRenderer("LineRenderer", "my_linus_renderus");
 	}
 
 	// virtual void setup() = 0;
 	void cleanup() {
-		lineRenderer.clean();
+		// lineRenderer.clean();
 	}
 
 	void setupModel() {
@@ -80,7 +81,9 @@ struct TriangleInspector : public Script {
 		isModelSetup = true;
 	}
 
-	void modelLoaded(const std::string &path) override {}
+	void modelLoaded(const std::string &path) override {
+		setupModel();
+	}
 
 	void selectedModelChanged(int idx) override {
 		// Save gfx state for restoring ?
@@ -355,7 +358,8 @@ struct TriangleInspector : public Script {
 		modelMat = glm::translate(modelMat, triModel.getPosition());
 		auto pvm = app.getCamera().getProjectionMatrix() * app.getCamera().getViewMatrix() * modelMat;
 		// TODO important here seems wrong, app.getSurface().width / app.getSurface().height
-		glm::vec2 viewport = { app.getWidth(), app.getHeight() };
+		// glm::vec2 viewport = { app.getWidth(), app.getHeight() };
+		glm::vec2 viewport = { app.getSurfaceWidth(), app.getSurfaceHeight() };
 
 		std::vector<float> radiuses(m.nverts());
 		for (auto &v : m.iter_vertices()) {
@@ -388,6 +392,8 @@ struct TriangleInspector : public Script {
 		// TODO important here seems wrong, app.getSurface().width / app.getSurface().height
 		glm::vec2 viewport = { app.getWidth(), app.getHeight() };
 		
+		auto &lineRenderer = app.getRenderer("my_linus_renderus").as<LineRenderer>();
+
 		lineRenderer.clearLines();
 
 		// Compute radius of points in 3D from point size
@@ -453,8 +459,8 @@ struct TriangleInspector : public Script {
 		triModel.setHighlight(ElementKind::POINTS_ELT);
 
 
-		glm::vec3 p{0};
-		lineRenderer.render(p);
+		// glm::vec3 p{0};
+		// lineRenderer.render(p);
 
 	}
 
@@ -472,7 +478,7 @@ struct TriangleInspector : public Script {
 	double eps = 0.001;
 	int nOverlaps = 0;
 
-	LineRenderer lineRenderer;
+	// LineRenderer lineRenderer;
 	HBoxes3 hbbox;
 
 };

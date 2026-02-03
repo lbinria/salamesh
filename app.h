@@ -290,6 +290,8 @@ struct App : public IApp {
 
 
 	RenderSurface &getRenderSurface() { return *renderSurfaces[0]; }
+    int getSurfaceWidth() const override { return renderSurfaces[0]->width; }
+    int getSurfaceHeight() const override { return renderSurfaces[0]->height; }
 
 	InputState& getInputState() override { return st; }
 

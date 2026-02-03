@@ -11,7 +11,8 @@ using json = nlohmann::json;
 
 struct Camera {
 
-
+	Camera (const Camera&) = delete;
+	Camera& operator= (const Camera&) = delete;
 
     Camera() = default;
 

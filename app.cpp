@@ -5,6 +5,8 @@
 #include "core/cameras/descent_camera.h"
 #include "core/renderers/line_renderer.h"
 
+#include "module_triangle_diagnostic/triangle_inspector.h"
+
 #include <ranges>
 
 struct UBOMatrices {
@@ -452,6 +454,9 @@ void App::init() {
 	settings.load(args.settings_path);
 	loadModules(settings);
 
+	auto ti = std::make_unique<TriangleInspector>(*this);
+	ti->init();
+	scripts.push_back(std::move(ti));
 }
 
 void App::start() {
@@ -490,7 +495,7 @@ void App::start() {
 		UBOMatrices mats{
 			view,
 			projection,
-			{getWidth(), getHeight()}
+			{getWidth(), getHeight()} // TODO here maybe replace by renderSurface width / height
 		};
 		
 		sl::updateUBOData(uboMatrices, sizeof(UBOMatrices), &mats);
@@ -504,16 +509,16 @@ void App::start() {
 		update(dt);
 
 		// Render scene
+		for (auto &[k, r] : renderers) {
+			glm::vec3 origin{0.f};
+			r->render(origin);
+		}
+
 		for (auto &model : models) {
 			model->setColormap0Texture(colormaps[model->getSelectedColormap(ColormapLayer::COLORMAP_LAYER_0)].tex);
 			model->setColormap1Texture(colormaps[model->getSelectedColormap(ColormapLayer::COLORMAP_LAYER_1)].tex);
 			model->setColormap2Texture(colormaps[model->getSelectedColormap(ColormapLayer::COLORMAP_LAYER_2)].tex);
 			model->render();
-		}
-
-		for (auto &[k, r] : renderers) {
-			glm::vec3 origin{0.f};
-			r->render(origin);
 		}
 
 		// Go back to default framebuffer to draw the screen quad

@@ -5,10 +5,9 @@ function init()
 	print("Screen aspect: " .. tostring(app.aspect_ratio))
 	print("Number of cameras: " .. tostring(app.count_cameras))
 
-	app:add_renderer("LineRenderer", "line_renderer")
+	-- app:add_renderer("LineRenderer", "line_renderer")
 	-- local j = app.camera:save_state()
 	-- app.camera:savus(j)
-
 
 	local av_cameras = app:list_available_cameras()
 	local av_renderers = app:list_available_renderers()
@@ -31,6 +30,8 @@ function init()
 end
 
 local val = 0
+local xx = 0
+local was_clicked = false
 function draw_gui()
 	-- imgui.Begin("Foot_bar")
 	-- imgui.Text(app.navigation_path_string)
@@ -72,6 +73,7 @@ function draw_gui()
 	end
 
 	if imgui.Button("lines!") then
+		was_clicked = true
 		local lr = app:get_renderer("line_renderer"):as("LineRenderer")
 		lr:clear_lines()
 		for i=1,1000 do
@@ -80,15 +82,22 @@ function draw_gui()
 			local l = Line{
 				a = vec3{i * 0.1, 0, 0},
 				b = vec3{i * 0.1 + 0.1, 0, 0},
-				color = vec3{1,0,0}
+				color = vec3{1,i / 1000.0,0}
 			}
 
 			lr:add_line(l)
 			
 		end
+		xx = xx + 1
 		lr:push()
 
 	end
+
+	if imgui.Button("GOGOGO") then 
+		app.navigation_path = {"diagnostic", "overlapping_vertices"}
+	end
+
+	imgui.Text("xx: " .. tostring(xx))
 
 	imgui.End()
 
@@ -128,7 +137,6 @@ function update(dt)
 	-- s = s .. ")"
 	-- print(s)
 
-	
 	-- app.camera:move({0,0}, {1600.0 * dt, 0})
 
 

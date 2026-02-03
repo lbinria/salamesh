@@ -21,6 +21,9 @@ struct Model {
 
 	std::function<bool(Model& /*self*/, const std::string /*path*/)> loadCallback;
 
+	Model (const Model&) = delete;
+	Model& operator= (const Model&) = delete;
+
 	Model(std::map<std::string, std::shared_ptr<IRenderer>> renderers) :
 	_name(""),
 	_path(""),

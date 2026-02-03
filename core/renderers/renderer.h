@@ -22,7 +22,8 @@ struct IRenderer {
 	template<typename T>
 	T& as() {
 		static_assert(std::is_base_of_v<IRenderer, T>, "Renderer::as() can only be used with derived classes of Renderer");
-		return static_cast<T&>(*this);
+		auto &x = static_cast<T&>(*this);
+		return x;
 	}
 
 	// User must overwrite which element(s) are rendered by renderer
