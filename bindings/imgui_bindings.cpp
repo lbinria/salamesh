@@ -351,6 +351,19 @@ namespace bindings {
 			ImGuiFileDialog::Instance()->OpenDialog(vKey, vTitle, vFilters, config);
 		});
 
+		imgui.set_function("BeginToolTip", []() {
+			return ImGui::BeginTooltip();
+		});
+
+		imgui.set_function("EndToolTip", []() {
+			return ImGui::EndTooltip();
+		});
+
+		// Event
+		imgui.set_function("IsItemHovered", []() {
+			return ImGui::IsItemHovered();
+		});
+
 		lua["imgui"] = imgui;
 	}
 	
@@ -444,11 +457,6 @@ namespace bindings {
 
 // 		if (active) ImGui::PopStyleColor(3);
 
-// 		if (ImGui::IsItemHovered()) {
-// 			ImGui::BeginTooltip();
-// 			ImGui::Text(icons[i].first.c_str());
-// 			ImGui::EndTooltip();
-// 		}
 
 // 	}
 
