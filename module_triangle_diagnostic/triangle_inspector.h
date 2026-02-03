@@ -176,79 +176,6 @@ struct TriangleInspector : public Script {
 			ImGui::End();
 			return true;
 		}
-		
-		// float pointSize = triModel.getPointsRenderer().getPointSize();
-
-		// // Compute PVM matrix
-		// glm::mat4 modelMat = glm::mat4(1.0f);
-		// modelMat = glm::translate(modelMat, model.getPosition());
-		// auto pvm = app.getCamera().getProjectionMatrix() * app.getCamera().getViewMatrix() * modelMat;
-		// glm::vec2 viewport = { app.getWidth(), app.getHeight() };
-		
-		// lineRenderer.clearLines();
-
-		// // Compute radius of points in 3D from point size
-		// std::vector<float> radiuses(m.nverts());
-		// for (auto &v : m.iter_vertices()) {
-		// 	radiuses[v] = getRadius(pvm, sl::um2glm(v.pos()), pointSize, viewport);
-
-		// 	// Push lines for debug
-		// 	lineRenderer.addLine({sl::um2glm(v.pos()), sl::um2glm(v.pos()) + glm::vec3(radiuses[v], 0.f, 0.f), {1.f, 0.f, 0.f}});
-		// 	lineRenderer.addLine({sl::um2glm(v.pos()), sl::um2glm(v.pos()) + glm::vec3(-radiuses[v], 0.f, 0.f), {1.f, 0.f, 0.f}});
-		// 	lineRenderer.addLine({sl::um2glm(v.pos()), sl::um2glm(v.pos()) + glm::vec3(0.f, radiuses[v], 0.f), {1.f, 0.f, 0.f}});
-		// 	lineRenderer.addLine({sl::um2glm(v.pos()), sl::um2glm(v.pos()) + glm::vec3(0.f, -radiuses[v], 0.f), {1.f, 0.f, 0.f}});
-		// 	lineRenderer.addLine({sl::um2glm(v.pos()), sl::um2glm(v.pos()) + glm::vec3(0.f, 0.f, radiuses[v]), {1.f, 0.f, 0.f}});
-		// 	lineRenderer.addLine({sl::um2glm(v.pos()), sl::um2glm(v.pos()) + glm::vec3(0.f, 0.f, -radiuses[v]), {1.f, 0.f, 0.f}});
-		// }
-
-		// lineRenderer.push();
-
-
-		// // Highlight degenerated points
-		// PointAttribute<float> pointHl;
-		// pointHl.bind("_highlight", triModel.getSurfaceAttributes(), triModel.getMesh());
-		// pointHl.fill(0.f);
-
-		// // Highlight degenerated facets
-		// FacetAttribute<float> facetHl;
-		// facetHl.bind("_highlight", triModel.getSurfaceAttributes(), triModel.getMesh());
-		// facetHl.fill(0.f);
-
-		// std::vector<std::set<long>> pointOverlaps(m.nverts());
-		// int nOverlaps = 0;
-
-
-
-		// for (auto &a : m.iter_vertices()) {
-			
-		// 	BBox3 bbox;
-		// 	bbox.add(a.pos() - vec3{radiuses[a], radiuses[a], radiuses[a]});
-		// 	bbox.add(a.pos() + vec3{radiuses[a], radiuses[a], radiuses[a]});
-		// 	std::vector<int> results;
-		// 	hbbox.intersect(bbox, results);
-
-		// 	if (results.size() <= 1)
-		// 		continue;
-
-		// 	bool isOverlaps = false;
-		// 	for (auto &b : results) {
-		// 		if (b == a) continue;
-
-		// 		pointHl[a] = 1.f;
-		// 		pointHl[b] = 1.f;
-		// 		pointOverlaps[a].insert(b);
-		// 		pointOverlaps[b].insert(a);
-		// 		isOverlaps = true;
-		// 	}
-			
-		// 	if (isOverlaps)
-		// 		++nOverlaps;
-
-		// }
-
-
-		// triModel.setHighlight(ElementKind::POINTS_ELT);
-
 
 		if (isNav) {
 
@@ -459,8 +386,8 @@ struct TriangleInspector : public Script {
 		triModel.setHighlight(ElementKind::POINTS_ELT);
 
 
-		// glm::vec3 p{0};
-		// lineRenderer.render(p);
+		glm::vec3 p{0};
+		lineRenderer.render(p);
 
 	}
 

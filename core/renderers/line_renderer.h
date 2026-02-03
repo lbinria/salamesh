@@ -26,9 +26,6 @@ struct LineRenderer : public IRenderer {
 		glm::vec3 color;
 	};
 
-	LineRenderer (const LineRenderer&) = delete;
-	LineRenderer& operator= (const LineRenderer&) = delete;
-
 	LineRenderer() : 
 		IRenderer(Shader(sl::shadersPath("gizmo_line.vert"), sl::shadersPath("gizmo_line.frag"))) {
 			

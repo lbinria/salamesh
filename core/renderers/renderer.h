@@ -19,6 +19,9 @@ struct IRenderer {
 		STD = 1
 	};
 
+	IRenderer (const IRenderer&) = delete;
+	IRenderer& operator= (const IRenderer&) = delete;
+
 	template<typename T>
 	T& as() {
 		static_assert(std::is_base_of_v<IRenderer, T>, "Renderer::as() can only be used with derived classes of Renderer");
@@ -307,6 +310,7 @@ struct IRenderer {
 
 	float *ptrAttr;
 
+	// TODO rename to nelements
 	int nverts = 0;
 
 	void setPosition(glm::vec3 &position) {

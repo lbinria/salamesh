@@ -56,6 +56,8 @@ namespace fs = std::filesystem;
 
 struct App : public IApp {
 
+    App (const App&) = delete;
+	App& operator= (const App&) = delete;
 
     App(Args args) : 
         args(args),
@@ -303,7 +305,6 @@ struct App : public IApp {
 	int getHeight() const { return screenHeight; }
 	double getAspectRatio() const { return static_cast<double>(screenWidth) / screenHeight; }
 
-	// To override lifecycle functions
 	void init();
 	void update(float dt);
 	void draw_gui();
