@@ -214,48 +214,98 @@ struct App : public IApp {
         }
     }
 
-    std::vector<std::shared_ptr<Camera>>& getCameras() override {
-        return cameras;
-    }
+	Camera& addCamera(std::string type, std::string name) override {
+		auto camera = makeCamera(type);
+		camera->setName(name);
+		cameras.push_back(std::move(camera));
+		return *cameras[cameras.size() - 1];
+	}
 
-    int countCameras() override {
-        return cameras.size();
-    }
+	void removeCamera(std::string name) override {
+		cameras.erase(
+			std::remove_if(cameras.begin(), cameras.end(), [&name](const auto& camera) { 
+				return camera->getName() == name; 
+			}), 
+			cameras.end()
+		);
+	}
 
-    void setSelectedCamera(int selected) override {
-        if (selected < 0 || selected >= cameras.size()) {
-            std::cerr << "Invalid camera index: " << selected << std::endl;
-            return;
-        }
-        // TODO see this, quick-fix
-        getRenderSurface().setCamera(cameras[selected]);
-        selectedCamera = selected;
-    }
-    
-    int getSelectedCamera() override {
-        return selectedCamera;
-    }
+	std::vector<std::shared_ptr<Camera>>& getCameras() override {
+		return cameras;
+	}
 
-    Camera& getCamera() override { return *cameras[selectedCamera]; }
+	void setSelectedCamera(int selected) override {
+		if (selected < 0 || selected >= cameras.size()) {
+			std::cerr << "Invalid camera index: " << selected << std::endl;
+			return;
+		}
+		// TODO see this, quick-fix
+		getRenderSurface().setCamera(cameras[selected]);
+		selectedCamera = selected;
+	}
+	
+	int getSelectedCamera() override {
+		return selectedCamera;
+	}
 
-    RenderSurface &getRenderSurface() { return *renderSurfaces[0]; }
+	Camera& getCamera() override { return *cameras[selectedCamera]; }
 
-    InputState& getInputState() override { return st; }
+	int countCameras() override {
+		return cameras.size();
+	}
 
-    std::vector<Colormap> getColormaps() override {
-        return colormaps;
-    }
+	IRenderer& addRenderer(std::string type, std::string name) override {
+		auto renderer = makeRenderer(type);
+		renderer->init();
+		renderers[name] = std::move(renderer);
+		return *renderers[name];
+	}
 
-    int getWidth() const { return screenWidth; }
-    int getHeight() const { return screenHeight; }
-    double getAspectRatio() const { return static_cast<double>(screenWidth) / screenHeight; }
+	void removeRenderer(std::string name) override {
+		if (renderers.count(name) > 0)
+			renderers[name]->clean();
 
-    // To override lifecycle functions
-    void init();
-    void update(float dt);
-    void draw_gui();
+		renderers.erase(name);
+	}
 
-    
+	int countRenderers() override {
+		return renderers.size();
+	}
+	
+	void clearRenderers() override {
+		for (auto &[k, r] : renderers) {
+			r->clean();
+		}
+
+		renderers.clear();
+	}
+
+	IRenderer& getRenderer(std::string name) override {
+		if (renderers.count(name) <= 0)
+			throw std::runtime_error("Renderer " + name + " was not found.");
+		
+		return *renderers[name];
+	}
+
+
+
+	RenderSurface &getRenderSurface() { return *renderSurfaces[0]; }
+
+	InputState& getInputState() override { return st; }
+
+	std::vector<Colormap> getColormaps() override {
+		return colormaps;
+	}
+
+	int getWidth() const { return screenWidth; }
+	int getHeight() const { return screenHeight; }
+	double getAspectRatio() const { return static_cast<double>(screenWidth) / screenHeight; }
+
+	// To override lifecycle functions
+	void init();
+	void update(float dt);
+	void draw_gui();
+
     void mouse_move(double x, double y);
     void mouse_scroll(double xoffset, double yoffset);
     void mouse_button(int button, int action, int mods);
@@ -275,7 +325,13 @@ struct App : public IApp {
 
 	void updateCamera(float dt);
 
-	virtual std::unique_ptr<Camera> makeCamera(std::string type);
+	void registerCamera(std::string type, std::function<std::unique_ptr<Camera>()> instanciatorFunc);
+	std::vector<std::string> listAvailableCameras() override;
+	void registerRenderer(std::string type, std::function<std::unique_ptr<IRenderer>()> instanciatorFunc);
+	std::vector<std::string> listAvailableRenderers() override;
+
+	std::unique_ptr<Camera> makeCamera(std::string type);
+	std::unique_ptr<IRenderer> makeRenderer(std::string type);
 
 
     std::vector<std::string> getNavigationPath() override {
@@ -326,6 +382,7 @@ struct App : public IApp {
 	std::vector<std::shared_ptr<Camera>> cameras;
 	std::vector<std::shared_ptr<Model>> models;
 	std::vector<std::unique_ptr<RenderSurface>> renderSurfaces;
+    std::map<std::string, std::unique_ptr<IRenderer>> renderers;
 
 	int selectedCamera = 0;
 	int selectedModel = 0;
@@ -354,6 +411,12 @@ struct App : public IApp {
 	// Current navigation path of the app
 	std::vector<std::string> navPath;
 
+	// Instanciator, enable camera instanciation
+	// Register new instanciator for custom camera
+	std::map<std::string, std::function<std::unique_ptr<Camera>()>> cameraInstanciators;
+	// Instanciator, enable renderer instanciation
+	// Register new instanciator for custom renderer
+	std::map<std::string, std::function<std::unique_ptr<IRenderer>()>> rendererInstanciators;
 
 
 };

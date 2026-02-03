@@ -14,15 +14,13 @@ namespace bindings {
 							glm::vec3(float, float, float),
 							glm::vec3(const glm::vec3&)>{},
 
-			// Operators
-		// app_type.set_function("remove_model", sol::overload(
-		// 	[](IApp &self, int idx) {
-		// 		self.removeModel(idx);
-		// 	},
-		// 	[](IApp &self, std::string name) -> bool {
-		// 		return self.removeModel(name);
-		// 	}
-		// ));
+			sol::call_constructor, [](sol::table t) {
+				return glm::vec3{
+					t.get_or(1, 0.f),
+					t.get_or(2, 0.f),
+					t.get_or(3, 0.f)
+				};
+			},
 
 			sol::meta_function::addition, sol::overload(
 				[](const glm::vec3 &a, const glm::vec3 &b) {
@@ -33,17 +31,9 @@ namespace bindings {
 				}*/
 			),
 
-			// sol::meta_function::addition, [](const glm::vec3 &a, const glm::vec3 &b) {
-			// 	return a + b;
-			// },
-
 			sol::meta_function::subtraction, [](const glm::vec3 &a, const glm::vec3 &b) {
 				return a - b;
 			},
-
-			// sol::meta_function::multiplication, [](const glm::vec3 &a, const glm::vec3 &b) {
-			// 	return a * b;
-			// },
 
 			sol::meta_function::multiplication, sol::overload(
 				[](const glm::vec3 &a, const glm::vec3 &b) {

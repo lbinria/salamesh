@@ -1,12 +1,33 @@
+
 function init()
 	print("Screen width: " .. tostring(app.width))
 	print("Screen height: " .. tostring(app.height))
 	print("Screen aspect: " .. tostring(app.aspect_ratio))
 	print("Number of cameras: " .. tostring(app.count_cameras))
 
-
+	app:add_renderer("LineRenderer", "line_renderer")
 	-- local j = app.camera:save_state()
 	-- app.camera:savus(j)
+
+
+	local av_cameras = app:list_available_cameras()
+	local av_renderers = app:list_available_renderers()
+
+	print("Available cameras list:")
+	for i=1, #av_cameras do
+		print(av_cameras[i])
+	end
+
+	print("Available renderers list:")
+	for i=1, #av_renderers do
+		print(av_renderers[i])
+	end
+
+
+	app:add_camera("TrackBallCamera", "my_trackballus")
+	app:add_camera("TrackBallCamera", "my_trackballus2")
+	app:remove_camera("my_trackballus")
+
 end
 
 local val = 0
@@ -50,6 +71,25 @@ function draw_gui()
 		app.screenshot("test1.png", 400)
 	end
 
+	if imgui.Button("lines!") then
+		local lr = app:get_renderer("line_renderer"):as("LineRenderer")
+		lr:clear_lines()
+		for i=1,1000 do
+
+			
+			local l = Line{
+				a = vec3{i * 0.1, 0, 0},
+				b = vec3{i * 0.1 + 0.1, 0, 0},
+				color = vec3{1,0,0}
+			}
+
+			lr:add_line(l)
+			
+		end
+		lr:push()
+
+	end
+
 	imgui.End()
 
 end
@@ -90,6 +130,7 @@ function update(dt)
 
 	
 	-- app.camera:move({0,0}, {1600.0 * dt, 0})
+
 
 
 end

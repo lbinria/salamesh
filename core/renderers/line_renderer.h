@@ -42,12 +42,16 @@ struct LineRenderer : public IRenderer {
 		lines.clear();
 	}
 
+	// TODO generate guid for line
+	// TODO maybe push partially data to GPU instead of all data
 	void addLine(Line line) {
 		lines.push_back(line);
 
 		if (autoUpdate)
 			push();
 	}
+
+	// TODO removeLine by guid / idx / range
 
 	bool getAutoUpdate() { return autoUpdate; }
 	void setAutoUpdate(bool val) { autoUpdate = val; }

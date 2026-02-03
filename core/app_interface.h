@@ -72,13 +72,19 @@ struct IApp {
 	virtual void saveState(const std::string filename) = 0;
 	virtual void loadState(const std::string filename) = 0;
 
+	virtual Camera& addCamera(std::string type, std::string name) = 0;
+	virtual void removeCamera(std::string name) = 0;
 	virtual Camera& getCamera() = 0;
 	virtual std::vector<std::shared_ptr<Camera>>& getCameras() = 0;
-	virtual int countCameras() = 0;
 	virtual void setSelectedCamera(int selected)= 0;
 	virtual int getSelectedCamera() = 0;
+	virtual int countCameras() = 0;
 
-
+	virtual IRenderer& addRenderer(std::string type, std::string name) = 0;
+	virtual void removeRenderer(std::string name) = 0;
+	virtual IRenderer& getRenderer(std::string name) = 0;
+	virtual int countRenderers() = 0;
+	virtual void clearRenderers() = 0;
 
 	virtual InputState& getInputState() = 0;
 
@@ -102,4 +108,8 @@ struct IApp {
 	virtual void loadModule(fs::path modulePath) = 0;
 
 	virtual bool isUIHovered() const = 0;
+
+	// Registration
+	virtual std::vector<std::string> listAvailableCameras() = 0;
+	virtual std::vector<std::string> listAvailableRenderers() = 0;
 };

@@ -3,6 +3,9 @@
 #include "core/cameras/arcball_camera.h"
 #include "core/cameras/trackball_camera.h"
 #include "core/cameras/descent_camera.h"
+#include "core/renderers/line_renderer.h"
+
+#include <ranges>
 
 struct UBOMatrices {
 	alignas(16) glm::mat4 view;
@@ -389,6 +392,13 @@ void App::init() {
 
 	std::cout << "Init" << std::endl;
 
+	// Create cameras instanciators
+	cameraInstanciators["ArcBallCamera"] = []() { return std::make_unique<ArcBallCamera>(); };
+	cameraInstanciators["DescentCamera"] = []() { return std::make_unique<DescentCamera>(); };
+	cameraInstanciators["TrackBallCamera"] = []() { return std::make_unique<TrackBallCamera>(); };
+	// Create renderers instanciantors
+	rendererInstanciators["LineRenderer"] = []() { return std::make_unique<LineRenderer>(); };
+
 	{
 		// Create cameras
 		auto trackball_camera = std::make_shared<TrackBallCamera>("Trackball");
@@ -491,6 +501,8 @@ void App::start() {
 		glCullFace(cull_mode);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
+		update(dt);
+
 		// Render scene
 		for (auto &model : models) {
 			model->setColormap0Texture(colormaps[model->getSelectedColormap(ColormapLayer::COLORMAP_LAYER_0)].tex);
@@ -499,7 +511,10 @@ void App::start() {
 			model->render();
 		}
 
-		update(dt);
+		for (auto &[k, r] : renderers) {
+			glm::vec3 origin{0.f};
+			r->render(origin);
+		}
 
 		// Go back to default framebuffer to draw the screen quad
 		glBindFramebuffer(GL_FRAMEBUFFER, 0);
@@ -804,8 +819,13 @@ void App::draw_gui() {
 void App::clean() {
 	std::cout << "App clean..." << std::endl;
 
+	// TODO refactor to functions
 	for (auto &model : models) {
 		model->clean();
+	}
+
+	for (auto &[k, r] : renderers) {
+		r->clean();
 	}
 
 	for (auto &c : scripts) {
@@ -1385,10 +1405,14 @@ void App::clearScene() {
 	for (auto &m : models)
 		m->clean();
 
+	for (auto &[k, r] : renderers)
+		r->clean();
+
 	// TODO maybe clean modules ?
 
 	models.clear();
 	cameras.clear();
+	
 
 	selectedCamera = 0;
 	selectedModel = 0;
@@ -1647,21 +1671,55 @@ void App::mouse_move(double x, double y) {
 
 }
 
-std::unique_ptr<Camera> App::makeCamera(std::string type) {
-	// Register cameras
-	if (type == "ArcBallCamera")
-		return std::make_unique<ArcBallCamera>();
-	else if (type == "DescentCamera")
-		return std::make_unique<DescentCamera>();
-	else if (type == "TrackBallCamera")
-		return std::make_unique<TrackBallCamera>();
-	else {
-		std::cerr 
-			<< "Unable to make camera of type " 
-			<< type 
-			<< ", maybe you should override `makeCamera` to add the construction of your custom camera class ?" 
-			<< std::endl;
+void App::registerCamera(std::string type, std::function<std::unique_ptr<Camera>()> instanciatorFunc) {
+	cameraInstanciators[type] = instanciatorFunc;
+}
 
-		return nullptr;
+void App::registerRenderer(std::string type, std::function<std::unique_ptr<IRenderer>()> instanciatorFunc) {
+	rendererInstanciators[type] = instanciatorFunc;
+}
+
+std::vector<std::string> App::listAvailableRenderers() {
+	std::vector<std::string> v;
+	for (auto &[k, r] : rendererInstanciators)
+		v.push_back(k);
+
+	return v;
+}
+
+std::vector<std::string> App::listAvailableCameras() {
+	std::vector<std::string> v;
+	for (auto &[k, r] : cameraInstanciators)
+		v.push_back(k);
+
+	return v;
+}
+
+std::unique_ptr<Camera> App::makeCamera(std::string type) {
+	if (cameraInstanciators.count(type) > 0) {
+		return cameraInstanciators[type]();
 	}
+
+	std::cerr 
+		<< "Unable to make camera of type " 
+		<< type 
+		<< ", maybe you should register `makeCamera` to add the construction of your custom camera class ?" 
+		<< std::endl;
+
+	return nullptr;
+}
+
+
+std::unique_ptr<IRenderer> App::makeRenderer(std::string type) {
+	if (rendererInstanciators.count(type) > 0) {
+		return rendererInstanciators[type]();
+	}
+
+	std::cerr 
+		<< "Unable to make camera of type " 
+		<< type 
+		<< ", maybe you should override `makeCamera` to add the construction of your custom camera class ?" 
+		<< std::endl;
+
+	return nullptr;
 }

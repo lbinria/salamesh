@@ -127,6 +127,7 @@ add_executable(salamesh
   bindings/glm_bindings.h bindings/glm_bindings.cpp
   bindings/fs_bindings.h bindings/fs_bindings.cpp
   bindings/um_bindings.h bindings/um_bindings.cpp
+  bindings/renderer_bindings.h bindings/renderer_bindings.cpp
 
   # some include files to build with the executable
   include/stb_include.cpp 

@@ -19,6 +19,11 @@ struct IRenderer {
 		STD = 1
 	};
 
+	template<typename T>
+	T& as() {
+		static_assert(std::is_base_of_v<IRenderer, T>, "Renderer::as() can only be used with derived classes of Renderer");
+		return static_cast<T&>(*this);
+	}
 
 	// User must overwrite which element(s) are rendered by renderer
 	// It can render one or more primitives (ElementKind::POINTS_ELT, ...)
@@ -50,11 +55,6 @@ struct IRenderer {
 	IRenderer(Shader shader) : shader(std::move(shader)) {}
 
 	// TODO see list of shader function, some are specific to mesh_renderer...
-
-	void setModel(glm::mat4 model) {
-		shader.use();
-		shader.setMat4("model", model);
-	}
 
 	// TODO to remove
 	void setAttrElement(int element) {

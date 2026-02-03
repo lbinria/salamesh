@@ -1,9 +1,6 @@
 #include "model_bindings.h"
 
 #include "../core/app_interface.h"
-#include "../core/renderers/renderer.h"
-#include "../core/renderers/point_set_renderer.h"
-#include "../core/renderers/halfedge_renderer.h"
 #include "../core/models/model.h"
 #include "../core/models/surface_model.h"
 #include "../core/attribute.h"
@@ -86,71 +83,7 @@ namespace bindings {
 		);
 
 
-		sol::usertype<PointSetRenderer> pointSetRenderer_t = lua.new_usertype<PointSetRenderer>("PointSetRenderer");
 
-		pointSetRenderer_t["visible"] = sol::property(
-			&PointSetRenderer::getVisible,
-			&PointSetRenderer::setVisible
-		);
-		pointSetRenderer_t["color"] = sol::property(
-			&PointSetRenderer::getColor,
-			&PointSetRenderer::setColor
-		);
-		pointSetRenderer_t["size"] = sol::property(
-			&PointSetRenderer::getPointSize,
-			&PointSetRenderer::setPointSize
-		);
-
-		sol::usertype<HalfedgeRenderer> halfedgeRenderer_t = lua.new_usertype<HalfedgeRenderer>("HalfedgeRenderer");
-
-		halfedgeRenderer_t["visible"] = sol::property(
-			&HalfedgeRenderer::getVisible,
-			&HalfedgeRenderer::setVisible
-		);
-		halfedgeRenderer_t["inside_color"] = sol::property(
-			&HalfedgeRenderer::getInsideColor,
-			&HalfedgeRenderer::setInsideColor
-		);
-		halfedgeRenderer_t["outside_color"] = sol::property(
-			&HalfedgeRenderer::getOutsideColor,
-			&HalfedgeRenderer::setOutsideColor
-		);
-		halfedgeRenderer_t["thickness"] = sol::property(
-			&HalfedgeRenderer::getThickness,
-			&HalfedgeRenderer::setThickness
-		);
-
-		sol::usertype<IRenderer> meshRenderer_t = lua.new_usertype<IRenderer>("MeshRenderer");
-
-		meshRenderer_t["visible"] = sol::property(
-			&IRenderer::getVisible,
-			&IRenderer::setVisible
-		);
-
-		meshRenderer_t["color"] = sol::property(
-			&IRenderer::getColor,
-			&IRenderer::setColor
-		);
-
-		meshRenderer_t["size"] = sol::property(
-			&IRenderer::getMeshSize,
-			&IRenderer::setMeshSize
-		);
-
-		meshRenderer_t["shrink"] = sol::property(
-			&IRenderer::getMeshShrink,
-			&IRenderer::setMeshShrink
-		);
-
-		meshRenderer_t["corner_visible"] = sol::property(
-			&IRenderer::getCornerVisible,
-			&IRenderer::setCornerVisible
-		);
-
-		meshRenderer_t["attr_repeat"] = sol::property(
-			&IRenderer::getAttrRepeat,
-			&IRenderer::setAttrRepeat
-		);
 
 		sol::usertype<Model> model_t = lua.new_usertype<Model>("Model");
 

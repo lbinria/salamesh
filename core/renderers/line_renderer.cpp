@@ -1,5 +1,6 @@
 #include "line_renderer.h"
 #include "../helpers.h"
+#include "../../core/graphic_api.h"
 
 void LineRenderer::init() {
 
@@ -12,13 +13,16 @@ void LineRenderer::init() {
 	shader.use();
 
 	// VBO
-	GLuint pLoc = glGetAttribLocation(shader.id, "p");
-	glEnableVertexAttribArray(pLoc);
-	glVertexAttribPointer(pLoc, 3, GL_FLOAT, GL_FALSE, sizeof(LineComponent), (void*)offsetof(LineComponent, p));
+	// GLuint pLoc = glGetAttribLocation(shader.id, "p");
+	// glEnableVertexAttribArray(pLoc);
+	// glVertexAttribPointer(pLoc, 3, GL_FLOAT, GL_FALSE, sizeof(LineComponent), (void*)offsetof(LineComponent, p));
+	// GLuint colorLoc = glGetAttribLocation(shader.id, "color");
+	// glEnableVertexAttribArray(colorLoc);
+	// glVertexAttribPointer(colorLoc, 3, GL_FLOAT, GL_FALSE, sizeof(LineComponent), (void*)offsetof(LineComponent, color));
+	sl::createVBOVec3(shader.id, "p", sizeof(LineComponent), (void*)offsetof(LineComponent, p));
+	sl::createVBOVec3(shader.id, "color", sizeof(LineComponent), (void*)offsetof(LineComponent, color));
 
-	GLuint colorLoc = glGetAttribLocation(shader.id, "color");
-	glEnableVertexAttribArray(colorLoc);
-	glVertexAttribPointer(colorLoc, 3, GL_FLOAT, GL_FALSE, sizeof(LineComponent), (void*)offsetof(LineComponent, color));
+
 
 }
 

@@ -142,6 +142,8 @@ namespace bindings {
 			self.setSelectedModel(selected - 1);
 		});
 
+		app_type.set_function("add_camera", &IApp::addCamera);
+		app_type.set_function("remove_camera", &IApp::removeCamera);
 		app_type["camera"] = sol::readonly_property(&IApp::getCamera);
 		app_type["cameras"] = sol::readonly_property(&IApp::getCameras);
 		app_type["count_cameras"] = sol::readonly_property(&IApp::countCameras);
@@ -151,6 +153,13 @@ namespace bindings {
 		}, [](IApp &self, int selected) {
 			self.setSelectedCamera(selected - 1);
 		});
+
+		app_type.set_function("add_renderer", &IApp::addRenderer);
+		app_type.set_function("remove_renderer", &IApp::removeRenderer);
+		app_type.set_function("get_renderer", &IApp::getRenderer);
+		app_type.set_function("count_renderers", &IApp::countRenderers);
+		app_type.set_function("clear_renderers", &IApp::clearRenderers);
+
 
 		app_type["input_state"] = sol::readonly_property(&IApp::getInputState);
 
@@ -193,5 +202,9 @@ namespace bindings {
 
 		// Modules
 		// app_type.set_function("load_module", &IApp::loadModule);
+
+		// Registration
+		app_type.set_function("list_available_cameras", &IApp::listAvailableCameras);
+		app_type.set_function("list_available_renderers", &IApp::listAvailableRenderers);
 	}
 }
