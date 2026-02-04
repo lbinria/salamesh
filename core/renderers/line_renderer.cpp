@@ -16,6 +16,7 @@ void LineRenderer::init() {
 	sl::createVBOVec3(shader.id, "p", sizeof(LineComponent), (void*)offsetof(LineComponent, p));
 	sl::createVBOVec3(shader.id, "color", sizeof(LineComponent), (void*)offsetof(LineComponent, color));
 
+	std::cout << "LineRenderer init" << std::endl;
 }
 
 void LineRenderer::push() {
@@ -33,6 +34,7 @@ void LineRenderer::push() {
 	glBindVertexArray(VAO);
 	glBindBuffer(GL_ARRAY_BUFFER, VBO);
 	glBufferData(GL_ARRAY_BUFFER, nverts * sizeof(LineComponent), lineComponents.data(), GL_DYNAMIC_DRAW);
+
 }
 
 void LineRenderer::render(glm::vec3 &position) {
@@ -45,6 +47,13 @@ void LineRenderer::render(glm::vec3 &position) {
 	setPosition(position);
 
 	glDrawArrays(GL_LINES, 0, nverts);
+}
+
+void LineRenderer::clear() {
+	glBindVertexArray(VAO);
+	glBindBuffer(GL_ARRAY_BUFFER, VBO);
+	glBufferData(GL_ARRAY_BUFFER, nverts * sizeof(LineComponent), nullptr, GL_DYNAMIC_DRAW);
+	clearLines();
 }
 
 void LineRenderer::clean() {

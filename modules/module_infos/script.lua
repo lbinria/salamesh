@@ -5,7 +5,7 @@ function init()
 	print("Screen aspect: " .. tostring(app.aspect_ratio))
 	print("Number of cameras: " .. tostring(app.count_cameras))
 
-	-- app:add_renderer("LineRenderer", "line_renderer")
+	app:add_renderer("LineRenderer", "line_renderer")
 	-- local j = app.camera:save_state()
 	-- app.camera:savus(j)
 

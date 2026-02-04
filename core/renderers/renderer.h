@@ -37,6 +37,11 @@ struct IRenderer {
 	virtual void push() = 0;
 	virtual void render(glm::vec3 &position) = 0;
 	virtual void clean() = 0;
+	
+	virtual void clear() {
+		clean();
+		init();
+	}
 
 	bool isRenderElement(ElementKind kind) {
 		return (getRenderElementKind() & kind) == kind;

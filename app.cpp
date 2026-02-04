@@ -510,8 +510,8 @@ void App::start() {
 
 		// Render scene
 		for (auto &[k, r] : renderers) {
-			glm::vec3 origin{0.f};
-			r->render(origin);
+			glm::vec3 o{0.f};
+			r->render(o);
 		}
 
 		for (auto &model : models) {
@@ -1411,7 +1411,7 @@ void App::clearScene() {
 		m->clean();
 
 	for (auto &[k, r] : renderers)
-		r->clean();
+		r->clear();
 
 	// TODO maybe clean modules ?
 

@@ -49,6 +49,8 @@
 
 #include "core/lua_script.h"
 
+#include "core/renderers/line_renderer.h"
+
 using namespace UM;
 
 #include <filesystem>

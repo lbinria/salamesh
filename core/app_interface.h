@@ -80,6 +80,7 @@ struct IApp {
 	virtual int getSelectedCamera() = 0;
 	virtual int countCameras() = 0;
 
+
 	virtual IRenderer& addRenderer(std::string type, std::string name) = 0;
 	virtual void removeRenderer(std::string name) = 0;
 	virtual IRenderer& getRenderer(std::string name) = 0;

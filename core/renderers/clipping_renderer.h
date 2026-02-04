@@ -32,6 +32,7 @@ struct ClippingRenderer : public IRenderer {
 	void push() override;
 	void render(glm::vec3 &position) override;
 	void clean() override;
+	void clear() override;
 
 	int getRenderElementKind() override { return 0; }
 

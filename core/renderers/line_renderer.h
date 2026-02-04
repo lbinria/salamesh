@@ -35,11 +35,13 @@ struct LineRenderer : public IRenderer {
 	void push();
 	void render(glm::vec3 &position);
 	void clean();
+	void clear() override;
 
 	int getRenderElementKind() override { return 0; }
 
 	void clearLines() {
 		lines.clear();
+		nverts = 0;
 	}
 
 	// TODO generate guid for line

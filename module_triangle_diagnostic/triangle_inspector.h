@@ -11,17 +11,18 @@
 
 struct TriangleInspector : public Script {
 
-	TriangleInspector(IApp &app) : Script(app) {}	
+	// TriangleInspector(IApp &app) : Script(app)/*, lineRenderer(app.addRenderer("LineRenderer", "my_linus_renderus").as<LineRenderer>())*/ {}	
+	// TriangleInspector(IApp &app) : Script(app), lineRenderer(app.addRenderer("LineRenderer", "my_linus_renderus")) {}	
+	TriangleInspector(IApp &app) : Script(app), lineRenderer(app.addRenderer("LineRenderer", "my_linus_renderus")) {}	
 
 	// Lifecycle
 	void init() {
 		// lineRenderer.init();
-		app.addRenderer("LineRenderer", "my_linus_renderus");
 	}
 
 	// virtual void setup() = 0;
 	void cleanup() {
-		// lineRenderer.clean();
+		lineRenderer.clean();
 	}
 
 	void setupModel() {
@@ -319,9 +320,9 @@ struct TriangleInspector : public Script {
 		// TODO important here seems wrong, app.getSurface().width / app.getSurface().height
 		glm::vec2 viewport = { app.getWidth(), app.getHeight() };
 		
-		auto &lineRenderer = app.getRenderer("my_linus_renderus").as<LineRenderer>();
+		auto &lr = lineRenderer.as<LineRenderer>();
 
-		lineRenderer.clearLines();
+		lr.clearLines();
 
 		// Compute radius of points in 3D from point size
 		std::vector<float> radiuses(m.nverts());
@@ -329,12 +330,12 @@ struct TriangleInspector : public Script {
 			radiuses[v] = getRadius(pvm, sl::um2glm(v.pos()), pointSize, viewport);
 
 			// Push lines for debug
-			lineRenderer.addLine({sl::um2glm(v.pos()), sl::um2glm(v.pos()) + glm::vec3(radiuses[v], 0.f, 0.f), {1.f, 0.f, 0.f}});
-			lineRenderer.addLine({sl::um2glm(v.pos()), sl::um2glm(v.pos()) + glm::vec3(-radiuses[v], 0.f, 0.f), {1.f, 0.f, 0.f}});
-			lineRenderer.addLine({sl::um2glm(v.pos()), sl::um2glm(v.pos()) + glm::vec3(0.f, radiuses[v], 0.f), {1.f, 0.f, 0.f}});
-			lineRenderer.addLine({sl::um2glm(v.pos()), sl::um2glm(v.pos()) + glm::vec3(0.f, -radiuses[v], 0.f), {1.f, 0.f, 0.f}});
-			lineRenderer.addLine({sl::um2glm(v.pos()), sl::um2glm(v.pos()) + glm::vec3(0.f, 0.f, radiuses[v]), {1.f, 0.f, 0.f}});
-			lineRenderer.addLine({sl::um2glm(v.pos()), sl::um2glm(v.pos()) + glm::vec3(0.f, 0.f, -radiuses[v]), {1.f, 0.f, 0.f}});
+			lr.addLine({sl::um2glm(v.pos()), sl::um2glm(v.pos()) + glm::vec3(radiuses[v], 0.f, 0.f), {1.f, 0.f, 0.f}});
+			lr.addLine({sl::um2glm(v.pos()), sl::um2glm(v.pos()) + glm::vec3(-radiuses[v], 0.f, 0.f), {1.f, 0.f, 0.f}});
+			lr.addLine({sl::um2glm(v.pos()), sl::um2glm(v.pos()) + glm::vec3(0.f, radiuses[v], 0.f), {1.f, 0.f, 0.f}});
+			lr.addLine({sl::um2glm(v.pos()), sl::um2glm(v.pos()) + glm::vec3(0.f, -radiuses[v], 0.f), {1.f, 0.f, 0.f}});
+			lr.addLine({sl::um2glm(v.pos()), sl::um2glm(v.pos()) + glm::vec3(0.f, 0.f, radiuses[v]), {1.f, 0.f, 0.f}});
+			lr.addLine({sl::um2glm(v.pos()), sl::um2glm(v.pos()) + glm::vec3(0.f, 0.f, -radiuses[v]), {1.f, 0.f, 0.f}});
 		}
 
 		lineRenderer.push();
@@ -386,8 +387,8 @@ struct TriangleInspector : public Script {
 		triModel.setHighlight(ElementKind::POINTS_ELT);
 
 
-		glm::vec3 p{0};
-		lineRenderer.render(p);
+		// glm::vec3 p{0};
+		// lineRenderer.render(p);
 
 	}
 
@@ -405,6 +406,9 @@ struct TriangleInspector : public Script {
 	double eps = 0.001;
 	int nOverlaps = 0;
 
+	// LineRenderer &lineRenderer;
+	IRenderer &lineRenderer;
+	// std::unique_ptr<IRenderer> lineRenderer;
 	// LineRenderer lineRenderer;
 	HBoxes3 hbbox;
 
