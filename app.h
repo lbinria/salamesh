@@ -259,6 +259,7 @@ struct App : public IApp {
 	}
 
 	IRenderer& addRenderer(std::string type, std::string name) override {
+        assert(!name.empty());
 		auto renderer = makeRenderer(type);
 		renderer->init();
 		renderers[name] = std::move(renderer);
@@ -394,8 +395,9 @@ struct App : public IApp {
 
 	std::vector<std::shared_ptr<Camera>> cameras;
 	std::vector<std::shared_ptr<Model>> models;
-	std::vector<std::unique_ptr<RenderSurface>> renderSurfaces;
     std::map<std::string, std::unique_ptr<IRenderer>> renderers;
+
+	std::vector<std::unique_ptr<RenderSurface>> renderSurfaces;
 
 	int selectedCamera = 0;
 	int selectedModel = 0;

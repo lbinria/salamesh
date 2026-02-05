@@ -1,6 +1,5 @@
 #include "app.h"
 
-#include "core/cameras/arcball_camera.h"
 #include "core/cameras/trackball_camera.h"
 #include "core/cameras/descent_camera.h"
 #include "core/renderers/line_renderer.h"
@@ -395,9 +394,8 @@ void App::init() {
 	std::cout << "Init" << std::endl;
 
 	// Create cameras instanciators
-	cameraInstanciators["ArcBallCamera"] = []() { return std::make_unique<ArcBallCamera>(); };
-	cameraInstanciators["DescentCamera"] = []() { return std::make_unique<DescentCamera>(); };
-	cameraInstanciators["TrackBallCamera"] = []() { return std::make_unique<TrackBallCamera>(); };
+	registerCamera("DescentCamera", []() { return std::make_unique<DescentCamera>(); });
+	registerCamera("TrackBallCamera", []() { return std::make_unique<TrackBallCamera>(); });
 	// Create renderers instanciantors
 	rendererInstanciators["LineRenderer"] = []() { return std::make_unique<LineRenderer>(); };
 	rendererInstanciators["PointSetRenderer"] = []() { return std::make_unique<PointSetRenderer>(); };
@@ -639,14 +637,9 @@ void App::updateCamera(float dt) {
 	}
 
 	if (st.mouse.isRightButton()) {
-		auto arcball = dynamic_cast<ArcBallCamera*>(&getCamera());
-		if (arcball) {
-			arcball->movePan(st.mouse.delta);
-		}
-		else {
-			auto trackball = dynamic_cast<TrackBallCamera*>(&getCamera());
-			if (trackball)
-				trackball->movePan(st.mouse.delta);
+		auto trackball = dynamic_cast<TrackBallCamera*>(&getCamera());
+		if (trackball) {
+			trackball->movePan(st.mouse.delta);
 		}
 	}
 
@@ -1608,19 +1601,6 @@ void App::key_event(int key, int scancode, int action, int mods) {
 		getCamera().setLock(false);
 	}
 
-	// // Switch cameras with 1 and 2 keys
-	// if (key == GLFW_KEY_1 && action == GLFW_PRESS) {
-	// 	Camera &refCam = getCamera();
-	// 	setSelectedCamera(0);
-	// 	if (countModels() > 0)
-	// 		getCamera().copy(refCam, getCurrentModel().bbox());
-	// } else if (key == GLFW_KEY_2 && action == GLFW_PRESS) {
-	// 	Camera &refCam = getCamera();
-	// 	setSelectedCamera(1);
-	// 	if (countModels() > 0)
-	// 		getCamera().copy(refCam, getCurrentModel().bbox());
-	// }
-
 	for (auto &script : scripts) {
 		script->key_event(key, scancode, action, mods);
 	}
@@ -1709,7 +1689,7 @@ std::unique_ptr<Camera> App::makeCamera(std::string type) {
 	std::cerr 
 		<< "Unable to make camera of type " 
 		<< type 
-		<< ", maybe you should register `makeCamera` to add the construction of your custom camera class ?" 
+		<< ", maybe you should register your custom camera class using `registerCamera` ?" 
 		<< std::endl;
 
 	return nullptr;
@@ -1722,9 +1702,9 @@ std::unique_ptr<IRenderer> App::makeRenderer(std::string type) {
 	}
 
 	std::cerr 
-		<< "Unable to make camera of type " 
+		<< "Unable to make renderer of type " 
 		<< type 
-		<< ", maybe you should override `makeCamera` to add the construction of your custom camera class ?" 
+		<< ", maybe you should register your custom camera class `registerRenderer` ?" 
 		<< std::endl;
 
 	return nullptr;

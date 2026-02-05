@@ -25,7 +25,6 @@ set(SOURCES
     shader.cpp shader.h 
 
     cameras/camera.h
-    cameras/arcball_camera.h
     cameras/trackball_camera.h
     cameras/descent_camera.h
 

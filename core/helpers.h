@@ -5,6 +5,10 @@
 #include <string>
 #include <cctype>
 
+#include <random>
+#include <sstream>
+#include <iomanip>
+
 namespace fs = std::filesystem;
 
 namespace sl {
@@ -134,6 +138,31 @@ namespace sl {
 
 	static std::string assetsPath(std::string filename) {
 		return exePath("") + "assets/" + filename;
+	}
+
+	static std::string generateGuid() {
+		std::random_device rd;
+		std::mt19937 gen(rd());
+		std::uniform_int_distribution<> dis(0, 15);
+		std::uniform_int_distribution<> dis2(8, 11);
+
+		std::stringstream ss;
+		ss << std::hex;
+		
+		// Generate 32 hexadecimal digits
+		for (int i = 0; i < 32; ++i) {
+			if (i == 8 || i == 12 || i == 16 || i == 20)
+				ss << '-';
+			
+			// Variant and version bits
+			if (i == 16) {
+				ss << dis2(gen);
+			} else {
+				ss << dis(gen);
+			}
+		}
+		
+		return ss.str();
 	}
 
 }

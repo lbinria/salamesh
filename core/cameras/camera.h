@@ -25,6 +25,13 @@ struct Camera {
         updateViewMatrix();
     }
 
+	template<typename T>
+	T& as() {
+		static_assert(std::is_base_of_v<Camera, T>, "Camera::as() can only be used with derived classes of Camera");
+		auto &x = static_cast<T&>(*this);
+		return x;
+	}
+
 	const std::string& getName() const { return m_name; }
 	void setName(const std::string& name) { m_name = name; }
 

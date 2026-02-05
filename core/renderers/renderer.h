@@ -22,6 +22,10 @@ struct IRenderer {
 	IRenderer (const IRenderer&) = delete;
 	IRenderer& operator= (const IRenderer&) = delete;
 
+	IRenderer(Shader shader) : 
+		shader(std::move(shader))
+	{}
+
 	template<typename T>
 	T& as() {
 		static_assert(std::is_base_of_v<IRenderer, T>, "Renderer::as() can only be used with derived classes of Renderer");
@@ -57,7 +61,6 @@ struct IRenderer {
 		return visible;
 	}
 
-	IRenderer(Shader shader) : shader(std::move(shader)) {}
 
 	// TODO see list of shader function, some are specific to mesh_renderer...
 
