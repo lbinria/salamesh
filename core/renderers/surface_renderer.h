@@ -37,11 +37,11 @@ struct SurfaceRenderer : public IRenderer {
 			shader.setFloat3("color", {0.71f, 0.71f, 0.71f});
 		}
 
-	void init();
-	void render(glm::vec3 &position);
-	void clean();
-
+	void init() override;
+	void render(glm::vec3 &position) override;
 	virtual void push() override = 0;
+	void clear() override;
+	void clean() override;
 
 	int getRenderElementKind() override { return ElementKind::FACETS_ELT | ElementKind::CORNERS_ELT; }
 

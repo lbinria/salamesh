@@ -102,6 +102,13 @@ void BBoxRenderer::render(glm::vec3 &position) {
 	glDrawArrays(GL_LINES, 0, nverts);
 }
 
+void BBoxRenderer::clear() {
+	glBindVertexArray(VAO);
+	glBindBuffer(GL_ARRAY_BUFFER, VBO);
+	glBufferData(GL_ARRAY_BUFFER, nverts * sizeof(Vertex), nullptr, GL_STATIC_DRAW);
+	nverts = 0;
+}
+
 void BBoxRenderer::clean() {
 	// Clean up
 	glDeleteVertexArrays(1, &VAO);

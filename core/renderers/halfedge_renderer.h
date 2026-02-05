@@ -27,10 +27,11 @@ struct HalfedgeRenderer : public IRenderer {
 
 	using IRenderer::IRenderer;
 
-	void init();
+	void init() override;
 	virtual void push() = 0;
-	void render(glm::vec3 &position);
-	void clean();
+	void render(glm::vec3 &position) override;
+	void clear() override;
+	void clean() override;
 
 	int getRenderElementKind() override { return ElementKind::EDGES_ELT | ElementKind::CORNERS_ELT; }
 

@@ -39,9 +39,10 @@ struct VolumeRenderer : public IRenderer {
 		}
 
 
-	void init();
-	void render(glm::vec3 &position);
-	void clean();
+	void init() override;
+	void render(glm::vec3 &position) override;
+	void clear() override;
+	void clean() override;
 
 	int getRenderElementKind() override { return ElementKind::CELLS_ELT | ElementKind::CELL_FACETS_ELT; }
 

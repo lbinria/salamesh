@@ -26,10 +26,11 @@ struct BBoxRenderer : public IRenderer {
 			setColor(glm::vec3(1.0, 1.0, 1.0));
 		}
 
-	void init();
-	void push();
-	void render(glm::vec3 &position);
-	void clean();
+	void init() override;
+	void push() override;
+	void render(glm::vec3 &position) override;
+	void clear() override;
+	void clean() override;
 
 	int getRenderElementKind() override { return 0; }
 

@@ -31,10 +31,10 @@ struct LineRenderer : public IRenderer {
 			
 		}
 
-	void init();
-	void push();
-	void render(glm::vec3 &position);
-	void clean();
+	void init() override;
+	void push() override;
+	void render(glm::vec3 &position) override;
+	void clean() override;
 	void clear() override;
 
 	int getRenderElementKind() override { return 0; }

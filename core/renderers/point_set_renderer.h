@@ -31,12 +31,14 @@ struct PointSetRenderer : public IRenderer {
 
 	PointSetRenderer() : 
 		IRenderer(Shader(sl::shadersPath("point.vert"), sl::shadersPath("point.frag"))), ps(*new PointSet()) {
+			setPointSize(4.0f);
+			setColor({0.23, 0.85, 0.66});
 		}
 
-	void init();
-	void push();
-	void render(glm::vec3 &position);
-	void clean();
+	void init() override;
+	void push() override;
+	void render(glm::vec3 &position) override;
+	void clean() override;
 	void clear() override;
 
 	int getRenderElementKind() override { return ElementKind::POINTS_ELT; }
@@ -68,6 +70,9 @@ struct PointSetRenderer : public IRenderer {
 	void clearPoints() {
 		std::vector<bool> toKill(ps.size(), true);
 		ps.delete_points(toKill);
+
+		if (autoUpdate)
+			push();
 	}
 
 	inline int count() {

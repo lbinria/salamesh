@@ -96,6 +96,12 @@ void SurfaceRenderer::render(glm::vec3 &position) {
 	glDrawArrays(GL_TRIANGLES, 0, nverts);
 }
 
+void SurfaceRenderer::clear() {
+	glBindVertexArray(VAO);
+	glBindBuffer(GL_ARRAY_BUFFER, VBO);
+	glBufferData(GL_ARRAY_BUFFER, nverts * sizeof(Vertex), nullptr, GL_STATIC_DRAW);
+}
+
 void SurfaceRenderer::clean() {
 	// Clean up
 	glDeleteVertexArrays(1, &VAO);

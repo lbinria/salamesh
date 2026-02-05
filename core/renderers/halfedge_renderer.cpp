@@ -85,22 +85,6 @@ void HalfedgeRenderer::render(glm::vec3 &position) {
 	glDrawArrays(GL_TRIANGLES, 0, nverts);
 }
 
-void HalfedgeRenderer::clean() {
-	// Clean up
-	glDeleteVertexArrays(1, &VAO);
-	glDeleteBuffers(1, &VBO);
-
-	glDeleteBuffers(1, &bufAttr);
-	glDeleteTextures(1, &texAttr);
-	glDeleteBuffers(1, &bufHighlight);
-	glDeleteTextures(1, &tboHighlight);
-	glDeleteBuffers(1, &bufFilter);
-	glDeleteTextures(1, &tboFilter);
-	glBindBuffer(GL_TEXTURE_BUFFER, 0);
-
-	shader.clean();
-}
-
 void SurfaceHalfedgeRenderer::push() {	
 	
 	std::vector<LineVert> vertices;
@@ -195,4 +179,27 @@ void VolumeHalfedgeRenderer::push() {
 	glBindVertexArray(VAO);
 	glBindBuffer(GL_ARRAY_BUFFER, VBO);
 	glBufferData(GL_ARRAY_BUFFER, nverts * sizeof(LineVert), vertices.data(), GL_STATIC_DRAW);
+}
+
+void HalfedgeRenderer::clear() {
+	glBindVertexArray(VAO);
+	glBindBuffer(GL_ARRAY_BUFFER, VBO);
+	glBufferData(GL_ARRAY_BUFFER, nverts * sizeof(LineVert), nullptr, GL_STATIC_DRAW);
+	nverts = 0;
+}
+
+void HalfedgeRenderer::clean() {
+	// Clean up
+	glDeleteVertexArrays(1, &VAO);
+	glDeleteBuffers(1, &VBO);
+
+	glDeleteBuffers(1, &bufAttr);
+	glDeleteTextures(1, &texAttr);
+	glDeleteBuffers(1, &bufHighlight);
+	glDeleteTextures(1, &tboHighlight);
+	glDeleteBuffers(1, &bufFilter);
+	glDeleteTextures(1, &tboFilter);
+	glBindBuffer(GL_TEXTURE_BUFFER, 0);
+
+	shader.clean();
 }
