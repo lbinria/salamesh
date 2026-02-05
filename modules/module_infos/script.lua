@@ -23,6 +23,10 @@ function init()
 		print(av_renderers[i])
 	end
 
+	for n, r in pairs(app.renderers) do
+		print("Renderer: " .. n)
+	end
+
 
 	app:add_camera("TrackBallCamera", "my_trackballus")
 	app:add_camera("TrackBallCamera", "my_trackballus2")

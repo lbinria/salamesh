@@ -300,6 +300,10 @@ struct App : public IApp {
 		return *renderers[name];
 	}
 
+	std::map<std::string, std::shared_ptr<IRenderer>> getRenderers() override {
+		return renderers;
+	}
+
 
 
 	RenderSurface &getRenderSurface() { return *renderSurfaces[0]; }
@@ -401,7 +405,7 @@ struct App : public IApp {
 
 	std::vector<std::shared_ptr<Camera>> cameras;
 	std::vector<std::shared_ptr<Model>> models;
-	std::map<std::string, std::unique_ptr<IRenderer>> renderers;
+	std::map<std::string, std::shared_ptr<IRenderer>> renderers;
 
 	std::vector<std::unique_ptr<RenderSurface>> renderSurfaces;
 

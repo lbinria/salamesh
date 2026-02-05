@@ -156,6 +156,7 @@ namespace bindings {
 
 		app_type.set_function("add_renderer", &IApp::addRenderer);
 		app_type.set_function("remove_renderer", &IApp::removeRenderer);
+		app_type["renderers"] = sol::readonly_property(&IApp::getRenderers);
 		app_type.set_function("get_renderer", &IApp::getRenderer);
 		app_type.set_function("count_renderers", &IApp::countRenderers);
 		app_type.set_function("has_renderer", &IApp::hasRenderer);
