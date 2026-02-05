@@ -397,8 +397,8 @@ void App::init() {
 	registerCamera("DescentCamera", []() { return std::make_unique<DescentCamera>(); });
 	registerCamera("TrackBallCamera", []() { return std::make_unique<TrackBallCamera>(); });
 	// Create renderers instanciantors
-	rendererInstanciators["LineRenderer"] = []() { return std::make_unique<LineRenderer>(); };
-	rendererInstanciators["PointSetRenderer"] = []() { return std::make_unique<PointSetRenderer>(); };
+	registerRenderer("LineRenderer", []() { return std::make_unique<LineRenderer>(); });
+	registerRenderer("PointSetRenderer", []() { return std::make_unique<PointSetRenderer>(); });
 
 	{
 		// Create cameras
@@ -1655,14 +1655,6 @@ void App::mouse_move(double x, double y) {
 		script->mouse_move(x, y);
 	}
 
-}
-
-void App::registerCamera(std::string type, std::function<std::unique_ptr<Camera>()> instanciatorFunc) {
-	cameraInstanciators[type] = instanciatorFunc;
-}
-
-void App::registerRenderer(std::string type, std::function<std::unique_ptr<IRenderer>()> instanciatorFunc) {
-	rendererInstanciators[type] = instanciatorFunc;
 }
 
 std::vector<std::string> App::listAvailableRenderers() {
