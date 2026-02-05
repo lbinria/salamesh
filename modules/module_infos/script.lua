@@ -6,6 +6,7 @@ function init()
 	print("Number of cameras: " .. tostring(app.count_cameras))
 
 	app:add_renderer("LineRenderer", "line_renderer")
+	app:add_renderer("PointSetRenderer", "my_point_set_renderer")
 	-- local j = app.camera:save_state()
 	-- app.camera:savus(j)
 
@@ -74,14 +75,15 @@ function draw_gui()
 
 	if imgui.Button("lines!") then
 		was_clicked = true
-		local lr = app:get_renderer("line_renderer"):as("LineRenderer")
+		local lr = app:get_renderer("line_renderer"):as("LineRenderer") -- TODO not have to make conversion
+		-- local lr = app:get_renderer("line_renderer") -- TODO not have to make conversion
 		lr:clear_lines()
 		for i=1,1000 do
 
 			
 			local l = Line{
 				a = vec3{i * 0.1, 0, 0},
-				b = vec3{i * 0.1 + 0.1, 0, 0},
+				b = vec3{i * 0.1 + 0.09, 0, 0},
 				color = vec3{1,i / 1000.0,0}
 			}
 
@@ -91,6 +93,34 @@ function draw_gui()
 		xx = xx + 1
 		lr:push()
 
+		app.camera.far_plane = 1000.
+		app.camera:look_at_box({vec3{0,-5,-50}, vec3{100,5,50}})
+
+	end
+
+	if imgui.Button("points !!!") then 
+		if app:has_renderer("my_point_set_renderer") then 
+			local ps = app:get_renderer("my_point_set_renderer"):as("PointSetRenderer")
+			for i=1,1000 do 
+				ps:add_point(vec3{i*0.3,0,0})
+			end
+			ps.light = true
+			ps.size = 10.
+			ps.color = vec3{0.4, 0.2, 0.76}
+			ps:push()
+			app.camera.far_plane = 1000.
+			app.camera:look_at_box({vec3{0,-5,-50}, vec3{100,5,50}})
+		end
+	end
+
+	if imgui.Button("move points...") then 
+		local ps = app:get_renderer("my_point_set_renderer"):as("PointSetRenderer")
+
+		for i=1,1000 do 
+			-- print(ps[i]:to_string())
+			ps[i] = ps[i] + umvec3{0.1, 0, 0}
+		end
+		ps:push()
 	end
 
 	if imgui.Button("GOGOGO") then 

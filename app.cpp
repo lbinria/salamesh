@@ -400,6 +400,7 @@ void App::init() {
 	cameraInstanciators["TrackBallCamera"] = []() { return std::make_unique<TrackBallCamera>(); };
 	// Create renderers instanciantors
 	rendererInstanciators["LineRenderer"] = []() { return std::make_unique<LineRenderer>(); };
+	rendererInstanciators["PointSetRenderer"] = []() { return std::make_unique<PointSetRenderer>(); };
 
 	{
 		// Create cameras

@@ -41,16 +41,26 @@ namespace bindings {
 			&IRenderer::setAttrRepeat
 		);
 
+		renderer_t["light"] = sol::writeonly_property(&IRenderer::setLight);
+
+
 		// TODO important missing cases
 		renderer_t.set_function("as", [](sol::this_state s, IRenderer& self, const std::string& typeName) -> sol::object {
 			if (typeName == "LineRenderer") {
-				if (auto lineRenderer = dynamic_cast<LineRenderer*>(&self)) {
-					return sol::make_object(s, lineRenderer);
+				if (auto r = dynamic_cast<LineRenderer*>(&self)) {
+					return sol::make_object(s, r);
+				}
+			} else if (typeName == "PointSetRenderer") {
+				if (auto r = dynamic_cast<PointSetRenderer*>(&self)) {
+					return sol::make_object(s, r);
 				}
 			}
 
 			return sol::nil;
 		});
+
+		renderer_t.set_function("push", &IRenderer::push);
+
 
 
 		sol::usertype<PointSetRenderer> pointSetRenderer_t = lua.new_usertype<PointSetRenderer>(
@@ -58,6 +68,14 @@ namespace bindings {
 			sol::base_classes, 
 			sol::bases<IRenderer>()
 		);
+
+		pointSetRenderer_t[sol::meta_function::index] = [](PointSetRenderer& self, int i) -> vec3 {
+			return self[i - 1];
+		};
+
+		pointSetRenderer_t[sol::meta_function::new_index] = [](PointSetRenderer& self, int i, vec3 value) {
+			self[i - 1] = value;
+		};
 
 		pointSetRenderer_t["visible"] = sol::property(
 			&PointSetRenderer::getVisible,
@@ -71,6 +89,11 @@ namespace bindings {
 			&PointSetRenderer::getPointSize,
 			&PointSetRenderer::setPointSize
 		);
+		pointSetRenderer_t.set_function("add_point", &PointSetRenderer::addPoint);
+		pointSetRenderer_t.set_function("add_points", &PointSetRenderer::addPoints);
+		pointSetRenderer_t.set_function("remove_points", &PointSetRenderer::removePoints);
+		pointSetRenderer_t["count"] = sol::readonly_property(&PointSetRenderer::count);
+
 
 		sol::usertype<HalfedgeRenderer> halfedgeRenderer_t = lua.new_usertype<HalfedgeRenderer>(
 			"HalfedgeRenderer",
@@ -124,7 +147,6 @@ namespace bindings {
 
 		lineRenderer_t.set_function("add_line", &LineRenderer::addLine);
 		lineRenderer_t.set_function("clear_lines", &LineRenderer::clearLines);
-		lineRenderer_t.set_function("push", &LineRenderer::push);
 
 	}
 }

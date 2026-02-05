@@ -158,6 +158,8 @@ namespace bindings {
 		app_type.set_function("remove_renderer", &IApp::removeRenderer);
 		app_type.set_function("get_renderer", &IApp::getRenderer);
 		app_type.set_function("count_renderers", &IApp::countRenderers);
+		app_type.set_function("has_renderer", &IApp::hasRenderer);
+		app_type.set_function("has_renderers", &IApp::hasRenderers);
 		app_type.set_function("clear_renderers", &IApp::clearRenderers);
 
 

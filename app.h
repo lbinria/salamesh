@@ -275,6 +275,14 @@ struct App : public IApp {
 	int countRenderers() override {
 		return renderers.size();
 	}
+
+    bool hasRenderer(std::string name) override {
+        return renderers.count(name) > 0;
+    }
+
+    bool hasRenderers() override {
+        return renderers.size() > 0;
+    }
 	
 	void clearRenderers() override {
 		for (auto &[k, r] : renderers) {

@@ -83,6 +83,67 @@ namespace bindings {
 
 	void UMBindings::loadBindings(sol::state &lua, IApp &app) {
 
+		// vec3 type
+		sol::usertype<vec3> vec3_t = lua.new_usertype<vec3>("umvec3",
+
+			// Constructor overloads
+			sol::constructors<vec3(), 
+							vec3(float, float, float),
+							vec3(const vec3&)>{},
+
+			sol::call_constructor, [](sol::table t) {
+				return vec3{
+					t.get_or(1, 0.f),
+					t.get_or(2, 0.f),
+					t.get_or(3, 0.f)
+				};
+			},
+
+			sol::meta_function::addition, sol::overload(
+				[](const vec3 &a, const vec3 &b) {
+					return a + b;
+				}/*, 
+				[](const float a, const glm::vec3 &b) {
+					return a + b;
+				}*/
+			),
+
+			sol::meta_function::subtraction, [](const vec3 &a, const vec3 &b) {
+				return a - b;
+			},
+
+			sol::meta_function::multiplication, sol::overload(
+				[](const vec3 &a, const vec3 &b) {
+					return a * b;
+				}, 
+				[](const float a, const vec3 &b) {
+					return a * b;
+				}
+			),
+
+			sol::meta_function::division, [](const vec3 &a, float x) {
+				return a / x;
+			},
+			
+			// Property accessors
+			"x", sol::readonly_property(&vec3::x),
+			"y", sol::readonly_property(&vec3::y),
+			"z", sol::readonly_property(&vec3::z)
+		);
+
+		vec3_t.set_function("to_string", [](vec3 &v) {
+			return std::string("(") + std::to_string(v.x) + ", " + std::to_string(v.y) + ", " + std::to_string(v.z) + ")";
+		});
+
+		sol::usertype<PointSet> pointSet_t = lua.new_usertype<PointSet>("PointSet");
+
+		pointSet_t[sol::meta_function::index] = [](PointSet& self, int i) -> vec3 {
+			return self[i];
+		};
+
+		pointSet_t[sol::meta_function::new_index] = [](PointSet& self, int i, vec3 value) {
+			self[i] = value;
+		};
 
 		sol::usertype<Surface> surface_t = lua.new_usertype<Surface>("Surface");
 		sol::usertype<Volume> volume_t = lua.new_usertype<Volume>("Volume");

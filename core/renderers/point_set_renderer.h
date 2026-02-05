@@ -29,10 +29,15 @@ struct PointSetRenderer : public IRenderer {
 			setColor({0.23, 0.85, 0.66}); // TODO here use a setting default point color
 		}
 
+	PointSetRenderer() : 
+		IRenderer(Shader(sl::shadersPath("point.vert"), sl::shadersPath("point.frag"))), ps(*new PointSet()) {
+		}
+
 	void init();
 	void push();
 	void render(glm::vec3 &position);
 	void clean();
+	void clear() override;
 
 	int getRenderElementKind() override { return ElementKind::POINTS_ELT; }
 
@@ -60,6 +65,15 @@ struct PointSetRenderer : public IRenderer {
 			push();
 	}
 
+	void clearPoints() {
+		std::vector<bool> toKill(ps.size(), true);
+		ps.delete_points(toKill);
+	}
+
+	inline int count() {
+		return ps.size();
+	}
+
 	float getPointSize() const {
 		return pointSize;
 	}
@@ -83,11 +97,17 @@ struct PointSetRenderer : public IRenderer {
 	bool getAutoUpdate() { return autoUpdate; }
 	void setAutoUpdate(bool val) { autoUpdate = val; }
 
-	PointSet &ps;
+
+	PointSet& getPointSet() { return ps; }
+
+	vec3& operator[](int index)
+	{
+		return ps[index];
+	}
 
 
     private:
-    
+    PointSet &ps;
 	bool autoUpdate = false;
 
     float pointSize;

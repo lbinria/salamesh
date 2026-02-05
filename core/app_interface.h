@@ -85,6 +85,8 @@ struct IApp {
 	virtual void removeRenderer(std::string name) = 0;
 	virtual IRenderer& getRenderer(std::string name) = 0;
 	virtual int countRenderers() = 0;
+	virtual bool hasRenderer(std::string name) = 0;
+	virtual bool hasRenderers() = 0;
 	virtual void clearRenderers() = 0;
 
 	virtual InputState& getInputState() = 0;
