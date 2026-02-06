@@ -26,11 +26,6 @@ namespace bindings {
 			self.move(old, newp);
 		});
 
-		camera_t["name"] = sol::property(
-			&Camera::getName,
-			&Camera::setName
-		);
-
 		camera_t["position"] = sol::property(
 			&Camera::getEye,
 			&Camera::setEye

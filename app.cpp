@@ -419,10 +419,10 @@ void App::init() {
 
 	{
 		// Create cameras
-		auto trackball_camera = std::make_shared<TrackBallCamera>("Trackball");
-		auto descent_camera = std::make_shared<DescentCamera>("Descent");
-		cameras["default"] = std::move(trackball_camera);
-		cameras["default_descent_camera"] = std::move(descent_camera);
+		auto trackballCamera = std::make_shared<TrackBallCamera>();
+		auto descentCamera = std::make_shared<DescentCamera>();
+		cameras["default"] = std::move(trackballCamera);
+		cameras["default_descent_camera"] = std::move(descentCamera);
 	}
 	
 	getRenderSurface().setCamera(cameras["default"]);

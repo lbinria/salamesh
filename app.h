@@ -221,7 +221,6 @@ struct App : public IApp {
 	Camera& addCamera(std::string type, std::string name) override {
 		assert(!name.empty() && "Cannot add camera with an empty name.");
 		auto camera = makeCamera(type);
-		camera->setName(name);
 		// camera->init();
 		cameras[name] = std::move(camera);
 		return *cameras[name];
