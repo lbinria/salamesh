@@ -97,7 +97,7 @@ struct App : public IApp {
 	// TO protected
 	void processInput(GLFWwindow *window);
 
-	void setup();
+	bool setup();
 	void start();
 	void clean();
 

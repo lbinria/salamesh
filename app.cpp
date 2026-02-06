@@ -158,7 +158,7 @@ static void framebuffer_size_callback(GLFWwindow* window, int width, int height)
 
 
 
-void App::setup() {
+bool App::setup() {
 
 	std::cout << "App setup..." << std::endl;
 
@@ -181,7 +181,7 @@ void App::setup() {
 	{
 		std::cout << "Failed to create GLFW window" << std::endl;
 		glfwTerminate();
-		return;
+		return false;
 	}
 	std::cout << "GLFW window created !" << std::endl;
 
@@ -193,10 +193,20 @@ void App::setup() {
 	glfwGetWindowSize(window, &ww, &wh);
 	int cx = wx + ww/2;
 	int cy = wy + wh/2;
+	std::cout << "Window pos & size: " 
+		<< cx << ", " << cy << ", " << ww << ", " << wh << "]" 
+		<< std::endl;
 
 	int monitorCount = 0;
-	GLFWmonitor** monitors = glfwGetMonitors(&monitorCount);
-	
+	GLFWmonitor** monitors = glfwGetMonitors(&monitorCount);	
+	std::cout << "Monitors count: " << monitorCount << std::endl;
+
+	// Maybe check that ?
+	if (monitorCount == 0) {
+		std::cerr << "No monitor found, quit the app." << std::endl;
+		return false;
+	}
+
 	// Choose best monitor
 	GLFWmonitor* monitor = nullptr;
 	int res = 0;
@@ -205,8 +215,11 @@ void App::setup() {
 		GLFWmonitor* m = monitors[i];
 		int mx, my, mw, mh;
 		glfwGetMonitorWorkarea(m, &mx, &my, &mw, &mh);
-
 		int curRes = mw * mh;
+
+		std::cout << "Monitor " << i << " working area: [" << mx << ", " << my << ", " << mw << ", " << mh << "]" << std::endl;
+		std::cout << "Monitor res: " << curRes << std::endl;
+
 		if (cx >= mx && cx <= mx + mw &&
 			cy >= my && cy <= my + mh && res <= curRes) {
 			// The window center is within the monitor's work area
@@ -216,6 +229,9 @@ void App::setup() {
 			monitorY = my;
 		}
 	}
+
+	// Quick fix ! No best monitor ? Take arbitrary the first
+	monitor = monitors[0];
 
 	const GLFWvidmode* mode = glfwGetVideoMode(monitor);
 
@@ -272,7 +288,7 @@ void App::setup() {
 	if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress))
 	{
 		std::cout << "Failed to initialize GLAD" << std::endl;
-		return;
+		return false;
 	}
 	
 	#endif
@@ -385,6 +401,7 @@ void App::setup() {
 	// glEnable(GL_CULL_FACE);
 	glDisable(GL_CULL_FACE);
 
+	return true;
 }
 
 // TODO probably merge some with start function

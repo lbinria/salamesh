@@ -25,8 +25,8 @@ int main(int argc, char** argv) {
 	}
 	
 	App app(args);
-	app.setup();
-	app.start();
+	if (app.setup())
+		app.start();
 
 	return 0;
 }
