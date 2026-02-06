@@ -500,20 +500,14 @@ function draw_gui()
 			imgui.Separator()
 
 			if (imgui.BeginListBox("##list_box_cameras")) then
-				for i = 1, #app.cameras do
+				for k, _ in pairs(app.cameras) do
 
-					local camera = app.cameras[i]
+					local is_selected = k == app.selected_camera
 
-					local is_selected = i == app.selected_camera
-					-- Create a unique ID for each item to prevent conflicts
-					imgui.PushID(i)
-
-					if (imgui.Selectable(tostring(i) .. ". " .. camera.name, is_selected)) then
-						app.selected_camera = i
+					-- Add unique id to prevent conflicts
+					if (imgui.Selectable(k .. "##list_box_selectable_" .. k, is_selected)) then
+						app.selected_camera = k
 					end
-
-
-					imgui.PopID()
 					
 				end
 				imgui.EndListBox()

@@ -219,47 +219,71 @@ struct App : public IApp {
 	}
 
 	Camera& addCamera(std::string type, std::string name) override {
+		assert(!name.empty() && "Cannot add camera with an empty name.");
 		auto camera = makeCamera(type);
 		camera->setName(name);
-		cameras.push_back(std::move(camera));
-		return *cameras[cameras.size() - 1];
+		// camera->init();
+		cameras[name] = std::move(camera);
+		return *cameras[name];
 	}
 
 	void removeCamera(std::string name) override {
-		cameras.erase(
-			std::remove_if(cameras.begin(), cameras.end(), [&name](const auto& camera) { 
-				return camera->getName() == name; 
-			}), 
-			cameras.end()
-		);
+		// if (cameras.count(name) > 0)
+			// cameras[name]->clean();
+
+		cameras.erase(name);
 	}
 
-	std::vector<std::shared_ptr<Camera>>& getCameras() override {
+	std::map<std::string, std::shared_ptr<Camera>>& getCameras() override {
 		return cameras;
 	}
 
-	void setSelectedCamera(int selected) override {
-		if (selected < 0 || selected >= cameras.size()) {
-			std::cerr << "Invalid camera index: " << selected << std::endl;
-			return;
-		}
-		// TODO see this, quick-fix
-		getRenderSurface().setCamera(cameras[selected]);
-		selectedCamera = selected;
+	Camera& getCamera(std::string name) override {
+		if (cameras.count(name) <= 0)
+			throw std::runtime_error("Camera " + name + " was not found.");
+		
+		return *cameras[name];
 	}
-	
-	int getSelectedCamera() override {
-		return selectedCamera;
-	}
-
-	Camera& getCamera() override { return *cameras[selectedCamera]; }
 
 	int countCameras() override {
 		return cameras.size();
 	}
 
+	bool hasCamera(std::string name) override {
+		return cameras.count(name) > 0;
+	}
+
+	bool hasCameras() override {
+		return cameras.size() > 0;
+	}
+
+	void clearCameras() override {
+		// for (auto &[k, c] : cameras) {
+		// 	c->clean();
+		// }
+
+		cameras.clear();
+	}
+
+	bool setSelectedCamera(std::string selected) override {
+		if (!hasCamera(selected)) {
+			std::cerr << "Invalid camera: " << selected << std::endl;
+			return false;
+		}
+		// Set camera to render surface
+		getRenderSurface().setCamera(cameras[selected]);
+		selectedCamera = selected;
+		return true;
+	}
+	
+	std::string getSelectedCamera() override {
+		return selectedCamera;
+	}
+
+	Camera& getCurrentCamera() override { return *cameras[selectedCamera]; }
+
 	IRenderer& addRenderer(std::string type, std::string name) override {
-		assert(!name.empty());
+		assert(!name.empty() && ""); // TODO complete message
 		auto renderer = makeRenderer(type);
 		renderer->init();
 		renderers[name] = std::move(renderer);
@@ -403,13 +427,13 @@ struct App : public IApp {
 	GLFWwindow* window;
 	glm::vec3 backgroundColor{0.05, 0.1, 0.15};
 
-	std::vector<std::shared_ptr<Camera>> cameras;
+	std::map<std::string, std::shared_ptr<Camera>> cameras;
 	std::vector<std::shared_ptr<Model>> models;
 	std::map<std::string, std::shared_ptr<IRenderer>> renderers;
 
 	std::vector<std::unique_ptr<RenderSurface>> renderSurfaces;
 
-	int selectedCamera = 0;
+	std::string selectedCamera = "default";
 	int selectedModel = 0;
 
 	std::vector<std::unique_ptr<Script>> scripts;

@@ -72,13 +72,19 @@ struct IApp {
 	virtual void saveState(const std::string filename) = 0;
 	virtual void loadState(const std::string filename) = 0;
 
+	virtual std::map<std::string, std::shared_ptr<Camera>>& getCameras() = 0;
 	virtual Camera& addCamera(std::string type, std::string name) = 0;
 	virtual void removeCamera(std::string name) = 0;
-	virtual Camera& getCamera() = 0;
-	virtual std::vector<std::shared_ptr<Camera>>& getCameras() = 0;
-	virtual void setSelectedCamera(int selected)= 0;
-	virtual int getSelectedCamera() = 0;
+	virtual Camera& getCurrentCamera() = 0;
+	virtual Camera& getCamera(std::string name) = 0;
 	virtual int countCameras() = 0;
+	virtual bool hasCamera(std::string name) = 0;
+	virtual bool hasCameras() = 0;
+	virtual void clearCameras() = 0;
+	// TODO add findOrCreate
+
+	virtual bool setSelectedCamera(std::string selected) = 0;
+	virtual std::string getSelectedCamera() = 0;
 
 	virtual std::map<std::string, std::shared_ptr<IRenderer>> getRenderers() = 0;
 	virtual IRenderer& addRenderer(std::string type, std::string name) = 0;

@@ -421,11 +421,11 @@ void App::init() {
 		// Create cameras
 		auto trackball_camera = std::make_shared<TrackBallCamera>("Trackball");
 		auto descent_camera = std::make_shared<DescentCamera>("Descent");
-		cameras.push_back(std::move(trackball_camera));
-		cameras.push_back(std::move(descent_camera));
+		cameras["default"] = std::move(trackball_camera);
+		cameras["default_descent_camera"] = std::move(descent_camera);
 	}
 	
-	getRenderSurface().setCamera(cameras[0]);
+	getRenderSurface().setCamera(cameras["default"]);
 	// renderSurfaces[1]->setCamera(cameras[1]);
 
 	// Load model
@@ -504,8 +504,8 @@ void App::start() {
 		processInput(window);
 
 		// Set view / projection from current camera
-		view = getCamera().getViewMatrix();
-		projection = getCamera().getProjectionMatrix();
+		view = getCurrentCamera().getViewMatrix();
+		projection = getCurrentCamera().getProjectionMatrix();
 
 		// Update UBO
 		UBOMatrices mats{
@@ -632,29 +632,29 @@ void App::updateCamera(float dt) {
 	}
 
 	if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS) {
-		getCamera().moveForward(speed);
+		getCurrentCamera().moveForward(speed);
 	} else if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS) {
-		getCamera().moveForward(-speed);
+		getCurrentCamera().moveForward(-speed);
 	}
 	if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS) {
-		getCamera().moveRight(-speed);
+		getCurrentCamera().moveRight(-speed);
 	} else if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS) {
-		getCamera().moveRight(speed);
+		getCurrentCamera().moveRight(speed);
 	}
 	if (glfwGetKey(window, GLFW_KEY_Q) == GLFW_PRESS) {
-		getCamera().moveUp(speed);
+		getCurrentCamera().moveUp(speed);
 	} else if (glfwGetKey(window, GLFW_KEY_E) == GLFW_PRESS) {
-		getCamera().moveUp(-speed);
+		getCurrentCamera().moveUp(-speed);
 	}
 
 
 	if (st.mouse.isLeftButton()) {
-		// getCamera().move(st.mouse.delta);
-		getCamera().move(st.mouse.lastPos, st.mouse.pos);
+		// getCurrentCamera().move(st.mouse.delta);
+		getCurrentCamera().move(st.mouse.lastPos, st.mouse.pos);
 	}
 
 	if (st.mouse.isRightButton()) {
-		auto trackball = dynamic_cast<TrackBallCamera*>(&getCamera());
+		auto trackball = dynamic_cast<TrackBallCamera*>(&getCurrentCamera());
 		if (trackball) {
 			trackball->movePan(st.mouse.delta);
 		}
@@ -945,7 +945,7 @@ bool App::loadModel(const std::string& filename) {
 void App::computeFarPlane() {
 	auto diameter = computeSceneDiameter();
 
-	for (auto &c : cameras) {
+	for (auto &[k, c] : cameras) {
 		c->setFarPlane(diameter * 5.f /* 5.f is an arbitrary value... */);
 	}
 }
@@ -954,7 +954,7 @@ void App::focus(int modelIdx) {
 	auto &model = models[modelIdx];
 
 	setSelectedModel(modelIdx);
-	getCamera().lookAtBox(model->bbox());
+	getCurrentCamera().lookAtBox(model->bbox());
 }
 
 // TODO add model must recompute far plane on loading
@@ -1175,11 +1175,11 @@ void App::unproject(int x, int y, float depth, glm::vec3 &p) {
 	glm::vec4 clipSpace(ndcX, ndcY, depth, 1.0f);
 
 	// Unproject clip space to view space
-	glm::mat4 invProj = glm::inverse(getCamera().getProjectionMatrix());
+	glm::mat4 invProj = glm::inverse(getCurrentCamera().getProjectionMatrix());
 	glm::vec4 viewSpace = invProj * clipSpace;
 
 	// Unproject view space to world space
-	glm::mat4 invView = glm::inverse(getCamera().getViewMatrix());
+	glm::mat4 invView = glm::inverse(getCurrentCamera().getViewMatrix());
 	glm::vec4 worldSpace = invView * (viewSpace / viewSpace.w);
 	p = glm::vec3(worldSpace);
 }
@@ -1392,7 +1392,7 @@ void App::saveState(const std::string filename) {
 	j["selected_model"] = selectedModel;
 	j["selected_camera"] = selectedCamera;
 	j["models"] = json::array();
-	j["cameras"] = json::array();
+	j["cameras"] = json::object();
 
 	// Save models states
 	for (int i = 0; i < models.size(); ++i) {		
@@ -1400,8 +1400,8 @@ void App::saveState(const std::string filename) {
 	}
 
 	// Save cameras states
-	for (int i = 0; i < cameras.size(); ++i) {
-		cameras[i]->saveState(j["cameras"][i]);
+	for (auto &[k, c] : cameras) {
+		c->saveState(j["cameras"][k]);
 	}
 
 	std::ofstream ofs(filename);
@@ -1430,7 +1430,7 @@ void App::clearScene() {
 	cameras.clear();
 	
 
-	selectedCamera = 0;
+	selectedCamera = "default";
 	selectedModel = 0;
 	// TODO selected color map... elements etc... layers...
 }
@@ -1440,12 +1440,12 @@ void App::loadState(json &j, const std::string path) {
 	clearScene();
 
 	// Load cameras states
-	for (auto &jCamera : j["cameras"]) {
+	for (auto &[cameraName, jCamera] : j["cameras"].items()) {
 		auto type = jCamera["type"].get<std::string>();
 		auto camera = makeCamera(type);
 		if (camera) {
 			camera->loadState(jCamera);
-			cameras.push_back(std::move(camera));
+			cameras[cameraName] = std::move(camera);
 		}
 	}
 
@@ -1473,7 +1473,7 @@ void App::loadState(json &j, const std::string path) {
 	// Load app state
 	cull_mode = j["cull_mode"].get<int>();
 	setSelectedModel(j["selected_model"].get<int>());
-	setSelectedCamera(j["selected_camera"].get<int>());
+	setSelectedCamera(j["selected_camera"].get<std::string>());
 
 	std::cout << "State loaded successfully." << std::endl;
 }
@@ -1613,9 +1613,9 @@ void App::key_event(int key, int scancode, int action, int mods) {
 	}
 
 	if (key == GLFW_KEY_LEFT_CONTROL && action == GLFW_PRESS) {
-		getCamera().setLock(true);
+		getCurrentCamera().setLock(true);
 	} else if (key == GLFW_KEY_LEFT_CONTROL && action == GLFW_RELEASE) {
-		getCamera().setLock(false);
+		getCurrentCamera().setLock(false);
 	}
 
 	for (auto &script : scripts) {
@@ -1629,9 +1629,9 @@ void App::mouse_scroll(double xoffset, double yoffset) {
 		return;
 
 	// Maybe move to a cameracontroller class
-	if (!getCamera().isLocked()) {
+	if (!getCurrentCamera().isLocked()) {
 		st.mouse.scrollDelta = glm::vec2(xoffset, yoffset);
-		getCamera().zoom(st.mouse.scrollDelta.y);
+		getCurrentCamera().zoom(st.mouse.scrollDelta.y);
 	}
 	else 
 		st.mouse.setCursorRadius(st.mouse.getCursorRadius() + static_cast<int>(yoffset));

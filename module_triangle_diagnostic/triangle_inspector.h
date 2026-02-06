@@ -217,8 +217,8 @@ struct TriangleInspector : public Script {
 
 		// 		// auto eyeP = p - radiuses[v] * 2.f;
 		// 		auto eyeP = b - glm::distance(p, b) * 2.f;
-		// 		app.getCamera().setEye(eyeP);
-		// 		app.getCamera().lookAt(b);
+		// 		app.getCurrentCamera().setEye(eyeP);
+		// 		app.getCurrentCamera().lookAt(b);
 		// 	}
 		// }
 
@@ -284,7 +284,7 @@ struct TriangleInspector : public Script {
 		// Compute PVM matrix
 		glm::mat4 modelMat = glm::mat4(1.0f);
 		modelMat = glm::translate(modelMat, triModel.getPosition());
-		auto pvm = app.getCamera().getProjectionMatrix() * app.getCamera().getViewMatrix() * modelMat;
+		auto pvm = app.getCurrentCamera().getProjectionMatrix() * app.getCurrentCamera().getViewMatrix() * modelMat;
 		// TODO important here seems wrong, app.getSurface().width / app.getSurface().height
 		// glm::vec2 viewport = { app.getWidth(), app.getHeight() };
 		glm::vec2 viewport = { app.getSurfaceWidth(), app.getSurfaceHeight() };
@@ -316,7 +316,7 @@ struct TriangleInspector : public Script {
 		// Compute PVM matrix
 		glm::mat4 modelMat = glm::mat4(1.0f);
 		modelMat = glm::translate(modelMat, triModel.getPosition());
-		auto pvm = app.getCamera().getProjectionMatrix() * app.getCamera().getViewMatrix() * modelMat;
+		auto pvm = app.getCurrentCamera().getProjectionMatrix() * app.getCurrentCamera().getViewMatrix() * modelMat;
 		// TODO important here seems wrong, app.getSurface().width / app.getSurface().height
 		glm::vec2 viewport = { app.getWidth(), app.getHeight() };
 		

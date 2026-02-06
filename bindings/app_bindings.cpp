@@ -144,14 +144,18 @@ namespace bindings {
 
 		app_type.set_function("add_camera", &IApp::addCamera);
 		app_type.set_function("remove_camera", &IApp::removeCamera);
-		app_type["camera"] = sol::readonly_property(&IApp::getCamera);
+		app_type["camera"] = sol::readonly_property(&IApp::getCurrentCamera);
 		app_type["cameras"] = sol::readonly_property(&IApp::getCameras);
+		app_type.set_function("get_camera", &IApp::getCamera);
 		app_type["count_cameras"] = sol::readonly_property(&IApp::countCameras);
+		app_type.set_function("has_camera", &IApp::hasCamera);
+		app_type.set_function("has_cameras", &IApp::hasCameras);
+		app_type.set_function("clear_cameras", &IApp::clearCameras);
 
 		app_type["selected_camera"] = sol::property([](IApp &self) {
-			return self.getSelectedCamera() + 1;
-		}, [](IApp &self, int selected) {
-			self.setSelectedCamera(selected - 1);
+			return self.getSelectedCamera();
+		}, [](IApp &self, std::string selected) {
+			self.setSelectedCamera(selected);
 		});
 
 		app_type.set_function("add_renderer", &IApp::addRenderer);
