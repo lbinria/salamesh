@@ -109,26 +109,11 @@ namespace bindings {
 		app_type.set_function("list_snapshots", &IApp::listSnapshots);
 
 		app_type.set_function("load_model", &IApp::loadModel);
-		
-		app_type.set_function("add_model", [](IApp &self, std::string name, int type) {
-			return self.addModel(name, (ModelType)type) + 1;
-		});
+		app_type.set_function("add_model", &IApp::addModel);
+		app_type.set_function("remove_model", &IApp::removeModel);
 
-		app_type.set_function("remove_model", sol::overload(
-			[](IApp &self, int idx) {
-				self.removeModel(idx);
-			},
-			[](IApp &self, std::string name) -> bool {
-				return self.removeModel(name);
-			}
-		));
+		app_type.set_function("get_model_by_name", &IApp::getModel);
 
-		app_type.set_function("get_model_by_name", &IApp::getModelByName);
-
-		app_type.set_function("get_index_of_model", [](IApp &self, std::string name) {
-			int idx = self.getIndexOfModel(name);
-			return idx != -1 ? idx + 1 : -1;
-		});
 
 		app_type["count_models"] = sol::readonly_property(&IApp::countModels);
 		app_type["has_models"] = sol::readonly_property(&IApp::hasModels);
@@ -136,11 +121,7 @@ namespace bindings {
 		app_type.set_function("getChildrenOf", &IApp::getChildrenOf);
 		app_type["model"] = sol::readonly_property(&IApp::getCurrentModel);
 
-		app_type["selected_model"] = sol::property([](IApp &self) {
-			return self.getSelectedModel() + 1;
-		}, [](IApp &self, int selected) {
-			self.setSelectedModel(selected - 1);
-		});
+		app_type["selected_model"] = sol::property(&IApp::getSelectedModel, &IApp::setSelectedModel);
 
 		app_type.set_function("add_camera", &IApp::addCamera);
 		app_type.set_function("remove_camera", &IApp::removeCamera);

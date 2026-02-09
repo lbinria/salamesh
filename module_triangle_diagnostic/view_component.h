@@ -66,7 +66,7 @@ struct ViewComponent : public Script {
 			for (auto &[modelAndRendererName, state] : rendererStates) {
 				auto &[modelName, rendererName] = modelAndRendererName;
 
-				auto model = app.getModelByName(modelName);
+				auto model = app.getModel(modelName);
 
 				auto renderers = model->getRenderers();
 				if (renderers.contains(rendererName)) {

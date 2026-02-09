@@ -110,14 +110,40 @@ struct App : public IApp {
 	glm::vec3 pickPoint(double x, double y);
 
 	// TODO to protected
-	std::unique_ptr<Model> makeModel(ModelType type);
-	bool loadModel(const std::string& filename) override;
-	int addModel(std::string name, ModelType type) override;
-	void removeModel(int idx) override;
-	bool removeModel(std::string name) override;
-	std::shared_ptr<Model> getModelByName(std::string name) override;
-	int getIndexOfModel(std::string name) override;
-	void focus(int modelIdx);
+	std::string loadModel(const std::string& filename, std::string name = "") override;
+
+	Model& addModel(std::string type, std::string name) override {
+		assert(!name.empty() && "Cannot add model with an empty name.");
+		auto model = makeModel(type);
+		// TODO important check whether model is null
+		model->setName(name);
+		model->setMeshIndex(models.size());
+		// model->init();
+		models[name] = std::move(model);
+		return *models[name];
+
+		// // 
+		// // model->loadCallback = ([this](Model&, const std::string) -> bool {
+		// // 	this->computeFarPlane();
+		// // 	this->script->modelLoaded(blabla)
+		// // });
+	}
+
+	void removeModel(std::string name) override {
+		if (models.count(name) > 0)
+			models[name]->clean();
+
+		models.erase(name);
+	}
+	
+	Model& getModel(std::string name) override {
+		if (models.count(name) <= 0)
+			throw std::runtime_error("Model " + name + " was not found.");
+		
+		return *models[name];
+	}
+
+	void focus(std::string modelName);
 
 	void addColormap(const std::string name, const std::string filename) override;
 	void removeColormap(const std::string name) override;
@@ -169,13 +195,13 @@ struct App : public IApp {
 
 	// Accessors
 
-	std::vector<std::shared_ptr<Model>>& getModels() override {
+	std::map<std::string, std::shared_ptr<Model>>& getModels() override {
 		return models;
 	}
 
 	std::vector<std::shared_ptr<Model>> getChildrenOf(std::shared_ptr<Model> model) {
 		std::vector<std::shared_ptr<Model>> children;
-		for (auto &m : models) {
+		for (auto &[k, m] : models) {
 			if (m->getParent() == model) {
 				children.push_back(m);
 			}
@@ -184,42 +210,61 @@ struct App : public IApp {
 		return children;
 	}
 
-	int countModels() override {
+	inline int countModels() override {
 		return models.size();
 	}
 
-	bool hasModels() override {
-		return countModels() > 0;
+	inline bool hasModel(std::string name) override {
+		return models.count(name) > 0;
 	}
 
-	void setSelectedModel(int selected) override {
-		if (selected < 0 || selected >= models.size()) {
-			std::cerr << "Invalid model index: " << selected << std::endl;
-			return;
+	inline bool hasModels() override {
+		return models.size() > 0;
+	}
+
+	void clearModels() override {
+		for (auto &[k, m] : models) {
+			m->clean();
 		}
 
-		selectedModel = selected;
-		notifySelectedModelChange(selected);
+		models.clear();
 	}
 
-	int getSelectedModel() override {
+	bool setSelectedModel(std::string name) override {
+		if (name.empty())
+			return false;
+
+		if (!hasModel(name)) {
+			std::cerr << "Invalid model selection: " << name << std::endl;
+			return false;
+		}
+
+		selectedModel = name;
+		notifySelectedModelChange(name);
+		return true;
+	}
+
+	inline std::string getSelectedModel() override {
 		return selectedModel;
 	}
 
-	Model& getCurrentModel() override {
+	inline Model& getCurrentModel() override {
 		return *models[selectedModel];
 	}
 
 	std::shared_ptr<Model> getHoveredModel() {
-		if (!st.mesh.anyHovered()) {
-			return nullptr;
-		} else {
-			return models[st.mesh.getHovered()];
-		}
+		// if (!st.mesh.anyHovered()) {
+		// 	return nullptr;
+		// } else {
+		// 	return models[st.mesh.getHovered()];
+		// }
+		// TODO implement
+		return nullptr;
 	}
 
 	Camera& addCamera(std::string type, std::string name) override {
 		assert(!name.empty() && "Cannot add camera with an empty name.");
+		// TODO important check whether camera is null !
 		auto camera = makeCamera(type);
 		// camera->init();
 		cameras[name] = std::move(camera);
@@ -265,10 +310,14 @@ struct App : public IApp {
 	}
 
 	bool setSelectedCamera(std::string selected) override {
+		if (selected.empty())
+			return false;
+
 		if (!hasCamera(selected)) {
-			std::cerr << "Invalid camera: " << selected << std::endl;
+			std::cerr << "Invalid camera selection: " << selected << std::endl;
 			return false;
 		}
+
 		// Set camera to render surface
 		getRenderSurface().setCamera(cameras[selected]);
 		selectedCamera = selected;
@@ -282,8 +331,9 @@ struct App : public IApp {
 	Camera& getCurrentCamera() override { return *cameras[selectedCamera]; }
 
 	IRenderer& addRenderer(std::string type, std::string name) override {
-		assert(!name.empty() && ""); // TODO complete message
+		assert(!name.empty() && "Cannot add renderer with an empty name."); // TODO complete message
 		auto renderer = makeRenderer(type);
+		// TODO important check whether renderer is null
 		renderer->init();
 		renderers[name] = std::move(renderer);
 		return *renderers[name];
@@ -358,13 +408,17 @@ struct App : public IApp {
 		}
 	}
 
-	void notifySelectedModelChange(int idx) {
-		for (auto &c : scripts) {
-			c->selectedModelChanged(idx);
+	void notifySelectedModelChange(std::string name) {
+		for (auto &s : scripts) {
+			s->selectedModelChanged(name);
 		}
 	}
 
 	void updateCamera(float dt);
+
+	inline void registerModel(std::string type, std::function<std::unique_ptr<Model>()> instanciatorFunc) {
+		modelInstanciators[type] = instanciatorFunc;
+	}
 
 	inline void registerCamera(std::string type, std::function<std::unique_ptr<Camera>()> instanciatorFunc) {
 		cameraInstanciators[type] = instanciatorFunc;
@@ -377,6 +431,7 @@ struct App : public IApp {
 	std::vector<std::string> listAvailableCameras() override;
 	std::vector<std::string> listAvailableRenderers() override;
 
+	std::unique_ptr<Model> makeModel(std::string type);
 	std::unique_ptr<Camera> makeCamera(std::string type);
 	std::unique_ptr<IRenderer> makeRenderer(std::string type);
 
@@ -427,13 +482,13 @@ struct App : public IApp {
 	glm::vec3 backgroundColor{0.05, 0.1, 0.15};
 
 	std::map<std::string, std::shared_ptr<Camera>> cameras;
-	std::vector<std::shared_ptr<Model>> models;
+	std::map<std::string, std::shared_ptr<Model>> models;
 	std::map<std::string, std::shared_ptr<IRenderer>> renderers;
 
 	std::vector<std::unique_ptr<RenderSurface>> renderSurfaces;
 
 	std::string selectedCamera = "default";
-	int selectedModel = 0;
+	std::string selectedModel = "";
 
 	std::vector<std::unique_ptr<Script>> scripts;
 	InputState st;
@@ -459,6 +514,9 @@ struct App : public IApp {
 	// Current navigation path of the app
 	std::vector<std::string> navPath;
 
+	// Instanciator, enable camera instanciation
+	// Register new instanciator for custom camera
+	std::map<std::string, std::function<std::unique_ptr<Model>()>> modelInstanciators;
 	// Instanciator, enable camera instanciation
 	// Register new instanciator for custom camera
 	std::map<std::string, std::function<std::unique_ptr<Camera>()>> cameraInstanciators;

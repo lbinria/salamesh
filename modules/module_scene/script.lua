@@ -3,10 +3,10 @@ function init()
 	print("Number of models: " .. tostring(#app.models))
 end
 
-function draw_tree(model, i)
+function draw_tree(model, k)
 	if (imgui.TreeNode(model.name)) then 
 
-		if (app.selected_model == i) then
+		if (app.selected_model == k) then
 			imgui.TextColored(1, 1, 0, 1, "Selected")
 		end
 
@@ -20,7 +20,7 @@ function draw_tree(model, i)
 
 		imgui.SameLine()
 		if (imgui.SmallButton("View")) then 
-			app.selected_model = i
+			app.selected_model = k
 			-- Set camera position !
 			-- app.camera.position = vec3.new(model_pos.x, model_pos.y, model_pos.z - 3.)
 			-- app.camera.look_at = vec3.new(model_pos.x, model_pos.y, model_pos.z)
@@ -31,11 +31,10 @@ function draw_tree(model, i)
 
 		imgui.Separator()
 
-		for i = 1, #app.models do
+		for k, child in pairs(app.models) do
 			-- TODO ImGuiTreeNodeFlags_Selected if model selected
-			local child = app.models[i]
 			if (child.parent == model) then 
-				draw_tree(child, i)
+				draw_tree(child, k)
 			end
 		end
 
@@ -411,8 +410,8 @@ function draw_model_properties(model, view)
 					for n = 1, #cur_model.attrs do
 						local is_selected = n == cur_model.selected_attr1
 						local label = cur_model.attrs[n].name 
-						.. " (" .. elementKindToString(cur_model.attrs[n].kind) .. ")" 
-						.. " (" .. elementTypeToString(cur_model.attrs[n].type) .. ")"
+						.. " (" .. element_kind_to_string(cur_model.attrs[n].kind) .. ")" 
+						.. " (" .. element_type_to_string(cur_model.attrs[n].type) .. ")"
 						.. " (" .. tostring(cur_model.attrs[n].dim) .. ")"
 
 						if (imgui.Selectable(label, is_selected)) then
@@ -440,25 +439,23 @@ function draw_gui()
 
 		if (imgui.BeginTabItem("Flat view")) then
 
-			for i = 1, #app.models do
-				local model = app.models[i]
-				imgui.PushID(i)
-
-				local sel_visible, new_visible = imgui.Checkbox(model.name .. "##" .. i, model.visible)
+			for k, model in pairs(app.models) do
+				
+				local sel_visible, new_visible = imgui.Checkbox(model.name .. "##" .. k, model.visible)
 				if (sel_visible) then 
 					model.visible = new_visible
 				end
 
 				imgui.SameLine()
-				if (imgui.Button("View")) then
-					app.selected_model = i
+				if (imgui.Button("View##" .. "btn_view_" .. k)) then
+					app.selected_model = k
 					-- Set camera position !
 					local model_pos = model.center
 					-- app.camera.position = vec3.new(model_pos.x, model_pos.y, model_pos.z - model.radius * 2.);
 					-- app.camera.look_at = vec3.new(model_pos.x, model_pos.y, model_pos.z);
 					app.camera:look_at_box(model.bbox)
 				end
-				imgui.PopID()
+				
 			end
 
 			imgui.Separator()
@@ -479,11 +476,10 @@ function draw_gui()
 			if (imgui.TreeNode("Scene##tree_node_scene")) then 
 
 				-- for k, model in app.models do 
-				for i = 1, #app.models do
+				for k, model in pairs(app.models) do
 					-- TODO ImGuiTreeNodeFlags_Selected if model selected
-					local model = app.models[i]
 					if (model.parent == nil) then 
-						draw_tree(model, i)
+						draw_tree(model, k)
 					end
 				end
 

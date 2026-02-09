@@ -191,14 +191,14 @@ struct LuaScript final : public Script {
 			navigationPathChanged_func(oldNavPath, newNavPath);
 	}
 
-	void modelLoaded(const std::string &path) override {
+	void modelLoaded(const std::string &name) override {
 		if (has_modelLoaded)
-			modelLoaded_func(path);
+			modelLoaded_func(name);
 	}
 
-	void selectedModelChanged(int idx) override {
+	void selectedModelChanged(std::string name) override {
 		if (has_selectedModelChanged)
-			selectedModelChanged(idx);
+			selectedModelChanged(name);
 	}
 
 	sol::state& getState() { return lua; }

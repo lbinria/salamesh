@@ -37,10 +37,7 @@ struct IApp {
 
 	virtual Image screenshot(const std::string& filename, int targetWidth = -1, int targetHeight = -1) = 0;
 
-	virtual int addModel(std::string name, ModelType type) = 0;
-	virtual void removeModel(int idx) = 0;
-	virtual bool removeModel(std::string name) = 0;
-	virtual bool loadModel(const std::string& filename) = 0;
+
 
 	virtual void clearScene() = 0;
 
@@ -51,16 +48,21 @@ struct IApp {
 	virtual bool getCull() const = 0;
 	virtual void setCull(bool enabled) = 0;
 
-	
-	virtual std::vector<std::shared_ptr<Model>>& getModels() = 0;
-	virtual std::shared_ptr<Model> getModelByName(std::string name) = 0;
-	virtual int getIndexOfModel(std::string name) = 0;
-	virtual std::vector<std::shared_ptr<Model>> getChildrenOf(std::shared_ptr<Model> model) = 0;
-	virtual int countModels() = 0;
-	virtual bool hasModels() = 0;
-	virtual int getSelectedModel() = 0;
-	virtual void setSelectedModel(int selected) = 0;
+	virtual std::map<std::string, std::shared_ptr<Model>>& getModels() = 0;
+	virtual Model& addModel(std::string type, std::string name) = 0;
+	virtual void removeModel(std::string name) = 0;
 	virtual Model& getCurrentModel() = 0;
+	virtual Model& getModel(std::string name) = 0;
+	virtual int countModels() = 0;
+	virtual bool hasModel(std::string name) = 0;
+	virtual bool hasModels() = 0;
+	virtual void clearModels() = 0;
+
+	virtual std::vector<std::shared_ptr<Model>> getChildrenOf(std::shared_ptr<Model> model) = 0;
+	virtual std::string getSelectedModel() = 0;
+	virtual bool setSelectedModel(std::string name) = 0;
+	virtual std::string loadModel(const std::string& filename, std::string name = "") = 0;
+
 	virtual void addColormap(const std::string name, const std::string filename) = 0;
 	virtual void removeColormap(const std::string name) = 0;
 	virtual Colormap getColormap(const std::string name) = 0;

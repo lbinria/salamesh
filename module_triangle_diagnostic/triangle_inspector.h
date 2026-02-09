@@ -25,12 +25,12 @@ struct TriangleInspector : public Script {
 		lineRenderer.clean();
 	}
 
-	void setupModel() {
+	void setupModel(std::string name) {
 
 		isModelSetup = false;
 
 		// Get current model and check it's a triangle mesh
-		auto &model = app.getCurrentModel();
+		auto &model = app.getModel(name);
 		if (model.getModelType() != ModelType::TRI_MODEL) {
 			return;
 		}
@@ -82,14 +82,14 @@ struct TriangleInspector : public Script {
 		isModelSetup = true;
 	}
 
-	void modelLoaded(const std::string &path) override {
-		setupModel();
+	void modelLoaded(const std::string &name) override {
+		setupModel(name);
 	}
 
-	void selectedModelChanged(int idx) override {
+	void selectedModelChanged(std::string name) override {
 		// Save gfx state for restoring ?
 		if (isNavHere())
-			setupModel();
+			setupModel(name);
 	}
 
 	
@@ -161,7 +161,7 @@ struct TriangleInspector : public Script {
 			if (app.getNavigationPath().front() == "diagnostic" && app.getNavigationPath().back() != "overlapping_vertices") {
 				app.addNavigationPath("overlapping_vertices");
 
-				setupModel();
+				setupModel(app.getSelectedModel());
 
 			}
 

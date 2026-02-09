@@ -30,8 +30,8 @@ struct Script {
 	// App events
 	virtual void navigationPathChanged(const std::vector<std::string> &oldNavPath, const std::vector<std::string> &newNavPath) {};
 	
-	virtual void modelLoaded(const std::string &path) {};
-	virtual void selectedModelChanged(int idx) {};
+	virtual void modelLoaded(const std::string &name) {};
+	virtual void selectedModelChanged(std::string name) {};
 
 	protected:
 	IApp &app;
