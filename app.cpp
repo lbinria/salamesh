@@ -411,11 +411,11 @@ void App::init() {
 	std::cout << "Init" << std::endl;
 
 	// Register model types
-	registerModel("TriModel", [](std::string name) { return std::make_unique<TriModel>(name); });
-	registerModel("QuadModel", [](std::string name) { return std::make_unique<QuadModel>(name); });
-	registerModel("PolyModel", [](std::string name) { return std::make_unique<PolyModel>(name); });
-	registerModel("TetModel", [](std::string name) { return std::make_unique<TetModel>(name); });
-	registerModel("HexModel", [](std::string name) { return std::make_unique<HexModel>(name); });
+	registerModel("TriModel", []() { return std::make_unique<TriModel>(); });
+	registerModel("QuadModel", []() { return std::make_unique<QuadModel>(); });
+	registerModel("PolyModel", []() { return std::make_unique<PolyModel>(); });
+	registerModel("TetModel", []() { return std::make_unique<TetModel>(); });
+	registerModel("HexModel", []() { return std::make_unique<HexModel>(); });
 	// registerModel("PolylineModel", []() { return std::make_unique<PolylineModel>(); });
 	// registerModel("PyramidModel", []() { return std::make_unique<PyramidModel>(); });
 	// registerModel("PrismModel", []() { return std::make_unique<PrismModel>(); });
@@ -876,27 +876,27 @@ std::string App::loadModel(const std::string& filename, std::string name) {
 	bool success = false;
 
 	std::unique_ptr<Model> model;
-	model = std::make_unique<PolyModel>(modelName);
+	model = std::make_unique<PolyModel>();
 
 	success = model->load(filename);
 
 	if (!success) {
-		model = std::make_unique<TriModel>(modelName);
+		model = std::make_unique<TriModel>();
 		success = model->load(filename);
 	}
 
 	if (!success) {
-		model = std::make_unique<QuadModel>(modelName);
+		model = std::make_unique<QuadModel>();
 		success = model->load(filename);
 	}
 
 	if (!success) {
-		model = std::make_unique<TetModel>(modelName);
+		model = std::make_unique<TetModel>();
 		success = model->load(filename);
 	}
 
 	if (!success) {
-		model = std::make_unique<HexModel>(modelName);
+		model = std::make_unique<HexModel>();
 		success = model->load(filename);
 	}
 
@@ -1629,9 +1629,9 @@ std::vector<std::string> App::listAvailableCameras() {
 	return v;
 }
 
-std::unique_ptr<Model> App::makeModel(std::string type, std::string name) {
+std::unique_ptr<Model> App::makeModel(std::string type) {
 	if (modelInstanciators.count(type) > 0) {
-		return modelInstanciators[type](name);
+		return modelInstanciators[type]();
 	}
 
 	std::cerr 

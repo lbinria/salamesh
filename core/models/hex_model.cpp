@@ -12,12 +12,6 @@ bool HexModel::load(const std::string path) {
 	if (_m.ncells() <= 0)
 		return false;
 
-	// Extract name
-	if (_name.empty()) {
-		std::filesystem::path p(path);
-		_name = p.stem().string();
-	}
-
 	clearAttrs();
 
 	auto containers = getAttributeContainers();

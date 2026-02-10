@@ -148,7 +148,6 @@ namespace bindings {
 			self.loadState(j);
 		});
 
-		model_t["name"] = sol::readonly_property(&Model::getName);
 		model_t["path"] = sol::readonly_property(&Model::getPath);
 		model_t["parent"] = sol::property(&Model::getParent, &Model::setParent);
 

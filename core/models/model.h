@@ -24,8 +24,7 @@ struct Model {
 	Model (const Model&) = delete;
 	Model& operator= (const Model&) = delete;
 
-	Model(std::map<std::string, std::shared_ptr<IRenderer>> renderers, std::string name) : 
-	_name(name), 
+	Model(std::map<std::string, std::shared_ptr<IRenderer>> renderers) :  
 	_path(""),
 	_renderers(std::move(renderers)) {}
 
@@ -55,7 +54,6 @@ struct Model {
 	virtual void doLoadState(json &j) {};
 	virtual void doSaveState(json &j) const {};
 
-	std::string getName() const { return _name; }
 	std::string getPath() const { return _path; }
 
 	static constexpr const char* clippingModeStrings[2] = {"Cell", "Std"};
@@ -481,7 +479,6 @@ struct Model {
 	virtual long pickEdge(glm::vec3 p0, int c) = 0;
 
 	protected:
-	std::string _name;
 	std::string _path;
 
 	glm::vec3 position{0, 0, 0};

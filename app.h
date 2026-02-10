@@ -114,7 +114,7 @@ struct App : public IApp {
 
 	Model& addModel(std::string type, std::string name) override {
 		assert(!name.empty() && "Cannot add model with an empty name.");
-		auto model = makeModel(type, name);
+		auto model = makeModel(type);
 		// TODO important check whether model is null
 		model->setMeshIndex(models.size());
 		// model->init();
@@ -415,7 +415,7 @@ struct App : public IApp {
 
 	void updateCamera(float dt);
 
-	inline void registerModel(std::string type, std::function<std::unique_ptr<Model>(std::string)> instanciatorFunc) {
+	inline void registerModel(std::string type, std::function<std::unique_ptr<Model>()> instanciatorFunc) {
 		modelInstanciators[type] = instanciatorFunc;
 	}
 
@@ -431,7 +431,7 @@ struct App : public IApp {
 	std::vector<std::string> listAvailableRenderers() override;
 
 	// Move to private !
-	std::unique_ptr<Model> makeModel(std::string type, std::string name);
+	std::unique_ptr<Model> makeModel(std::string type);
 	std::unique_ptr<Camera> makeCamera(std::string type);
 	std::unique_ptr<IRenderer> makeRenderer(std::string type);
 
@@ -516,7 +516,7 @@ struct App : public IApp {
 
 	// Instanciator, enable camera instanciation
 	// Register new instanciator for custom camera
-	std::map<std::string, std::function<std::unique_ptr<Model>(std::string)>> modelInstanciators;
+	std::map<std::string, std::function<std::unique_ptr<Model>()>> modelInstanciators;
 	// Instanciator, enable camera instanciation
 	// Register new instanciator for custom camera
 	std::map<std::string, std::function<std::unique_ptr<Camera>()>> cameraInstanciators;

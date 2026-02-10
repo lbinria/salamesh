@@ -2,13 +2,13 @@
 
 bool Model::saveState(std::string dirPath, json &j) /*const*/ {
 
-	// TODO maybe move saveAs geogram model into App::saveState, because model are loaded into App::loadState, not in Model::loadState
-
-
 	// Save current mesh state into a file
-	auto now = std::chrono::system_clock::now();
-	auto unix_timestamp = std::to_string(std::chrono::duration_cast<std::chrono::seconds>(now.time_since_epoch()).count());
-	auto filename = _name + "_" + unix_timestamp + ".geogram";
+	// auto now = std::chrono::system_clock::now();
+	// auto unix_timestamp = std::to_string(std::chrono::duration_cast<std::chrono::seconds>(now.time_since_epoch()).count());
+	// auto filename = _name + "_" + unix_timestamp + ".geogram";
+	auto guid = sl::generateGuid();
+	// auto filename = guid + "_" + unix_timestamp + ".geogram";
+	auto filename = guid + ".geogram";
 	auto filepath = std::filesystem::path(dirPath) / filename;
 	
 	// When saving state 
@@ -25,7 +25,6 @@ bool Model::saveState(std::string dirPath, json &j) /*const*/ {
 		return false;
 	}
 
-	j["name"] = _name;
 	j["path"] = filename;
 	j["position"] = { position.x, position.y, position.z };
 	j["is_light_enabled"] = isLightEnabled;
@@ -57,7 +56,6 @@ bool Model::saveState(std::string dirPath, json &j) /*const*/ {
 
 void Model::loadState(json &j) {
 	
-	_name = j["name"].get<std::string>();
 	_path = j["path"].get<std::string>();
 
 	position = glm::vec3(
