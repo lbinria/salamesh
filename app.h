@@ -80,6 +80,7 @@ struct App final : public IApp {
 	void clean();
 
 	void setupColormaps();
+	void setupCameras();
 
 	// Utils functions
 	Image screenshot(const std::string& filename, int targetWidth = -1, int targetHeight = -1) override;
@@ -99,7 +100,7 @@ struct App final : public IApp {
 		
 		// model->init();
 		models[name] = std::move(model);
-		modelNameByIndex[model->getMeshIndex()] = name;
+		modelNameByIndex[model->getIndex()] = name;
 		return *models[name];
 
 		// // 
@@ -134,6 +135,11 @@ struct App final : public IApp {
 
 	void addColormap(const std::string name, const std::string filename) override;
 	void removeColormap(const std::string name) override;
+	void clearColormaps() override {
+		colormaps.clear();
+		setupColormaps();
+	}
+
 	Colormap getColormap(const std::string name) override;
 	Colormap getColormap(int idx) override;
 
@@ -216,6 +222,8 @@ struct App final : public IApp {
 
 		models.clear();
 		modelNameByIndex.clear();
+		setSelectedModel("");
+		Model::clearIndex();
 	}
 
 	bool setSelectedModel(std::string name) override {
@@ -254,11 +262,6 @@ struct App final : public IApp {
 		return nullptr;
 	}
 
-	// To private
-	Model& getHoveredModelRef() {
-		return *getHoveredModel();
-	}
-
 	Camera& addCamera(std::string type, std::string name) override {
 		assert(!name.empty() && "Cannot add camera with an empty name.");
 		// TODO important check whether camera is null !
@@ -273,6 +276,11 @@ struct App final : public IApp {
 			// cameras[name]->clean();
 
 		cameras.erase(name);
+	}
+
+	void clearCameras() override {
+		cameras.clear();
+		setupCameras();
 	}
 
 	std::map<std::string, std::shared_ptr<Camera>>& getCameras() override {
@@ -296,10 +304,6 @@ struct App final : public IApp {
 
 	bool hasCameras() override {
 		return cameras.size() > 0;
-	}
-
-	void clearCameras() override {
-		cameras.clear();
 	}
 
 	bool setSelectedCamera(std::string selected) override {

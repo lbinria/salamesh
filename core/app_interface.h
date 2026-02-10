@@ -65,6 +65,7 @@ struct IApp {
 
 	virtual void addColormap(const std::string name, const std::string filename) = 0;
 	virtual void removeColormap(const std::string name) = 0;
+	virtual void clearColormaps() = 0;
 	virtual Colormap getColormap(const std::string name) = 0;
 	virtual Colormap getColormap(int idx) = 0;
 

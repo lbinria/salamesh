@@ -165,6 +165,12 @@ void App::setupColormaps() {
 	addColormap("extended", sl::assetsPath("extended.png"));
 }
 
+void App::setupCameras() {
+	auto trackballCamera = std::make_shared<TrackBallCamera>();
+	cameras["default"] = std::move(trackballCamera);
+	setSelectedCamera("default");
+}
+
 bool App::setup() {
 
 	std::cout << "App setup..." << std::endl;
@@ -430,13 +436,8 @@ void App::init() {
 	registerRenderer("LineRenderer", []() { return std::make_unique<LineRenderer>(); });
 	registerRenderer("PointSetRenderer", []() { return std::make_unique<PointSetRenderer>(); });
 
-	{
-		// Create cameras
-		auto trackballCamera = std::make_shared<TrackBallCamera>();
-		auto descentCamera = std::make_shared<DescentCamera>();
-		cameras["default"] = std::move(trackballCamera);
-		cameras["default_descent_camera"] = std::move(descentCamera);
-	}
+	// Create cameras
+	setupCameras();
 	
 	getRenderSurface().setCamera(cameras["default"]);
 	// renderSurfaces[1]->setCamera(cameras[1]);
@@ -918,7 +919,7 @@ std::string App::loadModel(const std::string& filename, std::string name) {
 
 	// Setup default clipping plane
 	model->setupClipping();
-	modelNameByIndex[model->getMeshIndex()] = modelName;
+	modelNameByIndex[model->getIndex()] = modelName;
 	models[modelName] = std::move(model);
 
 	// Update cameras far planes
@@ -1025,11 +1026,13 @@ long App::pick_mesh(double x, double y) {
 	glReadBuffer(GL_COLOR_ATTACHMENT4);
 	long id = pick(x, y);
 	glBindFramebuffer(GL_READ_FRAMEBUFFER, 0);
-	return id >= 0 && id < Model::getMaxMeshIndex() ? id : -1;
+	return id >= 0 && id < Model::getMaxIndex() ? id : -1;
 }
 
 std::vector<long> App::pick_vertices(double x, double y, int radius) {
-	if (!hasModels())
+	auto model = getHoveredModel();
+
+	if (!model)
 		return {};
 
 	glBindFramebuffer(GL_READ_FRAMEBUFFER, getRenderSurface().fbo);
@@ -1040,15 +1043,16 @@ std::vector<long> App::pick_vertices(double x, double y, int radius) {
 	// Clean ids
 	std::vector<long> clean_ids;
 	std::copy_if(ids.begin(), ids.end(), std::back_inserter(clean_ids), [&](long id) {
-		// TODO getCurrentModel is false !!!! when picking is current picking model instead
-		return id >= 0 && id < getCurrentModel().nverts();
+		return id >= 0 && id < model->nverts();
 	});
 
 	return clean_ids;
 }
 
 std::vector<long> App::pick_facets(double x, double y, int radius) {
-	if (!hasModels())
+	auto model = getHoveredModel();
+
+	if (!model)
 		return {};
 
 	glBindFramebuffer(GL_READ_FRAMEBUFFER, getRenderSurface().fbo);
@@ -1059,17 +1063,18 @@ std::vector<long> App::pick_facets(double x, double y, int radius) {
 	// Clean ids
 	std::vector<long> clean_ids;
 	std::copy_if(ids.begin(), ids.end(), std::back_inserter(clean_ids), [&](long id) {
-		// TODO getCurrentModel is false !!!! when picking is current picking model instead
-		return id >= 0 && id < getCurrentModel().nfacets();
+		return id >= 0 && id < model->nfacets();
 	});
 
 	return clean_ids;
 }
 
-std::vector<long> App::pick_cells(double x, double y, int radius) {
-	if (!hasModels())
+std::vector<long> App::pick_cells(double x, double y, int radius) {		
+	auto model = getHoveredModel();
+
+	if (!model)
 		return {};
-		
+
 	glBindFramebuffer(GL_READ_FRAMEBUFFER, getRenderSurface().fbo);
 	glReadBuffer(GL_COLOR_ATTACHMENT2);
 	auto ids = pick(x, y, radius);
@@ -1078,8 +1083,7 @@ std::vector<long> App::pick_cells(double x, double y, int radius) {
 	// Clean ids
 	std::vector<long> clean_ids;
 	std::copy_if(ids.begin(), ids.end(), std::back_inserter(clean_ids), [&](long id) {
-		// TODO getCurrentModel is false !!!! when picking is current picking model instead
-		return id >= 0 && id < getCurrentModel().ncells();
+		return id >= 0 && id < model->ncells();
 	});
 
 	return clean_ids;
@@ -1353,29 +1357,15 @@ void App::saveState(const std::string filename) {
 }
 
 void App::clearScene() {
-	// Clean models
-	for (auto &[k, m] : models)
-		m->clean();
 
-	// Clear renderers
-	for (auto &[k, r] : renderers)
-		r->clear();
-
-	// TODO maybe clean modules ?
-	models.clear();
-	modelNameByIndex.clear();
-	setSelectedModel("");
-
-	// Reset cameras
-	cameras.clear();
-	auto trackballCamera = std::make_shared<TrackBallCamera>();
-	cameras["default"] = std::move(trackballCamera);
-	setSelectedCamera("default");
-
+	// // Clear renderers
+	// for (auto &[k, r] : renderers)
+	// 	r->clear();
+	clearRenderers();
+	clearModels();
+	clearCameras();	
+	clearColormaps();
 	// TODO clear selected color map... elements etc... layers...
-	
-	colormaps.clear();
-	setupColormaps();
 }
 
 void App::loadState(json &j, const std::string path) {

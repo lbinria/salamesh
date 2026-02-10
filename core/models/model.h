@@ -443,12 +443,16 @@ struct Model {
 		setClippingPlaneNormal({1, 0, 0});
 	}
 
-	int getMeshIndex() {
+	int getIndex() {
 		return index;
 	}
 
-	static inline int getMaxMeshIndex() {
+	static inline int getMaxIndex() {
 		return maxIndex;
+	}
+
+	static void clearIndex() {
+		maxIndex = 0;
 	}
 
 	// Renderer getters
