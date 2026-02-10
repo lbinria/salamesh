@@ -11,9 +11,10 @@ bool Model::saveState(std::string dirPath, json &j) /*const*/ {
 	auto filename = _name + "_" + unix_timestamp + ".geogram";
 	auto filepath = std::filesystem::path(dirPath) / filename;
 	
-	// Make copy of attributes, beurk ! :vomit:
-	auto cpyAttrs = attrs;
-
+	// When saving state 
+	// we must keep / save all attributes of the mesh
+	// For example if user filtered something, we would like to keep filter
+	// So we add all mesh attributes to model
 	clearAttrs();
 	auto containers = getAttributeContainers();
 	for (auto &[k, c] : containers)
@@ -23,9 +24,6 @@ bool Model::saveState(std::string dirPath, json &j) /*const*/ {
 		std::cerr << "Unable to save state at " << filepath << std::endl;
 		return false;
 	}
-	
-	clearAttrs();
-	attrs = cpyAttrs;
 
 	j["name"] = _name;
 	j["path"] = filename;

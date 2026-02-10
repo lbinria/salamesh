@@ -279,6 +279,7 @@ struct IRenderer {
 		setSelectColor(glm::vec3(j["selectColor"][0].get<float>(), j["selectColor"][1].get<float>(), j["selectColor"][2].get<float>()));
 		setMeshSize(j["meshSize"].get<float>());
 		setMeshShrink(j["meshShrink"].get<float>());
+		setCornerVisible(j["isCornerVisible"].get<bool>());
 		doLoadState(j);
 	}
 
@@ -289,6 +290,7 @@ struct IRenderer {
 		j["selectColor"] = json::array({selectColor.x, selectColor.y, selectColor.z});
 		j["meshSize"] = meshSize;
 		j["meshShrink"] = meshShrink;
+		j["isCornerVisible"] = isCornerVisible;
 		doSaveState(j);
 	}
 
