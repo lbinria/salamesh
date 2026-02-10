@@ -29,11 +29,11 @@ bool TetModel::load(const std::string path) {
 	return true;
 }
 
-void TetModel::saveAs(const std::string path) const {
+bool TetModel::saveAs(const std::string path, std::vector<Attribute> attrs) const {
 	// Check path validity
 	if (path.empty()) {
 		std::cerr << "Error: No path specified for saving the mesh." << std::endl;
-		return;
+		return false;
 	}
 	
 	// Save attributes ! Convert back from salamesh attributes to NamedContainer vectors
@@ -65,4 +65,6 @@ void TetModel::saveAs(const std::string path) const {
 	);
 
 	write_by_extension(path, _m, attributes);
+
+	return true;
 }

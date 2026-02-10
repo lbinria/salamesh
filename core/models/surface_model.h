@@ -106,11 +106,11 @@ struct SurfaceModel : public Model {
 		return true;
 	}
 
-	void saveAs(const std::string path) const override {
+	bool saveAs(const std::string path, std::vector<Attribute> attrs) const override {
 		// Check path validity
 		if (path.empty()) {
 			std::cerr << "Error: No path specified for saving the mesh." << std::endl;
-			return;
+			return false;
 		}
 		
 		// Save attributes ! Convert back from salamesh attributes to NamedContainer vectors
@@ -144,6 +144,8 @@ struct SurfaceModel : public Model {
 		);
 
 		write_by_extension(path, getSurface(), attributes);
+
+		return true;
 	}
 
 	std::tuple<glm::vec3, glm::vec3> bbox() override {

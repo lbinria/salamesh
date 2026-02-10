@@ -43,10 +43,15 @@ struct Model {
 	virtual ModelType getModelType() const = 0;
 
 	virtual bool load(const std::string path) = 0;
-	virtual void saveAs(const std::string path) const = 0;
+	virtual bool saveAs(const std::string path, std::vector<Attribute> attrs) const = 0;
 
-	void save() const {
-		saveAs(_path);
+	bool saveAs(const std::string path) const {
+		return saveAs(path, attrs);
+	}
+
+
+	bool save() const {
+		return saveAs(_path);
 	}
 
 	void saveState(std::string dirPath, json &j) /*const*/;

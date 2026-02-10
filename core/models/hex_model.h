@@ -35,7 +35,7 @@ struct HexModel final : public Model {
 
 
 	bool load(const std::string path) override;
-	void saveAs(const std::string path) const override;
+	bool saveAs(const std::string path, std::vector<Attribute> attrs) const override;
 
 	Hexahedra& getHexahedra() { return _m; }
 	VolumeAttributes& getVolumeAttributes() { return _volumeAttributes; }

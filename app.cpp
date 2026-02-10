@@ -799,7 +799,9 @@ void App::draw_gui() {
 			// action
 			std::cout << "file path:" << directoryPath << ", file path name: " << filename << std::endl;
 			std::cout << "save model..." << std::endl;
-			getCurrentModel().saveAs(filename);
+			if (!getCurrentModel().saveAs(filename)) {
+				std::cerr << "Unable to save current model at: " << filename << std::endl;
+			}
 		}
 		
 		// close

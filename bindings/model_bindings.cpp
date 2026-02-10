@@ -128,7 +128,15 @@ namespace bindings {
 
 		model_t.set_function("load", &Model::load);
 		model_t.set_function("save", &Model::save);
-		model_t.set_function("save_as", &Model::saveAs);
+		
+		model_t.set_function("save_as", sol::overload(
+			[](Model &self, std::string path) {
+				return self.saveAs(path);
+			},
+			[](Model &self, std::string path, std::vector<Attribute> attrs) {
+				return self.saveAs(path, attrs);
+			}
+		));
 
 		model_t.set_function("save_state", [](Model &self, std::string dirPath) {
 			json j;

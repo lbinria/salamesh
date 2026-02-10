@@ -36,7 +36,7 @@ struct TetModel final : public Model {
 
 
 	bool load(const std::string path) override;
-	void saveAs(const std::string path) const override;
+	bool saveAs(const std::string path, std::vector<Attribute> attrs) const override;
 
 	Tetrahedra& getTetrahedra() { return _m; }
 	VolumeAttributes& getVolumeAttributes() { return _volumeAttributes; }
