@@ -54,7 +54,7 @@ struct Model {
 		return saveAs(_path);
 	}
 
-	void saveState(std::string dirPath, json &j) /*const*/;
+	bool saveState(std::string dirPath, json &j) /*const*/;
 	void loadState(json &j);
 
 	virtual void doLoadState(json &j) {};

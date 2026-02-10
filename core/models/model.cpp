@@ -1,6 +1,6 @@
 #include "model.h"
 
-void Model::saveState(std::string dirPath, json &j) /*const*/ {
+bool Model::saveState(std::string dirPath, json &j) /*const*/ {
 
 	// TODO maybe move saveAs geogram model into App::saveState, because model are loaded into App::loadState, not in Model::loadState
 
@@ -19,7 +19,10 @@ void Model::saveState(std::string dirPath, json &j) /*const*/ {
 	for (auto &[k, c] : containers)
 		addAttr(k, c);
 
-	saveAs(filepath.string());
+	if (!saveAs(filepath.string())) {
+		std::cerr << "Unable to save state at " << filepath << std::endl;
+		return false;
+	}
 	
 	clearAttrs();
 	attrs = cpyAttrs;
@@ -50,6 +53,8 @@ void Model::saveState(std::string dirPath, json &j) /*const*/ {
 	}
 
 	doSaveState(j);
+
+	return true;
 }
 
 void Model::loadState(json &j) {
