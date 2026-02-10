@@ -411,11 +411,11 @@ void App::init() {
 	std::cout << "Init" << std::endl;
 
 	// Register model types
-	registerModel("TriModel", []() { return std::make_unique<TriModel>(); });
-	registerModel("QuadModel", []() { return std::make_unique<QuadModel>(); });
-	registerModel("PolyModel", []() { return std::make_unique<PolyModel>(); });
-	registerModel("TetModel", []() { return std::make_unique<TetModel>(); });
-	registerModel("HexModel", []() { return std::make_unique<HexModel>(); });
+	registerModel("TriModel", [](std::string name) { return std::make_unique<TriModel>(name); });
+	registerModel("QuadModel", [](std::string name) { return std::make_unique<QuadModel>(name); });
+	registerModel("PolyModel", [](std::string name) { return std::make_unique<PolyModel>(name); });
+	registerModel("TetModel", [](std::string name) { return std::make_unique<TetModel>(name); });
+	registerModel("HexModel", [](std::string name) { return std::make_unique<HexModel>(name); });
 	// registerModel("PolylineModel", []() { return std::make_unique<PolylineModel>(); });
 	// registerModel("PyramidModel", []() { return std::make_unique<PyramidModel>(); });
 	// registerModel("PrismModel", []() { return std::make_unique<PrismModel>(); });
@@ -869,41 +869,41 @@ void App::clean() {
 
 std::string App::loadModel(const std::string& filename, std::string name) {
 
+	std::string modelName = name.empty() ? 
+		std::filesystem::path(filename).stem().string() + std::to_string(models.size()) : 
+		name;
+
 	bool success = false;
 
 	std::unique_ptr<Model> model;
-	model = std::make_unique<PolyModel>();
+	model = std::make_unique<PolyModel>(modelName);
 
 	success = model->load(filename);
 
 	if (!success) {
-		model = std::make_unique<TriModel>();
+		model = std::make_unique<TriModel>(modelName);
 		success = model->load(filename);
 	}
 
 	if (!success) {
-		model = std::make_unique<QuadModel>();
+		model = std::make_unique<QuadModel>(modelName);
 		success = model->load(filename);
 	}
 
 	if (!success) {
-		model = std::make_unique<TetModel>();
+		model = std::make_unique<TetModel>(modelName);
 		success = model->load(filename);
 	}
 
 	if (!success) {
-		model = std::make_unique<HexModel>();
+		model = std::make_unique<HexModel>(modelName);
 		success = model->load(filename);
 	}
 
 	if (!success)
 		return "";
 
-	std::string modelName = name.empty() ? 
-		std::filesystem::path(filename).stem().string() + std::to_string(models.size()) : 
-		name;
-	
-	model->setName(modelName);
+
 	model->setMeshIndex(models.size());
 
 	// Setup default gfx
@@ -921,9 +921,6 @@ std::string App::loadModel(const std::string& filename, std::string name) {
 
 	// Update cameras far planes
 	computeFarPlane();
-
-	// // Focus loaded model
-	// focus(modelName);
 
 	// Notify scripts
 	for (auto &s : scripts) {
@@ -1632,9 +1629,9 @@ std::vector<std::string> App::listAvailableCameras() {
 	return v;
 }
 
-std::unique_ptr<Model> App::makeModel(std::string type) {
+std::unique_ptr<Model> App::makeModel(std::string type, std::string name) {
 	if (modelInstanciators.count(type) > 0) {
-		return modelInstanciators[type]();
+		return modelInstanciators[type](name);
 	}
 
 	std::cerr 

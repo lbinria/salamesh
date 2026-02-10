@@ -43,7 +43,7 @@ namespace RendererSpecialization {
 template<SurfaceDerived TSurface>
 struct SurfaceModel : public Model {
 
-	SurfaceModel() : 
+	SurfaceModel(std::string name) : 
 		_m(),
 		Model::Model({
 			{"mesh_renderer", std::make_shared<typename RendererSpecialization::RendererSelector<TSurface>::type>(_m)}, 
@@ -52,7 +52,7 @@ struct SurfaceModel : public Model {
 			{"edge_renderer", std::make_shared<SurfaceHalfedgeRenderer>(_m) },
 			{"bbox_renderer", std::make_shared<BBoxRenderer>(_m.points) },
 			{"zclipping_renderer", std::make_shared<ClippingRenderer>(_m.points) }
-		})
+		}, name)
 		{}
 
 	ModelType getModelType() const override {

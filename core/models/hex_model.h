@@ -18,7 +18,7 @@ using json = nlohmann::json;
 
 struct HexModel final : public Model {
 
-	HexModel() : 
+	HexModel(std::string name) : 
         _m(), 
         Model::Model({
             {"mesh_renderer", std::make_shared<HexRenderer>(_m)}, 
@@ -26,7 +26,7 @@ struct HexModel final : public Model {
             {"edge_renderer", std::make_shared<VolumeHalfedgeRenderer>(_m) },
             {"bbox_renderer", std::make_shared<BBoxRenderer>(_m.points) },
             {"zclipping_renderer", std::make_shared<ClippingRenderer>(_m.points) }
-        })
+        }, name)
         {}
 
     ModelType getModelType() const override {

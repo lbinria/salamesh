@@ -19,7 +19,7 @@ using json = nlohmann::json;
 
 struct TetModel final : public Model {
 
-    TetModel() : 
+    TetModel(std::string name) : 
         _m(), 
         Model::Model({
             {"mesh_renderer", std::make_shared<TetRenderer>(_m)}, 
@@ -27,7 +27,7 @@ struct TetModel final : public Model {
             {"edge_renderer", std::make_shared<VolumeHalfedgeRenderer>(_m) },
             {"bbox_renderer", std::make_shared<BBoxRenderer>(_m.points) },
             {"zclipping_renderer", std::make_shared<ClippingRenderer>(_m.points) }
-        })
+        }, name)
         {}
 
     ModelType getModelType() const override {
