@@ -156,7 +156,14 @@ static void framebuffer_size_callback(GLFWwindow* window, int width, int height)
 	app->getRenderSurface().resize(width, height);
 }
 
-
+void App::setupColormaps() {
+	// Load default colormap textures
+	addColormap("CET-R41", sl::assetsPath("CET-R41px.png"));
+	addColormap("CET-L08", sl::assetsPath("CET-L08px.png"));
+	addColormap("alpha", sl::assetsPath("colormap_alpha.png"));
+	addColormap("cat", "/home/tex/Models/cat/Cat_diffuse.jpg");
+	addColormap("extended", sl::assetsPath("extended.png"));
+}
 
 bool App::setup() {
 
@@ -336,11 +343,7 @@ bool App::setup() {
 	}
 
 	// Load default colormap textures
-	addColormap("CET-R41", sl::assetsPath("CET-R41px.png"));
-	addColormap("CET-L08", sl::assetsPath("CET-L08px.png"));
-	addColormap("alpha", sl::assetsPath("colormap_alpha.png"));
-	addColormap("cat", "/home/tex/Models/cat/Cat_diffuse.jpg");
-	addColormap("extended", sl::assetsPath("extended.png"));
+	setupColormaps();
 
 	// Load icons
 	int iconWidth, iconHeight, iconChannels;
@@ -904,8 +907,6 @@ std::string App::loadModel(const std::string& filename, std::string name) {
 		return "";
 
 
-	model->setMeshIndex(models.size());
-
 	// Setup default gfx
 	model->setLight(true);
 	model->getMeshRenderer().setMeshShrink(0.f);
@@ -917,6 +918,7 @@ std::string App::loadModel(const std::string& filename, std::string name) {
 
 	// Setup default clipping plane
 	model->setupClipping();
+	modelNameByIndex[model->getMeshIndex()] = modelName;
 	models[modelName] = std::move(model);
 
 	// Update cameras far planes
@@ -1007,8 +1009,6 @@ long App::pickEdge(double x, double y) {
 	// it is called by callback mouse_move that is decorelated from main loop
 	// Line below should be sufficient to get hovered
 
-	// int h = st.cell.anyHovered() ? st.cell.getHovered() : st.facet.getHovered();
-
 	int h;
 	if (st.cell.anyHovered() && (model->getModelType() == ModelType::HEX_MODEL || model->getModelType() == ModelType::TET_MODEL))
 		h = st.cell.getHovered();
@@ -1025,7 +1025,7 @@ long App::pick_mesh(double x, double y) {
 	glReadBuffer(GL_COLOR_ATTACHMENT4);
 	long id = pick(x, y);
 	glBindFramebuffer(GL_READ_FRAMEBUFFER, 0);
-	return id >= 0 && id < models.size() ? id : -1;
+	return id >= 0 && id < Model::getMaxMeshIndex() ? id : -1;
 }
 
 std::vector<long> App::pick_vertices(double x, double y, int radius) {
@@ -1353,25 +1353,29 @@ void App::saveState(const std::string filename) {
 }
 
 void App::clearScene() {
-	// Clean models and renderers
+	// Clean models
 	for (auto &[k, m] : models)
 		m->clean();
 
+	// Clear renderers
 	for (auto &[k, r] : renderers)
 		r->clear();
 
 	// TODO maybe clean modules ?
 	models.clear();
+	modelNameByIndex.clear();
+	setSelectedModel("");
 
 	// Reset cameras
 	cameras.clear();
 	auto trackballCamera = std::make_shared<TrackBallCamera>();
 	cameras["default"] = std::move(trackballCamera);
-
 	setSelectedCamera("default");
-	setSelectedModel("");
 
 	// TODO clear selected color map... elements etc... layers...
+	
+	colormaps.clear();
+	setupColormaps();
 }
 
 void App::loadState(json &j, const std::string path) {

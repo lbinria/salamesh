@@ -26,7 +26,10 @@ struct Model {
 
 	Model(std::map<std::string, std::shared_ptr<IRenderer>> renderers) :  
 	_path(""),
-	_renderers(std::move(renderers)) {}
+	_renderers(std::move(renderers)) {
+		index = maxIndex;
+		++maxIndex;
+	}
 
 	template<typename T>
 	T& as() {
@@ -63,8 +66,10 @@ struct Model {
 
 	// Lifecycle functions
 	void init() {
-		for (auto const &[k, r] : _renderers)
+		for (auto const &[k, r] : _renderers) {
 			r->init();
+			r->setMeshIndex(index);
+		}
 	}
 
 	void push() {
@@ -438,9 +443,12 @@ struct Model {
 		setClippingPlaneNormal({1, 0, 0});
 	}
 
-	void setMeshIndex(int index) {
-		for (auto const &[k, r] : _renderers)
-			r->setMeshIndex(index);
+	int getMeshIndex() {
+		return index;
+	}
+
+	static inline int getMaxMeshIndex() {
+		return maxIndex;
 	}
 
 	// Renderer getters
@@ -597,6 +605,9 @@ struct Model {
 
 	private:
 	
+	static inline int maxIndex = 0;
+	int index;
+
 	std::map<std::tuple<Layer, ElementKind>, std::string> attrNameByLayerAndKind;
 	std::map<std::tuple<Layer, ElementKind>, bool> activatedLayers;
 };

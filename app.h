@@ -56,7 +56,7 @@ using namespace UM;
 #include <filesystem>
 namespace fs = std::filesystem;
 
-struct App : public IApp {
+struct App final : public IApp {
 
 	App (const App&) = delete;
 	App& operator= (const App&) = delete;
@@ -67,32 +67,10 @@ struct App : public IApp {
 		screenHeight(768)
 	{}
 
-	// Another screenfbo
-	unsigned int screenFbo;
-
-	// OpenGL
-	unsigned int fbo;
-	unsigned int rbo;
-	// unsigned int depthPickingRbo;
-	unsigned int depthAttachmentTexture;
-	unsigned int texColor;
-	unsigned int texCellID;
-	unsigned int texFacetID;
-	unsigned int texVertexID;
-
-	unsigned int uboMatrices, uboViewport;
-
-	unsigned int quadVAO, quadVBO;
-
 	// settings
 	// TODO rename to windowWidth, windowHeight
 	unsigned int screenWidth;
 	unsigned int screenHeight;
-
-	// TODO here need a Colormap struct {unsigned int tex; int w; int h; string name}
-	// display color map in good format for 2D in the UI
-	std::vector<Colormap> colormaps;
-
 
 	// TO protected
 	void processInput(GLFWwindow *window);
@@ -100,6 +78,8 @@ struct App : public IApp {
 	bool setup();
 	void start();
 	void clean();
+
+	void setupColormaps();
 
 	// Utils functions
 	Image screenshot(const std::string& filename, int targetWidth = -1, int targetHeight = -1) override;
@@ -116,9 +96,10 @@ struct App : public IApp {
 		assert(!name.empty() && "Cannot add model with an empty name.");
 		auto model = makeModel(type);
 		// TODO important check whether model is null
-		model->setMeshIndex(models.size());
+		
 		// model->init();
 		models[name] = std::move(model);
+		modelNameByIndex[model->getMeshIndex()] = name;
 		return *models[name];
 
 		// // 
@@ -133,6 +114,13 @@ struct App : public IApp {
 			models[name]->clean();
 
 		models.erase(name);
+		//
+		for (auto &[i, curName] : modelNameByIndex) {
+			if (curName == name) {
+				modelNameByIndex.erase(i);
+				break;
+			}
+		}
 	}
 	
 	Model& getModel(std::string name) override {
@@ -227,6 +215,7 @@ struct App : public IApp {
 		}
 
 		models.clear();
+		modelNameByIndex.clear();
 	}
 
 	bool setSelectedModel(std::string name) override {
@@ -252,13 +241,22 @@ struct App : public IApp {
 	}
 
 	std::shared_ptr<Model> getHoveredModel() {
-		// if (!st.mesh.anyHovered()) {
-		// 	return nullptr;
-		// } else {
-		// 	return models[st.mesh.getHovered()];
-		// }
-		// TODO implement
+		// Searching
+		auto hoveredIndex = st.mesh.getHovered();
+
+		if (modelNameByIndex.count(hoveredIndex) > 0) {
+			auto name = modelNameByIndex[hoveredIndex];
+			if (models.count(name) > 0) {
+				return models[name];
+			}
+		}
+
 		return nullptr;
+	}
+
+	// To private
+	Model& getHoveredModelRef() {
+		return *getHoveredModel();
 	}
 
 	Camera& addCamera(std::string type, std::string name) override {
@@ -301,10 +299,6 @@ struct App : public IApp {
 	}
 
 	void clearCameras() override {
-		// for (auto &[k, c] : cameras) {
-		// 	c->clean();
-		// }
-
 		cameras.clear();
 	}
 
@@ -430,12 +424,6 @@ struct App : public IApp {
 	std::vector<std::string> listAvailableCameras() override;
 	std::vector<std::string> listAvailableRenderers() override;
 
-	// Move to private !
-	std::unique_ptr<Model> makeModel(std::string type);
-	std::unique_ptr<Camera> makeCamera(std::string type);
-	std::unique_ptr<IRenderer> makeRenderer(std::string type);
-
-
 	std::vector<std::string> getNavigationPath() override {
 		return navPath;
 	}
@@ -475,15 +463,37 @@ struct App : public IApp {
 
 	bool isUIHovered() const override { return _isUIHovered; }
 
-	protected:
+	private:
 	Args args;
 
 	GLFWwindow* window;
 	glm::vec3 backgroundColor{0.05, 0.1, 0.15};
 
+	// Another screenfbo
+	unsigned int screenFbo;
+
+	// OpenGL
+	unsigned int fbo;
+	unsigned int rbo;
+	unsigned int depthAttachmentTexture;
+	unsigned int texColor;
+	unsigned int texCellID;
+	unsigned int texFacetID;
+	unsigned int texVertexID;
+
+	unsigned int uboMatrices, uboViewport;
+
+	unsigned int quadVAO, quadVBO;
+
+
+
+	// display color map in good format for 2D in the UI
+	std::vector<Colormap> colormaps;
+
 	std::map<std::string, std::shared_ptr<Camera>> cameras;
 	std::map<std::string, std::shared_ptr<Model>> models;
 	std::map<std::string, std::shared_ptr<IRenderer>> renderers;
+	std::map<int, std::string> modelNameByIndex;
 
 	std::vector<std::unique_ptr<RenderSurface>> renderSurfaces;
 
@@ -506,13 +516,16 @@ struct App : public IApp {
 
 	void setupLayout();
 
-	// TODO move to private
 	bool _isUIHovered = false;
 
 	private:
 
 	// Current navigation path of the app
 	std::vector<std::string> navPath;
+
+	std::unique_ptr<Model> makeModel(std::string type);
+	std::unique_ptr<Camera> makeCamera(std::string type);
+	std::unique_ptr<IRenderer> makeRenderer(std::string type);
 
 	// Instanciator, enable camera instanciation
 	// Register new instanciator for custom camera
