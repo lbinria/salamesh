@@ -92,15 +92,17 @@ struct App final : public IApp {
 	// TODO to protected
 	std::string loadModel(const std::string& filename, std::string name = "") override;
 
-	Model& addModel(std::string type, std::string name) override {
+	std::shared_ptr<Model> addModel(std::string type, std::string name) override {
 		assert(!name.empty() && "Cannot add model with an empty name.");
 		auto model = modelInstanciator.make(type);
-		// TODO important check whether model is null
+
+		if (!model)
+			return nullptr;
 		
 		// model->init();
 		models[name] = std::move(model);
 		modelNameByIndex[model->getIndex()] = name;
-		return *models[name];
+		return models[name];
 
 		// // 
 		// // model->loadCallback = ([this](Model&, const std::string) -> bool {
@@ -262,13 +264,17 @@ struct App final : public IApp {
 		return nullptr;
 	}
 
-	Camera& addCamera(std::string type, std::string name) override {
+	std::shared_ptr<Camera> addCamera(std::string type, std::string name) override {
 		assert(!name.empty() && "Cannot add camera with an empty name.");
-		// TODO important check whether camera is null !
+
 		auto camera = cameraInstanciator.make(type);
+
+		if (!camera)
+			return nullptr;
+
 		// camera->init();
 		cameras[name] = std::move(camera);
-		return *cameras[name];
+		return cameras[name];
 	}
 
 	void removeCamera(std::string name) override {
@@ -327,13 +333,16 @@ struct App final : public IApp {
 
 	Camera& getCurrentCamera() override { return *cameras[selectedCamera]; }
 
-	IRenderer& addRenderer(std::string type, std::string name) override {
-		assert(!name.empty() && "Cannot add renderer with an empty name."); // TODO complete message
+	std::shared_ptr<IRenderer> addRenderer(std::string type, std::string name) override {
+		assert(!name.empty() && "Cannot add renderer with an empty name.");
 		auto renderer = rendererInstanciator.make(type);
-		// TODO important check whether renderer is null
+
+		if (!renderer)
+			return nullptr;
+
 		renderer->init();
 		renderers[name] = std::move(renderer);
-		return *renderers[name];
+		return renderers[name];
 	}
 
 	void removeRenderer(std::string name) override {

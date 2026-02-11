@@ -847,7 +847,6 @@ void App::drawGui() {
 void App::clean() {
 	std::cout << "App clean..." << std::endl;
 
-	// TODO refactor to functions
 	for (auto &[k, model] : models) {
 		model->clean();
 	}

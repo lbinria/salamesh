@@ -13,7 +13,7 @@ struct TriangleInspector : public Script {
 
 	// TriangleInspector(IApp &app) : Script(app)/*, lineRenderer(app.addRenderer("LineRenderer", "my_linus_renderus").as<LineRenderer>())*/ {}	
 	// TriangleInspector(IApp &app) : Script(app), lineRenderer(app.addRenderer("LineRenderer", "my_linus_renderus")) {}	
-	TriangleInspector(IApp &app) : Script(app), lineRenderer(app.addRenderer("LineRenderer", "my_linus_renderus")) {}	
+	TriangleInspector(IApp &app) : Script(app), lineRenderer(*app.addRenderer("LineRenderer", "my_linus_renderus")) {}	
 
 	// Lifecycle
 	void init() {

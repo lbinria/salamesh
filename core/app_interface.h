@@ -89,7 +89,7 @@ struct IApp {
 	virtual void setCull(bool enabled) = 0;
 
 	virtual std::map<std::string, std::shared_ptr<Model>>& getModels() = 0;
-	virtual Model& addModel(std::string type, std::string name) = 0;
+	virtual std::shared_ptr<Model> addModel(std::string type, std::string name) = 0;
 	virtual void removeModel(std::string name) = 0;
 	virtual Model& getCurrentModel() = 0;
 	virtual Model& getModel(std::string name) = 0;
@@ -116,7 +116,7 @@ struct IApp {
 	virtual void loadState(const std::string filename) = 0;
 
 	virtual std::map<std::string, std::shared_ptr<Camera>>& getCameras() = 0;
-	virtual Camera& addCamera(std::string type, std::string name) = 0;
+	virtual std::shared_ptr<Camera> addCamera(std::string type, std::string name) = 0;
 	virtual void removeCamera(std::string name) = 0;
 	virtual Camera& getCurrentCamera() = 0;
 	virtual Camera& getCamera(std::string name) = 0;
@@ -130,7 +130,7 @@ struct IApp {
 	virtual std::string getSelectedCamera() = 0;
 
 	virtual std::map<std::string, std::shared_ptr<IRenderer>> getRenderers() = 0;
-	virtual IRenderer& addRenderer(std::string type, std::string name) = 0;
+	virtual std::shared_ptr<IRenderer> addRenderer(std::string type, std::string name) = 0;
 	virtual void removeRenderer(std::string name) = 0;
 	virtual IRenderer& getRenderer(std::string name) = 0;
 	virtual int countRenderers() = 0;
