@@ -420,21 +420,21 @@ void App::init() {
 	std::cout << "Init" << std::endl;
 
 	// Register model types
-	registerModel("TriModel", []() { return std::make_unique<TriModel>(); });
-	registerModel("QuadModel", []() { return std::make_unique<QuadModel>(); });
-	registerModel("PolyModel", []() { return std::make_unique<PolyModel>(); });
-	registerModel("TetModel", []() { return std::make_unique<TetModel>(); });
-	registerModel("HexModel", []() { return std::make_unique<HexModel>(); });
-	// registerModel("PolylineModel", []() { return std::make_unique<PolylineModel>(); });
-	// registerModel("PyramidModel", []() { return std::make_unique<PyramidModel>(); });
-	// registerModel("PrismModel", []() { return std::make_unique<PrismModel>(); });
+	modelInstanciator.registerType("TriModel", []() { return std::make_unique<TriModel>(); });
+	modelInstanciator.registerType("QuadModel", []() { return std::make_unique<QuadModel>(); });
+	modelInstanciator.registerType("PolyModel", []() { return std::make_unique<PolyModel>(); });
+	modelInstanciator.registerType("TetModel", []() { return std::make_unique<TetModel>(); });
+	modelInstanciator.registerType("HexModel", []() { return std::make_unique<HexModel>(); });
+	// modelInstanciator.registerType("PolylineModel", []() { return std::make_unique<PolylineModel>(); });
+	// modelInstanciator.registerType("PyramidModel", []() { return std::make_unique<PyramidModel>(); });
+	// modelInstanciator.registerType("PrismModel", []() { return std::make_unique<PrismModel>(); });
 
 	// Register cameras types
-	registerCamera("DescentCamera", []() { return std::make_unique<DescentCamera>(); });
-	registerCamera("TrackBallCamera", []() { return std::make_unique<TrackBallCamera>(); });
+	cameraInstanciator.registerType("DescentCamera", []() { return std::make_unique<DescentCamera>(); });
+	cameraInstanciator.registerType("TrackBallCamera", []() { return std::make_unique<TrackBallCamera>(); });
 	// Register renderers types
-	registerRenderer("LineRenderer", []() { return std::make_unique<LineRenderer>(); });
-	registerRenderer("PointSetRenderer", []() { return std::make_unique<PointSetRenderer>(); });
+	rendererInstanciator.registerType("LineRenderer", []() { return std::make_unique<LineRenderer>(); });
+	rendererInstanciator.registerType("PointSetRenderer", []() { return std::make_unique<PointSetRenderer>(); });
 
 	// Create cameras
 	setupCameras();
@@ -1375,7 +1375,7 @@ void App::loadState(json &j, const std::string path) {
 	// Load cameras states
 	for (auto &[cameraName, jCamera] : j["cameras"].items()) {
 		auto type = jCamera["type"].get<std::string>();
-		auto camera = makeCamera(type);
+		auto camera = cameraInstanciator.make(type);
 		if (camera) {
 			camera->loadState(jCamera);
 			cameras[cameraName] = std::move(camera);
@@ -1605,63 +1605,4 @@ void App::mouse_move(double x, double y) {
 		script->mouse_move(x, y);
 	}
 
-}
-
-std::vector<std::string> App::listAvailableRenderers() {
-	std::vector<std::string> v;
-	for (auto &[k, r] : rendererInstanciators)
-		v.push_back(k);
-
-	return v;
-}
-
-std::vector<std::string> App::listAvailableCameras() {
-	std::vector<std::string> v;
-	for (auto &[k, r] : cameraInstanciators)
-		v.push_back(k);
-
-	return v;
-}
-
-std::unique_ptr<Model> App::makeModel(std::string type) {
-	if (modelInstanciators.count(type) > 0) {
-		return modelInstanciators[type]();
-	}
-
-	std::cerr 
-		<< "Unable to make model of type " 
-		<< type 
-		<< ", maybe you should register your custom model class using `registerModel` ?" 
-		<< std::endl;
-
-	return nullptr;
-}
-
-std::unique_ptr<Camera> App::makeCamera(std::string type) {
-	if (cameraInstanciators.count(type) > 0) {
-		return cameraInstanciators[type]();
-	}
-
-	std::cerr 
-		<< "Unable to make camera of type " 
-		<< type 
-		<< ", maybe you should register your custom camera class using `registerCamera` ?" 
-		<< std::endl;
-
-	return nullptr;
-}
-
-
-std::unique_ptr<IRenderer> App::makeRenderer(std::string type) {
-	if (rendererInstanciators.count(type) > 0) {
-		return rendererInstanciators[type]();
-	}
-
-	std::cerr 
-		<< "Unable to make renderer of type " 
-		<< type 
-		<< ", maybe you should register your custom camera class `registerRenderer` ?" 
-		<< std::endl;
-
-	return nullptr;
 }

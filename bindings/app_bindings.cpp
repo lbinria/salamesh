@@ -23,6 +23,20 @@ namespace bindings {
 			"image", sol::readonly_property(&Snapshot::getImage)
 		);
 
+		// Instanciator type binding
+		lua.new_usertype<Instanciator<Model>>("ModelInstanciator", 
+			// "register_type", &Instanciator<Model>::registerType,
+			"list_available_types", &Instanciator<Model>::listAvailableTypes
+		);
+		lua.new_usertype<Instanciator<Camera>>("CameraInstanciator", 
+			// "register_type", &Instanciator<Camera>::registerType,
+			"list_available_types", &Instanciator<Camera>::listAvailableTypes
+		);
+		lua.new_usertype<Instanciator<IRenderer>>("RendererInstanciator", 
+			// "register_type", &Instanciator<IRenderer>::registerType,
+			"list_available_types", &Instanciator<IRenderer>::listAvailableTypes
+		);
+
 		// Input state binding
 		sol::usertype<InputState::PrimitiveState> primitive_state_t = lua.new_usertype<InputState::PrimitiveState>("PrimitiveState", 
 			sol::constructors<InputState::PrimitiveState()>(),
@@ -192,7 +206,8 @@ namespace bindings {
 		// app_type.set_function("load_module", &IApp::loadModule);
 
 		// Registration
-		app_type.set_function("list_available_cameras", &IApp::listAvailableCameras);
-		app_type.set_function("list_available_renderers", &IApp::listAvailableRenderers);
+		app_type["model_instanciator"] = sol::readonly_property(&IApp::getModelInstanciator);
+		app_type["camera_instanciator"] = sol::readonly_property(&IApp::getCameraInstanciator);
+		app_type["renderer_instanciator"] = sol::readonly_property(&IApp::getRendererInstanciator);
 	}
 }

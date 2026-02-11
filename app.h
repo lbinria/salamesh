@@ -72,8 +72,7 @@ struct App final : public IApp {
 	unsigned int screenWidth;
 	unsigned int screenHeight;
 
-	// TO protected
-	void processInput(GLFWwindow *window);
+
 
 	bool setup();
 	void start();
@@ -95,7 +94,7 @@ struct App final : public IApp {
 
 	Model& addModel(std::string type, std::string name) override {
 		assert(!name.empty() && "Cannot add model with an empty name.");
-		auto model = makeModel(type);
+		auto model = modelInstanciator.make(type);
 		// TODO important check whether model is null
 		
 		// model->init();
@@ -115,7 +114,7 @@ struct App final : public IApp {
 			models[name]->clean();
 
 		models.erase(name);
-		//
+		// Sync
 		for (auto &[i, curName] : modelNameByIndex) {
 			if (curName == name) {
 				modelNameByIndex.erase(i);
@@ -265,7 +264,7 @@ struct App final : public IApp {
 	Camera& addCamera(std::string type, std::string name) override {
 		assert(!name.empty() && "Cannot add camera with an empty name.");
 		// TODO important check whether camera is null !
-		auto camera = makeCamera(type);
+		auto camera = cameraInstanciator.make(type);
 		// camera->init();
 		cameras[name] = std::move(camera);
 		return *cameras[name];
@@ -329,7 +328,7 @@ struct App final : public IApp {
 
 	IRenderer& addRenderer(std::string type, std::string name) override {
 		assert(!name.empty() && "Cannot add renderer with an empty name."); // TODO complete message
-		auto renderer = makeRenderer(type);
+		auto renderer = rendererInstanciator.make(type);
 		// TODO important check whether renderer is null
 		renderer->init();
 		renderers[name] = std::move(renderer);
@@ -412,21 +411,6 @@ struct App final : public IApp {
 	}
 
 	void updateCamera(float dt);
-
-	inline void registerModel(std::string type, std::function<std::unique_ptr<Model>()> instanciatorFunc) {
-		modelInstanciators[type] = instanciatorFunc;
-	}
-
-	inline void registerCamera(std::string type, std::function<std::unique_ptr<Camera>()> instanciatorFunc) {
-		cameraInstanciators[type] = instanciatorFunc;
-	}
-
-	inline void registerRenderer(std::string type, std::function<std::unique_ptr<IRenderer>()> instanciatorFunc) {
-		rendererInstanciators[type] = instanciatorFunc;
-	}
-
-	std::vector<std::string> listAvailableCameras() override;
-	std::vector<std::string> listAvailableRenderers() override;
 
 	std::vector<std::string> getNavigationPath() override {
 		return navPath;
@@ -512,6 +496,8 @@ struct App final : public IApp {
 	int cull_mode = GL_BACK;
 	bool cull = true;
 
+	void processInput(GLFWwindow *window);
+
 	void loadModules(Settings &settings);
 	void loadModule(fs::path modulePath) override;
 	std::unique_ptr<LuaScript> loadScript(fs::path scriptPath);
@@ -522,24 +508,17 @@ struct App final : public IApp {
 
 	bool _isUIHovered = false;
 
+	const Instanciator<Model>& getModelInstanciator() const override { return modelInstanciator; }
+	const Instanciator<Camera>& getCameraInstanciator() const override { return cameraInstanciator; }
+	const Instanciator<IRenderer>& getRendererInstanciator() const override { return rendererInstanciator; }
+
 	private:
 
 	// Current navigation path of the app
 	std::vector<std::string> navPath;
 
-	std::unique_ptr<Model> makeModel(std::string type);
-	std::unique_ptr<Camera> makeCamera(std::string type);
-	std::unique_ptr<IRenderer> makeRenderer(std::string type);
-
-	// Instanciator, enable camera instanciation
-	// Register new instanciator for custom camera
-	std::map<std::string, std::function<std::unique_ptr<Model>()>> modelInstanciators;
-	// Instanciator, enable camera instanciation
-	// Register new instanciator for custom camera
-	std::map<std::string, std::function<std::unique_ptr<Camera>()>> cameraInstanciators;
-	// Instanciator, enable renderer instanciation
-	// Register new instanciator for custom renderer
-	std::map<std::string, std::function<std::unique_ptr<IRenderer>()>> rendererInstanciators;
-
+	Instanciator<Model> modelInstanciator;
+	Instanciator<Camera> cameraInstanciator;
+	Instanciator<IRenderer> rendererInstanciator;
 
 };

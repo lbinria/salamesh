@@ -10,8 +10,16 @@ function init()
 	-- local j = app.camera:save_state()
 	-- app.camera:savus(j)
 
-	local av_cameras = app:list_available_cameras()
-	local av_renderers = app:list_available_renderers()
+	-- local av_cameras = app:list_available_cameras()
+	-- local av_renderers = app:list_available_renderers()
+	local av_models = app.model_instanciator:list_available_types()
+	local av_cameras = app.camera_instanciator:list_available_types()
+	local av_renderers = app.renderer_instanciator:list_available_types()
+
+	print("Available models list:")
+	for i=1, #av_models do
+		print(av_models[i])
+	end
 
 	print("Available cameras list:")
 	for i=1, #av_cameras do

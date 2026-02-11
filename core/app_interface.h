@@ -31,6 +31,46 @@ struct Snapshot {
 	Image getImage() { return image; }
 };
 
+template<typename T>
+struct Instanciator {
+
+	Instanciator() = default;
+
+	// Instanciator (const Instanciator&) = delete;
+	// Instanciator& operator= (const Instanciator&) = delete;
+
+	std::unique_ptr<T> make(std::string type) {
+		if (instanciators.count(type) > 0) {
+			return instanciators[type]();
+		}
+
+		std::cerr 
+			<< "Unable to make entity of type " 
+			<< type 
+			<< ", maybe you should register your custom entity class using `registerType` ?" 
+			<< std::endl;
+
+		return nullptr;
+	}
+	
+	inline void registerType(std::string type, std::function<std::unique_ptr<T>()> instanciatorFunc) {
+		instanciators[type] = instanciatorFunc;
+	}
+
+	std::vector<std::string> listAvailableTypes() {
+		std::vector<std::string> v;
+		for (auto &[k, r] : instanciators)
+			v.push_back(k);
+
+		return v;
+	}
+
+	private:
+	// Instanciator, enable entity instanciation
+	// Register new instanciator for custom entity
+	std::map<std::string, std::function<std::unique_ptr<T>()>> instanciators;
+};
+
 struct IApp {
 
 	virtual void quit() = 0;
@@ -122,7 +162,8 @@ struct IApp {
 
 	virtual bool isUIHovered() const = 0;
 
-	// Registration
-	virtual std::vector<std::string> listAvailableCameras() = 0;
-	virtual std::vector<std::string> listAvailableRenderers() = 0;
+	virtual const Instanciator<Model>& getModelInstanciator() const = 0;
+	virtual const Instanciator<Camera>& getCameraInstanciator() const = 0;
+	virtual const Instanciator<IRenderer>& getRendererInstanciator() const = 0;
+
 };
