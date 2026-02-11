@@ -86,10 +86,10 @@ struct TriangleInspector : public Script {
 		setupModel(name);
 	}
 
-	void selectedModelChanged(std::string name) override {
+	void selectedModelChanged(std::string oldName, std::string newName) override {
 		// Save gfx state for restoring ?
 		if (isNavHere())
-			setupModel(name);
+			setupModel(newName);
 	}
 
 	

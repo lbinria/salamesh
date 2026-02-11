@@ -1,4 +1,8 @@
 
+function scene_cleared()
+	print("scene cleared !")
+end
+
 function init()
 	print("Screen width: " .. tostring(app.width))
 	print("Screen height: " .. tostring(app.height))

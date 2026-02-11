@@ -234,8 +234,9 @@ struct App final : public IApp {
 			return false;
 		}
 
+		auto oldSelection = selectedModel;
 		selectedModel = name;
-		notifySelectedModelChange(name);
+		notifySelectedModelChanged(oldSelection, name);
 		return true;
 	}
 
@@ -398,15 +399,21 @@ struct App final : public IApp {
 	void mouse_button(int button, int action, int mods);
 	void key_event(int key, int scancode, int action, int mods);
 
-	void notifyNavigationPathChange(std::vector<std::string> &oldNavPath, std::vector<std::string>& newNavPath) {
+	void notifyNavigationPathChanged(std::vector<std::string> &oldNavPath, std::vector<std::string>& newNavPath) {
 		for (auto &c : scripts) {
 			c->navigationPathChanged(oldNavPath, newNavPath);
 		}
 	}
 
-	void notifySelectedModelChange(std::string name) {
+	void notifySelectedModelChanged(std::string oldName, std::string newName) {
 		for (auto &s : scripts) {
-			s->selectedModelChanged(name);
+			s->selectedModelChanged(oldName, newName);
+		}
+	}
+
+	void notifySceneCleared() {
+		for (auto &s : scripts) {
+			s->sceneCleared();
 		}
 	}
 
@@ -417,14 +424,14 @@ struct App final : public IApp {
 	}
 
 	void setNavigationPath(std::vector<std::string> path) override {
-		notifyNavigationPathChange(navPath, path);
+		notifyNavigationPathChanged(navPath, path);
 		navPath = path;
 	}
 
 	void addNavigationPath(std::string pathComponent) {
 		std::vector<std::string> newPath(navPath);
 		newPath.push_back(pathComponent);
-		notifyNavigationPathChange(navPath, newPath);
+		notifyNavigationPathChanged(navPath, newPath);
 		navPath = newPath;
 	}
 
@@ -434,7 +441,7 @@ struct App final : public IApp {
 
 		auto newPath = navPath;
 		newPath.erase(newPath.end() - 1);
-		notifyNavigationPathChange(navPath, newPath);
+		notifyNavigationPathChanged(navPath, newPath);
 		navPath = newPath;
 	}
 

@@ -4,8 +4,7 @@
 		"modules/module_infos",
 		"modules/module_scene",
 		"modules/module_inspector",
-		"modules/module_snapshots",
-		"/home/tex/Projects/salamesh_diagnostic_module/build"
+		"modules/module_snapshots"
 	],
 	"scene": {
 		"background_color": "#ffffff"

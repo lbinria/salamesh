@@ -51,6 +51,7 @@ struct LuaScript final : public Script {
 		navigationPathChanged_func = lua.get<sol::protected_function>("navigation_path_changed");
 		modelLoaded_func = lua.get<sol::protected_function>("model_loaded");
 		selectedModelChanged_func = lua.get<sol::protected_function>("selected_model_changed");
+		sceneCleared_func = lua.get<sol::protected_function>("scene_cleared");
 
 		// Check whether functions exists
 		has_init = init_func.valid();
@@ -66,6 +67,7 @@ struct LuaScript final : public Script {
 		has_navigationPathChanged = navigationPathChanged_func.valid();
 		has_modelLoaded = modelLoaded_func.valid();
 		has_selectedModelChanged = selectedModelChanged_func.valid();
+		has_sceneCleared = sceneCleared_func.valid();
 	}
 
 
@@ -196,9 +198,14 @@ struct LuaScript final : public Script {
 			modelLoaded_func(name);
 	}
 
-	void selectedModelChanged(std::string name) override {
+	void selectedModelChanged(std::string oldName, std::string newName) override {
 		if (has_selectedModelChanged)
-			selectedModelChanged(name);
+			selectedModelChanged_func(oldName, newName);
+	}
+
+	void sceneCleared() override {
+		if (has_sceneCleared)
+			sceneCleared_func();
 	}
 
 	sol::state& getState() { return lua; }
@@ -226,6 +233,7 @@ struct LuaScript final : public Script {
 	sol::protected_function navigationPathChanged_func;
 	sol::protected_function modelLoaded_func;
 	sol::protected_function selectedModelChanged_func;
+	sol::protected_function sceneCleared_func;
 
 
 	bool 
@@ -240,6 +248,7 @@ struct LuaScript final : public Script {
 		has_cleanup, 
 		has_navigationPathChanged,
 		has_modelLoaded,
-		has_selectedModelChanged;
+		has_selectedModelChanged,
+		has_sceneCleared;
 
 };

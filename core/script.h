@@ -31,7 +31,8 @@ struct Script {
 	virtual void navigationPathChanged(const std::vector<std::string> &oldNavPath, const std::vector<std::string> &newNavPath) {};
 	
 	virtual void modelLoaded(const std::string &name) {};
-	virtual void selectedModelChanged(std::string name) {};
+	virtual void selectedModelChanged(std::string oldName, std::string newName) {};
+	virtual void sceneCleared() {};
 
 	protected:
 	IApp &app;

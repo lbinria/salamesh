@@ -1366,6 +1366,7 @@ void App::clearScene() {
 	clearCameras();	
 	clearColormaps();
 	// TODO clear selected color map... elements etc... layers...
+	notifySceneCleared();
 }
 
 void App::loadState(json &j, const std::string path) {
