@@ -43,7 +43,7 @@ function draw_tree(model, k)
 end
 
 local clipping_planes = {"x", "y", "z"}
-local sel_clipping_plane = 1
+local sel_clipping_plane = {}
 
 local invert_clipping = false
 
@@ -108,12 +108,16 @@ function draw_model_properties(model, k, view)
 				imgui.EndCombo()
 			end
 
-			if (imgui.BeginCombo("##Clipping plane normal", clipping_planes[sel_clipping_plane])) then
+			if not sel_clipping_plane[k] then 
+				sel_clipping_plane[k] = 1
+			end
+
+			if (imgui.BeginCombo("##Clipping plane normal", clipping_planes[sel_clipping_plane[k]])) then
 				for i = 1, #clipping_planes do
-					local is_selected = i == sel_clipping_plane
+					local is_selected = i == sel_clipping_plane[k]
 					if (imgui.Selectable(clipping_planes[i], is_selected)) then
 						
-						sel_clipping_plane = i
+						sel_clipping_plane[k] = i
 
 						if (i == 1) then
 							model.clipping_plane_normal = vec3.new(1,0,0)
@@ -132,13 +136,13 @@ function draw_model_properties(model, k, view)
 			local plane_pos = 0
 			-- Maybe it exists a better way to get model center from x,y,z than that ugly switch
 			local center_at = 0;
-			if (sel_clipping_plane == 1) then
+			if (sel_clipping_plane[k] == 1) then
 				plane_pos = model.clipping_plane_point.x
 				center_at = model.center.x
-			elseif (sel_clipping_plane == 2) then
+			elseif (sel_clipping_plane[k] == 2) then
 				plane_pos = model.clipping_plane_point.y
 				center_at = model.center.y
-			elseif (sel_clipping_plane == 3) then
+			elseif (sel_clipping_plane[k] == 3) then
 				plane_pos = model.clipping_plane_point.z
 				center_at = model.center.z
 			end
@@ -154,11 +158,11 @@ function draw_model_properties(model, k, view)
 				local new_clipping_plane_pos = center_at + new_clipping_plane_pos_factor * model.radius
 
 				local v 
-				if (sel_clipping_plane == 1) then
+				if (sel_clipping_plane[k] == 1) then
 					v = vec3.new(new_clipping_plane_pos, model.clipping_plane_point.y, model.clipping_plane_point.z)
-				elseif (sel_clipping_plane == 2) then
+				elseif (sel_clipping_plane[k] == 2) then
 					v = vec3.new(model.clipping_plane_point.x, new_clipping_plane_pos, model.clipping_plane_point.z)
-				elseif (sel_clipping_plane == 3) then
+				elseif (sel_clipping_plane[k] == 3) then
 					v = vec3.new(model.clipping_plane_point.x, model.clipping_plane_point.y, new_clipping_plane_pos)
 				end
 				model.clipping_plane_point = v
