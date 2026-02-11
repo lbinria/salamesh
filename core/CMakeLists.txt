@@ -42,9 +42,8 @@ set(SOURCES
     renderers/hex_renderer.cpp renderers/hex_renderer.h
 
     models/model.h models/model.cpp
-    models/surface_model.cpp models/surface_model.h
-    models/tet_model.cpp models/tet_model.h
-    models/hex_model.cpp models/hex_model.h
+    models/surface_model.h
+    models/volume_model.h
 
   # some include files to build with the lib
   ../include/stb_include.cpp 

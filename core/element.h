@@ -87,11 +87,11 @@ static ModelType modelTypeFromMeshType() {
 	else if constexpr (std::is_same_v<TMesh, UM::Polygons>)
 		return ModelType::POLYGON_MODEL;
 	else if constexpr (std::is_same_v<TMesh, UM::Tetrahedra>)
-		return ModelType::TRI_MODEL;
+		return ModelType::TET_MODEL;
 	else if constexpr (std::is_same_v<TMesh, UM::Hexahedra>)
-		return ModelType::TRI_MODEL;
+		return ModelType::HEX_MODEL;
 	else if constexpr (std::is_same_v<TMesh, UM::Pyramids>)
-		return ModelType::TRI_MODEL;
+		return ModelType::PYRAMID_MODEL;
 	else 
 		return ModelType::HYBRID_MODEL;
 }

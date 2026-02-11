@@ -38,8 +38,7 @@
 #include "core/shader.h"
 
 #include "core/models/surface_model.h"
-#include "core/models/tet_model.h"
-#include "core/models/hex_model.h"
+#include "core/models/volume_model.h"
 
 
 #include "render_surface.h"
