@@ -109,7 +109,7 @@ struct LuaScript final : public Script {
 			init_func();
 	}
 
-	bool draw_gui(ImGuiContext *ctx) override {
+	bool drawGui(ImGuiContext *ctx) override {
 		if (!has_draw_gui)
 			return true;
 

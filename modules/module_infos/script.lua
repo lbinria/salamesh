@@ -1,6 +1,8 @@
 
 function scene_cleared()
 	print("scene cleared !")
+	app:add_renderer("LineRenderer", "line_renderer")
+	app:add_renderer("PointSetRenderer", "my_point_set_renderer")
 end
 
 function init()

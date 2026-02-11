@@ -131,7 +131,7 @@ struct TriangleInspector : public Script {
 		return app.getNavigationPathString() == "diagnostic/overlapping_vertices";
 	}
 
-	bool draw_gui(ImGuiContext* ctx) {
+	bool drawGui(ImGuiContext* ctx) {
 		// Check that nav path is "diagnostic"
 		if (app.getNavigationPath().size() == 0 || app.getNavigationPath().front() != "diagnostic") {
 			return true;

@@ -595,7 +595,7 @@ void App::start() {
 		// ImGui::Image((ImTextureID)renderSurfaces[1]->texColor, size, ImVec2(0.0f, 1.0f), ImVec2(1.0f, 0.0f));
 		// ImGui::End();
 
-		draw_gui();
+		drawGui();
 
 		// ImGui::Begin("Render");
 		// ImVec2 size = ImGui::GetWindowSize();
@@ -746,7 +746,7 @@ void App::setupLayout() {
 
 
 
-void App::draw_gui() {
+void App::drawGui() {
 
 
 	setupLayout();
@@ -819,7 +819,7 @@ void App::draw_gui() {
 
 	for (auto &script : scripts) {
 		// if (script->status == LuaScript::SCRIPT_STATUS_OK) {
-			bool success = script->draw_gui(ImGui::GetCurrentContext());
+			bool success = script->drawGui(ImGui::GetCurrentContext());
 			if (!success) {
 
 				// Clear properly ImGui

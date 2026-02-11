@@ -30,7 +30,7 @@ struct ViewComponent : public Script {
 
 
 
-	bool draw_gui(ImGuiContext* ctx) {
+	bool drawGui(ImGuiContext* ctx) {
 		return true;
 	}
 	

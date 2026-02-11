@@ -392,7 +392,7 @@ struct App final : public IApp {
 
 	void init();
 	void update(float dt);
-	void draw_gui();
+	void drawGui();
 
 	void mouse_move(double x, double y);
 	void mouse_scroll(double xoffset, double yoffset);
