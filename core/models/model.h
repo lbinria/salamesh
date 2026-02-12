@@ -24,7 +24,7 @@ struct Model {
 	Model (const Model&) = delete;
 	Model& operator= (const Model&) = delete;
 
-	Model(std::map<std::string, std::shared_ptr<IRenderer>> renderers) :  
+	Model(std::map<std::string, std::shared_ptr<Renderer>> renderers) :  
 	_path(""),
 	_renderers(std::move(renderers)) {
 		index = maxIndex;
@@ -383,11 +383,11 @@ struct Model {
 		isLightFollowView = follow;
 	}
 
-	IRenderer::ClippingMode getClippingMode() const {
+	Renderer::ClippingMode getClippingMode() const {
 		return clippingMode;
 	}
 
-	void setClippingMode(IRenderer::ClippingMode mode) {
+	void setClippingMode(Renderer::ClippingMode mode) {
 		for (auto const &[k, r] : _renderers)
 			r->setClippingMode(mode);
 
@@ -467,7 +467,7 @@ struct Model {
 		return nullptr;
 	}
 
-	IRenderer& getMeshRenderer() const {
+	Renderer& getMeshRenderer() const {
 		// Warning, I do that here because I have the garantee that _meshRenderer is always initialized
 		// If _meshRenderer is uninitialized, this will throw a segfault
 		// (I don't want to transfer ownership)
@@ -479,11 +479,11 @@ struct Model {
 		return _renderers.contains(name);
 	}
 
-	std::map<std::string, std::shared_ptr<IRenderer>> getRenderers() const {
+	std::map<std::string, std::shared_ptr<Renderer>> getRenderers() const {
 		return _renderers;
 	}
 
-	std::shared_ptr<IRenderer> getRenderer(const std::string name) const {
+	std::shared_ptr<Renderer> getRenderer(const std::string name) const {
 		return _renderers.at(name);
 	}
 
@@ -508,7 +508,7 @@ struct Model {
 	bool isLightEnabled = true;
 	bool isLightFollowView = false;
 
-	IRenderer::ClippingMode clippingMode = IRenderer::ClippingMode::STD;
+	Renderer::ClippingMode clippingMode = Renderer::ClippingMode::STD;
 	bool isClipping = false;
 	glm::vec3 clippingPlanePoint{0.f, 0.f, 0.f};
 	glm::vec3 clippingPlaneNormal{0.f, 0.f, 1.f};
@@ -518,7 +518,7 @@ struct Model {
 	int selectedColormap[3] = {0, 0, 0};
 
 	// Renderers
-	std::map<std::string, std::shared_ptr<IRenderer>> _renderers;
+	std::map<std::string, std::shared_ptr<Renderer>> _renderers;
 
 	virtual std::vector<std::pair<ElementKind, NamedContainer>> getAttributeContainers() const = 0;
 	

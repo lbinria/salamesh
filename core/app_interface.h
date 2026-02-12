@@ -129,10 +129,10 @@ struct IApp {
 	virtual bool setSelectedCamera(std::string selected) = 0;
 	virtual std::string getSelectedCamera() = 0;
 
-	virtual std::map<std::string, std::shared_ptr<IRenderer>> getRenderers() = 0;
-	virtual std::shared_ptr<IRenderer> addRenderer(std::string type, std::string name) = 0;
+	virtual std::map<std::string, std::shared_ptr<Renderer>> getRenderers() = 0;
+	virtual std::shared_ptr<Renderer> addRenderer(std::string type, std::string name) = 0;
 	virtual void removeRenderer(std::string name) = 0;
-	virtual IRenderer& getRenderer(std::string name) = 0;
+	virtual Renderer& getRenderer(std::string name) = 0;
 	virtual int countRenderers() = 0;
 	virtual bool hasRenderer(std::string name) = 0;
 	virtual bool hasRenderers() = 0;
@@ -164,6 +164,6 @@ struct IApp {
 
 	virtual const Instanciator<Model>& getModelInstanciator() const = 0;
 	virtual const Instanciator<Camera>& getCameraInstanciator() const = 0;
-	virtual const Instanciator<IRenderer>& getRendererInstanciator() const = 0;
+	virtual const Instanciator<Renderer>& getRendererInstanciator() const = 0;
 
 };

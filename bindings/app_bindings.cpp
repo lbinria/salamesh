@@ -32,9 +32,9 @@ namespace bindings {
 			// "register_type", &Instanciator<Camera>::registerType,
 			"list_available_types", &Instanciator<Camera>::listAvailableTypes
 		);
-		lua.new_usertype<Instanciator<IRenderer>>("RendererInstanciator", 
-			// "register_type", &Instanciator<IRenderer>::registerType,
-			"list_available_types", &Instanciator<IRenderer>::listAvailableTypes
+		lua.new_usertype<Instanciator<Renderer>>("RendererInstanciator", 
+			// "register_type", &Instanciator<Renderer>::registerType,
+			"list_available_types", &Instanciator<Renderer>::listAvailableTypes
 		);
 
 		// Input state binding

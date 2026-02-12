@@ -13,7 +13,7 @@ using json = nlohmann::json;
 
 using namespace UM;
 
-struct BBoxRenderer : public IRenderer {
+struct BBoxRenderer : public Renderer {
 
 	struct Vertex {
 		glm::vec3 p;
@@ -21,7 +21,7 @@ struct BBoxRenderer : public IRenderer {
 
 	// TODO get shader from renderer name
 	BBoxRenderer(PointSet &ps) : 
-		IRenderer(Shader(sl::shadersPath("bbox.vert"), sl::shadersPath("bbox.frag"))),
+		Renderer(Shader(sl::shadersPath("bbox.vert"), sl::shadersPath("bbox.frag"))),
 		ps(ps) {
 			setColor(glm::vec3(1.0, 1.0, 1.0));
 		}

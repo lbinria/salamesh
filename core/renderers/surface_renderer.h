@@ -17,7 +17,7 @@ using json = nlohmann::json;
 #include "../element.h"
 using namespace UM;
 
-struct SurfaceRenderer : public IRenderer {
+struct SurfaceRenderer : public Renderer {
 	
 	struct Vertex {
 		// int vertexIndex;
@@ -30,7 +30,7 @@ struct SurfaceRenderer : public IRenderer {
 	};
 
 	SurfaceRenderer(Surface &m) : 
-		IRenderer(Shader(sl::shadersPath("surface.vert"), sl::shadersPath("surface.frag"))),
+		Renderer(Shader(sl::shadersPath("surface.vert"), sl::shadersPath("surface.frag"))),
 		_m(m)
 		{
 			shader.use();

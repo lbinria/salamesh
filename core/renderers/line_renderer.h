@@ -13,7 +13,7 @@ using json = nlohmann::json;
 
 using namespace UM;
 
-struct LineRenderer : public IRenderer {
+struct LineRenderer : public Renderer {
 
 	struct LineComponent {
 		glm::vec3 p;
@@ -27,7 +27,7 @@ struct LineRenderer : public IRenderer {
 	};
 
 	LineRenderer() : 
-		IRenderer(Shader(sl::shadersPath("gizmo_line.vert"), sl::shadersPath("gizmo_line.frag"))) {
+		Renderer(Shader(sl::shadersPath("gizmo_line.vert"), sl::shadersPath("gizmo_line.frag"))) {
 			
 		}
 

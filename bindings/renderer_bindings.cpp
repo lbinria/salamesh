@@ -9,43 +9,43 @@ namespace bindings {
 
 	void RendererBindings::loadBindings(sol::state &lua, IApp &app) {
 
-		sol::usertype<IRenderer> renderer_t = lua.new_usertype<IRenderer>("IRenderer");
+		sol::usertype<Renderer> renderer_t = lua.new_usertype<Renderer>("Renderer");
 
 		renderer_t["visible"] = sol::property(
-			&IRenderer::getVisible,
-			&IRenderer::setVisible
+			&Renderer::getVisible,
+			&Renderer::setVisible
 		);
 
 		renderer_t["color"] = sol::property(
-			&IRenderer::getColor,
-			&IRenderer::setColor
+			&Renderer::getColor,
+			&Renderer::setColor
 		);
 
 		renderer_t["size"] = sol::property(
-			&IRenderer::getMeshSize,
-			&IRenderer::setMeshSize
+			&Renderer::getMeshSize,
+			&Renderer::setMeshSize
 		);
 
 		renderer_t["shrink"] = sol::property(
-			&IRenderer::getMeshShrink,
-			&IRenderer::setMeshShrink
+			&Renderer::getMeshShrink,
+			&Renderer::setMeshShrink
 		);
 
 		renderer_t["corner_visible"] = sol::property(
-			&IRenderer::getCornerVisible,
-			&IRenderer::setCornerVisible
+			&Renderer::getCornerVisible,
+			&Renderer::setCornerVisible
 		);
 
 		renderer_t["attr_repeat"] = sol::property(
-			&IRenderer::getAttrRepeat,
-			&IRenderer::setAttrRepeat
+			&Renderer::getAttrRepeat,
+			&Renderer::setAttrRepeat
 		);
 
-		renderer_t["light"] = sol::writeonly_property(&IRenderer::setLight);
+		renderer_t["light"] = sol::writeonly_property(&Renderer::setLight);
 
 
 		// TODO important missing cases
-		renderer_t.set_function("as", [](sol::this_state s, IRenderer& self, const std::string& typeName) -> sol::object {
+		renderer_t.set_function("as", [](sol::this_state s, Renderer& self, const std::string& typeName) -> sol::object {
 			if (typeName == "LineRenderer") {
 				if (auto r = dynamic_cast<LineRenderer*>(&self)) {
 					return sol::make_object(s, r);
@@ -59,14 +59,14 @@ namespace bindings {
 			return sol::nil;
 		});
 
-		renderer_t.set_function("push", &IRenderer::push);
+		renderer_t.set_function("push", &Renderer::push);
 
 
 
 		sol::usertype<PointSetRenderer> pointSetRenderer_t = lua.new_usertype<PointSetRenderer>(
 			"PointSetRenderer",
 			sol::base_classes, 
-			sol::bases<IRenderer>()
+			sol::bases<Renderer>()
 		);
 
 		pointSetRenderer_t[sol::meta_function::index] = [](PointSetRenderer& self, int i) -> vec3 {
@@ -98,7 +98,7 @@ namespace bindings {
 		sol::usertype<HalfedgeRenderer> halfedgeRenderer_t = lua.new_usertype<HalfedgeRenderer>(
 			"HalfedgeRenderer",
 			sol::base_classes, 
-			sol::bases<IRenderer>()
+			sol::bases<Renderer>()
 		);
 
 		halfedgeRenderer_t["visible"] = sol::property(
@@ -141,7 +141,7 @@ namespace bindings {
 		auto lineRenderer_t = lua.new_usertype<LineRenderer>(
 			"LineRenderer",
 			sol::base_classes, 
-			sol::bases<IRenderer>(),
+			sol::bases<Renderer>(),
 			"auto_update", sol::writeonly_property(&LineRenderer::setAutoUpdate)
 		);
 

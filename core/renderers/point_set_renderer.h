@@ -14,7 +14,7 @@ using json = nlohmann::json;
 
 using namespace UM;
 
-struct PointSetRenderer : public IRenderer {
+struct PointSetRenderer : public Renderer {
 
 	struct Vertex {
 		int vertexIndex;
@@ -23,14 +23,14 @@ struct PointSetRenderer : public IRenderer {
 	};
 
 	PointSetRenderer(PointSet &ps) : 
-		IRenderer(Shader(sl::shadersPath("point.vert"), sl::shadersPath("point.frag"))),
+		Renderer(Shader(sl::shadersPath("point.vert"), sl::shadersPath("point.frag"))),
 		ps(ps) {
 			setPointSize(4.0f); // TODO here use a setting default point size
 			setColor({0.23, 0.85, 0.66}); // TODO here use a setting default point color
 		}
 
 	PointSetRenderer() : 
-		IRenderer(Shader(sl::shadersPath("point.vert"), sl::shadersPath("point.frag"))), ps(*new PointSet()) {
+		Renderer(Shader(sl::shadersPath("point.vert"), sl::shadersPath("point.frag"))), ps(*new PointSet()) {
 			setPointSize(4.0f);
 			setColor({0.23, 0.85, 0.66});
 		}

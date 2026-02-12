@@ -18,7 +18,7 @@ using json = nlohmann::json;
 
 using namespace UM;
 
-struct VolumeRenderer : public IRenderer {
+struct VolumeRenderer : public Renderer {
 
 	struct Vertex {
 		int vertexIndex;
@@ -31,7 +31,7 @@ struct VolumeRenderer : public IRenderer {
 	};
 
 	VolumeRenderer(Volume &m) : 
-		IRenderer(Shader(sl::shadersPath("volume.vert"), sl::shadersPath("volume.frag"))),
+		Renderer(Shader(sl::shadersPath("volume.vert"), sl::shadersPath("volume.frag"))),
 		_m(m)
 		{
 			shader.use();

@@ -407,7 +407,7 @@ struct TriangleInspector : public Script {
 	int nOverlaps = 0;
 
 	// LineRenderer &lineRenderer;
-	IRenderer &lineRenderer;
+	Renderer &lineRenderer;
 	// std::unique_ptr<IRenderer> lineRenderer;
 	// LineRenderer lineRenderer;
 	HBoxes3 hbbox;

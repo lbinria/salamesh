@@ -12,23 +12,23 @@ using json = nlohmann::json;
 
 #include "../helpers.h"
 
-struct IRenderer {
+struct Renderer {
 
 	enum ClippingMode {
 		CELL = 0,
 		STD = 1
 	};
 
-	IRenderer (const IRenderer&) = delete;
-	IRenderer& operator= (const IRenderer&) = delete;
+	Renderer (const Renderer&) = delete;
+	Renderer& operator= (const Renderer&) = delete;
 
-	IRenderer(Shader shader) : 
+	Renderer(Shader shader) : 
 		shader(std::move(shader))
 	{}
 
 	template<typename T>
 	T& as() {
-		static_assert(std::is_base_of_v<IRenderer, T>, "Renderer::as() can only be used with derived classes of Renderer");
+		static_assert(std::is_base_of_v<Renderer, T>, "Renderer::as() can only be used with derived classes of Renderer");
 		auto &x = static_cast<T&>(*this);
 		return x;
 	}

@@ -14,7 +14,7 @@ using json = nlohmann::json;
 
 using namespace UM;
 
-struct HalfedgeRenderer : public IRenderer {
+struct HalfedgeRenderer : public Renderer {
 
 	struct LineVert {
 		int halfedgeIndex;
@@ -25,7 +25,7 @@ struct HalfedgeRenderer : public IRenderer {
 		glm::vec3 bary;
 	};
 
-	using IRenderer::IRenderer;
+	using Renderer::Renderer;
 
 	void init() override;
 	virtual void push() = 0;

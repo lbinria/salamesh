@@ -332,7 +332,7 @@ struct App final : public IApp {
 
 	Camera& getCurrentCamera() override { return *cameras[selectedCamera]; }
 
-	std::shared_ptr<IRenderer> addRenderer(std::string type, std::string name) override {
+	std::shared_ptr<Renderer> addRenderer(std::string type, std::string name) override {
 		assert(!name.empty() && "Cannot add renderer with an empty name.");
 		auto renderer = rendererInstanciator.make(type);
 
@@ -371,14 +371,14 @@ struct App final : public IApp {
 		renderers.clear();
 	}
 
-	IRenderer& getRenderer(std::string name) override {
+	Renderer& getRenderer(std::string name) override {
 		if (renderers.count(name) <= 0)
 			throw std::runtime_error("Renderer " + name + " was not found.");
 		
 		return *renderers[name];
 	}
 
-	std::map<std::string, std::shared_ptr<IRenderer>> getRenderers() override {
+	std::map<std::string, std::shared_ptr<Renderer>> getRenderers() override {
 		return renderers;
 	}
 
@@ -495,7 +495,7 @@ struct App final : public IApp {
 
 	std::map<std::string, std::shared_ptr<Camera>> cameras;
 	std::map<std::string, std::shared_ptr<Model>> models;
-	std::map<std::string, std::shared_ptr<IRenderer>> renderers;
+	std::map<std::string, std::shared_ptr<Renderer>> renderers;
 	std::map<int, std::string> modelNameByIndex;
 
 	std::vector<std::unique_ptr<RenderSurface>> renderSurfaces;
@@ -525,7 +525,7 @@ struct App final : public IApp {
 
 	const Instanciator<Model>& getModelInstanciator() const override { return modelInstanciator; }
 	const Instanciator<Camera>& getCameraInstanciator() const override { return cameraInstanciator; }
-	const Instanciator<IRenderer>& getRendererInstanciator() const override { return rendererInstanciator; }
+	const Instanciator<Renderer>& getRendererInstanciator() const override { return rendererInstanciator; }
 
 	private:
 
@@ -534,6 +534,6 @@ struct App final : public IApp {
 
 	Instanciator<Model> modelInstanciator;
 	Instanciator<Camera> cameraInstanciator;
-	Instanciator<IRenderer> rendererInstanciator;
+	Instanciator<Renderer> rendererInstanciator;
 
 };
