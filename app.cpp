@@ -244,7 +244,8 @@ bool App::setup() {
 	}
 
 	// Quick fix ! No best monitor ? Take arbitrary the first
-	monitor = monitors[0];
+	if (!monitor)
+		monitor = monitors[0];
 
 	const GLFWvidmode* mode = glfwGetVideoMode(monitor);
 
