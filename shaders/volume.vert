@@ -2,14 +2,13 @@
 
 // Vertex attributes
 layout (location = 0) in vec3 aPos;
-layout (location = 1) in float size;
-layout (location = 2) in vec3 normal;
-layout (location = 3) in vec3 aHeights;
+layout (location = 1) in vec3 normal;
+layout (location = 2) in vec3 aHeights;
 
 // Indexes of the primitive this vertices belongs to
-layout (location = 4) in int vertexIndex;
-layout (location = 5) in int facetIndex;
-layout (location = 6) in int cellIndex;
+layout (location = 3) in int vertexIndex;
+layout (location = 4) in int facetIndex;
+layout (location = 5) in int cellIndex;
 
 layout (std140, binding = 0) uniform Matrices
 {

@@ -101,7 +101,6 @@ void VolumeRenderer::init() {
 	#endif
 
 	GLuint positionLocation = glGetAttribLocation(shader.id, "aPos");
-	GLuint sizeLocation = glGetAttribLocation(shader.id, "size");
 	GLuint normalLocation = glGetAttribLocation(shader.id, "normal");
 	GLuint heightsLocation = glGetAttribLocation(shader.id, "aHeights");
 	GLuint facetIndexLocation = glGetAttribLocation(shader.id, "facetIndex");
@@ -113,9 +112,6 @@ void VolumeRenderer::init() {
 
 	glEnableVertexAttribArray(positionLocation);
 	glVertexAttribPointer(positionLocation, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)offsetof(Vertex, position));
-
-	glEnableVertexAttribArray(sizeLocation);
-	glVertexAttribPointer(sizeLocation, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)offsetof(Vertex, size));
 
 	glEnableVertexAttribArray(normalLocation);
 	glVertexAttribPointer(normalLocation, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)offsetof(Vertex, normal));

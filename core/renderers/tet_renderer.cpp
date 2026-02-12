@@ -36,7 +36,6 @@ void TetRenderer::push() {
 				vertices[i] = { 
 					.vertexIndex= v,
 					.position= glm::vec3(p.x, p.y, p.z),
-					.size= 1.f,
 					.normal= glm::vec3(n.x, n.y, n.z),
 					.heights= edge,
 					.facetIndex= f,
