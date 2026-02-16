@@ -4,6 +4,10 @@
 #include "core/cameras/descent_camera.h"
 #include "core/renderers/line_renderer.h"
 
+#include "core/models/polyline_model.h"
+#include "core/models/surface_model.h"
+#include "core/models/volume_model.h"
+
 #include "module_triangle_diagnostic/triangle_inspector.h"
 
 #include <ranges>
@@ -788,7 +792,9 @@ void App::drawGui() {
 				std::cout << "filename: " << filename << ", fullpath: " << fullpath << std::endl;
 				std::cout << "read model..." << std::endl;
 				auto modelName = loadModel(fullpath);
-				focus(modelName);
+				
+				if (!modelName.empty())
+					focus(modelName);
 			}
 		}
 		
@@ -901,6 +907,11 @@ std::string App::loadModel(const std::string& filename, std::string name) {
 
 	if (!success) {
 		model = std::make_unique<HexModel>();
+		success = model->load(filename);
+	}
+
+	if (!success) {
+		model = std::make_unique<PolylineModel>();
 		success = model->load(filename);
 	}
 

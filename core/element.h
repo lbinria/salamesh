@@ -73,6 +73,7 @@ static std::string elementTypeToString(ElementType t) {
 	}
 }
 
+// TODO maybe to constexpr
 // TODO maybe move elsewhere because it is dependent of ultimaille this is a "glue"
 template<typename TMesh>
 static ModelType modelTypeFromMeshType() {

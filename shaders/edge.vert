@@ -27,11 +27,13 @@ void main()
 
     vec3 d = aP1 - aP0;
 
-    vec3 p0 = aP0 - (aP0 - bary) * 0.2;
-    vec3 p1 = aP1 - (aP1 - bary) * 0.2;
+    // vec3 p0 = aP0 - (aP0 - bary) * 0.2;
+    // vec3 p1 = aP1 - (aP1 - bary) * 0.2;
+    vec3 p0 = aP0 - (aP0 - bary) * 0.0;
+    vec3 p1 = aP1 - (aP1 - bary) * 0.0;
 
-    p0 += d * 0.1;
-    p1 -= d * 0.1;
+    // p0 += d * 0.1;
+    // p1 -= d * 0.1;
 
     // 1) World→view→clip for both endpoints
     vec4 c0 = projection * view * model * vec4(p0, 1.0);

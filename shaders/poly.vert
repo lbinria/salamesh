@@ -54,10 +54,10 @@ void main()
    vec4 clip = pvm * vec4(world, 1.0);
    gl_Position = clip;
 
-   float h = 0; // TODO compute h
+   float h = 0;
 
+   // Compute triangle height for from barycenter (bary on localIndex=0)
    if (localIndex == 0) {
-      // Compute triangle height for current ref point
       // To clip space
       vec4 clip0  = pvm * vec4(p0, 1.0);
       vec4 clip1  = pvm * vec4(p1, 1.0);

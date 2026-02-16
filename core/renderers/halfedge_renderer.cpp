@@ -181,6 +181,36 @@ void VolumeHalfedgeRenderer::push() {
 	glBufferData(GL_ARRAY_BUFFER, nverts * sizeof(LineVert), vertices.data(), GL_STATIC_DRAW);
 }
 
+void PolylineRenderer::push() {
+	// Create vertices
+	/* 6 vertices per edges : 2 triangles for a rect with each 3 vertices */
+	std::vector<LineVert> vertices(_m.nedges() * 6); 
+
+	for (auto &e : _m.iter_edges()) {
+
+		vec3 p0 = e.from().pos();
+		vec3 p1 = e.to().pos();
+
+		LineVert lv0{e, sl::um2glm(p0), sl::um2glm(p1), -1.f, 0.f};
+		LineVert lv1{e, sl::um2glm(p0), sl::um2glm(p1), +1.f, 0.f};
+		LineVert lv2{e, sl::um2glm(p0), sl::um2glm(p1), -1.f, 1.f};
+		LineVert lv3{e, sl::um2glm(p0), sl::um2glm(p1), +1.f, 1.f};
+
+		vertices[e * 6 + 0] = lv0;
+		vertices[e * 6 + 1] = lv1;
+		vertices[e * 6 + 2] = lv2;
+
+		vertices[e * 6 + 3] = lv2;
+		vertices[e * 6 + 4] = lv3;
+		vertices[e * 6 + 5] = lv1;
+	}
+
+	glBindVertexArray(VAO);
+	glBindBuffer(GL_ARRAY_BUFFER, VBO);
+	glBufferData(GL_ARRAY_BUFFER, vertices.size() * sizeof(LineVert), vertices.data(), GL_STATIC_DRAW);
+	nverts = vertices.size();
+}
+
 void HalfedgeRenderer::clear() {
 	glBindVertexArray(VAO);
 	glBindBuffer(GL_ARRAY_BUFFER, VBO);

@@ -34,6 +34,7 @@ set(SOURCES
     renderers/halfedge_renderer.cpp renderers/halfedge_renderer.h
     renderers/bbox_renderer/bbox_renderer.cpp renderers/bbox_renderer/bbox_renderer.h
     renderers/clipping_renderer.cpp renderers/clipping_renderer.h
+    renderers/polyline_renderer.cpp renderers/polyline_renderer.h
     renderers/surface_renderer.cpp renderers/surface_renderer.h
     renderers/volume_renderer.cpp renderers/volume_renderer.h
     renderers/tri_renderer.cpp renderers/tri_renderer.h
@@ -42,6 +43,7 @@ set(SOURCES
     renderers/hex_renderer.cpp renderers/hex_renderer.h
 
     models/model.h models/model.cpp
+    models/polyline_model.h
     models/surface_model.h
     models/volume_model.h
 

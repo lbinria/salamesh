@@ -114,3 +114,18 @@ struct VolumeHalfedgeRenderer : public HalfedgeRenderer {
 
 	Volume &_m;
 };
+
+struct PolylineRenderer : public HalfedgeRenderer {
+
+		PolylineRenderer(PolyLine &m) : 
+		HalfedgeRenderer(Shader(sl::shadersPath("edge.vert"), sl::shadersPath("edge.frag"))),
+		_m(m) {
+			setThickness(2.0f);
+			setInsideColor({0.0, 0.97, 0.73});
+			setOutsideColor({0.0, 0.6, 0.45});
+		}
+
+	void push() override;
+
+	PolyLine &_m;
+};
