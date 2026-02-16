@@ -45,6 +45,26 @@ struct HalfedgeRenderer : public Renderer {
 		edgeSize = size;
 	}
 
+	float getSpacing() const {
+		return halfedgeSpacing;
+	}
+
+	void setSpacing(float spacing) {
+		shader.use();
+		shader.setFloat("spacing", spacing);
+		halfedgeSpacing = spacing;
+	}
+
+	float getPadding() const {
+		return halfedgePadding;
+	}
+
+	void setPadding(float padding) {
+		shader.use();
+		shader.setFloat("padding", padding);
+		halfedgePadding = padding;
+	}
+
 	glm::vec3 getInsideColor() const {
 		return edgeInsideColor;
 	}
@@ -68,6 +88,8 @@ struct HalfedgeRenderer : public Renderer {
 	private:
 
 	float edgeSize;
+	float halfedgeSpacing = 0;
+	float halfedgePadding = 0;
 	glm::vec3 edgeInsideColor;
 	glm::vec3 edgeOutsideColor;
 

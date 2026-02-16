@@ -117,6 +117,14 @@ namespace bindings {
 			&HalfedgeRenderer::getThickness,
 			&HalfedgeRenderer::setThickness
 		);
+		halfedgeRenderer_t["spacing"] = sol::property(
+			&HalfedgeRenderer::getSpacing,
+			&HalfedgeRenderer::setSpacing
+		);
+		halfedgeRenderer_t["padding"] = sol::property(
+			&HalfedgeRenderer::getPadding,
+			&HalfedgeRenderer::setPadding
+		);
 
 
 		auto line_t = lua.new_usertype<LineRenderer::Line>(

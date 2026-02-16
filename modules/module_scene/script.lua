@@ -244,6 +244,18 @@ function draw_model_properties(model, k, view)
 					model.edges.thickness = new_edge_thickness
 				end
 
+				local sel_edge_spacing, new_edge_spacing = imgui.SliderFloat("Edge spacing", model.edges.spacing, 0, 1)
+				if (sel_edge_spacing) then 
+					print("Change edge spacing: " .. tostring(new_edge_spacing))
+					model.edges.spacing = new_edge_spacing
+				end
+
+				local sel_edge_padding, new_edge_padding = imgui.SliderFloat("Edge padding", model.edges.padding, 0, 1)
+				if (sel_edge_padding) then 
+					print("Change edge padding: " .. tostring(new_edge_padding))
+					model.edges.padding = new_edge_padding
+				end
+
 				local sel_edge_inside_color, new_edge_inside_color = imgui.ColorEdit3("Edge inside color", model.edges.inside_color)
 				if (sel_edge_inside_color) then 
 					print("Change edge inside color: " .. tostring(new_edge_inside_color))

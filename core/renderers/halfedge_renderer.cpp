@@ -138,9 +138,16 @@ void VolumeHalfedgeRenderer::push() {
 
 	for (auto &c : _m.iter_cells()) {
 		int nf = _m.nfacets_per_cell();
+
+		// vec3 b;
+		// for (int lv = 0; lv < ; ++lv) {
+		// 	b += f.vertex(lv).pos();
+		// }
+		// b /= facetSize;
+
 		for (int f = 0; f < nf; ++f) {
 			int facetSize = _m.facet_size(f);
-			
+
 			// TODO here just manage tet / hex, should manage prism, pyramid, etc...
 			// The best is to see if we can make refCell useless
 			int refCell = facetSize == 3 ? 0 : 1;
@@ -150,17 +157,19 @@ void VolumeHalfedgeRenderer::push() {
 				auto lc1 = reference_cells[refCell].facets[(i + 1) % facetSize + facetSize * f];
 				auto v0 = c.corner(lc0).vertex();
 				auto v1 = c.corner(lc1).vertex();
-				auto p0 = v0.pos();
-				auto p1 = v1.pos();
+				vec3 p0 = v0;
+				vec3 p1 = v1;
+
+				glm::vec3 bary = sl::um2glm((p0 + p1) * .5);
 				
 				// int halfedgeIdx = c * 24 + f * i;
 				int halfedgeIdx = c * (nf * facetSize) + f * i;
 
 				// build the 4 “corner” vertices
-				LineVert lv0{halfedgeIdx, glm::vec3(p0.x, p0.y, p0.z), glm::vec3(p1.x, p1.y, p1.z), -1.0f, 0.0f};  // corner: start, left side
-				LineVert lv1{halfedgeIdx, glm::vec3(p0.x, p0.y, p0.z), glm::vec3(p1.x, p1.y, p1.z), +1.0f, 0.0f};  // corner: start, right side
-				LineVert lv2{halfedgeIdx, glm::vec3(p0.x, p0.y, p0.z), glm::vec3(p1.x, p1.y, p1.z), -1.0f, 1.0f};  // corner: end,   left side
-				LineVert lv3{halfedgeIdx, glm::vec3(p0.x, p0.y, p0.z), glm::vec3(p1.x, p1.y, p1.z), +1.0f, 1.0f};  // corner: end,   right side
+				LineVert lv0{halfedgeIdx, glm::vec3(p0.x, p0.y, p0.z), glm::vec3(p1.x, p1.y, p1.z), -1.0f, 0.0f, bary};  // corner: start, left side
+				LineVert lv1{halfedgeIdx, glm::vec3(p0.x, p0.y, p0.z), glm::vec3(p1.x, p1.y, p1.z), +1.0f, 0.0f, bary};  // corner: start, right side
+				LineVert lv2{halfedgeIdx, glm::vec3(p0.x, p0.y, p0.z), glm::vec3(p1.x, p1.y, p1.z), -1.0f, 1.0f, bary};  // corner: end,   left side
+				LineVert lv3{halfedgeIdx, glm::vec3(p0.x, p0.y, p0.z), glm::vec3(p1.x, p1.y, p1.z), +1.0f, 1.0f, bary};  // corner: end,   right side
 
 				vertices.push_back(lv0);
 				vertices.push_back(lv1);
@@ -191,10 +200,12 @@ void PolylineRenderer::push() {
 		vec3 p0 = e.from().pos();
 		vec3 p1 = e.to().pos();
 
-		LineVert lv0{e, sl::um2glm(p0), sl::um2glm(p1), -1.f, 0.f};
-		LineVert lv1{e, sl::um2glm(p0), sl::um2glm(p1), +1.f, 0.f};
-		LineVert lv2{e, sl::um2glm(p0), sl::um2glm(p1), -1.f, 1.f};
-		LineVert lv3{e, sl::um2glm(p0), sl::um2glm(p1), +1.f, 1.f};
+		glm::vec3 bary = sl::um2glm((p0 + p1) * .5);
+
+		LineVert lv0{e, sl::um2glm(p0), sl::um2glm(p1), -1.f, 0.f, bary};
+		LineVert lv1{e, sl::um2glm(p0), sl::um2glm(p1), +1.f, 0.f, bary};
+		LineVert lv2{e, sl::um2glm(p0), sl::um2glm(p1), -1.f, 1.f, bary};
+		LineVert lv3{e, sl::um2glm(p0), sl::um2glm(p1), +1.f, 1.f, bary};
 
 		vertices[e * 6 + 0] = lv0;
 		vertices[e * 6 + 1] = lv1;
