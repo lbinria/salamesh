@@ -47,16 +47,16 @@ struct TriangleInspector : public Script {
 		pointRenderer.setHoverColor(glm::vec3(1.f, 1.f, 1.f));
 		pointRenderer.setSelectColor(glm::vec3(0.88f, 0.06f, 0.01f));
 
-		auto &meshRenderer = triModel.getMeshRenderer();
-		meshRenderer.setVisible(true);
+		auto meshRenderer = triModel.getMeshRenderer();
+		meshRenderer->setVisible(true);
 		// Highlights
-		meshRenderer.setHoverColor(glm::vec3(1.f, 1.f, 1.f));
-		meshRenderer.setSelectColor(glm::vec3(1.f, 0.06f, 0.51f));
+		meshRenderer->setHoverColor(glm::vec3(1.f, 1.f, 1.f));
+		meshRenderer->setSelectColor(glm::vec3(1.f, 0.06f, 0.51f));
 		// Gfx
-		meshRenderer.setVisible(true);
+		meshRenderer->setVisible(true);
 		// meshRenderer.setColorMode(ColorMode::COLOR);
-		meshRenderer.setColor(glm::vec3(1.f, 1.f, 1.f));
-		meshRenderer.setMeshSize(0.5f);
+		meshRenderer->setColor(glm::vec3(1.f, 1.f, 1.f));
+		meshRenderer->setMeshSize(0.5f);
 
 		auto edgeRenderer = triModel.getEdgesRenderer();
 		if (edgeRenderer) {

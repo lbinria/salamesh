@@ -921,8 +921,11 @@ std::string App::loadModel(const std::string& filename, std::string name) {
 
 	// Setup default gfx
 	model->setLight(true);
-	model->getMeshRenderer().setMeshShrink(0.f);
-	model->getMeshRenderer().setMeshSize(0.0f);
+	auto meshRenderer = model->getMeshRenderer();
+	if (meshRenderer) {
+		meshRenderer->setMeshShrink(0.f);
+		meshRenderer->setMeshSize(0.0f);
+	}
 	
 	auto edges = model->getEdgesRenderer();
 	if (edges)

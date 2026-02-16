@@ -467,12 +467,19 @@ struct Model {
 		return nullptr;
 	}
 
-	Renderer& getMeshRenderer() const {
-		// Warning, I do that here because I have the garantee that _meshRenderer is always initialized
-		// If _meshRenderer is uninitialized, this will throw a segfault
-		// (I don't want to transfer ownership)
-		// Maybe there is a better way to do that
-		return *_renderers.at("mesh_renderer");
+	// Renderer& getMeshRenderer() const {
+	// 	// Warning, I do that here because I have the garantee that _meshRenderer is always initialized
+	// 	// If _meshRenderer is uninitialized, this will throw a segfault
+	// 	// (I don't want to transfer ownership)
+	// 	// Maybe there is a better way to do that
+	// 	return *_renderers.at("mesh_renderer");
+	// }
+
+	std::shared_ptr<Renderer> getMeshRenderer() const {
+		if(_renderers.contains("mesh_renderer"))
+			return _renderers.at("mesh_renderer");
+		
+		return nullptr;
 	}
 
 	bool hasRenderer(std::string name) {
