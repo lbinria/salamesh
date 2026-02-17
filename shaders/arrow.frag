@@ -41,6 +41,9 @@ uniform int colormapElement[3] = {-1, -1, -1};
 uniform int highlightElement;
 uniform int filterElement;
 
+in mat4 fragView;
+in mat4 plane;
+
 vec3 encode_id(int id) {
     int r = id & 0x000000FF;
     int g = (id & 0x0000FF00) >> 8;
@@ -122,27 +125,168 @@ void clip(inout vec3 col) {
    }
 }
 
-vec4 trace(inout vec3 col) {
-    // dist from border: center is u=0.5
-    float d = abs(vLocalUV.x - 0.5) - 0.5;  
-    float e = fwidth(d);
-    float t = smoothstep(e, -e, d);
+// vertical cylinder
+float sdCylinder( vec3 p, float h, float r )
+{
+  vec2 d = abs(vec2(length(p.xz),p.y)) - vec2(r,h);
+  return min(max(d.x,d.y),0.0) + length(max(d,0.0));
+}
 
-    // optional hard discard of outside
-    if(t<0.01) discard;
-
-    // Point coord from [0, 1] to [-1, 1]
-    vec2 V = 2.0 * (gl_PointCoord - vec2(0.5, 0.5));
+float sdCone( vec3 p, vec2 c, float h )
+{
+  // c is the sin/cos of the angle, h is height
+  // Alternatively pass q instead of (c,h),
+  // which is the point at the base in 2D
+  vec2 q = h*vec2(c.x/c.y,-1.0);
     
-    // Distance from line center: center is u=0.5
-    float dc = abs(vLocalUV.x - 0.5);
-    float z = sqrt(dc);
-    vec3 N = vec3(V.x, -V.y, z);
+  vec2 w = vec2( length(p.xz), p.y );
+  vec2 a = w - q*clamp( dot(w,q)/dot(q,q), 0.0, 1.0 );
+  vec2 b = w - q*vec2( clamp( w.x/q.x, 0.0, 1.0 ), 1.0 );
+  float k = sign( q.y );
+  float d = min(dot( a, a ),dot(b, b));
+  float s = max( k*(w.x*q.y-w.y*q.x),k*(w.y-q.y)  );
+  return sqrt(d)*sign(s);
+}
 
-    // Update depth according to radius
-    gl_FragDepth = gl_FragCoord.z - 0.00005 * N.z;
+float map( in vec3 pos )
+{
+    float coneHeight = 1.;
+    float coneRadius = .5;
+    //vec3 conePos = vec3(cos(iTime),sin(iTime), 0.1);
+    vec3 arrowPos = vec3(0.,0, 0.);
+    vec3 conePos = vec3(0., 1., 0.);
+    vec3 cylinderPos = vec3(0., -0.0, 0.);
+    //float sdfCone = sdCone(pos, conePos, coneHeight, coneRadius);
+    float sdfCone = sdCone(pos - (arrowPos + conePos), vec2(sin(radians(25.)), cos(radians(25.))), 0.6);
+    float sdfCylinder = sdCylinder(pos - (arrowPos + cylinderPos), 0.4, 0.2);
+    return min(sdfCylinder, sdfCone);
+    //return sdfCone;
+}
 
-    return vec4(N, t);
+vec3 calcNormal(vec3 hp) {
+    // Normal calculation using gradient approximation
+    //float eps = 0.01;
+    const float eps = 0.0005;
+    return normalize(vec3(
+        map(hp + vec3(eps, 0, 0)) - 
+        map(hp - vec3(eps, 0, 0)),
+        map(hp + vec3(0, eps, 0)) - 
+        map(hp - vec3(0, eps, 0)),
+        map(hp + vec3(0, 0, eps)) - 
+        map(hp - vec3(0, 0, eps))
+    )) /*/ (2.0 * eps)*/;
+}
+
+
+vec3 trace(vec2 uv, inout vec3 col) {
+
+    // // Combined rotation and initial camera position
+    // vec3 ro = vec3(0, 0, 1.);
+    
+    // vec3 ta = vec3( 0.0, 0.0, 0.0 );
+    // // camera matrix
+    // vec3 ww = normalize( ta - ro );
+    // vec3 uu = normalize( cross(ww,vec3(0.0,1.0,0.0) ) );
+    // vec3 vv = normalize( cross(uu,ww));
+
+    // // Orthographic ray origin 
+    // // Scale uv to control view size (lower value = zoomed in)
+    // float orthoScale = 1.0; // Adjust this to zoom in/out
+    // ro = ro + uv.x * uu * orthoScale + uv.y * vv * orthoScale;
+    // // Orthographic ray direction (always looking forward)
+    // vec3 rd = ww;
+
+    // vec3 ro = vec3(uv, -1.);
+    // vec3 rd = vec3(0,0,1.);
+
+	mat4 simulatedView = mat4(
+        vec4(1, 0, 0, 0),   // Right vector (X-axis)
+        vec4(0, 1, 0, 0),   // Up vector (Y-axis)
+        vec4(0, 0, -1, 0),  // Look vector (negated for right-handed system)
+        vec4(0, 0, 0, 1)    // Translation row (no translation)
+    );
+
+	mat4 v = mat4(
+		fragView[0].xyz, 0,
+		fragView[1].xyz, 0,
+		fragView[2].xyz, 0,
+		0, 0, 0, 1
+	);
+
+	// mat3 pp = mat3(
+	// 	plane[0].xyz, 
+	// 	plane[1].xyz, 
+	// 	plane[2].xyz
+	// );
+
+	// Rotate 90
+	// uv = vec2(uv.y, uv.x);
+
+    vec3 ro = vec3(uv, -1.);
+    vec3 rd = vec3(0,0,1.);
+
+
+
+	mat4 x = simulatedView * plane;
+	// mat4 x = simulatedView;
+	// mat4 x = v;
+    ro = (x * vec4(ro, 1.0)).xyz;
+    rd = (x * vec4(rd, 0.0)).xyz;
+
+
+
+	// mat3 x = v * pp;
+    // ro = (x * ro).xyz;
+    // rd = (x * rd).xyz;
+
+
+    // raymarch
+    const float tmax = 3.0;
+    float t = 0.0;
+    for( int i=0; i<256; i++ )
+    {
+        vec3 pos = ro + t*rd;
+        float h = map(pos);
+        if( h<0.0001 || t>tmax ) break;
+        t += h;
+    }
+
+    // shading/lighting	
+    if( t<tmax )
+    {
+        vec3 pos = ro + t*rd;
+        // vec3 nor = calcNormal(pos);
+        
+		vec3 N = calcNormal(pos);
+        float dif = clamp( dot(N,vec3(0.57703, 0.12, -0.43)), 0.0, 1.0 );
+        float amb = 0.5 + 0.5*dot(N,vec3(0.0,1.0,0.0));
+        //col = vec3(0.2,0.3,0.4)*amb + vec3(0.8,0.7,0.5)*dif;
+		//col = vec3(0.2,0.3,0.4);
+		return N;
+    } else {
+		discard;
+	}
+
+    // // dist from border: center is u=0.5
+    // float d = abs(vLocalUV.x - 0.5) - 0.5;  
+    // float e = fwidth(d);
+    // float t = smoothstep(e, -e, d);
+
+    // // optional hard discard of outside
+    // if(t<0.01) discard;
+
+    // // Point coord from [0, 1] to [-1, 1]
+    // vec2 V = 2.0 * (gl_PointCoord - vec2(0.5, 0.5));
+    
+    // // Distance from line center: center is u=0.5
+    // float dc = abs(vLocalUV.x - 0.5);
+    // float z = sqrt(dc);
+    // vec3 N = vec3(V.x, -V.y, z);
+
+    // // Update depth according to radius
+    // gl_FragDepth = gl_FragCoord.z - 0.00005 * N.z;
+
+    // return vec4(N, t);
 }
 
 void highlight(inout vec3 col) {
@@ -163,7 +307,7 @@ void highlight(inout vec3 col) {
     }
 }
 
-void shading(inout vec3 col, vec3 N, float t) {
+void shading(inout vec3 col, vec3 N) {
     float light = 1. - dot(N, vec3(0.35,0.45,1.)) /** .5 + .5*/;
     col *= light * 0.5 + 0.5;
 }
@@ -201,11 +345,15 @@ void main()
     _filter(col);
     clip(col);
 
-    vec4 Nt = trace(col);
-    vec3 N = vec3(Nt);
-    float t = Nt.w;
+	
+	vec2 uv = vLocalUV;
+    vec3 N = trace(uv, col);
+    
+	
+	// vec3 N = vec3(Nt);
+    // float t = Nt.w;
 
-    col = mix(uColorOutside, uColorInside, t);
+    // col = mix(uColorOutside, uColorInside, t);
 
     // Show colormap data if activated
     vec4 c[3];
@@ -224,7 +372,7 @@ void main()
     }
 
     highlight(col);
-    shading(col, N, t);
+    shading(col, N);
 
     FragColor = vec4(col, 1.);
 }
