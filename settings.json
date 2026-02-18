@@ -4,7 +4,8 @@
 		"modules/module_infos",
 		"modules/module_scene",
 		"modules/module_inspector",
-		"modules/module_snapshots"
+		"modules/module_snapshots",
+		"/home/tex/Projects/salamesh_overlap_diagnostic_module/build"
 	],
 	"scene": {
 		"background_color": "#ffffff"

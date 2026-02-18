@@ -1385,6 +1385,8 @@ void App::clearScene() {
 	clearColormaps();
 	// TODO clear selected color map... elements etc... layers...
 	notifySceneCleared();
+
+	setNavigationPath({});
 }
 
 void App::loadState(json &j, const std::string path) {
