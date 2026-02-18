@@ -87,33 +87,10 @@ void main()
 
 
 
-	// vec3 rt = normalize(p1 - p0);
-	// vec3 up = normalize(cross(rt, vec3(0.,1.,0.)));
-	// vec3 fw = normalize(cross(up, rt));
-	// vec3 center = (p0 + p1) * .5;
-	// // plane = mat4(
-	// // 	vec4(rt, 0),
-	// // 	vec4(up, 0),
-	// // 	vec4(fw, 0),
-	// // 	// vec4(center, 1.)
-	// // 	vec4(0, 0, 0, 1.)
-	// // );
-	// plane = mat4(
-	// 	vec4(fw, 0),
-	// 	vec4(up, 0),
-	// 	vec4(rt, 0),
-	// 	// vec4(center, 1.)
-	// 	vec4(0, 0, 0, 1.)
-	// );
-
-	// vec3 invBase3 = mix(p1, p0, aEnd);
-	vec3 dir3 = normalize(p1 - p0);
-	// vec3 dir3 = normalize(invBase3 - gl_Position.xyz);
-
-	vec3 rt = vec3(abs(dir3.x), 0, 0);
-	vec3 up = vec3(0, abs(dir3.y), 0);
+	vec3 rt = normalize(p1 - p0);
+	vec3 up = normalize(cross(rt, vec3(0.,1.,0.)));
 	vec3 fw = normalize(cross(up, rt));
-	
+	vec3 center = (p0 + p1) * .5;
 	plane = mat4(
 		vec4(rt, 0),
 		vec4(up, 0),
@@ -122,9 +99,8 @@ void main()
 		vec4(0, 0, 0, 1.)
 	);
 
+
     // // 9) build local UV for shading:
-    // //    u = side→ 0 at -1, 1 at +1  ;  v = along the segment
-    // vLocalUV = vec2( (aSide + 1.0)*0.5, aEnd );
     vLocalUV = vec2( aSide, aEnd * 2. - 1. );
 
 	fragView = view;

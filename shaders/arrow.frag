@@ -226,8 +226,8 @@ vec3 trace(vec2 uv, inout vec3 col) {
     vec3 rd = vec3(0,0,1.);
 
 
-
-	mat4 x = simulatedView * plane;
+	mat4 x = simulatedView;
+	// mat4 x = simulatedView * plane;
 	// mat4 x = simulatedView;
 	// mat4 x = v;
     ro = (x * vec4(ro, 1.0)).xyz;
