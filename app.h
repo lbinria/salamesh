@@ -95,6 +95,10 @@ struct App final : public IApp {
 		assert(!name.empty() && "Cannot add model with an empty name.");
 		auto model = modelInstanciator.make(type);
 
+		// Check whether renderer already exists
+		if (models.contains(name))
+			return models[name];
+
 		if (!model)
 			return nullptr;
 		
@@ -268,6 +272,10 @@ struct App final : public IApp {
 
 		auto camera = cameraInstanciator.make(type);
 
+		// Check whether renderer already exists
+		if (cameras.contains(name))
+			return cameras[name];
+
 		if (!camera)
 			return nullptr;
 
@@ -334,6 +342,11 @@ struct App final : public IApp {
 
 	std::shared_ptr<Renderer> addRenderer(std::string type, std::string name) override {
 		assert(!name.empty() && "Cannot add renderer with an empty name.");
+
+		// Check whether renderer already exists
+		if (renderers.contains(name))
+			return renderers[name];
+
 		auto renderer = rendererInstanciator.make(type);
 
 		if (!renderer)
