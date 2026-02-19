@@ -445,25 +445,24 @@ struct App final : public IApp {
 	}
 
 	void setNavigationPath(std::vector<std::string> path) override {
-		notifyNavigationPathChanged(navPath, path);
+		auto oldPath = navPath;
 		navPath = path;
+		notifyNavigationPathChanged(oldPath, navPath);
 	}
 
 	void addNavigationPath(std::string pathComponent) {
-		std::vector<std::string> newPath(navPath);
-		newPath.push_back(pathComponent);
-		notifyNavigationPathChanged(navPath, newPath);
-		navPath = newPath;
+		auto oldPath = navPath;
+		navPath.push_back(pathComponent);
+		notifyNavigationPathChanged(oldPath, navPath);
 	}
 
 	void topNavigationPath() override {
 		if (navPath.size() <= 0)
 			return;
 
-		auto newPath = navPath;
-		newPath.erase(newPath.end() - 1);
-		notifyNavigationPathChanged(navPath, newPath);
-		navPath = newPath;
+		auto oldPath = navPath;
+		navPath.erase(navPath.end() - 1);
+		notifyNavigationPathChanged(oldPath, navPath);
 	}
 
 	std::string getNavigationPathString() override {

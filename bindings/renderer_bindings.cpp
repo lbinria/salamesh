@@ -154,7 +154,9 @@ namespace bindings {
 		);
 
 		lineRenderer_t.set_function("add_line", &LineRenderer::addLine);
+		lineRenderer_t.set_function("add_lines", &LineRenderer::addLines);
 		lineRenderer_t.set_function("clear_lines", &LineRenderer::clearLines);
+		lineRenderer_t.set_function("push", &LineRenderer::push);
 
 	}
 }

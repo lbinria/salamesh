@@ -741,9 +741,9 @@ void App::setupLayout() {
 		}
 
 
-		ImGui::Begin("Bot Bar");
-		ImGui::Text("bot bar");
-		ImGui::End();
+		// ImGui::Begin("Bot Bar");
+		// ImGui::Text("bot bar");
+		// ImGui::End();
 
 
 	}
@@ -948,6 +948,7 @@ std::string App::loadModel(const std::string& filename, std::string name) {
 		s->modelLoaded(modelName);
 	}
 
+	focus(modelName);
 	return modelName;
 }
 

@@ -53,6 +53,13 @@ struct LineRenderer : public Renderer {
 			push();
 	}
 
+	void addLines(std::vector<Line> allLines) {
+		lines.insert(lines.end(), allLines.begin(), allLines.end());
+
+		if (autoUpdate)
+			push();
+	}
+
 	// TODO removeLine by guid / idx / range
 
 	bool getAutoUpdate() { return autoUpdate; }
