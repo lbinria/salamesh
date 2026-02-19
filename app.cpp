@@ -1362,6 +1362,19 @@ void App::saveState(const std::string filename) {
 		c->saveState(j["cameras"][k]);
 	}
 
+	// TODO important save renderer states
+
+	// TODO important save colormaps
+
+	// Save navigation path
+	j["nav_path"] = navPath;
+
+	// Save misc
+	j["model_name_by_index"] = json::object();
+	for (auto &[k, m] : modelNameByIndex) {
+		j["model_name_by_index"][std::to_string(k)] = m;
+	}
+
 	std::ofstream ofs(filename);
 	if (!ofs.is_open()) {
 		std::cerr << "Failed to open file for saving state: " << filename << std::endl;
@@ -1428,6 +1441,15 @@ void App::loadState(json &j, const std::string path) {
 	cull_mode = j["cull_mode"].get<int>();
 	setSelectedModel(j["selected_model"].get<std::string>());
 	setSelectedCamera(j["selected_camera"].get<std::string>());
+
+	// Save navigation path
+	setNavigationPath(j["nav_path"].get<std::vector<std::string>>());
+
+	// Save misc
+	for (auto &[idx, jModelName]: j["model_name_by_index"].items()) {
+		std::string modelName = jModelName;
+		modelNameByIndex[std::stoi(idx)] = modelName;
+	}
 
 	std::cout << "State loaded successfully." << std::endl;
 }
