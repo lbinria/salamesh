@@ -209,5 +209,8 @@ namespace bindings {
 		app_type["model_instanciator"] = sol::readonly_property(&IApp::getModelInstanciator);
 		app_type["camera_instanciator"] = sol::readonly_property(&IApp::getCameraInstanciator);
 		app_type["renderer_instanciator"] = sol::readonly_property(&IApp::getRendererInstanciator);
+
+
+		app_type["is_debug"] = sol::readonly_property(&IApp::isDebug);
 	}
 }

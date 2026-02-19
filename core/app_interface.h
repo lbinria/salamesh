@@ -161,6 +161,7 @@ struct IApp {
 	virtual void loadModule(fs::path modulePath) = 0;
 
 	virtual bool isUIHovered() const = 0;
+	virtual bool isDebug() const = 0;
 
 	virtual const Instanciator<Model>& getModelInstanciator() const = 0;
 	virtual const Instanciator<Camera>& getCameraInstanciator() const = 0;

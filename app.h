@@ -479,6 +479,14 @@ struct App final : public IApp {
 
 	bool isUIHovered() const override { return _isUIHovered; }
 
+	bool isDebug() const override {
+		#ifdef DEBUG
+		return true;
+		#else 
+		return false;
+		#endif
+	}
+
 	private:
 	Args args;
 
@@ -540,7 +548,6 @@ struct App final : public IApp {
 	const Instanciator<Camera>& getCameraInstanciator() const override { return cameraInstanciator; }
 	const Instanciator<Renderer>& getRendererInstanciator() const override { return rendererInstanciator; }
 
-	private:
 
 	// Current navigation path of the app
 	std::vector<std::string> navPath;
