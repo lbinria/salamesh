@@ -100,9 +100,16 @@ struct IApp {
 	virtual bool hasModels() = 0;
 	virtual void clearModels() = 0;
 
+
 	virtual std::vector<std::shared_ptr<Model>> getChildrenOf(std::shared_ptr<Model> model) = 0;
 	virtual std::string getSelectedModel() = 0;
 	virtual bool setSelectedModel(std::string name) = 0;
+	virtual void focus(std::string modelName) = 0;
+
+	virtual std::string getModelNameByIndex(int index) = 0;
+	virtual int getModelIndexByName(std::string name) = 0;
+
+
 	virtual std::string loadModel(const std::string& filename, std::string name = "") = 0;
 
 	virtual void addColormap(const std::string name, const std::string filename) = 0;

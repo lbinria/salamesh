@@ -135,8 +135,6 @@ struct App final : public IApp {
 		return *models[name];
 	}
 
-	void focus(std::string modelName);
-
 	void addColormap(const std::string name, const std::string filename) override;
 	void removeColormap(const std::string name) override;
 	void clearColormaps() override {
@@ -230,6 +228,10 @@ struct App final : public IApp {
 		Model::clearIndex();
 	}
 
+	inline std::string getSelectedModel() override {
+		return selectedModel;
+	}
+
 	bool setSelectedModel(std::string name) override {
 		if (name.empty())
 			return false;
@@ -245,9 +247,8 @@ struct App final : public IApp {
 		return true;
 	}
 
-	inline std::string getSelectedModel() override {
-		return selectedModel;
-	}
+	void focus(std::string modelName) override;
+
 
 	inline Model& getCurrentModel() override {
 		return *models[selectedModel];
@@ -266,6 +267,20 @@ struct App final : public IApp {
 
 		return nullptr;
 	}
+
+	std::string getModelNameByIndex(int index) override {
+		return modelNameByIndex[index];
+	}
+
+	int getModelIndexByName(std::string name) override {
+		for (auto &[i, modelName] : modelNameByIndex) {
+			if (modelName == name) {
+				return i;
+			}
+		}
+		return -1;
+	}
+	
 
 	std::shared_ptr<Camera> addCamera(std::string type, std::string name) override {
 		assert(!name.empty() && "Cannot add camera with an empty name.");

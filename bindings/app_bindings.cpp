@@ -137,6 +137,11 @@ namespace bindings {
 		app_type["hovered_model"] = sol::readonly_property(&IApp::getHoveredModel);
 
 		app_type["selected_model"] = sol::property(&IApp::getSelectedModel, &IApp::setSelectedModel);
+		app_type.set_function("focus", &IApp::focus);
+
+		app_type.set_function("get_model_name_by_index", &IApp::getModelNameByIndex);
+		app_type.set_function("get_model_index_by_name", &IApp::getModelIndexByName);
+
 
 		app_type.set_function("add_camera", &IApp::addCamera);
 		app_type.set_function("remove_camera", &IApp::removeCamera);
