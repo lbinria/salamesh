@@ -456,8 +456,7 @@ void App::init() {
 		sl::toLower(ext);
 
 		if (accepted.contains(ext)) {
-			auto modelName = loadModel(p.string());
-			focus(modelName);
+			loadModel(p.string());
 		}
 		else if (p.extension() == ".lua") {
 			std::cout << "load script: " << p.string() << std::endl;
@@ -791,10 +790,7 @@ void App::drawGui() {
 				std::string fullpath = kv.second;
 				std::cout << "filename: " << filename << ", fullpath: " << fullpath << std::endl;
 				std::cout << "read model..." << std::endl;
-				auto modelName = loadModel(fullpath);
-				
-				if (!modelName.empty())
-					focus(modelName);
+				loadModel(fullpath);
 			}
 		}
 		
@@ -948,7 +944,10 @@ std::string App::loadModel(const std::string& filename, std::string name) {
 		s->modelLoaded(modelName);
 	}
 
-	focus(modelName);
+	// A model was loaded ? focus it !
+	if (!modelName.empty())
+		focus(modelName);
+
 	return modelName;
 }
 
