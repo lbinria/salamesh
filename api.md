@@ -1,6 +1,37 @@
 # API
 
-Caution: At the moment, this doc is totally generated and can not reflect the actual one.
+Caution: At the moment, this doc is partially generated and can not reflect the actual one.
+
+### Script callback functions
+
+Callback functions are functions called by the app. There is 3 categories of callback functions:
+
+ - `Lifecycle`: called at some point of the execution of the app
+ - `Events`: called when a specific event is triggered by the user / app
+ - `Configuration`: specific function that does return data to specify how the app should use or format some elements
+
+| Function/Property Name | Description | Example |
+|------------------------|-------------|---------|
+| **Lifecycle functions** |||
+| `init()` | Called when the script is initialized, generally at the initialization of app | [Details](signal_examples.md#init) |
+| `draw_gui()` | Called when app is drawing the user interface | [Details](signal_examples.md#draw_gui) |
+| `update(dt: float)` | Called when app update rendering (dt is the delta time in second) | [Details](signal_examples.md#update) |
+| `cleanup()` | Called when the script is cleaned, generally when closing app | |
+| **Event functions** |||
+| `mouse_move(x: float, y: float)` | Called on mouse move. (x, y) is the position of the mouse | |
+| `mouse_button(button: int, action: int, mods: int)` | Called on mouse click. | |
+| `mouse_scroll(xoffset: float, yoffset: float)` | Called on mouse scroll. (xoffset, yoffset) are delta values of scrolling on axes (x, y) | |
+| `key_event(key: int, scan_code: int, action: int, mods: int)` | Called on key press | Details |
+| `navigation_path_changed(old_nav_path: string list, new_nav_path: string list)` | Called immediately after navigation path has changed | Details |
+| `model_loaded(name: string)` | Called immediately after a model was loaded | Details |
+| `selected_model_changed(old_name: string, new_name: string)` | Called immediately after the model's selection change | Details |
+| `scene_cleared()` | Called immediately after the scene was cleared | Details |
+| **Config functions**|||
+| `layout_gui()` | Enable to specify where the user interface must be draw | |
+
+#### Examples
+
+
 
 ### App
 
@@ -21,10 +52,14 @@ There is only one instance of App, it is already declared and accessible using `
 | `get_index_of_model` | Function | `(name: string)` | Gets model index (1-based) | `int` |
 | `count_models` | Read-only Property | None | Returns number of models | `int` |
 | `has_models` | Read-only Property | None | Checks if models exist | `bool` |
-| `models` | Read-only Property | None | Returns list of models | Model collection |
-| `getChildrenOf` | Function | Likely model-related | Gets children of a model | Model collection |
-| `model` | Read-only Property | None | Gets current model | Current model |
+| `models` | Read-only Property | None | Returns list of models | `Model` collection |
+| `getChildrenOf` | Function | Likely model-related | Gets children of a model | `Model` collection |
+| `model` | Read-only Property | None | Gets current model | `Model` |
+| `hovered_model` | Read-only Property | None | Gets hovered model | `Model` |
 | `selected_model` | Property | `(selected: int)` | Gets/sets selected model (1-based) | `int` |
+| `focus` | Function | `(name: string)` | Focus model | `void` |
+| `get_model_name_by_index` | Function | `(i: int)` | Returns model's name of given index | `string` |
+| `get_model_index_by_name` | Function | `(name: string)` | Returns model's index of given name | `int` |
 | **Camera Management** |||
 | `cameras` | Read-only Property | None | Returns camera collection | Camera collection |
 | `camera` | Read-only Property | None | Gets current camera | Current camera |
