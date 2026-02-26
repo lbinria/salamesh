@@ -92,6 +92,8 @@ struct IApp {
 	virtual std::shared_ptr<Model> addModel(std::string type, std::string name) = 0;
 	virtual void removeModel(std::string name) = 0;
 	virtual Model& getCurrentModel() = 0;
+	virtual std::shared_ptr<Model> getHoveredModel() = 0;
+
 	virtual Model& getModel(std::string name) = 0;
 	virtual int countModels() = 0;
 	virtual bool hasModel(std::string name) = 0;

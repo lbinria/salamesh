@@ -134,6 +134,7 @@ namespace bindings {
 		app_type["models"] = sol::readonly_property(&IApp::getModels);
 		app_type.set_function("getChildrenOf", &IApp::getChildrenOf);
 		app_type["model"] = sol::readonly_property(&IApp::getCurrentModel);
+		app_type["hovered_model"] = sol::readonly_property(&IApp::getHoveredModel);
 
 		app_type["selected_model"] = sol::property(&IApp::getSelectedModel, &IApp::setSelectedModel);
 
