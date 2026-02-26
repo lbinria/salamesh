@@ -7,12 +7,12 @@ function init()
 	-- app.models[idx].position = vec3.new(0, 2, 0)
 
 
-	-- local my_model = app:get_model_by_name("my_model")
+	-- local my_model = app:get_model("my_model")
 	-- print("Name of model my_model: " .. my_model.name)
 	-- local my_model_idx = app:get_index_of_model("my_model")
 	-- print("Index of my_model: " .. tostring(my_model_idx))
 
-	-- local hello = app:get_model_by_name("hello")
+	-- local hello = app:get_model("hello")
 
 	-- local hello_idx = app:get_index_of_model("hellow")
 	-- print("Index of hellow: " .. tostring(hello_idx))

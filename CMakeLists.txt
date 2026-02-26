@@ -67,7 +67,6 @@ include(FetchContent)
 FetchContent_Declare(
   ultimaille
   GIT_REPOSITORY https://github.com/ssloy/ultimaille
-  # GIT_TAG        6d50ee5
   GIT_TAG        bed2ad0
 )
 FetchContent_MakeAvailable(ultimaille)

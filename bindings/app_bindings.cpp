@@ -126,7 +126,7 @@ namespace bindings {
 		app_type.set_function("add_model", &IApp::addModel);
 		app_type.set_function("remove_model", &IApp::removeModel);
 
-		app_type.set_function("get_model_by_name", &IApp::getModel);
+		app_type.set_function("get_model", &IApp::getModel);
 
 
 		app_type["count_models"] = sol::readonly_property(&IApp::countModels);

@@ -17,7 +17,7 @@ There is only one instance of App, it is already declared and accessible using `
 | `load_model` | Function | `(filename: string)` | Loads a model | `bool` |
 | `add_model` | Function | `(name: string, type: int)` | Adds a model with given name and type | `int` (index + 1) |
 | `remove_model` | Overloaded Function | `(idx: int)` or `(name: string)` | Removes a model by index or name | `void` or `bool` |
-| `get_model_by_name` | Function | `(name: string)` | Retrieves model by name | Model type |
+| `get_model` | Function | `(name: string)` | Retrieves model by name | Model type |
 | `get_index_of_model` | Function | `(name: string)` | Gets model index (1-based) | `int` |
 | `count_models` | Read-only Property | None | Returns number of models | `int` |
 | `has_models` | Read-only Property | None | Checks if models exist | `bool` |
