@@ -17,11 +17,12 @@ Callback functions are functions called by the app. There is 3 categories of cal
 | `draw_gui()` | Called when app is drawing the user interface | [Details](signal_examples.md#draw_gui) |
 | `update(dt: float)` | Called when app update rendering (dt is the delta time in second) | [Details](signal_examples.md#update) |
 | `cleanup()` | Called when the script is cleaned, generally when closing app | |
-| **Event functions** |||
+| **Input event functions** |||
 | `mouse_move(x: float, y: float)` | Called on mouse move. (x, y) is the position of the mouse | |
 | `mouse_button(button: int, action: int, mods: int)` | Called on mouse click. | |
 | `mouse_scroll(xoffset: float, yoffset: float)` | Called on mouse scroll. (xoffset, yoffset) are delta values of scrolling on axes (x, y) | |
 | `key_event(key: int, scan_code: int, action: int, mods: int)` | Called on key press | Details |
+| **App event functions** |||
 | `navigation_path_changed(old_nav_path: string list, new_nav_path: string list)` | Called immediately after navigation path has changed | Details |
 | `model_loaded(name: string)` | Called immediately after a model was loaded | Details |
 | `selected_model_changed(old_name: string, new_name: string)` | Called immediately after the model's selection change | Details |
@@ -49,11 +50,10 @@ There is only one instance of App, it is already declared and accessible using `
 | `add_model` | Function | `(name: string, type: int)` | Adds a model with given name and type | `int` (index + 1) |
 | `remove_model` | Overloaded Function | `(idx: int)` or `(name: string)` | Removes a model by index or name | `void` or `bool` |
 | `get_model` | Function | `(name: string)` | Retrieves model by name | Model type |
-| `get_index_of_model` | Function | `(name: string)` | Gets model index (1-based) | `int` |
 | `count_models` | Read-only Property | None | Returns number of models | `int` |
 | `has_models` | Read-only Property | None | Checks if models exist | `bool` |
 | `models` | Read-only Property | None | Returns list of models | `Model` collection |
-| `getChildrenOf` | Function | Likely model-related | Gets children of a model | `Model` collection |
+| `get_children_of` | Function | Likely model-related | Gets children of a model | `Model` collection |
 | `model` | Read-only Property | None | Gets current model | `Model` |
 | `hovered_model` | Read-only Property | None | Gets hovered model | `Model` |
 | `selected_model` | Property | `(selected: int)` | Gets/sets selected model (1-based) | `int` |

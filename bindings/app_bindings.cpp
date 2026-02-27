@@ -132,7 +132,7 @@ namespace bindings {
 		app_type["count_models"] = sol::readonly_property(&IApp::countModels);
 		app_type["has_models"] = sol::readonly_property(&IApp::hasModels);
 		app_type["models"] = sol::readonly_property(&IApp::getModels);
-		app_type.set_function("getChildrenOf", &IApp::getChildrenOf);
+		app_type.set_function("get_children_of", &IApp::getChildrenOf);
 		app_type["model"] = sol::readonly_property(&IApp::getCurrentModel);
 		app_type["hovered_model"] = sol::readonly_property(&IApp::getHoveredModel);
 
