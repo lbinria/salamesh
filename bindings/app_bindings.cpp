@@ -110,7 +110,10 @@ namespace bindings {
 			"starts_with", sol::overload(
 				[](NavigationPath &self, std::vector<std::string> head) { self.startsWith(head); },
 				[](NavigationPath &self, std::string head) { self.startsWith(head); }
-			)
+			),
+			sol::meta_function::to_string, [](NavigationPath& self) {
+				return self.str();
+			}
 		);
 
 		// General functions 
