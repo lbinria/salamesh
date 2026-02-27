@@ -215,12 +215,6 @@ namespace bindings {
 			}
 		);
 
-		app_type.set_function("set_navigation_path", 
-			sol::overload(
-				[](IApp &self, std::vector<std::string> path) { self.setNavigationPath(path); },
-				[](IApp &self, std::string strPath) { self.setNavigationPath(strPath); }
-			)
-		);
 		app_type.set_function("add_navigation_path", &IApp::addNavigationPath);
 		app_type.set_function("top_navigation_path", &IApp::topNavigationPath);
 
