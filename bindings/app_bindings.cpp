@@ -94,9 +94,7 @@ namespace bindings {
 
 		input_state_t.set_function("get_primitive_state", &InputState::getPrimitiveState);
 
-		// General functions 
-		lua.set_function("element_kind_to_string", &elementKindToString);
-		lua.set_function("element_type_to_string", &elementTypeToString);
+
 
 		sol::usertype<Colormap> colormap_t = lua.new_usertype<Colormap>("Colormap", 
 			sol::constructors<Colormap()>(),
@@ -105,6 +103,19 @@ namespace bindings {
 			"height", sol::readonly_property(&Colormap::height),
 			"tex", sol::readonly_property(&Colormap::tex)
 		);
+
+		sol::usertype<NavigationPath> navigationPath_t = lua.new_usertype<NavigationPath>("NavigationPath",
+			"get", &NavigationPath::get,
+			"str", &NavigationPath::str,
+			"starts_with", sol::overload(
+				[](NavigationPath &self, std::vector<std::string> head) { self.startsWith(head); },
+				[](NavigationPath &self, std::string head) { self.startsWith(head); }
+			)
+		);
+
+		// General functions 
+		lua.set_function("element_kind_to_string", &elementKindToString);
+		lua.set_function("element_type_to_string", &elementTypeToString);
 
 		// App bindings
 		lua["app"] = &app;
@@ -192,11 +203,15 @@ namespace bindings {
 			app.setCullMode(mode);
 		});
 
-
-
 		// Navigation
-		app_type["navigation_path"] = sol::property(&IApp::getNavigationPath, &IApp::setNavigationPath);
-		app_type["navigation_path_string"] = sol::readonly_property(&IApp::getNavigationPathString);
+		app_type["navigation_path"] = sol::readonly_property(&IApp::getNavigationPath);
+
+		app_type.set_function("set_navigation_path", 
+			sol::overload(
+				[](IApp &self, std::vector<std::string> path) { self.setNavigationPath(path); },
+				[](IApp &self, std::string strPath) { self.setNavigationPath(strPath); }
+			)
+		);
 		app_type.set_function("add_navigation_path", &IApp::addNavigationPath);
 		app_type.set_function("top_navigation_path", &IApp::topNavigationPath);
 

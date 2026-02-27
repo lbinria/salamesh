@@ -28,7 +28,7 @@ struct Script {
 	virtual void key_event(int key, int scancode, int action, int mods) {};
 
 	// App events
-	virtual void navigationPathChanged(const std::vector<std::string> &oldNavPath, const std::vector<std::string> &newNavPath) {};
+	virtual void navigationPathChanged(NavigationPath &oldNavPath, NavigationPath &newNavPath) {};
 	
 	virtual void modelLoaded(const std::string &name) {};
 	virtual void selectedModelChanged(std::string oldName, std::string newName) {};

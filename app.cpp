@@ -770,7 +770,7 @@ void App::drawGui() {
 		ImGuiWindowFlags_NoDecoration         // Remove default title bar (optional)
 	);
 
-	ImGui::Text(getNavigationPathString().c_str());
+	ImGui::Text(navPath2.str().c_str());
 
 	ImGui::End();
 
@@ -1399,7 +1399,7 @@ void App::clearScene() {
 	// TODO clear selected color map... elements etc... layers...
 	notifySceneCleared();
 
-	setNavigationPath({});
+	setNavigationPath("");
 }
 
 void App::loadState(json &j, const std::string path) {

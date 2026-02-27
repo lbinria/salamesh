@@ -31,6 +31,81 @@ struct Snapshot {
 	Image getImage() { return image; }
 };
 
+struct NavigationPath {
+
+	NavigationPath(std::vector<std::string> path = {}) : 
+		path(path) {}
+
+	void set(std::vector<std::string> newPath) {
+		path = newPath;
+	}
+
+	void set(std::string newPath) {
+		auto pathComponents = split(newPath, '/');
+		set(pathComponents);
+	}
+
+	std::vector<std::string> get() {
+		return path;
+	}
+
+	std::string str() {
+		if (path.empty()) return {};
+
+		std::ostringstream oss;
+		oss << path[0];
+		for (size_t i = 1; i < path.size(); ++i) 
+			oss << '/' << path[i];
+
+		return oss.str();
+	}
+
+	void push(std::string pathComponent) {
+		auto oldPath = path;
+		path.push_back(pathComponent);
+	}
+
+	void pop() {
+		if (path.size() <= 0)
+			return;
+
+		auto oldPath = path;
+		path.erase(path.end() - 1);
+	}
+
+	bool startsWith(std::string strPath) {
+		auto pathComponents = split(strPath, '/');
+		return startsWith(pathComponents);
+	}
+
+	bool startsWith(std::vector<std::string> head) noexcept {
+		if (head.size() > path.size())
+			return false;
+
+		for (int i = 0; i < head.size(); ++i) {
+			if (path[i] != head[i])
+				return false;
+		}
+
+		return true;
+	}
+
+	private:
+	std::vector<std::string> path;
+
+	std::vector<std::string> split(std::string s, char delim) {
+		std::stringstream ss(s);
+		std::string segment;
+		std::vector<std::string> segments;
+
+		while(std::getline(ss, segment, delim))
+			segments.push_back(segment);
+
+		return segments;
+	}
+
+};
+
 template<typename T>
 struct Instanciator {
 
@@ -160,9 +235,9 @@ struct IApp {
 	virtual std::vector<Colormap> getColormaps() = 0;
 
 	// Navigation
-	virtual std::vector<std::string> getNavigationPath() = 0;
+	virtual NavigationPath getNavigationPath() = 0;
 	virtual void setNavigationPath(std::vector<std::string> path) = 0;
-	virtual std::string getNavigationPathString() = 0;
+	virtual void setNavigationPath(std::string strPath) = 0;
 	virtual void addNavigationPath(std::string pathComponent) = 0;
 	virtual void topNavigationPath() = 0;
 

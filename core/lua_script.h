@@ -188,7 +188,7 @@ struct LuaScript final : public Script {
 
 	// App events
 
-	void navigationPathChanged(const std::vector<std::string> &oldNavPath, const std::vector<std::string> &newNavPath) override {
+	void navigationPathChanged(NavigationPath &oldNavPath, NavigationPath &newNavPath) override {
 		if (has_navigationPathChanged)
 			navigationPathChanged_func(oldNavPath, newNavPath);
 	}

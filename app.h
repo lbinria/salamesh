@@ -50,6 +50,8 @@
 
 #include "core/renderers/line_renderer.h"
 
+#include "core/navigation_path.h"
+
 using namespace UM;
 
 #include <filesystem>
@@ -63,7 +65,8 @@ struct App final : public IApp {
 	App(Args args) : 
 		args(args),
 		screenWidth(1024), 
-		screenHeight(768)
+		screenHeight(768),
+		navPath2()
 	{}
 
 	// settings
@@ -435,7 +438,7 @@ struct App final : public IApp {
 	void mouse_button(int button, int action, int mods);
 	void key_event(int key, int scancode, int action, int mods);
 
-	void notifyNavigationPathChanged(std::vector<std::string> &oldNavPath, std::vector<std::string>& newNavPath) {
+	void notifyNavigationPathChanged(NavigationPath &oldNavPath, NavigationPath& newNavPath) {
 		for (auto &c : scripts) {
 			c->navigationPathChanged(oldNavPath, newNavPath);
 		}
@@ -455,40 +458,32 @@ struct App final : public IApp {
 
 	void updateCamera(float dt);
 
-	std::vector<std::string> getNavigationPath() override {
-		return navPath;
+	NavigationPath getNavigationPath() override {
+		return navPath2;
 	}
 
 	void setNavigationPath(std::vector<std::string> path) override {
-		auto oldPath = navPath;
-		navPath = path;
-		notifyNavigationPathChanged(oldPath, navPath);
+		auto oldPath = navPath2;
+		navPath2.set(path);
+		notifyNavigationPathChanged(oldPath, navPath2);
+	}
+
+	void setNavigationPath(std::string strPath) override {
+		auto oldPath = navPath2;
+		navPath2.set(strPath);
+		notifyNavigationPathChanged(oldPath, navPath2);
 	}
 
 	void addNavigationPath(std::string pathComponent) {
-		auto oldPath = navPath;
-		navPath.push_back(pathComponent);
-		notifyNavigationPathChanged(oldPath, navPath);
+		auto oldPath = navPath2;
+		navPath2.push(pathComponent);
+		notifyNavigationPathChanged(oldPath, navPath2);
 	}
 
 	void topNavigationPath() override {
-		if (navPath.size() <= 0)
-			return;
-
-		auto oldPath = navPath;
-		navPath.erase(navPath.end() - 1);
-		notifyNavigationPathChanged(oldPath, navPath);
-	}
-
-	std::string getNavigationPathString() override {
-		if (navPath.empty()) return {};
-
-		std::ostringstream oss;
-		oss << navPath[0];
-		for (size_t i = 1; i < navPath.size(); ++i) 
-			oss << '/' << navPath[i];
-
-		return oss.str();
+		auto oldPath = navPath2;
+		navPath2.pop();
+		notifyNavigationPathChanged(oldPath, navPath2);
 	}
 
 	bool isUIHovered() const override { return _isUIHovered; }
@@ -565,6 +560,7 @@ struct App final : public IApp {
 
 	// Current navigation path of the app
 	std::vector<std::string> navPath;
+	NavigationPath navPath2;
 
 	Instanciator<Model> modelInstanciator;
 	Instanciator<Camera> cameraInstanciator;

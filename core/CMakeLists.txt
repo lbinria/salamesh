@@ -21,6 +21,7 @@ set(SOURCES
     attribute.h
     element.h
     input_states.h 
+    navigation_path.h 
 
     shader.cpp shader.h 
 
