@@ -113,6 +113,14 @@ namespace bindings {
 			),
 			sol::meta_function::to_string, [](NavigationPath& self) {
 				return self.str();
+			},
+			sol::meta_function::equal_to, [](const NavigationPath& self, const sol::object& other) {
+				if (other.is<std::string>()) {
+					return self.str() == other.as<std::string>();
+				} else if (other.is<NavigationPath>()) {
+					return self == other.as<NavigationPath>();
+				}
+				return false;
 			}
 		);
 

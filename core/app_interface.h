@@ -45,11 +45,11 @@ struct NavigationPath {
 		set(pathComponents);
 	}
 
-	std::vector<std::string> get() {
+	std::vector<std::string> get() const {
 		return path;
 	}
 
-	std::string str() {
+	std::string str() const {
 		if (path.empty()) return {};
 
 		std::ostringstream oss;
@@ -59,6 +59,27 @@ struct NavigationPath {
 
 		return oss.str();
 	}
+
+	operator std::string() const {
+		return str();
+	}
+
+	bool operator ==(const NavigationPath &other) const {
+		return this->path == other.path;
+	}
+
+    // Compare with std::string
+    bool operator==(const std::string& str) const {
+        return this->str() == str;
+    }
+    
+    bool operator!=(const NavigationPath& other) const {
+        return !(*this == other);
+    }
+    
+    bool operator!=(const std::string& str) const {
+        return !(this->str() == str);
+    }
 
 	void push(std::string pathComponent) {
 		auto oldPath = path;
@@ -73,12 +94,12 @@ struct NavigationPath {
 		path.erase(path.end() - 1);
 	}
 
-	bool startsWith(std::string strPath) {
+	bool startsWith(std::string strPath) const {
 		auto pathComponents = split(strPath, '/');
 		return startsWith(pathComponents);
 	}
 
-	bool startsWith(std::vector<std::string> head) noexcept {
+	bool startsWith(std::vector<std::string> head) const noexcept {
 		if (head.size() > path.size())
 			return false;
 
@@ -93,7 +114,7 @@ struct NavigationPath {
 	private:
 	std::vector<std::string> path;
 
-	std::vector<std::string> split(std::string s, char delim) {
+	std::vector<std::string> split(std::string s, char delim) const {
 		std::stringstream ss(s);
 		std::string segment;
 		std::vector<std::string> segments;
