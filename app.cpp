@@ -8,7 +8,6 @@
 #include "core/models/surface_model.h"
 #include "core/models/volume_model.h"
 
-#include "module_triangle_diagnostic/triangle_inspector.h"
 
 #include <ranges>
 
