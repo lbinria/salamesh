@@ -204,7 +204,16 @@ namespace bindings {
 		});
 
 		// Navigation
-		app_type["navigation_path"] = sol::readonly_property(&IApp::getNavigationPath);
+		app_type["navigation_path"] = sol::property(
+			&IApp::getNavigationPath,
+			[](IApp& self, const sol::object& value) {
+				if (value.is<std::string>()) {
+					self.setNavigationPath(value.as<std::string>());
+				} else if (value.is<std::vector<std::string>>()) {
+					self.setNavigationPath(value.as<std::vector<std::string>>());
+				}
+			}
+		);
 
 		app_type.set_function("set_navigation_path", 
 			sol::overload(
