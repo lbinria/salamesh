@@ -120,6 +120,7 @@ struct SurfaceHalfedgeRenderer : public HalfedgeRenderer {
 	void push() override;
 
 	Surface &_m;
+
 };
 
 struct VolumeHalfedgeRenderer : public HalfedgeRenderer {

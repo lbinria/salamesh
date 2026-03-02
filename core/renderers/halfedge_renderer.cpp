@@ -85,9 +85,20 @@ void HalfedgeRenderer::render(glm::vec3 &position) {
 	glDrawArrays(GL_TRIANGLES, 0, nverts);
 }
 
-void SurfaceHalfedgeRenderer::push() {	
+void SurfaceHalfedgeRenderer::push() {
+
+	// Lazy-loading of halfedges, 
+	// only push on visible if needed
+	if (!visible) {
+		shouldPush = true;
+		return;
+	}
+
+	auto begin = std::chrono::steady_clock::now();
 	
 	std::vector<LineVert> vertices;
+	// pre-allocate to speed-up
+	vertices.reserve(_m.nfacets() * 4 /* reserve for 4 side facets */ * 6 /* 1 quad, 2 tri per quad, 3 points per tri */); 
 
 	for (auto &f : _m.iter_facets()) {
 		int facetSize = _m.facet_size(f);
@@ -108,11 +119,14 @@ void SurfaceHalfedgeRenderer::push() {
 			
 			int halfedgeIdx = f * facetSize + i;
 
+			const glm::vec3 gp0(p0.x, p0.y, p0.z);
+			const glm::vec3 gp1(p1.x, p1.y, p1.z);
+
 			// build the 4 “corner” vertices
-			LineVert lv0{halfedgeIdx, glm::vec3(p0.x, p0.y, p0.z), glm::vec3(p1.x, p1.y, p1.z), -1.0f, 0.0f, bary};  // corner: start, left side
-			LineVert lv1{halfedgeIdx, glm::vec3(p0.x, p0.y, p0.z), glm::vec3(p1.x, p1.y, p1.z), +1.0f, 0.0f, bary};  // corner: start, right side
-			LineVert lv2{halfedgeIdx, glm::vec3(p0.x, p0.y, p0.z), glm::vec3(p1.x, p1.y, p1.z), -1.0f, 1.0f, bary};  // corner: end,   left side
-			LineVert lv3{halfedgeIdx, glm::vec3(p0.x, p0.y, p0.z), glm::vec3(p1.x, p1.y, p1.z), +1.0f, 1.0f, bary};  // corner: end,   right side
+			LineVert lv0{halfedgeIdx, gp0, gp1, -1.0f, 0.0f, bary};  // corner: start, left side
+			LineVert lv1{halfedgeIdx, gp0, gp1, +1.0f, 0.0f, bary};  // corner: start, right side
+			LineVert lv2{halfedgeIdx, gp0, gp1, -1.0f, 1.0f, bary};  // corner: end,   left side
+			LineVert lv3{halfedgeIdx, gp0, gp1, +1.0f, 1.0f, bary};  // corner: end,   right side
 
 			vertices.push_back(lv0);
 			vertices.push_back(lv1);
@@ -127,9 +141,16 @@ void SurfaceHalfedgeRenderer::push() {
 
 	nverts = vertices.size();
 
+	std::cout << "nverts: " << nverts << std::endl;
+
 	glBindVertexArray(VAO);
 	glBindBuffer(GL_ARRAY_BUFFER, VBO);
 	glBufferData(GL_ARRAY_BUFFER, nverts * sizeof(LineVert), vertices.data(), GL_STATIC_DRAW);
+
+	auto end = std::chrono::steady_clock::now();
+	std::cout << "duration: " << std::chrono::duration_cast<std::chrono::milliseconds>(end - begin).count() << std::endl;
+
+	shouldPush = false;
 }
 
 void VolumeHalfedgeRenderer::push() {
@@ -138,12 +159,6 @@ void VolumeHalfedgeRenderer::push() {
 
 	for (auto &c : _m.iter_cells()) {
 		int nf = _m.nfacets_per_cell();
-
-		// vec3 b;
-		// for (int lv = 0; lv < ; ++lv) {
-		// 	b += f.vertex(lv).pos();
-		// }
-		// b /= facetSize;
 
 		for (int f = 0; f < nf; ++f) {
 			int facetSize = _m.facet_size(f);
@@ -165,11 +180,14 @@ void VolumeHalfedgeRenderer::push() {
 				// int halfedgeIdx = c * 24 + f * i;
 				int halfedgeIdx = c * (nf * facetSize) + f * i;
 
+				const glm::vec3 gp0(p0.x, p0.y, p0.z);
+				const glm::vec3 gp1(p1.x, p1.y, p1.z);
+
 				// build the 4 “corner” vertices
-				LineVert lv0{halfedgeIdx, glm::vec3(p0.x, p0.y, p0.z), glm::vec3(p1.x, p1.y, p1.z), -1.0f, 0.0f, bary};  // corner: start, left side
-				LineVert lv1{halfedgeIdx, glm::vec3(p0.x, p0.y, p0.z), glm::vec3(p1.x, p1.y, p1.z), +1.0f, 0.0f, bary};  // corner: start, right side
-				LineVert lv2{halfedgeIdx, glm::vec3(p0.x, p0.y, p0.z), glm::vec3(p1.x, p1.y, p1.z), -1.0f, 1.0f, bary};  // corner: end,   left side
-				LineVert lv3{halfedgeIdx, glm::vec3(p0.x, p0.y, p0.z), glm::vec3(p1.x, p1.y, p1.z), +1.0f, 1.0f, bary};  // corner: end,   right side
+				LineVert lv0{halfedgeIdx, gp0, gp1, -1.0f, 0.0f, bary};  // corner: start, left side
+				LineVert lv1{halfedgeIdx, gp0, gp1, +1.0f, 0.0f, bary};  // corner: start, right side
+				LineVert lv2{halfedgeIdx, gp0, gp1, -1.0f, 1.0f, bary};  // corner: end,   left side
+				LineVert lv3{halfedgeIdx, gp0, gp1, +1.0f, 1.0f, bary};  // corner: end,   right side
 
 				vertices.push_back(lv0);
 				vertices.push_back(lv1);

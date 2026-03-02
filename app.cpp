@@ -922,13 +922,13 @@ std::string App::loadModel(const std::string& filename, std::string name) {
 		meshRenderer->setMeshSize(0.0f);
 	}
 	
-	auto edges = model->getEdgesRenderer();
-	if (edges && model->getModelType() != ModelType::POLYLINE_MODEL) {
-		edges->setVisible(false);
-	}
+	// auto edges = model->getEdgesRenderer();
+	// if (edges && model->getModelType() == ModelType::POLYLINE_MODEL) {
+	// 	edges->setVisible(true);
+	// }
 
-	// By default points not visible
-	model->getPointsRenderer().setVisible(false);
+	// // By default points not visible
+	// model->getPointsRenderer().setVisible(false);
 
 	// Setup default clipping plane
 	model->setupClipping();

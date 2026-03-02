@@ -55,6 +55,10 @@ struct Renderer {
 
 	void setVisible(bool v) {
 		visible = v;
+
+		if (v && shouldPush) {
+			push();
+		}
 	}
 
 	bool getVisible() const {
@@ -301,6 +305,7 @@ struct Renderer {
 	protected:
 
 	bool visible = true;
+	bool shouldPush = false;
 
 	glm::vec3 color{0.71f, 0.71f, 0.71f};
 	glm::vec3 hoverColor{1.f, 1.f, 1.f};

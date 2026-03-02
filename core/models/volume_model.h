@@ -48,7 +48,10 @@ struct VolumeModel final : public Model {
 			{"bbox_renderer", std::make_shared<BBoxRenderer>(_m.points) },
 			{"zclipping_renderer", std::make_shared<ClippingRenderer>(_m.points) }
 		})
-		{}
+		{
+			getPointsRenderer().setVisible(false);
+			getEdgesRenderer()->setVisible(false);
+		}
 
 	ModelType getModelType() const override {
 		return modelTypeFromMeshType<TVolume>();

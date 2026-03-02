@@ -150,49 +150,6 @@ struct Model {
 
 	void setSelectedAttr(int idx, ColormapLayer layer);
 
-	// void updateAttrs() {
-	// 	for (int l = 0; l < 3; ++l)
-	// 		setSelectedAttr(selectedAttr[l], static_cast<ColormapLayer>(l));
-	// }
-
-	// // TODO move out of this, in element.h
-	// template<typename T>
-	// ElementType deduceType(GenericAttribute<T> &attr) {
-	// 	if constexpr (std::is_same_v<T, double>) {
-	// 		return ElementType::DOUBLE_ELT;
-	// 	} else if constexpr (std::is_same_v<T, int>) {
-	// 		return ElementType::INT_ELT;
-	// 	} else if constexpr (std::is_same_v<T, bool>) {
-	// 		return ElementType::BOOL_ELT;
-	// 	} else if constexpr (std::is_same_v<T, vec2>) {
-	// 		return ElementType::VEC2_ELT;
-	// 	} else if constexpr (std::is_same_v<T, vec3>) {
-	// 		return ElementType::VEC3_ELT;
-	// 	} else {
-	// 		throw std::runtime_error("Unknown attribute type for container: " + attr.getName());
-	// 	}
-	// }
-	// std::optional<Attribute> findAttr(std::string name, ElementKind kind) {
-	// 	for (const auto &a : attrs) {
-	// 		if (a.getName() == name && a.getKind() == kind) {
-	// 			return a;
-	// 		}
-	// 	}
-	// 	return std::nullopt;
-	// }
-	// ElementKind umAttributeKind2ElementKind(AttributeBase::TYPE kind) {
-	// 	switch (kind) {
-	// 		case AttributeBase::POINTS: return ElementKind::POINTS_ELT;
-	// 		case AttributeBase::EDGES: return ElementKind::EDGES_ELT;
-	// 		case AttributeBase::FACETS: return ElementKind::FACETS_ELT;
-	// 		case AttributeBase::CORNERS: return ElementKind::CORNERS_ELT;
-	// 		case AttributeBase::CELLS: return ElementKind::CELLS_ELT;
-	// 		case AttributeBase::CELLFACETS: return ElementKind::CELL_FACETS_ELT;
-	// 		case AttributeBase::CELLCORNERS: return ElementKind::CELL_CORNERS_ELT;
-	// 		default: throw std::runtime_error("Unknown attribute kind for binding: " + std::to_string(kind));
-	// 	}
-	// }
-
 	void setSelectedColormap(int idx, ColormapLayer layer) {
 		selectedColormap[static_cast<int>(layer)] = idx;
 	}
@@ -466,14 +423,6 @@ struct Model {
 			
 		return nullptr;
 	}
-
-	// Renderer& getMeshRenderer() const {
-	// 	// Warning, I do that here because I have the garantee that _meshRenderer is always initialized
-	// 	// If _meshRenderer is uninitialized, this will throw a segfault
-	// 	// (I don't want to transfer ownership)
-	// 	// Maybe there is a better way to do that
-	// 	return *_renderers.at("mesh_renderer");
-	// }
 
 	std::shared_ptr<Renderer> getMeshRenderer() const {
 		if(_renderers.contains("mesh_renderer"))
