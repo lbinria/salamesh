@@ -874,6 +874,8 @@ void App::clean() {
 
 std::string App::loadModel(const std::string& filename, std::string name) {
 
+	auto begin = std::chrono::steady_clock::now();
+
 	std::string modelName = name.empty() ? 
 		std::filesystem::path(filename).stem().string() + std::to_string(models.size()) : 
 		name;
@@ -946,6 +948,9 @@ std::string App::loadModel(const std::string& filename, std::string name) {
 	// A model was loaded ? focus it !
 	if (!modelName.empty())
 		focus(modelName);
+
+	auto end = std::chrono::steady_clock::now();
+	std::cout << "load model total duration: " << std::chrono::duration_cast<std::chrono::milliseconds>(end - begin).count() << std::endl;
 
 	return modelName;
 }

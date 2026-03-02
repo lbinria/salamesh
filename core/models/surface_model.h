@@ -79,6 +79,7 @@ struct SurfaceModel : public Model {
 		// TODO see if necessary... we can load Triangles as Polygons, it works
 		// but there is maybe some optimisations for Triangles...
 		// Check if poly & only triangle, should be a triangle
+		// Note: check this improve the loading time of big triangle model => for 180MO, 6500ms instead of 7500ms
 		if (getModelType() == ModelType::POLYGON_MODEL) {
 			bool onlyTri = true;
 			for (auto &f : _m.iter_facets()) {

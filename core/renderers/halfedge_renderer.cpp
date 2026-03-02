@@ -93,8 +93,6 @@ void SurfaceHalfedgeRenderer::push() {
 		shouldPush = true;
 		return;
 	}
-
-	auto begin = std::chrono::steady_clock::now();
 	
 	std::vector<LineVert> vertices;
 	// pre-allocate to speed-up
@@ -146,9 +144,6 @@ void SurfaceHalfedgeRenderer::push() {
 	glBindVertexArray(VAO);
 	glBindBuffer(GL_ARRAY_BUFFER, VBO);
 	glBufferData(GL_ARRAY_BUFFER, nverts * sizeof(LineVert), vertices.data(), GL_STATIC_DRAW);
-
-	auto end = std::chrono::steady_clock::now();
-	std::cout << "duration: " << std::chrono::duration_cast<std::chrono::milliseconds>(end - begin).count() << std::endl;
 
 	shouldPush = false;
 }
