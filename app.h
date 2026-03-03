@@ -502,6 +502,10 @@ struct App final : public IApp {
 	GLFWwindow* window;
 	glm::vec3 backgroundColor{0.05, 0.1, 0.15};
 
+	float fps = 0.f;
+	int frameCount = 0;
+	float elapsedTime = 0.000001f;
+
 	// Another screenfbo
 	unsigned int screenFbo;
 
@@ -559,7 +563,7 @@ struct App final : public IApp {
 
 
 	// Current navigation path of the app
-	std::vector<std::string> navPath;
+	std::vector<std::string> navPath; // TODO remove
 	NavigationPath navPath2;
 
 	Instanciator<Model> modelInstanciator;

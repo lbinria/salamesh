@@ -518,6 +518,16 @@ void App::start() {
 		float timeValue = glfwGetTime();
 		float dt = timeValue - lastTimeValue;
 
+		// Compute fps
+		++frameCount;
+		elapsedTime += dt;
+		if (elapsedTime >= 1.f) {
+			frameCount = 0;
+			elapsedTime = 0.000001f;
+		}
+
+		fps = round(frameCount / elapsedTime);
+
 		processInput(window);
 
 		// Set view / projection from current camera
@@ -817,8 +827,9 @@ void App::drawGui() {
 
 	
 	ImGui::GetBackgroundDrawList()->AddCircle(ImGui::GetMousePos(), st.mouse.getCursorRadius(), IM_COL32(225, 225, 255, 200), 0, 2);
-
-
+	// if (isDebug()) {
+		ImGui::GetBackgroundDrawList()->AddText(ImVec2(15, 30), ImGui::GetColorU32(ImVec4(1., 1., 1., 1.)), ("FPS: " + std::format("{:.0f}", fps)).c_str());
+	// }
 
 	for (auto &script : scripts) {
 
