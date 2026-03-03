@@ -582,10 +582,15 @@ struct ImGuiStackState {
 		colorStackSize = ctx->ColorStack.size();
 		styleVarStackSize = ctx->StyleVarStack.size();
 		fontStackSize = ctx->FontStack.size();
+		disableStackSize = ctx->DisabledStackSize;
 	}
 
 	void restore() {
 		// Restore all stacks to their previous state
+		while (ctx->DisabledStackSize > disableStackSize) {
+			ImGui::EndDisabled();
+		}
+
 		while (ctx->CurrentWindowStack.size() > windowStackSize) {
 			ImGui::End();
 		}
@@ -629,6 +634,8 @@ struct ImGuiStackState {
 		while (ctx->FontStack.size() > fontStackSize) {
 			ImGui::PopFont();
 		}
+
+
 	}
 
 	int 
@@ -642,7 +649,8 @@ struct ImGuiStackState {
 		currentTabBarStackSize,
 		colorStackSize,
 		styleVarStackSize,
-		fontStackSize;
+		fontStackSize,
+		disableStackSize;
 
 	private:
 	ImGuiContext *ctx;
