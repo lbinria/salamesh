@@ -6,6 +6,35 @@
 namespace bindings {
 
 	void ImGuiBindings::loadBindings(sol::state &lua, IApp &app) {
+
+		// ImVec2 type binding
+		lua.new_usertype<ImVec2>("ImVec2", 
+			sol::call_constructor, [](sol::table t) {
+				return ImVec2(
+					t.get_or(1, 0.f),
+					t.get_or(2, 0.f)
+				);
+			},
+			"x", sol::property(&ImVec2::x),
+			"y", sol::property(&ImVec2::y)
+		);
+
+		// ImVec4 type binding
+		lua.new_usertype<ImVec4>("ImVec4", 
+			sol::call_constructor, [](sol::table t) {
+				return ImVec4(
+					t.get_or(1, 0.f),
+					t.get_or(2, 0.f),
+					t.get_or(3, 0.f),
+					t.get_or(4, 0.f)
+				);
+			},
+			"x", sol::property(&ImVec4::x),
+			"y", sol::property(&ImVec4::y),
+			"z", sol::property(&ImVec4::z),
+			"w", sol::property(&ImVec4::w)
+		);
+
 		// Imgui bindings
 		auto imgui = lua.create_table();
 
@@ -240,13 +269,9 @@ namespace bindings {
 			}
 		});
 
-
+		// TODO to remove
 		imgui.set_function("ImVec2", [](float x, float y) {
 			return ImVec2(x, y);
-		});
-
-		imgui.set_function("ImVec4", [](float r, float g, float b, float a) {
-			return ImVec4(r, g, b, a);
 		});
 
 		imgui.set_function("GetColorU32", [](ImVec4 v) {
@@ -442,14 +467,14 @@ namespace bindings {
 		});
 
 		// AddPolyline
-		imgui.set_function("AddPolyline", [](const std::vector<ImVec2>& points, ImU32 col, std::optional<ImDrawFlags> flagsOpt, std::optional<float> thicknessOpt) {
+		imgui.set_function("AddPolyline", [](std::vector<ImVec2> points, ImU32 col, std::optional<ImDrawFlags> flagsOpt, std::optional<float> thicknessOpt) {
 			ImDrawFlags flags = flagsOpt.has_value() ? flagsOpt.value() : 0;
 			float thickness = thicknessOpt.has_value() ? thicknessOpt.value() : 1.;
 			ImGui::GetBackgroundDrawList()->AddPolyline(points.data(), points.size(), col, flags, thickness);
 		});
 
 		// AddConvexPolyFilled
-		imgui.set_function("AddConvexPolyFilled", [](const std::vector<ImVec2>& points, ImU32 col) {
+		imgui.set_function("AddConvexPolyFilled", [](std::vector<ImVec2> points, ImU32 col) {
 			ImGui::GetBackgroundDrawList()->AddConvexPolyFilled(points.data(), points.size(), col);
 		});
 
