@@ -10,7 +10,6 @@
 
 
 #include <ranges>
-#include <format>
 
 struct UBOMatrices {
 	alignas(16) glm::mat4 view;
@@ -832,7 +831,7 @@ void App::drawGui() {
 	
 	ImGui::GetBackgroundDrawList()->AddCircle(ImGui::GetMousePos(), st.mouse.getCursorRadius(), IM_COL32(225, 225, 255, 200), 0, 2);
 	// if (isDebug()) {
-		ImGui::GetBackgroundDrawList()->AddText(ImVec2(15, 30), ImGui::GetColorU32(ImVec4(1., 1., 1., 1.)), ("FPS: " + std::format("{:.0f}", fps)).c_str());
+		ImGui::GetBackgroundDrawList()->AddText(ImVec2(15, 30), ImGui::GetColorU32(ImVec4(1., 1., 1., 1.)), ("FPS: " + std::to_string(static_cast<int>(fps))).c_str());
 	// }
 
 	for (auto &script : scripts) {
