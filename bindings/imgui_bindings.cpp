@@ -245,6 +245,14 @@ namespace bindings {
 			return ImVec2(x, y);
 		});
 
+		imgui.set_function("ImVec4", [](float r, float g, float b, float a) {
+			return ImVec4(r, g, b, a);
+		});
+
+		imgui.set_function("GetColorU32", [](ImVec4 v) {
+			return ImGui::GetColorU32(v);
+		});
+
 		imgui.set_function("PushID", [](int id) {
 			ImGui::PushID(id);
 		});
@@ -362,6 +370,13 @@ namespace bindings {
 
 		imgui.set_function("EndToolTip", []() {
 			return ImGui::EndTooltip();
+		});
+
+		// Drawing
+		imgui.set_function("AddCircle", [](ImVec2 center, float radius, ImU32 col, std::optional<int> numSegments, std::optional<float> thickness) {
+			int numSeg = numSegments.has_value() ? numSegments.value() : 0;
+			float thick = thickness.has_value() ? thickness.value() : 1.;
+			ImGui::GetBackgroundDrawList()->AddCircle(center, radius, col, numSeg, thick);
 		});
 
 		// Event
