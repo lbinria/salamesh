@@ -827,67 +827,14 @@ void App::drawGui() {
 
 		auto ctx = ImGui::GetCurrentContext();
 
-		int windowStackSize = ctx->CurrentWindowStack.size();
-		int groupStackSize = ctx->GroupStack.size();
-		int treeNodeStackSize = ctx->TreeNodeStack.size();
-		int itemFlagsStackSize = ctx->ItemFlagsStack.size();
-		int openPopupStackSize = ctx->OpenPopupStack.size();
-		int focusScopeStackSize = ctx->FocusScopeStack.size();
-		int beginPopupStackSize = ctx->BeginPopupStack.size();
-		int currentTabBarStackSize = ctx->CurrentTabBarStack.size();
-		int colorStackSize = ctx->ColorStack.size();
-		int styleVarStackSize = ctx->StyleVarStack.size();
-		int fontStackSize = ctx->FontStack.size();
+		ImGuiStackState stackState(ctx);
 
 		bool success = script->drawGui(ctx);
 		if (!success) {
-
-			// Restore all stacks to their previous state
-			while (ctx->CurrentWindowStack.size() > windowStackSize) {
-				ImGui::End();
-			}
-
-			while (ctx->GroupStack.size() > groupStackSize) {
-				ImGui::EndGroup();
-			}
-
-			while (ctx->TreeNodeStack.size() > treeNodeStackSize) {
-				ImGui::TreePop();
-			}
-
-			while (ctx->ItemFlagsStack.size() > itemFlagsStackSize) {
-				ctx->ItemFlagsStack.pop_back();
-			}
-
-			while (ctx->OpenPopupStack.size() > openPopupStackSize) {
-				ctx->OpenPopupStack.pop_back();
-			}
-
-			while (ctx->FocusScopeStack.size() > focusScopeStackSize) {
-				ctx->FocusScopeStack.pop_back();
-			}
-
-			while (ctx->BeginPopupStack.size() > beginPopupStackSize) {
-				ctx->BeginPopupStack.pop_back();
-			}
-
-			while (ctx->CurrentTabBarStack.size() > currentTabBarStackSize) {
-				ImGui::EndTabBar();
-			}
-
-			while (ctx->ColorStack.size() > colorStackSize) {
-				ImGui::PopStyleColor();
-			}
-
-			while (ctx->StyleVarStack.size() > styleVarStackSize) {
-				ImGui::PopStyleVar();
-			}
-
-			while (ctx->FontStack.size() > fontStackSize) {
-				ImGui::PopFont();
-			}
-
-			
+			// Restore all stacks
+			// We must do that to avoid app to crash
+			// because of inconsistent stack state in ImGui
+			stackState.restore();
 		}
 	}
 
