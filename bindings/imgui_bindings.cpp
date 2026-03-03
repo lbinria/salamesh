@@ -402,10 +402,28 @@ namespace bindings {
 		// 	"ImDrawFlags_Closed", ImDrawFlags_Closed,
 		// );
 
-		imgui.set_function("AddCircle", [](ImVec2 center, float radius, ImU32 col, std::optional<int> numSegments, std::optional<float> thickness) {
+		imgui.set_function("AddCircle", [](ImVec2 center, float radius, ImU32 col, std::optional<int> numSegmentsOpt, std::optional<float> thicknessOpt) {
+			int numSegments = numSegmentsOpt.has_value() ? numSegmentsOpt.value() : 0;
+			float thickness = thicknessOpt.has_value() ? thicknessOpt.value() : 1.;
+			ImGui::GetBackgroundDrawList()->AddCircle(center, radius, col, numSegments, thickness);
+		});
+
+		imgui.set_function("AddCircleFilled", [](ImVec2 center, float radius, ImU32 col, std::optional<int> numSegments) {
 			int numSeg = numSegments.has_value() ? numSegments.value() : 0;
-			float thick = thickness.has_value() ? thickness.value() : 1.;
-			ImGui::GetBackgroundDrawList()->AddCircle(center, radius, col, numSeg, thick);
+			ImGui::GetBackgroundDrawList()->AddCircleFilled(center, radius, col, numSeg);
+		});
+
+		imgui.set_function("AddEllipse", [](ImVec2 center, ImVec2 radius, ImU32 col, std::optional<float> rotOpt, std::optional<int> numSegmentsOpt, std::optional<float> thicknessOpt) {
+			float rot = rotOpt.has_value() ? rotOpt.value() : 1.;
+			int numSegments = numSegmentsOpt.has_value() ? numSegmentsOpt.value() : 0;
+			float thickness = thicknessOpt.has_value() ? thicknessOpt.value() : 1.;
+			ImGui::GetBackgroundDrawList()->AddEllipse(center, radius, col, rot, numSegments, thickness);
+		});
+
+		imgui.set_function("AddEllipseFilled", [](ImVec2 center, ImVec2 radius, ImU32 col, std::optional<float> rotOpt, std::optional<int> numSegmentsOpt) {
+			float rot = rotOpt.has_value() ? rotOpt.value() : 1.;
+			int numSegments = numSegmentsOpt.has_value() ? numSegmentsOpt.value() : 0;
+			ImGui::GetBackgroundDrawList()->AddEllipseFilled(center, radius, col, rot, numSegments);
 		});
 
 		imgui.set_function("AddRect", [](ImVec2 pMin, ImVec2 pMax, ImU32 col, float rounding, std::optional<ImDrawFlags> flagsOpt, std::optional<float> thicknessOpt) {
@@ -414,85 +432,69 @@ namespace bindings {
 			ImGui::GetBackgroundDrawList()->AddRect(pMin, pMax, col, rounding, flags, thickness);
 		});
 
-		// AddLine
-		imgui.set_function("AddLine", [](ImVec2 p1, ImVec2 p2, ImU32 col, std::optional<float> thicknessOpt) {
-			float thickness = thicknessOpt.has_value() ? thicknessOpt.value() : 1.;
-			ImGui::GetBackgroundDrawList()->AddLine(p1, p2, col, thickness);
-		});
-
-		// AddTriangle
-		imgui.set_function("AddTriangle", [](ImVec2 p1, ImVec2 p2, ImVec2 p3, ImU32 col, std::optional<float> thicknessOpt) {
-			float thickness = thicknessOpt.has_value() ? thicknessOpt.value() : 1.;
-			ImGui::GetBackgroundDrawList()->AddTriangle(p1, p2, p3, col, thickness);
-		});
-
-		// AddTriangleFilled
-		imgui.set_function("AddTriangleFilled", [](ImVec2 p1, ImVec2 p2, ImVec2 p3, ImU32 col) {
-			ImGui::GetBackgroundDrawList()->AddTriangleFilled(p1, p2, p3, col);
-		});
-
-		// AddQuad
-		imgui.set_function("AddQuad", [](ImVec2 p1, ImVec2 p2, ImVec2 p3, ImVec2 p4, ImU32 col, std::optional<float> thicknessOpt) {
-			float thickness = thicknessOpt.has_value() ? thicknessOpt.value() : 1.;
-			ImGui::GetBackgroundDrawList()->AddQuad(p1, p2, p3, p4, col, thickness);
-		});
-
-		// AddQuadFilled
-		imgui.set_function("AddQuadFilled", [](ImVec2 p1, ImVec2 p2, ImVec2 p3, ImVec2 p4, ImU32 col) {
-			ImGui::GetBackgroundDrawList()->AddQuadFilled(p1, p2, p3, p4, col);
-		});
-
-		// AddRectFilled
 		imgui.set_function("AddRectFilled", [](ImVec2 pMin, ImVec2 pMax, ImU32 col, std::optional<float> roundingOpt, std::optional<ImDrawFlags> flagsOpt) {
 			float rounding = roundingOpt.has_value() ? roundingOpt.value() : 0.;
 			ImDrawFlags flags = flagsOpt.has_value() ? flagsOpt.value() : 0;
 			ImGui::GetBackgroundDrawList()->AddRectFilled(pMin, pMax, col, rounding, flags);
 		});
 
-		// AddCircleFilled
-		imgui.set_function("AddCircleFilled", [](ImVec2 center, float radius, ImU32 col, std::optional<int> numSegmentsOpt) {
-			int numSegments = numSegmentsOpt.has_value() ? numSegmentsOpt.value() : 0;
-			ImGui::GetBackgroundDrawList()->AddCircleFilled(center, radius, col, numSegments);
+		imgui.set_function("AddTriangle", [](ImVec2 p1, ImVec2 p2, ImVec2 p3, ImU32 col, std::optional<float> thicknessOpt) {
+			float thickness = thicknessOpt.has_value() ? thicknessOpt.value() : 1.;
+			ImGui::GetBackgroundDrawList()->AddTriangle(p1, p2, p3, col, thickness);
 		});
 
-		// AddNgon (regular polygon with N sides)
+		imgui.set_function("AddTriangleFilled", [](ImVec2 p1, ImVec2 p2, ImVec2 p3, ImU32 col) {
+			ImGui::GetBackgroundDrawList()->AddTriangleFilled(p1, p2, p3, col);
+		});
+
+		imgui.set_function("AddQuad", [](ImVec2 p1, ImVec2 p2, ImVec2 p3, ImVec2 p4, ImU32 col, std::optional<float> thicknessOpt) {
+			float thickness = thicknessOpt.has_value() ? thicknessOpt.value() : 1.;
+			ImGui::GetBackgroundDrawList()->AddQuad(p1, p2, p3, p4, col, thickness);
+		});
+
+		imgui.set_function("AddQuadFilled", [](ImVec2 p1, ImVec2 p2, ImVec2 p3, ImVec2 p4, ImU32 col) {
+			ImGui::GetBackgroundDrawList()->AddQuadFilled(p1, p2, p3, p4, col);
+		});
+
 		imgui.set_function("AddNgon", [](ImVec2 center, float radius, ImU32 col, int numSegments, std::optional<float> thicknessOpt) {
 			float thickness = thicknessOpt.has_value() ? thicknessOpt.value() : 1.;
 			ImGui::GetBackgroundDrawList()->AddNgon(center, radius, col, numSegments, thickness);
 		});
 
-		// AddNgonFilled
 		imgui.set_function("AddNgonFilled", [](ImVec2 center, float radius, ImU32 col, int numSegments) {
 			ImGui::GetBackgroundDrawList()->AddNgonFilled(center, radius, col, numSegments);
 		});
 
-		// AddPolyline
+		imgui.set_function("AddLine", [](ImVec2 p1, ImVec2 p2, ImU32 col, std::optional<float> thicknessOpt) {
+			float thickness = thicknessOpt.has_value() ? thicknessOpt.value() : 1.;
+			ImGui::GetBackgroundDrawList()->AddLine(p1, p2, col, thickness);
+		});
+
 		imgui.set_function("AddPolyline", [](std::vector<ImVec2> points, ImU32 col, std::optional<ImDrawFlags> flagsOpt, std::optional<float> thicknessOpt) {
 			ImDrawFlags flags = flagsOpt.has_value() ? flagsOpt.value() : 0;
 			float thickness = thicknessOpt.has_value() ? thicknessOpt.value() : 1.;
 			ImGui::GetBackgroundDrawList()->AddPolyline(points.data(), points.size(), col, flags, thickness);
 		});
 
-		// AddConvexPolyFilled
 		imgui.set_function("AddConvexPolyFilled", [](std::vector<ImVec2> points, ImU32 col) {
 			ImGui::GetBackgroundDrawList()->AddConvexPolyFilled(points.data(), points.size(), col);
 		});
 
-		// AddBezierCubic (cubic Bezier curve)
 		imgui.set_function("AddBezierCubic", [](ImVec2 p1, ImVec2 p2, ImVec2 p3, ImVec2 p4, ImU32 col, std::optional<float> thicknessOpt, std::optional<int> numSegmentsOpt) {
 			float thickness = thicknessOpt.has_value() ? thicknessOpt.value() : 1.;
 			int numSegments = numSegmentsOpt.has_value() ? numSegmentsOpt.value() : 0;
 			ImGui::GetBackgroundDrawList()->AddBezierCubic(p1, p2, p3, p4, col, thickness, numSegments);
 		});
 
-		// AddBezierQuadratic (quadratic Bezier curve)
 		imgui.set_function("AddBezierQuadratic", [](ImVec2 p1, ImVec2 p2, ImVec2 p3, ImU32 col, std::optional<float> thicknessOpt, std::optional<int> numSegmentsOpt) {
 			float thickness = thicknessOpt.has_value() ? thicknessOpt.value() : 1.;
 			int numSegments = numSegmentsOpt.has_value() ? numSegmentsOpt.value() : 0;
 			ImGui::GetBackgroundDrawList()->AddBezierQuadratic(p1, p2, p3, col, thickness, numSegments);
 		});
 
-		
+		imgui.set_function("AddText", [](ImVec2 pos, ImU32 col, const char *text) {
+			ImGui::GetBackgroundDrawList()->AddText(pos, col, text);
+		});
 
 		// Event
 		imgui.set_function("IsItemHovered", []() {
