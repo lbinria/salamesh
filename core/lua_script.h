@@ -27,7 +27,6 @@ struct LuaScript final : public Script {
 		// TODO load / bind symbols from C++ shared lib associated to the script
 
 		try {
-			// lua.script_file(script);
 			lua.safe_script_file(script);
 		} catch (const sol::error& e) {
 			std::cerr << "Error loading script: " << e.what() << std::endl;
@@ -209,13 +208,6 @@ struct LuaScript final : public Script {
 	}
 
 	sol::state& getState() { return lua; }
-
-	enum Status {
-		SCRIPT_STATUS_OK,
-		SCRIPT_STATUS_FAILED
-	};
-
-	Status status = SCRIPT_STATUS_OK;
 
 	private:
 

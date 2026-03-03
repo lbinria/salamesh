@@ -34,6 +34,13 @@ struct Script {
 	virtual void selectedModelChanged(std::string oldName, std::string newName) {};
 	virtual void sceneCleared() {};
 
+	enum Status {
+		SCRIPT_STATUS_OK,
+		SCRIPT_STATUS_FAILED
+	};
+
+	Status status = SCRIPT_STATUS_OK;
+
 	protected:
 	IApp &app;
 };

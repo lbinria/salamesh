@@ -1,5 +1,6 @@
 #include "imgui_bindings.h"
 #include <imgui.h>
+#include <imgui_internal.h>
 #include "ImGuiFileDialog.h"
 
 namespace bindings {
@@ -7,6 +8,10 @@ namespace bindings {
 	void ImGuiBindings::loadBindings(sol::state &lua, IApp &app) {
 		// Imgui bindings
 		auto imgui = lua.create_table();
+
+		imgui.set_function("CtxId", []() {
+			return ImGui::GetCurrentContext()->ActiveId;
+		});
 
 		// Window
 		imgui.set_function("Begin", [](const char* name) {

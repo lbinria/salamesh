@@ -293,6 +293,7 @@ bool App::setup() {
     ImGuiIO &io = ImGui::GetIO();
 	io.ConfigFlags |= ImGuiConfigFlags_DockingEnable;
 	// io.ConfigFlags |= ImGuiConfigFlags_ViewportsEnable;
+	std::cout << "ImGui context ID: " << ImGui::GetCurrentContext()->ActiveId << std::endl;
     // Setup Platform/Renderer backends
     ImGui_ImplGlfw_InitForOpenGL(window, true);
     ImGui_ImplOpenGL3_Init("#version 330");
@@ -820,27 +821,74 @@ void App::drawGui() {
 
 
 	for (auto &script : scripts) {
-		// if (script->status == LuaScript::SCRIPT_STATUS_OK) {
-			bool success = script->drawGui(ImGui::GetCurrentContext());
-			if (!success) {
 
-				// Clear properly ImGui
+		if (script->status != LuaScript::SCRIPT_STATUS_OK)
+			continue;
 
-				// auto &io = ImGui::GetIO();
-				// bool last_error_recovery = io.ConfigErrorRecovery;
-				// io.ConfigErrorRecovery = false;
-				
-				// // ImGui::NewFrame();
-				// // ImGui::EndFrame();
+		auto ctx = ImGui::GetCurrentContext();
 
-				// io.ConfigErrorRecovery = last_error_recovery;
-				// // Clean up commands
-				// auto draw_data = ImGui::GetDrawData();
-				// if (draw_data != nullptr)
-				// 	draw_data->Clear();
+		int windowStackSize = ctx->CurrentWindowStack.size();
+		int groupStackSize = ctx->GroupStack.size();
+		int treeNodeStackSize = ctx->TreeNodeStack.size();
+		int itemFlagsStackSize = ctx->ItemFlagsStack.size();
+		int openPopupStackSize = ctx->OpenPopupStack.size();
+		int focusScopeStackSize = ctx->FocusScopeStack.size();
+		int beginPopupStackSize = ctx->BeginPopupStack.size();
+		int currentTabBarStackSize = ctx->CurrentTabBarStack.size();
+		int colorStackSize = ctx->ColorStack.size();
+		int styleVarStackSize = ctx->StyleVarStack.size();
+		int fontStackSize = ctx->FontStack.size();
 
+		bool success = script->drawGui(ctx);
+		if (!success) {
+
+			// Restore all stacks to their previous state
+			while (ctx->CurrentWindowStack.size() > windowStackSize) {
+				ImGui::End();
 			}
-		// }
+
+			while (ctx->GroupStack.size() > groupStackSize) {
+				ImGui::EndGroup();
+			}
+
+			while (ctx->TreeNodeStack.size() > treeNodeStackSize) {
+				ImGui::TreePop();
+			}
+
+			while (ctx->ItemFlagsStack.size() > itemFlagsStackSize) {
+				ctx->ItemFlagsStack.pop_back();
+			}
+
+			while (ctx->OpenPopupStack.size() > openPopupStackSize) {
+				ctx->OpenPopupStack.pop_back();
+			}
+
+			while (ctx->FocusScopeStack.size() > focusScopeStackSize) {
+				ctx->FocusScopeStack.pop_back();
+			}
+
+			while (ctx->BeginPopupStack.size() > beginPopupStackSize) {
+				ctx->BeginPopupStack.pop_back();
+			}
+
+			while (ctx->CurrentTabBarStack.size() > currentTabBarStackSize) {
+				ImGui::EndTabBar();
+			}
+
+			while (ctx->ColorStack.size() > colorStackSize) {
+				ImGui::PopStyleColor();
+			}
+
+			while (ctx->StyleVarStack.size() > styleVarStackSize) {
+				ImGui::PopStyleVar();
+			}
+
+			while (ctx->FontStack.size() > fontStackSize) {
+				ImGui::PopFont();
+			}
+
+			
+		}
 	}
 
 	_isUIHovered = ImGui::IsAnyItemHovered() || ImGui::IsWindowHovered(ImGuiHoveredFlags_AnyWindow);
