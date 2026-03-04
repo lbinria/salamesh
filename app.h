@@ -98,6 +98,8 @@ struct App final : public IApp {
 		assert(!name.empty() && "Cannot add model with an empty name.");
 		auto model = modelInstanciator.make(type);
 
+		// TODO maybe chekc type exists, else we dont understand why we get null model ?
+
 		// Check whether renderer already exists
 		if (models.contains(name))
 			return models[name];
@@ -106,8 +108,8 @@ struct App final : public IApp {
 			return nullptr;
 		
 		// model->init();
-		models[name] = std::move(model);
 		modelNameByIndex[model->getIndex()] = name;
+		models[name] = std::move(model);
 		return models[name];
 
 		// // 
