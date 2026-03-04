@@ -66,7 +66,8 @@ namespace bindings {
 		sol::usertype<PointSetRenderer> pointSetRenderer_t = lua.new_usertype<PointSetRenderer>(
 			"PointSetRenderer",
 			sol::base_classes, 
-			sol::bases<Renderer>()
+			sol::bases<Renderer>(),
+			"auto_update", sol::writeonly_property(&PointSetRenderer::setAutoUpdate)
 		);
 
 		pointSetRenderer_t[sol::meta_function::index] = [](PointSetRenderer& self, int i) -> vec3 {
@@ -92,6 +93,9 @@ namespace bindings {
 		pointSetRenderer_t.set_function("add_point", &PointSetRenderer::addPoint);
 		pointSetRenderer_t.set_function("add_points", &PointSetRenderer::addPoints);
 		pointSetRenderer_t.set_function("remove_points", &PointSetRenderer::removePoints);
+		pointSetRenderer_t.set_function("clear_points", &PointSetRenderer::clearPoints);
+		pointSetRenderer_t.set_function("push", &PointSetRenderer::push);
+
 		pointSetRenderer_t["count"] = sol::readonly_property(&PointSetRenderer::count);
 
 
@@ -157,6 +161,18 @@ namespace bindings {
 		lineRenderer_t.set_function("add_lines", &LineRenderer::addLines);
 		lineRenderer_t.set_function("clear_lines", &LineRenderer::clearLines);
 		lineRenderer_t.set_function("push", &LineRenderer::push);
+
+		// auto pointSetRenderer_t = lua.new_usertype<PointSetRenderer>(
+		// 	"PointSetRenderer",
+		// 	sol::base_classes, 
+		// 	sol::bases<Renderer>(),
+		// 	"auto_update", sol::writeonly_property(&PointSetRenderer::setAutoUpdate)
+		// );
+
+		// pointSetRenderer_t.set_function("push", &PointSetRenderer::push);
+		// pointSetRenderer_t.set_function("clear_points", &PointSetRenderer::clearPoints);
+		// pointSetRenderer_t.set_function("add_point", &PointSetRenderer::addPoint);
+		// pointSetRenderer_t.set_function("add_points", &PointSetRenderer::addPoints);
 
 	}
 }

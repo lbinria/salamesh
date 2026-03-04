@@ -89,7 +89,7 @@ struct App final : public IApp {
 	float getDepth(double x, double y);
 
 	void unproject(int x, int y, float depth, glm::vec3 &p);
-	glm::vec3 pickPoint(double x, double y);
+	glm::vec3 pickPoint(double x, double y) override;
 
 	// TODO to protected
 	std::string loadModel(const std::string& filename, std::string name = "") override;

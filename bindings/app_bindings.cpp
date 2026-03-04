@@ -235,6 +235,8 @@ namespace bindings {
 		app_type["cull_mode"] = sol::writeonly_property(&IApp::setCullMode);
 		app_type["cull"] = sol::property(&IApp::getCull, &IApp::setCull);
 
+		app_type.set_function("pick_point", &IApp::pickPoint);
+
 		app_type["is_ui_hovered"] = sol::readonly_property(&IApp::isUIHovered);
 
 		// Modules

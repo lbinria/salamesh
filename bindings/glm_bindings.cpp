@@ -7,6 +7,56 @@ namespace bindings {
 	void GlmBindings::loadBindings(sol::state &lua, IApp &app) {
 
 		// vec3 type
+		sol::usertype<glm::vec2> vec2_type = lua.new_usertype<glm::vec2>("vec2",
+
+			// Constructor overloads
+			sol::constructors<glm::vec2(), 
+							glm::vec2(float, float),
+							glm::vec2(const glm::vec2&)>{},
+
+			sol::call_constructor, [](sol::table t) {
+				return glm::vec2{
+					t.get_or(1, 0.f),
+					t.get_or(2, 0.f)
+				};
+			},
+
+			sol::meta_function::addition, sol::overload(
+				[](const glm::vec2 &a, const glm::vec2 &b) {
+					return a + b;
+				}/*, 
+				[](const float a, const glm::vec3 &b) {
+					return a + b;
+				}*/
+			),
+
+			sol::meta_function::subtraction, [](const glm::vec2 &a, const glm::vec2 &b) {
+				return a - b;
+			},
+
+			sol::meta_function::multiplication, sol::overload(
+				[](const glm::vec2 &a, const glm::vec2 &b) {
+					return a * b;
+				}, 
+				[](const float a, const glm::vec2 &b) {
+					return a * b;
+				}
+			),
+
+			sol::meta_function::division, [](const glm::vec2 &a, const glm::vec2 &b) {
+				return a / b;
+			},
+			
+			// Property accessors
+			"x", sol::readonly_property(&glm::vec2::x),
+			"y", sol::readonly_property(&glm::vec2::y)
+		);
+
+		vec2_type.set_function("to_string", [](glm::vec2 &v) {
+			return std::string("(") + std::to_string(v.x) + ", " + std::to_string(v.y) + ")";
+		});
+
+		// vec3 type
 		sol::usertype<glm::vec3> vec3_type = lua.new_usertype<glm::vec3>("vec3",
 
 			// Constructor overloads

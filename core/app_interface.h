@@ -253,6 +253,8 @@ struct IApp {
 	virtual int getSurfaceWidth() const = 0;
 	virtual int getSurfaceHeight() const = 0;
 
+	virtual glm::vec3 pickPoint(double x, double y) = 0;
+
 	virtual std::vector<Colormap> getColormaps() = 0;
 
 	// Navigation
