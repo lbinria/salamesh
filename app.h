@@ -96,13 +96,14 @@ struct App final : public IApp {
 
 	std::shared_ptr<Model> addModel(std::string type, std::string name) override {
 		assert(!name.empty() && "Cannot add model with an empty name.");
-		auto model = modelInstanciator.make(type);
 
 		// TODO maybe chekc type exists, else we dont understand why we get null model ?
 
 		// Check whether renderer already exists
 		if (models.contains(name))
 			return models[name];
+
+		auto model = modelInstanciator.make(type);
 
 		if (!model)
 			return nullptr;
@@ -290,11 +291,11 @@ struct App final : public IApp {
 	std::shared_ptr<Camera> addCamera(std::string type, std::string name) override {
 		assert(!name.empty() && "Cannot add camera with an empty name.");
 
-		auto camera = cameraInstanciator.make(type);
-
 		// Check whether renderer already exists
 		if (cameras.contains(name))
 			return cameras[name];
+
+		auto camera = cameraInstanciator.make(type);
 
 		if (!camera)
 			return nullptr;
