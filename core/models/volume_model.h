@@ -159,6 +159,18 @@ struct VolumeModel final : public Model {
 		return _m.create_cells(n);
 	}
 
+	void deleteElements(std::vector<int> indexes) override {
+		std::vector<bool> toKill(_m.ncells(), false);
+		for (int i : indexes)
+			toKill[i] = true;
+					
+		_m.delete_cells(toKill);
+	}
+
+	void deleteIsolatedVertices() override {
+		_m.delete_isolated_vertices();
+	}
+
 	std::tuple<glm::vec3, glm::vec3> bbox() override {
 		glm::vec3 min = glm::vec3(FLT_MAX);
 		glm::vec3 max = glm::vec3(-FLT_MAX);

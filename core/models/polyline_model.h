@@ -142,6 +142,18 @@ struct PolylineModel : public Model {
 		return _m.create_edges(n);
 	}
 
+	void deleteElements(std::vector<int> indexes) override {
+		std::vector<bool> toKill(_m.nedges(), false);
+		for (int i : indexes)
+			toKill[i] = true;
+					
+		_m.delete_edges(toKill);
+	}
+
+	void deleteIsolatedVertices() override {
+		_m.delete_isolated_vertices();
+	}
+
 	long pickEdge(glm::vec3 p0, int f) {
 		return 0;
 		// auto &m = getSurface();

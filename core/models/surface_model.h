@@ -199,6 +199,19 @@ struct SurfaceModel : public Model {
 		}
 	}
 
+	void deleteElements(std::vector<int> indexes) override {
+		std::vector<bool> toKill(_m.nfacets(), false);
+		for (int i : indexes)
+			toKill[i] = true;
+		
+		_m.delete_facets(toKill);
+	}
+
+	void deleteIsolatedVertices() override {
+		_m.delete_isolated_vertices();
+	}
+
+
 
 	long pickEdge(glm::vec3 p0, int f) override {
 		auto &m = getSurface();
