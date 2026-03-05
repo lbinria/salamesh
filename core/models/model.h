@@ -112,6 +112,7 @@ struct Model {
 	virtual int createElements(int n, int size = 0) = 0;
 	virtual void deleteElements(std::vector<int> indexes) = 0;
 	virtual void deleteIsolatedVertices() = 0;
+	virtual void deleteVertices(std::vector<int> indexes) = 0;
 
 	virtual std::tuple<glm::vec3, glm::vec3> bbox() = 0;
 

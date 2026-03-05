@@ -174,6 +174,7 @@ namespace bindings {
 
 		model_t.set_function("delete_elements", &Model::deleteElements);
 		model_t.set_function("delete_isolated_vertices", &Model::deleteIsolatedVertices);
+		model_t.set_function("delete_vertices", &Model::deleteVertices);
 
 		model_t["bbox"] = sol::readonly_property([](Model& m, sol::this_state s) {
 			sol::state_view lua(s);
