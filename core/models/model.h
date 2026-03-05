@@ -109,6 +109,7 @@ struct Model {
 	virtual int nhalfedges() const = 0;
 	// Mesh manipulations (just simple ones)
 	virtual void vert(int i, int lv, int vi) = 0;
+	virtual int createElements(int n, int size = 0) = 0;
 
 	virtual std::tuple<glm::vec3, glm::vec3> bbox() = 0;
 

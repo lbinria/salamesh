@@ -155,6 +155,9 @@ struct VolumeModel final : public Model {
 		_m.vert(ci, lv) = vi;
 	}
 
+	int createElements(int n, int size = 0) override {
+		return _m.create_cells(n);
+	}
 
 	std::tuple<glm::vec3, glm::vec3> bbox() override {
 		glm::vec3 min = glm::vec3(FLT_MAX);

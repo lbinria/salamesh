@@ -191,6 +191,15 @@ struct SurfaceModel : public Model {
 		_m.vert(fi, lv) = vi;
 	}
 
+	int createElements(int n, int size = 0) override {
+		if constexpr (!std::is_same_v<Polygons, TSurface>) {
+			return _m.create_facets(n);
+		} else {
+			return _m.create_facets(n, size);;
+		}
+	}
+
+
 	long pickEdge(glm::vec3 p0, int f) override {
 		auto &m = getSurface();
 

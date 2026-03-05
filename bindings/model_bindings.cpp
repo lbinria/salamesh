@@ -166,6 +166,11 @@ namespace bindings {
 		model_t["ncells"] = sol::readonly_property(&Model::ncells);
 
 		model_t.set_function("vert", &Model::vert);
+		
+		model_t.set_function("create_elements", [](Model &self, int n, std::optional<int> sizeOpt) {
+			int size = sizeOpt.has_value() ? sizeOpt.value() : 0;
+ 			return self.createElements(n, size);
+		});
 
 		model_t["bbox"] = sol::readonly_property([](Model& m, sol::this_state s) {
 			sol::state_view lua(s);

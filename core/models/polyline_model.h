@@ -138,6 +138,10 @@ struct PolylineModel : public Model {
 		_m.vert(e, lv) = vi;
 	}
 
+	int createElements(int n, int size = 0) override {
+		return _m.create_edges(n);
+	}
+
 	long pickEdge(glm::vec3 p0, int f) {
 		return 0;
 		// auto &m = getSurface();
