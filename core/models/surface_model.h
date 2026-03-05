@@ -152,7 +152,7 @@ struct SurfaceModel : public Model {
 		glm::vec3 max = glm::vec3(-FLT_MAX);
 
 		for (auto &v : m.iter_vertices()) {
-			glm::vec3 p = sl::um2glm(v.pos());
+			glm::vec3 p = sl::um2glm(v);
 			min = glm::min(min, p);
 			max = glm::max(max, p);
 		}
