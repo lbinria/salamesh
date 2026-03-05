@@ -108,7 +108,7 @@ struct App final : public IApp {
 		if (!model)
 			return nullptr;
 		
-		// model->init();
+		model->init();
 		modelNameByIndex[model->getIndex()] = name;
 		models[name] = std::move(model);
 		return models[name];
