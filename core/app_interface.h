@@ -254,6 +254,11 @@ struct IApp {
 	virtual int getSurfaceHeight() const = 0;
 
 	virtual glm::vec3 pickPoint(double x, double y) = 0;
+	virtual long pickEdge(double x, double y) = 0;
+	virtual long pick_mesh(double x, double y) = 0;
+	virtual std::vector<long> pick_vertices(double x, double y, int radius) = 0;
+	virtual std::vector<long> pick_facets(double x, double y, int radius) = 0;
+	virtual std::vector<long> pick_cells(double x, double y, int radius) = 0;
 
 	virtual std::vector<Colormap> getColormaps() = 0;
 
