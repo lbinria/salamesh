@@ -148,6 +148,9 @@ namespace bindings {
 			self.loadState(j);
 		});
 
+		model_t.set_function("push", &Model::push);
+
+
 		model_t["path"] = sol::readonly_property(&Model::getPath);
 		model_t["parent"] = sol::property(&Model::getParent, &Model::setParent);
 
@@ -155,6 +158,14 @@ namespace bindings {
 		
 		model_t["position"] = sol::property(&Model::getPosition, &Model::setPosition);
 		model_t["world_position"] = sol::readonly_property(&Model::getWorldPosition);
+
+		model_t["nverts"] = sol::readonly_property(&Model::nverts);
+		model_t["nfacets"] = sol::readonly_property(&Model::nfacets);
+		model_t["ncorners"] = sol::readonly_property(&Model::ncorners);
+		model_t["nhalfedges"] = sol::readonly_property(&Model::nhalfedges);
+		model_t["ncells"] = sol::readonly_property(&Model::ncells);
+
+		model_t.set_function("vert", &Model::vert);
 
 		model_t["bbox"] = sol::readonly_property([](Model& m, sol::this_state s) {
 			sol::state_view lua(s);
@@ -165,13 +176,6 @@ namespace bindings {
 
 		model_t["center"] = sol::readonly_property(&Model::getCenter);
 		model_t["radius"] = sol::readonly_property(&Model::getRadius);
-
-		model_t["nverts"] = sol::readonly_property(&Model::nverts);
-		model_t["nfacets"] = sol::readonly_property(&Model::nfacets);
-		model_t["ncorners"] = sol::readonly_property(&Model::ncorners);
-		model_t["nhalfedges"] = sol::readonly_property(&Model::nhalfedges);
-		model_t["ncells"] = sol::readonly_property(&Model::ncells);
-
 
 		model_t["light"] = sol::property(&Model::getLight, &Model::setLight);
 		model_t["is_light_follow_view"] = sol::property(&Model::getLightFollowView, &Model::setLightFollowView);

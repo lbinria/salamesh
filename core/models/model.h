@@ -107,6 +107,9 @@ struct Model {
 	virtual int ncells() const = 0; 
 	virtual int ncorners() const = 0; 
 	virtual int nhalfedges() const = 0;
+	// Mesh manipulations (just simple ones)
+	virtual void vert(int i, int lv, int vi) = 0;
+
 	virtual std::tuple<glm::vec3, glm::vec3> bbox() = 0;
 
 	glm::vec3 getCenter() {
@@ -118,7 +121,6 @@ struct Model {
 		auto [bmin, bmax] = bbox();
 		return glm::length(bmax - bmin) / 2.f;
 	}
-
 
 	void removeAttr(int idx);
 	void removeAttr(ElementKind kind, std::string name);

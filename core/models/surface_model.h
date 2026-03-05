@@ -167,28 +167,28 @@ struct SurfaceModel : public Model {
 	SurfaceAttributes& getSurfaceAttributes() { return _surfaceAttributes; }
 	const SurfaceAttributes& getSurfaceAttributes() const { return _surfaceAttributes; }
 
-	int nverts() const override {
-		auto &m = getSurface();
-		return m.nverts();
+	inline int nverts() const override {
+		return _m.nverts();
 	}
 
-	int nfacets() const override {
-		auto &m = getSurface();
-		return m.nfacets();
+	inline int nfacets() const override {
+		return _m.nfacets();
 	} 
 
-	int ncells() const override {
+	inline int ncells() const override {
 		return 0;
 	}
 
-	int ncorners() const override {
-		auto &m = getSurface();
-		return m.ncorners();
+	inline int ncorners() const override {
+		return _m.ncorners();
 	}
 
-	int nhalfedges() const override {
-		auto &m = getSurface();
-		return m.ncorners();
+	inline int nhalfedges() const override {
+		return _m.ncorners();
+	}
+
+	inline void vert(int fi, int lv, int vi) override {
+		_m.vert(fi, lv) = vi;
 	}
 
 	long pickEdge(glm::vec3 p0, int f) override {

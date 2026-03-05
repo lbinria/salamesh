@@ -134,6 +134,10 @@ struct PolylineModel : public Model {
 		return _m.nedges();
 	}
 
+	inline void vert(int e, int lv, int vi) override {
+		_m.vert(e, lv) = vi;
+	}
+
 	long pickEdge(glm::vec3 p0, int f) {
 		return 0;
 		// auto &m = getSurface();

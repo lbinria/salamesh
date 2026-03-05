@@ -131,25 +131,30 @@ struct VolumeModel final : public Model {
 	VolumeAttributes& getVolumeAttributes() { return _volumeAttributes; }
 	const VolumeAttributes& getVolumeAttributes() const { return _volumeAttributes; }
 
-	int nverts() const override {
+	inline int nverts() const override {
 		return _m.nverts();
 	}
 
-	int nfacets() const override {
+	inline int nfacets() const override {
 		return _m.nfacets();
 	}
 
-	int ncells() const override {
+	inline int ncells() const override {
 		return _m.ncells();
 	}
 
-	int ncorners() const override {
+	inline int ncorners() const override {
 		return _m.ncorners();
 	}
 
-	int nhalfedges() const override {
+	inline int nhalfedges() const override {
 		return _m.ncells() * 24;
 	}
+
+	inline void vert(int ci, int lv, int vi) override {
+		_m.vert(ci, lv) = vi;
+	}
+
 
 	std::tuple<glm::vec3, glm::vec3> bbox() override {
 		glm::vec3 min = glm::vec3(FLT_MAX);
