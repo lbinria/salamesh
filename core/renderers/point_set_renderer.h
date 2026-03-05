@@ -43,23 +43,28 @@ struct PointSetRenderer : public Renderer {
 
 	int getRenderElementKind() override { return ElementKind::POINTS_ELT; }
 
-	void addPoint(glm::vec3 p) {
+	int addPoint(glm::vec3 p) {
 		int off = ps.create_points(1);
 		ps[off] = sl::glm2um(p);
 
 		if (autoUpdate)
 			push();
+
+		return off;
 	}
 
-	void addPoints(std::vector<glm::vec3> points) {
+	int addPoints(std::vector<glm::vec3> points) {
 		int off = ps.create_points(points.size());
 		for (int i = off; i < points.size() - 1; ++i)
 			ps[i] = sl::glm2um(points[i]);
 
 		if (autoUpdate)
 			push();
+
+		return off;
 	}
 
+	// TODO add removePoint, and removePoitns by index not bool vector
 	void removePoints(std::vector<bool> toKill) {
 		ps.delete_points(toKill);
 
