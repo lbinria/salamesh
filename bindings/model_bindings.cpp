@@ -46,26 +46,6 @@ namespace bindings {
 			"COLORMAP_LAYER_2", ColormapLayer::COLORMAP_LAYER_2
 		);
 
-		// // Create container user types for different attribute types
-		// sol::usertype<Attribute::Container<double>> attr_double_container_t = lua.new_usertype<Attribute::Container<double>>("AttributeContainerDouble");
-
-		// attr_double_container_t[sol::meta_function::index] = [](Attribute::Container<double>& c, int i) {
-		// 	return c[i];
-		// };
-
-		// attr_double_container_t[sol::meta_function::new_index] = [](Attribute::Container<double>& c, int i, double value) {
-		// 	c[i] = value;
-		// };
-
-		// sol::usertype<Attribute::Container<int>> attr_int_container_t = lua.new_usertype<Attribute::Container<int>>("AttributeContainerInt");
-
-		// attr_int_container_t[sol::meta_function::index] = [](Attribute::Container<int>& c, int i) {
-		// 	return c[i];
-		// };
-
-		// attr_int_container_t[sol::meta_function::new_index] = [](Attribute::Container<int>& c, int i, int value) {
-		// 	c[i] = value;
-		// };
 
 
 		sol::usertype<Attribute> attr_t = lua.new_usertype<Attribute>("Attribute", 
@@ -91,40 +71,6 @@ namespace bindings {
 		model_t.set_function("as_quad", &Model::as<QuadModel>);
 		model_t.set_function("as_poly", &Model::as<PolyModel>);
 
-		// model_t["surface_attributes"] = sol::readonly_property([](Model &self) -> std::optional<SurfaceAttributes*> {
-		// 	if (self.getModelType() == ModelType::TRI_MODEL) {
-		// 		auto &m = self.as<TriModel>();
-		// 		return &m.getSurfaceAttributes();
-		// 	} else if (self.getModelType() == ModelType::QUAD_MODEL) {
-		// 		auto &m = self.as<QuadModel>();
-		// 		return &m.getSurfaceAttributes();
-		// 	} else if (self.getModelType() == ModelType::POLYGON_MODEL) {
-		// 		auto &m = self.as<PolyModel>();
-		// 		return &m.getSurfaceAttributes();
-		// 	}
-
-		// 	return std::nullopt;
-		// });
-
-		// model_t["mesh"] = sol::readonly_property([](Model &self, sol::this_state s) -> sol::object {
-		// 	sol::state_view lua(s);
-
-		// 	if (self.getModelType() == ModelType::TRI_MODEL) {
-		// 		auto &m = self.as<TriModel>();
-		// 		auto &mesh = m.getMesh();
-		// 		return sol::make_object(lua, mesh);
-		// 	} else if (self.getModelType() == ModelType::QUAD_MODEL) {
-		// 		auto &m = self.as<QuadModel>();
-		// 		auto &mesh = m.getMesh();
-		// 		return sol::make_object(lua, mesh);
-		// 	} else if (self.getModelType() == ModelType::POLYGON_MODEL) {
-		// 		auto &m = self.as<PolyModel>();
-		// 		auto &mesh = m.getMesh();
-		// 		return sol::make_object(lua, mesh);
-		// 	}
-
-		// 	return sol::nil;
-		// });
 
 		model_t.set_function("load", &Model::load);
 		model_t.set_function("save", &Model::save);
