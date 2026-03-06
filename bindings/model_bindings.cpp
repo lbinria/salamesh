@@ -2,7 +2,9 @@
 
 #include "../core/app_interface.h"
 #include "../core/models/model.h"
+#include "../core/models/polyline_model.h"
 #include "../core/models/surface_model.h"
+#include "../core/models/volume_model.h"
 #include "../core/attribute.h"
 
 namespace bindings {
@@ -83,9 +85,15 @@ namespace bindings {
 				return sol::make_object(lua, 0.3f);
 		});
 
-		// model_t["surface_attributes"] = sol::readonly_property([](Model &self) -> std::unique_ptr<SurfaceAttributes> { 
-		// 	if (model)
-		// 	return self.getSurfaceAttributes(); 
+		// model_t["surface_attributes"] = sol::readonly_property([&lua](Model &self) -> sol::object { 
+		// 	if (self.getDim() == 1)
+		// 		return sol::make_object(lua, self.as<PolylineModel>().getSurfaceAttributes());
+		// 	else if (self.getDim() == 2)
+		// 		return sol::make_object(lua, self.as<SurfaceModel>().getSurfaceAttributes());
+		// 	else if (self.getDim() == 3)
+		// 		return sol::make_object(lua, self.as<VolumeModel>().getVolumeAttributes());
+		// 	else 
+		// 		return sol::make_object(lua, sol::nil);
 		// });
 
 

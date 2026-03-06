@@ -31,7 +31,7 @@ struct Model {
 		++maxIndex;
 	}
 
-	template<typename T>
+	template<class T>
 	T& as() {
 		static_assert(std::is_base_of_v<Model, T>, "Model::as() can only be used with derived classes of Model");
 		return static_cast<T&>(*this);

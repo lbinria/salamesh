@@ -73,7 +73,6 @@ static std::string elementTypeToString(ElementType t) {
 	}
 }
 
-// TODO maybe to constexpr
 // TODO maybe move elsewhere because it is dependent of ultimaille this is a "glue"
 template<typename TMesh>
 static consteval ModelType modelTypeFromMeshType() {
@@ -97,6 +96,9 @@ static consteval ModelType modelTypeFromMeshType() {
 		return ModelType::HYBRID_MODEL;
 }
 
+template<typename T>
+struct dependent_false : std::false_type {};
+
 template<ModelType T>
 static consteval int modelDimFromModelType() {
 	if constexpr (T == ModelType::POINTSET_MODEL) {
@@ -118,8 +120,9 @@ static consteval int modelDimFromModelType() {
 	} else {
 		// Should never happen, if it happens, that is because
 		// you created a new ModelType and you didn't add it in conditional statement above
-		static_assert(false, 
-			"Model type given `modelDimFromModelType` as template argument is unkwown."
-		);
+		// dependent_false<std::integral_constant<ModelType, T> is a trick to make static_assert dependent to T
+		// I should do this as static_assert(false, ...) is evaluated directly even if T is OK
+		static_assert(dependent_false<std::integral_constant<ModelType, T>>::value, 
+            "Model type given to `modelDimFromModelType` is unknown.");
 	}
 }
