@@ -14,7 +14,7 @@ struct Attribute {
 	ElementKind kind;
 	ElementType type;
 	std::shared_ptr<ContainerBase> ptr; // TODO maybe remove !
-	int selectedDim = -1; // -1 means select all dimensions
+	bool isSplit;
 
 	std::string getName() const { return name; }
 	ElementKind getKind() const { return kind; }
@@ -38,7 +38,7 @@ struct Attribute {
 		return Container<T>(ptr);
 	}
 
-	int getDims() {
+	int getNDims() {
 		switch (type)
 		{
 		case ElementType::VEC3_ELT:

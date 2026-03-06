@@ -535,14 +535,13 @@ struct Model {
 
 		auto attrName = getLayerAttr(layer, kind);
 
-		// TODO refactor, maybe move getNDims and ndim hacks out of updateLayer & pass as parameters
 		int nDims = getAttributeNDims(attrName, kind);
 
-		// Extract selectedDim (hack here... extract from string)
+		// Extract selectedDim from string
 		int selectedDim = -1;
 		auto lbrPos = attrName.find('[');
 		auto rbrPos = attrName.find(']');
-		// if attr[0] for example, we would like to see selectedDim=0, so nDims of attribute = 1
+		// if "attr[0]" requested for example, we would like to see selectedDim=0, so nDims of attribute = 1
 		if (lbrPos != std::string::npos && rbrPos != std::string::npos) {
 			selectedDim = std::stoi(attrName.substr(lbrPos + 1, rbrPos - lbrPos));
 			attrName = attrName.substr(0, lbrPos);

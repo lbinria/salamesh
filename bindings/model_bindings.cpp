@@ -53,13 +53,13 @@ namespace bindings {
 			"name", sol::readonly_property(&Attribute::getName),
 			"kind", sol::readonly_property(&Attribute::getKind),
 			"type", sol::readonly_property(&Attribute::getType),
-			"dim", sol::readonly_property(&Attribute::getDims),
+			"dim", sol::readonly_property(&Attribute::getNDims)
 			// "ptr", sol::readonly_property(&Attribute::getPtr),
-			"double_container", sol::readonly_property(&Attribute::getContainer<double>),
-			"int_container", sol::readonly_property(&Attribute::getContainer<int>),
-			"bool_container", sol::readonly_property(&Attribute::getContainer<bool>),
-			"vec2_container", sol::readonly_property(&Attribute::getContainer<vec2>),
-			"vec3_container", sol::readonly_property(&Attribute::getContainer<vec3>)
+			// "double_container", sol::readonly_property(&Attribute::getContainer<double>),
+			// "int_container", sol::readonly_property(&Attribute::getContainer<int>),
+			// "bool_container", sol::readonly_property(&Attribute::getContainer<bool>),
+			// "vec2_container", sol::readonly_property(&Attribute::getContainer<vec2>),
+			// "vec3_container", sol::readonly_property(&Attribute::getContainer<vec3>)
 		);
 
 

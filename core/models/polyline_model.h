@@ -69,10 +69,9 @@ struct PolylineModel : public Model {
 		std::vector<NamedContainer> point_attrs;
 		std::vector<NamedContainer> edge_attrs;
 		for (auto &a : attrs) {
-			// TODO do something more clear here !
-			// Do not save attributes 
+			// Do not save splitted attributes 
 			// For example, attr : vec2 => attr[0], attr[1] aren't saved
-			if (a.selectedDim != -1)
+			if (a.isSplit)
 				continue;
 
 			std::string name = a.name;

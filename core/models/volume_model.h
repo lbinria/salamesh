@@ -99,6 +99,11 @@ struct VolumeModel final : public Model {
 		std::vector<NamedContainer> cell_facet_attrs;
 		std::vector<NamedContainer> cell_attrs;
 		for (auto &a : attrs) {
+			// Do not save splitted attributes 
+			// For example, attr : vec2 => attr[0], attr[1] aren't saved
+			if (a.isSplit)
+				continue;
+
 			std::string name = a.name;
 			ElementKind kind = a.kind;
 			auto &container = a.ptr;

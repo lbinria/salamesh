@@ -137,18 +137,18 @@ void Model::addAttr(ElementKind kind, NamedContainer &container) {
 		type = ElementType::BOOL_ELT;
 	} else if (auto a = dynamic_cast<AttributeContainer<vec2>*>(container.ptr.get())) {
 		type = ElementType::VEC2_ELT;
-		attrs.emplace_back(container.name + "[0]", kind, ElementType::DOUBLE_ELT, container.ptr, 0);
-		attrs.emplace_back(container.name + "[1]", kind, ElementType::DOUBLE_ELT, container.ptr, 1);
+		attrs.emplace_back(container.name + "[0]", kind, ElementType::DOUBLE_ELT, container.ptr, true);
+		attrs.emplace_back(container.name + "[1]", kind, ElementType::DOUBLE_ELT, container.ptr, true);
 	} else if (auto a = dynamic_cast<AttributeContainer<vec3>*>(container.ptr.get())) {
 		type = ElementType::VEC3_ELT;
-		attrs.emplace_back(container.name + "[0]", kind, ElementType::DOUBLE_ELT, container.ptr, 0);
-		attrs.emplace_back(container.name + "[1]", kind, ElementType::DOUBLE_ELT, container.ptr, 1);
-		attrs.emplace_back(container.name + "[2]", kind, ElementType::DOUBLE_ELT, container.ptr, 2);
+		attrs.emplace_back(container.name + "[0]", kind, ElementType::DOUBLE_ELT, container.ptr, true);
+		attrs.emplace_back(container.name + "[1]", kind, ElementType::DOUBLE_ELT, container.ptr, true);
+		attrs.emplace_back(container.name + "[2]", kind, ElementType::DOUBLE_ELT, container.ptr, true);
 	} else {
 		throw std::runtime_error("Unknown attribute type for container: " + container.name);
 	}
 
-	attrs.emplace_back(container.name, kind, type, container.ptr, -1);
+	attrs.emplace_back(container.name, kind, type, container.ptr, false);
 }
 
 void Model::removeAttr(int idx) {

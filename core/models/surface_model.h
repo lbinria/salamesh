@@ -115,10 +115,9 @@ struct SurfaceModel : public Model {
 		std::vector<NamedContainer> facet_attrs;
 		std::vector<NamedContainer> corner_attrs;
 		for (auto &a : attrs) {
-			// TODO do something more clear here !
-			// Do not save attributes 
+			// Do not save splitted attributes 
 			// For example, attr : vec2 => attr[0], attr[1] aren't saved
-			if (a.selectedDim != -1)
+			if (a.isSplit)
 				continue;
 
 			std::string name = a.name;
