@@ -539,7 +539,7 @@ struct Model {
 			<< attrName 
 			<< " of kind "
 			<< elementKindToString(kind) 
-			<< " is not supported on "
+			<< " was not found on "
 			<< modelTypeToString(getModelType())
 			<< std::endl;
 		return std::nullopt;

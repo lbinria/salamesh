@@ -85,16 +85,17 @@ namespace bindings {
 				return sol::make_object(lua, 0.3f);
 		});
 
-		// model_t["surface_attributes"] = sol::readonly_property([&lua](Model &self) -> sol::object { 
-		// 	if (self.getDim() == 1)
-		// 		return sol::make_object(lua, self.as<PolylineModel>().getSurfaceAttributes());
-		// 	else if (self.getDim() == 2)
-		// 		return sol::make_object(lua, self.as<SurfaceModel>().getSurfaceAttributes());
-		// 	else if (self.getDim() == 3)
-		// 		return sol::make_object(lua, self.as<VolumeModel>().getVolumeAttributes());
-		// 	else 
-		// 		return sol::make_object(lua, sol::nil);
-		// });
+		model_t["attributes"] = sol::readonly_property([&lua](Model &self) -> sol::object { 
+			if (self.getDim() == 1)
+				return sol::make_object(lua, self.as<PolylineModel>().getSurfaceAttributes());
+			else if (self.getDim() == 2) {
+				return sol::make_object(lua, self.as<SurfModel>().getSurfaceAttributes());
+			}
+			else if (self.getDim() == 3)
+				return sol::make_object(lua, self.as<VolModel>().getVolumeAttributes());
+			else 
+				return sol::make_object(lua, sol::nil);
+		});
 
 
 

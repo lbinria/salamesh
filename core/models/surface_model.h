@@ -40,12 +40,24 @@ namespace RendererSpecialization {
 	};
 }
 
+struct SurfModel : public Model {
+
+	SurfModel(std::map<std::string, std::shared_ptr<Renderer>> renderers) : Model::Model(renderers) {}
+
+	SurfaceAttributes& getSurfaceAttributes() { return _surfaceAttributes; }
+	const SurfaceAttributes& getSurfaceAttributes() const { return _surfaceAttributes; }
+
+	protected:
+	SurfaceAttributes _surfaceAttributes;
+
+};
+
 template<SurfaceDerived TSurface>
-struct SurfaceModel : public Model {
+struct SurfaceModel : public SurfModel {
 
 	SurfaceModel() : 
 		_m(),
-		Model::Model({
+		SurfModel::SurfModel({
 			{"mesh_renderer", std::make_shared<typename RendererSpecialization::RendererSelector<TSurface>::type>(_m)}, 
 			{"point_renderer", std::make_shared<PointSetRenderer>(_m.points) },
 			{"edge_renderer", std::make_shared<SurfaceHalfedgeRenderer>(_m) },
@@ -167,8 +179,7 @@ struct SurfaceModel : public Model {
 	Surface& getSurface() { return _m; }
 	const Surface& getSurface() const { return _m; }
 
-	SurfaceAttributes& getSurfaceAttributes() { return _surfaceAttributes; }
-	const SurfaceAttributes& getSurfaceAttributes() const { return _surfaceAttributes; }
+
 
 	inline int nverts() const override {
 		return _m.nverts();
@@ -259,7 +270,6 @@ struct SurfaceModel : public Model {
 
 	protected:
 
-	SurfaceAttributes _surfaceAttributes;
 
 	// virtual Surface& getSurface() = 0;
 	// virtual const Surface& getSurface() const = 0;

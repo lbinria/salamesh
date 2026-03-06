@@ -36,12 +36,25 @@ namespace RendererSpecialization {
 
 }
 
+struct VolModel : public Model {
+
+	VolModel(std::map<std::string, std::shared_ptr<Renderer>> renderers) : Model::Model(renderers) {}
+
+	VolumeAttributes& getVolumeAttributes() { return _volumeAttributes; }
+	const VolumeAttributes& getVolumeAttributes() const { return _volumeAttributes; }
+
+	protected:
+
+	VolumeAttributes _volumeAttributes;
+
+};
+
 template<VolumeDerived TVolume>
-struct VolumeModel final : public Model {
+struct VolumeModel final : public VolModel {
 
 	VolumeModel() : 
 		_m(), 
-		Model::Model({
+		VolModel::VolModel({
 			{"mesh_renderer", std::make_shared<typename RendererSpecialization::RendererSelector<TVolume>::type>(_m)}, 
 			{"point_renderer", std::make_shared<PointSetRenderer>(_m.points) },
 			{"edge_renderer", std::make_shared<VolumeHalfedgeRenderer>(_m) },
@@ -136,9 +149,6 @@ struct VolumeModel final : public Model {
 	}
 
 	TVolume& getMesh() { return _m; }
-
-	VolumeAttributes& getVolumeAttributes() { return _volumeAttributes; }
-	const VolumeAttributes& getVolumeAttributes() const { return _volumeAttributes; }
 
 	inline int nverts() const override {
 		return _m.nverts();
@@ -253,7 +263,6 @@ struct VolumeModel final : public Model {
 
 	// Mesh
 	TVolume _m;
-	VolumeAttributes _volumeAttributes;
 	
 };
 
