@@ -61,6 +61,10 @@ struct SurfaceModel : public Model {
 		return modelTypeFromMeshType<TSurface>();
 	}
 
+	int getDim() const override {
+		return modelDimFromModelType<modelTypeFromMeshType<TSurface>()>();
+	}
+
 	bool load(const std::string path) override {
 		
 		// Load the mesh

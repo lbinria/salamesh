@@ -37,7 +37,8 @@ struct Model {
 		return static_cast<T&>(*this);
 	}
 
-	virtual ModelType getModelType() const = 0;
+	virtual ModelType getModelType() const = 0; 
+	virtual int getDim() const = 0; 
 
 	virtual bool load(const std::string path) = 0;
 	virtual bool saveAs(const std::string path, std::vector<Attribute> attrs) const = 0;
@@ -452,6 +453,17 @@ struct Model {
 	// TODO maybe remove that later, using screen RBO to get edge ?
 	virtual long pickEdge(glm::vec3 p0, int c) = 0;
 
+	NamedContainer getAttributeContainer(std::string name, ElementKind kind) const {
+		auto containers = getAttributeContainers();
+		for (auto &c : containers) {
+			if (c.first ==  kind && c.second.name == name) {
+				return c.second;
+			}
+		}
+
+		throw std::runtime_error("Container " + name + " of kind " + elementKindToString(kind) + " not found.");
+	}
+
 	protected:
 	std::string _path;
 
@@ -483,6 +495,8 @@ struct Model {
 	std::map<std::string, std::shared_ptr<Renderer>> _renderers;
 
 	virtual std::vector<std::pair<ElementKind, NamedContainer>> getAttributeContainers() const = 0;
+
+
 	
 	void addAttr(ElementKind kind, NamedContainer &container);
 
@@ -530,6 +544,13 @@ struct Model {
 			<< std::endl;
 		return std::nullopt;
 	}
+
+	// void bindAttr(std::string attrName) {
+	// 	NamedContainer
+	// 	PointAttribute<double> a;
+	// 	a.bind(attrName, _surfaceAttribute, _m);
+	// 	return a;
+	// }
 
 	void updateLayer(Layer layer, ElementKind kind) {
 

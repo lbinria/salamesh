@@ -30,6 +30,10 @@ struct PolylineModel : public Model {
 		return modelTypeFromMeshType<PolyLine>();
 	}
 
+	int getDim() const override {
+		return modelDimFromModelType<modelTypeFromMeshType<PolyLine>()>();
+	}
+
 	bool load(const std::string path) override {
 		
 		// Load the mesh

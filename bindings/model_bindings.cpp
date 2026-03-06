@@ -67,6 +67,29 @@ namespace bindings {
 
 		sol::usertype<Model> model_t = lua.new_usertype<Model>("Model");
 
+		// model_t.set_function("bind_attr", [](Model &self, ElementKind kind, ElementType type, std::string name) {
+		// 	if (kind == ElementKind.POINTS_ELT) {
+		// 		PointAttribute<double> pa;
+		// 		pa.bind(name, _surface, _m);
+		// 	}
+		// 	// Search for named container
+		// 	auto container = self.getAttributeContainer(name, kind);
+		// 	return Attribute{name, kind, type, container.ptr};
+		// });
+		model_t.set_function("test", [&lua](Model &self, bool b) -> sol::object  {
+			if (b)
+				return sol::make_object(lua, std::string("hello"));
+			else 
+				return sol::make_object(lua, 0.3f);
+		});
+
+		// model_t["surface_attributes"] = sol::readonly_property([](Model &self) -> std::unique_ptr<SurfaceAttributes> { 
+		// 	if (model)
+		// 	return self.getSurfaceAttributes(); 
+		// });
+
+
+
 		model_t.set_function("as_tri", &Model::as<TriModel>);
 		model_t.set_function("as_quad", &Model::as<QuadModel>);
 		model_t.set_function("as_poly", &Model::as<PolyModel>);

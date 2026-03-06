@@ -76,7 +76,7 @@ static std::string elementTypeToString(ElementType t) {
 // TODO maybe to constexpr
 // TODO maybe move elsewhere because it is dependent of ultimaille this is a "glue"
 template<typename TMesh>
-static ModelType modelTypeFromMeshType() {
+static consteval ModelType modelTypeFromMeshType() {
 	if constexpr (std::is_same_v<TMesh, UM::PointSet>)
 		return ModelType::POINTSET_MODEL;
 	else if constexpr (std::is_same_v<TMesh, UM::PolyLine>)
@@ -95,4 +95,31 @@ static ModelType modelTypeFromMeshType() {
 		return ModelType::PYRAMID_MODEL;
 	else 
 		return ModelType::HYBRID_MODEL;
+}
+
+template<ModelType T>
+static consteval int modelDimFromModelType() {
+	if constexpr (T == ModelType::POINTSET_MODEL) {
+		return 0;
+	} else if constexpr(T == ModelType::POLYLINE_MODEL) {
+		return 1;
+	} else if constexpr(
+		T == ModelType::TRI_MODEL || 
+		T == ModelType::QUAD_MODEL || 
+		T == ModelType::POLYGON_MODEL) {
+		return 2;
+	} else if constexpr(
+		T == ModelType::TET_MODEL || 
+		T == ModelType::HEX_MODEL || 
+		T == ModelType::PRISM_MODEL ||
+		T == ModelType::PYRAMID_MODEL ||
+		T == ModelType::HYBRID_MODEL) {
+		return 3;
+	} else {
+		// Should never happen, if it happens, that is because
+		// you created a new ModelType and you didn't add it in conditional statement above
+		static_assert(false, 
+			"Model type given `modelDimFromModelType` as template argument is unkwown."
+		);
+	}
 }

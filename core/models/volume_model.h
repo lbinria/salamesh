@@ -57,6 +57,10 @@ struct VolumeModel final : public Model {
 		return modelTypeFromMeshType<TVolume>();
 	}
 
+	int getDim() const override {
+		return modelDimFromModelType<modelTypeFromMeshType<TVolume>()>();
+	}
+
 	bool load(const std::string path) override {
 		
 		// Load the mesh
