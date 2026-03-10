@@ -9,6 +9,18 @@
 
 namespace bindings {
 
+	template<typename T>
+	void createAttributeContainerType(sol::state &lua, std::string name) {
+		lua.new_usertype<Attribute::Container<T>>(name, 
+			sol::meta_function::index, [&lua](Attribute::Container<T>& self, int i) {
+				return self.get(i);
+			},
+			sol::meta_function::new_index, [&lua](Attribute::Container<T>& self, int i, T val) {
+				self.set(i, val);
+			}
+		);
+	}
+
 	void ModelBindings::loadBindings(sol::state &lua, IApp &app) {
 
 		lua.new_enum("ModelType", 
@@ -34,6 +46,14 @@ namespace bindings {
 			"CELL_CORNERS_ELT", ElementKind::CELL_CORNERS_ELT
 		);
 
+		lua.new_enum("ElementType", 
+			"DOUBLE_ELT", ElementType::DOUBLE_ELT,
+			"INT_ELT", ElementType::INT_ELT,
+			"BOOL_ELT", ElementType::BOOL_ELT,
+			"VEC2_ELT", ElementType::VEC2_ELT,
+			"VEC3_ELT", ElementType::VEC3_ELT
+		);
+
 		lua.new_enum("Layer", 
 			"COLORMAP_0", Layer::COLORMAP_0,
 			"COLORMAP_1", Layer::COLORMAP_1,
@@ -55,53 +75,29 @@ namespace bindings {
 			"name", sol::readonly_property(&Attribute::getName),
 			"kind", sol::readonly_property(&Attribute::getKind),
 			"type", sol::readonly_property(&Attribute::getType),
-			"dim", sol::readonly_property(&Attribute::getNDims)
-			// "ptr", sol::readonly_property(&Attribute::getPtr),
-			// "double_container", sol::readonly_property(&Attribute::getContainer<double>),
-			// "int_container", sol::readonly_property(&Attribute::getContainer<int>),
-			// "bool_container", sol::readonly_property(&Attribute::getContainer<bool>),
-			// "vec2_container", sol::readonly_property(&Attribute::getContainer<vec2>),
-			// "vec3_container", sol::readonly_property(&Attribute::getContainer<vec3>)
+			"dim", sol::readonly_property(&Attribute::getNDims),
+			"double_data", sol::readonly_property(&Attribute::getContainer<double>),
+			"int_data", sol::readonly_property(&Attribute::getContainer<int>),
+			"bool_data", sol::readonly_property(&Attribute::getContainer<bool>),
+			"vec2_data", sol::readonly_property(&Attribute::getContainer<vec2>),
+			"vec3_data", sol::readonly_property(&Attribute::getContainer<vec3>)
 		);
 
-
-
+		createAttributeContainerType<double>(lua, "DoubleContainer");
+		createAttributeContainerType<int>(lua, "IntContainer");
+		createAttributeContainerType<bool>(lua, "BoolContainer");
+		createAttributeContainerType<vec2>(lua, "Vec2Container");
+		createAttributeContainerType<vec3>(lua, "Vec3Container");
 
 		sol::usertype<Model> model_t = lua.new_usertype<Model>("Model");
 
-		// model_t.set_function("bind_attr", [](Model &self, ElementKind kind, ElementType type, std::string name) {
-		// 	if (kind == ElementKind.POINTS_ELT) {
-		// 		PointAttribute<double> pa;
-		// 		pa.bind(name, _surface, _m);
-		// 	}
-		// 	// Search for named container
-		// 	auto container = self.getAttributeContainer(name, kind);
-		// 	return Attribute{name, kind, type, container.ptr};
-		// });
-		model_t.set_function("test", [&lua](Model &self, bool b) -> sol::object  {
-			if (b)
-				return sol::make_object(lua, std::string("hello"));
-			else 
-				return sol::make_object(lua, 0.3f);
-		});
-
-		model_t["attributes"] = sol::readonly_property([&lua](Model &self) -> sol::object { 
-			if (self.getDim() == 1)
-				return sol::make_object(lua, self.as<PolylineModel>().getSurfaceAttributes());
-			else if (self.getDim() == 2) {
-				return sol::make_object(lua, self.as<SurfModel>().getSurfaceAttributes());
-			}
-			else if (self.getDim() == 3)
-				return sol::make_object(lua, self.as<VolModel>().getVolumeAttributes());
-			else 
-				return sol::make_object(lua, sol::nil);
-		});
-
-
+		model_t.set_function("bind_attr", &Model::bindAttr);
 
 		model_t.set_function("as_tri", &Model::as<TriModel>);
 		model_t.set_function("as_quad", &Model::as<QuadModel>);
 		model_t.set_function("as_poly", &Model::as<PolyModel>);
+
+		// TODO missing conversion 2 volume models
 
 
 		model_t.set_function("load", &Model::load);

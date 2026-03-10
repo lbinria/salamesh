@@ -464,6 +464,8 @@ struct Model {
 		throw std::runtime_error("Container " + name + " of kind " + elementKindToString(kind) + " not found.");
 	}
 
+	virtual Attribute bindAttr(std::string attrName, ElementKind kind, ElementType type) = 0;
+
 	protected:
 	std::string _path;
 
@@ -544,13 +546,6 @@ struct Model {
 			<< std::endl;
 		return std::nullopt;
 	}
-
-	// void bindAttr(std::string attrName) {
-	// 	NamedContainer
-	// 	PointAttribute<double> a;
-	// 	a.bind(attrName, _surfaceAttribute, _m);
-	// 	return a;
-	// }
 
 	void updateLayer(Layer layer, ElementKind kind) {
 

@@ -175,6 +175,49 @@ struct SurfaceModel : public SurfModel {
 		return {min, max};
 	}
 
+	Attribute bindAttr(std::string attrName, ElementKind kind, ElementType type) override {
+		if (kind == ElementKind::POINTS_ELT) {
+			switch (type)
+			{
+			case ElementType::DOUBLE_ELT: {
+				PointAttribute<double> a;
+				a.bind(attrName, _surfaceAttributes, _m);
+				break;
+			}
+			case ElementType::INT_ELT: {
+				PointAttribute<int> a;
+				a.bind(attrName, _surfaceAttributes, _m);
+				break;
+			}
+			case ElementType::BOOL_ELT: {
+				PointAttribute<bool> a;
+				a.bind(attrName, _surfaceAttributes, _m);
+				break;
+			}
+			case ElementType::VEC2_ELT: {
+				PointAttribute<vec2> a;
+				a.bind(attrName, _surfaceAttributes, _m);
+				break;
+			}
+			case ElementType::VEC3_ELT: {
+				PointAttribute<vec3> a;
+				a.bind(attrName, _surfaceAttributes, _m);
+				break;
+			}
+			default:
+				break;
+			}
+		} else if (kind == ElementKind::FACETS_ELT) {
+
+		} else if (kind == ElementKind::CORNERS_ELT) {
+			// blabla
+		}
+
+
+		auto container = getAttributeContainer(attrName, kind);
+		return Attribute{attrName, kind, type, container.ptr};
+	}
+
 	TSurface& getMesh() { return _m; }
 	Surface& getSurface() { return _m; }
 	const Surface& getSurface() const { return _m; }

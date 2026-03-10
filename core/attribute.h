@@ -27,8 +27,10 @@ struct Attribute {
 	struct Container {
 		Container(std::shared_ptr<ContainerBase> p) : ptr(std::static_pointer_cast<AttributeContainer<T>>(p)) {}
 
-		T& operator[](int i) { return ptr->data[i]; }
-		const T& operator[](int i) const { return ptr->data[i]; }
+		// T& operator[](int i) { return ptr->data[i]; }
+		// const T& operator[](int i) const { return ptr->data[i]; }
+		T get(int i) { return ptr->data[i]; }
+		void set(int i, T val) { ptr->data[i] = val; }
 
 		std::shared_ptr<AttributeContainer<T>> ptr;
 	};
