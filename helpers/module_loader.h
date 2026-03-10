@@ -55,10 +55,11 @@ struct ModuleLoader {
 		// Optionally: free the library after usage or manage it with unique_ptr
 		// FreeLibrary(handle);  // Uncomment if you want to manage the library lifecycle
 
-		RendererInfo** (*allocateRendererInfos)();
-		allocateRendererInfos = (RendererInfo**(*)())dlsym(handle, "allocateRendererInfos");
-		int (*rendererInfosSize)();
-		rendererInfosSize = (int(*)())dlsym(handle, "rendererInfosSize");
+		using allocateRendererInfosFunc = RendererInfo**(*)();
+		allocateRendererInfosFunc allocateRendererInfos = (allocateRendererInfosFunc)GetProcAddress(handle, "allocateRendererInfos");
+
+		using rendererInfosSizeFunc = int(*)();
+		rendererInfosSizeFunc rendererInfosSize = (rendererInfosSizeFunc)GetProcAddress(handle, "rendererInfosSize");
 
 		std::vector<std::unique_ptr<RendererInfo>> rInfos;
 		if (allocateRendererInfos && rendererInfosSize) {
@@ -107,10 +108,11 @@ struct ModuleLoader {
 		// Optionally: free the library after usage or manage it with unique_ptr
 		// FreeLibrary(handle);  // Uncomment if you want to manage the library lifecycle
 
-		RendererInfo** (*allocateRendererInfos)();
-		allocateRendererInfos = (RendererInfo**(*)())dlsym(handle, "allocateRendererInfos");
-		int (*rendererInfosSize)();
-		rendererInfosSize = (int(*)())dlsym(handle, "rendererInfosSize");
+		using allocateRendererInfosFunc = RendererInfo**(*)();
+		allocateRendererInfosFunc allocateRendererInfos = (allocateRendererInfosFunc)GetProcAddress(handle, "allocateRendererInfos");
+
+		using rendererInfosSizeFunc = int(*)();
+		rendererInfosSizeFunc rendererInfosSize = (rendererInfosSizeFunc)GetProcAddress(handle, "rendererInfosSize");
 
 		std::vector<std::unique_ptr<RendererInfo>> rInfos;
 		if (allocateRendererInfos && rendererInfosSize) {

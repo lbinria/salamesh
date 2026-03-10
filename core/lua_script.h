@@ -85,7 +85,7 @@ struct LuaScript final : public Script {
 		lua.open_libraries(sol::lib::io);
 		lua.open_libraries(sol::lib::utf8);
 
-
+		// TODO maybe pass all bindings as parameter of loadBinding !
 		std::vector<std::unique_ptr<bindings::LuaBinding>> bindings;
 		bindings.push_back(std::make_unique<bindings::FsBindings>());
 		bindings.push_back(std::make_unique<bindings::ImGuiBindings>());
