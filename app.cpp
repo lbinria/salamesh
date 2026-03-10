@@ -1531,12 +1531,16 @@ void App::loadCppScript(fs::path scriptPath, sol::state& state) {
 	// Load the shared library
 	ModuleLoader loader;
 	
-	auto script = loader.load(scriptPath.string(), *this, state);
+	auto mod = loader.load(scriptPath.string(), *this, state);
 
-	if (script) {
-		scripts.push_back(std::move(script));
+	if (mod->script) {
+		scripts.push_back(std::move(mod->script));
 	} else {
 		std::cout << "Failed to load C++ script at: " << scriptPath.string() << std::endl;
+	}
+
+	for (auto &rInfo : mod->rInfos) {
+		rendererInstanciator.registerType(rInfo->type, rInfo->instanciatorFunc);
 	}
 }
 
@@ -1545,12 +1549,16 @@ void App::loadCppScript(fs::path scriptPath) {
 	// Load the shared library
 	ModuleLoader loader;
 	
-	auto script = loader.load(scriptPath.string(), *this);
+	auto mod = loader.load(scriptPath.string(), *this);
 
-	if (script) {
-		scripts.push_back(std::move(script));
+	if (mod->script) {
+		scripts.push_back(std::move(mod->script));
 	} else {
 		std::cout << "Failed to load C++ script at: " << scriptPath.string() << std::endl;
+	}
+
+	for (auto &rInfo : mod->rInfos) {
+		rendererInstanciator.registerType(rInfo->type, rInfo->instanciatorFunc);
 	}
 }
 

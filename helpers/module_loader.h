@@ -13,6 +13,8 @@
 
 #include "../core/app_interface.h"
 #include "../core/script.h"
+#include "../core/module.h"
+#include "../core/renderers/renderer_info.h"
 
 #define SOL_ALL_SAFETIES_ON 1
 #include <sol/sol.hpp>
@@ -92,7 +94,7 @@ struct ModuleLoader {
 
 	#else
 	
-	std::unique_ptr<Script> load(const std::string path, IApp &app) {
+	std::unique_ptr<Module> load(const std::string path, IApp &app) {
 
 		void *handle = dlopen(path.c_str(), RTLD_NOW);
 
@@ -111,20 +113,37 @@ struct ModuleLoader {
 		if (!allocator) {
 			std::cout << "fail to allocator func." << std::endl;
 			return nullptr;
-		}
+		}		
 		
 		std::cout << "func allocator created." << std::endl;
 
-		Script* component = (Script*)allocator(app);
+		Script* script = (Script*)allocator(app);
 
 		std::cout << "allocated." << std::endl;
 
+
+		RendererInfo** (*allocateRendererInfos)();
+		allocateRendererInfos = (RendererInfo**(*)())dlsym(handle, "allocateRendererInfos");
+		int (*rendererInfosSize)();
+		rendererInfosSize = (int(*)())dlsym(handle, "rendererInfosSize");
+
+		std::vector<std::unique_ptr<RendererInfo>> rInfos;
+		if (allocateRendererInfos && rendererInfosSize) {
+			auto raw_renderers = allocateRendererInfos();
+			int count = rendererInfosSize();
+			for (int i = 0; i < count; ++i) {
+				std::unique_ptr<RendererInfo> ptr(raw_renderers[i]);
+				rInfos.push_back(std::move(ptr));
+			}
+		}
+
+
 		// dlclose(handle);
 
-		return std::unique_ptr<Script>(component);
+		return std::make_unique<Module>(std::unique_ptr<Script>(script), std::move(rInfos));
 	}
 
-	std::unique_ptr<Script> load(const std::string path, IApp &app, sol::state &lua) {
+	std::unique_ptr<Module> load(const std::string path, IApp &app, sol::state &lua) {
 
 		void *handle = dlopen(path.c_str(), RTLD_NOW);
 
@@ -147,13 +166,30 @@ struct ModuleLoader {
 		
 		std::cout << "func allocator created." << std::endl;
 
-		Script* component = (Script*)allocator(app, lua);
+		Script* script = (Script*)allocator(app, lua);
 
 		std::cout << "allocated." << std::endl;
 
+		RendererInfo** (*allocateRendererInfos)();
+		allocateRendererInfos = (RendererInfo**(*)())dlsym(handle, "allocateRendererInfos");
+		int (*rendererInfosSize)();
+		rendererInfosSize = (int(*)())dlsym(handle, "rendererInfosSize");
+
+		std::vector<std::unique_ptr<RendererInfo>> rInfos;
+		if (allocateRendererInfos && rendererInfosSize) {
+			auto rInfosPtr = allocateRendererInfos();
+			int count = rendererInfosSize();
+			for (int i = 0; i < count; ++i) {
+				auto rInfoPtr = rInfosPtr[i];
+				std::unique_ptr<RendererInfo> ptr(rInfoPtr);
+				std::cout << ptr->type << std::endl;
+				rInfos.push_back(std::move(ptr));
+			}
+		}
+
 		// dlclose(handle);
 
-		return std::unique_ptr<Script>(component);
+		return std::make_unique<Module>(std::unique_ptr<Script>(script), std::move(rInfos));
 	}
 
 	#endif

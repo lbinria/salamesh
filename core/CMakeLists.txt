@@ -18,6 +18,7 @@ set(SOURCES
     app_interface.h
     script.h
     lua_script.h
+    module.h
     attribute.h
     element.h
     input_states.h 
@@ -29,6 +30,7 @@ set(SOURCES
     cameras/trackball_camera.h
     cameras/descent_camera.h
 
+    renderers/renderer_info.h
     renderers/renderer.h
     renderers/line_renderer.cpp renderers/line_renderer.h
     renderers/point_set_renderer.cpp renderers/point_set_renderer.h
