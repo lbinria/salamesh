@@ -24,7 +24,7 @@
 struct ModuleLoader {
 	
 	#ifdef WIN32
-	std::unique_ptr<Script> load(const std::string& path, IApp& app) {
+	std::unique_ptr<Module> load(const std::string& path, IApp& app) {
 		// Load the DLL
 		HMODULE handle = LoadLibrary(path.c_str());
 		
@@ -47,18 +47,36 @@ struct ModuleLoader {
 
 		std::cout << "Allocator function created." << std::endl;
 
-		// Allocate the component
-		Script* component = allocator(app);
+		// Allocate the script
+		Script* script = allocator(app);
 
 		std::cout << "Script allocated." << std::endl;
 
 		// Optionally: free the library after usage or manage it with unique_ptr
 		// FreeLibrary(handle);  // Uncomment if you want to manage the library lifecycle
 
-		return std::unique_ptr<Script>(component);
+		RendererInfo** (*allocateRendererInfos)();
+		allocateRendererInfos = (RendererInfo**(*)())dlsym(handle, "allocateRendererInfos");
+		int (*rendererInfosSize)();
+		rendererInfosSize = (int(*)())dlsym(handle, "rendererInfosSize");
+
+		std::vector<std::unique_ptr<RendererInfo>> rInfos;
+		if (allocateRendererInfos && rendererInfosSize) {
+			auto raw_renderers = allocateRendererInfos();
+			int count = rendererInfosSize();
+			for (int i = 0; i < count; ++i) {
+				std::unique_ptr<RendererInfo> ptr(raw_renderers[i]);
+				rInfos.push_back(std::move(ptr));
+			}
+		}
+
+
+		// dlclose(handle);
+
+		return std::make_unique<Module>(std::unique_ptr<Script>(script), std::move(rInfos));
 	}
 
-	std::unique_ptr<Script> load(const std::string& path, IApp& app, sol::state &lua) {
+	std::unique_ptr<Module> load(const std::string& path, IApp& app, sol::state &lua) {
 		// Load the DLL
 		HMODULE handle = LoadLibrary(path.c_str());
 		
@@ -81,15 +99,33 @@ struct ModuleLoader {
 
 		std::cout << "Allocator function created." << std::endl;
 
-		// Allocate the component
-		Script* component = allocator(app, lua);
+		// Allocate the script
+		Script* script = allocator(app, lua);
 
 		std::cout << "Script allocated." << std::endl;
 
 		// Optionally: free the library after usage or manage it with unique_ptr
 		// FreeLibrary(handle);  // Uncomment if you want to manage the library lifecycle
 
-		return std::unique_ptr<Script>(component);
+		RendererInfo** (*allocateRendererInfos)();
+		allocateRendererInfos = (RendererInfo**(*)())dlsym(handle, "allocateRendererInfos");
+		int (*rendererInfosSize)();
+		rendererInfosSize = (int(*)())dlsym(handle, "rendererInfosSize");
+
+		std::vector<std::unique_ptr<RendererInfo>> rInfos;
+		if (allocateRendererInfos && rendererInfosSize) {
+			auto raw_renderers = allocateRendererInfos();
+			int count = rendererInfosSize();
+			for (int i = 0; i < count; ++i) {
+				std::unique_ptr<RendererInfo> ptr(raw_renderers[i]);
+				rInfos.push_back(std::move(ptr));
+			}
+		}
+
+
+		// dlclose(handle);
+
+		return std::make_unique<Module>(std::unique_ptr<Script>(script), std::move(rInfos));
 	}
 
 	#else
