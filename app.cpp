@@ -881,6 +881,10 @@ void App::clean() {
 		glDeleteTextures(1, &colormaps[i].tex);
 }
 
+bool App::saveModel(std::string name, const std::string& filename) {
+	return getModel(name).saveAs(filename);
+}
+
 std::string App::loadModel(const std::string& filename, std::string name) {
 
 	auto begin = std::chrono::steady_clock::now();

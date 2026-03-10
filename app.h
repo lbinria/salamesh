@@ -91,7 +91,8 @@ struct App final : public IApp {
 	void unproject(int x, int y, float depth, glm::vec3 &p);
 	glm::vec3 pickPoint(double x, double y) override;
 
-	// TODO to protected
+	
+	bool saveModel(std::string name, const std::string& filename) override;
 	std::string loadModel(const std::string& filename, std::string name = "") override;
 
 	std::shared_ptr<Model> addModel(std::string type, std::string name) override {

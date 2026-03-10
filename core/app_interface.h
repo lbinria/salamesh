@@ -206,6 +206,7 @@ struct IApp {
 	virtual int getModelIndexByName(std::string name) = 0;
 
 
+	virtual bool saveModel(std::string name, const std::string& filename) = 0;
 	virtual std::string loadModel(const std::string& filename, std::string name = "") = 0;
 
 	virtual void addColormap(const std::string name, const std::string filename) = 0;

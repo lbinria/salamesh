@@ -144,6 +144,7 @@ namespace bindings {
 		app_type.set_function("load_snapshot", &IApp::loadSnapshot);
 		app_type.set_function("list_snapshots", &IApp::listSnapshots);
 
+		app_type.set_function("save_model", &IApp::saveModel);
 		app_type.set_function("load_model", &IApp::loadModel);
 		app_type.set_function("add_model", &IApp::addModel);
 		app_type.set_function("remove_model", &IApp::removeModel);
@@ -161,6 +162,7 @@ namespace bindings {
 		app_type["selected_model"] = sol::property(&IApp::getSelectedModel, &IApp::setSelectedModel);
 		app_type.set_function("focus", &IApp::focus);
 
+		app_type.set_function("has_model", &IApp::hasModel);
 		app_type.set_function("get_model_name_by_index", &IApp::getModelNameByIndex);
 		app_type.set_function("get_model_index_by_name", &IApp::getModelIndexByName);
 
