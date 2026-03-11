@@ -91,6 +91,10 @@ struct VolumeRenderer : public Renderer {
 	private:
 
 	unsigned int bufBary, texBary;
+	// TODO remove after refacto of volumes 
+	unsigned int bufAttr;
+	unsigned int texAttr;
+	unsigned int texColorMap;
 
 	void doLoadState(json &j) override {}
 	void doSaveState(json &j) const override {}

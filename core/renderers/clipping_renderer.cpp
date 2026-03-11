@@ -1,5 +1,6 @@
 #include "clipping_renderer.h"
 #include "../helpers.h"
+#include "../../core/graphic_api.h"
 
 struct Result {
     bool valid;                       // true if intersection polygon found
@@ -152,10 +153,7 @@ void ClippingRenderer::init() {
 	shader.use();
 
 	// VBO
-	GLuint pLoc = glGetAttribLocation(shader.id, "p");
-	glEnableVertexAttribArray(pLoc);
-	glVertexAttribPointer(pLoc, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)offsetof(Vertex, p));
-
+	sl::createVBOVec3(shader.id, "p", sizeof(Vertex), (void*)offsetof(Vertex, p));
 }
 
 void ClippingRenderer::push() {

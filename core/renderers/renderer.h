@@ -316,8 +316,8 @@ struct Renderer {
 	int attrRepeat = 1;
 
 	unsigned int VAO, VBO; // Buffers
-	unsigned int bufAttr, bufColormap0, bufColormap1, bufColormap2, bufHighlight, bufFilter; // Sample buffers
-	unsigned int texAttr, texColorMap, texColormap0, texColormap1, texColormap2, tboColormap0, tboColormap1, tboColormap2, tboHighlight, tboFilter; // Textures
+	unsigned int bufColormap0, bufColormap1, bufColormap2, bufHighlight, bufFilter; // Sample buffers
+	unsigned int texColormap0, texColormap1, texColormap2, tboColormap0, tboColormap1, tboColormap2, tboHighlight, tboFilter; // Textures
 
 	float *ptrAttr;
 

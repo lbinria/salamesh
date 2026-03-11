@@ -91,4 +91,10 @@ namespace sl {
 		glBindBuffer(GL_UNIFORM_BUFFER, 0);
 	}
 
+	// Bindings
+	inline void bindTextureBuffer(unsigned int tex, int location) {
+		glActiveTexture(GL_TEXTURE0 + location);
+		glBindTexture(GL_TEXTURE_BUFFER, tex);
+	}
+
 }
