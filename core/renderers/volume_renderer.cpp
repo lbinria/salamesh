@@ -163,13 +163,13 @@ void VolumeRenderer::render(glm::vec3 &position) {
 
 	setPosition(position);
 
-	glDrawArrays(GL_TRIANGLES, 0, nverts);
+	glDrawArrays(GL_TRIANGLES, 0, nelements);
 }
 
 void VolumeRenderer::clear() {
 	glBindVertexArray(VAO);
 	glBindBuffer(GL_ARRAY_BUFFER, VBO);
-	glBufferData(GL_ARRAY_BUFFER, nverts * sizeof(Vertex), nullptr, GL_STATIC_DRAW);
+	glBufferData(GL_ARRAY_BUFFER, nelements * sizeof(Vertex), nullptr, GL_STATIC_DRAW);
 }
 
 void VolumeRenderer::clean() {

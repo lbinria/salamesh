@@ -191,11 +191,11 @@ void ClippingRenderer::push() {
 		}
 	}
 
-	nverts = vertices.size();
+	nelements = vertices.size();
 
 	glBindVertexArray(VAO);
 	glBindBuffer(GL_ARRAY_BUFFER, VBO);
-	glBufferData(GL_ARRAY_BUFFER, nverts * sizeof(Vertex), vertices.data(), GL_DYNAMIC_DRAW);
+	glBufferData(GL_ARRAY_BUFFER, nelements * sizeof(Vertex), vertices.data(), GL_DYNAMIC_DRAW);
 }
 
 void ClippingRenderer::render(glm::vec3 &position) {
@@ -207,14 +207,14 @@ void ClippingRenderer::render(glm::vec3 &position) {
 
 	setPosition(position);
 
-	glDrawArrays(GL_TRIANGLES, 0, nverts);
+	glDrawArrays(GL_TRIANGLES, 0, nelements);
 }
 
 void ClippingRenderer::clear() {
 	glBindVertexArray(VAO);
 	glBindBuffer(GL_ARRAY_BUFFER, VBO);
-	glBufferData(GL_ARRAY_BUFFER, nverts * sizeof(Vertex), nullptr, GL_DYNAMIC_DRAW);
-	nverts = 0;
+	glBufferData(GL_ARRAY_BUFFER, nelements * sizeof(Vertex), nullptr, GL_DYNAMIC_DRAW);
+	nelements = 0;
 }
 
 void ClippingRenderer::clean() {

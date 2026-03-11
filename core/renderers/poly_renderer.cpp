@@ -100,7 +100,7 @@ void PolyRenderer::push() {
 		ntri += nvertsFacet;
 		nVertsPerFacet[f] = static_cast<float>(nvertsFacet);
 	}
-	nverts = 3 * ntri /* 3 points per tri, n tri per facet */;
+	nelements = 3 * ntri /* 3 points per tri, n tri per facet */;
 
 	int cornerOff = 0;
 	std::vector<Vertex> vertices;
@@ -207,14 +207,14 @@ void PolyRenderer::render(glm::vec3 &position) {
 
 	setPosition(position);
 
-	glDrawArrays(GL_TRIANGLES, 0, nverts);
+	glDrawArrays(GL_TRIANGLES, 0, nelements);
 }
 
 void PolyRenderer::clear() {
 	glBindVertexArray(VAO);
 	glBindBuffer(GL_ARRAY_BUFFER, VBO);
-	glBufferData(GL_ARRAY_BUFFER, nverts * sizeof(Vertex), nullptr, GL_STATIC_DRAW);
-	nverts = 0;
+	glBufferData(GL_ARRAY_BUFFER, nelements * sizeof(Vertex), nullptr, GL_STATIC_DRAW);
+	nelements = 0;
 }
 
 void PolyRenderer::clean() {

@@ -83,11 +83,11 @@ void BBoxRenderer::push() {
 	vertices.push_back({ glm::vec3(pMax.x, pMax.y, pMin.z) });
 	vertices.push_back({ glm::vec3(pMax.x, pMin.y, pMin.z) });
 
-	nverts = vertices.size();
+	nelements = vertices.size();
 
 	glBindVertexArray(VAO);
 	glBindBuffer(GL_ARRAY_BUFFER, VBO);
-	glBufferData(GL_ARRAY_BUFFER, nverts * sizeof(Vertex), vertices.data(), GL_STATIC_DRAW);
+	glBufferData(GL_ARRAY_BUFFER, nelements * sizeof(Vertex), vertices.data(), GL_STATIC_DRAW);
 }
 
 void BBoxRenderer::render(glm::vec3 &position) {
@@ -99,14 +99,14 @@ void BBoxRenderer::render(glm::vec3 &position) {
 
 	setPosition(position);
 	
-	glDrawArrays(GL_LINES, 0, nverts);
+	glDrawArrays(GL_LINES, 0, nelements);
 }
 
 void BBoxRenderer::clear() {
 	glBindVertexArray(VAO);
 	glBindBuffer(GL_ARRAY_BUFFER, VBO);
-	glBufferData(GL_ARRAY_BUFFER, nverts * sizeof(Vertex), nullptr, GL_STATIC_DRAW);
-	nverts = 0;
+	glBufferData(GL_ARRAY_BUFFER, nelements * sizeof(Vertex), nullptr, GL_STATIC_DRAW);
+	nelements = 0;
 }
 
 void BBoxRenderer::clean() {

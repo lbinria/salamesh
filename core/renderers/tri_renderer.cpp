@@ -2,9 +2,9 @@
 
 void TriRenderer::push() {
 
-	nverts = _m.nfacets() * 3 /* 3 points per tri */;
+	nelements = _m.nfacets() * 3 /* 3 points per tri */;
 
-	std::vector<Vertex> vertices(nverts);
+	std::vector<Vertex> vertices(nelements);
 	for (auto &f : _m.iter_facets()) {
 
 		auto p0 = f.vertex(0).pos();

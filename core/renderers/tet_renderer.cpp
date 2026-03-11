@@ -2,8 +2,8 @@
 
 void TetRenderer::push() {
 
-	nverts = _m.nfacets() * 3 /* 3 points per tri */;
-	std::vector<Vertex> vertices(nverts);
+	nelements = _m.nfacets() * 3 /* 3 points per tri */;
+	std::vector<Vertex> vertices(nelements);
 
 	int i = 0;
 	

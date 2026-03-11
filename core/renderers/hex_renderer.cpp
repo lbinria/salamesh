@@ -2,8 +2,8 @@
 
 void HexRenderer::push() {
 
-	nverts = _m.nfacets() * 2 /* 2 tri per facet */ * 3 /* 3 points per tri */;
-	std::vector<Vertex> vertices(nverts);
+	nelements = _m.nfacets() * 2 /* 2 tri per facet */ * 3 /* 3 points per tri */;
+	std::vector<Vertex> vertices(nelements);
 
 	int i = 0;
 	const auto ref = reference_cells[_m.cell_type];

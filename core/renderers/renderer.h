@@ -322,7 +322,7 @@ struct Renderer {
 	float *ptrAttr;
 
 	// TODO rename to nelements
-	int nverts = 0;
+	int nelements = 0;
 
 	void setPosition(glm::vec3 &position) {
 		glm::mat4 model = glm::mat4(1.0f);

@@ -29,11 +29,11 @@ void LineRenderer::push() {
 		lineComponents.push_back({ .p = l.b, .color = l.color });
 	}
 
-	nverts = lineComponents.size();
+	nelements = lineComponents.size();
 
 	glBindVertexArray(VAO);
 	glBindBuffer(GL_ARRAY_BUFFER, VBO);
-	glBufferData(GL_ARRAY_BUFFER, nverts * sizeof(LineComponent), lineComponents.data(), GL_DYNAMIC_DRAW);
+	glBufferData(GL_ARRAY_BUFFER, nelements * sizeof(LineComponent), lineComponents.data(), GL_DYNAMIC_DRAW);
 
 }
 
@@ -46,13 +46,13 @@ void LineRenderer::render(glm::vec3 &position) {
 
 	setPosition(position);
 
-	glDrawArrays(GL_LINES, 0, nverts);
+	glDrawArrays(GL_LINES, 0, nelements);
 }
 
 void LineRenderer::clear() {
 	glBindVertexArray(VAO);
 	glBindBuffer(GL_ARRAY_BUFFER, VBO);
-	glBufferData(GL_ARRAY_BUFFER, nverts * sizeof(LineComponent), nullptr, GL_DYNAMIC_DRAW);
+	glBufferData(GL_ARRAY_BUFFER, nelements * sizeof(LineComponent), nullptr, GL_DYNAMIC_DRAW);
 	clearLines();
 }
 

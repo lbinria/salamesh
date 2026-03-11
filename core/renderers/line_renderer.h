@@ -41,7 +41,7 @@ struct LineRenderer : public Renderer {
 
 	void clearLines() {
 		lines.clear();
-		nverts = 0;
+		nelements = 0;
 	}
 
 	// TODO generate guid for line

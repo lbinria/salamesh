@@ -71,7 +71,7 @@ void HalfedgeRenderer::render(glm::vec3 &position) {
 
 	setPosition(position);
 
-	glDrawArrays(GL_TRIANGLES, 0, nverts);
+	glDrawArrays(GL_TRIANGLES, 0, nelements);
 }
 
 void SurfaceHalfedgeRenderer::push() {
@@ -126,13 +126,13 @@ void SurfaceHalfedgeRenderer::push() {
 		}
 	}
 
-	nverts = vertices.size();
+	nelements = vertices.size();
 
-	std::cout << "nverts: " << nverts << std::endl;
+	std::cout << "nverts: " << nelements << std::endl;
 
 	glBindVertexArray(VAO);
 	glBindBuffer(GL_ARRAY_BUFFER, VBO);
-	glBufferData(GL_ARRAY_BUFFER, nverts * sizeof(LineVert), vertices.data(), GL_STATIC_DRAW);
+	glBufferData(GL_ARRAY_BUFFER, nelements * sizeof(LineVert), vertices.data(), GL_STATIC_DRAW);
 
 	shouldPush = false;
 }
@@ -185,11 +185,11 @@ void VolumeHalfedgeRenderer::push() {
 		}
 	}
 
-	nverts = vertices.size();
+	nelements = vertices.size();
 
 	glBindVertexArray(VAO);
 	glBindBuffer(GL_ARRAY_BUFFER, VBO);
-	glBufferData(GL_ARRAY_BUFFER, nverts * sizeof(LineVert), vertices.data(), GL_STATIC_DRAW);
+	glBufferData(GL_ARRAY_BUFFER, nelements * sizeof(LineVert), vertices.data(), GL_STATIC_DRAW);
 }
 
 void PolylineRenderer::push() {
@@ -221,14 +221,14 @@ void PolylineRenderer::push() {
 	glBindVertexArray(VAO);
 	glBindBuffer(GL_ARRAY_BUFFER, VBO);
 	glBufferData(GL_ARRAY_BUFFER, vertices.size() * sizeof(LineVert), vertices.data(), GL_STATIC_DRAW);
-	nverts = vertices.size();
+	nelements = vertices.size();
 }
 
 void HalfedgeRenderer::clear() {
 	glBindVertexArray(VAO);
 	glBindBuffer(GL_ARRAY_BUFFER, VBO);
-	glBufferData(GL_ARRAY_BUFFER, nverts * sizeof(LineVert), nullptr, GL_STATIC_DRAW);
-	nverts = 0;
+	glBufferData(GL_ARRAY_BUFFER, nelements * sizeof(LineVert), nullptr, GL_STATIC_DRAW);
+	nelements = 0;
 }
 
 void HalfedgeRenderer::clean() {
