@@ -21,7 +21,6 @@ struct Shader {
     unsigned int id;
 
     Shader(std::string vertexShaderPath, std::string fragmentShaderPath);
-    Shader(std::string vertexShaderPath, std::string fragmentShaderPath, std::string geometryShaderPath);
 
     // Activate shader
     void use();
