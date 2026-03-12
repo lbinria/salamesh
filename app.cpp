@@ -1423,16 +1423,6 @@ void App::loadState(json &j, const std::string path) {
 
 	clearScene();
 
-	// Load cameras states
-	for (auto &[cameraName, jCamera] : j["cameras"].items()) {
-		auto type = jCamera["type"].get<std::string>();
-		auto camera = cameraInstanciator.make(type);
-		if (camera) {
-			camera->loadState(jCamera);
-			cameras[cameraName] = std::move(camera);
-		}
-	}
-
 	// Load models states
 	for (auto &[modelName, jModel] : j["models"].items()) {
 		// Concatenate state.json file path with model path
@@ -1452,6 +1442,16 @@ void App::loadState(json &j, const std::string path) {
 		model->loadState(jModel);
 
 		// TODO! recompute cameras far / near
+	}
+
+	// Load cameras states after model (because loading model will focus on)
+	for (auto &[cameraName, jCamera] : j["cameras"].items()) {
+		auto type = jCamera["type"].get<std::string>();
+		auto camera = cameraInstanciator.make(type);
+		if (camera) {
+			camera->loadState(jCamera);
+			cameras[cameraName] = std::move(camera);
+		}
 	}
 
 	// Load app state
