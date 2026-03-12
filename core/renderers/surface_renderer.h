@@ -13,11 +13,11 @@
 #include "../include/json.hpp"
 using json = nlohmann::json;
 
-#include "renderer.h"
+#include "mesh_renderer.h"
 #include "../element.h"
 using namespace UM;
 
-struct SurfaceRenderer : public Renderer {
+struct SurfaceRenderer : public MeshRenderer {
 	
 	struct Vertex {
 		// int vertexIndex;
@@ -30,12 +30,9 @@ struct SurfaceRenderer : public Renderer {
 	};
 
 	SurfaceRenderer(Surface &m) : 
-		Renderer(Shader(sl::shadersPath("surface.vert"), sl::shadersPath("surface.frag"))),
+		MeshRenderer(Shader(sl::shadersPath("surface.vert"), sl::shadersPath("surface.frag"))),
 		_m(m)
-		{
-			shader.use();
-			shader.setFloat3("color", {0.71f, 0.71f, 0.71f});
-		}
+		{}
 
 	void init() override;
 	void render(glm::vec3 &position) override;
@@ -59,6 +56,10 @@ struct SurfaceRenderer : public Renderer {
 
 	private:
 
-	void doLoadState(json &j) override {}
-	void doSaveState(json &j) const override {}
+	void doLoadState(json &j) override {
+		MeshRenderer::doLoadState(j);
+	}
+	void doSaveState(json &j) const override {
+		MeshRenderer::doSaveState(j);
+	}
 };

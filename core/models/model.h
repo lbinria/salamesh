@@ -4,6 +4,7 @@
 #include "../layer.h"
 #include "../attribute.h"
 #include "../renderers/renderer.h"
+#include "../renderers/mesh_renderer.h"
 #include "../renderers/point_set_renderer.h"
 #include "../renderers/halfedge_renderer.h"
 
@@ -69,7 +70,10 @@ struct Model {
 	void init() {
 		for (auto const &[k, r] : _renderers) {
 			r->init();
-			r->setMeshIndex(index);
+			// r->setMeshIndex(index);
+			if (auto mesh_renderer = std::dynamic_pointer_cast<MeshRenderer>(r)) {
+				mesh_renderer->setMeshIndex(index);
+			}
 		}
 	}
 
@@ -431,9 +435,9 @@ struct Model {
 		return nullptr;
 	}
 
-	std::shared_ptr<Renderer> getMeshRenderer() const {
+	std::shared_ptr<MeshRenderer> getMeshRenderer() const {
 		if(_renderers.contains("mesh_renderer"))
-			return _renderers.at("mesh_renderer");
+			return std::static_pointer_cast<MeshRenderer>(_renderers.at("mesh_renderer"));
 		
 		return nullptr;
 	}
@@ -450,7 +454,6 @@ struct Model {
 		return _renderers.at(name);
 	}
 
-	// TODO maybe remove that later, using screen RBO to get edge ?
 	virtual long pickEdge(glm::vec3 p0, int c) = 0;
 
 	NamedContainer getAttributeContainer(std::string name, ElementKind kind) const {

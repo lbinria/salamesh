@@ -1,6 +1,7 @@
 #include "renderer_bindings.h"
 
 #include "../core/renderers/renderer.h"
+#include "../core/renderers/mesh_renderer.h"
 #include "../core/renderers/point_set_renderer.h"
 #include "../core/renderers/halfedge_renderer.h"
 #include "../core/renderers/line_renderer.h"
@@ -14,31 +15,6 @@ namespace bindings {
 		renderer_t["visible"] = sol::property(
 			&Renderer::getVisible,
 			&Renderer::setVisible
-		);
-
-		renderer_t["color"] = sol::property(
-			&Renderer::getColor,
-			&Renderer::setColor
-		);
-
-		renderer_t["size"] = sol::property(
-			&Renderer::getMeshSize,
-			&Renderer::setMeshSize
-		);
-
-		renderer_t["shrink"] = sol::property(
-			&Renderer::getMeshShrink,
-			&Renderer::setMeshShrink
-		);
-
-		renderer_t["corner_visible"] = sol::property(
-			&Renderer::getCornerVisible,
-			&Renderer::setCornerVisible
-		);
-
-		renderer_t["attr_repeat"] = sol::property(
-			&Renderer::getAttrRepeat,
-			&Renderer::setAttrRepeat
 		);
 
 		renderer_t["light"] = sol::writeonly_property(&Renderer::setLight);
@@ -61,6 +37,32 @@ namespace bindings {
 
 		renderer_t.set_function("push", &Renderer::push);
 
+
+		sol::usertype<MeshRenderer> meshRenderer_t = lua.new_usertype<MeshRenderer>(
+			"MeshRenderer",
+			sol::base_classes, 
+			sol::bases<Renderer>()
+		);
+
+		meshRenderer_t["color"] = sol::property(
+			&MeshRenderer::getColor,
+			&MeshRenderer::setColor
+		);
+
+		meshRenderer_t["size"] = sol::property(
+			&MeshRenderer::getMeshSize,
+			&MeshRenderer::setMeshSize
+		);
+
+		meshRenderer_t["shrink"] = sol::property(
+			&MeshRenderer::getMeshShrink,
+			&MeshRenderer::setMeshShrink
+		);
+
+		meshRenderer_t["corner_visible"] = sol::property(
+			&MeshRenderer::getCornerVisible,
+			&MeshRenderer::setCornerVisible
+		);
 
 
 		sol::usertype<PointSetRenderer> pointSetRenderer_t = lua.new_usertype<PointSetRenderer>(

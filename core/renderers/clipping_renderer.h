@@ -53,15 +53,15 @@ struct ClippingRenderer : public Renderer {
 		push();
 	}
 
-	// glm::vec3 getColor() const {
-	// 	return color;
-	// }
+	glm::vec3 getColor() const {
+		return color;
+	}
 
-	// void setColor(glm::vec3 c) {
-	// 	shader.use();
-	// 	shader.setFloat3("color", c);
-	// 	color = c;
-	// }
+	void setColor(glm::vec3 c) {
+		shader.use();
+		shader.setFloat3("color", c);
+		color = c;
+	}
 
 
 	private:

@@ -13,12 +13,12 @@
 #include "../include/json.hpp"
 using json = nlohmann::json;
 
-#include "renderer.h"
+#include "mesh_renderer.h"
 #include "../element.h"
 
 using namespace UM;
 
-struct VolumeRenderer : public Renderer {
+struct VolumeRenderer : public MeshRenderer {
 
 	struct Vertex {
 		int vertexIndex;
@@ -31,12 +31,9 @@ struct VolumeRenderer : public Renderer {
 	};
 
 	VolumeRenderer(Volume &m) : 
-		Renderer(Shader(sl::shadersPath("volume.vert"), sl::shadersPath("volume.frag"))),
+		MeshRenderer(Shader(sl::shadersPath("volume.vert"), sl::shadersPath("volume.frag"))),
 		_m(m)
-		{
-			shader.use();
-			shader.setFloat3("color", {0.71f, 0.71f, 0.71f});
-		}
+		{}
 
 
 	void init() override;
@@ -96,7 +93,11 @@ struct VolumeRenderer : public Renderer {
 	unsigned int texAttr;
 	unsigned int texColorMap;
 
-	void doLoadState(json &j) override {}
-	void doSaveState(json &j) const override {}
+	void doLoadState(json &j) override {
+		MeshRenderer::doLoadState(j);
+	}
+	void doSaveState(json &j) const override {
+		MeshRenderer::doSaveState(j);
+	}
 
 };

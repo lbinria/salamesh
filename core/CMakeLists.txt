@@ -32,6 +32,7 @@ set(SOURCES
 
     renderers/renderer_info.h
     renderers/renderer.h
+    renderers/mesh_renderer.h
     renderers/line_renderer.cpp renderers/line_renderer.h
     renderers/point_set_renderer.cpp renderers/point_set_renderer.h
     renderers/halfedge_renderer.cpp renderers/halfedge_renderer.h
