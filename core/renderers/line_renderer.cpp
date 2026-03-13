@@ -29,12 +29,7 @@ void LineRenderer::push() {
 		lineComponents.push_back({ .p = l.b, .color = l.color });
 	}
 
-	nelements = lineComponents.size();
-
-	glBindVertexArray(VAO);
-	glBindBuffer(GL_ARRAY_BUFFER, VBO);
-	glBufferData(GL_ARRAY_BUFFER, nelements * sizeof(LineComponent), lineComponents.data(), GL_DYNAMIC_DRAW);
-
+	writeVBOBuffer(lineComponents, true);
 }
 
 void LineRenderer::render(glm::vec3 &position) {

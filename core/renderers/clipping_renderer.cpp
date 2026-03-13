@@ -191,11 +191,7 @@ void ClippingRenderer::push() {
 		}
 	}
 
-	nelements = vertices.size();
-
-	glBindVertexArray(VAO);
-	glBindBuffer(GL_ARRAY_BUFFER, VBO);
-	glBufferData(GL_ARRAY_BUFFER, nelements * sizeof(Vertex), vertices.data(), GL_DYNAMIC_DRAW);
+    writeVBOBuffer(vertices);
 }
 
 void ClippingRenderer::render(glm::vec3 &position) {

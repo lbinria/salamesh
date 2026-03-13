@@ -126,13 +126,7 @@ void SurfaceHalfedgeRenderer::push() {
 		}
 	}
 
-	nelements = vertices.size();
-
-	std::cout << "nverts: " << nelements << std::endl;
-
-	glBindVertexArray(VAO);
-	glBindBuffer(GL_ARRAY_BUFFER, VBO);
-	glBufferData(GL_ARRAY_BUFFER, nelements * sizeof(LineVert), vertices.data(), GL_STATIC_DRAW);
+	writeVBOBuffer(vertices);
 
 	shouldPush = false;
 }

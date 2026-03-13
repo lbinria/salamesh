@@ -254,6 +254,15 @@ struct Renderer {
 		shader.setMat4("model", model);
 	}
 
+	template<typename T>
+	void writeVBOBuffer(std::vector<T> data, bool dynamicDraw = false) {
+		auto drawType = dynamicDraw ? GL_DYNAMIC_DRAW : GL_STATIC_DRAW;
+		nelements = data.size();
+		glBindVertexArray(VAO);
+		glBindBuffer(GL_ARRAY_BUFFER, VBO);
+		glBufferData(GL_ARRAY_BUFFER, nelements * sizeof(T), data.data(), drawType);
+	}
+
 	private:
 
 	virtual void doLoadState(json &j) = 0;

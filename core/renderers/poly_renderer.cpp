@@ -164,7 +164,7 @@ void PolyRenderer::push() {
 		cornerOff += f.size();
 	}
 
-	PolyRenderer::push(vertices);
+	writeVBOBuffer(vertices);
 
 	// Write buffer
 	glBindBuffer(GL_TEXTURE_BUFFER, bufNVertsPerFacet);

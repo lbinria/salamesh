@@ -28,6 +28,6 @@ void TriRenderer::push() {
 		}
 	}
 
-	SurfaceRenderer::push(vertices);
+	writeVBOBuffer(vertices);
 
 }
