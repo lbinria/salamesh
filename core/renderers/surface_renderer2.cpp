@@ -19,6 +19,7 @@ void SurfaceRenderer2::init() {
 	sl::createTBO(bufPoints, tboPoints, GL_RGB32F);
 	sl::createTBO(bufFacets, tboFacets, GL_R32I);
 	sl::createTBO(bufOffsets, tboOffsets, GL_R32I);
+	sl::createTBO(bufFacetIndexes, tboFacetIndexes, GL_R32I);
 
 	shader.use();
 
@@ -33,6 +34,7 @@ void SurfaceRenderer2::init() {
 	shader.setInt("bufPoints", 8);
 	shader.setInt("bufFacets", 9);
 	shader.setInt("bufOffsets", 10);
+	shader.setInt("bufFacetIndexes", 11);
 
 
 	
@@ -84,6 +86,9 @@ void SurfaceRenderer2::render(glm::vec3 &position) {
 	glActiveTexture(GL_TEXTURE0 + 10);
 	glBindTexture(GL_TEXTURE_BUFFER, tboOffsets);
 
+	glActiveTexture(GL_TEXTURE0 + 11);
+	glBindTexture(GL_TEXTURE_BUFFER, tboFacetIndexes);
+
 	setPosition(position);
 
 	glDrawArrays(GL_TRIANGLES, 0, nelements);
@@ -110,12 +115,14 @@ void SurfaceRenderer2::clean() {
 	glDeleteBuffers(1, &bufPoints);
 	glDeleteBuffers(1, &bufFacets);
 	glDeleteBuffers(1, &bufOffsets);
+	glDeleteBuffers(1, &bufFacetIndexes);
 	glDeleteTextures(1, &tboColormap1);
 	glDeleteBuffers(1, &bufColormap2);
 	glDeleteTextures(1, &tboColormap2);
 	glDeleteTextures(1, &tboPoints);
 	glDeleteTextures(1, &tboFacets);
 	glDeleteTextures(1, &tboOffsets);
+	glDeleteTextures(1, &tboFacetIndexes);
 	glBindBuffer(GL_TEXTURE_BUFFER, 0);
 
 	// Clean shader

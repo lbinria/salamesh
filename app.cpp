@@ -278,7 +278,7 @@ bool App::setup() {
 	std::cout << "GLFW current context created !" << std::endl;
 
 	// Disable VSync
-	// glfwSwapInterval(0);
+	glfwSwapInterval(0);
 
 	// Setup inputs
 	glfwSetKeyCallback(window, key_callback);

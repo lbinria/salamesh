@@ -4,9 +4,9 @@ layout (std140, binding = 0) uniform Matrices
 {
 	mat4 view;
 	mat4 projection;
-   vec2 viewport;
+	vec2 viewport;
 };
-
+uniform mat4 model;
 
 out vec3 fragBary;
 out vec3 fragNormal;
@@ -24,50 +24,47 @@ flat out int fragCornerOff;
 
 out vec3 fragWorldPos;
 
-uniform mat4 model;
 
 uniform float meshShrink;
 
-flat out int surfaceType; /* 0 => triangle, 1 => polygon */
-
-int regularOffset = 0;
 uniform samplerBuffer bufPoints;
 uniform isamplerBuffer bufFacets;
+uniform isamplerBuffer bufFacetIndexes;
 uniform isamplerBuffer bufOffsets;
 
 out vec3 fragColor;
 
 void main()
 {
-   int nverts = 4; // n verts in facet
-   int npts = nverts * 3;  // n points in facet 4 tri * 3 points per tri
-   int fi = gl_VertexID / npts; // Retrieve current facet index
+	int fi = texelFetch(bufFacetIndexes, gl_VertexID).x;
+	int off = texelFetch(bufOffsets, fi + 1).x;
+	int nverts = off - texelFetch(bufOffsets, fi).x;
+	int npts = nverts * 3;
 
-   // Retrieve local point in facet (int divide)
-   int lp = int(mod(gl_VertexID, npts));
-   // Retrieve local tri in facet (int divide)
-   int lt = lp / 3;
+	vec3 bary = vec3(0);
+	for (int i = 0; i < nverts; ++i) {
+		// Get verts of facet fi
+		int vi = texelFetch(bufFacets, off + i).x;
+		vec3 p = texelFetch(bufPoints, vi).xyz;
+		bary += p;
+	}
 
-   // Get verts of facet fi
-   int v[4];
-   v[0] = int(texelFetch(bufFacets, fi * nverts).x);
-   v[1] = int(texelFetch(bufFacets, fi * nverts + 1).x);
-   v[2] = int(texelFetch(bufFacets, fi * nverts + 2).x);
-   v[3] = int(texelFetch(bufFacets, fi * nverts + 3).x);
+	bary /= nverts;
 
-   vec3 p[5];
-   p[0] = texelFetch(bufPoints, v[0]).xyz;
-   p[1] = texelFetch(bufPoints, v[1]).xyz;
-   p[2] = texelFetch(bufPoints, v[2]).xyz;
-   p[3] = texelFetch(bufPoints, v[3]).xyz;
-   vec3 bary = (p[0] + p[1] + p[2] + p[3]) / 4.;
-   p[4] = bary;
 
-   int lvInTri = int(mod(lp, 3));
-   int lv = lvInTri == 0 ? 4 :  int(mod(lvInTri + lt - 1, 4));
+	// Retrieve local point in facet (int divide)
+	int lp = gl_VertexID - off * 3;
+	// Retrieve local tri in facet (int divide)
+	int lt = lp / 3;
 
-   gl_Position = projection * view * model * vec4(p[lv], 1.);
-   fragColor = vec3(0.0, 0.32, 1.0);
+	int lvInTri = int(mod(lp, 3));
+	int lv = lvInTri == 0 ? -1 :  int(mod(lvInTri + lt - 1, nverts));
+
+	vec3 p = lv == -1 ? bary : texelFetch(bufPoints, lv).xyz; // point to process
+
+
+	gl_Position = projection * view * model * vec4(p, 1.);
+	fragColor = vec3(0.0, 0.32, 1.0);
 
    // vec3 p0 = bary;
    // vec3 p1 = p[lv];
