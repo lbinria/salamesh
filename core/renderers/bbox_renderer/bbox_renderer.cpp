@@ -83,11 +83,7 @@ void BBoxRenderer::push() {
 	vertices.push_back({ glm::vec3(pMax.x, pMax.y, pMin.z) });
 	vertices.push_back({ glm::vec3(pMax.x, pMin.y, pMin.z) });
 
-	nelements = vertices.size();
-
-	glBindVertexArray(VAO);
-	glBindBuffer(GL_ARRAY_BUFFER, VBO);
-	glBufferData(GL_ARRAY_BUFFER, nelements * sizeof(Vertex), vertices.data(), GL_STATIC_DRAW);
+	writeVBOBuffer(vertices);
 }
 
 void BBoxRenderer::render(glm::vec3 &position) {

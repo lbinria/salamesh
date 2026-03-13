@@ -8,6 +8,7 @@
 #include "../renderers/halfedge_renderer.h"
 #include "../renderers/tri_renderer.h"
 #include "../renderers/poly_renderer.h"
+#include "../renderers/surface_renderer2.h"
 #include "../renderers/bbox_renderer/bbox_renderer.h"
 #include "../renderers/clipping_renderer.h"
 #include "../layer.h"
@@ -36,7 +37,8 @@ namespace RendererSpecialization {
 
 	template<>
 	struct RendererSelector<UM::Polygons> {
-		using type = PolyRenderer;
+		// using type = PolyRenderer;
+		using type = QuadRenderer2;
 	};
 }
 
