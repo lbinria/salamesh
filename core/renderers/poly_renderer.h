@@ -13,11 +13,11 @@
 #include "../../include/json.hpp"
 using json = nlohmann::json;
 
-#include "renderer.h"
+#include "mesh_renderer.h"
 #include "../element.h"
 using namespace UM;
 
-struct PolyRenderer : public Renderer {
+struct PolyRenderer : public MeshRenderer {
 
 	struct Vertex {
 		int vertexIndex;
@@ -33,7 +33,7 @@ struct PolyRenderer : public Renderer {
 	};
 
 	PolyRenderer(Surface &m) : 
-		Renderer(Shader(sl::shadersPath("poly.vert"), sl::shadersPath("surface.frag"))),
+		MeshRenderer(Shader(sl::shadersPath("poly.vert"), sl::shadersPath("surface.frag"))),
 		_m(m)
 		{
 			shader.use();
@@ -59,6 +59,11 @@ struct PolyRenderer : public Renderer {
 	unsigned int bufNVertsPerFacet; 
 	unsigned int texNVertsPerFacet;
 
-	void doLoadState(json &j) override {}
-	void doSaveState(json &j) const override {}
+	void doLoadState(json &j) override {
+		MeshRenderer::doLoadState(j);
+	}
+	
+	void doSaveState(json &j) const override {
+		MeshRenderer::doSaveState(j);
+	}
 };
