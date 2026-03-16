@@ -33,7 +33,8 @@ namespace RendererSpecialization {
 
 	template<>
 	struct RendererSelector<UM::Quads> {
-		using type = PolyRenderer;
+		// using type = PolyRenderer;
+		using type = QuadRenderer2;
 	};
 
 	template<>
@@ -96,18 +97,11 @@ struct SurfaceModel : public SurfModel {
 		if (_m.nfacets() <= 0)
 			return false;
 
-		// TODO see if necessary... we can load Triangles as Polygons, it works
-		// but there is maybe some optimisations for Triangles...
-		// Check if poly & only triangle, should be a triangle
-		// Note: check this improve the loading time of big triangle model => for 180MO, 6500ms instead of 7500ms
-		if (getModelType() == ModelType::POLYGON_MODEL) {
-			bool onlyTri = true;
-			for (auto &f : _m.iter_facets()) {
-				if (f.size() != 3)
-					onlyTri = false;
-			}
-			if (onlyTri)
-				return false;
+		// We can load Triangles / Quads as Polygons, it works, i know
+		// but there is maybe some optimisations for Triangles, Quads...
+		// Note: check this improve the loading time of big models
+		if (getModelType() == ModelType::POLYGON_MODEL && !mustLoadedAsPoly()) {
+			return false;
 		}
 
 		clearAttrs();
@@ -341,6 +335,29 @@ struct SurfaceModel : public SurfModel {
 	private:
 	// Mesh
 	TSurface _m;
+
+
+	// Check whether mesh has more than 4 vertices per facet
+	// if not, check that it contains irregular number of vertices per facet
+	bool mustLoadedAsPoly() {
+		if (_m.nfacets() <= 0)
+			return true;
+
+		int fs = _m.facet(0).size();
+
+		// N vert per facet greater than quad
+		if (fs > 4)
+			return true;
+
+		// Or irregular number of vertices
+		for (auto &f : _m.iter_facets()) {
+			if (fs != f.size())
+				return true;
+		}
+
+		return false;
+	}
+
 };
 
 typedef SurfaceModel<Triangles> TriModel;
