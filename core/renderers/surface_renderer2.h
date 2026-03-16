@@ -63,9 +63,13 @@ struct TriRenderer2 : public SurfaceRenderer2 {
 		// Convert vec3 f64 to vec3 f32
 		auto pointsData = *_m.points.data.get();
 
-		std::vector<glm::vec3> points;
-		for (auto &p : pointsData) {
-			points.push_back(sl::um2glm(p));
+		// std::vector<glm::vec3> points;
+		// for (auto &p : pointsData) {
+		// 	points.push_back(sl::um2glm(p));
+		// }
+		std::vector<glm::vec3> points(pointsData.size());
+		for (int i = 0; i < pointsData.size(); ++i) {
+			points[i] = sl::um2glm(pointsData[i]);
 		}
 
 		glBindBuffer(GL_TEXTURE_BUFFER, bufPoints);
@@ -81,17 +85,20 @@ struct TriRenderer2 : public SurfaceRenderer2 {
 struct QuadRenderer2 : public SurfaceRenderer2 {
 
 	QuadRenderer2(Surface &m) : 
-		SurfaceRenderer2(m, Shader(sl::shadersPath("quads.vert"), sl::shadersPath("gizmo_line.frag")))
+		SurfaceRenderer2(m, Shader(sl::shadersPath("quads.vert"), sl::shadersPath("surface.frag")))
 		{}
 
 	void push() override {
-
 		// Convert vec3 f64 to vec3 f32
 		auto pointsData = *_m.points.data.get();
 
-		std::vector<glm::vec3> points;
-		for (auto &p : pointsData) {
-			points.push_back(sl::um2glm(p));
+		// std::vector<glm::vec3> points;
+		// for (auto &p : pointsData) {
+		// 	points.push_back(sl::um2glm(p));
+		// }
+		std::vector<glm::vec3> points(pointsData.size());
+		for (int i = 0; i < pointsData.size(); ++i) {
+			points[i] = sl::um2glm(pointsData[i]);
 		}
 
 		glBindBuffer(GL_TEXTURE_BUFFER, bufPoints);

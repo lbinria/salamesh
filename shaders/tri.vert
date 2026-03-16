@@ -39,9 +39,7 @@ void main()
 {
 	const int facetSize = 3;
  	int fi = gl_VertexID / facetSize;
-	int lv = int(mod(gl_VertexID, 3));
-	// int vi = texelFetch(bufFacets, gl_VertexID).x;
-	// vec3 p = texelFetch(bufPoints, vi).xyz;
+	int lv = gl_VertexID % 3;
 
 	int v0 = texelFetch(bufFacets, fi * facetSize).x;
 	int v1 = texelFetch(bufFacets, fi * facetSize + 1).x;
@@ -99,12 +97,6 @@ void main()
 	float arg = max(0.0, s * (s - l[0]) * (s - l[1]) * (s - l[2])); 
 	float area = sqrt(arg);
 
-	// float h0 = 2. * area / a;
-	// float h1 = 2. * area / b;
-	// float h2 = 2. * area / c;
-	// vec3 heights = vec3(h0, h1, h2);
-	// fragHeights[lv] = heights[(lv + 1) % 3];
-
 	float h = 2. * area / l[(lv + 1) % 3];
 
 	fragHeights = vec3(0);
@@ -118,8 +110,7 @@ void main()
 
 	fragBarycentric = vec3(0.);
 	fragBarycentric[lv] = 1.;
-	// fragCornerIndex = cornerIndex;	
-	fragCornerIndex = 0; // TODO
+	fragCornerIndex = fi * 3;
 	fragCornerOff = fi * 3;
 
 	fragViewDir = -vec3(view[0][2], view[1][2], view[2][2]);
