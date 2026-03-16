@@ -157,8 +157,8 @@ vec4 showCornerAttributes(int layer) {
         int curPointIdx = getCurrentPointIdx(fragBarycentric);
 
         int curPointOff = 0;
-        // Polygon case
-        if (surfaceType == 1) {
+        // Quad / Polygon case
+        if (surfaceType > 0) {
             // In polygons, the point 0 is the barycenter
             // we never want display any corner on it, so snap to other vertices
             // Only the points 1 & 2 (y, z) components represent real corners
@@ -177,7 +177,19 @@ vec4 showCornerAttributes(int layer) {
         }
         
         // Get number of vertex for facet
-        int nvertsPerFacet = surfaceType == 0 ? 3 : int(texelFetch(nvertsPerFacetBuf, fragFacetIndex).x);
+        // int nvertsPerFacet = surfaceType == 0 ? 3 : int(texelFetch(nvertsPerFacetBuf, fragFacetIndex).x);
+
+        // TODO here replace surfaceType by nvertsPerFacet given from vertex shader
+        // it enable to process regular size polygon in the same way
+        int nvertsPerFacet = 0;
+        if (surfaceType == 0)
+            nvertsPerFacet = 3;
+        else if (surfaceType == 1)
+            nvertsPerFacet = int(texelFetch(nvertsPerFacetBuf, fragFacetIndex).x);
+        else if (surfaceType == 2)
+            nvertsPerFacet = 4;
+
+
 
         // Get the current corner index by using the "provoking" vertex corner index
         // plus the current point index
@@ -207,7 +219,11 @@ vec4 showCornerAttributes(int layer) {
 
         } else {
             // Get number of vertex for facet
-            int nvertsPerFacet = int(texelFetch(nvertsPerFacetBuf, fragFacetIndex).x);
+            int nvertsPerFacet;
+            if (surfaceType == 1) 
+                nvertsPerFacet = int(texelFetch(nvertsPerFacetBuf, fragFacetIndex).x);
+            else if (surfaceType == 2)
+                nvertsPerFacet = 4;
 
             // Surface is a polygon, p0 is bary
             // So color of bary is the average of the colors of all corners
@@ -315,6 +331,7 @@ void wireframe(inout vec3 col) {
     float f2 = 1. - smoothstep(flatFragHeights.y - meshSize, flatFragHeights.y, flatFragHeights.y - fragHeights.y);
     float f3 = 1. - smoothstep(flatFragHeights.z - meshSize, flatFragHeights.z, flatFragHeights.z - fragHeights.z);
     col *= f1 * f2 * f3;
+    // col *= min(f1, min(f2, f3));
 }
 
 // Mix with alpha discard

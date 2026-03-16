@@ -137,7 +137,6 @@ void main()
 		float area = sqrt(arg);
 
 		h = 2. * area / b;
-		// h = 1.;
 
 	} else {
 		// inf
@@ -164,5 +163,5 @@ void main()
 	// For light orientation
 	fragViewDir = -vec3(view[0][2], view[1][2], view[2][2]);
 
-	surfaceType = 1;
+	surfaceType = 2;
 }
