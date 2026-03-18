@@ -47,9 +47,9 @@ void main()
 	int fi = gl_VertexID / npts; // Retrieve current quad facet index
 
 	// Retrieve local point in facet \in [0, 11]
-	const int lp = gl_VertexID % npts;
+	int lp = gl_VertexID % npts;
 	// Retrieve local tri in facet \in [0, 3] (int divide)
-	const int lt = lp / 3;
+	int lt = lp / 3;
 
 	// Get verts of quad facet fi
 	int v[4] = {
@@ -70,7 +70,7 @@ void main()
 
 	// Local vertex in current tri in facet \in [0,2]
 	// const int lvt = lp % 3; // Can be replaced by gl_VertexID % 3 it's equivalent
-	const int lvt = gl_VertexID % 3; // Can be replaced by gl_VertexID % 3 it's equivalent
+	int lvt = gl_VertexID % 3; // Can be replaced by gl_VertexID % 3 it's equivalent
 
 	mat4 pvm = projection * view * model;
 

@@ -27,20 +27,19 @@ namespace RendererSpecialization {
 
 	template<>
 	struct RendererSelector<UM::Triangles> {
-		// using type = TriRenderer;
-		using type = TriRenderer2;
+		using type = TriRenderer;
+		// using type = TriRenderer2;
 	};
 
 	template<>
 	struct RendererSelector<UM::Quads> {
-		// using type = PolyRenderer;
-		using type = QuadRenderer2;
+		using type = PolyRenderer;
+		// using type = QuadRenderer2;
 	};
 
 	template<>
 	struct RendererSelector<UM::Polygons> {
 		using type = PolyRenderer;
-		// using type = QuadRenderer2;
 		// using type = PolyRenderer2;
 	};
 }
