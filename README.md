@@ -11,7 +11,16 @@ Forge your own meshing application in the fire of salamesh.
 
 You may find pre-build binaries in releases.
 
-### Linux (Debian / Ubuntu)
+### Linux 
+
+Get salamesh sources:
+
+```
+# Clone repo
+git clone https://github.com/lbinria/salamesh.git
+```
+
+#### Debian / Ubuntu (apt-get)
 
 As a linux user, we know how much fun compiling is !
 
@@ -24,10 +33,7 @@ sudo apt install -y build-essential cmake pkg-config git
 
 Or just run the following:
 
-```
-# Clone repo
-git clone https://github.com/lbinria/salamesh.git
-```
+
 ```
 # Install dev libs (OpenGL / GLFW / Lua)
 sudo apt install -y libgl1-mesa-dev libglu1-mesa-dev libglfw3 libglfw3-dev lua5.4 liblua5.4-dev
@@ -41,9 +47,9 @@ cd salamesh && cmake -B build`
 cd build &&  cmake --build . --parallel
 ```
 
-### Archlinux
+#### Archlinux (pacman)
 
-`pacman -S glfw3`
+`pacman -S mesa glu lua glfw3`
 
 ## Dependencies
 
