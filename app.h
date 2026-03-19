@@ -92,8 +92,7 @@ struct App final : public IApp {
 	glm::vec3 pickPoint(double x, double y) override;
 
 	
-	bool saveModel(std::string name, const std::string& filename) override;
-	std::string loadModel(const std::string& filename, std::string name = "") override;
+	std::shared_ptr<Model> loadModel(const std::string& filename, std::string name = "") override;
 
 	std::shared_ptr<Model> addModel(std::string type, std::string name) override {
 		assert(!name.empty() && "Cannot add model with an empty name.");

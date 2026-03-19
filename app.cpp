@@ -881,11 +881,7 @@ void App::clean() {
 		glDeleteTextures(1, &colormaps[i].tex);
 }
 
-bool App::saveModel(std::string name, const std::string& filename) {
-	return getModel(name).saveAs(filename);
-}
-
-std::string App::loadModel(const std::string& filename, std::string name) {
+std::shared_ptr<Model> App::loadModel(const std::string& filename, std::string name) {
 
 	auto begin = std::chrono::steady_clock::now();
 
@@ -926,7 +922,7 @@ std::string App::loadModel(const std::string& filename, std::string name) {
 	}
 
 	if (!success)
-		return "";
+		return nullptr;
 
 
 	// Setup default gfx
@@ -965,7 +961,7 @@ std::string App::loadModel(const std::string& filename, std::string name) {
 	auto end = std::chrono::steady_clock::now();
 	std::cout << "load model total duration: " << std::chrono::duration_cast<std::chrono::milliseconds>(end - begin).count() << std::endl;
 
-	return modelName;
+	return models[modelName];
 }
 
 void App::computeFarPlane() {
@@ -1433,7 +1429,7 @@ void App::loadState(json &j, const std::string path) {
 			std::filesystem::path(modelRelPath);
 		
 		// Try to load the model mesh
-		if (loadModel(modelPath.string(), modelName).empty())
+		if (!loadModel(modelPath.string(), modelName))
 			continue;
 		
 		// Get last added model

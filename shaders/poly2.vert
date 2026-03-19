@@ -37,14 +37,15 @@ out vec3 fragColor;
 void main()
 {
 	int fi = texelFetch(bufFacetIndexes, gl_VertexID).x;
+   int soff = texelFetch(bufOffsets, fi).x;
 	int off = texelFetch(bufOffsets, fi + 1).x;
-	int nverts = off - texelFetch(bufOffsets, fi).x;
+	int nverts = off - soff;
 	int npts = nverts * 3;
 
 	vec3 bary = vec3(0);
 	for (int i = 0; i < nverts; ++i) {
 		// Get verts of facet fi
-		int vi = texelFetch(bufFacets, off + i).x;
+		int vi = texelFetch(bufFacets, soff + i).x;
 		vec3 p = texelFetch(bufPoints, vi).xyz;
 		bary += p;
 	}
@@ -53,14 +54,14 @@ void main()
 
 
 	// Retrieve local point in facet (int divide)
-	int lp = gl_VertexID - off * 3;
+	int lp = gl_VertexID - soff * 3;
 	// Retrieve local tri in facet (int divide)
 	int lt = lp / 3;
 
-	int lvInTri = int(mod(lp, 3));
-	int lv = lvInTri == 0 ? -1 :  int(mod(lvInTri + lt - 1, nverts));
-
-	vec3 p = lv == -1 ? bary : texelFetch(bufPoints, lv).xyz; // point to process
+	int lvt = lp % 3;
+	// int lv = lvt == 0 ? -1 : (lvt + lt - 1) % nverts;
+	// vec3 p = lv == -1 ? bary : texelFetch(bufPoints, lv).xyz; // point to process
+   vec3 p = lvt == 0 ? bary : texelFetch(bufPoints, (lvt + lt - 1) % nverts).xyz; // point to process
 
 
 	gl_Position = projection * view * model * vec4(p, 1.);

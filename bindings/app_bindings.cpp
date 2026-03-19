@@ -144,7 +144,6 @@ namespace bindings {
 		app_type.set_function("load_snapshot", &IApp::loadSnapshot);
 		app_type.set_function("list_snapshots", &IApp::listSnapshots);
 
-		app_type.set_function("save_model", &IApp::saveModel);
 		app_type.set_function("load_model", &IApp::loadModel);
 		app_type.set_function("add_model", &IApp::addModel);
 		app_type.set_function("remove_model", &IApp::removeModel);

@@ -46,24 +46,32 @@ There is only one instance of App, it is already declared and accessible using `
 | **Scene Management** |||
 | `clear_scene` | Function | None | Clears the current scene | `void` |
 | **Model Management** |||
-| `load_model` | Function | `(filename: string)` | Loads a model | `bool` |
-| `add_model` | Function | `(name: string, type: int)` | Adds a model with given name and type | `int` (index + 1) |
-| `remove_model` | Overloaded Function | `(idx: int)` or `(name: string)` | Removes a model by index or name | `void` or `bool` |
-| `get_model` | Function | `(name: string)` | Retrieves model by name | Model type |
+| `load_model` | Function | `(filename: string, [name: string])` | Loads a model | `Model` | null` |
+| `add_model` | Function | `(type: string, name: string)` | Adds a model with given type and name | `Model` |
+| `remove_model` | Function | `(name: string)` | Removes a model by name | `void` |
+| `get_model` | Function | `(name: string)` | Retrieves model by name | `Model` |
 | `count_models` | Read-only Property | None | Returns number of models | `int` |
-| `has_models` | Read-only Property | None | Checks if models exist | `bool` |
-| `models` | Read-only Property | None | Returns list of models | `Model` collection |
-| `get_children_of` | Function | Likely model-related | Gets children of a model | `Model` collection |
+| `has_models` | Read-only Property | None | Checks if there is at least one model in scene | `bool` |
+| `models` | Read-only Property | None | Returns list of models | `Model list` |
+| `get_children_of` | Function | Likely model-related | Gets children of a model | `Model list` |
 | `model` | Read-only Property | None | Gets current model | `Model` |
 | `hovered_model` | Read-only Property | None | Gets hovered model | `Model` |
-| `selected_model` | Property | `(selected: int)` | Gets/sets selected model (1-based) | `int` |
+| `selected_model` | Property | `string` | Gets/sets selected model by name | `string` |
 | `focus` | Function | `(name: string)` | Focus model | `void` |
+| `has_model` | Function | `(name: string)` | Check if model of given name exists | `bool` |
 | `get_model_name_by_index` | Function | `(i: int)` | Returns model's name of given index | `string` |
 | `get_model_index_by_name` | Function | `(name: string)` | Returns model's index of given name | `int` |
 | **Camera Management** |||
-| `cameras` | Read-only Property | None | Returns camera collection | Camera collection |
-| `camera` | Read-only Property | None | Gets current camera | Current camera |
-| `selected_camera` | Property | `(selected: int)` | Gets/sets selected camera (1-based) | `int` |
+| `add_camera` | Function | `(type: string, name: string)` | Adds a model with given type and name | `Camera` |
+| `remove_camera` | Function | `(name: string)` | Removes a camera by name | `void` |
+| `cameras` | Read-only Property | None | Returns camera collection | `Camera collection` |
+| `camera` | Read-only Property | None | Gets current camera | `Camera` |
+| `get_camera` | Function | `(name: string)` | Retrieves camera by name | `Camera` |
+| `count_cameras` | Read-only Property | None | Returns number of cameras | `int` |
+| `has_cameras` | Read-only Property | None | Checks if there is at least one camera in scene | `bool` |
+| `has_camera` | Function | `(name: string)` | Check if model of given name exists | `bool` |
+| `clear_cameras` | Function | `()` | Remove all cameras in scene | `void` |
+| `selected_camera` | Property | `(selected: string)` | Gets/sets selected camera | `string` |
 | `input_state` | Read-only Property | None | Gets current input state | Input state type |
 | **Colormaps Management** |||
 | `colormaps` | Read-only Property | None | Returns colormap collection | Colormap collection |
