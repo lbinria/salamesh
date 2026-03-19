@@ -452,7 +452,7 @@ void App::init() {
 
 	// Load model
 	// Check for files given in args (is it models, scripts ?)
-	std::set<std::string> accepted{".obj", ".mesh", ".geogram"};
+	std::set<std::string> accepted{".obj", ".mesh", ".geogram", ".vtk"};
 
 	for (auto &p : args.paths) {
 		std::string ext = p.extension().string();
@@ -1255,7 +1255,7 @@ void App::showOpenModelDialog() {
 	ImGuiFileDialog::Instance()->OpenDialog(
 		"OpenModelDlg", 
 		"Choose File", 
-		"All supported mesh files {.geogram, .mesh, .obj},.geogram,.mesh,.obj,.json", 
+		"All supported mesh files {.geogram, .mesh, .obj, .vtk},.geogram,.mesh,.obj,.vtk,.json", 
 		config
 	);
 }
@@ -1264,7 +1264,7 @@ void App::showSaveModelDialog() {
 	IGFD::FileDialogConfig config;
 	config.path = ".";
 	config.flags = ImGuiFileDialogFlags_ConfirmOverwrite;
-	ImGuiFileDialog::Instance()->OpenDialog("SaveModelAsDlg", "Save as", ".geogram,.mesh,.obj", config);
+	ImGuiFileDialog::Instance()->OpenDialog("SaveModelAsDlg", "Save as", ".geogram,.mesh,.obj,.vtk", config);
 }
 
 Snapshot App::snapshot() {
