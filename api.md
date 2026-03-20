@@ -10,7 +10,7 @@ Callback functions are functions called by the app. There is 3 categories of cal
  - `Events`: called when a specific event is triggered by the user / app
  - `Configuration`: specific function that does return data to specify how the app should use or format some elements
 
-| Function/Property Name | Description | Example |
+| Function | Description | Example |
 |------------------------|-------------|---------|
 | **Lifecycle functions** |||
 | `init()` | Called when the script is initialized, generally at the initialization of app | [Details](signal_examples.md#init) |
@@ -42,21 +42,21 @@ There is only one instance of App, it is already declared and accessible using `
 | Function/Property Name | Type | Parameters | Description | Return Type |
 |------------------------|------|------------|-------------|-------------|
 | **App functions** |||
-| `quit` | Function | None | Exits the application | `void` |
-| `is_debug` | Read-only Property | None | Check whether application was compiled in Debug mode | `bool` |
+| `quit` | Function | — | Exits the application | `void` |
+| `is_debug` | Read-only Property | — | Check whether application was compiled in Debug mode | `bool` |
 | **Scene Management** |||
-| `clear_scene` | Function | None | Clears the current scene | `void` |
+| `clear_scene` | Function | — | Clears the current scene | `void` |
 | **Model Management** |||
 | `load_model` | Function | `(filename: string, [name: string])` | Loads a model | `Model` | null` |
 | `add_model` | Function | `(type: string, name: string)` | Adds a model with given type and name | `Model` |
 | `remove_model` | Function | `(name: string)` | Removes a model by name | `void` |
 | `get_model` | Function | `(name: string)` | Retrieves model by name | `Model` |
-| `count_models` | Read-only Property | None | Returns number of models | `int` |
-| `has_models` | Read-only Property | None | Checks if there is at least one model in scene | `bool` |
-| `models` | Read-only Property | None | Returns list of models | `Model list` |
+| `count_models` | Read-only Property | — | Returns number of models | `int` |
+| `has_models` | Read-only Property | — | Checks if there is at least one model in scene | `bool` |
+| `models` | Read-only Property | — | Returns list of models | `Model list` |
 | `get_children_of` | Function | Likely model-related | Gets children of a model | `Model list` |
-| `model` | Read-only Property | None | Gets current model | `Model` |
-| `hovered_model` | Read-only Property | None | Gets hovered model | `Model` |
+| `model` | Read-only Property | — | Gets current model | `Model` |
+| `hovered_model` | Read-only Property | — | Gets hovered model | `Model` |
 | `selected_model` | Property | `string` | Gets/sets selected model by name | `string` |
 | `focus` | Function | `(name: string)` | Focus model | `void` |
 | `has_model` | Function | `(name: string)` | Check if model of given name exists | `bool` |
@@ -65,40 +65,40 @@ There is only one instance of App, it is already declared and accessible using `
 | **Camera Management** |||
 | `add_camera` | Function | `(type: string, name: string)` | Adds a model with given type and name | `Camera` |
 | `remove_camera` | Function | `(name: string)` | Removes a camera by name | `void` |
-| `cameras` | Read-only Property | None | Returns camera collection | `Camera collection` |
-| `camera` | Read-only Property | None | Gets current camera | `Camera` |
+| `cameras` | Read-only Property | — | Returns camera collection | `Camera collection` |
+| `camera` | Read-only Property | — | Gets current camera | `Camera` |
 | `get_camera` | Function | `(name: string)` | Retrieves camera by name | `Camera` |
-| `count_cameras` | Read-only Property | None | Returns number of cameras | `int` |
-| `has_cameras` | Read-only Property | None | Checks if there is at least one camera in scene | `bool` |
+| `count_cameras` | Read-only Property | — | Returns number of cameras | `int` |
+| `has_cameras` | Read-only Property | — | Checks if there is at least one camera in scene | `bool` |
 | `has_camera` | Function | `(name: string)` | Check if model of given name exists | `bool` |
 | `clear_cameras` | Function | `()` | Remove all cameras from scene | `void` |
 | `selected_camera` | Property | `(selected: string)` | Gets/sets selected camera | `string` |
-| `input_state` | Read-only Property | None | Gets current input state | Input state type |
+| `input_state` | Read-only Property | — | Gets current input state | Input state type |
 | **Renderer Management** |||
 | `add_renderer` | Function | `(type: string, name: string)` | Adds a renderer with given type and name | `Renderer` |
 | `remove_renderer` | Function | `(name: string)` | Removes a renderer by name | `void` |
-| `renderers` | Read-only Property | None | Returns camera collection | `Renderer collection` |
+| `renderers` | Read-only Property | — | Returns camera collection | `Renderer collection` |
 | `get_renderer` | Function | `(name: string)` | Retrieves renderer by name | `Renderer` |
-| `count_renderer` | Read-only Property | None | Returns number of renderer | `int` |
+| `count_renderer` | Read-only Property | — | Returns number of renderer | `int` |
 | `has_renderer` | Function | `(name: string)` | Check if renderer of given name exists | `bool` |
-| `has_renderers` | Read-only Property | None | Checks if there is at least one renderer in scene | `bool` |
+| `has_renderers` | Read-only Property | — | Checks if there is at least one renderer in scene | `bool` |
 | `clear_renderers` | Function | `()` | Remove all renderers from scene | `void` |
 | **Colormaps Management** |||
-| `colormaps` | Read-only Property | None | Returns colormap collection | `Colormap collection` |
+| `colormaps` | Read-only Property | — | Returns colormap collection | `Colormap collection` |
 | `add_colormap` | Function | `(name: string, filename: string)` | Adds a colormap | `void` |
 | `remove_colormap` | Function | `(name: string)` | Removes a colormap | `void` |
 | `get_colormap` | Overloaded Function | `(idx: int)` or `(name: string)` | Gets a colormap | `Colormap` |
 | **States** |||
 | `load_state` | Function | `(filename: string)` | Loads a previously saved application state | `bool` |
 | `save_state` | Function | `(filename: string)` | Saves the current application state | `bool` |
-| `snapshot` | Function | None | Creates a snapshot of current state | `Snapshot` |
-| `load_snapshot` | Function | None | Loads a previously created snapshot | `void` |
-| `list_snapshots` | Function | None | Returns list of available snapshots | `List of Snapshot` |
+| `snapshot` | Function | — | Creates a snapshot of current state | `Snapshot` |
+| `load_snapshot` | Function | — | Loads a previously created snapshot | `void` |
+| `list_snapshots` | Function | — | Returns list of available snapshots | `List of Snapshot` |
 | `screenshot` | Function | `(filename: string)` | Takes a screenshot | `void` |
 | **Graphics** |||
 | `setCullMode` | Function | `(mode: int)` | Sets culling mode | `void` |
 | `cull_mode` | Write-only Property | `(mode: int)` | Sets culling mode | `void` |
-| `cull` | Property | None | Gets/sets culling | Cull state |
+| `cull` | Property | — | Gets/sets culling | Cull state |
 | **Picking** |||
 | `pick_point` | Function | `(x: double, y: double)` | Pick 3D point at (x,y) | `vec3` |
 | `pick_edge` | Function | `(x: double, y: double)` | Pick edge id at (x,y) | `long` |
@@ -109,26 +109,27 @@ There is only one instance of App, it is already declared and accessible using `
 | **Navigation** |||
 | `navigation_path` | Property | `string \| string list` | Gets/sets navigation path | `NavigationPath` |
 | `add_navigation_path` | Function | `(path_component: string)` | Adds a path component to navigation path | `void` |
-| `top_navigation_path` | Function | None | Go to top navigation path | `void` |
+| `top_navigation_path` | Function | — | Go to top navigation path | `void` |
 | **Dialogs** |||
-| `show_open_model_dialog` | Function | None | Displays dialog to open a model | `void` |
-| `show_save_model_dialog` | Function | None | Displays dialog to save a model | `void` |
+| `show_open_model_dialog` | Function | — | Displays dialog to open a model | `void` |
+| `show_save_model_dialog` | Function | — | Displays dialog to save a model | `void` |
 
 ___
+
 ### `InputState`
 
 | Property | Access | Type | Description |
 |----------|--------|------|-------------|
-| `vertex` | Read-write | `PrimitiveState` | Get vertex mouse state |
-| `edge` | Read-only | `PrimitiveState` | Get edge mouse state |
-| `facet` | Read-only | `PrimitiveState` | Get facet mouse state |
-| `cell` | Read-only | `PrimitiveState` | Get cell mouse state |
-| `mesh` | Read-only | `PrimitiveState` | Get mesh mouse state |
+| `vertex` | Read-write | `HoverState` | Get vertex hover state |
+| `edge` | Read-only | `HoverState` | Get edge hover state |
+| `facet` | Read-only | `HoverState` | Get facet hover state |
+| `cell` | Read-only | `HoverState` | Get cell hover state |
+| `mesh` | Read-only | `HoverState` | Get mesh hover state |
 | `mouse` | Read-only | `MouseState` | Get mouse state |
 
 ___
 
-### `PrimitiveState`
+### `HoverState`
 
 | Property | Access | Type | Description |
 |----------|--------|------|-------------|
@@ -159,15 +160,24 @@ ___
 
 ___
 
+### `NavigationPath`
+
+| Function/Property | Type | Parameters | Return Type | Description |
+|------|------|-----------|-------------|-------------|
+| `get` | Function | — | `String list` | Return the navigation path as list of string |
+| `str` | Function | — | `String` | Returns string representation of the path |
+| `starts_with` | Function | `(head: String)` or `(head: Table[String])` | — | Check whether the path is prepend by a given head (string or table of strings) |
+___
+
 ### `Snapshot`
 
 A snapshot of the app state.
 
 | Function/Property Name | Type | Parameters | Return Type | Description |
 |------------------------|------|------------|-------------|-------------|
-| `state_filename` | Read-only Property | None | `string` | Filename of the saved state |
-| `thumb_filename` | Read-only Property | None | `string` | Filename of the thumbnail |
-| `image` | Read-only Property | None | `Image` | Associated image object |
+| `state_filename` | Read-only Property | — | `string` | Filename of the saved state |
+| `thumb_filename` | Read-only Property | — | `string` | Filename of the thumbnail |
+| `image` | Read-only Property | — | `Image` | Associated image object |
 
 ___
 
@@ -177,10 +187,10 @@ Represent image / texture data.
 
 | Function/Property Name | Type | Parameters | Return Type | Description |
 |------------------------|------|------------|-------------|-------------|
-| `tex_id` | Read-only Property | None | `int` | Texture identifier |
-| `width` | Read-only Property | None | `int` | Image width |
-| `height` | Read-only Property | None | `int` | Image height |
-| `channels` | Read-only Property | None | `int` | Number of color channels |
+| `tex_id` | Read-only Property | — | `int` | Texture identifier |
+| `width` | Read-only Property | — | `int` | Image width |
+| `height` | Read-only Property | — | `int` | Image height |
+| `channels` | Read-only Property | — | `int` | Number of color channels |
 
 
 
@@ -190,7 +200,7 @@ Represent image / texture data.
 |------------------------|------|------------|-------------|-------------|
 | **Window Management** |||
 | `Begin` | Function | `(name: string)` | Begins an ImGui window | `bool` |
-| `End` | Function | None | Ends the current ImGui window | `void` |
+| `End` | Function | — | Ends the current ImGui window | `void` |
 | **Text Rendering** |||
 | `Text` | Overloaded Function | `(text: string)` or `(format: string, ...args)` | Renders text | `void` |
 | `TextColored` | Overloaded Function | `(r,g,b,a: float, text: string)` or `(r,g,b,a: float, format: string, ...args)` | Renders colored text | `void` |
@@ -209,7 +219,7 @@ Represent image / texture data.
 | `InputFloat3` | Function | `(label: string, initial_value: vec3)` | 3D float input | `{changed: bool, new_values: [float, float, float]}` |
 | **Combo and Selection Widgets** |||
 | `BeginCombo` | Function | `(label: string, preview_value: string)` | Starts a combo box | `bool` |
-| `EndCombo` | Function | None | Ends a combo box | `void` |
+| `EndCombo` | Function | — | Ends a combo box | `void` |
 | `BeginListBox` | Overloaded Function | `(label: string)` or `(label: string, size: ImVec2)` | Starts a list box | `bool` |
-| `EndListBox` | Function | None | Ends a list box | `void` |
+| `EndListBox` | Function | — | Ends a list box | `void` |
 | `Selectable` | Function | `(label: string, selected: bool)` | Creates a selectable item | `bool` |

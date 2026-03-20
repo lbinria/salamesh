@@ -38,12 +38,12 @@ namespace bindings {
 		);
 
 		// Input state binding
-		sol::usertype<InputState::PrimitiveState> primitive_state_t = lua.new_usertype<InputState::PrimitiveState>("PrimitiveState", 
-			sol::constructors<InputState::PrimitiveState()>(),
-			"hovered", sol::readonly_property(&InputState::PrimitiveState::getHovered),
-			"all_hovered", sol::readonly_property(&InputState::PrimitiveState::getAllHovered),
-			"any_hovered", sol::readonly_property(&InputState::PrimitiveState::anyHovered),
-			"has_changed", sol::readonly_property(&InputState::PrimitiveState::hasChanged)
+		sol::usertype<InputState::HoverState> primitive_state_t = lua.new_usertype<InputState::HoverState>("HoverState", 
+			sol::constructors<InputState::HoverState()>(),
+			"hovered", sol::readonly_property(&InputState::HoverState::getHovered),
+			"all_hovered", sol::readonly_property(&InputState::HoverState::getAllHovered),
+			"any_hovered", sol::readonly_property(&InputState::HoverState::anyHovered),
+			"has_changed", sol::readonly_property(&InputState::HoverState::hasChanged)
 		);
 
 		sol::usertype<InputState::MouseState> mouse_state_t = lua.new_usertype<InputState::MouseState>("MouseState", 
@@ -83,7 +83,7 @@ namespace bindings {
 		);
 
 		sol::usertype<InputState> input_state_t = lua.new_usertype<InputState>("InputState", 
-			sol::constructors<InputState(), InputState::PrimitiveState()>(),
+			sol::constructors<InputState(), InputState::HoverState()>(),
 			"vertex", sol::readonly_property(&InputState::vertex),
 			"edge", sol::readonly_property(&InputState::edge),
 			"facet", sol::readonly_property(&InputState::facet),
@@ -92,7 +92,7 @@ namespace bindings {
 			"mouse", sol::readonly_property(&InputState::mouse)
 		);
 
-		input_state_t.set_function("get_primitive_state", &InputState::getPrimitiveState);
+		input_state_t.set_function("get_primitive_state", &InputState::getHoverState);
 
 
 

@@ -6,7 +6,7 @@
 
 struct InputState {
 
-	struct PrimitiveState {
+	struct HoverState {
 
 		std::vector<long> getAllHovered() {
 			return hovered;
@@ -27,7 +27,7 @@ struct InputState {
 			lastHovered = hovered;
 			hovered = idxs;
 		}
-		// TODO rename to anyHovered ?
+
 		bool anyHovered() {
 			return !hovered.empty();
 		}
@@ -96,16 +96,16 @@ struct InputState {
 		int dblClickInterval = 200 /*ms*/;
 	};
 
-	PrimitiveState vertex;
-	PrimitiveState edge;
-	PrimitiveState facet;
-	PrimitiveState cell;
-	PrimitiveState mesh;
+	HoverState vertex;
+	HoverState edge;
+	HoverState facet;
+	HoverState cell;
+	HoverState mesh;
 
 	MouseState mouse;
 
-	// Get mouse state of a given primitive (VERTEX, EDGE, FACET, CELL...)
-	PrimitiveState& getPrimitiveState(ElementKind kind) {
+	// Get hover state of a given primitive (VERTEX, EDGE, FACET, CELL...)
+	HoverState& getHoverState(ElementKind kind) {
 		switch (kind)
 		{
 		case ElementKind::POINTS_ELT:
