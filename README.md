@@ -1,4 +1,4 @@
-# SalaMesh
+# Salamesh
 
 ![](logo.jpeg)
 
@@ -13,12 +13,18 @@ You may find pre-build binaries in releases.
 
 ### Linux 
 
-Get salamesh sources:
+Get salamesh:
 
 ```
 # Clone repo
 git clone https://github.com/lbinria/salamesh.git
 ```
+
+#### Prerequisite
+
+ - Git
+ - CMake
+ - Build essentials
 
 #### Debian / Ubuntu (apt-get)
 
@@ -44,7 +50,7 @@ cd salamesh && cmake -B build`
 ```
 ```
 # Compile
-cd build &&  cmake --build . --parallel
+cd build &&  cmake --build . --parallel 8
 ```
 
 #### Archlinux (pacman)

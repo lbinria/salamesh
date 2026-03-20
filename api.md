@@ -43,6 +43,7 @@ There is only one instance of App, it is already declared and accessible using `
 |------------------------|------|------------|-------------|-------------|
 | **App functions** |||
 | `quit` | Function | None | Exits the application | `void` |
+| `is_debug` | Read-only Property | None | Check whether application was compiled in Debug mode | `bool` |
 | **Scene Management** |||
 | `clear_scene` | Function | None | Clears the current scene | `void` |
 | **Model Management** |||
@@ -70,14 +71,23 @@ There is only one instance of App, it is already declared and accessible using `
 | `count_cameras` | Read-only Property | None | Returns number of cameras | `int` |
 | `has_cameras` | Read-only Property | None | Checks if there is at least one camera in scene | `bool` |
 | `has_camera` | Function | `(name: string)` | Check if model of given name exists | `bool` |
-| `clear_cameras` | Function | `()` | Remove all cameras in scene | `void` |
+| `clear_cameras` | Function | `()` | Remove all cameras from scene | `void` |
 | `selected_camera` | Property | `(selected: string)` | Gets/sets selected camera | `string` |
 | `input_state` | Read-only Property | None | Gets current input state | Input state type |
+| **Renderer Management** |||
+| `add_renderer` | Function | `(type: string, name: string)` | Adds a renderer with given type and name | `Renderer` |
+| `remove_renderer` | Function | `(name: string)` | Removes a renderer by name | `void` |
+| `renderers` | Read-only Property | None | Returns camera collection | `Renderer collection` |
+| `get_renderer` | Function | `(name: string)` | Retrieves renderer by name | `Renderer` |
+| `count_renderer` | Read-only Property | None | Returns number of renderer | `int` |
+| `has_renderer` | Function | `(name: string)` | Check if renderer of given name exists | `bool` |
+| `has_renderers` | Read-only Property | None | Checks if there is at least one renderer in scene | `bool` |
+| `clear_renderers` | Function | `()` | Remove all renderers from scene | `void` |
 | **Colormaps Management** |||
-| `colormaps` | Read-only Property | None | Returns colormap collection | Colormap collection |
-| `add_colormap` | Function | Colormap parameters | Adds a colormap | `void` |
-| `remove_colormap` | Function | Colormap identifier | Removes a colormap | `void` |
-| `get_colormap` | Overloaded Function | `(idx: int)` or `(name: string)` | Gets a colormap | Colormap |
+| `colormaps` | Read-only Property | None | Returns colormap collection | `Colormap collection` |
+| `add_colormap` | Function | `(name: string, filename: string)` | Adds a colormap | `void` |
+| `remove_colormap` | Function | `(name: string)` | Removes a colormap | `void` |
+| `get_colormap` | Overloaded Function | `(idx: int)` or `(name: string)` | Gets a colormap | `Colormap` |
 | **States** |||
 | `load_state` | Function | `(filename: string)` | Loads a previously saved application state | `bool` |
 | `save_state` | Function | `(filename: string)` | Saves the current application state | `bool` |
@@ -89,43 +99,90 @@ There is only one instance of App, it is already declared and accessible using `
 | `setCullMode` | Function | `(mode: int)` | Sets culling mode | `void` |
 | `cull_mode` | Write-only Property | `(mode: int)` | Sets culling mode | `void` |
 | `cull` | Property | None | Gets/sets culling | Cull state |
+| **Picking** |||
+| `pick_point` | Function | `(x: double, y: double)` | Pick 3D point at (x,y) | `vec3` |
+| `pick_edge` | Function | `(x: double, y: double)` | Pick edge id at (x,y) | `long` |
+| `pick_mesh` | Function | `(x: double, y: double)` | Pick mesh id at (x,y) | `long` |
+| `pick_cells` | Function | `(x: double, y: double, r: int)` | Pick cells ids at (x,y) in circle of radius r | `long list` |
+| `pick_facets` | Function | `(x: double, y: double, r: int)` | Pick facets ids at (x,y) in circle of radius r | `long list` |
+| `pick_vertices` | Function | `(x: double, y: double, r: int)` | Pick vertices ids at (x,y) in circle of radius r | `long list` |
 | **Navigation** |||
-| `navigation_path` | Property | Path value | Gets/sets navigation path | Navigation path |
-| `navigation_path_string` | Read-only Property | None | Gets navigation path as string | `string` |
-| `add_navigation_path` | Function | Path parameters | Adds a navigation path | `void` |
+| `navigation_path` | Property | `string \| string list` | Gets/sets navigation path | `NavigationPath` |
+| `add_navigation_path` | Function | `(path_component: string)` | Adds a path component to navigation path | `void` |
+| `top_navigation_path` | Function | None | Go to top navigation path | `void` |
 | **Dialogs** |||
 | `show_open_model_dialog` | Function | None | Displays dialog to open a model | `void` |
 | `show_save_model_dialog` | Function | None | Displays dialog to save a model | `void` |
 
-### Image 
+___
+### `InputState`
 
-Represent image / texture data.
+| Property | Access | Type | Description |
+|----------|--------|------|-------------|
+| `vertex` | Read-write | `PrimitiveState` | Get vertex mouse state |
+| `edge` | Read-only | `PrimitiveState` | Get edge mouse state |
+| `facet` | Read-only | `PrimitiveState` | Get facet mouse state |
+| `cell` | Read-only | `PrimitiveState` | Get cell mouse state |
+| `mesh` | Read-only | `PrimitiveState` | Get mesh mouse state |
+| `mouse` | Read-only | `MouseState` | Get mouse state |
 
-| Function/Property Name | Type | Parameters | Return Type | Description |
-|------------------------|------|------------|-------------|-------------|
-| tex_id | Read-only Property | None | `int` | Texture identifier |
-| width | Read-only Property | None | `int` | Image width |
-| height | Read-only Property | None | `int` | Image height |
-| channels | Read-only Property | None | `int` | Number of color channels |
+___
 
-### Snapshot
+### `PrimitiveState`
+
+| Property | Access | Type | Description |
+|----------|--------|------|-------------|
+| `hovered` | Read-only | `Number` | Get the primitive id that is currently hovered by mouse |
+| `all_hovered` | Read-only | `Number list` | Get the primitive ids that are currently hovered by mouse |
+| `any_hovered` | Read-only | `Boolean` | Indicates whether a primitive is currently hovered by mouse |
+| `has_changed` | Read-only | `Boolean` | Indicates whether the primitive currently hovered by mouse has changed |
+
+___
+
+### `MouseState`
+
+| Property | Access | Type | Description |
+|----------|--------|------|-------------|
+| `pos` | Read-only | `vec2` | Current mouse position |
+| `last_pos` | Read-only | `vec2` | Previous mouse position |
+| `delta` | Read-only | `vec2` | Change in position since last frame |
+| `buttons` | Read-only | `Table` (8 booleans) | State of 8 mouse buttons (1-indexed) |
+| `dbl_buttons` | Read-only | `Table` (8 booleans) | Double-click state of 8 mouse buttons (1-indexed) |
+| `last_clicks` | Read-only | `Table` (8 numbers) | Timestamp of last click for each button (1-indexed) |
+| `cursor_radius` | Read-only | `Number` | Radius of the cursor |
+| `dbl_click_interval` | Read-only | `Number` | Time interval for detecting double-clicks |
+| `is_left_button` | Read-only | `Boolean` | Indicated whether left mouse button is pressed |
+| `is_right_button` | Read-only | `Boolean` | Indicated whether right mouse button is pressed |
+| `is_middle_button` | Read-only | `Boolean` | Indicated whether middle mouse button is pressed |
+| `is_button_pressed(button: Number)` | Function | `Boolean` | Indicated whether given button is currently pressed |
+| `any_button_pressed` | Read-only | `Boolean` | Indicated whether any button is currently pressed |
+
+___
+
+### `Snapshot`
 
 A snapshot of the app state.
 
 | Function/Property Name | Type | Parameters | Return Type | Description |
 |------------------------|------|------------|-------------|-------------|
-| state_filename | Read-only Property | None | `string` | Filename of the saved state |
-| thumb_filename | Read-only Property | None | `string` | Filename of the thumbnail |
-| image | Read-only Property | None | `Image` | Associated image object |
+| `state_filename` | Read-only Property | None | `string` | Filename of the saved state |
+| `thumb_filename` | Read-only Property | None | `string` | Filename of the thumbnail |
+| `image` | Read-only Property | None | `Image` | Associated image object |
 
-### PrimitiveState
+___
 
-| Property | Access | Type | Description |
-|----------|--------|------|-------------|
-| hovered | Read-write | Boolean | Current hover state |
-| all_hovered | Read-only | Boolean | Whether all elements are hovered |
-| any_hovered | Read-only | Boolean | Whether any element is hovered |
-| has_changed | Read-only | Boolean | Whether state has changed |
+### `Image` 
+
+Represent image / texture data.
+
+| Function/Property Name | Type | Parameters | Return Type | Description |
+|------------------------|------|------------|-------------|-------------|
+| `tex_id` | Read-only Property | None | `int` | Texture identifier |
+| `width` | Read-only Property | None | `int` | Image width |
+| `height` | Read-only Property | None | `int` | Image height |
+| `channels` | Read-only Property | None | `int` | Number of color channels |
+
+
 
 ## ImGui
 
