@@ -246,12 +246,9 @@ struct IApp {
 	virtual InputState& getInputState() = 0;
 
 	// Window & rendersurface
-	virtual int getWidth() const = 0;
-	virtual int getHeight() const = 0;
+	virtual int getWindowWidth() const = 0;
+	virtual int getWindowHeight() const = 0;
 	virtual double getAspectRatio() const = 0;
-
-	virtual int getSurfaceWidth() const = 0;
-	virtual int getSurfaceHeight() const = 0;
 
 	virtual glm::vec3 pickPoint(double x, double y) = 0;
 	virtual long pickEdge(double x, double y) = 0;

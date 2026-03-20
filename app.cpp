@@ -153,8 +153,8 @@ static void framebuffer_size_callback(GLFWwindow* window, int width, int height)
     if (!app)
 		return;
 
-	app->screenWidth = width;
-	app->screenHeight = height;
+	app->windowWidth = width;
+	app->windowHeight = height;
 
 	app->getRenderSurface().resize(width, height);
 }
@@ -191,7 +191,7 @@ bool App::setup() {
 	glfwWindowHint(GLFW_SAMPLES, 4);
 
 	// Create a GLFW window
-	window = glfwCreateWindow(screenWidth, screenHeight, "SalaMesh", NULL, NULL);
+	window = glfwCreateWindow(windowWidth, windowHeight, "SalaMesh", NULL, NULL);
 	
 	if (window == NULL)
 	{
@@ -254,23 +254,23 @@ bool App::setup() {
 
 	if (monitor) {
 		// Calculate 80% of screen width and height
-		int windowWidth = static_cast<int>(mode->width * 0.8f);
-		int windowHeight = static_cast<int>(mode->height * 0.8f);
+		int ww = static_cast<int>(mode->width * 0.8f);
+		int wh = static_cast<int>(mode->height * 0.8f);
 
 		// Calculate the position to center the window
-		int posX = (mode->width - windowWidth) / 2 + monitorX;
-		int posY = (mode->height - windowHeight) / 2 + monitorY;
+		int posX = (mode->width - ww) / 2 + monitorX;
+		int posY = (mode->height - wh) / 2 + monitorY;
 
 		// Set window to 80% size and center it
 		glfwSetWindowPos(window, posX, posY);
-		glfwSetWindowSize(window, windowWidth, windowHeight);
+		glfwSetWindowSize(window, ww, wh);
 
 		// Update screen width and height if needed
-		screenWidth = windowWidth;
-		screenHeight = windowHeight;
+		windowWidth = ww;
+		windowHeight = wh;
 	}
 
-	std::cout << "Window size: " << screenWidth << ", " << screenHeight << std::endl;
+	std::cout << "Window size: " << windowWidth << ", " << windowHeight << std::endl;
 
 	glfwMakeContextCurrent(window);
     glfwSetWindowUserPointer(window, this);
@@ -368,12 +368,12 @@ bool App::setup() {
 		std::cerr << "Unable to load BugAnt icon." << std::endl;
 	}
 
-	auto renderSurface = std::make_unique<RenderSurface>(screenWidth, screenHeight);
+	auto renderSurface = std::make_unique<RenderSurface>(windowWidth, windowHeight);
 	renderSurface->setBackgroundColor({0.05, 0.1, 0.15});
 	renderSurface->setup();
 	renderSurfaces.push_back(std::move(renderSurface));
 
-	// auto renderSurface2 = std::make_unique<RenderSurface>(screenWidth, screenHeight);
+	// auto renderSurface2 = std::make_unique<RenderSurface>(windowWidth, windowHeight);
 	// renderSurface2->setBackgroundColor({0.16, 0.85, 0.35});
 	// glGenFramebuffers(1, &screenFbo);
 	// renderSurface2->setup();
@@ -383,7 +383,7 @@ bool App::setup() {
 	sl::createUBO(uboMatrices, sizeof(UBOMatrices));
 
 
-	glViewport(0, 0, screenWidth, screenHeight);
+	glViewport(0, 0, windowWidth, windowHeight);
 	glfwSetFramebufferSizeCallback(window, framebuffer_size_callback);
 
 
@@ -541,7 +541,7 @@ void App::start() {
 		UBOMatrices mats{
 			view,
 			projection,
-			{getWidth(), getHeight()} // TODO here maybe replace by renderSurface width / height
+			{getWindowWidth(), getWindowHeight()} // TODO here maybe replace by renderSurface width / height
 		};
 		
 		sl::updateUBOData(uboMatrices, sizeof(UBOMatrices), &mats);
@@ -983,6 +983,14 @@ void App::focus(std::string modelName) {
 
 
 void App::addColormap(const std::string name, const std::string filename) {
+
+	for (const auto& cm : colormaps) {
+		if (cm.name == name) {
+			std::cerr << "App::addColormap: colormap '" << name << "' already exists." << std::endl;
+			return;
+		}
+	}
+
 	int width, height, nrChannels;
 	
 	Colormap cm{
@@ -993,15 +1001,14 @@ void App::addColormap(const std::string name, const std::string filename) {
 	};
 
 	if(!sl::load_texture_2d(filename, cm.tex, width, height, nrChannels)) {
-		std::cerr << "Unable to load colormap " << name << " at " << filename << "." << std::endl;
+		std::cerr << "App::addColormap: unable to load colormap " << name << " at " << filename << "." << std::endl;
 		return;
 	}
 
 	cm.width = width;
 	cm.height = height;
 
-	colormaps.resize(colormaps.size() + 1);
-	colormaps[colormaps.size() - 1] = cm;
+	colormaps.push_back(cm);
 }
 
 void App::removeColormap(const std::string name) {
@@ -1127,7 +1134,7 @@ float getLinearDepth(float depth, float _near, float _far) {
 float App::getDepth(double x, double y) {
 	glBindFramebuffer(GL_READ_FRAMEBUFFER, getRenderSurface().fbo);
     float depth;
-    glReadPixels(x, screenHeight - y, 1, 1, GL_DEPTH_COMPONENT, GL_FLOAT, &depth);
+    glReadPixels(x, windowHeight - y, 1, 1, GL_DEPTH_COMPONENT, GL_FLOAT, &depth);
     return depth;
 }
 
@@ -1136,21 +1143,20 @@ void getNDC(int x, int y, int w, int h, float &ndcX, float &ndcY) {
 	ndcY = 1.0f - (2.f*y) / h;
 }
 
-void App::unproject(int x, int y, float depth, glm::vec3 &p) {
-	
+void App::unproject(Camera& camera, int x, int y, float depth, glm::vec3 &p) {
 	// Screen coordinates to NDC
 	float ndcX, ndcY;
-	getNDC(x, y, screenWidth, screenHeight, ndcX, ndcY);
+	getNDC(x, y, windowWidth, windowHeight, ndcX, ndcY);
 
 	// Clip space coordinates
 	glm::vec4 clipSpace(ndcX, ndcY, depth, 1.0f);
 
 	// Unproject clip space to view space
-	glm::mat4 invProj = glm::inverse(getCurrentCamera().getProjectionMatrix());
+	glm::mat4 invProj = glm::inverse(camera.getProjectionMatrix());
 	glm::vec4 viewSpace = invProj * clipSpace;
 
 	// Unproject view space to world space
-	glm::mat4 invView = glm::inverse(getCurrentCamera().getViewMatrix());
+	glm::mat4 invView = glm::inverse(camera.getViewMatrix());
 	glm::vec4 worldSpace = invView * (viewSpace / viewSpace.w);
 	p = glm::vec3(worldSpace);
 }
@@ -1161,13 +1167,13 @@ glm::vec3 App::pickPoint(double x, double y) {
 	depth = depth * 2.f - 1.f; // Convert to NDC range [-1, 1]
 
 	glm::vec3 p;
-	unproject(x, y, depth, p);
+	unproject(getCurrentCamera(), x, y, depth, p);
 	return p;
 }
 
 long App::pick(double x, double y) {	
 	unsigned char pixel[4];
-	glReadPixels(x, screenHeight - y, 1, 1, GL_RGBA, GL_UNSIGNED_BYTE, pixel);
+	glReadPixels(x, windowHeight - y, 1, 1, GL_RGBA, GL_UNSIGNED_BYTE, pixel);
 	// Decode id from pixel
 	return pixel[3] == 0 ? -1 :
 		pixel[0] +
@@ -1186,7 +1192,7 @@ std::set<long> App::pick(double xPos, double yPos, int radius) {
 	// Read pixels in square that bounds our circle
 	glReadPixels(
 		xPos - radius,
-		screenHeight - yPos - radius,
+		windowHeight - yPos - radius,
 		diameter,
 		diameter,
 		GL_RGBA,

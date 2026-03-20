@@ -64,15 +64,13 @@ struct App final : public IApp {
 
 	App(Args args) : 
 		args(args),
-		screenWidth(1024), 
-		screenHeight(768),
+		windowWidth(1024), 
+		windowHeight(768),
 		navPath2()
 	{}
 
-	// settings
-	// TODO rename to windowWidth, windowHeight
-	unsigned int screenWidth;
-	unsigned int screenHeight;
+	unsigned int windowWidth;
+	unsigned int windowHeight;
 
 
 
@@ -88,7 +86,7 @@ struct App final : public IApp {
 	void quit() override;
 	float getDepth(double x, double y);
 
-	void unproject(int x, int y, float depth, glm::vec3 &p);
+	void unproject(Camera &camera, int x, int y, float depth, glm::vec3 &p);
 	glm::vec3 pickPoint(double x, double y) override;
 
 	
@@ -419,8 +417,6 @@ struct App final : public IApp {
 
 
 	RenderSurface &getRenderSurface() { return *renderSurfaces[0]; }
-	int getSurfaceWidth() const override { return renderSurfaces[0]->width; }
-	int getSurfaceHeight() const override { return renderSurfaces[0]->height; }
 
 	InputState& getInputState() override { return st; }
 
@@ -428,9 +424,9 @@ struct App final : public IApp {
 		return colormaps;
 	}
 
-	int getWidth() const { return screenWidth; }
-	int getHeight() const { return screenHeight; }
-	double getAspectRatio() const { return static_cast<double>(screenWidth) / screenHeight; }
+	int getWindowWidth() const { return windowWidth; }
+	int getWindowHeight() const { return windowHeight; }
+	double getAspectRatio() const { return static_cast<double>(windowWidth) / windowHeight; }
 
 	void init();
 	void update(float dt);

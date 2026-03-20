@@ -230,8 +230,8 @@ namespace bindings {
 		app_type.set_function("add_navigation_path", &IApp::addNavigationPath);
 		app_type.set_function("top_navigation_path", &IApp::topNavigationPath);
 
-		app_type["width"] = sol::readonly_property(&IApp::getWidth);
-		app_type["height"] = sol::readonly_property(&IApp::getHeight);
+		app_type["width"] = sol::readonly_property(&IApp::getWindowWidth);
+		app_type["height"] = sol::readonly_property(&IApp::getWindowHeight);
 		app_type["aspect_ratio"] = sol::readonly_property(&IApp::getAspectRatio);
 		app_type["cull_mode"] = sol::writeonly_property(&IApp::setCullMode);
 		app_type["cull"] = sol::property(&IApp::getCull, &IApp::setCull);
