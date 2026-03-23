@@ -46,6 +46,7 @@
 #include "core/cameras/camera.h"
 #include "core/cameras/camera_collection.h"
 #include "core/renderers/renderer_collection.h"
+#include "core/models/model_collection.h"
 
 
 #include "core/lua_script.h"
@@ -94,52 +95,7 @@ struct App final : public IApp {
 	
 	std::shared_ptr<Model> loadModel(const std::string& filename, std::string name = "") override;
 
-	std::shared_ptr<Model> addModel(std::string type, std::string name) override {
-		assert(!name.empty() && "Cannot add model with an empty name.");
 
-		// TODO maybe chekc type exists, else we dont understand why we get null model ?
-
-		// Check whether renderer already exists
-		if (models.contains(name))
-			return models[name];
-
-		auto model = modelInstanciator.make(type);
-
-		if (!model)
-			return nullptr;
-		
-		model->init();
-		modelNameByIndex[model->getIndex()] = name;
-		models[name] = std::move(model);
-		return models[name];
-
-		// // 
-		// // model->loadCallback = ([this](Model&, const std::string) -> bool {
-		// // 	this->computeFarPlane();
-		// // 	this->script->modelLoaded(blabla)
-		// // });
-	}
-
-	void removeModel(std::string name) override {
-		if (models.count(name) > 0)
-			models[name]->clean();
-
-		models.erase(name);
-		// Sync
-		for (auto &[i, curName] : modelNameByIndex) {
-			if (curName == name) {
-				modelNameByIndex.erase(i);
-				break;
-			}
-		}
-	}
-	
-	Model& getModel(std::string name) override {
-		if (models.count(name) <= 0)
-			throw std::runtime_error("Model " + name + " was not found.");
-		
-		return *models[name];
-	}
 
 	void addColormap(const std::string name, const std::string filename) override;
 	void removeColormap(const std::string name) override;
@@ -196,43 +152,9 @@ struct App final : public IApp {
 
 	// Accessors
 
-	std::map<std::string, std::shared_ptr<Model>>& getModels() override {
-		return models;
-	}
 
-	std::vector<std::shared_ptr<Model>> getChildrenOf(std::shared_ptr<Model> model) {
-		std::vector<std::shared_ptr<Model>> children;
-		for (auto &[k, m] : models) {
-			if (m->getParent() == model) {
-				children.push_back(m);
-			}
-		}
+	ModelCollection& getModels() override { return models; }
 
-		return children;
-	}
-
-	inline int countModels() override {
-		return models.size();
-	}
-
-	inline bool hasModel(std::string name) override {
-		return models.count(name) > 0;
-	}
-
-	inline bool hasModels() override {
-		return models.size() > 0;
-	}
-
-	void clearModels() override {
-		for (auto &[k, m] : models) {
-			m->clean();
-		}
-
-		models.clear();
-		modelNameByIndex.clear();
-		setSelectedModel("");
-		Model::clearIndex();
-	}
 
 	inline std::string getSelectedModel() override {
 		return selectedModel;
@@ -242,7 +164,7 @@ struct App final : public IApp {
 		if (name.empty())
 			return false;
 
-		if (!hasModel(name)) {
+		if (!models.has(name)) {
 			std::cerr << "Invalid model selection: " << name << std::endl;
 			return false;
 		}
@@ -264,27 +186,15 @@ struct App final : public IApp {
 		// Searching
 		auto hoveredIndex = st.mesh.getHovered();
 
-		if (modelNameByIndex.count(hoveredIndex) > 0) {
-			auto name = modelNameByIndex[hoveredIndex];
-			if (models.count(name) > 0) {
+		
+		if (models.hasModelIndex(hoveredIndex)) {
+			auto name = models.getModelNameByIndex(hoveredIndex);
+			if (models.has(name)) {
 				return models[name];
 			}
 		}
 
 		return nullptr;
-	}
-
-	std::string getModelNameByIndex(int index) override {
-		return modelNameByIndex[index];
-	}
-
-	int getModelIndexByName(std::string name) override {
-		for (auto &[i, modelName] : modelNameByIndex) {
-			if (modelName == name) {
-				return i;
-			}
-		}
-		return -1;
 	}
 	
 	bool setSelectedCamera(std::string selected) override {
@@ -409,9 +319,10 @@ struct App final : public IApp {
 	unsigned int rbo;
 	unsigned int depthAttachmentTexture;
 	unsigned int texColor;
-	unsigned int texCellID;
-	unsigned int texFacetID;
-	unsigned int texVertexID;
+	
+	unsigned int texCellID; // TODO seems not used  REMOVE
+	unsigned int texFacetID; // TODO seems not used  REMOVE
+	unsigned int texVertexID; // TODO seems not used  REMOVE
 
 	unsigned int uboMatrices, uboViewport;
 
@@ -424,10 +335,9 @@ struct App final : public IApp {
 
 	
 	CameraCollection cameras;
-	std::map<std::string, std::shared_ptr<Model>> models;
+	ModelCollection models;
 	RendererCollection renderers;
 
-	std::map<int, std::string> modelNameByIndex;
 
 	std::vector<std::unique_ptr<RenderSurface>> renderSurfaces;
 
@@ -454,14 +364,10 @@ struct App final : public IApp {
 
 	bool _isUIHovered = false;
 
-	const Instanciator<Model>& getModelInstanciator() const override { return modelInstanciator; }
-
 
 	// Current navigation path of the app
 	std::vector<std::string> navPath; // TODO remove
 	NavigationPath navPath2;
-
-	Instanciator<Model> modelInstanciator;
 
 };
 

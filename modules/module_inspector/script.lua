@@ -1,28 +1,5 @@
 function init()
-	-- print("INITUS")
-	-- local idx = app:add_model("my_model")
-	-- print("Model added: " .. idx)
-	-- app.models[idx]:load("assets/catorus_hex_facet_attr.geogram")
-	-- print("Model loaded: " .. idx)
-	-- app.models[idx].position = vec3.new(0, 2, 0)
 
-
-	-- local my_model = app:get_model("my_model")
-	-- print("Name of model my_model: " .. my_model.name)
-	-- local my_model_idx = app:get_index_of_model("my_model")
-	-- print("Index of my_model: " .. tostring(my_model_idx))
-
-	-- local hello = app:get_model("hello")
-
-	-- local hello_idx = app:get_index_of_model("hellow")
-	-- print("Index of hellow: " .. tostring(hello_idx))
-	-- local n = "null"
-	-- if hello then n = hello.name end
-	-- print("Name of model hello: " .. n)
-
-
-
-	-- print("Get by name: " .. my_model .. " at index: " .. my_model_idx)
 end
 
 function get_str(primitive_state)

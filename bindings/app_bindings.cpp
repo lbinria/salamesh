@@ -145,30 +145,75 @@ namespace bindings {
 		app_type.set_function("list_snapshots", &IApp::listSnapshots);
 
 		app_type.set_function("load_model", &IApp::loadModel);
-		app_type.set_function("add_model", &IApp::addModel);
-		app_type.set_function("remove_model", &IApp::removeModel);
-
-		app_type.set_function("get_model", &IApp::getModel);
 
 
-		app_type["count_models"] = sol::readonly_property(&IApp::countModels);
-		app_type["has_models"] = sol::readonly_property(&IApp::hasModels);
+
 		app_type["models"] = sol::readonly_property(&IApp::getModels);
-		app_type.set_function("get_children_of", &IApp::getChildrenOf);
 		app_type["model"] = sol::readonly_property(&IApp::getCurrentModel);
 		app_type["hovered_model"] = sol::readonly_property(&IApp::getHoveredModel);
-
 		app_type["selected_model"] = sol::property(&IApp::getSelectedModel, &IApp::setSelectedModel);
 		app_type.set_function("focus", &IApp::focus);
 
-		app_type.set_function("has_model", &IApp::hasModel);
-		app_type.set_function("get_model_name_by_index", &IApp::getModelNameByIndex);
-		app_type.set_function("get_model_index_by_name", &IApp::getModelIndexByName);
 
+		sol::usertype<ModelCollection> modelCollection_t = lua.new_usertype<ModelCollection>("ModelCollection",
+			"add", &ModelCollection::add,
+			"remove", &ModelCollection::remove,
+			"get", sol::resolve<Model&(std::string)>(&ModelCollection::get),
+			"all", sol::resolve<std::map<std::string, std::shared_ptr<Model>>&()>(&ModelCollection::get),
+			"count", sol::readonly_property(&ModelCollection::count),
+			"has", &ModelCollection::has,
+			"any", sol::readonly_property(&ModelCollection::any),
+			"clear", &ModelCollection::clear,
+			"get_children_of", &ModelCollection::getChildrenOf,
+			"get_model_name_by_index", &ModelCollection::getModelNameByIndex,
+			"get_model_index_by_name", &ModelCollection::getModelIndexByName
+		);
 
+		modelCollection_t.set_function(sol::meta_function::pairs, [](sol::this_state L, ModelCollection& self) {
+			auto it = self.begin();
+			auto end = self.end();
+			
+			return sol::as_function([it, end](sol::this_state L) mutable {
+				if (it == end) {
+					// Signal end of iteration
+					return std::make_tuple(
+						sol::object(sol::lua_nil),
+						sol::object(sol::lua_nil)
+					);
+				}
+				auto key = it->first;
+				auto value = it->second;
+				std::advance(it, 1);
+
+				return std::make_tuple(
+					sol::object(L, sol::in_place, key),
+					sol::object(L, sol::in_place, value)
+				);
+			});
+		});
+
+		// modelCollection_t.set_function(sol::meta_function::pairs, [](sol::this_state L, ModelCollection& self) {
+		// 	auto it = self.begin();
+		// 	auto end = self.end();
+			
+		// 	return sol::as_function([it, end](sol::this_state L) mutable -> sol::object {
+		// 		if (it == end) {
+		// 			return sol::object(L, sol::nil);
+		// 		}
+		// 		auto key = it->first;
+		// 		auto value = it->second;
+		// 		++it;
+		// 		return sol::object(L, sol::in_place, key, value);
+		// 	});
+		// });
 		
+		modelCollection_t[sol::meta_function::index] = [](ModelCollection& self, const std::string &name) -> std::shared_ptr<Model>& {
+			return self[name];
+		};
 
-
+		modelCollection_t[sol::meta_function::new_index] = [](ModelCollection& self, const std::string &name, std::shared_ptr<Model>& value) {
+			self[name] = value;
+		};
 
 
 		app_type["camera"] = sol::readonly_property(&IApp::getCurrentCamera);
@@ -182,7 +227,7 @@ namespace bindings {
 			"all", sol::resolve<std::map<std::string, std::shared_ptr<Camera>>&()>(&CameraCollection::get),
 			"count", sol::readonly_property(&CameraCollection::count),
 			"has", &CameraCollection::has,
-			"any", &CameraCollection::any,
+			"any", sol::readonly_property(&CameraCollection::any),
 			"clear", &CameraCollection::clear
 		);
 
@@ -216,7 +261,7 @@ namespace bindings {
 			"all", sol::resolve<std::map<std::string, std::shared_ptr<Renderer>>&()>(&RendererCollection::get),
 			"count", sol::readonly_property(&RendererCollection::count),
 			"has", &RendererCollection::has,
-			"any", &RendererCollection::any,
+			"any", sol::readonly_property(&RendererCollection::any),
 			"clear", &RendererCollection::clear
 		);
 
@@ -309,10 +354,6 @@ namespace bindings {
 
 		// Modules
 		// app_type.set_function("load_module", &IApp::loadModule);
-
-		// Registration
-		app_type["model_instanciator"] = sol::readonly_property(&IApp::getModelInstanciator);
-
 
 		app_type["is_debug"] = sol::readonly_property(&IApp::isDebug);
 	}

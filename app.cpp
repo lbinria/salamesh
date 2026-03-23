@@ -428,14 +428,14 @@ void App::init() {
 	std::cout << "Init" << std::endl;
 
 	// Register model types
-	modelInstanciator.registerType("TriModel", []() { return std::make_unique<TriModel>(); });
-	modelInstanciator.registerType("QuadModel", []() { return std::make_unique<QuadModel>(); });
-	modelInstanciator.registerType("PolyModel", []() { return std::make_unique<PolyModel>(); });
-	modelInstanciator.registerType("TetModel", []() { return std::make_unique<TetModel>(); });
-	modelInstanciator.registerType("HexModel", []() { return std::make_unique<HexModel>(); });
-	// modelInstanciator.registerType("PolylineModel", []() { return std::make_unique<PolylineModel>(); });
-	// modelInstanciator.registerType("PyramidModel", []() { return std::make_unique<PyramidModel>(); });
-	// modelInstanciator.registerType("PrismModel", []() { return std::make_unique<PrismModel>(); });
+	models.getInstanciator().registerType("TriModel", []() { return std::make_unique<TriModel>(); });
+	models.getInstanciator().registerType("QuadModel", []() { return std::make_unique<QuadModel>(); });
+	models.getInstanciator().registerType("PolyModel", []() { return std::make_unique<PolyModel>(); });
+	models.getInstanciator().registerType("TetModel", []() { return std::make_unique<TetModel>(); });
+	models.getInstanciator().registerType("HexModel", []() { return std::make_unique<HexModel>(); });
+	// models.getInstanciator().registerType("PolylineModel", []() { return std::make_unique<PolylineModel>(); });
+	// models.getInstanciator().registerType("PyramidModel", []() { return std::make_unique<PyramidModel>(); });
+	// models.getInstanciator().registerType("PrismModel", []() { return std::make_unique<PrismModel>(); });
 
 	// Register cameras types
 	cameras.getInstanciator().registerType("DescentCamera", []() { return std::make_unique<DescentCamera>(); });
@@ -657,7 +657,7 @@ void App::update(float dt) {
 void App::updateCamera(float dt) {
 
 	float speed = 0.01f;
-	if (countModels() > 0) {
+	if (models.any()) {
 		speed = getCurrentModel().getRadius() * 0.5f * dt;
 	}
 
@@ -886,7 +886,7 @@ std::shared_ptr<Model> App::loadModel(const std::string& filename, std::string n
 	auto begin = std::chrono::steady_clock::now();
 
 	std::string modelName = name.empty() ? 
-		std::filesystem::path(filename).stem().string() + std::to_string(models.size()) : 
+		std::filesystem::path(filename).stem().string() + std::to_string(models.count()) : 
 		name;
 
 	bool success = false;
@@ -943,7 +943,7 @@ std::shared_ptr<Model> App::loadModel(const std::string& filename, std::string n
 
 	// Setup default clipping plane
 	model->setupClipping();
-	modelNameByIndex[model->getIndex()] = modelName;
+	models.modelNameByIndex[model->getIndex()] = modelName;
 	models[modelName] = std::move(model);
 
 	// Update cameras far planes
@@ -1390,7 +1390,7 @@ void App::saveState(const std::string filename) {
 
 	// Save misc
 	j["model_name_by_index"] = json::object();
-	for (auto &[k, m] : modelNameByIndex) {
+	for (auto &[k, m] : models.modelNameByIndex) {
 		j["model_name_by_index"][std::to_string(k)] = m;
 	}
 
@@ -1408,11 +1408,9 @@ void App::saveState(const std::string filename) {
 
 void App::clearScene() {
 
-	// // Clear renderers
-	// for (auto &[k, r] : renderers)
-	// 	r->clear();
 	renderers.clear();
-	clearModels();	
+	models.clear();
+	setSelectedModel("");
 	cameras.clear();
 	setupCameras();
 	clearColormaps();
@@ -1468,7 +1466,8 @@ void App::loadState(json &j, const std::string path) {
 	// Save misc
 	for (auto &[idx, jModelName]: j["model_name_by_index"].items()) {
 		std::string modelName = jModelName;
-		modelNameByIndex[std::stoi(idx)] = modelName;
+		// modelNameByIndex[std::stoi(idx)] = modelName;
+		models.modelNameByIndex[std::stoi(idx)] = modelName;
 	}
 
 	std::cout << "State loaded successfully." << std::endl;

@@ -1,6 +1,6 @@
 function init()
 	print("Load scene module")
-	print("Number of models: " .. tostring(#app.models))
+	print("Number of models: " .. tostring(app.models.count))
 end
 
 function draw_tree(model, k)
@@ -477,7 +477,7 @@ function draw_gui()
 			imgui.Separator()
 
 			-- Check if app has at least one model, to draw properties of current one (if exists)
-			if (app.has_models) then
+			if (app.models.any) then
 				draw_model_properties(app.model, app.selected_model, 0)
 			end
 

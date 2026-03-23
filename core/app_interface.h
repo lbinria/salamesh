@@ -6,6 +6,7 @@
 #include "cameras/camera.h"
 #include "cameras/camera_collection.h"
 #include "renderers/renderer_collection.h"
+#include "models/model_collection.h"
 #include <string>
 
 struct Colormap {
@@ -186,26 +187,12 @@ struct IApp {
 	virtual bool getCull() const = 0;
 	virtual void setCull(bool enabled) = 0;
 
-	virtual std::map<std::string, std::shared_ptr<Model>>& getModels() = 0;
-	virtual std::shared_ptr<Model> addModel(std::string type, std::string name) = 0;
-	virtual void removeModel(std::string name) = 0;
+
 	virtual Model& getCurrentModel() = 0;
 	virtual std::shared_ptr<Model> getHoveredModel() = 0;
-
-	virtual Model& getModel(std::string name) = 0;
-	virtual int countModels() = 0;
-	virtual bool hasModel(std::string name) = 0;
-	virtual bool hasModels() = 0;
-	virtual void clearModels() = 0;
-
-
-	virtual std::vector<std::shared_ptr<Model>> getChildrenOf(std::shared_ptr<Model> model) = 0;
 	virtual std::string getSelectedModel() = 0;
 	virtual bool setSelectedModel(std::string name) = 0;
 	virtual void focus(std::string modelName) = 0;
-
-	virtual std::string getModelNameByIndex(int index) = 0;
-	virtual int getModelIndexByName(std::string name) = 0;
 
 
 	virtual std::shared_ptr<Model> loadModel(const std::string& filename, std::string name = "") = 0;
@@ -230,6 +217,7 @@ struct IApp {
 	virtual std::string getSelectedCamera() = 0;
 
 	virtual RendererCollection& getRenderers() = 0;
+	virtual ModelCollection& getModels() = 0;
 
 
 	virtual InputState& getInputState() = 0;
@@ -260,7 +248,5 @@ struct IApp {
 
 	virtual bool isUIHovered() const = 0;
 	virtual bool isDebug() const = 0;
-
-	virtual const Instanciator<Model>& getModelInstanciator() const = 0;
 
 };
