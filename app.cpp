@@ -441,8 +441,8 @@ void App::init() {
 	cameras.getInstanciator().registerType("DescentCamera", []() { return std::make_unique<DescentCamera>(); });
 	cameras.getInstanciator().registerType("TrackBallCamera", []() { return std::make_unique<TrackBallCamera>(); });
 	// Register renderers types
-	rendererInstanciator.registerType("LineRenderer", []() { return std::make_unique<LineRenderer>(); });
-	rendererInstanciator.registerType("PointSetRenderer", []() { return std::make_unique<PointSetRenderer>(); });
+	renderers.getInstanciator().registerType("LineRenderer", []() { return std::make_unique<LineRenderer>(); });
+	renderers.getInstanciator().registerType("PointSetRenderer", []() { return std::make_unique<PointSetRenderer>(); });
 
 	// Create cameras
 	setupCameras();
@@ -1411,7 +1411,7 @@ void App::clearScene() {
 	// // Clear renderers
 	// for (auto &[k, r] : renderers)
 	// 	r->clear();
-	clearRenderers();
+	renderers.clear();
 	clearModels();	
 	cameras.clear();
 	setupCameras();
@@ -1543,7 +1543,7 @@ void App::loadCppScript(fs::path scriptPath, sol::state& state) {
 	}
 
 	for (auto &rInfo : mod->rInfos) {
-		rendererInstanciator.registerType(rInfo->type, rInfo->instanciatorFunc);
+		renderers.getInstanciator().registerType(rInfo->type, rInfo->instanciatorFunc);
 	}
 }
 
@@ -1561,7 +1561,7 @@ void App::loadCppScript(fs::path scriptPath) {
 	}
 
 	for (auto &rInfo : mod->rInfos) {
-		rendererInstanciator.registerType(rInfo->type, rInfo->instanciatorFunc);
+		renderers.getInstanciator().registerType(rInfo->type, rInfo->instanciatorFunc);
 	}
 }
 

@@ -5,6 +5,7 @@
 #include "element.h"
 #include "cameras/camera.h"
 #include "cameras/camera_collection.h"
+#include "renderers/renderer_collection.h"
 #include <string>
 
 struct Colormap {
@@ -228,14 +229,8 @@ struct IApp {
 	virtual bool setSelectedCamera(std::string selected) = 0;
 	virtual std::string getSelectedCamera() = 0;
 
-	virtual std::map<std::string, std::shared_ptr<Renderer>> getRenderers() = 0;
-	virtual std::shared_ptr<Renderer> addRenderer(std::string type, std::string name) = 0;
-	virtual void removeRenderer(std::string name) = 0;
-	virtual Renderer& getRenderer(std::string name) = 0;
-	virtual int countRenderers() = 0;
-	virtual bool hasRenderer(std::string name) = 0;
-	virtual bool hasRenderers() = 0;
-	virtual void clearRenderers() = 0;
+	virtual RendererCollection& getRenderers() = 0;
+
 
 	virtual InputState& getInputState() = 0;
 
@@ -267,6 +262,5 @@ struct IApp {
 	virtual bool isDebug() const = 0;
 
 	virtual const Instanciator<Model>& getModelInstanciator() const = 0;
-	virtual const Instanciator<Renderer>& getRendererInstanciator() const = 0;
 
 };

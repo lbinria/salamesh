@@ -45,6 +45,7 @@
 
 #include "core/cameras/camera.h"
 #include "core/cameras/camera_collection.h"
+#include "core/renderers/renderer_collection.h"
 
 
 #include "core/lua_script.h"
@@ -308,61 +309,7 @@ struct App final : public IApp {
 	Camera& getCurrentCamera() override { return *cameras[selectedCamera]; }
 	CameraCollection& getCameras() override { return cameras; }
 
-	std::shared_ptr<Renderer> addRenderer(std::string type, std::string name) override {
-		assert(!name.empty() && "Cannot add renderer with an empty name.");
-
-		// Check whether renderer already exists
-		if (renderers.contains(name))
-			return renderers[name];
-
-		auto renderer = rendererInstanciator.make(type);
-
-		if (!renderer)
-			return nullptr;
-
-		renderer->init();
-		renderers[name] = std::move(renderer);
-		return renderers[name];
-	}
-
-	void removeRenderer(std::string name) override {
-		if (renderers.count(name) > 0)
-			renderers[name]->clean();
-
-		renderers.erase(name);
-	}
-
-	int countRenderers() override {
-		return renderers.size();
-	}
-
-	bool hasRenderer(std::string name) override {
-		return renderers.count(name) > 0;
-	}
-
-	bool hasRenderers() override {
-		return renderers.size() > 0;
-	}
-	
-	void clearRenderers() override {
-		for (auto &[k, r] : renderers) {
-			r->clean();
-		}
-
-		renderers.clear();
-	}
-
-	Renderer& getRenderer(std::string name) override {
-		if (renderers.count(name) <= 0)
-			throw std::runtime_error("Renderer " + name + " was not found.");
-		
-		return *renderers[name];
-	}
-
-	std::map<std::string, std::shared_ptr<Renderer>> getRenderers() override {
-		return renderers;
-	}
-
+	RendererCollection& getRenderers() override { return renderers; }
 
 
 	RenderSurface &getRenderSurface() { return *renderSurfaces[0]; }
@@ -478,7 +425,8 @@ struct App final : public IApp {
 	
 	CameraCollection cameras;
 	std::map<std::string, std::shared_ptr<Model>> models;
-	std::map<std::string, std::shared_ptr<Renderer>> renderers;
+	RendererCollection renderers;
+
 	std::map<int, std::string> modelNameByIndex;
 
 	std::vector<std::unique_ptr<RenderSurface>> renderSurfaces;
@@ -507,7 +455,6 @@ struct App final : public IApp {
 	bool _isUIHovered = false;
 
 	const Instanciator<Model>& getModelInstanciator() const override { return modelInstanciator; }
-	const Instanciator<Renderer>& getRendererInstanciator() const override { return rendererInstanciator; }
 
 
 	// Current navigation path of the app
@@ -515,7 +462,6 @@ struct App final : public IApp {
 	NavigationPath navPath2;
 
 	Instanciator<Model> modelInstanciator;
-	Instanciator<Renderer> rendererInstanciator;
 
 };
 

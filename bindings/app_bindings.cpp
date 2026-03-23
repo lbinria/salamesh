@@ -209,6 +209,40 @@ namespace bindings {
 			self[name] = value;
 		};
 
+		sol::usertype<RendererCollection> rendererCollection_t = lua.new_usertype<RendererCollection>("RendererCollection",
+			"add", &RendererCollection::add,
+			"remove", &RendererCollection::remove,
+			"get", sol::resolve<Renderer&(std::string)>(&RendererCollection::get),
+			"all", sol::resolve<std::map<std::string, std::shared_ptr<Renderer>>&()>(&RendererCollection::get),
+			"count", sol::readonly_property(&RendererCollection::count),
+			"has", &RendererCollection::has,
+			"any", &RendererCollection::any,
+			"clear", &RendererCollection::clear
+		);
+
+		rendererCollection_t.set_function(sol::meta_function::pairs, [](sol::this_state L, RendererCollection& self) {
+			auto it = self.begin();
+			auto end = self.end();
+			
+			return sol::as_function([it, end](sol::this_state L) mutable {
+				if (it == end) {
+					return sol::object(L, sol::nil);
+				}
+				auto key = it->first;
+				auto value = it->second;
+				++it;
+				return sol::object(L, sol::in_place, std::make_tuple(key, value));
+			});
+		});
+		
+		rendererCollection_t[sol::meta_function::index] = [](RendererCollection& self, const std::string &name) -> std::shared_ptr<Renderer>& {
+			return self[name];
+		};
+
+		rendererCollection_t[sol::meta_function::new_index] = [](RendererCollection& self, const std::string &name, std::shared_ptr<Renderer>& value) {
+			self[name] = value;
+		};
+
 
 		app_type["selected_camera"] = sol::property([](IApp &self) {
 			return self.getSelectedCamera();
@@ -216,14 +250,8 @@ namespace bindings {
 			self.setSelectedCamera(selected);
 		});
 
-		app_type.set_function("add_renderer", &IApp::addRenderer);
-		app_type.set_function("remove_renderer", &IApp::removeRenderer);
+
 		app_type["renderers"] = sol::readonly_property(&IApp::getRenderers);
-		app_type.set_function("get_renderer", &IApp::getRenderer);
-		app_type.set_function("count_renderers", &IApp::countRenderers);
-		app_type.set_function("has_renderer", &IApp::hasRenderer);
-		app_type.set_function("has_renderers", &IApp::hasRenderers);
-		app_type.set_function("clear_renderers", &IApp::clearRenderers);
 
 
 		app_type["input_state"] = sol::readonly_property(&IApp::getInputState);
@@ -284,7 +312,6 @@ namespace bindings {
 
 		// Registration
 		app_type["model_instanciator"] = sol::readonly_property(&IApp::getModelInstanciator);
-		app_type["renderer_instanciator"] = sol::readonly_property(&IApp::getRendererInstanciator);
 
 
 		app_type["is_debug"] = sol::readonly_property(&IApp::isDebug);
