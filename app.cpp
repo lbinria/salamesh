@@ -438,8 +438,8 @@ void App::init() {
 	// modelInstanciator.registerType("PrismModel", []() { return std::make_unique<PrismModel>(); });
 
 	// Register cameras types
-	cameraInstanciator.registerType("DescentCamera", []() { return std::make_unique<DescentCamera>(); });
-	cameraInstanciator.registerType("TrackBallCamera", []() { return std::make_unique<TrackBallCamera>(); });
+	cameras.getInstanciator().registerType("DescentCamera", []() { return std::make_unique<DescentCamera>(); });
+	cameras.getInstanciator().registerType("TrackBallCamera", []() { return std::make_unique<TrackBallCamera>(); });
 	// Register renderers types
 	rendererInstanciator.registerType("LineRenderer", []() { return std::make_unique<LineRenderer>(); });
 	rendererInstanciator.registerType("PointSetRenderer", []() { return std::make_unique<PointSetRenderer>(); });
@@ -1412,8 +1412,9 @@ void App::clearScene() {
 	// for (auto &[k, r] : renderers)
 	// 	r->clear();
 	clearRenderers();
-	clearModels();
-	clearCameras();	
+	clearModels();	
+	cameras.clear();
+	setupCameras();
 	clearColormaps();
 	// TODO clear selected color map... elements etc... layers...
 	notifySceneCleared();
@@ -1449,7 +1450,7 @@ void App::loadState(json &j, const std::string path) {
 	// Load cameras states after model (because loading model will focus on)
 	for (auto &[cameraName, jCamera] : j["cameras"].items()) {
 		auto type = jCamera["type"].get<std::string>();
-		auto camera = cameraInstanciator.make(type);
+		auto camera = cameras.getInstanciator().make(type);
 		if (camera) {
 			camera->loadState(jCamera);
 			cameras[cameraName] = std::move(camera);

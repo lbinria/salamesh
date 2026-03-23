@@ -4,6 +4,7 @@
 #include "input_states.h"
 #include "element.h"
 #include "cameras/camera.h"
+#include "cameras/camera_collection.h"
 #include <string>
 
 struct Colormap {
@@ -220,16 +221,9 @@ struct IApp {
 	virtual void saveState(const std::string filename) = 0;
 	virtual void loadState(const std::string filename) = 0;
 
-	virtual std::map<std::string, std::shared_ptr<Camera>>& getCameras() = 0;
-	virtual std::shared_ptr<Camera> addCamera(std::string type, std::string name) = 0;
-	virtual void removeCamera(std::string name) = 0;
-	virtual Camera& getCurrentCamera() = 0;
-	virtual Camera& getCamera(std::string name) = 0;
-	virtual int countCameras() = 0;
-	virtual bool hasCamera(std::string name) = 0;
-	virtual bool hasCameras() = 0;
-	virtual void clearCameras() = 0;
+	virtual CameraCollection& getCameras() = 0;
 	// TODO add findOrCreate
+	virtual Camera& getCurrentCamera() = 0;
 
 	virtual bool setSelectedCamera(std::string selected) = 0;
 	virtual std::string getSelectedCamera() = 0;
@@ -273,7 +267,6 @@ struct IApp {
 	virtual bool isDebug() const = 0;
 
 	virtual const Instanciator<Model>& getModelInstanciator() const = 0;
-	virtual const Instanciator<Camera>& getCameraInstanciator() const = 0;
 	virtual const Instanciator<Renderer>& getRendererInstanciator() const = 0;
 
 };

@@ -166,15 +166,49 @@ namespace bindings {
 		app_type.set_function("get_model_index_by_name", &IApp::getModelIndexByName);
 
 
-		app_type.set_function("add_camera", &IApp::addCamera);
-		app_type.set_function("remove_camera", &IApp::removeCamera);
+		
+
+
+
+
 		app_type["camera"] = sol::readonly_property(&IApp::getCurrentCamera);
 		app_type["cameras"] = sol::readonly_property(&IApp::getCameras);
-		app_type.set_function("get_camera", &IApp::getCamera);
-		app_type["count_cameras"] = sol::readonly_property(&IApp::countCameras);
-		app_type.set_function("has_camera", &IApp::hasCamera);
-		app_type.set_function("has_cameras", &IApp::hasCameras);
-		app_type.set_function("clear_cameras", &IApp::clearCameras);
+
+
+		sol::usertype<CameraCollection> cameraCollection_t = lua.new_usertype<CameraCollection>("CameraCollection",
+			"add", &CameraCollection::add,
+			"remove", &CameraCollection::remove,
+			"get", sol::resolve<Camera&(std::string)>(&CameraCollection::get),
+			"all", sol::resolve<std::map<std::string, std::shared_ptr<Camera>>&()>(&CameraCollection::get),
+			"count", sol::readonly_property(&CameraCollection::count),
+			"has", &CameraCollection::has,
+			"any", &CameraCollection::any,
+			"clear", &CameraCollection::clear
+		);
+
+		cameraCollection_t.set_function(sol::meta_function::pairs, [](sol::this_state L, CameraCollection& self) {
+			auto it = self.begin();
+			auto end = self.end();
+			
+			return sol::as_function([it, end](sol::this_state L) mutable {
+				if (it == end) {
+					return sol::object(L, sol::nil);
+				}
+				auto key = it->first;
+				auto value = it->second;
+				++it;
+				return sol::object(L, sol::in_place, std::make_tuple(key, value));
+			});
+		});
+		
+		cameraCollection_t[sol::meta_function::index] = [](CameraCollection& self, const std::string &name) -> std::shared_ptr<Camera>& {
+			return self[name];
+		};
+
+		cameraCollection_t[sol::meta_function::new_index] = [](CameraCollection& self, const std::string &name, std::shared_ptr<Camera>& value) {
+			self[name] = value;
+		};
+
 
 		app_type["selected_camera"] = sol::property([](IApp &self) {
 			return self.getSelectedCamera();
@@ -250,7 +284,6 @@ namespace bindings {
 
 		// Registration
 		app_type["model_instanciator"] = sol::readonly_property(&IApp::getModelInstanciator);
-		app_type["camera_instanciator"] = sol::readonly_property(&IApp::getCameraInstanciator);
 		app_type["renderer_instanciator"] = sol::readonly_property(&IApp::getRendererInstanciator);
 
 

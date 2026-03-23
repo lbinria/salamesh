@@ -44,6 +44,7 @@
 #include "render_surface.h"
 
 #include "core/cameras/camera.h"
+#include "core/cameras/camera_collection.h"
 
 
 #include "core/lua_script.h"
@@ -285,64 +286,11 @@ struct App final : public IApp {
 		return -1;
 	}
 	
-
-	std::shared_ptr<Camera> addCamera(std::string type, std::string name) override {
-		assert(!name.empty() && "Cannot add camera with an empty name.");
-
-		// Check whether renderer already exists
-		if (cameras.contains(name))
-			return cameras[name];
-
-		auto camera = cameraInstanciator.make(type);
-
-		if (!camera)
-			return nullptr;
-
-		// camera->init();
-		cameras[name] = std::move(camera);
-		return cameras[name];
-	}
-
-	void removeCamera(std::string name) override {
-		// if (cameras.count(name) > 0)
-			// cameras[name]->clean();
-
-		cameras.erase(name);
-	}
-
-	void clearCameras() override {
-		cameras.clear();
-		setupCameras();
-	}
-
-	std::map<std::string, std::shared_ptr<Camera>>& getCameras() override {
-		return cameras;
-	}
-
-	Camera& getCamera(std::string name) override {
-		if (cameras.count(name) <= 0)
-			throw std::runtime_error("Camera " + name + " was not found.");
-		
-		return *cameras[name];
-	}
-
-	int countCameras() override {
-		return cameras.size();
-	}
-
-	bool hasCamera(std::string name) override {
-		return cameras.count(name) > 0;
-	}
-
-	bool hasCameras() override {
-		return cameras.size() > 0;
-	}
-
 	bool setSelectedCamera(std::string selected) override {
 		if (selected.empty())
 			return false;
 
-		if (!hasCamera(selected)) {
+		if (!cameras.has(selected)) {
 			std::cerr << "Invalid camera selection: " << selected << std::endl;
 			return false;
 		}
@@ -358,6 +306,7 @@ struct App final : public IApp {
 	}
 
 	Camera& getCurrentCamera() override { return *cameras[selectedCamera]; }
+	CameraCollection& getCameras() override { return cameras; }
 
 	std::shared_ptr<Renderer> addRenderer(std::string type, std::string name) override {
 		assert(!name.empty() && "Cannot add renderer with an empty name.");
@@ -526,7 +475,8 @@ struct App final : public IApp {
 	// display color map in good format for 2D in the UI
 	std::vector<Colormap> colormaps;
 
-	std::map<std::string, std::shared_ptr<Camera>> cameras;
+	
+	CameraCollection cameras;
 	std::map<std::string, std::shared_ptr<Model>> models;
 	std::map<std::string, std::shared_ptr<Renderer>> renderers;
 	std::map<int, std::string> modelNameByIndex;
@@ -557,7 +507,6 @@ struct App final : public IApp {
 	bool _isUIHovered = false;
 
 	const Instanciator<Model>& getModelInstanciator() const override { return modelInstanciator; }
-	const Instanciator<Camera>& getCameraInstanciator() const override { return cameraInstanciator; }
 	const Instanciator<Renderer>& getRendererInstanciator() const override { return rendererInstanciator; }
 
 
@@ -566,7 +515,6 @@ struct App final : public IApp {
 	NavigationPath navPath2;
 
 	Instanciator<Model> modelInstanciator;
-	Instanciator<Camera> cameraInstanciator;
 	Instanciator<Renderer> rendererInstanciator;
 
 };
