@@ -18,6 +18,9 @@ struct UBOMatrices {
 };
 
 Image App::screenshot(const std::string& filename, int targetWidth, int targetHeight) {
+	glBindFramebuffer(GL_READ_FRAMEBUFFER, getRenderSurface().fbo);
+	glReadBuffer(GL_COLOR_ATTACHMENT0);
+
 	int width, height;
 	glfwGetWindowSize(window, &width, &height);
 
@@ -28,6 +31,8 @@ Image App::screenshot(const std::string& filename, int targetWidth, int targetHe
 	glPixelStorei(GL_PACK_ALIGNMENT, 1);
 	glReadBuffer(GL_FRONT);
 	glReadPixels(0, 0, width, height, GL_RGBA, GL_UNSIGNED_BYTE, pixels.data());
+
+	glBindFramebuffer(GL_READ_FRAMEBUFFER, 0);
 
 	// Flip the image vertically
 	std::vector<unsigned char> flipped_pixels(width * height * 4);
