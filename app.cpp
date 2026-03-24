@@ -1342,7 +1342,7 @@ std::vector<Snapshot> App::listSnapshots() {
 
 		unsigned int tex;
 		int w, h, c;
-		if (!sl::load_texture_2d(thumbFilenames[i], tex, w, h, c)) {
+		if (!sl::load_texture_2d(thumbFilenames[i], tex, w, h, c, 0)) {
 			std::cerr << "Unable to load snapshot thumb " << thumbFilenames[i] << "." << std::endl;
 			continue;
 		}
