@@ -314,16 +314,6 @@ struct App final : public IApp {
 	// Another screenfbo
 	unsigned int screenFbo;
 
-	// OpenGL
-	unsigned int fbo;
-	unsigned int rbo;
-	unsigned int depthAttachmentTexture;
-	unsigned int texColor;
-	
-	unsigned int texCellID; // TODO seems not used  REMOVE
-	unsigned int texFacetID; // TODO seems not used  REMOVE
-	unsigned int texVertexID; // TODO seems not used  REMOVE
-
 	unsigned int uboMatrices, uboViewport;
 
 	unsigned int quadVAO, quadVBO;
