@@ -418,7 +418,6 @@ bool App::setup() {
 // TODO probably merge some with start function
 void App::init() {
 
-
 	std::cout << "Init" << std::endl;
 
 	scene.init();
@@ -464,10 +463,6 @@ void App::init() {
 	Settings settings;
 	settings.load(args.settings_path);
 	loadModules(settings);
-
-	// auto ti = std::make_unique<TriangleInspector>(*this);
-	// ti->init();
-	// scripts.push_back(std::move(ti));
 }
 
 void App::start() {
@@ -478,14 +473,6 @@ void App::start() {
 
 	// Init inherited class 
 	init();
-
-	glm::mat4 model(1.f);
-	model = glm::rotate(model, glm::radians(-55.0f), glm::vec3(1.f, 0.f, 0.f));
-
-	glm::mat4 projection(1.f);
-	glm::mat4 view(1.f);
-
-	view = glm::translate(view, glm::vec3(0.f, 0.f, -3.f));
 
 	float lastTimeValue = glfwGetTime();
 
@@ -509,8 +496,8 @@ void App::start() {
 		processInput(window);
 
 		// Set view / projection from current camera
-		view = scene.getCurrentCamera().getViewMatrix();
-		projection = scene.getCurrentCamera().getProjectionMatrix();
+		glm::mat4 view = scene.getCurrentCamera().getViewMatrix();
+		glm::mat4 projection = scene.getCurrentCamera().getProjectionMatrix();
 
 		// Update UBO
 		UBOMatrices mats{
