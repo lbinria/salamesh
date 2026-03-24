@@ -144,15 +144,17 @@ namespace bindings {
 		app_type.set_function("load_snapshot", &IApp::loadSnapshot);
 		app_type.set_function("list_snapshots", &IApp::listSnapshots);
 
-		app_type.set_function("load_model", &IApp::loadModel);
 
+		app_type["scene"] = sol::readonly_property(&IApp::getScene);
 
+		sol::usertype<IScene> scene_t = lua.new_usertype<IScene>("IScene");
 
-		app_type["models"] = sol::readonly_property(&IApp::getModels);
-		app_type["model"] = sol::readonly_property(&IApp::getCurrentModel);
-		app_type["hovered_model"] = sol::readonly_property(&IApp::getHoveredModel);
-		app_type["selected_model"] = sol::property(&IApp::getSelectedModel, &IApp::setSelectedModel);
-		app_type.set_function("focus", &IApp::focus);
+		scene_t.set_function("load_model", &IScene::loadModel);
+		scene_t["models"] = sol::readonly_property(&IScene::getModels);
+		scene_t["model"] = sol::readonly_property(&IScene::getCurrentModel);
+		scene_t["hovered_model"] = sol::readonly_property(&IScene::getHoveredModel);
+		scene_t["selected_model"] = sol::property(&IScene::getSelectedModel, &IScene::setSelectedModel);
+		scene_t.set_function("focus", &IScene::focus);
 
 
 		sol::usertype<ModelCollection> modelCollection_t = lua.new_usertype<ModelCollection>("ModelCollection",

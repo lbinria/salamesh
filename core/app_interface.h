@@ -1,5 +1,6 @@
 #pragma once
 
+#include "scene_interface.h"
 #include "models/model.h"
 #include "input_states.h"
 #include "element.h"
@@ -8,6 +9,8 @@
 #include "renderers/renderer_collection.h"
 #include "models/model_collection.h"
 #include <string>
+
+
 
 struct Colormap {
 	std::string name;
@@ -177,9 +180,6 @@ struct IApp {
 	virtual Image screenshot(const std::string& filename, int targetWidth = -1, int targetHeight = -1) = 0;
 
 
-
-	virtual void clearScene() = 0;
-
 	virtual void showOpenModelDialog() = 0;
 	virtual void showSaveModelDialog() = 0;
 
@@ -187,15 +187,13 @@ struct IApp {
 	virtual bool getCull() const = 0;
 	virtual void setCull(bool enabled) = 0;
 
+	virtual void clearScene() = 0;
 
-	virtual Model& getCurrentModel() = 0;
-	virtual std::shared_ptr<Model> getHoveredModel() = 0;
-	virtual std::string getSelectedModel() = 0;
-	virtual bool setSelectedModel(std::string name) = 0;
-	virtual void focus(std::string modelName) = 0;
+	virtual void computeFarPlane() = 0;
+
+	virtual IScene& getScene() = 0;
 
 
-	virtual std::shared_ptr<Model> loadModel(const std::string& filename, std::string name = "") = 0;
 
 	virtual void addColormap(const std::string name, const std::string filename) = 0;
 	virtual void removeColormap(const std::string name) = 0;
@@ -217,7 +215,6 @@ struct IApp {
 	virtual std::string getSelectedCamera() = 0;
 
 	virtual RendererCollection& getRenderers() = 0;
-	virtual ModelCollection& getModels() = 0;
 
 
 	virtual InputState& getInputState() = 0;

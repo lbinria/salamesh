@@ -432,15 +432,7 @@ void App::init() {
 
 	std::cout << "Init" << std::endl;
 
-	// Register model types
-	models.getInstanciator().registerType("TriModel", []() { return std::make_unique<TriModel>(); });
-	models.getInstanciator().registerType("QuadModel", []() { return std::make_unique<QuadModel>(); });
-	models.getInstanciator().registerType("PolyModel", []() { return std::make_unique<PolyModel>(); });
-	models.getInstanciator().registerType("TetModel", []() { return std::make_unique<TetModel>(); });
-	models.getInstanciator().registerType("HexModel", []() { return std::make_unique<HexModel>(); });
-	// models.getInstanciator().registerType("PolylineModel", []() { return std::make_unique<PolylineModel>(); });
-	// models.getInstanciator().registerType("PyramidModel", []() { return std::make_unique<PyramidModel>(); });
-	// models.getInstanciator().registerType("PrismModel", []() { return std::make_unique<PrismModel>(); });
+	scene.init();
 
 	// Register cameras types
 	cameras.getInstanciator().registerType("DescentCamera", []() { return std::make_unique<DescentCamera>(); });
@@ -464,7 +456,7 @@ void App::init() {
 		sl::toLower(ext);
 
 		if (accepted.contains(ext)) {
-			loadModel(p.string());
+			scene.loadModel(p.string());
 		}
 		else if (p.extension() == ".lua") {
 			std::cout << "load script: " << p.string() << std::endl;
@@ -565,7 +557,7 @@ void App::start() {
 			r->render(o);
 		}
 
-		for (auto &[k, model] : models) {
+		for (auto &[k, model] : scene.getModels()) {
 			model->setColormap0Texture(colormaps[model->getSelectedColormap(ColormapLayer::COLORMAP_LAYER_0)].tex);
 			model->setColormap1Texture(colormaps[model->getSelectedColormap(ColormapLayer::COLORMAP_LAYER_1)].tex);
 			model->setColormap2Texture(colormaps[model->getSelectedColormap(ColormapLayer::COLORMAP_LAYER_2)].tex);
@@ -662,8 +654,8 @@ void App::update(float dt) {
 void App::updateCamera(float dt) {
 
 	float speed = 0.01f;
-	if (models.any()) {
-		speed = getCurrentModel().getRadius() * 0.5f * dt;
+	if (scene.getModels().any()) {
+		speed = scene.getCurrentModel().getRadius() * 0.5f * dt;
 	}
 
 	if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS) {
@@ -808,7 +800,7 @@ void App::drawGui() {
 				std::string fullpath = kv.second;
 				std::cout << "filename: " << filename << ", fullpath: " << fullpath << std::endl;
 				std::cout << "read model..." << std::endl;
-				loadModel(fullpath);
+				scene.loadModel(fullpath);
 			}
 		}
 		
@@ -824,7 +816,7 @@ void App::drawGui() {
 			// action
 			std::cout << "file path:" << directoryPath << ", file path name: " << filename << std::endl;
 			std::cout << "save model..." << std::endl;
-			if (!getCurrentModel().saveAs(filename)) {
+			if (!scene.getCurrentModel().saveAs(filename)) {
 				std::cerr << "Unable to save current model at: " << filename << std::endl;
 			}
 		}
@@ -863,9 +855,7 @@ void App::drawGui() {
 void App::clean() {
 	std::cout << "App clean..." << std::endl;
 
-	for (auto &[k, model] : models) {
-		model->clean();
-	}
+	scene.clean();
 
 	for (auto &[k, renderer] : renderers) {
 		renderer->clean();
@@ -886,88 +876,7 @@ void App::clean() {
 		glDeleteTextures(1, &colormaps[i].tex);
 }
 
-std::shared_ptr<Model> App::loadModel(const std::string& filename, std::string name) {
 
-	auto begin = std::chrono::steady_clock::now();
-
-	std::string modelName = name.empty() ? 
-		std::filesystem::path(filename).stem().string() + std::to_string(models.count()) : 
-		name;
-
-	bool success = false;
-
-	std::unique_ptr<Model> model;
-	model = std::make_unique<PolyModel>();
-
-	success = model->load(filename);
-
-	if (!success) {
-		model = std::make_unique<TriModel>();
-		success = model->load(filename);
-	}
-
-	if (!success) {
-		model = std::make_unique<QuadModel>();
-		success = model->load(filename);
-	}
-
-	if (!success) {
-		model = std::make_unique<TetModel>();
-		success = model->load(filename);
-	}
-
-	if (!success) {
-		model = std::make_unique<HexModel>();
-		success = model->load(filename);
-	}
-
-	if (!success) {
-		model = std::make_unique<PolylineModel>();
-		success = model->load(filename);
-	}
-
-	if (!success)
-		return nullptr;
-
-
-	// Setup default gfx
-	model->setLight(true);
-	auto meshRenderer = model->getMeshRenderer();
-	if (meshRenderer) {
-		meshRenderer->setMeshShrink(0.f);
-		meshRenderer->setMeshSize(0.0f);
-	}
-	
-	// auto edges = model->getEdgesRenderer();
-	// if (edges && model->getModelType() == ModelType::POLYLINE_MODEL) {
-	// 	edges->setVisible(true);
-	// }
-
-	// // By default points not visible
-	// model->getPointsRenderer().setVisible(false);
-
-	// Setup default clipping plane
-	model->setupClipping();
-	models.modelNameByIndex[model->getIndex()] = modelName;
-	models[modelName] = std::move(model);
-
-	// Update cameras far planes
-	computeFarPlane();
-
-	// Notify scripts
-	for (auto &s : scripts) {
-		s->modelLoaded(modelName);
-	}
-
-	// A model was loaded ? focus it !
-	if (!modelName.empty())
-		focus(modelName);
-
-	auto end = std::chrono::steady_clock::now();
-	std::cout << "load model total duration: " << std::chrono::duration_cast<std::chrono::milliseconds>(end - begin).count() << std::endl;
-
-	return models[modelName];
-}
 
 void App::computeFarPlane() {
 	auto diameter = computeSceneDiameter();
@@ -978,13 +887,6 @@ void App::computeFarPlane() {
 
 	// TODO should refresh camera here, elsewhere nothing will be visible until we doing somethin that refresh the camera!
 }
-
-void App::focus(std::string modelName) {
-	setSelectedModel(modelName);
-	auto &model = models[modelName];
-	getCurrentCamera().lookAtBox(model->bbox());
-}
-
 
 
 void App::addColormap(const std::string name, const std::string filename) {
@@ -1042,7 +944,7 @@ long App::pickEdge(double x, double y) {
 	if (!st.cell.anyHovered() && !st.facet.anyHovered())
 		return -1;
 
-	auto model = getHoveredModel();
+	auto model = scene.getHoveredModel();
 	if (!model)
 		return -1;
 
@@ -1073,7 +975,7 @@ long App::pick_mesh(double x, double y) {
 }
 
 std::vector<long> App::pick_vertices(double x, double y, int radius) {
-	auto model = getHoveredModel();
+	auto model = scene.getHoveredModel();
 
 	if (!model)
 		return {};
@@ -1093,7 +995,7 @@ std::vector<long> App::pick_vertices(double x, double y, int radius) {
 }
 
 std::vector<long> App::pick_facets(double x, double y, int radius) {
-	auto model = getHoveredModel();
+	auto model = scene.getHoveredModel();
 
 	if (!model)
 		return {};
@@ -1113,7 +1015,7 @@ std::vector<long> App::pick_facets(double x, double y, int radius) {
 }
 
 std::vector<long> App::pick_cells(double x, double y, int radius) {		
-	auto model = getHoveredModel();
+	auto model = scene.getHoveredModel();
 
 	if (!model)
 		return {};
@@ -1240,7 +1142,7 @@ std::set<long> App::pick(double xPos, double yPos, int radius) {
 std::tuple<glm::vec3, glm::vec3> App::computeSceneBBox() {
 	glm::vec3 min{std::numeric_limits<float>::max()};
 	glm::vec3 max{-std::numeric_limits<float>::max()};
-	for (auto &[k, m] : models) {
+	for (auto &[k, m] : scene.getModels()) {
 		auto [cmin, cmax] = m->bbox();
 		min = glm::min(min, cmin);
 		max = glm::max(max, cmax);
@@ -1371,13 +1273,13 @@ void App::saveState(const std::string filename) {
 	// Save app states
 	j["header"]["type"] = "state";
 	j["cull_mode"] = cull_mode;
-	j["selected_model"] = selectedModel;
+	j["selected_model"] = scene.getSelectedModel();
 	j["selected_camera"] = selectedCamera;
 	j["models"] = json::object();
 	j["cameras"] = json::object();
 
 	// Save models states
-	for (auto &[k, m] : models) {
+	for (auto &[k, m] : scene.getModels()) {
 		m->saveState(p.parent_path().string(), j["models"][k]);
 	}
 
@@ -1395,7 +1297,7 @@ void App::saveState(const std::string filename) {
 
 	// Save misc
 	j["model_name_by_index"] = json::object();
-	for (auto &[k, m] : models.modelNameByIndex) {
+	for (auto &[k, m] : scene.getModels().modelNameByIndex) {
 		j["model_name_by_index"][std::to_string(k)] = m;
 	}
 
@@ -1414,8 +1316,7 @@ void App::saveState(const std::string filename) {
 void App::clearScene() {
 
 	renderers.clear();
-	models.clear();
-	setSelectedModel("");
+	scene.clear();
 	cameras.clear();
 	setupCameras();
 	clearColormaps();
@@ -1439,11 +1340,11 @@ void App::loadState(json &j, const std::string path) {
 			std::filesystem::path(modelRelPath);
 		
 		// Try to load the model mesh
-		if (!loadModel(modelPath.string(), modelName))
+		if (!scene.loadModel(modelPath.string(), modelName))
 			continue;
 		
 		// Get last added model
-		auto &model = models[modelName];
+		auto &model = scene.getModels()[modelName];
 		// Load state into last loaded model
 		model->loadState(jModel);
 
@@ -1462,7 +1363,7 @@ void App::loadState(json &j, const std::string path) {
 
 	// Load app state
 	cull_mode = j["cull_mode"].get<int>();
-	setSelectedModel(j["selected_model"].get<std::string>());
+	scene.setSelectedModel(j["selected_model"].get<std::string>());
 	setSelectedCamera(j["selected_camera"].get<std::string>());
 
 	// Save navigation path
@@ -1472,7 +1373,7 @@ void App::loadState(json &j, const std::string path) {
 	for (auto &[idx, jModelName]: j["model_name_by_index"].items()) {
 		std::string modelName = jModelName;
 		// modelNameByIndex[std::stoi(idx)] = modelName;
-		models.modelNameByIndex[std::stoi(idx)] = modelName;
+		scene.getModels().modelNameByIndex[std::stoi(idx)] = modelName;
 	}
 
 	std::cout << "State loaded successfully." << std::endl;

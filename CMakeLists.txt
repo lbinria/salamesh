@@ -117,6 +117,7 @@ add_subdirectory(core)
 add_executable(salamesh 
   main.cpp 
   app.cpp app.h
+  scene.cpp scene.h
 
   render_surface.cpp render_surface.h
 

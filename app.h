@@ -35,6 +35,7 @@
 #include <iostream>
 #include <cmath>
 
+#include "scene.h"
 #include "core/shader.h"
 
 #include "core/models/model.h"
@@ -69,7 +70,8 @@ struct App final : public IApp {
 		args(args),
 		windowWidth(1024), 
 		windowHeight(768),
-		navPath2()
+		navPath2(),
+		scene(*this)
 	{}
 
 	unsigned int windowWidth;
@@ -93,7 +95,6 @@ struct App final : public IApp {
 	glm::vec3 pickPoint(double x, double y) override;
 
 	
-	std::shared_ptr<Model> loadModel(const std::string& filename, std::string name = "") override;
 
 
 
@@ -107,10 +108,10 @@ struct App final : public IApp {
 	Colormap getColormap(const std::string name) override;
 	Colormap getColormap(int idx) override;
 
+	IScene& getScene() override { return scene; }
 
 
-	void computeFarPlane();
-
+	void computeFarPlane() override;
 	void clearScene() override;
 
 	void showOpenModelDialog() override;
@@ -150,52 +151,8 @@ struct App final : public IApp {
 	std::tuple<glm::vec3, glm::vec3> computeSceneBBox();
 	float computeSceneDiameter();
 
-	// Accessors
 
 
-	ModelCollection& getModels() override { return models; }
-
-
-	inline std::string getSelectedModel() override {
-		return selectedModel;
-	}
-
-	bool setSelectedModel(std::string name) override {
-		if (name.empty())
-			return false;
-
-		if (!models.has(name)) {
-			std::cerr << "Invalid model selection: " << name << std::endl;
-			return false;
-		}
-
-		auto oldSelection = selectedModel;
-		selectedModel = name;
-		notifySelectedModelChanged(oldSelection, name);
-		return true;
-	}
-
-	void focus(std::string modelName) override;
-
-
-	inline Model& getCurrentModel() override {
-		return *models[selectedModel];
-	}
-
-	std::shared_ptr<Model> getHoveredModel() {
-		// Searching
-		auto hoveredIndex = st.mesh.getHovered();
-
-		
-		if (models.hasModelIndex(hoveredIndex)) {
-			auto name = models.getModelNameByIndex(hoveredIndex);
-			if (models.has(name)) {
-				return models[name];
-			}
-		}
-
-		return nullptr;
-	}
 	
 	bool setSelectedCamera(std::string selected) override {
 		if (selected.empty())
@@ -323,16 +280,14 @@ struct App final : public IApp {
 	// display color map in good format for 2D in the UI
 	std::vector<Colormap> colormaps;
 
-	
+	Scene scene;
 	CameraCollection cameras;
-	ModelCollection models;
 	RendererCollection renderers;
 
 
 	std::vector<std::unique_ptr<RenderSurface>> renderSurfaces;
 
 	std::string selectedCamera = "default";
-	std::string selectedModel = "";
 
 	std::vector<std::unique_ptr<Script>> scripts;
 	InputState st;
