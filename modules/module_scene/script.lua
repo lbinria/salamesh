@@ -22,9 +22,9 @@ function draw_tree(model, k)
 		if (imgui.SmallButton("View")) then 
 			app.scene.selected_model = k
 			-- Set camera position !
-			-- app.camera.position = vec3.new(model_pos.x, model_pos.y, model_pos.z - 3.)
-			-- app.camera.look_at = vec3.new(model_pos.x, model_pos.y, model_pos.z)
-			app.camera:look_at_box(model.bbox)
+			-- app.scene.camera.position = vec3.new(model_pos.x, model_pos.y, model_pos.z - 3.)
+			-- app.scene.camera.look_at = vec3.new(model_pos.x, model_pos.y, model_pos.z)
+			app.scene.camera:look_at_box(model.bbox)
 		end
 
 		draw_model_properties(model, k, 0)
@@ -467,9 +467,9 @@ function draw_gui()
 					app.scene.selected_model = k
 					-- Set camera position !
 					local model_pos = model.center
-					-- app.camera.position = vec3.new(model_pos.x, model_pos.y, model_pos.z - model.radius * 2.);
-					-- app.camera.look_at = vec3.new(model_pos.x, model_pos.y, model_pos.z);
-					app.camera:look_at_box(model.bbox)
+					-- app.scene.camera.position = vec3.new(model_pos.x, model_pos.y, model_pos.z - model.radius * 2.);
+					-- app.scene.camera.look_at = vec3.new(model_pos.x, model_pos.y, model_pos.z);
+					app.scene.camera:look_at_box(model.bbox)
 				end
 				
 			end
@@ -512,13 +512,13 @@ function draw_gui()
 			imgui.Separator()
 
 			if (imgui.BeginListBox("##list_box_cameras")) then
-				for k, _ in pairs(app.cameras) do
+				for k, _ in pairs(app.scene.cameras) do
 
-					local is_selected = k == app.selected_camera
+					local is_selected = k == app.scene.selected_camera
 
 					-- Add unique id to prevent conflicts
 					if (imgui.Selectable(k .. "##list_box_selectable_" .. k, is_selected)) then
-						app.selected_camera = k
+						app.scene.selected_camera = k
 					end
 					
 				end
@@ -527,13 +527,13 @@ function draw_gui()
 			
 			imgui.Text("Properties")
 			imgui.Separator()
-			local camera = app.camera
+			local camera = app.scene.camera
 			local p = camera.position
 
 			-- Compute zoom factor (varies between 0.001 for 0% - 1 for 100%)
-			-- local fov = app.camera.fov
+			-- local fov = app.scene.camera.fov
 			-- local zoom_factor = -(fov - 45.) / (45. - 0.25) * 100.
-			local zoom_factor = app.camera.zoom * 100.
+			local zoom_factor = app.scene.camera.zoom * 100.
 			
 			
 			-- Convert -0 value to 0
@@ -544,7 +544,7 @@ function draw_gui()
 			imgui.Text("Zoom: " .. str_zoom_factor .. "%")
 			imgui.SameLine()
 			if (imgui.SmallButton("Reset zoom")) then
-				app.camera:reset_zoom()
+				app.scene.camera:reset_zoom()
 			end
 
 			imgui.Text("Position: " .. p:to_string());

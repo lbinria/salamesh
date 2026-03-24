@@ -1,6 +1,7 @@
 #pragma once
 
 #include "scene_interface.h"
+#include "render_surface.h"
 #include "models/model.h"
 #include "input_states.h"
 #include "element.h"
@@ -207,15 +208,10 @@ struct IApp {
 	virtual void saveState(const std::string filename) = 0;
 	virtual void loadState(const std::string filename) = 0;
 
-	virtual CameraCollection& getCameras() = 0;
-	// TODO add findOrCreate
-	virtual Camera& getCurrentCamera() = 0;
 
-	virtual bool setSelectedCamera(std::string selected) = 0;
-	virtual std::string getSelectedCamera() = 0;
 
 	virtual RendererCollection& getRenderers() = 0;
-
+	virtual RenderSurface &getRenderSurface() = 0;
 
 	virtual InputState& getInputState() = 0;
 

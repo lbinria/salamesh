@@ -1,6 +1,6 @@
 #pragma once
-#include "core/cameras/camera.h"
-#include "core/shader.h"
+#include "cameras/camera.h"
+#include "shader.h"
 
 #include "../include/glm/glm.hpp"
 #include "../include/glm/gtc/matrix_transform.hpp"

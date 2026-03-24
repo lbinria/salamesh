@@ -218,9 +218,13 @@ namespace bindings {
 		};
 
 
-		app_type["camera"] = sol::readonly_property(&IApp::getCurrentCamera);
-		app_type["cameras"] = sol::readonly_property(&IApp::getCameras);
-
+		scene_t["camera"] = sol::readonly_property(&IScene::getCurrentCamera);
+		scene_t["cameras"] = sol::readonly_property(&IScene::getCameras);
+		scene_t["selected_camera"] = sol::property([](IScene &self) {
+			return self.getSelectedCamera();
+		}, [](IScene &self, std::string selected) {
+			self.setSelectedCamera(selected);
+		});
 
 		sol::usertype<CameraCollection> cameraCollection_t = lua.new_usertype<CameraCollection>("CameraCollection",
 			"add", &CameraCollection::add,
@@ -291,11 +295,7 @@ namespace bindings {
 		};
 
 
-		app_type["selected_camera"] = sol::property([](IApp &self) {
-			return self.getSelectedCamera();
-		}, [](IApp &self, std::string selected) {
-			self.setSelectedCamera(selected);
-		});
+
 
 
 		app_type["renderers"] = sol::readonly_property(&IApp::getRenderers);

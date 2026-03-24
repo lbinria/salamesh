@@ -27,6 +27,8 @@ set(SOURCES
 
     shader.cpp shader.h 
 
+    render_surface.cpp render_surface.h
+
     cameras/camera_collection.h
     renderers/renderer_collection.h
     models/model_collection.h

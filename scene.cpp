@@ -88,6 +88,11 @@ std::shared_ptr<Model> Scene::loadModel(const std::string& filename, std::string
 void Scene::focus(std::string modelName) {
 	setSelectedModel(modelName);
 	auto &model = models[modelName];
-	// getCurrentCamera().lookAtBox(model->bbox());
-	app.getCurrentCamera().lookAtBox(model->bbox());
+	getCurrentCamera().lookAtBox(model->bbox());
+}
+
+void Scene::setupCameras() {
+	auto trackballCamera = std::make_shared<TrackBallCamera>();
+	cameras["default"] = std::move(trackballCamera);
+	setSelectedCamera("default");
 }

@@ -5,6 +5,8 @@
 #include "core/models/surface_model.h"
 #include "core/models/volume_model.h"
 #include "core/models/polyline_model.h"
+#include "core/cameras/trackball_camera.h"
+#include "core/cameras/descent_camera.h"
 
 struct Scene : public IScene {
 	
@@ -21,6 +23,17 @@ struct Scene : public IScene {
 		// models.getInstanciator().registerType("PolylineModel", []() { return std::make_unique<PolylineModel>(); });
 		// models.getInstanciator().registerType("PyramidModel", []() { return std::make_unique<PyramidModel>(); });
 		// models.getInstanciator().registerType("PrismModel", []() { return std::make_unique<PrismModel>(); });
+
+		// Register cameras types
+		cameras.getInstanciator().registerType("DescentCamera", []() { return std::make_unique<DescentCamera>(); });
+		cameras.getInstanciator().registerType("TrackBallCamera", []() { return std::make_unique<TrackBallCamera>(); });
+
+		// TODO register renderer
+
+		// Create cameras
+		setupCameras();
+
+		app.getRenderSurface().setCamera(cameras["default"]);
 	}
 
 	void clean() override {
@@ -32,6 +45,8 @@ struct Scene : public IScene {
 	void clear() override {
 		models.clear();
 		setSelectedModel("");
+		cameras.clear();
+		setupCameras();
 	}
 
 	std::shared_ptr<Model> loadModel(const std::string& filename, std::string name = "") override;
@@ -83,10 +98,39 @@ struct Scene : public IScene {
 		return nullptr;
 	}
 
+	void setupCameras();
+
+
+	bool setSelectedCamera(std::string selected) override {
+		if (selected.empty())
+			return false;
+
+		if (!cameras.has(selected)) {
+			std::cerr << "Invalid camera selection: " << selected << std::endl;
+			return false;
+		}
+
+		// Set camera to render surface
+		app.getRenderSurface().setCamera(cameras[selected]);
+		selectedCamera = selected;
+		return true;
+	}
+	
+	std::string getSelectedCamera() override {
+		return selectedCamera;
+	}
+
+	Camera& getCurrentCamera() override { return *cameras[selectedCamera]; }
+	CameraCollection& getCameras() override { return cameras; }
+
 	private:
 	IApp &app;
+
 	std::string selectedModel = "";
 	ModelCollection models;
+
+	std::string selectedCamera = "default";
+	CameraCollection cameras;
 
 
 };

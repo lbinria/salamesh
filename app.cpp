@@ -173,11 +173,7 @@ void App::setupColormaps() {
 	addColormap("extended", sl::assetsPath("extended.png"));
 }
 
-void App::setupCameras() {
-	auto trackballCamera = std::make_shared<TrackBallCamera>();
-	cameras["default"] = std::move(trackballCamera);
-	setSelectedCamera("default");
-}
+
 
 bool App::setup() {
 
@@ -434,17 +430,13 @@ void App::init() {
 
 	scene.init();
 
-	// Register cameras types
-	cameras.getInstanciator().registerType("DescentCamera", []() { return std::make_unique<DescentCamera>(); });
-	cameras.getInstanciator().registerType("TrackBallCamera", []() { return std::make_unique<TrackBallCamera>(); });
+
 	// Register renderers types
 	renderers.getInstanciator().registerType("LineRenderer", []() { return std::make_unique<LineRenderer>(); });
 	renderers.getInstanciator().registerType("PointSetRenderer", []() { return std::make_unique<PointSetRenderer>(); });
 
-	// Create cameras
-	setupCameras();
+
 	
-	getRenderSurface().setCamera(cameras["default"]);
 	// renderSurfaces[1]->setCamera(cameras[1]);
 
 	// Load model
@@ -531,8 +523,8 @@ void App::start() {
 		processInput(window);
 
 		// Set view / projection from current camera
-		view = getCurrentCamera().getViewMatrix();
-		projection = getCurrentCamera().getProjectionMatrix();
+		view = scene.getCurrentCamera().getViewMatrix();
+		projection = scene.getCurrentCamera().getProjectionMatrix();
 
 		// Update UBO
 		UBOMatrices mats{
@@ -659,29 +651,29 @@ void App::updateCamera(float dt) {
 	}
 
 	if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS) {
-		getCurrentCamera().moveForward(speed);
+		scene.getCurrentCamera().moveForward(speed);
 	} else if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS) {
-		getCurrentCamera().moveForward(-speed);
+		scene.getCurrentCamera().moveForward(-speed);
 	}
 	if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS) {
-		getCurrentCamera().moveRight(-speed);
+		scene.getCurrentCamera().moveRight(-speed);
 	} else if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS) {
-		getCurrentCamera().moveRight(speed);
+		scene.getCurrentCamera().moveRight(speed);
 	}
 	if (glfwGetKey(window, GLFW_KEY_Q) == GLFW_PRESS) {
-		getCurrentCamera().moveUp(speed);
+		scene.getCurrentCamera().moveUp(speed);
 	} else if (glfwGetKey(window, GLFW_KEY_E) == GLFW_PRESS) {
-		getCurrentCamera().moveUp(-speed);
+		scene.getCurrentCamera().moveUp(-speed);
 	}
 
 
 	if (st.mouse.isLeftButton()) {
-		// getCurrentCamera().move(st.mouse.delta);
-		getCurrentCamera().move(st.mouse.lastPos, st.mouse.pos);
+		// scene.getCurrentCamera().move(st.mouse.delta);
+		scene.getCurrentCamera().move(st.mouse.lastPos, st.mouse.pos);
 	}
 
 	if (st.mouse.isRightButton()) {
-		auto trackball = dynamic_cast<TrackBallCamera*>(&getCurrentCamera());
+		auto trackball = dynamic_cast<TrackBallCamera*>(&scene.getCurrentCamera());
 		if (trackball) {
 			trackball->movePan(st.mouse.delta);
 		}
@@ -881,7 +873,7 @@ void App::clean() {
 void App::computeFarPlane() {
 	auto diameter = computeSceneDiameter();
 
-	for (auto &[k, c] : cameras) {
+	for (auto &[k, c] : scene.getCameras()) {
 		c->setFarPlane(diameter * 5.f /* 5.f is an arbitrary value... */);
 	}
 
@@ -1074,7 +1066,7 @@ glm::vec3 App::pickPoint(double x, double y) {
 	depth = depth * 2.f - 1.f; // Convert to NDC range [-1, 1]
 
 	glm::vec3 p;
-	unproject(getCurrentCamera(), x, y, depth, p);
+	unproject(scene.getCurrentCamera(), x, y, depth, p);
 	return p;
 }
 
@@ -1274,7 +1266,7 @@ void App::saveState(const std::string filename) {
 	j["header"]["type"] = "state";
 	j["cull_mode"] = cull_mode;
 	j["selected_model"] = scene.getSelectedModel();
-	j["selected_camera"] = selectedCamera;
+	j["selected_camera"] = scene.getSelectedCamera();
 	j["models"] = json::object();
 	j["cameras"] = json::object();
 
@@ -1284,7 +1276,7 @@ void App::saveState(const std::string filename) {
 	}
 
 	// Save cameras states
-	for (auto &[k, c] : cameras) {
+	for (auto &[k, c] : scene.getCameras()) {
 		c->saveState(j["cameras"][k]);
 	}
 
@@ -1317,8 +1309,7 @@ void App::clearScene() {
 
 	renderers.clear();
 	scene.clear();
-	cameras.clear();
-	setupCameras();
+
 	clearColormaps();
 	// TODO clear selected color map... elements etc... layers...
 	notifySceneCleared();
@@ -1354,17 +1345,17 @@ void App::loadState(json &j, const std::string path) {
 	// Load cameras states after model (because loading model will focus on)
 	for (auto &[cameraName, jCamera] : j["cameras"].items()) {
 		auto type = jCamera["type"].get<std::string>();
-		auto camera = cameras.getInstanciator().make(type);
+		auto camera = scene.getCameras().getInstanciator().make(type);
 		if (camera) {
 			camera->loadState(jCamera);
-			cameras[cameraName] = std::move(camera);
+			scene.getCameras()[cameraName] = std::move(camera);
 		}
 	}
 
 	// Load app state
 	cull_mode = j["cull_mode"].get<int>();
 	scene.setSelectedModel(j["selected_model"].get<std::string>());
-	setSelectedCamera(j["selected_camera"].get<std::string>());
+	scene.setSelectedCamera(j["selected_camera"].get<std::string>());
 
 	// Save navigation path
 	setNavigationPath(j["nav_path"].get<std::vector<std::string>>());
@@ -1522,9 +1513,9 @@ void App::key_event(int key, int scancode, int action, int mods) {
 	}
 
 	if (key == GLFW_KEY_LEFT_CONTROL && action == GLFW_PRESS) {
-		getCurrentCamera().setLock(true);
+		scene.getCurrentCamera().setLock(true);
 	} else if (key == GLFW_KEY_LEFT_CONTROL && action == GLFW_RELEASE) {
-		getCurrentCamera().setLock(false);
+		scene.getCurrentCamera().setLock(false);
 	}
 
 	for (auto &script : scripts) {
@@ -1538,9 +1529,9 @@ void App::mouse_scroll(double xoffset, double yoffset) {
 		return;
 
 	// Maybe move to a cameracontroller class
-	if (!getCurrentCamera().isLocked()) {
+	if (!scene.getCurrentCamera().isLocked()) {
 		st.mouse.scrollDelta = glm::vec2(xoffset, yoffset);
-		getCurrentCamera().zoom(st.mouse.scrollDelta.y);
+		scene.getCurrentCamera().zoom(st.mouse.scrollDelta.y);
 	}
 	else 
 		st.mouse.setCursorRadius(st.mouse.getCursorRadius() + static_cast<int>(yoffset));

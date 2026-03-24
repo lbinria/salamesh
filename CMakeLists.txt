@@ -119,7 +119,6 @@ add_executable(salamesh
   app.cpp app.h
   scene.cpp scene.h
 
-  render_surface.cpp render_surface.h
 
   bindings/imgui_bindings.h bindings/imgui_bindings.cpp
   bindings/app_bindings.h bindings/app_bindings.cpp

@@ -42,7 +42,7 @@
 
 
 
-#include "render_surface.h"
+#include "core/render_surface.h"
 
 #include "core/cameras/camera.h"
 #include "core/cameras/camera_collection.h"
@@ -84,7 +84,6 @@ struct App final : public IApp {
 	void clean();
 
 	void setupColormaps();
-	void setupCameras();
 
 	// Utils functions
 	Image screenshot(const std::string& filename, int targetWidth = -1, int targetHeight = -1) override;
@@ -154,32 +153,12 @@ struct App final : public IApp {
 
 
 	
-	bool setSelectedCamera(std::string selected) override {
-		if (selected.empty())
-			return false;
 
-		if (!cameras.has(selected)) {
-			std::cerr << "Invalid camera selection: " << selected << std::endl;
-			return false;
-		}
-
-		// Set camera to render surface
-		getRenderSurface().setCamera(cameras[selected]);
-		selectedCamera = selected;
-		return true;
-	}
-	
-	std::string getSelectedCamera() override {
-		return selectedCamera;
-	}
-
-	Camera& getCurrentCamera() override { return *cameras[selectedCamera]; }
-	CameraCollection& getCameras() override { return cameras; }
 
 	RendererCollection& getRenderers() override { return renderers; }
 
 
-	RenderSurface &getRenderSurface() { return *renderSurfaces[0]; }
+	RenderSurface &getRenderSurface() override { return *renderSurfaces[0]; }
 
 	InputState& getInputState() override { return st; }
 
@@ -281,13 +260,11 @@ struct App final : public IApp {
 	std::vector<Colormap> colormaps;
 
 	Scene scene;
-	CameraCollection cameras;
 	RendererCollection renderers;
 
 
 	std::vector<std::unique_ptr<RenderSurface>> renderSurfaces;
 
-	std::string selectedCamera = "default";
 
 	std::vector<std::unique_ptr<Script>> scripts;
 	InputState st;
