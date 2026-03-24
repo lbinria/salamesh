@@ -1,6 +1,7 @@
 #pragma once
 
 #include "camera.h"
+#include <numbers>
 
 struct DescentCamera final : public Camera {
 
@@ -25,7 +26,7 @@ struct DescentCamera final : public Camera {
 
         glm::vec2 mouseDelta = newPos - oldPos;
         // Compute delta angles from viewport dimensions
-        glm::vec2 delta((2.f * M_PI) / _screen.x, M_PI / _screen.y);
+        glm::vec2 delta((2.f * std::numbers::pi) / _screen.x, std::numbers::pi / _screen.y);
         // Compute actual angles move
         float angleX = -mouseDelta.x * delta.x;
         float angleY = -mouseDelta.y * delta.y;
