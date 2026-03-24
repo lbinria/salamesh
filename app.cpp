@@ -825,21 +825,6 @@ void App::clean() {
 
 }
 
-
-
-void App::computeFarPlane() {
-	auto diameter = computeSceneDiameter();
-
-	for (auto &[k, c] : scene.getCameras()) {
-		c->setFarPlane(diameter * 5.f /* 5.f is an arbitrary value... */);
-	}
-
-	// TODO should refresh camera here, elsewhere nothing will be visible until we doing somethin that refresh the camera!
-}
-
-
-
-
 long App::pickEdge(double x, double y) {
 	if (!st.cell.anyHovered() && !st.facet.anyHovered())
 		return -1;
@@ -1037,23 +1022,6 @@ std::set<long> App::pick(double xPos, double yPos, int radius) {
 
 	delete[] pixelData;
 	return pickIDs;
-}
-
-std::tuple<glm::vec3, glm::vec3> App::computeSceneBBox() {
-	glm::vec3 min{std::numeric_limits<float>::max()};
-	glm::vec3 max{-std::numeric_limits<float>::max()};
-	for (auto &[k, m] : scene.getModels()) {
-		auto [cmin, cmax] = m->bbox();
-		min = glm::min(min, cmin);
-		max = glm::max(max, cmax);
-	}
-	
-	return std::make_tuple(min, max);
-}
-
-float App::computeSceneDiameter() {
-	auto [min, max] = computeSceneBBox();
-	return glm::length(max - min);
 }
 
 void App::showOpenModelDialog() {

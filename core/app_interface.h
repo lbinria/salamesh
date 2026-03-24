@@ -186,7 +186,6 @@ struct IApp {
 
 	virtual void clearScene() = 0;
 
-	virtual void computeFarPlane() = 0;
 
 	virtual IScene& getScene() = 0;
 

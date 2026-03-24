@@ -67,7 +67,7 @@ std::shared_ptr<Model> Scene::loadModel(const std::string& filename, std::string
 
 	// Update cameras far planes
 	// computeFarPlane();
-	app.computeFarPlane();
+	computeFarPlane();
 
 
 	// // Notify scripts
@@ -89,6 +89,33 @@ void Scene::focus(std::string modelName) {
 	setSelectedModel(modelName);
 	auto &model = models[modelName];
 	getCurrentCamera().lookAtBox(model->bbox());
+}
+
+std::tuple<glm::vec3, glm::vec3> Scene::computeSceneBBox() {
+	glm::vec3 min{std::numeric_limits<float>::max()};
+	glm::vec3 max{-std::numeric_limits<float>::max()};
+	for (auto &[k, m] : models) {
+		auto [cmin, cmax] = m->bbox();
+		min = glm::min(min, cmin);
+		max = glm::max(max, cmax);
+	}
+	
+	return std::make_tuple(min, max);
+}
+
+float Scene::computeSceneDiameter() {
+	auto [min, max] = computeSceneBBox();
+	return glm::length(max - min);
+}
+
+void Scene::computeFarPlane() {
+	auto diameter = computeSceneDiameter();
+
+	for (auto &[k, c] : cameras) {
+		c->setFarPlane(diameter * 5.f /* 5.f is an arbitrary value... */);
+	}
+
+	// TODO should refresh camera here, elsewhere nothing will be visible until we doing somethin that refresh the camera!
 }
 
 void Scene::setupCameras() {

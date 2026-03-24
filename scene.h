@@ -126,6 +126,11 @@ struct Scene : public IScene {
 		return nullptr;
 	}
 
+	std::tuple<glm::vec3, glm::vec3> computeSceneBBox();
+	float computeSceneDiameter();
+	void computeFarPlane();
+
+
 	void setupCameras();
 
 

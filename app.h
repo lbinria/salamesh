@@ -101,7 +101,6 @@ struct App final : public IApp {
 	IScene& getScene() override { return scene; }
 
 
-	void computeFarPlane() override;
 	void clearScene() override;
 
 	void showOpenModelDialog() override;
@@ -138,8 +137,7 @@ struct App final : public IApp {
 		cull = enabled; 
 	}
 
-	std::tuple<glm::vec3, glm::vec3> computeSceneBBox();
-	float computeSceneDiameter();
+
 
 
 
