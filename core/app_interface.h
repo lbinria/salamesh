@@ -13,11 +13,7 @@
 
 
 
-struct Colormap {
-	std::string name;
-	int width, height;
-	unsigned int tex;
-};
+
 
 struct Image {
 	unsigned int texId;
@@ -195,13 +191,6 @@ struct IApp {
 	virtual IScene& getScene() = 0;
 
 
-
-	virtual void addColormap(const std::string name, const std::string filename) = 0;
-	virtual void removeColormap(const std::string name) = 0;
-	virtual void clearColormaps() = 0;
-	virtual Colormap getColormap(const std::string name) = 0;
-	virtual Colormap getColormap(int idx) = 0;
-
 	virtual Snapshot snapshot() = 0;
 	virtual void loadSnapshot() = 0;
 	virtual std::vector<Snapshot> listSnapshots() = 0;
@@ -226,7 +215,6 @@ struct IApp {
 	virtual std::vector<long> pick_facets(double x, double y, int radius) = 0;
 	virtual std::vector<long> pick_cells(double x, double y, int radius) = 0;
 
-	virtual std::vector<Colormap> getColormaps() = 0;
 
 	// Navigation
 	virtual NavigationPath getNavigationPath() = 0;

@@ -275,7 +275,7 @@ function draw_model_properties(model, k, view)
 
 			imgui.Text("Colormap 0")
 
-			local colormaps = app.colormaps
+			local colormaps = app.scene.colormaps
 			local items = {}
 			for i = 1, #colormaps do 
 				table.insert(items, colormaps[i].name)
@@ -299,7 +299,7 @@ function draw_model_properties(model, k, view)
 					end
 
 					-- Display the image after the text
-					imgui.Image(app.colormaps[i].tex, colormap_size)
+					imgui.Image(app.scene.colormaps[i].tex, colormap_size)
 
 					imgui.PopID()
 				end
@@ -307,7 +307,7 @@ function draw_model_properties(model, k, view)
 				imgui.EndCombo()
 			end
 
-			local selected_cm = app.colormaps[model.selected_colormap0]
+			local selected_cm = app.scene.colormaps[model.selected_colormap0]
 			if selected_cm.height > 1 then 
 				local h = selected_cm.height / selected_cm.width * 320
 				colormap_size = imgui.ImVec2(320, h)
@@ -320,7 +320,7 @@ function draw_model_properties(model, k, view)
 
 			imgui.Text("Colormap 1")
 
-			local colormaps = app.colormaps
+			local colormaps = app.scene.colormaps
 			local items = {}
 			for i = 1, #colormaps do 
 				table.insert(items, colormaps[i].name)
@@ -343,7 +343,7 @@ function draw_model_properties(model, k, view)
 					end
 
 					-- Display the image after the text
-					imgui.Image(app.colormaps[i].tex, colormap_size)
+					imgui.Image(app.scene.colormaps[i].tex, colormap_size)
 
 					imgui.PopID()
 				end
@@ -351,7 +351,7 @@ function draw_model_properties(model, k, view)
 				imgui.EndCombo()
 			end
 
-			local selected_cm = app.colormaps[model.selected_colormap1]
+			local selected_cm = app.scene.colormaps[model.selected_colormap1]
 			if selected_cm.height > 1 then 
 				local h = selected_cm.height / selected_cm.width * 320
 				colormap_size = imgui.ImVec2(320, h)

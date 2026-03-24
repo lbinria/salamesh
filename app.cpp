@@ -164,14 +164,7 @@ static void framebuffer_size_callback(GLFWwindow* window, int width, int height)
 	app->getRenderSurface().resize(width, height);
 }
 
-void App::setupColormaps() {
-	// Load default colormap textures
-	addColormap("CET-R41", sl::assetsPath("CET-R41px.png"));
-	addColormap("CET-L08", sl::assetsPath("CET-L08px.png"));
-	addColormap("alpha", sl::assetsPath("colormap_alpha.png"));
-	addColormap("cat", "/home/tex/Models/cat/Cat_diffuse.jpg");
-	addColormap("extended", sl::assetsPath("extended.png"));
-}
+
 
 
 
@@ -358,7 +351,7 @@ bool App::setup() {
 	}
 
 	// Load default colormap textures
-	setupColormaps();
+	scene.setupColormaps();
 
 	// Load icons
 	int iconWidth, iconHeight, iconChannels;
@@ -537,17 +530,7 @@ void App::start() {
 		update(dt);
 
 		// Render scene
-		for (auto &[k, r] : scene.getRenderers()) {
-			glm::vec3 o{0.f};
-			r->render(o);
-		}
-
-		for (auto &[k, model] : scene.getModels()) {
-			model->setColormap0Texture(colormaps[model->getSelectedColormap(ColormapLayer::COLORMAP_LAYER_0)].tex);
-			model->setColormap1Texture(colormaps[model->getSelectedColormap(ColormapLayer::COLORMAP_LAYER_1)].tex);
-			model->setColormap2Texture(colormaps[model->getSelectedColormap(ColormapLayer::COLORMAP_LAYER_2)].tex);
-			model->render();
-		}
+		scene.render();
 
 		// Go back to default framebuffer to draw the screen quad
 		glBindFramebuffer(GL_FRAMEBUFFER, 0);
@@ -842,10 +825,6 @@ void App::clean() {
 
 	scene.clean();
 
-	for (auto &[k, renderer] : scene.getRenderers()) {
-		renderer->clean();
-	}
-
 	for (auto &script : scripts) {
 		script->cleanup();
 	}
@@ -856,9 +835,7 @@ void App::clean() {
 	for (auto &rs : renderSurfaces)
 		rs->clean();
 
-	// Clear textures
-	for (int i = 0; i < colormaps.size(); ++i)
-		glDeleteTextures(1, &colormaps[i].tex);
+
 }
 
 
@@ -874,56 +851,7 @@ void App::computeFarPlane() {
 }
 
 
-void App::addColormap(const std::string name, const std::string filename) {
 
-	for (const auto& cm : colormaps) {
-		if (cm.name == name) {
-			std::cerr << "App::addColormap: colormap '" << name << "' already exists." << std::endl;
-			return;
-		}
-	}
-
-	int width, height, nrChannels;
-	
-	Colormap cm{
-		name,
-		0,
-		0,
-		0
-	};
-
-	if(!sl::load_texture_2d(filename, cm.tex, width, height, nrChannels)) {
-		std::cerr << "App::addColormap: unable to load colormap " << name << " at " << filename << "." << std::endl;
-		return;
-	}
-
-	cm.width = width;
-	cm.height = height;
-
-	colormaps.push_back(cm);
-}
-
-void App::removeColormap(const std::string name) {
-	for (int i = 0; i < colormaps.size(); ++i) {
-		if (colormaps[i].name == name) {
-			colormaps.erase(colormaps.begin() + i);
-			return;
-		}
-	}
-}
-
-Colormap App::getColormap(const std::string name) {
-	for (int i = 0; i < colormaps.size(); ++i) {
-		if (colormaps[i].name == name) {
-			return colormaps[i];
-		}
-	}
-	throw std::runtime_error("Colormap " + name + " not found.");
-}
-
-Colormap App::getColormap(int idx) {
-	return colormaps[idx];
-}
 
 long App::pickEdge(double x, double y) {
 	if (!st.cell.anyHovered() && !st.facet.anyHovered())
@@ -1302,7 +1230,6 @@ void App::clearScene() {
 
 	scene.clear();
 
-	clearColormaps();
 	// TODO clear selected color map... elements etc... layers...
 	notifySceneCleared();
 

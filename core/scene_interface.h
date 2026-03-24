@@ -3,10 +3,17 @@
 #include "cameras/camera_collection.h"
 #include "renderers/renderer_collection.h"
 
+struct Colormap {
+	std::string name;
+	int width, height;
+	unsigned int tex;
+};
+
 struct IScene {
 	virtual void init() = 0;
 	virtual void clean() = 0;
 	virtual void clear() = 0;
+	virtual void render() = 0;
 
 
 	virtual std::shared_ptr<Model> loadModel(const std::string& filename, std::string name = "") = 0;
@@ -25,5 +32,12 @@ struct IScene {
 	virtual std::string getSelectedCamera() = 0;
 
 	virtual RendererCollection& getRenderers() = 0;
+
+	virtual std::vector<Colormap> getColormaps() = 0;
+	virtual void addColormap(const std::string name, const std::string filename) = 0;
+	virtual void removeColormap(const std::string name) = 0;
+	virtual void clearColormaps() = 0;
+	virtual Colormap getColormap(const std::string name) = 0;
+	virtual Colormap getColormap(int idx) = 0;
 
 };

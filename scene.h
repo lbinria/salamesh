@@ -8,6 +8,7 @@
 #include "core/cameras/trackball_camera.h"
 #include "core/cameras/descent_camera.h"
 #include "core/renderers/line_renderer.h"
+#include "core/graphic_api.h"
 
 struct Scene : public IScene {
 	
@@ -39,10 +40,32 @@ struct Scene : public IScene {
 		app.getRenderSurface().setCamera(cameras["default"]);
 	}
 
+	void render() override {
+		for (auto &[k, r] : renderers) {
+			glm::vec3 o{0.f};
+			r->render(o);
+		}
+
+		for (auto &[k, model] : models) {
+			model->setColormap0Texture(colormaps[model->getSelectedColormap(ColormapLayer::COLORMAP_LAYER_0)].tex);
+			model->setColormap1Texture(colormaps[model->getSelectedColormap(ColormapLayer::COLORMAP_LAYER_1)].tex);
+			model->setColormap2Texture(colormaps[model->getSelectedColormap(ColormapLayer::COLORMAP_LAYER_2)].tex);
+			model->render();
+		}
+	}
+
 	void clean() override {
 		for (auto &[k, model] : models) {
 			model->clean();
 		}
+
+		for (auto &[k, renderer] : renderers) {
+			renderer->clean();
+		}
+
+		// Clear textures
+		for (int i = 0; i < colormaps.size(); ++i)
+			glDeleteTextures(1, &colormaps[i].tex);
 	}
 
 	void clear() override {
@@ -51,6 +74,7 @@ struct Scene : public IScene {
 		setSelectedModel("");
 		cameras.clear();
 		setupCameras();
+		clearColormaps();
 	}
 
 	std::shared_ptr<Model> loadModel(const std::string& filename, std::string name = "") override;
@@ -129,6 +153,24 @@ struct Scene : public IScene {
 
 	RendererCollection& getRenderers() override { return renderers; }
 
+
+	void setupColormaps();
+
+	void addColormap(const std::string name, const std::string filename) override;
+	void removeColormap(const std::string name) override;
+
+	void clearColormaps() override {
+		colormaps.clear();
+		setupColormaps();
+	}
+
+	std::vector<Colormap> getColormaps() override {
+		return colormaps;
+	}
+
+	Colormap getColormap(const std::string name) override;
+	Colormap getColormap(int idx) override;
+
 	private:
 	IApp &app;
 
@@ -139,5 +181,8 @@ struct Scene : public IScene {
 	CameraCollection cameras;
 
 	RendererCollection renderers;
+
+	// display color map in good format for 2D in the UI
+	std::vector<Colormap> colormaps;
 
 };

@@ -83,7 +83,6 @@ struct App final : public IApp {
 	void start();
 	void clean();
 
-	void setupColormaps();
 
 	// Utils functions
 	Image screenshot(const std::string& filename, int targetWidth = -1, int targetHeight = -1) override;
@@ -97,15 +96,7 @@ struct App final : public IApp {
 
 
 
-	void addColormap(const std::string name, const std::string filename) override;
-	void removeColormap(const std::string name) override;
-	void clearColormaps() override {
-		colormaps.clear();
-		setupColormaps();
-	}
 
-	Colormap getColormap(const std::string name) override;
-	Colormap getColormap(int idx) override;
 
 	IScene& getScene() override { return scene; }
 
@@ -161,9 +152,7 @@ struct App final : public IApp {
 
 	InputState& getInputState() override { return st; }
 
-	std::vector<Colormap> getColormaps() override {
-		return colormaps;
-	}
+
 
 	int getWindowWidth() const { return windowWidth; }
 	int getWindowHeight() const { return windowHeight; }
@@ -255,8 +244,7 @@ struct App final : public IApp {
 
 
 
-	// display color map in good format for 2D in the UI
-	std::vector<Colormap> colormaps;
+
 
 	Scene scene;
 
