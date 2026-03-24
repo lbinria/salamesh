@@ -155,7 +155,6 @@ struct App final : public IApp {
 	
 
 
-	RendererCollection& getRenderers() override { return renderers; }
 
 
 	RenderSurface &getRenderSurface() override { return *renderSurfaces[0]; }
@@ -260,7 +259,6 @@ struct App final : public IApp {
 	std::vector<Colormap> colormaps;
 
 	Scene scene;
-	RendererCollection renderers;
 
 
 	std::vector<std::unique_ptr<RenderSurface>> renderSurfaces;

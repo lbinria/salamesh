@@ -1,6 +1,7 @@
 #pragma once
 #include "models/model_collection.h"
 #include "cameras/camera_collection.h"
+#include "renderers/renderer_collection.h"
 
 struct IScene {
 	virtual void init() = 0;
@@ -22,4 +23,7 @@ struct IScene {
 
 	virtual bool setSelectedCamera(std::string selected) = 0;
 	virtual std::string getSelectedCamera() = 0;
+
+	virtual RendererCollection& getRenderers() = 0;
+
 };

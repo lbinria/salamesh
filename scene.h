@@ -7,6 +7,7 @@
 #include "core/models/polyline_model.h"
 #include "core/cameras/trackball_camera.h"
 #include "core/cameras/descent_camera.h"
+#include "core/renderers/line_renderer.h"
 
 struct Scene : public IScene {
 	
@@ -28,7 +29,9 @@ struct Scene : public IScene {
 		cameras.getInstanciator().registerType("DescentCamera", []() { return std::make_unique<DescentCamera>(); });
 		cameras.getInstanciator().registerType("TrackBallCamera", []() { return std::make_unique<TrackBallCamera>(); });
 
-		// TODO register renderer
+		// Register renderers types
+		renderers.getInstanciator().registerType("LineRenderer", []() { return std::make_unique<LineRenderer>(); });
+		renderers.getInstanciator().registerType("PointSetRenderer", []() { return std::make_unique<PointSetRenderer>(); });
 
 		// Create cameras
 		setupCameras();
@@ -43,6 +46,7 @@ struct Scene : public IScene {
 	}
 
 	void clear() override {
+		renderers.clear();
 		models.clear();
 		setSelectedModel("");
 		cameras.clear();
@@ -123,6 +127,8 @@ struct Scene : public IScene {
 	Camera& getCurrentCamera() override { return *cameras[selectedCamera]; }
 	CameraCollection& getCameras() override { return cameras; }
 
+	RendererCollection& getRenderers() override { return renderers; }
+
 	private:
 	IApp &app;
 
@@ -132,5 +138,6 @@ struct Scene : public IScene {
 	std::string selectedCamera = "default";
 	CameraCollection cameras;
 
+	RendererCollection renderers;
 
 };

@@ -430,13 +430,6 @@ void App::init() {
 
 	scene.init();
 
-
-	// Register renderers types
-	renderers.getInstanciator().registerType("LineRenderer", []() { return std::make_unique<LineRenderer>(); });
-	renderers.getInstanciator().registerType("PointSetRenderer", []() { return std::make_unique<PointSetRenderer>(); });
-
-
-	
 	// renderSurfaces[1]->setCamera(cameras[1]);
 
 	// Load model
@@ -544,7 +537,7 @@ void App::start() {
 		update(dt);
 
 		// Render scene
-		for (auto &[k, r] : renderers) {
+		for (auto &[k, r] : scene.getRenderers()) {
 			glm::vec3 o{0.f};
 			r->render(o);
 		}
@@ -849,7 +842,7 @@ void App::clean() {
 
 	scene.clean();
 
-	for (auto &[k, renderer] : renderers) {
+	for (auto &[k, renderer] : scene.getRenderers()) {
 		renderer->clean();
 	}
 
@@ -1307,7 +1300,6 @@ void App::saveState(const std::string filename) {
 
 void App::clearScene() {
 
-	renderers.clear();
 	scene.clear();
 
 	clearColormaps();
@@ -1439,7 +1431,7 @@ void App::loadCppScript(fs::path scriptPath, sol::state& state) {
 	}
 
 	for (auto &rInfo : mod->rInfos) {
-		renderers.getInstanciator().registerType(rInfo->type, rInfo->instanciatorFunc);
+		scene.getRenderers().getInstanciator().registerType(rInfo->type, rInfo->instanciatorFunc);
 	}
 }
 
@@ -1457,7 +1449,7 @@ void App::loadCppScript(fs::path scriptPath) {
 	}
 
 	for (auto &rInfo : mod->rInfos) {
-		renderers.getInstanciator().registerType(rInfo->type, rInfo->instanciatorFunc);
+		scene.getRenderers().getInstanciator().registerType(rInfo->type, rInfo->instanciatorFunc);
 	}
 }
 

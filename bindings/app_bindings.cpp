@@ -298,7 +298,7 @@ namespace bindings {
 
 
 
-		app_type["renderers"] = sol::readonly_property(&IApp::getRenderers);
+		scene_t["renderers"] = sol::readonly_property(&IScene::getRenderers);
 
 
 		app_type["input_state"] = sol::readonly_property(&IApp::getInputState);

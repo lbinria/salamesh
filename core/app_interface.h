@@ -210,7 +210,6 @@ struct IApp {
 
 
 
-	virtual RendererCollection& getRenderers() = 0;
 	virtual RenderSurface &getRenderSurface() = 0;
 
 	virtual InputState& getInputState() = 0;
