@@ -1,84 +1,20 @@
 #pragma once
 #include "model.h"
+#include "../entity_collection.h"
 
 #include <map>
 #include <memory>
 
-struct ModelCollection {
+struct ModelCollection : public EntityCollection<Model> {
 
-template<typename T>
-struct Instanciator {
-
-	Instanciator() = default;
-
-	// Instanciator (const Instanciator&) = delete;
-	// Instanciator& operator= (const Instanciator&) = delete;
-
-	std::unique_ptr<T> make(std::string type) {
-		if (instanciators.count(type) > 0) {
-			return instanciators[type]();
-		}
-
-		std::cerr 
-			<< "Unable to make entity of type " 
-			<< type 
-			<< ", maybe you should register your custom entity class using `registerType` ?" 
-			<< std::endl;
-
-		return nullptr;
-	}
-	
-	inline void registerType(std::string type, std::function<std::unique_ptr<T>()> instanciatorFunc) {
-		instanciators[type] = instanciatorFunc;
-	}
-
-	std::vector<std::string> listAvailableTypes() {
-		std::vector<std::string> v;
-		for (auto &[k, r] : instanciators)
-			v.push_back(k);
-
-		return v;
-	}
-
-	private:
-	// Instanciator, enable entity instanciation
-	// Register new instanciator for custom entity
-	std::map<std::string, std::function<std::unique_ptr<T>()>> instanciators;
-};
-
-	auto begin() {
-		return models.begin();
-	}
-
-	auto end() {
-		return models.end();
-	}
-
-	auto begin() const {
-		return models.begin();
-	}
-
-	auto end() const {
-		return models.end();
-	}
-
-	std::shared_ptr<Model>& operator[](const std::string& name) {
-		return models[name];
-	}
-
-	const std::shared_ptr<Model>& operator[](const std::string& name) const {
-		return models.at(name);
-	}
-
-
-	std::shared_ptr<Model> add(std::string type, std::string name) {
+	std::shared_ptr<Model> add(std::string type, std::string name) override {
 		assert(!name.empty() && "Cannot add model with an empty name.");
 
 		// TODO maybe chekc type exists, else we dont understand why we get null model ?
 
 		// Check whether renderer already exists
-		if (models.contains(name))
-			return models[name];
+		if (entities.contains(name))
+			return entities[name];
 
 		auto model = instanciator.make(type);
 
@@ -87,8 +23,8 @@ struct Instanciator {
 		
 		model->init();
 		modelNameByIndex[model->getIndex()] = name;
-		models[name] = std::move(model);
-		return models[name];
+		entities[name] = std::move(model);
+		return entities[name];
 
 		// // 
 		// // model->loadCallback = ([this](Model&, const std::string) -> bool {
@@ -97,11 +33,11 @@ struct Instanciator {
 		// // });
 	}
 
-	void remove(std::string name) {
-		if (models.count(name) > 0)
-			models[name]->clean();
+	void remove(std::string name) override {
+		if (entities.count(name) > 0)
+			entities[name]->clean();
 
-		models.erase(name);
+		entities.erase(name);
 		// Sync
 		for (auto &[i, curName] : modelNameByIndex) {
 			if (curName == name) {
@@ -111,20 +47,9 @@ struct Instanciator {
 		}
 	}
 	
-	Model& get(std::string name) {
-		if (models.count(name) <= 0)
-			throw std::runtime_error("Model " + name + " was not found.");
-		
-		return *models[name];
-	}
-
-	std::map<std::string, std::shared_ptr<Model>>& get() {
-		return models;
-	}
-
 	std::vector<std::shared_ptr<Model>> getChildrenOf(std::shared_ptr<Model> model) {
 		std::vector<std::shared_ptr<Model>> children;
-		for (auto &[k, m] : models) {
+		for (auto &[k, m] : entities) {
 			if (m->getParent() == model) {
 				children.push_back(m);
 			}
@@ -133,24 +58,12 @@ struct Instanciator {
 		return children;
 	}
 
-	inline int count() {
-		return models.size();
-	}
-
-	inline bool has(std::string name) {
-		return models.count(name) > 0;
-	}
-
-	inline bool any() {
-		return models.size() > 0;
-	}
-
-	void clear() {
-		for (auto &[k, m] : models) {
+	void clear() override {
+		for (auto &[k, m] : entities) {
 			m->clean();
 		}
 
-		models.clear();
+		entities.clear();
 		modelNameByIndex.clear();
 		Model::clearIndex();
 	}
@@ -172,14 +85,6 @@ struct Instanciator {
 		return -1;
 	}
 
-
-	Instanciator<Model>& getInstanciator() { return instanciator; }
-
 	std::map<int, std::string> modelNameByIndex;
-
-	private:
-	std::map<std::string, std::shared_ptr<Model>> models;
-	Instanciator<Model> instanciator;
-
 
 };

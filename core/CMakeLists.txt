@@ -30,6 +30,7 @@ set(SOURCES
 
     render_surface.cpp render_surface.h
 
+    instanciator.h
     cameras/camera_collection.h
     renderers/renderer_collection.h
     models/model_collection.h
