@@ -1,7 +1,7 @@
 #pragma once
 #include "core/app_interface.h"
 #include "core/scene_interface.h"
-#include "core/scene_view_interface.h"
+#include "scene_view.h"
 
 #include "core/models/model.h"
 #include "core/models/surface_model.h"
@@ -11,6 +11,8 @@
 #include "core/cameras/descent_camera.h"
 #include "core/renderers/line_renderer.h"
 #include "core/graphic_api.h"
+
+#include <map>
 
 struct Scene : public IScene {
 	
@@ -36,10 +38,15 @@ struct Scene : public IScene {
 		renderers.getInstanciator().registerType("LineRenderer", []() { return std::make_unique<LineRenderer>(); });
 		renderers.getInstanciator().registerType("PointSetRenderer", []() { return std::make_unique<PointSetRenderer>(); });
 
-		// Create cameras
+		// Init default view
+		auto view = std::make_shared<SceneView>(1024, 768);
+		view->setup();
+		views["default"] = std::move(view);
+
 		setupCameras();
 
-		app.getRenderSurface().setCamera(cameras["default"]);
+		// TODO replace by getDefaultView.setCamera
+		getDefaultView().getRenderSurface().setCamera(cameras["default"]);
 	}
 
 	void render() override {
@@ -101,6 +108,7 @@ struct Scene : public IScene {
 
 		auto oldSelection = selectedModel;
 		selectedModel = name;
+		// TODO important reactivate this !
 		// notifySelectedModelChanged(oldSelection, name);
 		return true;
 	}
@@ -146,7 +154,7 @@ struct Scene : public IScene {
 		}
 
 		// Set camera to render surface
-		app.getRenderSurface().setCamera(cameras[selected]);
+		getDefaultView().setCamera(cameras[selected]);
 		selectedCamera = selected;
 		return true;
 	}
@@ -181,6 +189,8 @@ struct Scene : public IScene {
 	void loadState(json &j, const std::string filename);
 	void saveState(json &j, const std::string filename);
 
+	ISceneView& getDefaultView() { return *views["default"]; }
+	std::map<std::string, std::shared_ptr<ISceneView>>& getViews() { return views; }
 
 	private:
 	IApp &app;
@@ -196,5 +206,6 @@ struct Scene : public IScene {
 	// display color map in good format for 2D in the UI
 	std::vector<Colormap> colormaps;
 
-	// std::map<std::string, SceneView> views;
+	std::map<std::string, std::shared_ptr<ISceneView>> views;
+	
 };

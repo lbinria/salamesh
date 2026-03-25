@@ -18,7 +18,7 @@ struct UBOMatrices {
 };
 
 Image App::screenshot(const std::string& filename, int targetWidth, int targetHeight) {
-	glBindFramebuffer(GL_READ_FRAMEBUFFER, getRenderSurface().fbo);
+	glBindFramebuffer(GL_READ_FRAMEBUFFER, scene.getDefaultView().getRenderSurface().fbo);
 	glReadBuffer(GL_COLOR_ATTACHMENT0);
 
 	int width, height;
@@ -160,8 +160,8 @@ static void framebuffer_size_callback(GLFWwindow* window, int width, int height)
 
 	app->windowWidth = width;
 	app->windowHeight = height;
-
-	app->getRenderSurface().resize(width, height);
+	
+	app->getScene().getDefaultView().resize(width, height);
 }
 
 
@@ -362,10 +362,10 @@ bool App::setup() {
 		std::cerr << "Unable to load BugAnt icon." << std::endl;
 	}
 
-	auto renderSurface = std::make_unique<RenderSurface>(windowWidth, windowHeight);
-	renderSurface->setBackgroundColor({0.05, 0.1, 0.15});
-	renderSurface->setup();
-	renderSurfaces.push_back(std::move(renderSurface));
+	// auto renderSurface = std::make_unique<RenderSurface>(windowWidth, windowHeight);
+	// renderSurface->setBackgroundColor({0.05, 0.1, 0.15});
+	// renderSurface->setup();
+	// renderSurfaces.push_back(std::move(renderSurface));
 
 	// auto renderSurface2 = std::make_unique<RenderSurface>(windowWidth, windowHeight);
 	// renderSurface2->setBackgroundColor({0.16, 0.85, 0.35});
@@ -508,8 +508,8 @@ void App::start() {
 		
 		sl::updateUBOData(uboMatrices, sizeof(UBOMatrices), &mats);
 
-		getRenderSurface().bind();
-		getRenderSurface().clear();
+		scene.getDefaultView().getRenderSurface().bind();
+		scene.getDefaultView().clear();
 		glEnable(GL_DEPTH_TEST);
 		glCullFace(cull_mode);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -521,7 +521,7 @@ void App::start() {
 
 		// Go back to default framebuffer to draw the screen quad
 		glBindFramebuffer(GL_FRAMEBUFFER, 0);
-		getRenderSurface().render(screenShader, quadVAO);
+		scene.getDefaultView().render(screenShader, quadVAO);
 
 
 		// renderSurfaces[1]->bind();
@@ -568,7 +568,7 @@ void App::start() {
 
 		// ImGui::Begin("Render");
 		// ImVec2 size = ImGui::GetWindowSize();
-		// auto s = getRenderSurface();
+		// auto s = scene.getDefaultView().getRenderSurface();
 		// s.resize(size.x, size.y);
 		// ImGui::Image((ImTextureID)s.texColor, size, ImVec2(0.0f, 1.0f), ImVec2(1.0f, 0.0f));
 		// ImGui::End();
@@ -819,9 +819,9 @@ void App::clean() {
 	glDeleteVertexArrays(1, &quadVAO);
 	glDeleteBuffers(1, &quadVBO);
 
-	for (auto &rs : renderSurfaces)
-		rs->clean();
-
+	// Clean views (can be merge into scene.clean() i think )
+	for (auto &[viewName, view] : scene.getViews())
+		view->clean();
 
 }
 
@@ -852,7 +852,7 @@ long App::pickEdge(double x, double y) {
 }
 
 long App::pick_mesh(double x, double y) {
-	glBindFramebuffer(GL_READ_FRAMEBUFFER, getRenderSurface().fbo);
+	glBindFramebuffer(GL_READ_FRAMEBUFFER, scene.getDefaultView().getRenderSurface().fbo);
 	glReadBuffer(GL_COLOR_ATTACHMENT4);
 	long id = pick(x, y);
 	glBindFramebuffer(GL_READ_FRAMEBUFFER, 0);
@@ -865,7 +865,7 @@ std::vector<long> App::pick_vertices(double x, double y, int radius) {
 	if (!model)
 		return {};
 
-	glBindFramebuffer(GL_READ_FRAMEBUFFER, getRenderSurface().fbo);
+	glBindFramebuffer(GL_READ_FRAMEBUFFER, scene.getDefaultView().getRenderSurface().fbo);
 	glReadBuffer(GL_COLOR_ATTACHMENT3);
 	auto ids = pick(x, y, radius);
 	glBindFramebuffer(GL_READ_FRAMEBUFFER, 0);
@@ -885,7 +885,7 @@ std::vector<long> App::pick_facets(double x, double y, int radius) {
 	if (!model)
 		return {};
 
-	glBindFramebuffer(GL_READ_FRAMEBUFFER, getRenderSurface().fbo);
+	glBindFramebuffer(GL_READ_FRAMEBUFFER, scene.getDefaultView().getRenderSurface().fbo);
 	glReadBuffer(GL_COLOR_ATTACHMENT1);
 	auto ids = pick(x, y, radius);
 	glBindFramebuffer(GL_READ_FRAMEBUFFER, 0);
@@ -905,7 +905,7 @@ std::vector<long> App::pick_cells(double x, double y, int radius) {
 	if (!model)
 		return {};
 
-	glBindFramebuffer(GL_READ_FRAMEBUFFER, getRenderSurface().fbo);
+	glBindFramebuffer(GL_READ_FRAMEBUFFER, scene.getDefaultView().getRenderSurface().fbo);
 	glReadBuffer(GL_COLOR_ATTACHMENT2);
 	auto ids = pick(x, y, radius);
 	glBindFramebuffer(GL_READ_FRAMEBUFFER, 0);
@@ -924,7 +924,7 @@ float getLinearDepth(float depth, float _near, float _far) {
 }
 
 float App::getDepth(double x, double y) {
-	glBindFramebuffer(GL_READ_FRAMEBUFFER, getRenderSurface().fbo);
+	glBindFramebuffer(GL_READ_FRAMEBUFFER, scene.getDefaultView().getRenderSurface().fbo);
     float depth;
     glReadPixels(x, windowHeight - y, 1, 1, GL_DEPTH_COMPONENT, GL_FLOAT, &depth);
     return depth;

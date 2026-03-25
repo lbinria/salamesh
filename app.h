@@ -138,16 +138,6 @@ struct App final : public IApp {
 	}
 
 
-
-
-
-	
-
-
-
-
-	RenderSurface &getRenderSurface() override { return *renderSurfaces[0]; }
-
 	InputState& getInputState() override { return st; }
 
 
@@ -245,9 +235,6 @@ struct App final : public IApp {
 
 
 	Scene scene;
-
-
-	std::vector<std::unique_ptr<RenderSurface>> renderSurfaces;
 
 
 	std::vector<std::unique_ptr<Script>> scripts;

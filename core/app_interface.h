@@ -156,10 +156,6 @@ struct IApp {
 	virtual void saveState(const std::string filename) = 0;
 	virtual void loadState(const std::string filename) = 0;
 
-
-
-	virtual RenderSurface &getRenderSurface() = 0;
-
 	virtual InputState& getInputState() = 0;
 
 	// Window & rendersurface

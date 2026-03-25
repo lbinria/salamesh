@@ -3,6 +3,8 @@
 #include "cameras/camera_collection.h"
 #include "renderers/renderer_collection.h"
 
+#include "scene_view_interface.h"
+
 struct Colormap {
 	std::string name;
 	int width, height;
@@ -40,4 +42,6 @@ struct IScene {
 	virtual Colormap getColormap(const std::string name) = 0;
 	virtual Colormap getColormap(int idx) = 0;
 
+	virtual ISceneView& getDefaultView() = 0;
+	virtual std::map<std::string, std::shared_ptr<ISceneView>>& getViews() = 0;
 };
