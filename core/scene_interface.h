@@ -42,6 +42,6 @@ struct IScene {
 	virtual Colormap getColormap(const std::string name) = 0;
 	virtual Colormap getColormap(int idx) = 0;
 
-	virtual ISceneView& getDefaultView() = 0;
+	virtual ISceneView& getMainView() = 0;
 	virtual std::map<std::string, std::shared_ptr<ISceneView>>& getViews() = 0;
 };

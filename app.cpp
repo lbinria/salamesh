@@ -100,7 +100,7 @@ struct UBOMatrices {
 };
 
 Image App::screenshot(const std::string& filename, int targetWidth, int targetHeight) {
-	glBindFramebuffer(GL_READ_FRAMEBUFFER, scene.getDefaultView().getRenderSurface().fbo);
+	glBindFramebuffer(GL_READ_FRAMEBUFFER, scene.getMainView().getRenderSurface().fbo);
 	glReadBuffer(GL_COLOR_ATTACHMENT0);
 
 	int width, height;
@@ -243,7 +243,7 @@ static void framebuffer_size_callback(GLFWwindow* window, int width, int height)
 	app->windowWidth = width;
 	app->windowHeight = height;
 	
-	app->getScene().getDefaultView().resize(width, height);
+	app->getScene().getMainView().resize(width, height);
 }
 
 
@@ -602,8 +602,8 @@ void App::start() {
 		
 		sl::updateUBOData(uboMatrices, sizeof(UBOMatrices), &mats);
 
-		scene.getDefaultView().getRenderSurface().bind();
-		scene.getDefaultView().clear();
+		scene.getMainView().getRenderSurface().bind();
+		scene.getMainView().clear();
 		glEnable(GL_DEPTH_TEST);
 		glCullFace(cull_mode);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -615,7 +615,7 @@ void App::start() {
 
 		// Go back to default framebuffer to draw the screen quad
 		glBindFramebuffer(GL_FRAMEBUFFER, 0);
-		scene.getDefaultView().render(screenShader, quadVAO);
+		scene.getMainView().render(screenShader, quadVAO);
 
 
 		// -------------------
@@ -638,7 +638,7 @@ void App::start() {
 
 		// ImGui::Begin("Render");
 		// ImVec2 size = ImGui::GetWindowSize();
-		// auto s = scene.getDefaultView().getRenderSurface();
+		// auto s = scene.getMainView().getRenderSurface();
 		// s.resize(size.x, size.y);
 		// ImGui::Image((ImTextureID)s.texColor, size, ImVec2(0.0f, 1.0f), ImVec2(1.0f, 0.0f));
 		// ImGui::End();
@@ -916,7 +916,7 @@ long App::pickEdge(double x, double y) {
 }
 
 long App::pick_mesh(double x, double y) {
-	glBindFramebuffer(GL_READ_FRAMEBUFFER, scene.getDefaultView().getRenderSurface().fbo);
+	glBindFramebuffer(GL_READ_FRAMEBUFFER, scene.getMainView().getRenderSurface().fbo);
 	glReadBuffer(GL_COLOR_ATTACHMENT4);
 	long id = pick(x, y);
 	glBindFramebuffer(GL_READ_FRAMEBUFFER, 0);
@@ -929,7 +929,7 @@ std::vector<long> App::pick_vertices(double x, double y, int radius) {
 	if (!model)
 		return {};
 
-	glBindFramebuffer(GL_READ_FRAMEBUFFER, scene.getDefaultView().getRenderSurface().fbo);
+	glBindFramebuffer(GL_READ_FRAMEBUFFER, scene.getMainView().getRenderSurface().fbo);
 	glReadBuffer(GL_COLOR_ATTACHMENT3);
 	auto ids = pick(x, y, radius);
 	glBindFramebuffer(GL_READ_FRAMEBUFFER, 0);
@@ -949,7 +949,7 @@ std::vector<long> App::pick_facets(double x, double y, int radius) {
 	if (!model)
 		return {};
 
-	glBindFramebuffer(GL_READ_FRAMEBUFFER, scene.getDefaultView().getRenderSurface().fbo);
+	glBindFramebuffer(GL_READ_FRAMEBUFFER, scene.getMainView().getRenderSurface().fbo);
 	glReadBuffer(GL_COLOR_ATTACHMENT1);
 	auto ids = pick(x, y, radius);
 	glBindFramebuffer(GL_READ_FRAMEBUFFER, 0);
@@ -969,7 +969,7 @@ std::vector<long> App::pick_cells(double x, double y, int radius) {
 	if (!model)
 		return {};
 
-	glBindFramebuffer(GL_READ_FRAMEBUFFER, scene.getDefaultView().getRenderSurface().fbo);
+	glBindFramebuffer(GL_READ_FRAMEBUFFER, scene.getMainView().getRenderSurface().fbo);
 	glReadBuffer(GL_COLOR_ATTACHMENT2);
 	auto ids = pick(x, y, radius);
 	glBindFramebuffer(GL_READ_FRAMEBUFFER, 0);
@@ -988,7 +988,7 @@ float getLinearDepth(float depth, float _near, float _far) {
 }
 
 float App::getDepth(double x, double y) {
-	glBindFramebuffer(GL_READ_FRAMEBUFFER, scene.getDefaultView().getRenderSurface().fbo);
+	glBindFramebuffer(GL_READ_FRAMEBUFFER, scene.getMainView().getRenderSurface().fbo);
     float depth;
     glReadPixels(x, windowHeight - y, 1, 1, GL_DEPTH_COMPONENT, GL_FLOAT, &depth);
     return depth;

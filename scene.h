@@ -45,8 +45,8 @@ struct Scene : public IScene {
 
 		setupCameras();
 
-		// TODO replace by getDefaultView.setCamera
-		getDefaultView().getRenderSurface().setCamera(cameras["default"]);
+		// TODO replace by getMainView.setCamera
+		getMainView().getRenderSurface().setCamera(cameras["default"]);
 	}
 
 	void render() override {
@@ -154,7 +154,7 @@ struct Scene : public IScene {
 		}
 
 		// Set camera to render surface
-		getDefaultView().setCamera(cameras[selected]);
+		getMainView().setCamera(cameras[selected]);
 		selectedCamera = selected;
 		return true;
 	}
@@ -189,7 +189,7 @@ struct Scene : public IScene {
 	void loadState(json &j, const std::string filename);
 	void saveState(json &j, const std::string filename);
 
-	ISceneView& getDefaultView() { return *views["default"]; }
+	ISceneView& getMainView() { return *views["default"]; }
 	std::map<std::string, std::shared_ptr<ISceneView>>& getViews() { return views; }
 
 	private:
