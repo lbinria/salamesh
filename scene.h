@@ -1,6 +1,8 @@
 #pragma once
 #include "core/app_interface.h"
 #include "core/scene_interface.h"
+#include "core/scene_view_interface.h"
+
 #include "core/models/model.h"
 #include "core/models/surface_model.h"
 #include "core/models/volume_model.h"
@@ -176,6 +178,10 @@ struct Scene : public IScene {
 	Colormap getColormap(const std::string name) override;
 	Colormap getColormap(int idx) override;
 
+	void loadState(json &j, const std::string filename);
+	void saveState(json &j, const std::string filename);
+
+
 	private:
 	IApp &app;
 
@@ -190,4 +196,5 @@ struct Scene : public IScene {
 	// display color map in good format for 2D in the UI
 	std::vector<Colormap> colormaps;
 
+	// std::map<std::string, SceneView> views;
 };

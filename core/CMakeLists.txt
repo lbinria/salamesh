@@ -17,6 +17,7 @@ endif(WIN32)
 set(SOURCES
     app_interface.h
     scene_interface.h
+    scene_view_interface.h
     script.h
     lua_script.h
     module.h

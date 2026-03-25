@@ -1141,33 +1141,15 @@ void App::saveState(const std::string filename) {
 	// Save app states
 	j["header"]["type"] = "state";
 	j["cull_mode"] = cull_mode;
-	j["selected_model"] = scene.getSelectedModel();
-	j["selected_camera"] = scene.getSelectedCamera();
-	j["models"] = json::object();
-	j["cameras"] = json::object();
 
-	// Save models states
-	for (auto &[k, m] : scene.getModels()) {
-		m->saveState(p.parent_path().string(), j["models"][k]);
-	}
 
-	// Save cameras states
-	for (auto &[k, c] : scene.getCameras()) {
-		c->saveState(j["cameras"][k]);
-	}
 
-	// TODO important save renderer states
-
-	// TODO important save colormaps
+	scene.saveState(j, filename);
 
 	// Save navigation path
 	j["nav_path"] = navPath;
 
-	// Save misc
-	j["model_name_by_index"] = json::object();
-	for (auto &[k, m] : scene.getModels().modelNameByIndex) {
-		j["model_name_by_index"][std::to_string(k)] = m;
-	}
+
 
 	std::ofstream ofs(filename);
 	if (!ofs.is_open()) {
@@ -1195,51 +1177,16 @@ void App::loadState(json &j, const std::string path) {
 
 	clearScene();
 
-	// Load models states
-	for (auto &[modelName, jModel] : j["models"].items()) {
-		// Concatenate state.json file path with model path
-		// in order to search the mesh file relatively to the state.json file
-		std::string modelRelPath = jModel["path"];
-		auto modelPath = 
-			std::filesystem::path(path).remove_filename() / 
-			std::filesystem::path(modelRelPath);
-		
-		// Try to load the model mesh
-		if (!scene.loadModel(modelPath.string(), modelName))
-			continue;
-		
-		// Get last added model
-		auto &model = scene.getModels()[modelName];
-		// Load state into last loaded model
-		model->loadState(jModel);
-
-		// TODO! recompute cameras far / near
-	}
-
-	// Load cameras states after model (because loading model will focus on)
-	for (auto &[cameraName, jCamera] : j["cameras"].items()) {
-		auto type = jCamera["type"].get<std::string>();
-		auto camera = scene.getCameras().getInstanciator().make(type);
-		if (camera) {
-			camera->loadState(jCamera);
-			scene.getCameras()[cameraName] = std::move(camera);
-		}
-	}
+	scene.loadState(j, path);
 
 	// Load app state
 	cull_mode = j["cull_mode"].get<int>();
-	scene.setSelectedModel(j["selected_model"].get<std::string>());
-	scene.setSelectedCamera(j["selected_camera"].get<std::string>());
+
 
 	// Save navigation path
 	setNavigationPath(j["nav_path"].get<std::vector<std::string>>());
 
-	// Save misc
-	for (auto &[idx, jModelName]: j["model_name_by_index"].items()) {
-		std::string modelName = jModelName;
-		// modelNameByIndex[std::stoi(idx)] = modelName;
-		scene.getModels().modelNameByIndex[std::stoi(idx)] = modelName;
-	}
+
 
 	std::cout << "State loaded successfully." << std::endl;
 }

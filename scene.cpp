@@ -183,3 +183,71 @@ Colormap Scene::getColormap(const std::string name) {
 Colormap Scene::getColormap(int idx) {
 	return colormaps[idx];
 }
+
+void Scene::loadState(json &j, const std::string filename) {
+	// Load models states
+	for (auto &[modelName, jModel] : j["models"].items()) {
+		// Concatenate state.json file path with model path
+		// in order to search the mesh file relatively to the state.json file
+		std::string modelRelPath = jModel["path"];
+		auto modelPath = 
+			std::filesystem::path(filename).remove_filename() / 
+			std::filesystem::path(modelRelPath);
+		
+		// Try to load the model mesh
+		if (!loadModel(modelPath.string(), modelName))
+			continue;
+		
+		// Get last added model
+		auto &model = models[modelName];
+		// Load state into last loaded model
+		model->loadState(jModel);
+
+		// TODO! recompute cameras far / near
+	}
+
+	for (auto &[idx, jModelName]: j["model_name_by_index"].items()) {
+		std::string modelName = jModelName;
+		models.modelNameByIndex[std::stoi(idx)] = modelName;
+	}
+
+	// Load cameras states after model (because loading model will focus on)
+	for (auto &[cameraName, jCamera] : j["cameras"].items()) {
+		auto type = jCamera["type"].get<std::string>();
+		auto camera = cameras.getInstanciator().make(type);
+		if (camera) {
+			camera->loadState(jCamera);
+			cameras[cameraName] = std::move(camera);
+		}
+	}
+
+	setSelectedModel(j["selected_model"].get<std::string>());
+	setSelectedCamera(j["selected_camera"].get<std::string>());
+}
+
+void Scene::saveState(json &j, const std::string filename) {
+	std::filesystem::path p = filename;
+
+	j["selected_model"] = selectedModel;
+	j["selected_camera"] = selectedCamera;
+	j["models"] = json::object();
+	j["cameras"] = json::object();
+
+	// Save models states
+	for (auto &[k, m] : models) {
+		m->saveState(p.parent_path().string(), j["models"][k]);
+	}
+
+	j["model_name_by_index"] = json::object();
+	for (auto &[k, m] : models.modelNameByIndex) {
+		j["model_name_by_index"][std::to_string(k)] = m;
+	}
+
+	// Save cameras states
+	for (auto &[k, c] : cameras) {
+		c->saveState(j["cameras"][k]);
+	}
+
+	// TODO important save renderer states
+	// TODO important save colormaps states
+}
