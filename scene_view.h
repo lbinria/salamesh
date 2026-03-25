@@ -5,9 +5,10 @@ struct SceneView : public ISceneView {
 
 	SceneView(int width, int height) : renderSurface(width, height) {}
 
+	// TODO pass width, height on setup, remove from constructor
 	void setup() override {
 		renderSurface.setBackgroundColor(backgroundColor);
-		renderSurface.setup();
+		renderSurface.setup(); 
 	}
 
 	void render(Shader &screenShader, unsigned int quadVAO) override {

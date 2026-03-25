@@ -618,30 +618,6 @@ void App::start() {
 		scene.getDefaultView().render(screenShader, quadVAO);
 
 
-		// renderSurfaces[1]->bind();
-		// renderSurfaces[1]->clear();
-		// glEnable(GL_DEPTH_TEST);
-		// glCullFace(cull_mode);
-		// glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
-		// // // // Update UBO
-		// // // glm::mat4 mats[2] = { view, projection }; // Ensure view and projection matrices are contiguous in memory
-		// // // glBindBuffer(GL_UNIFORM_BUFFER, uboMatrices);
-		// // // glBufferData(GL_UNIFORM_BUFFER, sizeof(glm::mat4) * 2, glm::value_ptr(mats[0]), GL_DYNAMIC_DRAW);
-		// // // glBindBuffer(GL_UNIFORM_BUFFER, 0);  
-
-		// // Render scene
-		// for (auto &model : models) {
-		// 	model->setTexture(colormaps[model->getSelectedColormap()]);
-		// 	model->render();
-		// }
-
-		// glBindFramebuffer(GL_FRAMEBUFFER, screenFbo);
-		// renderSurfaces[1]->render(screenShader, quadVAO);
-
-
-
-
 		// -------------------
 		// Go back to default framebuffer to draw UI
 		glBindFramebuffer(GL_FRAMEBUFFER, 0);
@@ -774,7 +750,7 @@ void App::setupLayout() {
 
 			ImGuiID leftbot = ImGui::DockBuilderSplitNode(navBar, ImGuiDir_Down, 0.25f, nullptr, &navBar);
 
-			ImGui::DockBuilderDockWindow("Bot Bar", botBar);
+			// ImGui::DockBuilderDockWindow("Bot Bar", botBar);
 			// ImGui::DockBuilderDockWindow("Left Side Bar", leftbot);
 			// ImGui::DockBuilderDockWindow("Right Side Bar", toolBar);
 			// ImGui::DockBuilderDockWindow("Right Side Bar2", toolBar);
@@ -797,12 +773,6 @@ void App::setupLayout() {
 
 			ImGui::DockBuilderFinish(dockspace_id);
 		}
-
-
-		// ImGui::Begin("Bot Bar");
-		// ImGui::Text("bot bar");
-		// ImGui::End();
-
 
 	}
 }
