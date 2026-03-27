@@ -22,7 +22,6 @@ struct ModelCollection : public EntityCollection<Model> {
 			return nullptr;
 		
 		model->init();
-		modelNameByIndex[model->getIndex()] = name;
 		entities[name] = std::move(model);
 		return entities[name];
 
@@ -38,13 +37,6 @@ struct ModelCollection : public EntityCollection<Model> {
 			entities[name]->clean();
 
 		entities.erase(name);
-		// Sync
-		for (auto &[i, curName] : modelNameByIndex) {
-			if (curName == name) {
-				modelNameByIndex.erase(i);
-				break;
-			}
-		}
 	}
 	
 	std::vector<std::shared_ptr<Model>> getChildrenOf(std::shared_ptr<Model> model) {
@@ -64,27 +56,16 @@ struct ModelCollection : public EntityCollection<Model> {
 		}
 
 		entities.clear();
-		modelNameByIndex.clear();
 		Model::clearIndex();
 	}
 
-	bool hasModelIndex(int index) {
-		return modelNameByIndex.count(index) > 0;
-	}
-
-	std::string getModelNameByIndex(int index) {
-		return modelNameByIndex[index];
-	}
-
-	int getModelIndexByName(std::string name) {
-		for (auto &[i, modelName] : modelNameByIndex) {
-			if (modelName == name) {
-				return i;
-			}
+	std::shared_ptr<Model> getByIndex(int index) {
+		for (auto &[k, e] : entities) {
+			if (e->getIndex() == index)
+				return e;
 		}
-		return -1;
-	}
 
-	std::map<int, std::string> modelNameByIndex;
+		return nullptr;
+	}
 
 };

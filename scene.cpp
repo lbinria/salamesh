@@ -62,7 +62,6 @@ std::shared_ptr<Model> Scene::loadModel(const std::string& filename, std::string
 
 	// Setup default clipping plane
 	model->setupClipping();
-	models.modelNameByIndex[model->getIndex()] = modelName;
 	models[modelName] = std::move(model);
 
 	// Update cameras far planes
@@ -206,11 +205,6 @@ void Scene::loadState(json &j, const std::string filename) {
 		// TODO! recompute cameras far / near
 	}
 
-	for (auto &[idx, jModelName]: j["model_name_by_index"].items()) {
-		std::string modelName = jModelName;
-		models.modelNameByIndex[std::stoi(idx)] = modelName;
-	}
-
 	// Load cameras states after model (because loading model will focus on)
 	for (auto &[cameraName, jCamera] : j["cameras"].items()) {
 		auto type = jCamera["type"].get<std::string>();
@@ -236,11 +230,6 @@ void Scene::saveState(json &j, const std::string filename) {
 	// Save models states
 	for (auto &[k, m] : models) {
 		m->saveState(p.parent_path().string(), j["models"][k]);
-	}
-
-	j["model_name_by_index"] = json::object();
-	for (auto &[k, m] : models.modelNameByIndex) {
-		j["model_name_by_index"][std::to_string(k)] = m;
 	}
 
 	// Save cameras states

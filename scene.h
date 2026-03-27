@@ -126,19 +126,8 @@ struct Scene : public IScene {
 	}
 
 	std::shared_ptr<Model> getHoveredModel() {
-		// Searching
-		// auto hoveredIndex = st.mesh.getHovered();
 		auto hoveredIndex = app.getInputState().mesh.getHovered();
-
-		
-		if (models.hasModelIndex(hoveredIndex)) {
-			auto name = models.getModelNameByIndex(hoveredIndex);
-			if (models.has(name)) {
-				return models[name];
-			}
-		}
-
-		return nullptr;
+		return models.getByIndex(hoveredIndex);
 	}
 
 	std::tuple<glm::vec3, glm::vec3> computeSceneBBox();

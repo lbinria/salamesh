@@ -167,8 +167,7 @@ namespace bindings {
 			"any", sol::readonly_property(&ModelCollection::any),
 			"clear", &ModelCollection::clear,
 			"get_children_of", &ModelCollection::getChildrenOf,
-			"get_model_name_by_index", &ModelCollection::getModelNameByIndex,
-			"get_model_index_by_name", &ModelCollection::getModelIndexByName
+			"get_by_index", &ModelCollection::getByIndex
 		);
 
 		modelCollection_t.set_function(sol::meta_function::pairs, [](sol::this_state L, ModelCollection& self) {
