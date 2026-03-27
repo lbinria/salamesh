@@ -29,8 +29,8 @@ struct SurfaceRenderer : public MeshRenderer {
 		int facetIndex;
 	};
 
-	SurfaceRenderer(Surface &m) : 
-		MeshRenderer(Shader(sl::shadersPath("surface.vert"), sl::shadersPath("surface.frag"))),
+	SurfaceRenderer(std::string name, Surface &m) : 
+		MeshRenderer(name, Shader(sl::shadersPath("surface.vert"), sl::shadersPath("surface.frag"))),
 		_m(m)
 		{}
 

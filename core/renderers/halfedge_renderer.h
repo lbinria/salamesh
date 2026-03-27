@@ -109,8 +109,8 @@ struct HalfedgeRenderer : public Renderer {
 
 struct SurfaceHalfedgeRenderer : public HalfedgeRenderer {
 
-	SurfaceHalfedgeRenderer(Surface &m) : 
-		HalfedgeRenderer(Shader(sl::shadersPath("edge.vert"), sl::shadersPath("edge.frag"))),
+	SurfaceHalfedgeRenderer(std::string name, Surface &m) : 
+		HalfedgeRenderer(name, Shader(sl::shadersPath("edge.vert"), sl::shadersPath("edge.frag"))),
 		_m(m) {
 			setThickness(2.0f);
 			setInsideColor({0.0, 0.97, 0.73});
@@ -125,8 +125,8 @@ struct SurfaceHalfedgeRenderer : public HalfedgeRenderer {
 
 struct VolumeHalfedgeRenderer : public HalfedgeRenderer {
 
-	VolumeHalfedgeRenderer(Volume &m) : 
-		HalfedgeRenderer(Shader(sl::shadersPath("edge.vert"), sl::shadersPath("edge.frag"))),
+	VolumeHalfedgeRenderer(std::string name, Volume &m) : 
+		HalfedgeRenderer(name, Shader(sl::shadersPath("edge.vert"), sl::shadersPath("edge.frag"))),
 		_m(m) {
 			setThickness(2.0f);
 			setInsideColor({0.0, 0.97, 0.73});
@@ -140,8 +140,8 @@ struct VolumeHalfedgeRenderer : public HalfedgeRenderer {
 
 struct PolylineRenderer : public HalfedgeRenderer {
 
-		PolylineRenderer(PolyLine &m) : 
-		HalfedgeRenderer(Shader(sl::shadersPath("edge.vert"), sl::shadersPath("edge.frag"))),
+		PolylineRenderer(std::string name, PolyLine &m) : 
+		HalfedgeRenderer(name, Shader(sl::shadersPath("edge.vert"), sl::shadersPath("edge.frag"))),
 		_m(m) {
 			setThickness(2.0f);
 			setInsideColor({0.0, 0.97, 0.73});

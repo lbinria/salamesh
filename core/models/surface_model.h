@@ -46,7 +46,7 @@ namespace RendererSpecialization {
 
 struct SurfModel : public Model {
 
-	SurfModel(std::map<std::string, std::shared_ptr<Renderer>> renderers) : Model::Model(renderers) {}
+	SurfModel(std::string name, std::map<std::string, std::shared_ptr<Renderer>> renderers) : Model::Model(name, renderers) {}
 
 	SurfaceAttributes& getSurfaceAttributes() { return _surfaceAttributes; }
 	const SurfaceAttributes& getSurfaceAttributes() const { return _surfaceAttributes; }
@@ -59,14 +59,14 @@ struct SurfModel : public Model {
 template<SurfaceDerived TSurface>
 struct SurfaceModel : public SurfModel {
 
-	SurfaceModel() : 
+	SurfaceModel(std::string name) : 
 		_m(),
-		SurfModel::SurfModel({
-			{"mesh_renderer", std::make_shared<typename RendererSpecialization::RendererSelector<TSurface>::type>(_m)}, 
-			{"point_renderer", std::make_shared<PointSetRenderer>(_m.points) },
-			{"edge_renderer", std::make_shared<SurfaceHalfedgeRenderer>(_m) },
-			{"bbox_renderer", std::make_shared<BBoxRenderer>(_m.points) },
-			{"zclipping_renderer", std::make_shared<ClippingRenderer>(_m.points) }
+		SurfModel::SurfModel(name, {
+			{"mesh_renderer", std::make_shared<typename RendererSpecialization::RendererSelector<TSurface>::type>("", _m)}, 
+			{"point_renderer", std::make_shared<PointSetRenderer>("", _m.points) },
+			{"edge_renderer", std::make_shared<SurfaceHalfedgeRenderer>("", _m) },
+			{"bbox_renderer", std::make_shared<BBoxRenderer>("", _m.points) },
+			{"zclipping_renderer", std::make_shared<ClippingRenderer>("", _m.points) }
 		})
 		{
 			getPointsRenderer().setVisible(false);

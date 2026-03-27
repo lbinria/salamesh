@@ -22,7 +22,8 @@ struct Renderer {
 	Renderer (const Renderer&) = delete;
 	Renderer& operator= (const Renderer&) = delete;
 
-	Renderer(Shader shader) : 
+	Renderer(std::string name, Shader shader) : 
+		name(name.empty() ? sl::generateGuid() : name),
 		shader(std::move(shader))
 	{}
 
@@ -226,6 +227,8 @@ struct Renderer {
 		doSaveState(j);
 	}
 
+	std::string getName() { return name; }
+
 	protected:
 	Shader shader;
 
@@ -264,6 +267,8 @@ struct Renderer {
 	}
 
 	private:
+
+	std::string name;
 
 	virtual void doLoadState(json &j) = 0;
 	virtual void doSaveState(json &j) const = 0;

@@ -38,7 +38,7 @@ namespace RendererSpecialization {
 
 struct VolModel : public Model {
 
-	VolModel(std::map<std::string, std::shared_ptr<Renderer>> renderers) : Model::Model(renderers) {}
+	VolModel(std::string name, std::map<std::string, std::shared_ptr<Renderer>> renderers) : Model::Model(name, renderers) {}
 
 	VolumeAttributes& getVolumeAttributes() { return _volumeAttributes; }
 	const VolumeAttributes& getVolumeAttributes() const { return _volumeAttributes; }
@@ -52,14 +52,14 @@ struct VolModel : public Model {
 template<VolumeDerived TVolume>
 struct VolumeModel final : public VolModel {
 
-	VolumeModel() : 
+	VolumeModel(std::string name) : 
 		_m(), 
-		VolModel::VolModel({
-			{"mesh_renderer", std::make_shared<typename RendererSpecialization::RendererSelector<TVolume>::type>(_m)}, 
-			{"point_renderer", std::make_shared<PointSetRenderer>(_m.points) },
-			{"edge_renderer", std::make_shared<VolumeHalfedgeRenderer>(_m) },
-			{"bbox_renderer", std::make_shared<BBoxRenderer>(_m.points) },
-			{"zclipping_renderer", std::make_shared<ClippingRenderer>(_m.points) }
+		VolModel::VolModel(name, {
+			{"mesh_renderer", std::make_shared<typename RendererSpecialization::RendererSelector<TVolume>::type>("", _m)}, 
+			{"point_renderer", std::make_shared<PointSetRenderer>("", _m.points) },
+			{"edge_renderer", std::make_shared<VolumeHalfedgeRenderer>("", _m) },
+			{"bbox_renderer", std::make_shared<BBoxRenderer>("", _m.points) },
+			{"zclipping_renderer", std::make_shared<ClippingRenderer>("", _m.points) }
 		})
 		{
 			getPointsRenderer().setVisible(false);

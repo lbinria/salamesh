@@ -26,8 +26,8 @@ struct LineRenderer : public Renderer {
 		glm::vec3 color;
 	};
 
-	LineRenderer() : 
-		Renderer(Shader(sl::shadersPath("gizmo_line.vert"), sl::shadersPath("gizmo_line.frag"))) {
+	LineRenderer(std::string name) : 
+		Renderer(name, Shader(sl::shadersPath("gizmo_line.vert"), sl::shadersPath("gizmo_line.frag"))) {
 			
 		}
 

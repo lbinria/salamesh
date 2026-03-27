@@ -30,8 +30,8 @@ struct VolumeRenderer : public MeshRenderer {
 		int cellIndex;
 	};
 
-	VolumeRenderer(Volume &m) : 
-		MeshRenderer(Shader(sl::shadersPath("volume.vert"), sl::shadersPath("volume.frag"))),
+	VolumeRenderer(std::string name, Volume &m) : 
+		MeshRenderer(name, Shader(sl::shadersPath("volume.vert"), sl::shadersPath("volume.frag"))),
 		_m(m)
 		{}
 

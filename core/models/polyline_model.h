@@ -13,13 +13,13 @@
 
 struct PolylineModel : public Model {
 
-	PolylineModel() : 
+	PolylineModel(std::string name) : 
 		_m(),
-		Model::Model({
-			{"point_renderer", std::make_shared<PointSetRenderer>(_m.points) },
-			{"edge_renderer", std::make_shared<PolylineRenderer>(_m)}, 
-			{"bbox_renderer", std::make_shared<BBoxRenderer>(_m.points) },
-			{"zclipping_renderer", std::make_shared<ClippingRenderer>(_m.points) }
+		Model::Model(name, {
+			{"point_renderer", std::make_shared<PointSetRenderer>("", _m.points) },
+			{"edge_renderer", std::make_shared<PolylineRenderer>("", _m)}, 
+			{"bbox_renderer", std::make_shared<BBoxRenderer>("", _m.points) },
+			{"zclipping_renderer", std::make_shared<ClippingRenderer>("", _m.points) }
 		})
 		{
 			getPointsRenderer().setVisible(false);

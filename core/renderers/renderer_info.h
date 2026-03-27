@@ -5,5 +5,5 @@
 
 struct RendererInfo {
 	std::string type;
-	std::function<std::unique_ptr<Renderer>()> instanciatorFunc;
+	std::function<std::unique_ptr<Renderer>(std::string)> instanciatorFunc;
 };

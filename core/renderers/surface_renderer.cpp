@@ -50,7 +50,7 @@ void SurfaceRenderer::init() {
 
 }
 
-void SurfaceRenderer::render(glm::vec3 &position) {
+void SurfaceRenderer::render(/* RendererView rv */ glm::vec3 &position) {
 
 	if (!visible)
 		return;
@@ -81,6 +81,9 @@ void SurfaceRenderer::render(glm::vec3 &position) {
 	glActiveTexture(GL_TEXTURE0 + 7);
 	glBindTexture(GL_TEXTURE_BUFFER, tboColormap2);
 
+	// rv.setLayerTextures();
+	// rv.shader.use();
+	// rv.render(pos) do the same as setPosition
 	setPosition(position);
 
 	glDrawArrays(GL_TRIANGLES, 0, nelements);

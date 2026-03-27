@@ -20,8 +20,8 @@ struct BBoxRenderer : public Renderer {
 	};
 
 	// TODO get shader from renderer name
-	BBoxRenderer(PointSet &ps) : 
-		Renderer(Shader(sl::shadersPath("bbox.vert"), sl::shadersPath("bbox.frag"))),
+	BBoxRenderer(std::string name, PointSet &ps) : 
+		Renderer(name, Shader(sl::shadersPath("bbox.vert"), sl::shadersPath("bbox.frag"))),
 		ps(ps) {
 			setColor(glm::vec3(1.0, 1.0, 1.0));
 		}

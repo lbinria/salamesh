@@ -19,8 +19,8 @@ using namespace UM;
 
 struct SurfaceRenderer2 : public MeshRenderer {
 	
-	SurfaceRenderer2(Surface &m, Shader shader) : 
-		MeshRenderer(std::move(shader)),
+	SurfaceRenderer2(std::string name, Surface &m, Shader shader) : 
+		MeshRenderer(name, std::move(shader)),
 		_m(m)
 		{}
 
@@ -53,9 +53,9 @@ struct SurfaceRenderer2 : public MeshRenderer {
 
 struct TriRenderer2 : public SurfaceRenderer2 {
 
-	TriRenderer2(Surface &m) : 
+	TriRenderer2(std::string name, Surface &m) : 
 		// SurfaceRenderer2(m, Shader(sl::shadersPath("tri.vert"), sl::shadersPath("gizmo_line.frag")))
-		SurfaceRenderer2(m, Shader(sl::shadersPath("tri.vert"), sl::shadersPath("surface.frag")))
+		SurfaceRenderer2(name, m, Shader(sl::shadersPath("tri.vert"), sl::shadersPath("surface.frag")))
 		{}
 
 	void push() override {
@@ -84,8 +84,8 @@ struct TriRenderer2 : public SurfaceRenderer2 {
 
 struct QuadRenderer2 : public SurfaceRenderer2 {
 
-	QuadRenderer2(Surface &m) : 
-		SurfaceRenderer2(m, Shader(sl::shadersPath("quads.vert"), sl::shadersPath("surface.frag")))
+	QuadRenderer2(std::string name, Surface &m) : 
+		SurfaceRenderer2(name, m, Shader(sl::shadersPath("quads.vert"), sl::shadersPath("surface.frag")))
 		{}
 
 	void push() override {
@@ -113,8 +113,8 @@ struct QuadRenderer2 : public SurfaceRenderer2 {
 
 struct PolyRenderer2 : public SurfaceRenderer2 {
 
-	PolyRenderer2(Surface &m) : 
-		SurfaceRenderer2(m, Shader(sl::shadersPath("poly2.vert"), sl::shadersPath("gizmo_line.frag")))
+	PolyRenderer2(std::string name, Surface &m) : 
+		SurfaceRenderer2(name, m, Shader(sl::shadersPath("poly2.vert"), sl::shadersPath("gizmo_line.frag")))
 		{}
 
 	void push() override {

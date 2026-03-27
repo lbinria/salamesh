@@ -22,15 +22,15 @@ struct PointSetRenderer : public Renderer {
 		float size;
 	};
 
-	PointSetRenderer(PointSet &ps) : 
-		Renderer(Shader(sl::shadersPath("point.vert"), sl::shadersPath("point.frag"))),
+	PointSetRenderer(std::string name, PointSet &ps) : 
+		Renderer(name, Shader(sl::shadersPath("point.vert"), sl::shadersPath("point.frag"))),
 		ps(ps) {
 			setPointSize(4.0f); // TODO here use a setting default point size
 			setColor({0.23, 0.85, 0.66}); // TODO here use a setting default point color
 		}
 
-	PointSetRenderer() : 
-		Renderer(Shader(sl::shadersPath("point.vert"), sl::shadersPath("point.frag"))), ps(*new PointSet()) {
+	PointSetRenderer(std::string name) : 
+		Renderer(name, Shader(sl::shadersPath("point.vert"), sl::shadersPath("point.frag"))), ps(*new PointSet()) {
 			setPointSize(4.0f);
 			setColor({0.23, 0.85, 0.66});
 		}

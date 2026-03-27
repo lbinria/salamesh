@@ -21,8 +21,8 @@ struct ClippingRenderer : public Renderer {
 		glm::vec3 p;
 	};
 
-	ClippingRenderer(PointSet &ps) : 
-		Renderer(Shader(sl::shadersPath("clipping.vert"), sl::shadersPath("clipping.frag"))),
+	ClippingRenderer(std::string name, PointSet &ps) : 
+		Renderer(name, Shader(sl::shadersPath("clipping.vert"), sl::shadersPath("clipping.frag"))),
 		ps(ps) {
 			visible = false;
 			// setColor(glm::vec3(1.0, 1.0, 1.0));

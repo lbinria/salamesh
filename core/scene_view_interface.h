@@ -14,4 +14,14 @@ struct ISceneView {
 
 	virtual RenderSurface &getRenderSurface() = 0;
 
+
+
+	// ModelView getModelView(std::string modelName) {
+		// if not found
+		// create from default ModelView.default();
+	// }
+
+	// std::map<std::string, ModelView> modelViews;
+	// std::map<std::string, RendererView> rendererViews;
+
 };

@@ -3,8 +3,8 @@
 
 struct MeshRenderer : public Renderer {
 	
-	MeshRenderer(Shader shader) : 
-		Renderer(std::move(shader))
+	MeshRenderer(std::string name, Shader shader) : 
+		Renderer(name, std::move(shader))
 		{
 			shader.use();
 			shader.setFloat3("color", {0.71f, 0.71f, 0.71f});

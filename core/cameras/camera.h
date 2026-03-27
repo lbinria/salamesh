@@ -5,6 +5,8 @@
 #include "../include/json.hpp"
 using json = nlohmann::json;
 
+#include "../helpers.h"
+
 #include <string>
 #include <algorithm>
 #include <iostream>
@@ -14,16 +16,7 @@ struct Camera {
 	Camera (const Camera&) = delete;
 	Camera& operator= (const Camera&) = delete;
 
-	Camera() = default;
-
-	// Camera(std::string name) : 
-	// 	m_name(name),
-	// 	m_eye(0.f, 0.f, -3.f),
-	// 	m_lookAt(0.f, 0.f, 0.f),
-	// 	m_projectionMatrix()
-	// {
-	// 	updateViewMatrix();
-	// }
+	Camera(std::string name) : name(name.empty() ? sl::generateGuid() : name) {}
 
 	template<typename T>
 	T& as() {
@@ -167,7 +160,9 @@ struct Camera {
 
 	virtual std::string getType() = 0;
 
-protected:
+	std::string getName() { return name; }
+
+	protected:
 	std::string m_name;
 	float _zoomFactor = 1.f;
 	glm::vec2 _screen;
@@ -188,4 +183,6 @@ protected:
 		return (1.f / (1.f + std::exp(-(x - center) / w))) * max_value * 2.;
 	}
 
+	private:
+	std::string name;
 };

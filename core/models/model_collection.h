@@ -16,7 +16,7 @@ struct ModelCollection : public EntityCollection<Model> {
 		if (entities.contains(name))
 			return entities[name];
 
-		auto model = instanciator.make(type);
+		auto model = instanciator.make(type, name);
 
 		if (!model)
 			return nullptr;

@@ -11,32 +11,32 @@ std::shared_ptr<Model> Scene::loadModel(const std::string& filename, std::string
 	bool success = false;
 
 	std::unique_ptr<Model> model;
-	model = std::make_unique<PolyModel>();
+	model = std::make_unique<PolyModel>(modelName);
 
 	success = model->load(filename);
 
 	if (!success) {
-		model = std::make_unique<TriModel>();
+		model = std::make_unique<TriModel>(modelName);
 		success = model->load(filename);
 	}
 
 	if (!success) {
-		model = std::make_unique<QuadModel>();
+		model = std::make_unique<QuadModel>(modelName);
 		success = model->load(filename);
 	}
 
 	if (!success) {
-		model = std::make_unique<TetModel>();
+		model = std::make_unique<TetModel>(modelName);
 		success = model->load(filename);
 	}
 
 	if (!success) {
-		model = std::make_unique<HexModel>();
+		model = std::make_unique<HexModel>(modelName);
 		success = model->load(filename);
 	}
 
 	if (!success) {
-		model = std::make_unique<PolylineModel>();
+		model = std::make_unique<PolylineModel>(modelName);
 		success = model->load(filename);
 	}
 
@@ -119,7 +119,7 @@ void Scene::computeFarPlane() {
 }
 
 void Scene::setupCameras() {
-	auto trackballCamera = std::make_shared<TrackBallCamera>();
+	auto trackballCamera = std::make_shared<TrackBallCamera>("default");
 	cameras["default"] = std::move(trackballCamera);
 	setSelectedCamera("default");
 }
@@ -214,7 +214,7 @@ void Scene::loadState(json &j, const std::string filename) {
 	// Load cameras states after model (because loading model will focus on)
 	for (auto &[cameraName, jCamera] : j["cameras"].items()) {
 		auto type = jCamera["type"].get<std::string>();
-		auto camera = cameras.getInstanciator().make(type);
+		auto camera = cameras.getInstanciator().make(type, cameraName);
 		if (camera) {
 			camera->loadState(jCamera);
 			cameras[cameraName] = std::move(camera);

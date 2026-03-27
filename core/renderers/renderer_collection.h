@@ -14,7 +14,7 @@ struct RendererCollection : public EntityCollection<Renderer> {
 		if (entities.contains(name))
 			return entities[name];
 
-		auto renderer = instanciator.make(type);
+		auto renderer = instanciator.make(type, name);
 
 		if (!renderer)
 			return nullptr;

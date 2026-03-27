@@ -14,7 +14,7 @@ struct CameraCollection : public EntityCollection<Camera> {
 		if (entities.contains(name))
 			return entities[name];
 
-		auto camera = instanciator.make(type);
+		auto camera = instanciator.make(type, name);
 
 		if (!camera)
 			return nullptr;

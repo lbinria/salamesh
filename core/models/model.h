@@ -25,7 +25,8 @@ struct Model {
 	Model (const Model&) = delete;
 	Model& operator= (const Model&) = delete;
 
-	Model(std::map<std::string, std::shared_ptr<Renderer>> renderers) :  
+	Model(std::string name, std::map<std::string, std::shared_ptr<Renderer>> renderers) :  
+	name(name.empty() ? sl::generateGuid() : name),
 	_path(""),
 	_renderers(std::move(renderers)) {
 		index = maxIndex;
@@ -91,13 +92,15 @@ struct Model {
 		}
 	}
 
-	void render() {
+	void render(/* ModelView modelView */) {
 		if (!visible)
 			return;
 		
 		glm::vec3 pos = getWorldPosition();
 
 		for (auto const &[k, r] : _renderers)
+			// auto rv = modelView.rendererView[k]
+			// r->render(rv, pos);
 			r->render(pos);
 	}
 
@@ -469,7 +472,10 @@ struct Model {
 
 	virtual Attribute bindAttr(std::string attrName, ElementKind kind, ElementType type) = 0;
 
+	std::string getName() { return name; }
+
 	protected:
+	std::string name;
 	std::string _path;
 
 	glm::vec3 position{0, 0, 0};

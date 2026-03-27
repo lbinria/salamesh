@@ -21,22 +21,22 @@ struct Scene : public IScene {
 
 	void init() override {
 		// Register model types
-		models.getInstanciator().registerType("TriModel", []() { return std::make_unique<TriModel>(); });
-		models.getInstanciator().registerType("QuadModel", []() { return std::make_unique<QuadModel>(); });
-		models.getInstanciator().registerType("PolyModel", []() { return std::make_unique<PolyModel>(); });
-		models.getInstanciator().registerType("TetModel", []() { return std::make_unique<TetModel>(); });
-		models.getInstanciator().registerType("HexModel", []() { return std::make_unique<HexModel>(); });
-		// models.getInstanciator().registerType("PolylineModel", []() { return std::make_unique<PolylineModel>(); });
-		// models.getInstanciator().registerType("PyramidModel", []() { return std::make_unique<PyramidModel>(); });
-		// models.getInstanciator().registerType("PrismModel", []() { return std::make_unique<PrismModel>(); });
+		models.getInstanciator().registerType("TriModel", [](auto name) { return std::make_unique<TriModel>(name); });
+		models.getInstanciator().registerType("QuadModel", [](auto name) { return std::make_unique<QuadModel>(name); });
+		models.getInstanciator().registerType("PolyModel", [](auto name) { return std::make_unique<PolyModel>(name); });
+		models.getInstanciator().registerType("TetModel", [](auto name) { return std::make_unique<TetModel>(name); });
+		models.getInstanciator().registerType("HexModel", [](auto name) { return std::make_unique<HexModel>(name); });
+		// models.getInstanciator().registerType("PolylineModel", [](auto name) { return std::make_unique<PolylineModel>(name); });
+		// models.getInstanciator().registerType("PyramidModel", [](auto name) { return std::make_unique<PyramidModel>(name); });
+		// models.getInstanciator().registerType("PrismModel", [](auto name) { return std::make_unique<PrismModel>(name); });
 
 		// Register cameras types
-		cameras.getInstanciator().registerType("DescentCamera", []() { return std::make_unique<DescentCamera>(); });
-		cameras.getInstanciator().registerType("TrackBallCamera", []() { return std::make_unique<TrackBallCamera>(); });
+		cameras.getInstanciator().registerType("DescentCamera", [](auto name) { return std::make_unique<DescentCamera>(name); });
+		cameras.getInstanciator().registerType("TrackBallCamera", [](auto name) { return std::make_unique<TrackBallCamera>(name); });
 
 		// Register renderers types
-		renderers.getInstanciator().registerType("LineRenderer", []() { return std::make_unique<LineRenderer>(); });
-		renderers.getInstanciator().registerType("PointSetRenderer", []() { return std::make_unique<PointSetRenderer>(); });
+		renderers.getInstanciator().registerType("LineRenderer", [](auto name) { return std::make_unique<LineRenderer>(name); });
+		renderers.getInstanciator().registerType("PointSetRenderer", [](auto name) { return std::make_unique<PointSetRenderer>(name); });
 
 		// Init default view
 		auto view = std::make_shared<SceneView>(1024, 768);
@@ -56,6 +56,11 @@ struct Scene : public IScene {
 		}
 
 		for (auto &[k, model] : models) {
+			// For each views
+			// Get modelview associated with model
+			// use shaders of modelview & render model
+			// model->render(modelView);
+			
 			model->setColormap0Texture(colormaps[model->getSelectedColormap(ColormapLayer::COLORMAP_LAYER_0)].tex);
 			model->setColormap1Texture(colormaps[model->getSelectedColormap(ColormapLayer::COLORMAP_LAYER_1)].tex);
 			model->setColormap2Texture(colormaps[model->getSelectedColormap(ColormapLayer::COLORMAP_LAYER_2)].tex);

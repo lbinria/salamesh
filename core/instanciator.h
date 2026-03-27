@@ -8,9 +8,9 @@ struct Instanciator {
 	// Instanciator (const Instanciator&) = delete;
 	// Instanciator& operator= (const Instanciator&) = delete;
 
-	std::unique_ptr<T> make(std::string type) {
+	std::unique_ptr<T> make(std::string type, std::string name) {
 		if (instanciators.count(type) > 0) {
-			return instanciators[type]();
+			return instanciators[type](name);
 		}
 
 		std::cerr 
@@ -22,7 +22,7 @@ struct Instanciator {
 		return nullptr;
 	}
 	
-	inline void registerType(std::string type, std::function<std::unique_ptr<T>()> instanciatorFunc) {
+	inline void registerType(std::string type, std::function<std::unique_ptr<T>(std::string)> instanciatorFunc) {
 		instanciators[type] = instanciatorFunc;
 	}
 
@@ -37,5 +37,5 @@ struct Instanciator {
 	private:
 	// Instanciator, enable entity instanciation
 	// Register new instanciator for custom entity
-	std::map<std::string, std::function<std::unique_ptr<T>()>> instanciators;
+	std::map<std::string, std::function<std::unique_ptr<T>(std::string)>> instanciators;
 };

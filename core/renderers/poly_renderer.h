@@ -32,8 +32,8 @@ struct PolyRenderer : public MeshRenderer {
 		glm::vec3 n;
 	};
 
-	PolyRenderer(Surface &m) : 
-		MeshRenderer(Shader(sl::shadersPath("poly.vert"), sl::shadersPath("surface.frag"))),
+	PolyRenderer(std::string name, Surface &m) : 
+		MeshRenderer(name, Shader(sl::shadersPath("poly.vert"), sl::shadersPath("surface.frag"))),
 		_m(m)
 		{
 			shader.use();
