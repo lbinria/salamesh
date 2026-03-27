@@ -8,6 +8,8 @@ namespace bindings {
 		
 		sol::usertype<Camera> camera_t = lua.new_usertype<Camera>("Camera");
 
+		camera_t["name"] = sol::readonly_property(&Camera::getName);
+
 		camera_t.set_function("move_right", &Camera::moveRight);
 		camera_t.set_function("move_up", &Camera::moveUp);
 		camera_t.set_function("move_forward", &Camera::moveForward);

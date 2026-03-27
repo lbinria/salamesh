@@ -99,6 +99,7 @@ namespace bindings {
 
 		// TODO missing conversion 2 volume models
 
+		model_t["name"] = sol::readonly_property(&Model::getName);
 
 		model_t.set_function("load", &Model::load);
 		model_t.set_function("save", &Model::save);

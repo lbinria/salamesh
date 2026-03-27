@@ -12,6 +12,8 @@ namespace bindings {
 
 		sol::usertype<Renderer> renderer_t = lua.new_usertype<Renderer>("Renderer");
 
+		renderer_t["name"] = sol::readonly_property(&Renderer::getName);
+
 		renderer_t["visible"] = sol::property(
 			&Renderer::getVisible,
 			&Renderer::setVisible
