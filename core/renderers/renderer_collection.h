@@ -8,7 +8,6 @@
 struct RendererCollection : public EntityCollection<Renderer> {
 
 	std::shared_ptr<Renderer> add(std::string type, std::string name) override {
-		assert(!name.empty() && "Cannot add renderer with an empty name.");
 
 		// Check whether renderer already exists
 		if (entities.contains(name))
@@ -19,9 +18,11 @@ struct RendererCollection : public EntityCollection<Renderer> {
 		if (!renderer)
 			return nullptr;
 
+		auto n = renderer->getName();
+
 		renderer->init();
-		entities[name] = std::move(renderer);
-		return entities[name];
+		entities[n] = std::move(renderer);
+		return entities[n];
 	}
 
 	void remove(std::string name) override {

@@ -8,7 +8,6 @@
 struct CameraCollection : public EntityCollection<Camera> {
 
 	std::shared_ptr<Camera> add(std::string type, std::string name) override {
-		assert(!name.empty() && "Cannot add camera with an empty name.");
 
 		// Check whether renderer already exists
 		if (entities.contains(name))
@@ -19,9 +18,10 @@ struct CameraCollection : public EntityCollection<Camera> {
 		if (!camera)
 			return nullptr;
 
+		auto n = camera->getName();
 		// camera->init();
-		entities[name] = std::move(camera);
-		return entities[name];
+		entities[n] = std::move(camera);
+		return entities[n];
 	}
 
 	void remove(std::string name) override {

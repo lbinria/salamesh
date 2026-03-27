@@ -212,10 +212,6 @@ namespace bindings {
 			return self[name];
 		};
 
-		modelCollection_t[sol::meta_function::new_index] = [](ModelCollection& self, const std::string &name, std::shared_ptr<Model>& value) {
-			self[name] = value;
-		};
-
 
 		scene_t["camera"] = sol::readonly_property(&IScene::getCurrentCamera);
 		scene_t["cameras"] = sol::readonly_property(&IScene::getCameras);
@@ -255,10 +251,6 @@ namespace bindings {
 			return self[name];
 		};
 
-		cameraCollection_t[sol::meta_function::new_index] = [](CameraCollection& self, const std::string &name, std::shared_ptr<Camera>& value) {
-			self[name] = value;
-		};
-
 		sol::usertype<RendererCollection> rendererCollection_t = lua.new_usertype<RendererCollection>("RendererCollection",
 			"add", &RendererCollection::add,
 			"remove", &RendererCollection::remove,
@@ -288,13 +280,6 @@ namespace bindings {
 		rendererCollection_t[sol::meta_function::index] = [](RendererCollection& self, const std::string &name) -> std::shared_ptr<Renderer>& {
 			return self[name];
 		};
-
-		rendererCollection_t[sol::meta_function::new_index] = [](RendererCollection& self, const std::string &name, std::shared_ptr<Renderer>& value) {
-			self[name] = value;
-		};
-
-
-
 
 
 		scene_t["renderers"] = sol::readonly_property(&IScene::getRenderers);

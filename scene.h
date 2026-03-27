@@ -21,22 +21,22 @@ struct Scene : public IScene {
 
 	void init() override {
 		// Register model types
-		models.getInstanciator().registerType("TriModel", [](auto name) { return std::make_unique<TriModel>(name); });
-		models.getInstanciator().registerType("QuadModel", [](auto name) { return std::make_unique<QuadModel>(name); });
-		models.getInstanciator().registerType("PolyModel", [](auto name) { return std::make_unique<PolyModel>(name); });
-		models.getInstanciator().registerType("TetModel", [](auto name) { return std::make_unique<TetModel>(name); });
-		models.getInstanciator().registerType("HexModel", [](auto name) { return std::make_unique<HexModel>(name); });
-		// models.getInstanciator().registerType("PolylineModel", [](auto name) { return std::make_unique<PolylineModel>(name); });
-		// models.getInstanciator().registerType("PyramidModel", [](auto name) { return std::make_unique<PyramidModel>(name); });
-		// models.getInstanciator().registerType("PrismModel", [](auto name) { return std::make_unique<PrismModel>(name); });
+		models.getInstanciator().registerType("TriModel", [](std::string name) { return std::make_unique<TriModel>(name); });
+		models.getInstanciator().registerType("QuadModel", [](std::string name) { return std::make_unique<QuadModel>(name); });
+		models.getInstanciator().registerType("PolyModel", [](std::string name) { return std::make_unique<PolyModel>(name); });
+		models.getInstanciator().registerType("TetModel", [](std::string name) { return std::make_unique<TetModel>(name); });
+		models.getInstanciator().registerType("HexModel", [](std::string name) { return std::make_unique<HexModel>(name); });
+		// models.getInstanciator().registerType("PolylineModel", [](std::string name) { return std::make_unique<PolylineModel>(name); });
+		// models.getInstanciator().registerType("PyramidModel", [](std::string name) { return std::make_unique<PyramidModel>(name); });
+		// models.getInstanciator().registerType("PrismModel", [](std::string name) { return std::make_unique<PrismModel>(name); });
 
 		// Register cameras types
-		cameras.getInstanciator().registerType("DescentCamera", [](auto name) { return std::make_unique<DescentCamera>(name); });
-		cameras.getInstanciator().registerType("TrackBallCamera", [](auto name) { return std::make_unique<TrackBallCamera>(name); });
+		cameras.getInstanciator().registerType("DescentCamera", [](std::string name) { return std::make_unique<DescentCamera>(name); });
+		cameras.getInstanciator().registerType("TrackBallCamera", [](std::string name) { return std::make_unique<TrackBallCamera>(name); });
 
 		// Register renderers types
-		renderers.getInstanciator().registerType("LineRenderer", [](auto name) { return std::make_unique<LineRenderer>(name); });
-		renderers.getInstanciator().registerType("PointSetRenderer", [](auto name) { return std::make_unique<PointSetRenderer>(name); });
+		renderers.getInstanciator().registerType("LineRenderer", [](std::string name) { return std::make_unique<LineRenderer>(name); });
+		renderers.getInstanciator().registerType("PointSetRenderer", [](std::string name) { return std::make_unique<PointSetRenderer>(name); });
 
 		// Init default view
 		auto view = std::make_shared<SceneView>(1024, 768);

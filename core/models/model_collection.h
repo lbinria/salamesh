@@ -8,8 +8,6 @@
 struct ModelCollection : public EntityCollection<Model> {
 
 	std::shared_ptr<Model> add(std::string type, std::string name) override {
-		assert(!name.empty() && "Cannot add model with an empty name.");
-
 		// TODO maybe chekc type exists, else we dont understand why we get null model ?
 
 		// Check whether renderer already exists
@@ -21,9 +19,11 @@ struct ModelCollection : public EntityCollection<Model> {
 		if (!model)
 			return nullptr;
 		
+		auto n = model->getName();
+		
 		model->init();
-		entities[name] = std::move(model);
-		return entities[name];
+		entities[n] = std::move(model);
+		return entities[n];
 
 		// // 
 		// // model->loadCallback = ([this](Model&, const std::string) -> bool {

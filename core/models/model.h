@@ -475,7 +475,6 @@ struct Model {
 	std::string getName() { return name; }
 
 	protected:
-	std::string name;
 	std::string _path;
 
 	glm::vec3 position{0, 0, 0};
@@ -594,7 +593,7 @@ struct Model {
 	}
 
 	private:
-	
+	std::string name;
 	static inline int maxIndex = 0;
 	int index;
 
