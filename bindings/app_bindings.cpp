@@ -192,24 +192,11 @@ namespace bindings {
 				);
 			});
 		});
-
-		// modelCollection_t.set_function(sol::meta_function::pairs, [](sol::this_state L, ModelCollection& self) {
-		// 	auto it = self.begin();
-		// 	auto end = self.end();
-			
-		// 	return sol::as_function([it, end](sol::this_state L) mutable -> sol::object {
-		// 		if (it == end) {
-		// 			return sol::object(L, sol::nil);
-		// 		}
-		// 		auto key = it->first;
-		// 		auto value = it->second;
-		// 		++it;
-		// 		return sol::object(L, sol::in_place, key, value);
-		// 	});
-		// });
 		
-		modelCollection_t[sol::meta_function::index] = [](ModelCollection& self, const std::string &name) -> std::shared_ptr<Model>& {
-			return self[name];
+		modelCollection_t[sol::meta_function::index] = [](ModelCollection& self, const std::string name) -> const std::shared_ptr<Model> {
+			// Check existence before return, elsewhere self[name] is added to map with nullptr
+			// for example doing app.scene.models:missing_function() (equivalent to: app.scene.models["missing_function"]) will add a key "missing_function" to map with nullptr !!!
+			return self.has(name) ? self[name] : nullptr;
 		};
 
 
@@ -247,9 +234,12 @@ namespace bindings {
 			});
 		});
 		
-		cameraCollection_t[sol::meta_function::index] = [](CameraCollection& self, const std::string &name) -> std::shared_ptr<Camera>& {
-			return self[name];
+		cameraCollection_t[sol::meta_function::index] = [](CameraCollection& self, const std::string name) -> const std::shared_ptr<Camera> {
+			// Check existence before return, elsewhere self[name] is added to map with nullptr
+			// for example doing app.scene.cameras:missing_function() (equivalent to: app.scene.models["missing_function"]) will add a key "missing_function" to map with nullptr !!!
+			return self.has(name) ? self[name] : nullptr;
 		};
+
 
 		sol::usertype<RendererCollection> rendererCollection_t = lua.new_usertype<RendererCollection>("RendererCollection",
 			"add", &RendererCollection::add,
@@ -277,8 +267,10 @@ namespace bindings {
 			});
 		});
 		
-		rendererCollection_t[sol::meta_function::index] = [](RendererCollection& self, const std::string &name) -> std::shared_ptr<Renderer>& {
-			return self[name];
+		rendererCollection_t[sol::meta_function::index] = [](RendererCollection& self, const std::string name) -> const std::shared_ptr<Renderer> {
+			// Check existence before return, elsewhere self[name] is added to map with nullptr
+			// for example doing app.scene.renderers:missing_function() (equivalent to: app.scene.models["missing_function"]) will add a key "missing_function" to map with nullptr !!!
+			return self.has(name) ? self[name] : nullptr;
 		};
 
 
