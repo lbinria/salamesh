@@ -1,5 +1,6 @@
 #pragma once
 #include "render_surface.h"
+#include "models/model_view.h"
 
 struct ISceneView {
 
@@ -14,14 +15,6 @@ struct ISceneView {
 
 	virtual RenderSurface &getRenderSurface() = 0;
 
-
-
-	// ModelView getModelView(std::string modelName) {
-		// if not found
-		// create from default ModelView.default();
-	// }
-
-	// std::map<std::string, ModelView> modelViews;
-	// std::map<std::string, RendererView> rendererViews;
+	virtual std::map<std::string, ModelView> getModelViews() = 0;
 
 };

@@ -98,6 +98,16 @@ void BBoxRenderer::render(glm::vec3 &position) {
 	glDrawArrays(GL_LINES, 0, nelements);
 }
 
+	
+// void BBoxRenderer::render(RendererView &rv, glm::vec3 &position) {
+// 	if (!rv.visible)
+// 		return;
+
+// 	glBindVertexArray(VAO);
+// 	rv.use(position);
+// 	glDrawArrays(GL_LINES, 0, nelements);
+// }
+
 void BBoxRenderer::clear() {
 	glBindVertexArray(VAO);
 	glBindBuffer(GL_ARRAY_BUFFER, VBO);

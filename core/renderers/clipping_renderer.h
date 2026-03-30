@@ -36,6 +36,8 @@ struct ClippingRenderer : public Renderer {
 
 	int getRenderElementKind() override { return 0; }
 
+	std::unique_ptr<RendererView> getDefaultView() override { return std::make_unique<ClippingRendererView>(); }
+
 	void setClipping(bool enabled) {
 		Renderer::setClipping(enabled);
 		visible = enabled;

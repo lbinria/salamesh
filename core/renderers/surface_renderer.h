@@ -42,6 +42,8 @@ struct SurfaceRenderer : public MeshRenderer {
 
 	int getRenderElementKind() override { return ElementKind::FACETS_ELT | ElementKind::CORNERS_ELT; }
 
+	std::unique_ptr<RendererView> getDefaultView() override { return std::make_unique<SurfaceRendererView>(); }
+
 
 	protected:
 

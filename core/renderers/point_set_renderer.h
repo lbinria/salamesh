@@ -43,6 +43,8 @@ struct PointSetRenderer : public Renderer {
 
 	int getRenderElementKind() override { return ElementKind::POINTS_ELT; }
 
+	std::unique_ptr<RendererView> getDefaultView() override { return std::make_unique<PointSetRendererView>(); }
+
 	int addPoint(glm::vec3 p) {
 		int off = ps.create_points(1);
 		ps[off] = sl::glm2um(p);

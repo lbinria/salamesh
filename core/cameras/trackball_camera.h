@@ -3,7 +3,7 @@
 
 struct TrackBallCamera : public Camera {
 
-    TrackBallCamera(std::string name) : Camera(name) {}
+	using Camera::Camera;
 
     glm::vec4 getBounds() {
         float zoomFactor = _zoomFactor + 0.00001f; // Add eps to avoid screen size = 0 at 100%

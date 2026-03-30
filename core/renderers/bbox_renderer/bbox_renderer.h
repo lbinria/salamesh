@@ -29,10 +29,13 @@ struct BBoxRenderer : public Renderer {
 	void init() override;
 	void push() override;
 	void render(glm::vec3 &position) override;
+	// void render(RendererView &rv, glm::vec3 &position) override;
 	void clear() override;
 	void clean() override;
 
 	int getRenderElementKind() override { return 0; }
+
+	std::unique_ptr<RendererView> getDefaultView() override { return std::make_unique<BBoxRendererView>(); }
 
 	glm::vec3 getColor() const {
 		return color;

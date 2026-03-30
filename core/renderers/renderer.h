@@ -12,6 +12,8 @@ using json = nlohmann::json;
 
 #include "../helpers.h"
 
+#include "../renderers/renderer_view.h"
+
 struct Renderer {
 
 	enum ClippingMode {
@@ -38,9 +40,12 @@ struct Renderer {
 	// It can render one or more primitives (ElementKind::POINTS_ELT, ...)
 	virtual int getRenderElementKind() = 0;
 
+	virtual std::unique_ptr<RendererView> getDefaultView() = 0;
+
 	virtual void init() = 0;
 	virtual void push() = 0;
 	virtual void render(glm::vec3 &position) = 0;
+	// virtual void render(RendererView &rv, glm::vec3 &position) = 0;
 	virtual void clean() = 0;
 	virtual void clear() = 0;
 

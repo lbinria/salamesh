@@ -33,7 +33,14 @@ struct SceneView : public ISceneView {
 
 	RenderSurface &getRenderSurface() override { return renderSurface; }
 
+	std::map<std::string, ModelView> getModelViews() override {
+		return modelViews;
+	}
+
+
 	private:
 	glm::vec3 backgroundColor{0.05, 0.1, 0.15};
 	RenderSurface renderSurface;
+	std::map<std::string, ModelView> modelViews;
+
 };

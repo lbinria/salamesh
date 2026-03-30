@@ -39,6 +39,9 @@ struct LineRenderer : public Renderer {
 
 	int getRenderElementKind() override { return 0; }
 
+	std::unique_ptr<RendererView> getDefaultView() override { return std::make_unique<LineRendererView>(); }
+
+
 	void clearLines() {
 		lines.clear();
 		nelements = 0;
