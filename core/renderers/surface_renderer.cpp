@@ -50,42 +50,15 @@ void SurfaceRenderer::init() {
 
 }
 
-void SurfaceRenderer::render(/* RendererView rv */ glm::vec3 &position) {
+// TODO remove
+void SurfaceRenderer::render(glm::vec3 &position) {}
 
-	if (!visible)
+void SurfaceRenderer::render(RendererView &rv, glm::vec3 &position) {
+	if (!rv.visible)
 		return;
 
 	glBindVertexArray(VAO);
-
-	glActiveTexture(GL_TEXTURE0 + 0);
-	glBindTexture(GL_TEXTURE_2D, texColormap0);
-
-	glActiveTexture(GL_TEXTURE0 + 1);
-	glBindTexture(GL_TEXTURE_2D, texColormap1);
-
-	glActiveTexture(GL_TEXTURE0 + 2);
-	glBindTexture(GL_TEXTURE_2D, texColormap2);
-
-	glActiveTexture(GL_TEXTURE0 + 3);
-	glBindTexture(GL_TEXTURE_BUFFER, tboHighlight);
-
-	glActiveTexture(GL_TEXTURE0 + 4);
-	glBindTexture(GL_TEXTURE_BUFFER, tboFilter);
-
-	glActiveTexture(GL_TEXTURE0 + 5);
-	glBindTexture(GL_TEXTURE_BUFFER, tboColormap0);
-
-	glActiveTexture(GL_TEXTURE0 + 6);
-	glBindTexture(GL_TEXTURE_BUFFER, tboColormap1);
-
-	glActiveTexture(GL_TEXTURE0 + 7);
-	glBindTexture(GL_TEXTURE_BUFFER, tboColormap2);
-
-	// rv.setLayerTextures();
-	// rv.shader.use();
-	// rv.render(pos) do the same as setPosition
-	setPosition(position);
-
+	rv.use(position);
 	glDrawArrays(GL_TRIANGLES, 0, nelements);
 }
 

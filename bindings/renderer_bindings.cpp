@@ -22,7 +22,15 @@ namespace bindings {
 			"size", sol::property(&PointSetRendererView::getPointSize, &PointSetRendererView::setPointSize)
 		);
 
-
+		sol::usertype<MeshRendererView> meshRendererView = lua.new_usertype<MeshRendererView>(
+			"MeshRendererView",
+			sol::base_classes, 
+			sol::bases<RendererView>(),
+			"color", sol::property(&MeshRendererView::getColor, &MeshRendererView::setColor),
+			"size", sol::property(&MeshRendererView::getMeshSize, &MeshRendererView::setMeshSize),
+			"shrink", sol::property(&MeshRendererView::getMeshShrink, &MeshRendererView::setMeshShrink),
+			"corner_visible", sol::property(&MeshRendererView::getCornerVisible, &MeshRendererView::setCornerVisible)
+		);
 
 		sol::usertype<Renderer> renderer_t = lua.new_usertype<Renderer>("Renderer");
 
@@ -59,27 +67,6 @@ namespace bindings {
 			sol::base_classes, 
 			sol::bases<Renderer>()
 		);
-
-		meshRenderer_t["color"] = sol::property(
-			&MeshRenderer::getColor,
-			&MeshRenderer::setColor
-		);
-
-		meshRenderer_t["size"] = sol::property(
-			&MeshRenderer::getMeshSize,
-			&MeshRenderer::setMeshSize
-		);
-
-		meshRenderer_t["shrink"] = sol::property(
-			&MeshRenderer::getMeshShrink,
-			&MeshRenderer::setMeshShrink
-		);
-
-		meshRenderer_t["corner_visible"] = sol::property(
-			&MeshRenderer::getCornerVisible,
-			&MeshRenderer::setCornerVisible
-		);
-
 
 		sol::usertype<PointSetRenderer> pointSetRenderer_t = lua.new_usertype<PointSetRenderer>(
 			"PointSetRenderer",

@@ -171,41 +171,17 @@ void PolyRenderer::push() {
 	glBufferData(GL_TEXTURE_BUFFER, nVertsPerFacet.size() * sizeof(float), nVertsPerFacet.data(), GL_STATIC_DRAW);
 }
 
-void PolyRenderer::render(glm::vec3 &position) {
+void PolyRenderer::render(glm::vec3 &position) {}
 
-	if (!visible)
+void PolyRenderer::render(RendererView &rv, glm::vec3 &position) {
+	if (!rv.visible)
 		return;
 
 	glBindVertexArray(VAO);
-
-	glActiveTexture(GL_TEXTURE0 + 0);
-	glBindTexture(GL_TEXTURE_2D, texColormap0);
-
-	glActiveTexture(GL_TEXTURE0 + 1);
-	glBindTexture(GL_TEXTURE_2D, texColormap1);
-
-	glActiveTexture(GL_TEXTURE0 + 2);
-	glBindTexture(GL_TEXTURE_2D, texColormap2);
-
-	glActiveTexture(GL_TEXTURE0 + 3);
-	glBindTexture(GL_TEXTURE_BUFFER, tboHighlight);
-
-	glActiveTexture(GL_TEXTURE0 + 4);
-	glBindTexture(GL_TEXTURE_BUFFER, tboFilter);
-
-	glActiveTexture(GL_TEXTURE0 + 5);
-	glBindTexture(GL_TEXTURE_BUFFER, tboColormap0);
-
-	glActiveTexture(GL_TEXTURE0 + 6);
-	glBindTexture(GL_TEXTURE_BUFFER, tboColormap1);
-
-	glActiveTexture(GL_TEXTURE0 + 7);
-	glBindTexture(GL_TEXTURE_BUFFER, tboColormap2);
-
-	glActiveTexture(GL_TEXTURE0 + 8);
-	glBindTexture(GL_TEXTURE_BUFFER, texNVertsPerFacet);
-
-	setPosition(position);
+	rv.use(position);
+	
+	auto &prv = static_cast<PolyRendererView&>(rv);
+	prv.setNVertsPerFacetBuf(8, texNVertsPerFacet);
 
 	glDrawArrays(GL_TRIANGLES, 0, nelements);
 }

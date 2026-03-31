@@ -73,10 +73,6 @@ struct Model {
 	void init() {
 		for (auto const &[k, r] : _renderers) {
 			r->init();
-			// r->setMeshIndex(index);
-			if (auto mesh_renderer = std::dynamic_pointer_cast<MeshRenderer>(r)) {
-				mesh_renderer->setMeshIndex(index);
-			}
 		}
 	}
 
@@ -97,7 +93,12 @@ struct Model {
 	ModelView getDefaultView() {
 		std::map<std::string, std::shared_ptr<RendererView>> rv;
 		for (auto &[k, r] : getRenderers()) {
-			rv.insert({k, std::move(r->getDefaultView())});
+			rv.insert({k, r->getDefaultView()});
+
+			// TODO maybe can i pass mesh index directly to the MeshRendererView isntead of checking that !
+			if (auto mrv = std::dynamic_pointer_cast<MeshRendererView>(rv.at(k))) {
+				mrv->setMeshIndex(index);
+			}
 		}
 
 		ModelView mv(rv);

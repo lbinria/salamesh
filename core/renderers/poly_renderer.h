@@ -35,21 +35,27 @@ struct PolyRenderer : public MeshRenderer {
 	PolyRenderer(std::string name, Surface &m) : 
 		MeshRenderer(name, Shader(sl::shadersPath("poly.vert"), sl::shadersPath("surface.frag"))),
 		_m(m)
-		{
-			shader.use();
-			shader.setFloat3("color", {0.71f, 0.71f, 0.71f});
-		}
+		{}
 
 
 	void init() override;
 	void render(glm::vec3 &position) override;
+	void render(RendererView &rv, glm::vec3 &position) override;
+
 	void push() override;
 	void clear() override;
 	void clean() override;
 
 	int getRenderElementKind() override { return ElementKind::FACETS_ELT | ElementKind::CORNERS_ELT; }
 
-	std::unique_ptr<RendererView> getDefaultView() override { return std::make_unique<PolyRendererView>(); }
+	std::unique_ptr<RendererView> getDefaultView() override { 
+		auto rv = std::make_unique<PolyRendererView>();
+		rv->visible = true;
+		rv->setColor({0.71f, 0.71f, 0.71f});
+		rv->setMeshShrink(0.f);
+		rv->setMeshSize(0.0f);
+		return rv;
+	}
 
 
 	protected:

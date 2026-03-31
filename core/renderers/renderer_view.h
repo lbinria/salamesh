@@ -11,7 +11,7 @@ struct RendererView {
 		init();
 	}
 
-	virtual void init() {
+	void init() {
 		// For the moment don't use persistent mapped memory
 		// TODO clean DO THAT IN RENDERER ?
 		sl::createTBO(bufHighlight, tboHighlight);
@@ -174,6 +174,104 @@ struct LayeredRendererView : public RendererView {
 
 };
 
+struct MeshRendererView : public RendererView {
+	
+	using RendererView::RendererView;
+
+	float getMeshSize() const {
+		return meshSize;
+	}
+
+	void setMeshSize(float val) {
+		shader.use();
+		shader.setFloat("meshSize", val);
+		meshSize = val;
+	}
+
+	float getMeshShrink() const {
+		return meshShrink;
+	}
+
+	void setMeshShrink(float val) {
+		shader.use();
+		shader.setFloat("meshShrink", val);
+		meshShrink = val;
+	}
+
+	bool getCornerVisible() const {
+		return isCornerVisible;
+	}
+
+	void setCornerVisible(bool val) {
+		shader.use();
+		shader.setInt("isCornerVisible", val);
+		isCornerVisible = val;
+	}
+
+	void setMeshIndex(int index) {
+		shader.use();
+		shader.setInt("meshIndex", index);
+	}
+
+	glm::vec3 getColor() const {
+		return color;
+	}
+
+	void setColor(glm::vec3 c) {
+		shader.use();
+		shader.setFloat3("color", c);
+		color = c;
+	}
+
+	virtual void useTextures() override {
+		glActiveTexture(GL_TEXTURE0 + 0);
+		glBindTexture(GL_TEXTURE_2D, texColormap0);
+
+		glActiveTexture(GL_TEXTURE0 + 1);
+		glBindTexture(GL_TEXTURE_2D, texColormap1);
+
+		glActiveTexture(GL_TEXTURE0 + 2);
+		glBindTexture(GL_TEXTURE_2D, texColormap2);
+
+		glActiveTexture(GL_TEXTURE0 + 3);
+		glBindTexture(GL_TEXTURE_BUFFER, tboHighlight);
+
+		glActiveTexture(GL_TEXTURE0 + 4);
+		glBindTexture(GL_TEXTURE_BUFFER, tboFilter);
+
+		glActiveTexture(GL_TEXTURE0 + 5);
+		glBindTexture(GL_TEXTURE_BUFFER, tboColormap0);
+
+		glActiveTexture(GL_TEXTURE0 + 6);
+		glBindTexture(GL_TEXTURE_BUFFER, tboColormap1);
+
+		glActiveTexture(GL_TEXTURE0 + 7);
+		glBindTexture(GL_TEXTURE_BUFFER, tboColormap2);
+	}
+
+	virtual void doLoadState(json &j) override {
+		setColor(glm::vec3(j["color"][0].get<float>(), j["color"][1].get<float>(), j["color"][2].get<float>()));
+		setMeshSize(j["meshSize"].get<float>());
+		setMeshShrink(j["meshShrink"].get<float>());
+		setCornerVisible(j["isCornerVisible"].get<bool>());
+	}
+
+	virtual void doSaveState(json &j) const override {
+		j["color"] = json::array({color.x, color.y, color.z});
+		j["meshSize"] = meshSize;
+		j["meshShrink"] = meshShrink;
+		j["isCornerVisible"] = isCornerVisible;
+	}
+
+	private:
+
+	float meshSize;
+	float meshShrink;
+	bool isCornerVisible;
+	glm::vec3 color;
+
+};
+
 struct ClippingRendererView : public RendererView {
 	ClippingRendererView() : 
 		RendererView(Shader(sl::shadersPath("clipping.vert"), sl::shadersPath("clipping.frag"))) 
@@ -186,16 +284,18 @@ struct HalfedgeRendererView : public RendererView {
 	{}
 };
 
-struct VolumeRendererView : public RendererView {
+struct VolumeRendererView : public MeshRendererView {
 	VolumeRendererView() : 
-		RendererView(Shader(sl::shadersPath("volume.vert"), sl::shadersPath("volume.frag"))) 
+		MeshRendererView(Shader(sl::shadersPath("volume.vert"), sl::shadersPath("volume.frag"))) 
 	{}
 };
 
-struct SurfaceRendererView : public RendererView {
+struct SurfaceRendererView : public MeshRendererView {
 	SurfaceRendererView() : 
-		RendererView(Shader(sl::shadersPath("surface.vert"), sl::shadersPath("surface.frag"))) 
-	{}
+		MeshRendererView(Shader(sl::shadersPath("surface.vert"), sl::shadersPath("surface.frag"))) 
+	{
+		
+	}
 };
 
 struct LineRendererView : public RendererView {
@@ -231,10 +331,19 @@ struct BBoxRendererView : public RendererView {
 	glm::vec3 color;
 };
 
-struct PolyRendererView : public RendererView {
+struct PolyRendererView : public MeshRendererView {
 	PolyRendererView() : 
-		RendererView(Shader(sl::shadersPath("poly.vert"), sl::shadersPath("surface.frag"))) 
+		MeshRendererView(Shader(sl::shadersPath("poly.vert"), sl::shadersPath("surface.frag"))) 
 	{}
+
+	void setNVertsPerFacetBuf(unsigned int texNumber, unsigned int texId) {
+		glActiveTexture(GL_TEXTURE0 + texNumber);
+		glBindTexture(GL_TEXTURE_BUFFER, texId);
+		// TODO Make cache to not set shader everytime
+		shader.use();
+		shader.setInt("nvertsPerFacetBuf", texNumber);
+	}
+
 };
 
 

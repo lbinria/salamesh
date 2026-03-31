@@ -92,6 +92,7 @@ namespace bindings {
 		sol::usertype<ModelView> modelView_t = lua.new_usertype<ModelView>(
 			"ModelView",
 			"points", sol::readonly_property(&ModelView::getPoints),
+			"mesh", sol::readonly_property(&ModelView::getMesh),
 			"light_enabled", sol::property(&ModelView::getLightEnabled, &ModelView::setLightEnabled)
 		);
 

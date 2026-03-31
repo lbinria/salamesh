@@ -13,6 +13,13 @@ struct ModelView {
 		return *static_cast<PointSetRendererView*>(rendererViews.at("point_renderer").get());
 	}
 
+	std::shared_ptr<MeshRendererView> getMesh() const {
+		if(rendererViews.contains("mesh_renderer"))
+			return std::static_pointer_cast<MeshRendererView>(rendererViews.at("mesh_renderer"));
+		
+		return nullptr;
+	}
+
 	bool getLightEnabled() const {
 		return isLightEnabled;
 	}

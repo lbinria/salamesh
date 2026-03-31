@@ -36,13 +36,22 @@ struct SurfaceRenderer : public MeshRenderer {
 
 	void init() override;
 	void render(glm::vec3 &position) override;
+	void render(RendererView &rv, glm::vec3 &position) override;
+
 	virtual void push() override = 0;
 	void clear() override;
 	void clean() override;
 
 	int getRenderElementKind() override { return ElementKind::FACETS_ELT | ElementKind::CORNERS_ELT; }
 
-	std::unique_ptr<RendererView> getDefaultView() override { return std::make_unique<SurfaceRendererView>(); }
+	std::unique_ptr<RendererView> getDefaultView() override {
+		auto rv = std::make_unique<SurfaceRendererView>();
+		rv->visible = true;
+		rv->setColor({0.71f, 0.71f, 0.71f});
+		rv->setMeshShrink(0.f);
+		rv->setMeshSize(0.0f);
+		return rv;
+	}
 
 
 	protected:
