@@ -66,6 +66,16 @@ struct Scene : public IScene {
 			model->setColormap2Texture(colormaps[model->getSelectedColormap(ColormapLayer::COLORMAP_LAYER_2)].tex);
 			model->render();
 		}
+
+		// Render view
+		for (auto &[viewName, view] : views) {
+			for (auto &[modelName, model] : models) {
+				// Get view of the model
+				auto &mv = view->getModelView(*model);
+				model->render(mv);
+			}
+		}
+
 	}
 
 	void clean() override {

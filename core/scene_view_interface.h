@@ -16,5 +16,6 @@ struct ISceneView {
 	virtual RenderSurface &getRenderSurface() = 0;
 
 	virtual std::map<std::string, ModelView> getModelViews() = 0;
+	virtual ModelView& getModelView(Model &model) = 0;
 
 };

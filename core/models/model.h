@@ -8,6 +8,8 @@
 #include "../renderers/point_set_renderer.h"
 #include "../renderers/halfedge_renderer.h"
 
+#include "../models/model_view.h"
+
 #include "../../include/glm/glm.hpp"
 #include "../../include/json.hpp"
 
@@ -92,16 +94,33 @@ struct Model {
 		}
 	}
 
-	void render(/* ModelView modelView */) {
+	ModelView getDefaultView() {
+		std::map<std::string, std::shared_ptr<RendererView>> rv;
+		for (auto &[k, r] : getRenderers()) {
+			rv.insert({k, std::move(r->getDefaultView())});
+		}
+
+		return ModelView(rv);
+	}
+
+	void render() {
 		if (!visible)
 			return;
 		
 		glm::vec3 pos = getWorldPosition();
 
 		for (auto const &[k, r] : _renderers)
-			// auto rv = modelView.rendererView[k]
-			// r->render(rv, pos);
 			r->render(pos);
+	}
+
+	void render(ModelView &modelView) {
+		// TODO add visible check
+		glm::vec3 pos = getWorldPosition();
+
+		for (auto const &[k, r] : _renderers) {
+			auto &rv = modelView.rendererViews[k];
+			r->render(*rv, pos);
+		}
 	}
 
 	void clean() {

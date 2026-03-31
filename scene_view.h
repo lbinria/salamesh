@@ -37,6 +37,16 @@ struct SceneView : public ISceneView {
 		return modelViews;
 	}
 
+	ModelView& getModelView(Model &model) override {
+		auto n = model.getName();
+
+		// Create default view
+		if (!modelViews.contains(n))
+			modelViews.insert({n, model.getDefaultView()});
+
+		return modelViews.at(n);
+	}
+
 
 	private:
 	glm::vec3 backgroundColor{0.05, 0.1, 0.15};

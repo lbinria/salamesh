@@ -23,19 +23,25 @@ struct BBoxRenderer : public Renderer {
 	BBoxRenderer(std::string name, PointSet &ps) : 
 		Renderer(name, Shader(sl::shadersPath("bbox.vert"), sl::shadersPath("bbox.frag"))),
 		ps(ps) {
+			setVisible(false); // TODO just for test
 			setColor(glm::vec3(1.0, 1.0, 1.0));
 		}
 
 	void init() override;
 	void push() override;
 	void render(glm::vec3 &position) override;
-	// void render(RendererView &rv, glm::vec3 &position) override;
+	void render(RendererView &rv, glm::vec3 &position) override;
 	void clear() override;
 	void clean() override;
 
 	int getRenderElementKind() override { return 0; }
 
-	std::unique_ptr<RendererView> getDefaultView() override { return std::make_unique<BBoxRendererView>(); }
+	std::unique_ptr<RendererView> getDefaultView() override { 
+		auto rv = std::make_unique<BBoxRendererView>(); 
+		rv->visible = true;
+		rv->setColor({0.78, 0.32, 0.67});
+		return rv;
+	}
 
 	glm::vec3 getColor() const {
 		return color;

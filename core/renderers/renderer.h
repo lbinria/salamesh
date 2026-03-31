@@ -45,7 +45,7 @@ struct Renderer {
 	virtual void init() = 0;
 	virtual void push() = 0;
 	virtual void render(glm::vec3 &position) = 0;
-	// virtual void render(RendererView &rv, glm::vec3 &position) = 0;
+	virtual void render(RendererView &rv, glm::vec3 &position) {}
 	virtual void clean() = 0;
 	virtual void clear() = 0;
 

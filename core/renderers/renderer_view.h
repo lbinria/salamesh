@@ -62,6 +62,19 @@ struct BBoxRendererView : public RendererView {
 	BBoxRendererView() : 
 		RendererView(Shader(sl::shadersPath("bbox.vert"), sl::shadersPath("bbox.frag"))) 
 	{}
+
+	glm::vec3 getColor() const {
+		return color;
+	}
+
+	void setColor(glm::vec3 c) {
+		shader.use();
+		shader.setFloat3("color", c);
+		color = c;
+	}
+
+	private:
+	glm::vec3 color;
 };
 
 struct PolyRendererView : public RendererView {
