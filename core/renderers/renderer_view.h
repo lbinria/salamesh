@@ -15,6 +15,10 @@ struct RendererView {
 		shader.setMat4("model", model);
 	}
 
+	void clean() {
+		shader.clean();
+	}
+
 	bool visible;
 
 	protected:
@@ -71,6 +75,14 @@ struct BBoxRendererView : public RendererView {
 		shader.use();
 		shader.setFloat3("color", c);
 		color = c;
+	}
+
+	void doLoadState(json &j) override {
+		setColor({j["bboxColor"][0].get<float>(), j["bboxColor"][1].get<float>(), j["bboxColor"][2].get<float>()});
+	}
+
+	void doSaveState(json &j) const override {
+		j["bboxColor"] = json::array({color.x, color.y, color.z});
 	}
 
 	private:

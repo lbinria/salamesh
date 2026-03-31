@@ -22,10 +22,7 @@ struct BBoxRenderer : public Renderer {
 	// TODO get shader from renderer name
 	BBoxRenderer(std::string name, PointSet &ps) : 
 		Renderer(name, Shader(sl::shadersPath("bbox.vert"), sl::shadersPath("bbox.frag"))),
-		ps(ps) {
-			setVisible(false); // TODO just for test
-			setColor(glm::vec3(1.0, 1.0, 1.0));
-		}
+		ps(ps) {}
 
 	void init() override;
 	void push() override;
@@ -43,27 +40,11 @@ struct BBoxRenderer : public Renderer {
 		return rv;
 	}
 
-	glm::vec3 getColor() const {
-		return color;
-	}
-
-	void setColor(glm::vec3 c) {
-		shader.use();
-		shader.setFloat3("color", c);
-		color = c;
-	}
-
+	// TODO remove below
+	void doLoadState(json &j) override {}
+	void doSaveState(json &j) const override {}
 
 	private:
 	PointSet &ps;
-	glm::vec3 color;
-
-	void doLoadState(json &j) override {
-		setColor({j["bboxColor"][0].get<float>(), j["bboxColor"][1].get<float>(), j["bboxColor"][2].get<float>()});
-	}
-
-	void doSaveState(json &j) const override {
-		j["bboxColor"] = json::array({color.x, color.y, color.z});
-	}
 	
 };

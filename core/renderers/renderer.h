@@ -235,6 +235,7 @@ struct Renderer {
 	std::string getName() { return name; }
 
 	protected:
+	// TODO to remove
 	Shader shader;
 
 	bool visible = true;

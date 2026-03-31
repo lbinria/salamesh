@@ -86,16 +86,17 @@ void BBoxRenderer::push() {
 	writeVBOBuffer(vertices);
 }
 
+// TODO to remove
 void BBoxRenderer::render(glm::vec3 &position) {
 
-	if (!visible)
-		return;
+	// if (!visible)
+	// 	return;
 
-	glBindVertexArray(VAO);
+	// glBindVertexArray(VAO);
 
-	setPosition(position);
+	// setPosition(position);
 	
-	glDrawArrays(GL_LINES, 0, nelements);
+	// glDrawArrays(GL_LINES, 0, nelements);
 }
 
 	
