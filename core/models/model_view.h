@@ -9,7 +9,26 @@ struct ModelView {
 
 	ModelView(std::map<std::string, std::shared_ptr<RendererView>> &rendererViews) : rendererViews(rendererViews) {}
 
+	PointSetRendererView& getPoints() {
+		return *static_cast<PointSetRendererView*>(rendererViews.at("point_renderer").get());
+	}
+
+	bool getLightEnabled() const {
+		return isLightEnabled;
+	}
+
+	void setLightEnabled(bool enabled) {
+		for (auto const &[k, rv] : rendererViews)
+			rv->setLightEnabled(enabled);
+
+		isLightEnabled = enabled;
+	}
+
 	// TODO to unique_ptr
 	std::map<std::string, std::shared_ptr<RendererView>> rendererViews;
+
+	private:
+
+	bool isLightEnabled;
 
 };

@@ -155,6 +155,14 @@ namespace bindings {
 		scene_t["hovered_model"] = sol::readonly_property(&IScene::getHoveredModel);
 		scene_t["selected_model"] = sol::property(&IScene::getSelectedModel, &IScene::setSelectedModel);
 		scene_t.set_function("focus", &IScene::focus);
+		scene_t["views"] = sol::readonly_property(&IScene::getViews);
+		scene_t["main_view"] = sol::readonly_property(&IScene::getMainView);
+
+		sol::usertype<ISceneView> sceneView_t = lua.new_usertype<ISceneView>(
+			"ISceneView",
+			"models", sol::readonly_property(&ISceneView::getModelViews),
+			"get_model", &ISceneView::getModelView
+		);
 
 
 		sol::usertype<ModelCollection> modelCollection_t = lua.new_usertype<ModelCollection>("ModelCollection",

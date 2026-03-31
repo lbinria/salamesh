@@ -1,6 +1,7 @@
 #include "renderer_bindings.h"
 
 #include "../core/renderers/renderer.h"
+#include "../core/renderers/renderer_view.h"
 #include "../core/renderers/mesh_renderer.h"
 #include "../core/renderers/point_set_renderer.h"
 #include "../core/renderers/halfedge_renderer.h"
@@ -9,6 +10,19 @@
 namespace bindings {
 
 	void RendererBindings::loadBindings(sol::state &lua, IApp &app) {
+
+		sol::usertype<RendererView> rendererView_t = lua.new_usertype<RendererView>("RendererView");
+		rendererView_t["visible"] = sol::property(&RendererView::visible, &RendererView::visible);
+
+		sol::usertype<PointSetRendererView> pointSetRendererView_t = lua.new_usertype<PointSetRendererView>(
+			"PointSetRendererView",
+			sol::base_classes, 
+			sol::bases<RendererView>(),
+			"color", sol::property(&PointSetRendererView::getColor, &PointSetRendererView::setColor),
+			"size", sol::property(&PointSetRendererView::getPointSize, &PointSetRendererView::setPointSize)
+		);
+
+
 
 		sol::usertype<Renderer> renderer_t = lua.new_usertype<Renderer>("Renderer");
 
@@ -86,14 +100,14 @@ namespace bindings {
 			&PointSetRenderer::getVisible,
 			&PointSetRenderer::setVisible
 		);
-		pointSetRenderer_t["color"] = sol::property(
-			&PointSetRenderer::getColor,
-			&PointSetRenderer::setColor
-		);
-		pointSetRenderer_t["size"] = sol::property(
-			&PointSetRenderer::getPointSize,
-			&PointSetRenderer::setPointSize
-		);
+		// pointSetRenderer_t["color"] = sol::property(
+		// 	&PointSetRenderer::getColor,
+		// 	&PointSetRenderer::setColor
+		// );
+		// pointSetRenderer_t["size"] = sol::property(
+		// 	&PointSetRenderer::getPointSize,
+		// 	&PointSetRenderer::setPointSize
+		// );
 		pointSetRenderer_t.set_function("add_point", &PointSetRenderer::addPoint);
 		pointSetRenderer_t.set_function("add_points", &PointSetRenderer::addPoints);
 		pointSetRenderer_t.set_function("remove_points", &PointSetRenderer::removePoints);

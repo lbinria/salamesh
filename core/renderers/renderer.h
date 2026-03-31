@@ -120,6 +120,7 @@ struct Renderer {
 		selectColor = c;
 	}
 
+	// TODO to remove
 	void setLight(bool enabled) {
 		shader.use();
 		shader.setFloat("is_light_enabled", enabled); // TODO set int here !
@@ -247,6 +248,8 @@ struct Renderer {
 	int attrRepeat = 1;
 
 	unsigned int VAO, VBO; // Buffers
+
+	// TODO to remove
 	unsigned int bufColormap0, bufColormap1, bufColormap2, bufHighlight, bufFilter; // Sample buffers
 	unsigned int texColormap0, texColormap1, texColormap2, tboColormap0, tboColormap1, tboColormap2, tboHighlight, tboFilter; // Textures
 

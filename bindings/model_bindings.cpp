@@ -89,6 +89,13 @@ namespace bindings {
 		createAttributeContainerType<vec2>(lua, "Vec2Container");
 		createAttributeContainerType<vec3>(lua, "Vec3Container");
 
+		sol::usertype<ModelView> modelView_t = lua.new_usertype<ModelView>(
+			"ModelView",
+			"points", sol::readonly_property(&ModelView::getPoints),
+			"light_enabled", sol::property(&ModelView::getLightEnabled, &ModelView::setLightEnabled)
+		);
+
+
 		sol::usertype<Model> model_t = lua.new_usertype<Model>("Model");
 
 		model_t.set_function("bind_attr", &Model::bindAttr);

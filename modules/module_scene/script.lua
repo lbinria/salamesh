@@ -27,7 +27,7 @@ function draw_tree(model, k)
 			app.scene.camera:look_at_box(model.bbox)
 		end
 
-		draw_model_properties(model, k, 0)
+		draw_model_properties(model, k, app.scene.main_view)
 
 		imgui.Separator()
 
@@ -48,6 +48,8 @@ local sel_clipping_plane = {}
 local invert_clipping = false
 
 function draw_model_properties(model, k, view)
+	local model_view = view:get_model(model)
+	
 	local model_pos = model.world_position
 	local p = model.position
 	-- imgui.Text("world position: (%.4f, %.4f, %.4f)", model_pos.x, model_pos.y, model_pos.z);
@@ -68,18 +70,11 @@ function draw_model_properties(model, k, view)
 
 		if (imgui.CollapsingHeader("Light##" .. k .. "_properties_light")) then 
 
-			local sel_chk_enable_light, new_enable_light = imgui.Checkbox("Enable light", model.light)
+			local sel_chk_enable_light, new_enable_light = imgui.Checkbox("Enable light", model_view.light_enabled)
 
 			if (sel_chk_enable_light) then 
 				print("Enable light: " .. tostring(new_enable_light))
-				model.light = new_enable_light
-			end
-
-			local sel_chk_light_follow_view, new_light_follow_view = imgui.Checkbox("Light follow view", model.is_light_follow_view)
-
-			if (sel_chk_light_follow_view) then 
-				print("Enable light: " .. tostring(new_light_follow_view))
-				model.is_light_follow_view = new_light_follow_view
+				model_view.light_enabled = new_enable_light
 			end
 
 		end
@@ -212,22 +207,22 @@ function draw_model_properties(model, k, view)
 
 			end
 
-			local sel_point_visible, new_point_visible = imgui.Checkbox("Show points", model.points.visible)
+			local sel_point_visible, new_point_visible = imgui.Checkbox("Show points", model_view.points.visible)
 			if (sel_point_visible) then 
 				print("Change point visibility: " .. tostring(new_point_visible))
-				model.points.visible = new_point_visible
+				model_view.points.visible = new_point_visible
 			end
 
-			local sel_point_size, new_point_size = imgui.SliderFloat("Point size", model.points.size, 0, 50)
+			local sel_point_size, new_point_size = imgui.SliderFloat("Point size", model_view.points.size, 0, 50)
 			if (sel_point_size) then 
 				print("Change point size: " .. tostring(new_point_size))
-				model.points.size = new_point_size
+				model_view.points.size = new_point_size
 			end
 
-			local sel_point_color, new_point_color = imgui.ColorEdit3("Point color", model.points.color)
+			local sel_point_color, new_point_color = imgui.ColorEdit3("Point color", model_view.points.color)
 			if (sel_point_color) then 
 				-- print("Change point color: " .. tostring(new_point_color))
-				model.points.color = new_point_color
+				model_view.points.color = new_point_color
 			end
 
 			if model.edges then 
@@ -478,7 +473,7 @@ function draw_gui()
 
 			-- Check if app has at least one model, to draw properties of current one (if exists)
 			if (app.scene.models.any) then
-				draw_model_properties(app.scene.model, app.scene.selected_model, 0)
+				draw_model_properties(app.scene.model, app.scene.selected_model, app.scene.main_view)
 			end
 
 			imgui.EndTabItem()

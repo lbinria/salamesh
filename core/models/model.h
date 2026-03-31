@@ -100,7 +100,9 @@ struct Model {
 			rv.insert({k, std::move(r->getDefaultView())});
 		}
 
-		return ModelView(rv);
+		ModelView mv(rv);
+		mv.setLightEnabled(true);
+		return mv;
 	}
 
 	void render() {

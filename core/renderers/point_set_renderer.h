@@ -24,26 +24,26 @@ struct PointSetRenderer : public Renderer {
 
 	PointSetRenderer(std::string name, PointSet &ps) : 
 		Renderer(name, Shader(sl::shadersPath("point.vert"), sl::shadersPath("point.frag"))),
-		ps(ps) {
-			setPointSize(4.0f); // TODO here use a setting default point size
-			setColor({0.23, 0.85, 0.66}); // TODO here use a setting default point color
-		}
+		ps(ps) {}
 
 	PointSetRenderer(std::string name) : 
-		Renderer(name, Shader(sl::shadersPath("point.vert"), sl::shadersPath("point.frag"))), ps(*new PointSet()) {
-			setPointSize(4.0f);
-			setColor({0.23, 0.85, 0.66});
-		}
+		Renderer(name, Shader(sl::shadersPath("point.vert"), sl::shadersPath("point.frag"))), ps(*new PointSet()) {}
 
 	void init() override;
 	void push() override;
 	void render(glm::vec3 &position) override;
+	void render(RendererView &rv, glm::vec3 &position) override;
 	void clean() override;
 	void clear() override;
 
 	int getRenderElementKind() override { return ElementKind::POINTS_ELT; }
 
-	std::unique_ptr<RendererView> getDefaultView() override { return std::make_unique<PointSetRendererView>(); }
+	std::unique_ptr<RendererView> getDefaultView() override { 
+		auto rv = std::make_unique<PointSetRendererView>(); 
+		rv->setPointSize(4.0f);
+		rv->setColor({0.23, 0.85, 0.66});
+		return rv;
+	}
 
 	int addPoint(glm::vec3 p) {
 		int off = ps.create_points(1);
@@ -86,25 +86,7 @@ struct PointSetRenderer : public Renderer {
 		return ps.size();
 	}
 
-	float getPointSize() const {
-		return pointSize;
-	}
 
-	void setPointSize(float size) {
-		shader.use();
-		shader.setFloat("pointSize", size);
-		pointSize = size;
-	}
-
-	glm::vec3 getColor() const {
-		return color;
-	}
-
-	void setColor(glm::vec3 c) {
-		shader.use();
-		shader.setFloat3("pointColor", c);
-		color = c;
-	}
 
 	bool getAutoUpdate() { return autoUpdate; }
 	void setAutoUpdate(bool val) { autoUpdate = val; }
@@ -125,14 +107,8 @@ struct PointSetRenderer : public Renderer {
     float pointSize;
     glm::vec3 color;
 
-    void doLoadState(json &j) override {
-        setPointSize(j["pointSize"].get<float>());
-        setColor({j["pointColor"][0].get<float>(), j["pointColor"][1].get<float>(), j["pointColor"][2].get<float>()});
-    }
-
-    void doSaveState(json &j) const override {
-        j["pointSize"] = pointSize;
-        j["pointColor"] = json::array({color.x, color.y, color.z});
-    }
+	// TODO to remove
+    void doLoadState(json &j) override {}
+    void doSaveState(json &j) const override {}
 
 };

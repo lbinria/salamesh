@@ -40,7 +40,7 @@ struct BBoxRenderer : public Renderer {
 		return rv;
 	}
 
-	// TODO remove below
+	// TODO to remove
 	void doLoadState(json &j) override {}
 	void doSaveState(json &j) const override {}
 
