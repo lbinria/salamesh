@@ -1,4 +1,5 @@
 #include "model.h"
+#include "model_view.h"
 
 bool Model::saveState(std::string dirPath, json &j) /*const*/ {
 
@@ -259,4 +260,33 @@ void Model::unsetLayer(ElementKind kind, Layer layer, bool reset) {
 	}
 
 	activatedLayers[{layer, kind}] = false;
+}
+
+ModelView Model::getDefaultView() {
+	std::map<std::string, std::shared_ptr<RendererView>> rv;
+	for (auto &[k, r] : getRenderers()) {
+		rv.insert({k, r->getDefaultView()});
+
+		// TODO maybe can i pass mesh index directly to the MeshRendererView isntead of checking that !
+		if (auto mrv = std::dynamic_pointer_cast<MeshRendererView>(rv.at(k))) {
+			mrv->setMeshIndex(index);
+		}
+	}
+
+	ModelView mv(*this, rv);
+	mv.visible = true;
+	mv.setLightEnabled(true);
+	return mv;
+}
+
+void Model::render(ModelView &modelView) {
+	if (!modelView.visible)
+		return;
+
+	glm::vec3 pos = getWorldPosition();
+
+	for (auto const &[k, r] : _renderers) {
+		auto &rv = modelView.rendererViews[k];
+		r->render(*rv, pos);
+	}
 }

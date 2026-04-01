@@ -8,7 +8,7 @@
 #include "../renderers/point_set_renderer.h"
 #include "../renderers/halfedge_renderer.h"
 
-#include "../models/model_view.h"
+// #include "../models/model_view.h"
 
 #include "../../include/glm/glm.hpp"
 #include "../../include/json.hpp"
@@ -19,6 +19,8 @@
 
 using namespace UM;
 using json = nlohmann::json;
+
+struct ModelView;
 
 struct Model {
 
@@ -90,22 +92,9 @@ struct Model {
 		}
 	}
 
-	ModelView getDefaultView() {
-		std::map<std::string, std::shared_ptr<RendererView>> rv;
-		for (auto &[k, r] : getRenderers()) {
-			rv.insert({k, r->getDefaultView()});
 
-			// TODO maybe can i pass mesh index directly to the MeshRendererView isntead of checking that !
-			if (auto mrv = std::dynamic_pointer_cast<MeshRendererView>(rv.at(k))) {
-				mrv->setMeshIndex(index);
-			}
-		}
 
-		ModelView mv(rv);
-		mv.visible = true;
-		mv.setLightEnabled(true);
-		return mv;
-	}
+	ModelView getDefaultView();
 
 	void render() {
 		if (!visible)
@@ -117,17 +106,7 @@ struct Model {
 			r->render(pos);
 	}
 
-	void render(ModelView &modelView) {
-		if (!modelView.visible)
-			return;
-
-		glm::vec3 pos = getWorldPosition();
-
-		for (auto const &[k, r] : _renderers) {
-			auto &rv = modelView.rendererViews[k];
-			r->render(*rv, pos);
-		}
-	}
+	void render(ModelView &modelView);
 
 	void clean() {
 		for (auto const &[k, r] : _renderers)

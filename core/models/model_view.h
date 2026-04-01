@@ -4,10 +4,11 @@
 
 #include <map>
 #include <string>
+#include "model.h"
 
 struct ModelView {
 
-	ModelView(std::map<std::string, std::shared_ptr<RendererView>> &rendererViews) : rendererViews(rendererViews) {}
+	ModelView(Model &m, std::map<std::string, std::shared_ptr<RendererView>> &rendererViews) : model(m), rendererViews(rendererViews) {}
 
 	PointSetRendererView& getPoints() {
 		return *static_cast<PointSetRendererView*>(rendererViews.at("point_renderer").get());
@@ -37,6 +38,7 @@ struct ModelView {
 	bool visible;
 
 	private:
+	Model &model;
 	bool isLightEnabled;
 
 };
