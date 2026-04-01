@@ -3,7 +3,10 @@ function init()
 	print("Number of models: " .. tostring(app.scene.models.count))
 end
 
-function draw_tree(model, k)
+function draw_tree(model, k, view)
+
+	local model_view = view:get_model(model)
+
 	if (imgui.TreeNode(k)) then 
 
 		if (app.scene.selected_model == k) then
@@ -12,9 +15,9 @@ function draw_tree(model, k)
 
 		local model_pos = model.world_position
 
-		local sel_visible, new_visible = imgui.Checkbox("Visible##" .. k .. "_visible", model.visible)
+		local sel_visible, new_visible = imgui.Checkbox("Visible##" .. k .. "_visible", model_view.visible)
 		if (sel_visible) then 
-			model.visible = new_visible
+			model_view.visible = new_visible
 		end
 
 
@@ -34,7 +37,7 @@ function draw_tree(model, k)
 		for k, child in pairs(app.scene.models) do
 			-- TODO ImGuiTreeNodeFlags_Selected if model selected
 			if (child.parent == model) then 
-				draw_tree(child, k)
+				draw_tree(child, k, app.scene.main_view)
 			end
 		end
 
@@ -451,10 +454,12 @@ function draw_gui()
 		if (imgui.BeginTabItem("Flat view")) then
 
 			for k, model in pairs(app.scene.models) do
+
+				local model_view = app.scene.main_view:get_model(model)
 				
-				local sel_visible, new_visible = imgui.Checkbox(k .. "##" .. k, model.visible)
+				local sel_visible, new_visible = imgui.Checkbox(k .. "##" .. k, model_view.visible)
 				if (sel_visible) then 
-					model.visible = new_visible
+					model_view.visible = new_visible
 				end
 
 				imgui.SameLine()
@@ -490,7 +495,7 @@ function draw_gui()
 				for k, model in pairs(app.scene.models) do
 					-- TODO ImGuiTreeNodeFlags_Selected if model selected
 					if (model.parent == nil) then 
-						draw_tree(model, k)
+						draw_tree(model, k, app.scene.main_view)
 					end
 				end
 

@@ -102,6 +102,7 @@ struct Model {
 		}
 
 		ModelView mv(rv);
+		mv.visible = true;
 		mv.setLightEnabled(true);
 		return mv;
 	}
@@ -117,7 +118,9 @@ struct Model {
 	}
 
 	void render(ModelView &modelView) {
-		// TODO add visible check
+		if (!modelView.visible)
+			return;
+
 		glm::vec3 pos = getWorldPosition();
 
 		for (auto const &[k, r] : _renderers) {

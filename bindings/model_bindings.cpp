@@ -93,7 +93,8 @@ namespace bindings {
 			"ModelView",
 			"points", sol::readonly_property(&ModelView::getPoints),
 			"mesh", sol::readonly_property(&ModelView::getMesh),
-			"light_enabled", sol::property(&ModelView::getLightEnabled, &ModelView::setLightEnabled)
+			"light_enabled", sol::property(&ModelView::getLightEnabled, &ModelView::setLightEnabled),
+			"visible", sol::property(&ModelView::visible, &ModelView::visible)
 		);
 
 

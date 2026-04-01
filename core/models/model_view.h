@@ -34,8 +34,9 @@ struct ModelView {
 	// TODO to unique_ptr
 	std::map<std::string, std::shared_ptr<RendererView>> rendererViews;
 
-	private:
+	bool visible;
 
+	private:
 	bool isLightEnabled;
 
 };
