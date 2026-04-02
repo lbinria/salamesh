@@ -1,7 +1,13 @@
 #pragma once 
 #include "../shader.h"
 #include "../graphic_api.h"
+#include "../element.h"
+#include "../layer.h"
+#include "../helpers.h"
+#include "../../include/json.hpp"
+using json = nlohmann::json;
 
+#include <vector>
 
 struct RendererView {
 
@@ -31,6 +37,12 @@ struct RendererView {
 		shader.setInt("colormap2Buf", 7);
 	}
 
+	virtual int getRenderElementKind() = 0;
+
+	bool isRenderElement(ElementKind kind) {
+		return (getRenderElementKind() & kind) == kind;
+	}
+
 	void use(glm::vec3 &position) {
 		
 		useTextures();
@@ -43,6 +55,10 @@ struct RendererView {
 	}
 
 	virtual void useTextures() {};
+
+	void setColormap0Texture(unsigned int tex) { texColormap0 = tex; }
+	void setColormap1Texture(unsigned int tex) { texColormap1 = tex; }
+	void setColormap2Texture(unsigned int tex) { texColormap2 = tex; }
 
 	void setLightEnabled(bool enabled) {
 		shader.use();
@@ -276,38 +292,54 @@ struct ClippingRendererView : public RendererView {
 	ClippingRendererView() : 
 		RendererView(Shader(sl::shadersPath("clipping.vert"), sl::shadersPath("clipping.frag"))) 
 	{}
+
+	int getRenderElementKind() override { return 0; }
+
 };
 
 struct HalfedgeRendererView : public RendererView {
 	HalfedgeRendererView() : 
 		RendererView(Shader(sl::shadersPath("edge.vert"), sl::shadersPath("edge.frag"))) 
 	{}
+
+	int getRenderElementKind() override { return ElementKind::EDGES_ELT | ElementKind::CORNERS_ELT; }
+
 };
 
 struct VolumeRendererView : public MeshRendererView {
 	VolumeRendererView() : 
 		MeshRendererView(Shader(sl::shadersPath("volume.vert"), sl::shadersPath("volume.frag"))) 
 	{}
+
+	int getRenderElementKind() override { return ElementKind::CELLS_ELT | ElementKind::CELL_FACETS_ELT; }
+
 };
 
 struct SurfaceRendererView : public MeshRendererView {
 	SurfaceRendererView() : 
 		MeshRendererView(Shader(sl::shadersPath("surface.vert"), sl::shadersPath("surface.frag"))) 
-	{
-		
-	}
+	{}
+
+	int getRenderElementKind() override { return ElementKind::FACETS_ELT | ElementKind::CORNERS_ELT; }
+
 };
 
 struct LineRendererView : public RendererView {
 	LineRendererView() : 
 		RendererView(Shader(sl::shadersPath("gizmo_line.vert"), sl::shadersPath("gizmo_line.frag"))) 
 	{}
+
+	int getRenderElementKind() override { return 0; }
+
 };
 
 struct BBoxRendererView : public RendererView {
 	BBoxRendererView() : 
 		RendererView(Shader(sl::shadersPath("bbox.vert"), sl::shadersPath("bbox.frag"))) 
 	{}
+
+	int getRenderElementKind() override { return 0; }
+
 
 	glm::vec3 getColor() const {
 		return color;
@@ -344,6 +376,8 @@ struct PolyRendererView : public MeshRendererView {
 		shader.setInt("nvertsPerFacetBuf", texNumber);
 	}
 
+	int getRenderElementKind() override { return ElementKind::FACETS_ELT | ElementKind::CORNERS_ELT; }
+
 };
 
 
@@ -352,6 +386,9 @@ struct PointSetRendererView : public RendererView {
 	PointSetRendererView() : 
 		RendererView(Shader(sl::shadersPath("point.vert"), sl::shadersPath("point.frag"))) 
 	{}
+
+	int getRenderElementKind() override { return ElementKind::POINTS_ELT; }
+
 
 	float getPointSize() const {
 		return pointSize;

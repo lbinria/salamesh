@@ -1,6 +1,17 @@
 #include "model.h"
 #include "model_view.h"
 
+void Model::push() {
+
+	for (auto const &[k, r] : _renderers)
+		r->push();
+
+	// Update model views
+	for (auto &[viewName, mv] : views) {
+		mv.push();
+	}
+}
+
 bool Model::saveState(std::string dirPath, json &j) /*const*/ {
 
 	// Save current mesh state into a file
@@ -34,17 +45,13 @@ bool Model::saveState(std::string dirPath, json &j) /*const*/ {
 	j["clipping_plane_point"] = { clippingPlanePoint.x, clippingPlanePoint.y, clippingPlanePoint.z };
 	j["clipping_plane_normal"] = { clippingPlaneNormal.x, clippingPlaneNormal.y, clippingPlaneNormal.z };
 	j["invert_clipping"] = invertClipping;
-	// TODO save directly as arrays
-	j["selected_colormap0"] = selectedColormap[0];
-	j["selected_colormap1"] = selectedColormap[1];
-	j["selected_colormap2"] = selectedColormap[2];
-	j["selected_attr0"] = selectedAttr[0];
-	j["selected_attr1"] = selectedAttr[1];
-	j["selected_attr2"] = selectedAttr[2];
+
 	j["visible"] = visible;
 
-	j["attr_name_by_layer_and_kind"] = attrNameByLayerAndKind;
-	j["activated_layers"] = activatedLayers;
+	for (auto &[viewName, mv] : views) {
+		mv.saveState(j);
+	}
+
 
 	for (auto &[k, r] : _renderers) {
 		r->saveState(j["renderers"][k]);
@@ -83,32 +90,8 @@ void Model::loadState(json &j) {
 
 	setInvertClipping(j["invert_clipping"].get<bool>());
 
-	// TODO load directly as array
-	selectedAttr[0] = j["selected_attr0"].get<int>();
-	selectedAttr[1] = j["selected_attr1"].get<int>();
-	selectedAttr[2] = j["selected_attr2"].get<int>();
-		
-	selectedColormap[0] = j["selected_colormap0"].get<int>();
-	selectedColormap[1] = j["selected_colormap1"].get<int>();
-	selectedColormap[2] = j["selected_colormap2"].get<int>();
-
-	for (auto &j : j["attr_name_by_layer_and_kind"]) {
-		auto key = j[0];
-		Layer l = (Layer)key[0].get<int>();
-		ElementKind k = (ElementKind)key[1].get<int>();
-		auto attrName = j[1].get<std::string>();
-		attrNameByLayerAndKind[{l, k}] = attrName;
-	}
-
-	// Set layers
-	for (auto &j : j["activated_layers"]) {
-		auto key = j[0];
-		Layer l = (Layer)key[0].get<int>();
-		ElementKind k = (ElementKind)key[1].get<int>();
-		auto val = j[1].get<bool>();
-		if (val) {
-			setLayer(k, l);
-		}
+	for (auto &[viewName, mv] : views) {
+		loadState(j);
 	}
 
 
@@ -170,128 +153,19 @@ void Model::removeAttr(ElementKind kind, std::string name) {
 		attrs.erase(attrs.begin() + idx);
 }
 
-void Model::setSelectedAttr(int idx, ColormapLayer layer) {
-	// Under 0, no selection
-	// TODO does it silent ?
-	if (idx >= static_cast<int>(attrs.size()))
-		return;
-
-	selectedAttr[layer] = idx;
-	unsetColormaps(layer);
-
-	if (idx < 0) {
-		return;
-	}
-
-	auto attrName = attrs[idx].name;
-	ElementKind kind = attrs[idx].kind;
-
-	setColormapAttr(attrName, kind, layer);
-	setColormap(kind, layer);
-}
-
-void Model::resetLayer(ElementKind kind, Layer layer) {
-	// Prepare a vector of zeros of the size of the element kind to unset
-	std::vector<float> zeros;
-	switch (kind) {
-		case ElementKind::CELLS_ELT: {
-			zeros.resize(ncells(), 0.f);
-			break;
-		}
-		case ElementKind::CELL_FACETS_ELT:
-		case ElementKind::FACETS_ELT: {
-			zeros.resize(nfacets(), 0.f);
-			break;
-		}
-		case ElementKind::EDGES_ELT: {
-			zeros.resize(nhalfedges(), 0.f);
-			break;
-		}
-		case ElementKind::CORNERS_ELT: 
-		case ElementKind::CELL_CORNERS_ELT: {
-			zeros.resize(ncorners(), 0.f);
-			break;
-		}
-		case ElementKind::POINTS_ELT: {
-			zeros.resize(nverts(), 0.f);
-			break;
-		}
-	}
-
-	// If renderer is rendering this kind of element, set requested layer data to zeros
-	for (auto const &[k ,r] : _renderers) {
-		if (r->isRenderElement(kind)) {
-			r->setLayer(zeros, layer);
-		}
-	}
-}
-
-void Model::setLayer(ElementKind kind, Layer layer, bool update) {
-
-	if (activatedLayers[{layer, kind}] && !update)
-		return;
-
-	for (auto const &[k, r] : _renderers) {
-		if (r->isRenderElement(kind)) {
-			r->setLayerElement(kind, layer);
-		}
-	}
-
-	if (update)
-		updateLayer(layer, kind);
-
-	activatedLayers[{layer, kind}] = true;
-}
-
-void Model::unsetLayer(ElementKind kind, Layer layer, bool reset) {
-	// Little optimisation, doesn't update data
-	// if layer isn't activated, no need to unset
-	if (!activatedLayers[{layer, kind}])
-		return;
-	
-	// Set requested layer data to zeros
-	if (reset)
-		resetLayer(kind, layer);
-
-	for (auto const &[k ,r] : _renderers) {
-		if (r->isRenderElement(kind)) {
-			r->setLayerElement(-1, layer); // element -1 means => deactivate layer
-		}
-	}
-
-	activatedLayers[{layer, kind}] = false;
-}
-
 ModelView Model::getDefaultView(std::string viewName) {
-	// std::map<std::string, std::shared_ptr<RendererView>> rv;
-	// for (auto &[k, r] : getRenderers()) {
-	// 	rv.insert({k, r->getDefaultView()});
 
-	// 	// TODO maybe can i pass mesh index directly to the MeshRendererView isntead of checking that !
-	// 	if (auto mrv = std::dynamic_pointer_cast<MeshRendererView>(rv.at(k))) {
-	// 		mrv->setMeshIndex(index);
-	// 	}
-	// }
+	// Get / create (if not exists) default views of renderers
+	std::map<std::string, std::shared_ptr<RendererView>> rendererViews;
+	for (auto &[k, r] : _renderers) {
+		rendererViews[k] = r->getView(viewName);
+	}
 
-	// ModelView mv(*this, rv);
-	// mv.visible = true;
-	// mv.setLightEnabled(true);
-	// return mv;
-
-	ModelView mv(viewName, *this);
+	ModelView mv(*this, rendererViews);
 	mv.visible = true;
 	mv.setLightEnabled(true);
 	
-	// Get / create (if not exists) default views of renderers
-	for (auto &[k, r] : _renderers) {
-		auto rv = r->getView(viewName);
-		// TODO maybe can i pass mesh index directly to the MeshRendererView isntead of checking that !
-		// if (auto mrv = std::dynamic_pointer_cast<MeshRendererView>(rv)) {
-		// if (auto mrv = dynamic_cast<MeshRendererView*>(&rv)) {
-		// 	mrv->setMeshIndex(index);
-		// }
 
-	}
 
 	auto meshRenderer = getMeshRenderer();
 	if (meshRenderer) {
@@ -311,17 +185,15 @@ ModelView& Model::getView(std::string viewName) {
 	return views.at(viewName);
 }
 
-void Model::render(std::string viewName) {
+void Model::render(ModelView &modelView) {
 
-	auto &modelView = getView(viewName);
-	
 	if (!modelView.visible)
 		return;
 
 	glm::vec3 pos = getWorldPosition();
 
 	for (auto const &[k, r] : _renderers) {
-		auto &rv = *r->getView(viewName);
-		r->render(rv, pos);
+		auto rv = modelView.getRendererView(k);
+		r->render(*rv, pos);
 	}
 }

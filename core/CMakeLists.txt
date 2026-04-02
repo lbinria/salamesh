@@ -42,6 +42,7 @@ set(SOURCES
 
     renderers/renderer_info.h
     renderers/renderer.h
+    renderers/renderer_view.h
     renderers/mesh_renderer.h
     renderers/line_renderer.cpp renderers/line_renderer.h
     renderers/point_set_renderer.cpp renderers/point_set_renderer.h
@@ -56,6 +57,7 @@ set(SOURCES
     renderers/tet_renderer.cpp renderers/tet_renderer.h
     renderers/hex_renderer.cpp renderers/hex_renderer.h
 
+    models/model_view.h models/model_view.cpp
     models/model.h models/model.cpp
     models/polyline_model.h
     models/surface_model.h

@@ -78,19 +78,7 @@ struct Model {
 		}
 	}
 
-	void push() {
-		for (auto const &[k, r] : _renderers)
-			r->push();
-
-		// Push highlight and filter attributes if they exist
-		for (auto [k, isActivated] : activatedLayers) {
-			if (!isActivated) 
-				continue;
-
-			auto [layer, kind] = k;
-			updateLayer(layer, kind);
-		}
-	}
+	void push();
 
 
 
@@ -98,16 +86,16 @@ struct Model {
 	ModelView& getView(std::string viewName);
 
 	void render() {
-		if (!visible)
-			return;
+		// if (!visible)
+		// 	return;
 		
-		glm::vec3 pos = getWorldPosition();
+		// glm::vec3 pos = getWorldPosition();
 
-		for (auto const &[k, r] : _renderers)
-			r->render(pos);
+		// for (auto const &[k, r] : _renderers)
+		// 	r->render(pos);
 	}
 
-	void render(std::string viewName);
+	void render(ModelView &modelView);
 
 
 	void clean() {
@@ -164,128 +152,51 @@ struct Model {
 		attrs.clear();
 	}
 
-	int getSelectedAttr(ColormapLayer colormapLayer) {
-		return selectedAttr[static_cast<int>(colormapLayer)];
-	}
 
-	void setSelectedAttr(int idx, ColormapLayer layer);
 
-	void setSelectedColormap(int idx, ColormapLayer layer) {
-		selectedColormap[static_cast<int>(layer)] = idx;
-	}
+	int getAttributeNDims(std::string attrName, ElementKind kind) {
 
-	int getSelectedColormap(ColormapLayer layer) const {
-		return selectedColormap[static_cast<int>(layer)];
-	}
+		// TODO refactor, factorize that
+		auto containers = getAttributeContainers();
 
-	// Choose which attribute to bind to layer / kind
-	void setLayerAttr(std::string name, Layer layer, ElementKind kind) {
-		attrNameByLayerAndKind[{layer, kind}] = name;
-	}
-
-	std::string getLayerAttr(Layer layer, ElementKind kind) {
-		std::tuple<Layer, ElementKind> k = {layer, kind};
-		if (attrNameByLayerAndKind.contains(k))
-			return attrNameByLayerAndKind[k];
-		
-		return defaultAttrName(layer);
-	}
-
-	inline std::string getColormapAttr(ElementKind kind, ColormapLayer layer) {
-		return getLayerAttr(static_cast<Layer>(layer), kind);
-	}
-
-	inline void setColormapAttr(std::string name, ElementKind kind, ColormapLayer layer) {
-		setLayerAttr(name, static_cast<Layer>(layer), kind);
-	}
-
-	inline std::string getHighlightAttr(ElementKind kind) {
-		return getLayerAttr(Layer::HIGHLIGHT, kind);
-	}
-
-	inline void setHighlightAttr(std::string name, ElementKind kind) {
-		setLayerAttr(name, Layer::HIGHLIGHT, kind);
-	}
-
-	inline std::string getFilterAttr(ElementKind kind) {
-		return getLayerAttr(Layer::HIGHLIGHT, kind);
-	}
-
-	inline void setFilterAttr(std::string name, ElementKind kind) {
-		setLayerAttr(name, Layer::FILTER, kind);
-	}
-
-	bool isLayerActivated(ElementKind kind, Layer layer) {
-		return activatedLayers[{layer, kind}];
-	}
-
-	void resetLayer(ElementKind kind, Layer layer);
-
-	void setLayer(ElementKind kind, Layer layer, bool update = true);
-	// TODO maybe reset parameter won't be used, so layer never need to be reseted in this context
-	void unsetLayer(ElementKind kind, Layer layer, bool reset = false);
-
-	inline void setColormap(ElementKind kind, ColormapLayer layer, bool update = true) {
-		setLayer(kind, static_cast<Layer>(layer), update);
-	}
-
-	void unsetColormap(ElementKind kind, ColormapLayer colormapLayer) {
-		unsetLayer(kind, static_cast<Layer>(colormapLayer));
-	}
-
-	void unsetColormaps(ColormapLayer colormapLayer) {
-		// Unset all
-		for (int i = 0; i < 7; ++i) {
-			int kind = 1 << i;
-			unsetColormap((ElementKind)kind, colormapLayer);
-		}
-	}
-
-	void unsetColormaps(ElementKind kind) {
-		for (int l = 0; l < 3; ++l)
-			unsetColormap(kind, static_cast<ColormapLayer>(l));
-	}
-
-	void unsetColormaps() {
-		// Unset all
-		for (int l = 0; l < 3; ++l) {
-			for (int i = 0; i < 7; ++i) {
-				int kind = 1 << i;
-				unsetColormap((ElementKind)kind, static_cast<ColormapLayer>(l));
+		for (auto &[k, c] : containers) {
+			if (k == kind && c.name == attrName) {
+				auto cb = c.ptr.get();
+				if (auto a = dynamic_cast<AttributeContainer<vec3>*>(cb)) {
+					return 3;
+				} else if (auto a = dynamic_cast<AttributeContainer<vec2>*>(cb)) {
+					return 2;
+				} else {
+					return 1;
+				}
 			}
 		}
+
+		return -1;
+
+
 	}
 
-	inline void setHighlight(ElementKind kind, bool update = true) {
-		setLayer(kind, Layer::HIGHLIGHT, update);
-	}
+	// TODO maybe move into helper
+	std::optional<std::vector<float>> getAttrData(std::string attrName, ElementKind kind, int selectedDim = -1) {
 
-	inline void unsetHighlight(ElementKind kind) {
-		unsetLayer(kind, Layer::HIGHLIGHT);
-	}
 
-	void unsetHighlights() {
-		// Unset all
-		for (int i = 0; i < 7; ++i) {
-			int kind = 1 << i;
-			unsetHighlight((ElementKind)kind);
+		auto containers = getAttributeContainers();
+
+		for (auto &[k, c] : containers) {
+			if (k == kind && c.name == attrName) {
+				return sl::getContainerData(c.ptr.get(), selectedDim);
+			}
 		}
-	}
 
-	inline void setFilter(ElementKind kind, bool update = true) {
-		setLayer(kind, Layer::FILTER, update);
-	}
-
-	inline void unsetFilter(ElementKind kind) {
-		unsetLayer(kind, Layer::FILTER);
-	}
-
-	void unsetFilters() {
-		// Unset all
-		for (int i = 0; i < 7; ++i) {
-			int kind = 1 << i;
-			unsetFilter((ElementKind)kind);
-		}
+		std::cerr << "Error: Model::getAttrData(). Attribute "
+			<< attrName 
+			<< " of kind "
+			<< elementKindToString(kind) 
+			<< " was not found on "
+			<< modelTypeToString(getModelType())
+			<< std::endl;
+		return std::nullopt;
 	}
 
 	glm::vec3 getPosition() const {
@@ -320,23 +231,6 @@ struct Model {
 		}
 	}
 
-	// Renderer functions
-
-	// TODO maybe protected
-	void setColormap0Texture(unsigned int tex) {
-		for (auto const &[k, r] : _renderers)
-			r->setColormap0Texture(tex);
-	}
-	// TODO maybe protected
-	void setColormap1Texture(unsigned int tex) {
-		for (auto const &[k, r] : _renderers)
-			r->setColormap1Texture(tex);
-	}
-	// TODO maybe protected
-	void setColormap2Texture(unsigned int tex) {
-		for (auto const &[k, r] : _renderers)
-			r->setColormap2Texture(tex);
-	}
 
 	bool getLight() const {
 		return isLightEnabled;
@@ -492,7 +386,6 @@ struct Model {
 
 	std::vector<Attribute> attrs;
 
-	int selectedAttr[3] = {-1, -1, -1};
 
 
 	bool isLightEnabled = true;
@@ -505,7 +398,6 @@ struct Model {
 	bool invertClipping = false;
 	
 
-	int selectedColormap[3] = {0, 0, 0};
 
 	// Renderers
 	std::map<std::string, std::shared_ptr<Renderer>> _renderers;
@@ -516,95 +408,14 @@ struct Model {
 	
 	void addAttr(ElementKind kind, NamedContainer &container);
 
-	int getAttributeNDims(std::string attrName, ElementKind kind) {
 
-		// TODO refactor, factorize that
-		auto containers = getAttributeContainers();
-
-		for (auto &[k, c] : containers) {
-			if (k == kind && c.name == attrName) {
-				auto cb = c.ptr.get();
-				if (auto a = dynamic_cast<AttributeContainer<vec3>*>(cb)) {
-					return 3;
-				} else if (auto a = dynamic_cast<AttributeContainer<vec2>*>(cb)) {
-					return 2;
-				} else {
-					return 1;
-				}
-			}
-		}
-
-		return -1;
-
-
-	}
-
-	// TODO maybe move into helper
-	std::optional<std::vector<float>> getAttrData(std::string attrName, ElementKind kind, int selectedDim = -1) {
-
-
-		auto containers = getAttributeContainers();
-
-		for (auto &[k, c] : containers) {
-			if (k == kind && c.name == attrName) {
-				return sl::getContainerData(c.ptr.get(), selectedDim);
-			}
-		}
-
-		std::cerr << "Error: Model::getAttrData(). Attribute "
-			<< attrName 
-			<< " of kind "
-			<< elementKindToString(kind) 
-			<< " was not found on "
-			<< modelTypeToString(getModelType())
-			<< std::endl;
-		return std::nullopt;
-	}
-
-	void updateLayer(Layer layer, ElementKind kind) {
-
-		auto attrName = getLayerAttr(layer, kind);
-
-		int nDims = getAttributeNDims(attrName, kind);
-
-		// Extract selectedDim from string
-		int selectedDim = -1;
-		auto lbrPos = attrName.find('[');
-		auto rbrPos = attrName.find(']');
-		// if "attr[0]" requested for example, we would like to see selectedDim=0, so nDims of attribute = 1
-		if (lbrPos != std::string::npos && rbrPos != std::string::npos) {
-			selectedDim = std::stoi(attrName.substr(lbrPos + 1, rbrPos - lbrPos));
-			attrName = attrName.substr(0, lbrPos);
-			nDims = 1;
-		}
-
-		auto data_opt = getAttrData(attrName, kind, selectedDim);
-
-		// Silent when no data ?
-		// If no data => it means that attr name wasn't found
-		if (!data_opt.has_value())
-			return;
-
-		auto data = data_opt.value();
-
-		auto [min, max] = sl::getRange(data);
-
-		for (auto const &[k, r] : _renderers) {
-			if (r->isRenderElement(kind)) {
-				r->setLayerRange(layer, min, max);
-				r->setLayerNDims(layer, nDims);
-				r->setLayer(data, layer);
-			}
-		}
-	}
 
 	private:
 	std::string name;
 	static inline int maxIndex = 0;
 	int index;
 
-	std::map<std::tuple<Layer, ElementKind>, std::string> attrNameByLayerAndKind;
-	std::map<std::tuple<Layer, ElementKind>, bool> activatedLayers;
+
 
 	std::map<std::string, ModelView> views;
 

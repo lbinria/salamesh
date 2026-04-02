@@ -244,115 +244,115 @@ namespace bindings {
 
 		model_t.set_function("clear_attrs", &Model::clearAttrs);
 
-		model_t.set_function("get_selected_attr", [](Model &self, ColormapLayer layer) {
+		modelView_t.set_function("get_selected_attr", [](ModelView &self, ColormapLayer layer) {
 			return self.getSelectedAttr(layer) + 1;
 		});
 
-		model_t.set_function("set_selected_attr", [](Model &self, int idx, ColormapLayer layer) {
+		modelView_t.set_function("set_selected_attr", [](ModelView &self, int idx, ColormapLayer layer) {
 			self.setSelectedAttr(idx - 1, layer);
 		});
 
-		model_t["selected_attr0"] = sol::property([](Model &self) {
+		modelView_t["selected_attr0"] = sol::property([](ModelView &self) {
 			return self.getSelectedAttr(ColormapLayer::COLORMAP_LAYER_0) + 1;
-		}, [](Model &self, int selected) {
+		}, [](ModelView &self, int selected) {
 			self.setSelectedAttr(selected - 1, ColormapLayer::COLORMAP_LAYER_0);
 		});
 
-		model_t["selected_attr1"] = sol::property([](Model &self) {
+		modelView_t["selected_attr1"] = sol::property([](ModelView &self) {
 			return self.getSelectedAttr(ColormapLayer::COLORMAP_LAYER_1) + 1;
-		}, [](Model &self, int selected) {
+		}, [](ModelView &self, int selected) {
 			self.setSelectedAttr(selected - 1, ColormapLayer::COLORMAP_LAYER_1);
 		});
 
-		model_t["selected_attr2"] = sol::property([](Model &self) {
+		modelView_t["selected_attr2"] = sol::property([](ModelView &self) {
 			return self.getSelectedAttr(ColormapLayer::COLORMAP_LAYER_2) + 1;
-		}, [](Model &self, int selected) {
+		}, [](ModelView &self, int selected) {
 			self.setSelectedAttr(selected - 1, ColormapLayer::COLORMAP_LAYER_2);
 		});
 
-		model_t.set_function("get_selected_colormap", [](Model &self, ColormapLayer layer) {
+		modelView_t.set_function("get_selected_colormap", [](ModelView &self, ColormapLayer layer) {
 			return self.getSelectedColormap(layer) + 1;
 		});
 
-		model_t.set_function("set_selected_colormap", [](Model &self, int idx, ColormapLayer layer) {
+		modelView_t.set_function("set_selected_colormap", [](ModelView &self, int idx, ColormapLayer layer) {
 			self.setSelectedColormap(idx - 1, layer);
 		});
 
-		model_t["selected_colormap0"] = sol::property([](Model &self) {
+		modelView_t["selected_colormap0"] = sol::property([](ModelView &self) {
 			return self.getSelectedColormap(ColormapLayer::COLORMAP_LAYER_0) + 1;
-		}, [](Model &self, int selected) {
+		}, [](ModelView &self, int selected) {
 			self.setSelectedColormap(selected - 1, ColormapLayer::COLORMAP_LAYER_0);
 		});
 
-		model_t["selected_colormap1"] = sol::property([](Model &self) {
+		modelView_t["selected_colormap1"] = sol::property([](ModelView &self) {
 			return self.getSelectedColormap(ColormapLayer::COLORMAP_LAYER_1) + 1;
-		}, [](Model &self, int selected) {
+		}, [](ModelView &self, int selected) {
 			self.setSelectedColormap(selected - 1, ColormapLayer::COLORMAP_LAYER_1);
 		});
 
-		model_t["selected_colormap2"] = sol::property([](Model &self) {
+		modelView_t["selected_colormap2"] = sol::property([](ModelView &self) {
 			return self.getSelectedColormap(ColormapLayer::COLORMAP_LAYER_2) + 1;
-		}, [](Model &self, int selected) {
+		}, [](ModelView &self, int selected) {
 			self.setSelectedColormap(selected - 1, ColormapLayer::COLORMAP_LAYER_2);
 		});
 
 		// Layers
-		model_t.set_function("is_layer_activated", &Model::isLayerActivated);
-		model_t.set_function("reset_layer", &Model::resetLayer);
+		modelView_t.set_function("is_layer_activated", &ModelView::isLayerActivated);
+		modelView_t.set_function("reset_layer", &ModelView::resetLayer);
 
 
-		model_t.set_function("get_layer_attr", &Model::getLayerAttr);
-		model_t.set_function("set_layer_attr", &Model::setLayerAttr);
+		modelView_t.set_function("get_layer_attr", &ModelView::getLayerAttr);
+		modelView_t.set_function("set_layer_attr", &ModelView::setLayerAttr);
 
-		model_t.set_function("set_layer", 
-			[](Model &self, ElementKind kind, Layer layer, std::optional<bool> update) {
+		modelView_t.set_function("set_layer", 
+			[](ModelView &self, ElementKind kind, Layer layer, std::optional<bool> update) {
 				self.setLayer(kind, layer, update.value_or(true));
 			}
 		);
 
-		model_t.set_function("unset_layer", 
-			[](Model &self, ElementKind kind, Layer layer, std::optional<bool> reset) {
+		modelView_t.set_function("unset_layer", 
+			[](ModelView &self, ElementKind kind, Layer layer, std::optional<bool> reset) {
 				self.unsetLayer(kind, layer, reset.value_or(true));
 			}
 		);
 
 		
-		model_t.set_function("get_colormap_attr", &Model::getColormapAttr);
-		model_t.set_function("set_colormap_attr", &Model::setColormapAttr);
-		model_t.set_function("set_colormap", 
-			[](Model &self, ElementKind kind, ColormapLayer layer, std::optional<bool> update) {
+		modelView_t.set_function("get_colormap_attr", &ModelView::getColormapAttr);
+		modelView_t.set_function("set_colormap_attr", &ModelView::setColormapAttr);
+		modelView_t.set_function("set_colormap", 
+			[](ModelView &self, ElementKind kind, ColormapLayer layer, std::optional<bool> update) {
 				self.setColormap(kind, layer, update.value_or(true));
 			}
 		);
 
-		model_t.set_function("unset_colormap", &Model::unsetColormap);
+		modelView_t.set_function("unset_colormap", &ModelView::unsetColormap);
 		
-		model_t.set_function("unset_colormaps", sol::overload(
-			[](Model &self) { self.unsetColormaps(); },
-			[](Model &self, ElementKind kind) { self.unsetColormaps(kind); },
-			[](Model &self, ColormapLayer layer) { self.unsetColormaps(layer); }
+		modelView_t.set_function("unset_colormaps", sol::overload(
+			[](ModelView &self) { self.unsetColormaps(); },
+			[](ModelView &self, ElementKind kind) { self.unsetColormaps(kind); },
+			[](ModelView &self, ColormapLayer layer) { self.unsetColormaps(layer); }
 		));
 
-		model_t.set_function("get_highlight_attr", &Model::getHighlightAttr);
-		model_t.set_function("set_highlight_attr", &Model::setHighlightAttr);
-		model_t.set_function("set_highlight", 
-			[](Model &self, ElementKind kind, std::optional<bool> update) {
+		modelView_t.set_function("get_highlight_attr", &ModelView::getHighlightAttr);
+		modelView_t.set_function("set_highlight_attr", &ModelView::setHighlightAttr);
+		modelView_t.set_function("set_highlight", 
+			[](ModelView &self, ElementKind kind, std::optional<bool> update) {
 				self.setHighlight(kind, update.value_or(true));
 			}
 		);
 
-		model_t.set_function("unset_highlight", &Model::unsetHighlight);
-		model_t.set_function("unset_highlights", &Model::unsetHighlights);
+		modelView_t.set_function("unset_highlight", &ModelView::unsetHighlight);
+		modelView_t.set_function("unset_highlights", &ModelView::unsetHighlights);
 
-		model_t.set_function("get_filter_attr", &Model::getFilterAttr);
-		model_t.set_function("set_filter_attr", &Model::setFilterAttr);
-		model_t.set_function("set_filter", 
-			[](Model &self, ElementKind kind, std::optional<bool> update) {
+		modelView_t.set_function("get_filter_attr", &ModelView::getFilterAttr);
+		modelView_t.set_function("set_filter_attr", &ModelView::setFilterAttr);
+		modelView_t.set_function("set_filter", 
+			[](ModelView &self, ElementKind kind, std::optional<bool> update) {
 				self.setFilter(kind, update.value_or(true));
 			}
 		);
-		model_t.set_function("unset_filter", &Model::unsetFilter);
-		model_t.set_function("unset_filters", &Model::unsetFilters);
+		modelView_t.set_function("unset_filter", &ModelView::unsetFilter);
+		modelView_t.set_function("unset_filters", &ModelView::unsetFilters);
 
 
 		model_t["model_type"] = sol::readonly_property(&Model::getModelType);

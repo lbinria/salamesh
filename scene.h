@@ -55,22 +55,29 @@ struct Scene : public IScene {
 			r->render(o);
 		}
 
-		for (auto &[k, model] : models) {
-			// For each views
-			// Get modelview associated with model
-			// use shaders of modelview & render model
-			// model->render(modelView);
+		// for (auto &[k, model] : models) {
+		// 	// For each views
+		// 	// Get modelview associated with model
+		// 	// use shaders of modelview & render model
+		// 	// model->render(modelView);
 			
-			model->setColormap0Texture(colormaps[model->getSelectedColormap(ColormapLayer::COLORMAP_LAYER_0)].tex);
-			model->setColormap1Texture(colormaps[model->getSelectedColormap(ColormapLayer::COLORMAP_LAYER_1)].tex);
-			model->setColormap2Texture(colormaps[model->getSelectedColormap(ColormapLayer::COLORMAP_LAYER_2)].tex);
-			model->render();
-		}
+		// 	model->setColormap0Texture(colormaps[model->getSelectedColormap(ColormapLayer::COLORMAP_LAYER_0)].tex);
+		// 	model->setColormap1Texture(colormaps[model->getSelectedColormap(ColormapLayer::COLORMAP_LAYER_1)].tex);
+		// 	model->setColormap2Texture(colormaps[model->getSelectedColormap(ColormapLayer::COLORMAP_LAYER_2)].tex);
+		// 	model->render();
+		// }
 
 		// Render view
 		for (auto &[viewName, view] : views) {
 			for (auto &[modelName, model] : models) {
-				model->render(viewName);
+
+				auto &modelView = model->getView(viewName);
+
+				modelView.setColormap0Texture(colormaps[modelView.getSelectedColormap(ColormapLayer::COLORMAP_LAYER_0)].tex);
+				modelView.setColormap1Texture(colormaps[modelView.getSelectedColormap(ColormapLayer::COLORMAP_LAYER_1)].tex);
+				modelView.setColormap2Texture(colormaps[modelView.getSelectedColormap(ColormapLayer::COLORMAP_LAYER_2)].tex);
+
+				model->render(modelView);
 			}
 		}
 

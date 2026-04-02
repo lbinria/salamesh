@@ -57,13 +57,9 @@ struct Renderer {
 	virtual void clean() = 0;
 	virtual void clear() = 0;
 
-	bool isRenderElement(ElementKind kind) {
-		return (getRenderElementKind() & kind) == kind;
-	}
 
-	void setColormap0Texture(unsigned int tex) { texColormap0 = tex; }
-	void setColormap1Texture(unsigned int tex) { texColormap1 = tex; }
-	void setColormap2Texture(unsigned int tex) { texColormap2 = tex; }
+
+
 
 	void setVisible(bool v) {
 		visible = v;
