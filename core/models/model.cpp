@@ -262,39 +262,66 @@ void Model::unsetLayer(ElementKind kind, Layer layer, bool reset) {
 	activatedLayers[{layer, kind}] = false;
 }
 
-ModelView Model::getDefaultView() {
-	std::map<std::string, std::shared_ptr<RendererView>> rv;
-	for (auto &[k, r] : getRenderers()) {
-		rv.insert({k, r->getDefaultView()});
+ModelView Model::getDefaultView(std::string viewName) {
+	// std::map<std::string, std::shared_ptr<RendererView>> rv;
+	// for (auto &[k, r] : getRenderers()) {
+	// 	rv.insert({k, r->getDefaultView()});
 
-		// TODO maybe can i pass mesh index directly to the MeshRendererView isntead of checking that !
-		if (auto mrv = std::dynamic_pointer_cast<MeshRendererView>(rv.at(k))) {
-			mrv->setMeshIndex(index);
-		}
-	}
+	// 	// TODO maybe can i pass mesh index directly to the MeshRendererView isntead of checking that !
+	// 	if (auto mrv = std::dynamic_pointer_cast<MeshRendererView>(rv.at(k))) {
+	// 		mrv->setMeshIndex(index);
+	// 	}
+	// }
 
-	ModelView mv(*this, rv);
+	// ModelView mv(*this, rv);
+	// mv.visible = true;
+	// mv.setLightEnabled(true);
+	// return mv;
+
+	ModelView mv(viewName, *this);
 	mv.visible = true;
 	mv.setLightEnabled(true);
+	
+	// Get / create (if not exists) default views of renderers
+	for (auto &[k, r] : _renderers) {
+		auto rv = r->getView(viewName);
+		// TODO maybe can i pass mesh index directly to the MeshRendererView isntead of checking that !
+		// if (auto mrv = std::dynamic_pointer_cast<MeshRendererView>(rv)) {
+		// if (auto mrv = dynamic_cast<MeshRendererView*>(&rv)) {
+		// 	mrv->setMeshIndex(index);
+		// }
+
+	}
+
+	auto meshRenderer = getMeshRenderer();
+	if (meshRenderer) {
+		auto rv = meshRenderer->getView(viewName);
+		auto mrv = std::static_pointer_cast<MeshRendererView>(rv);
+		mrv->setMeshIndex(index);
+	}
+
 	return mv;
 }
 
 ModelView& Model::getView(std::string viewName) {
 	// Create default view
 	if (!views.contains(viewName))
-		views.insert({viewName, getDefaultView()});
+		views.insert({viewName, getDefaultView(viewName)});
 
 	return views.at(viewName);
 }
 
-void Model::render(ModelView &modelView) {
+void Model::render(std::string viewName) {
+
+	auto &modelView = getView(viewName);
+	
 	if (!modelView.visible)
 		return;
 
 	glm::vec3 pos = getWorldPosition();
 
 	for (auto const &[k, r] : _renderers) {
-		auto &rv = modelView.rendererViews[k];
-		r->render(*rv, pos);
+		auto &rv = *r->getView(viewName);
+		r->render(rv, pos);
 	}
 }

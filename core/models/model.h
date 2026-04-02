@@ -94,7 +94,7 @@ struct Model {
 
 
 
-	ModelView getDefaultView();
+	ModelView getDefaultView(std::string viewName);
 	ModelView& getView(std::string viewName);
 
 	void render() {
@@ -107,7 +107,8 @@ struct Model {
 			r->render(pos);
 	}
 
-	void render(ModelView &modelView);
+	void render(std::string viewName);
+
 
 	void clean() {
 		for (auto const &[k, r] : _renderers)

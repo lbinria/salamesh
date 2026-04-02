@@ -42,6 +42,14 @@ struct Renderer {
 
 	virtual std::unique_ptr<RendererView> getDefaultView() = 0;
 
+	std::shared_ptr<RendererView> getView(std::string viewName) {
+		// Create default view
+		if (!views.contains(viewName))
+			views.insert({viewName, getDefaultView()});
+
+		return views.at(viewName);
+	}
+
 	virtual void init() = 0;
 	virtual void push() = 0;
 	virtual void render(glm::vec3 &position) = 0;
@@ -281,5 +289,7 @@ struct Renderer {
 
 	virtual void doLoadState(json &j) = 0;
 	virtual void doSaveState(json &j) const = 0;
+
+	std::map<std::string, std::shared_ptr<RendererView>> views;
 
 };

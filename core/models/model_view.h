@@ -8,15 +8,17 @@
 
 struct ModelView {
 
-	ModelView(Model &m, std::map<std::string, std::shared_ptr<RendererView>> &rendererViews) : model(m), rendererViews(rendererViews) {}
+	ModelView(std::string viewName, Model &m) : viewName(viewName), model(m) {
+
+	}
 
 	PointSetRendererView& getPoints() {
-		return *static_cast<PointSetRendererView*>(rendererViews.at("point_renderer").get());
+		return *std::static_pointer_cast<PointSetRendererView>(model.getRenderer("point_renderer")->getView(viewName));
 	}
 
 	std::shared_ptr<MeshRendererView> getMesh() const {
-		if(rendererViews.contains("mesh_renderer"))
-			return std::static_pointer_cast<MeshRendererView>(rendererViews.at("mesh_renderer"));
+		if(model.hasRenderer("mesh_renderer"))
+			return std::static_pointer_cast<MeshRendererView>(model.getRenderer("mesh_renderer")->getView(viewName));
 		
 		return nullptr;
 	}
@@ -26,18 +28,16 @@ struct ModelView {
 	}
 
 	void setLightEnabled(bool enabled) {
-		for (auto const &[k, rv] : rendererViews)
-			rv->setLightEnabled(enabled);
+		for (auto const &[k, r] : model.getRenderers())
+			r->getView(viewName)->setLightEnabled(enabled);
 
 		isLightEnabled = enabled;
 	}
 
-	// TODO to unique_ptr
-	std::map<std::string, std::shared_ptr<RendererView>> rendererViews;
-
 	bool visible;
 
 	private:
+	std::string viewName;
 	Model &model;
 	bool isLightEnabled;
 

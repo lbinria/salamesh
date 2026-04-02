@@ -70,10 +70,7 @@ struct Scene : public IScene {
 		// Render view
 		for (auto &[viewName, view] : views) {
 			for (auto &[modelName, model] : models) {
-				// Get view of the model
-				// auto &mv = view->getModelView(*model);
-				auto &mv = model->getView(viewName);
-				model->render(mv);
+				model->render(viewName);
 			}
 		}
 
