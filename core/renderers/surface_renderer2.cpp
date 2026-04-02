@@ -48,9 +48,6 @@ void SurfaceRenderer2::init() {
 
 void SurfaceRenderer2::render(glm::vec3 &position) {
 
-	if (!visible)
-		return;
-
 	glBindVertexArray(VAO);
 
 	glActiveTexture(GL_TEXTURE0 + 0);

@@ -43,9 +43,6 @@ std::shared_ptr<Model> Scene::loadModel(const std::string& filename, std::string
 	if (!success)
 		return nullptr;
 
-
-	// Setup default gfx
-	model->setLight(true);
 	
 	// Setup default clipping plane
 	model->setupClipping();

@@ -24,8 +24,6 @@ struct ModelView;
 
 struct Model {
 
-	std::function<bool(Model& /*self*/, const std::string /*path*/)> loadCallback;
-
 	Model (const Model&) = delete;
 	Model& operator= (const Model&) = delete;
 
@@ -84,16 +82,6 @@ struct Model {
 
 	ModelView getDefaultView(std::string viewName);
 	ModelView& getView(std::string viewName);
-
-	void render() {
-		// if (!visible)
-		// 	return;
-		
-		// glm::vec3 pos = getWorldPosition();
-
-		// for (auto const &[k, r] : _renderers)
-		// 	r->render(pos);
-	}
 
 	void render(ModelView &modelView);
 
@@ -232,27 +220,9 @@ struct Model {
 	}
 
 
-	bool getLight() const {
-		return isLightEnabled;
-	}
 
-	void setLight(bool enabled) {
-		for (auto const &[k, r] : _renderers)
-			r->setLight(enabled);
 
-		isLightEnabled = enabled;
-	}
 
-	bool getLightFollowView() const {
-		return isLightFollowView;
-	}
-
-	void setLightFollowView(bool follow) {
-		for (auto const &[k, r] : _renderers)
-			r->setLightFollowView(follow);
-
-		isLightFollowView = follow;
-	}
 
 	Renderer::ClippingMode getClippingMode() const {
 		return clippingMode;
@@ -385,11 +355,6 @@ struct Model {
 	std::shared_ptr<Model> parent;
 
 	std::vector<Attribute> attrs;
-
-
-
-	bool isLightEnabled = true;
-	bool isLightFollowView = false;
 
 	Renderer::ClippingMode clippingMode = Renderer::ClippingMode::STD;
 	bool isClipping = false;

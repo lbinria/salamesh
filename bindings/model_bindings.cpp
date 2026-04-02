@@ -172,8 +172,7 @@ namespace bindings {
 		model_t["center"] = sol::readonly_property(&Model::getCenter);
 		model_t["radius"] = sol::readonly_property(&Model::getRadius);
 
-		model_t["light"] = sol::property(&Model::getLight, &Model::setLight);
-		model_t["is_light_follow_view"] = sol::property(&Model::getLightFollowView, &Model::setLightFollowView);
+		modelView_t["light"] = sol::property(&ModelView::getLightEnabled, &ModelView::setLightEnabled);
 
 		model_t["clipping_mode"] = sol::property([](Model &self) {
 			return self.getClippingMode() + 1;

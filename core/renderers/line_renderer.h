@@ -34,6 +34,8 @@ struct LineRenderer : public Renderer {
 	void init() override;
 	void push() override;
 	void render(glm::vec3 &position) override;
+	void render(RendererView &rv, glm::vec3 &position) override;
+
 	void clean() override;
 	void clear() override;
 

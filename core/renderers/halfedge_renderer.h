@@ -30,6 +30,7 @@ struct HalfedgeRenderer : public Renderer {
 	void init() override;
 	virtual void push() = 0;
 	void render(glm::vec3 &position) override;
+	void render(RendererView &rv, glm::vec3 &position) override;
 	void clear() override;
 	void clean() override;
 

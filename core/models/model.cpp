@@ -39,8 +39,6 @@ bool Model::saveState(std::string dirPath, json &j) /*const*/ {
 
 	j["path"] = filename;
 	j["position"] = { position.x, position.y, position.z };
-	j["is_light_enabled"] = isLightEnabled;
-	j["is_light_follow_view"] = isLightFollowView;
 	j["is_clipping"] = isClipping;
 	j["clipping_plane_point"] = { clippingPlanePoint.x, clippingPlanePoint.y, clippingPlanePoint.z };
 	j["clipping_plane_normal"] = { clippingPlaneNormal.x, clippingPlaneNormal.y, clippingPlaneNormal.z };
@@ -72,8 +70,6 @@ void Model::loadState(json &j) {
 		j["position"][2].get<float>()
 	);
 	
-	setLight(j["is_light_enabled"].get<bool>());
-	setLightFollowView(j["is_light_follow_view"].get<bool>());
 	setClipping(j["is_clipping"].get<bool>());
 
 	setClippingPlanePoint(glm::vec3(

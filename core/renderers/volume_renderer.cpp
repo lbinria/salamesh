@@ -141,9 +141,6 @@ void VolumeRenderer::init() {
 
 void VolumeRenderer::render(glm::vec3 &position) {
 
-	if (!visible)
-		return;
-
 	glBindVertexArray(VAO);
 
 	glActiveTexture(GL_TEXTURE0);

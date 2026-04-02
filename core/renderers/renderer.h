@@ -58,52 +58,6 @@ struct Renderer {
 	virtual void clear() = 0;
 
 
-
-
-
-	void setVisible(bool v) {
-		visible = v;
-
-		if (v && shouldPush) {
-			push();
-		}
-	}
-
-	bool getVisible() const {
-		return visible;
-	}
-
-	void setLayerElement(int element, Layer layer) {
-		// I could refactor more, 
-		// but we won't understand anything after that
-		switch (layer)
-		{
-		case Layer::COLORMAP_0:
-		case Layer::COLORMAP_1:
-		case Layer::COLORMAP_2:
-			shader.use();
-			shader.setInt("colormapElement[" + std::to_string(int(layer)) + "]", element);
-			break;
-		case Layer::HIGHLIGHT:
-			shader.use();
-			shader.setInt("highlightElement", element);
-			break;
-		case Layer::FILTER:
-			shader.use();
-			shader.setInt("filterElement", element);
-			break;
-		// Should never happen (except if all the case aren't covered)
-		default:
-			throw std::runtime_error(
-				"setLayerElement for layer: " + 
-				layerToString(layer) + 
-				" is not implemented."
-			);
-		}
-	}
-
-
-
 	glm::vec3 getHoverColor() const {
 		return hoverColor;
 	}
@@ -125,16 +79,6 @@ struct Renderer {
 	}
 
 	// TODO to remove
-	void setLight(bool enabled) {
-		shader.use();
-		shader.setFloat("is_light_enabled", enabled); // TODO set int here !
-	}
-
-	void setLightFollowView(bool follow) {
-		shader.use();
-		shader.setInt("is_light_follow_view", follow);
-	}
-
 	virtual void setClippingMode(ClippingMode mode) {
 		shader.use();
 		shader.setInt("clipping_mode", mode);		
@@ -222,7 +166,7 @@ struct Renderer {
 	}
 
 	void loadState(json &j) {
-		setVisible(j["visible"].get<bool>());
+		
 		setHoverColor(glm::vec3(j["hoverColor"][0].get<float>(), j["hoverColor"][1].get<float>(), j["hoverColor"][2].get<float>()));
 		setSelectColor(glm::vec3(j["selectColor"][0].get<float>(), j["selectColor"][1].get<float>(), j["selectColor"][2].get<float>()));
 
@@ -230,7 +174,6 @@ struct Renderer {
 	}
 
 	void saveState(json &j) const {
-		j["visible"] = visible;
 		j["hoverColor"] = json::array({hoverColor.x, hoverColor.y, hoverColor.z});
 		j["selectColor"] = json::array({selectColor.x, selectColor.y, selectColor.z});
 
@@ -243,7 +186,6 @@ struct Renderer {
 	// TODO to remove
 	Shader shader;
 
-	bool visible = true;
 	bool shouldPush = false;
 
 	glm::vec3 hoverColor{1.f, 1.f, 1.f};

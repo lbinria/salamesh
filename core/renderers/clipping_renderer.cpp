@@ -196,13 +196,19 @@ void ClippingRenderer::push() {
 
 void ClippingRenderer::render(glm::vec3 &position) {
 
-	if (!visible)
+	// glBindVertexArray(VAO);
+
+	// setPosition(position);
+
+	// glDrawArrays(GL_TRIANGLES, 0, nelements);
+}
+
+void ClippingRenderer::render(RendererView &rv, glm::vec3 &position) {
+	if (!rv.visible)
 		return;
 
 	glBindVertexArray(VAO);
-
-	setPosition(position);
-
+	rv.use(position);
 	glDrawArrays(GL_TRIANGLES, 0, nelements);
 }
 

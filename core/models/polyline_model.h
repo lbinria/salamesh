@@ -22,8 +22,6 @@ struct PolylineModel : public Model {
 			{"zclipping_renderer", std::make_shared<ClippingRenderer>("", _m.points) }
 		})
 		{
-			getPointsRenderer().setVisible(false);
-			getEdgesRenderer()->setVisible(true);
 		}
 
 	ModelType getModelType() const override {

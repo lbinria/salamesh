@@ -36,13 +36,6 @@ namespace bindings {
 
 		renderer_t["name"] = sol::readonly_property(&Renderer::getName);
 
-		renderer_t["visible"] = sol::property(
-			&Renderer::getVisible,
-			&Renderer::setVisible
-		);
-
-		renderer_t["light"] = sol::writeonly_property(&Renderer::setLight);
-
 
 		// TODO important missing cases
 		renderer_t.set_function("as", [](sol::this_state s, Renderer& self, const std::string& typeName) -> sol::object {
@@ -83,18 +76,8 @@ namespace bindings {
 			self[i - 1] = value;
 		};
 
-		pointSetRenderer_t["visible"] = sol::property(
-			&PointSetRenderer::getVisible,
-			&PointSetRenderer::setVisible
-		);
-		// pointSetRenderer_t["color"] = sol::property(
-		// 	&PointSetRenderer::getColor,
-		// 	&PointSetRenderer::setColor
-		// );
-		// pointSetRenderer_t["size"] = sol::property(
-		// 	&PointSetRenderer::getPointSize,
-		// 	&PointSetRenderer::setPointSize
-		// );
+
+
 		pointSetRenderer_t.set_function("add_point", &PointSetRenderer::addPoint);
 		pointSetRenderer_t.set_function("add_points", &PointSetRenderer::addPoints);
 		pointSetRenderer_t.set_function("remove_points", &PointSetRenderer::removePoints);
@@ -110,10 +93,7 @@ namespace bindings {
 			sol::bases<Renderer>()
 		);
 
-		halfedgeRenderer_t["visible"] = sol::property(
-			&HalfedgeRenderer::getVisible,
-			&HalfedgeRenderer::setVisible
-		);
+
 		halfedgeRenderer_t["inside_color"] = sol::property(
 			&HalfedgeRenderer::getInsideColor,
 			&HalfedgeRenderer::setInsideColor

@@ -171,6 +171,18 @@ struct RendererView {
 
 	bool visible;
 
+	void loadState(json &j) {
+		visible = j["visible"].get<bool>();
+		doLoadState(j);
+	}
+
+	void saveState(json &j) const {
+		j["visible"] = visible;
+		doSaveState(j);
+	}
+
+
+
 	protected:
 	Shader shader;
 
@@ -183,6 +195,7 @@ struct RendererView {
 	// TODO uncomment above and remove below
 	virtual void doLoadState(json &j) {};
 	virtual void doSaveState(json &j) const {};
+
 
 };
 
@@ -297,9 +310,9 @@ struct ClippingRendererView : public RendererView {
 
 };
 
-struct HalfedgeRendererView : public RendererView {
+struct HalfedgeRendererView : public MeshRendererView {
 	HalfedgeRendererView() : 
-		RendererView(Shader(sl::shadersPath("edge.vert"), sl::shadersPath("edge.frag"))) 
+		MeshRendererView(Shader(sl::shadersPath("edge.vert"), sl::shadersPath("edge.frag"))) 
 	{}
 
 	int getRenderElementKind() override { return ElementKind::EDGES_ELT | ElementKind::CORNERS_ELT; }

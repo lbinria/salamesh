@@ -195,6 +195,8 @@ struct ModelView {
 
 
 	bool saveState(json &j) /*const*/ {
+		j["is_light_enabled"] = isLightEnabled;
+		
 		// TODO save directly as arrays
 		j["selected_colormap0"] = selectedColormap[0];
 		j["selected_colormap1"] = selectedColormap[1];
@@ -210,6 +212,8 @@ struct ModelView {
 	}
 
 	void loadState(json &j) {
+		setLightEnabled(j["is_light_enabled"].get<bool>());
+
 		// TODO load directly as array
 		selectedAttr[0] = j["selected_attr0"].get<int>();
 		selectedAttr[1] = j["selected_attr1"].get<int>();

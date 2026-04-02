@@ -24,13 +24,12 @@ struct ClippingRenderer : public Renderer {
 	ClippingRenderer(std::string name, PointSet &ps) : 
 		Renderer(name, Shader(sl::shadersPath("clipping.vert"), sl::shadersPath("clipping.frag"))),
 		ps(ps) {
-			visible = false;
-			// setColor(glm::vec3(1.0, 1.0, 1.0));
 		}
 
 	void init() override;
 	void push() override;
 	void render(glm::vec3 &position) override;
+	void render(RendererView &rv, glm::vec3 &position) override;
 	void clean() override;
 	void clear() override;
 
@@ -40,7 +39,7 @@ struct ClippingRenderer : public Renderer {
 
 	void setClipping(bool enabled) {
 		Renderer::setClipping(enabled);
-		visible = enabled;
+		// visible = enabled;
 	}
 
 	void setClippingPlanePoint(glm::vec3 p) {
