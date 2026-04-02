@@ -42,6 +42,61 @@ struct ModelView {
 		isLightEnabled = enabled;
 	}
 
+	RendererView::ClippingMode getClippingMode() const {
+		return clippingMode;
+	}
+
+	void setClippingMode(RendererView::ClippingMode mode) {
+		for (auto const &[k, rv] : rendererViews)
+			rv->setClippingMode(mode);
+
+		clippingMode = mode;
+	}
+
+	bool getClipping() const {
+		return isClipping;
+	}
+
+	void setClipping(bool enabled) {
+		for (auto const &[k, rv] : rendererViews)
+			rv->setClipping(enabled);
+
+		isClipping = enabled;
+	}
+
+	glm::vec3 getClippingPlanePoint() const {
+		return clippingPlanePoint;
+	}
+
+	void setClippingPlanePoint(glm::vec3 p) {
+		for (auto const &[k, rv] : rendererViews)
+			rv->setClippingPlanePoint(p);
+
+		clippingPlanePoint = p;
+	}
+
+	glm::vec3 getClippingPlaneNormal() const {
+		return clippingPlaneNormal;
+	}
+
+	void setClippingPlaneNormal(glm::vec3 n) {
+		for (auto const &[k, rv] : rendererViews)
+			rv->setClippingPlaneNormal(n);
+
+		clippingPlaneNormal = n;
+	}
+
+	bool getInvertClipping() const {
+		return invertClipping;
+	}
+
+	void setInvertClipping(bool invert) {
+		for (auto const &[k, rv] : rendererViews)
+			rv->setInvertClipping(invert);
+
+		invertClipping = invert;
+	}
+
 	void push() {
 		// Push highlight and filter attributes if they exist
 		for (auto [k, isActivated] : activatedLayers) {
@@ -196,7 +251,7 @@ struct ModelView {
 
 	bool saveState(json &j) /*const*/ {
 		j["is_light_enabled"] = isLightEnabled;
-		
+
 		// TODO save directly as arrays
 		j["selected_colormap0"] = selectedColormap[0];
 		j["selected_colormap1"] = selectedColormap[1];
@@ -207,6 +262,11 @@ struct ModelView {
 
 		j["attr_name_by_layer_and_kind"] = attrNameByLayerAndKind;
 		j["activated_layers"] = activatedLayers;
+
+		j["is_clipping"] = isClipping;
+		j["clipping_plane_point"] = { clippingPlanePoint.x, clippingPlanePoint.y, clippingPlanePoint.z };
+		j["clipping_plane_normal"] = { clippingPlaneNormal.x, clippingPlaneNormal.y, clippingPlaneNormal.z };
+		j["invert_clipping"] = invertClipping;
 
 		return true;
 	}
@@ -241,6 +301,22 @@ struct ModelView {
 				setLayer(k, l);
 			}
 		}
+
+		setClipping(j["is_clipping"].get<bool>());
+
+		setClippingPlanePoint(glm::vec3(
+			j["clipping_plane_point"][0].get<float>(),
+			j["clipping_plane_point"][1].get<float>(),
+			j["clipping_plane_point"][2].get<float>()
+		));
+
+		setClippingPlaneNormal(glm::vec3(
+			j["clipping_plane_normal"][0].get<float>(),
+			j["clipping_plane_normal"][1].get<float>(),
+			j["clipping_plane_normal"][2].get<float>()
+		));
+
+		setInvertClipping(j["invert_clipping"].get<bool>());
 	}
 
 
@@ -290,7 +366,13 @@ struct ModelView {
 
 	private:
 	Model &model;
+
 	bool isLightEnabled;
+	RendererView::ClippingMode clippingMode = RendererView::ClippingMode::STD;
+	bool isClipping = false;
+	glm::vec3 clippingPlanePoint{0.f, 0.f, 0.f};
+	glm::vec3 clippingPlaneNormal{0.f, 0.f, 1.f};
+	bool invertClipping = false;
 
 	int selectedAttr[3] = {-1, -1, -1};
 	int selectedColormap[3] = {0, 0, 0};

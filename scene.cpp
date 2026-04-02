@@ -44,8 +44,6 @@ std::shared_ptr<Model> Scene::loadModel(const std::string& filename, std::string
 		return nullptr;
 
 	
-	// Setup default clipping plane
-	model->setupClipping();
 	models[modelName] = std::move(model);
 
 	// Update cameras far planes

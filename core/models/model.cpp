@@ -39,10 +39,7 @@ bool Model::saveState(std::string dirPath, json &j) /*const*/ {
 
 	j["path"] = filename;
 	j["position"] = { position.x, position.y, position.z };
-	j["is_clipping"] = isClipping;
-	j["clipping_plane_point"] = { clippingPlanePoint.x, clippingPlanePoint.y, clippingPlanePoint.z };
-	j["clipping_plane_normal"] = { clippingPlaneNormal.x, clippingPlaneNormal.y, clippingPlaneNormal.z };
-	j["invert_clipping"] = invertClipping;
+
 
 	j["visible"] = visible;
 
@@ -70,24 +67,10 @@ void Model::loadState(json &j) {
 		j["position"][2].get<float>()
 	);
 	
-	setClipping(j["is_clipping"].get<bool>());
 
-	setClippingPlanePoint(glm::vec3(
-		j["clipping_plane_point"][0].get<float>(),
-		j["clipping_plane_point"][1].get<float>(),
-		j["clipping_plane_point"][2].get<float>()
-	));
-
-	setClippingPlaneNormal(glm::vec3(
-		j["clipping_plane_normal"][0].get<float>(),
-		j["clipping_plane_normal"][1].get<float>(),
-		j["clipping_plane_normal"][2].get<float>()
-	));
-
-	setInvertClipping(j["invert_clipping"].get<bool>());
 
 	for (auto &[viewName, mv] : views) {
-		loadState(j);
+		mv.loadState(j);
 	}
 
 

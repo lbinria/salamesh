@@ -224,65 +224,9 @@ struct Model {
 
 
 
-	Renderer::ClippingMode getClippingMode() const {
-		return clippingMode;
-	}
 
-	void setClippingMode(Renderer::ClippingMode mode) {
-		for (auto const &[k, r] : _renderers)
-			r->setClippingMode(mode);
 
-		clippingMode = mode;
-	}
 
-	bool getClipping() const {
-		return isClipping;
-	}
-
-	void setClipping(bool enabled) {
-		for (auto const &[k, r] : _renderers)
-			r->setClipping(enabled);
-
-		isClipping = enabled;
-	}
-
-	glm::vec3 getClippingPlanePoint() const {
-		return clippingPlanePoint;
-	}
-
-	void setClippingPlanePoint(glm::vec3 p) {
-		for (auto const &[k, r] : _renderers)
-			r->setClippingPlanePoint(p);
-
-		clippingPlanePoint = p;
-	}
-
-	glm::vec3 getClippingPlaneNormal() const {
-		return clippingPlaneNormal;
-	}
-
-	void setClippingPlaneNormal(glm::vec3 n) {
-		for (auto const &[k, r] : _renderers)
-			r->setClippingPlaneNormal(n);
-
-		clippingPlaneNormal = n;
-	}
-
-	bool getInvertClipping() const {
-		return invertClipping;
-	}
-
-	void setInvertClipping(bool invert) {
-		for (auto const &[k, r] : _renderers)
-			r->setInvertClipping(invert);
-
-		invertClipping = invert;
-	}
-
-	void setupClipping() {
-		setClippingPlanePoint(getCenter());
-		setClippingPlaneNormal({1, 0, 0});
-	}
 
 	int getIndex() {
 		return index;
@@ -356,11 +300,7 @@ struct Model {
 
 	std::vector<Attribute> attrs;
 
-	Renderer::ClippingMode clippingMode = Renderer::ClippingMode::STD;
-	bool isClipping = false;
-	glm::vec3 clippingPlanePoint{0.f, 0.f, 0.f};
-	glm::vec3 clippingPlaneNormal{0.f, 0.f, 1.f};
-	bool invertClipping = false;
+
 	
 
 

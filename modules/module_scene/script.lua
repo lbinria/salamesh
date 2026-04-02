@@ -87,22 +87,22 @@ function draw_model_properties(model, k, view)
 		if (imgui.CollapsingHeader("Clipping##" .. k .. "_properties_clipping")) then 
 
 
-			local sel_chk_enable_clipping, new_enable_clipping = imgui.Checkbox("Enable clipping", model.clipping)
+			local sel_chk_enable_clipping, new_enable_clipping = imgui.Checkbox("Enable clipping", model_view.clipping)
 
 			if (sel_chk_enable_clipping) then 
 				print("Enable clipping: " .. tostring(new_enable_clipping))
-				model.clipping = new_enable_clipping
+				model_view.clipping = new_enable_clipping
 				app.cull = false
 			end
 
-			if (imgui.BeginCombo("##Clipping plane mode", model.clipping_mode_strings[model.clipping_mode])) then
+			if (imgui.BeginCombo("##Clipping plane mode", model.clipping_mode_strings[model_view.clipping_mode])) then
 				for i = 1, #model.clipping_mode_strings do
-					local is_selected = i == model.clipping_mode
+					local is_selected = i == model_view.clipping_mode
 					if (imgui.Selectable(model.clipping_mode_strings[i], is_selected)) then
 						
-						model.clipping_mode = i
+						model_view.clipping_mode = i
 
-						print("Set clipping mode to: " .. tostring(model.clipping_mode))
+						print("Set clipping mode to: " .. tostring(model_view.clipping_mode))
 					end
 				end
 				imgui.EndCombo()
@@ -120,14 +120,14 @@ function draw_model_properties(model, k, view)
 						sel_clipping_plane[k] = i
 
 						if (i == 1) then
-							model.clipping_plane_normal = vec3.new(1,0,0)
+							model_view.clipping_plane_normal = vec3.new(1,0,0)
 						elseif (i == 2) then
-							model.clipping_plane_normal = vec3.new(0,1,0)
+							model_view.clipping_plane_normal = vec3.new(0,1,0)
 						elseif (i == 3) then
-							model.clipping_plane_normal = vec3.new(0,0,1)
+							model_view.clipping_plane_normal = vec3.new(0,0,1)
 						end
 
-						print("Set clipping plane normal to: " .. model.clipping_plane_normal:to_string())
+						print("Set clipping plane normal to: " .. model_view.clipping_plane_normal:to_string())
 					end
 				end
 				imgui.EndCombo()
@@ -137,13 +137,13 @@ function draw_model_properties(model, k, view)
 			-- Maybe it exists a better way to get model center from x,y,z than that ugly switch
 			local center_at = 0;
 			if (sel_clipping_plane[k] == 1) then
-				plane_pos = model.clipping_plane_point.x
+				plane_pos = model_view.clipping_plane_point.x
 				center_at = model.center.x
 			elseif (sel_clipping_plane[k] == 2) then
-				plane_pos = model.clipping_plane_point.y
+				plane_pos = model_view.clipping_plane_point.y
 				center_at = model.center.y
 			elseif (sel_clipping_plane[k] == 3) then
-				plane_pos = model.clipping_plane_point.z
+				plane_pos = model_view.clipping_plane_point.z
 				center_at = model.center.z
 			end
 
@@ -159,19 +159,19 @@ function draw_model_properties(model, k, view)
 
 				local v 
 				if (sel_clipping_plane[k] == 1) then
-					v = vec3.new(new_clipping_plane_pos, model.clipping_plane_point.y, model.clipping_plane_point.z)
+					v = vec3.new(new_clipping_plane_pos, model_view.clipping_plane_point.y, model_view.clipping_plane_point.z)
 				elseif (sel_clipping_plane[k] == 2) then
-					v = vec3.new(model.clipping_plane_point.x, new_clipping_plane_pos, model.clipping_plane_point.z)
+					v = vec3.new(model_view.clipping_plane_point.x, new_clipping_plane_pos, model_view.clipping_plane_point.z)
 				elseif (sel_clipping_plane[k] == 3) then
-					v = vec3.new(model.clipping_plane_point.x, model.clipping_plane_point.y, new_clipping_plane_pos)
+					v = vec3.new(model_view.clipping_plane_point.x, model_view.clipping_plane_point.y, new_clipping_plane_pos)
 				end
-				model.clipping_plane_point = v
+				model_view.clipping_plane_point = v
 			end
 
 			local sel_invert_clipping, new_invert_clipping = imgui.Checkbox("Invert clipping", invert_clipping)
 			if (sel_invert_clipping) then 
 				invert_clipping = new_invert_clipping
-				model.invert_clipping = invert_clipping
+				model_view.invert_clipping = invert_clipping
 			end
 
 		end

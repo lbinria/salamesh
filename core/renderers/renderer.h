@@ -16,11 +16,6 @@ using json = nlohmann::json;
 
 struct Renderer {
 
-	enum ClippingMode {
-		CELL = 0,
-		STD = 1
-	};
-
 	Renderer (const Renderer&) = delete;
 	Renderer& operator= (const Renderer&) = delete;
 
@@ -59,32 +54,6 @@ struct Renderer {
 
 
 
-
-	// TODO to remove
-	virtual void setClippingMode(ClippingMode mode) {
-		shader.use();
-		shader.setInt("clipping_mode", mode);		
-	}
-
-	virtual void setClipping(bool enabled) {
-		shader.use();
-		shader.setInt("is_clipping_enabled", enabled);
-	}
-
-	virtual void setClippingPlanePoint(glm::vec3 p) {
-		shader.use();
-		shader.setFloat3("clipping_plane_point", p);
-	}
-
-	virtual void setClippingPlaneNormal(glm::vec3 n) {
-		shader.use();
-		shader.setFloat3("clipping_plane_normal", n);
-	}
-
-	void setInvertClipping(bool invert) {
-		shader.use();
-		shader.setInt("invert_clipping", invert);
-	}
 
 
 	void loadState(json &j) {

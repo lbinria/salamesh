@@ -11,6 +11,11 @@ using json = nlohmann::json;
 
 struct RendererView {
 
+	enum ClippingMode {
+		CELL = 0,
+		STD = 1
+	};
+
 	RendererView(Shader shader) : 
 		shader(std::move(shader))
 	{
@@ -63,6 +68,31 @@ struct RendererView {
 	void setLightEnabled(bool enabled) {
 		shader.use();
 		shader.setFloat("is_light_enabled", enabled); // TODO set int here !
+	}
+
+	virtual void setClippingMode(ClippingMode mode) {
+		shader.use();
+		shader.setInt("clipping_mode", mode);		
+	}
+
+	virtual void setClipping(bool enabled) {
+		shader.use();
+		shader.setInt("is_clipping_enabled", enabled);
+	}
+
+	virtual void setClippingPlanePoint(glm::vec3 p) {
+		shader.use();
+		shader.setFloat3("clipping_plane_point", p);
+	}
+
+	virtual void setClippingPlaneNormal(glm::vec3 n) {
+		shader.use();
+		shader.setFloat3("clipping_plane_normal", n);
+	}
+
+	void setInvertClipping(bool invert) {
+		shader.use();
+		shader.setInt("invert_clipping", invert);
 	}
 
 	void setLayerElement(int element, Layer layer) {
@@ -272,6 +302,8 @@ struct MeshRendererView : public RendererView {
 		selectColor = c;
 	}
 
+
+
 	virtual void useTextures() override {
 		glActiveTexture(GL_TEXTURE0 + 0);
 		glBindTexture(GL_TEXTURE_2D, texColormap0);
@@ -334,6 +366,50 @@ struct ClippingRendererView : public RendererView {
 	{}
 
 	int getRenderElementKind() override { return 0; }
+
+	void setClipping(bool enabled) {
+		RendererView::setClipping(enabled);
+		// visible = enabled;
+	}
+
+	void setClippingPlanePoint(glm::vec3 p) {
+		RendererView::setClippingPlanePoint(p);
+		clippingPlanePoint = p;
+		// push();
+	}
+
+	void setClippingPlaneNormal(glm::vec3 n) {
+		RendererView::setClippingPlaneNormal(n);
+		clippingPlaneNormal = n;
+		// push();
+	}
+
+	glm::vec3 getColor() const {
+		return color;
+	}
+
+	void setColor(glm::vec3 c) {
+		shader.use();
+		shader.setFloat3("color", c);
+		color = c;
+	}
+
+	virtual void doLoadState(json &j) override {
+		setColor({j["clippingColor"][0].get<float>(), j["clippingColor"][1].get<float>(), j["clippingColor"][2].get<float>()});
+		setClippingPlanePoint({j["clippingPlanePoint"][0].get<float>(), j["clippingPlanePoint"][1].get<float>(), j["clippingPlanePoint"][2].get<float>()});
+		setClippingPlaneNormal({j["clippingPlaneNormal"][0].get<float>(), j["clippingPlaneNormal"][1].get<float>(), j["clippingPlaneNormal"][2].get<float>()});
+	}
+	virtual void doSaveState(json &j) const override {
+		j["clippingColor"] = json::array({color.x, color.y, color.z});
+		j["clippingPlanePoint"] = json::array({clippingPlanePoint.x, clippingPlanePoint.y, clippingPlanePoint.z});
+		j["clippingPlaneNormal"] = json::array({clippingPlaneNormal.x, clippingPlaneNormal.y, clippingPlaneNormal.z});
+	}
+
+
+	private:
+	glm::vec3 color;
+	glm::vec3 clippingPlanePoint{0.0f, 0.0f, 0.0f}; // A point on the plane
+	glm::vec3 clippingPlaneNormal{1.0f, 0.0f, 0.0f}; // The normal of the plane
 
 };
 

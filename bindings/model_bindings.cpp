@@ -174,30 +174,29 @@ namespace bindings {
 
 		modelView_t["light"] = sol::property(&ModelView::getLightEnabled, &ModelView::setLightEnabled);
 
-		model_t["clipping_mode"] = sol::property([](Model &self) {
+		modelView_t["clipping_mode"] = sol::property([](ModelView &self) {
 			return self.getClippingMode() + 1;
-		}, [](Model &self, int selected) {
-			self.setClippingMode(static_cast<Renderer::ClippingMode>(selected - 1));
+		}, [](ModelView &self, int selected) {
+			self.setClippingMode(static_cast<RendererView::ClippingMode>(selected - 1));
 		});
 
-		model_t["clipping"] = sol::property(&Model::getClipping, &Model::setClipping);
+		modelView_t["clipping"] = sol::property(&ModelView::getClipping, &ModelView::setClipping);
 
-		model_t["clipping_plane_point"] = sol::property(
-			&Model::getClippingPlanePoint,
-			&Model::setClippingPlanePoint
+		modelView_t["clipping_plane_point"] = sol::property(
+			&ModelView::getClippingPlanePoint,
+			&ModelView::setClippingPlanePoint
 		);
 
-		model_t["clipping_plane_normal"] = sol::property(
-			&Model::getClippingPlaneNormal,
-			&Model::setClippingPlaneNormal
+		modelView_t["clipping_plane_normal"] = sol::property(
+			&ModelView::getClippingPlaneNormal,
+			&ModelView::setClippingPlaneNormal
 		);
 
-		model_t["invert_clipping"] = sol::property(
-			&Model::getInvertClipping,
-			&Model::setInvertClipping
+		modelView_t["invert_clipping"] = sol::property(
+			&ModelView::getInvertClipping,
+			&ModelView::setInvertClipping
 		);
 
-		model_t.set_function("setup_clipping", &Model::setupClipping);
 
 		model_t["clipping_mode_strings"] = sol::readonly_property(&Model::getClippingModeStrings);
 

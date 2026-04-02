@@ -136,8 +136,6 @@ void SurfaceHalfedgeRenderer::push() {
 	}
 
 	writeVBOBuffer(vertices);
-
-	shouldPush = false;
 }
 
 void VolumeHalfedgeRenderer::push() {
