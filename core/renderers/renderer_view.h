@@ -252,6 +252,26 @@ struct MeshRendererView : public RendererView {
 		color = c;
 	}
 
+	glm::vec3 getHoverColor() const {
+		return hoverColor;
+	}
+
+	void setHoverColor(glm::vec3 c) {
+		shader.use();
+		shader.setFloat3("hoverColor", c);
+		hoverColor = c;
+	}
+
+	glm::vec3 getSelectColor() const {
+		return selectColor;
+	}
+
+	void setSelectColor(glm::vec3 c) {
+		shader.use();
+		shader.setFloat3("selectColor", c);
+		selectColor = c;
+	}
+
 	virtual void useTextures() override {
 		glActiveTexture(GL_TEXTURE0 + 0);
 		glBindTexture(GL_TEXTURE_2D, texColormap0);
@@ -283,6 +303,8 @@ struct MeshRendererView : public RendererView {
 		setMeshSize(j["meshSize"].get<float>());
 		setMeshShrink(j["meshShrink"].get<float>());
 		setCornerVisible(j["isCornerVisible"].get<bool>());
+		setHoverColor(glm::vec3(j["hoverColor"][0].get<float>(), j["hoverColor"][1].get<float>(), j["hoverColor"][2].get<float>()));
+		setSelectColor(glm::vec3(j["selectColor"][0].get<float>(), j["selectColor"][1].get<float>(), j["selectColor"][2].get<float>()));
 	}
 
 	virtual void doSaveState(json &j) const override {
@@ -290,6 +312,8 @@ struct MeshRendererView : public RendererView {
 		j["meshSize"] = meshSize;
 		j["meshShrink"] = meshShrink;
 		j["isCornerVisible"] = isCornerVisible;
+		j["hoverColor"] = json::array({hoverColor.x, hoverColor.y, hoverColor.z});
+		j["selectColor"] = json::array({selectColor.x, selectColor.y, selectColor.z});
 	}
 
 	private:
@@ -298,6 +322,9 @@ struct MeshRendererView : public RendererView {
 	float meshShrink;
 	bool isCornerVisible;
 	glm::vec3 color;
+
+	glm::vec3 hoverColor{1.f, 1.f, 1.f};
+	glm::vec3 selectColor{0.f, 0.22f, 1.f};
 
 };
 

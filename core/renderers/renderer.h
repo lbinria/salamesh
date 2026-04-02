@@ -58,25 +58,7 @@ struct Renderer {
 	virtual void clear() = 0;
 
 
-	glm::vec3 getHoverColor() const {
-		return hoverColor;
-	}
 
-	void setHoverColor(glm::vec3 c) {
-		shader.use();
-		shader.setFloat3("hoverColor", c);
-		hoverColor = c;
-	}
-
-	glm::vec3 getSelectColor() const {
-		return selectColor;
-	}
-
-	void setSelectColor(glm::vec3 c) {
-		shader.use();
-		shader.setFloat3("selectColor", c);
-		selectColor = c;
-	}
 
 	// TODO to remove
 	virtual void setClippingMode(ClippingMode mode) {
@@ -105,77 +87,14 @@ struct Renderer {
 	}
 
 
-
-	void setLayerNDims(Layer layer, int nDims) {
-		// TODO check layer ? only works for colormaps...
-		shader.use();
-		shader.setInt("attrNDims[" + std::to_string(int(layer)) + "]", nDims);
-	}
-
-	void setLayerRange(Layer layer, float min, float max) {
-		// TODO check layer ? only works for colormaps...
-		shader.use();
-		shader.setFloat2("attrRange[" + std::to_string(int(layer)) + "]", glm::vec2(min, max));
-	}
-
-	// Put data to buffer
-	void setBuf(unsigned int buf, std::vector<float> data) {
-		glBindBuffer(GL_TEXTURE_BUFFER, buf);
-		glBufferData(GL_TEXTURE_BUFFER, data.size() * sizeof(float), data.data(), GL_DYNAMIC_DRAW);
-	}
-
-	// Put data chunk to buffer
-	void setBuf(unsigned int buf, int idx, float val) {
-		glBindBuffer(GL_TEXTURE_BUFFER, buf);
-		glBufferSubData(GL_TEXTURE_BUFFER, idx * sizeof(float), sizeof(float), &val);
-	}
-
-	// Obtain buffer that matches with requested layer
-	unsigned int getLayerBuffer(Layer layer) {
-		switch (layer)
-		{
-		case Layer::COLORMAP_0:
-			return bufColormap0;
-		case Layer::COLORMAP_1:
-			return bufColormap1;
-		case Layer::COLORMAP_2:
-			return bufColormap2;
-		case Layer::HIGHLIGHT:
-			return bufHighlight;
-		case Layer::FILTER:
-			return bufFilter;
-		// Should never happen (except if all the case aren't covered)
-		default:
-			throw std::runtime_error(
-				"getLayerBuffer for layer: " + 
-				layerToString(layer) + 
-				" is not implemented."
-			);
-		}
-	}
-
-	
-	void setLayer(int idx, float val, Layer layer) {
-		unsigned int buf = getLayerBuffer(layer);
-		setBuf(buf, idx, val);
-	}
-
-	void setLayer(std::vector<float> data, Layer layer) {
-		unsigned int buf = getLayerBuffer(layer);
-		setBuf(buf, data);
-	}
-
 	void loadState(json &j) {
-		
-		setHoverColor(glm::vec3(j["hoverColor"][0].get<float>(), j["hoverColor"][1].get<float>(), j["hoverColor"][2].get<float>()));
-		setSelectColor(glm::vec3(j["selectColor"][0].get<float>(), j["selectColor"][1].get<float>(), j["selectColor"][2].get<float>()));
 
+		// TODO renderviews!
 		doLoadState(j);
 	}
 
 	void saveState(json &j) const {
-		j["hoverColor"] = json::array({hoverColor.x, hoverColor.y, hoverColor.z});
-		j["selectColor"] = json::array({selectColor.x, selectColor.y, selectColor.z});
+		// TODO renderviews!
 
 		doSaveState(j);
 	}
@@ -185,13 +104,6 @@ struct Renderer {
 	protected:
 	// TODO to remove
 	Shader shader;
-
-	bool shouldPush = false;
-
-	glm::vec3 hoverColor{1.f, 1.f, 1.f};
-	glm::vec3 selectColor{0.f, 0.22f, 1.f};
-
-	int attrRepeat = 1;
 
 	unsigned int VAO, VBO; // Buffers
 
