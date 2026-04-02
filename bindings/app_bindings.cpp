@@ -160,8 +160,8 @@ namespace bindings {
 
 		sol::usertype<ISceneView> sceneView_t = lua.new_usertype<ISceneView>(
 			"ISceneView",
-			"models", sol::readonly_property(&ISceneView::getModelViews),
-			"get_model", &ISceneView::getModelView
+			"name", sol::readonly_property(&ISceneView::getName)
+			// "get_model", &ISceneView::getModelView
 		);
 
 

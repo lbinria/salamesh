@@ -279,6 +279,14 @@ ModelView Model::getDefaultView() {
 	return mv;
 }
 
+ModelView& Model::getView(std::string viewName) {
+	// Create default view
+	if (!views.contains(viewName))
+		views.insert({viewName, getDefaultView()});
+
+	return views.at(viewName);
+}
+
 void Model::render(ModelView &modelView) {
 	if (!modelView.visible)
 		return;

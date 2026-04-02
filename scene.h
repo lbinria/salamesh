@@ -39,9 +39,9 @@ struct Scene : public IScene {
 		renderers.getInstanciator().registerType("PointSetRenderer", [](std::string name) { return std::make_unique<PointSetRenderer>(name); });
 
 		// Init default view
-		auto view = std::make_shared<SceneView>(1024, 768);
+		auto view = std::make_shared<SceneView>("default", 1024, 768);
 		view->setup();
-		views["default"] = std::move(view);
+		views[view->getName()] = std::move(view);
 
 		setupCameras();
 
@@ -71,7 +71,8 @@ struct Scene : public IScene {
 		for (auto &[viewName, view] : views) {
 			for (auto &[modelName, model] : models) {
 				// Get view of the model
-				auto &mv = view->getModelView(*model);
+				// auto &mv = view->getModelView(*model);
+				auto &mv = model->getView(viewName);
 				model->render(mv);
 			}
 		}

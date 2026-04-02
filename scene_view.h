@@ -3,7 +3,11 @@
 
 struct SceneView : public ISceneView {
 
-	SceneView(int width, int height) : renderSurface(width, height) {}
+	SceneView(std::string name, int width, int height) : name(name), renderSurface(width, height) {}
+
+	std::string getName() const {
+		return name;
+	}
 
 	// TODO pass width, height on setup, remove from constructor
 	void setup() override {
@@ -33,24 +37,22 @@ struct SceneView : public ISceneView {
 
 	RenderSurface &getRenderSurface() override { return renderSurface; }
 
-	std::map<std::string, ModelView> getModelViews() override {
-		return modelViews;
-	}
+	// ModelView& getModelView(Model &model) override {
+	// 	auto n = model.getName();
+	// 	model.getView()
 
-	ModelView& getModelView(Model &model) override {
-		auto n = model.getName();
+	// 	// Create default view
+	// 	if (!modelViews.contains(n))
+	// 		modelViews.insert({n, model.getDefaultView()});
 
-		// Create default view
-		if (!modelViews.contains(n))
-			modelViews.insert({n, model.getDefaultView()});
-
-		return modelViews.at(n);
-	}
+	// 	return modelViews.at(n);
+	// }
 
 
 	private:
+	std::string name;
 	glm::vec3 backgroundColor{0.05, 0.1, 0.15};
 	RenderSurface renderSurface;
-	std::map<std::string, ModelView> modelViews;
+	// std::map<std::string, ModelView> modelViews;
 
 };

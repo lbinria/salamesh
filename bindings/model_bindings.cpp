@@ -100,6 +100,8 @@ namespace bindings {
 
 		sol::usertype<Model> model_t = lua.new_usertype<Model>("Model");
 
+		model_t.set_function("get_view", &Model::getView);
+
 		model_t.set_function("bind_attr", &Model::bindAttr);
 
 		model_t.set_function("as_tri", &Model::as<TriModel>);

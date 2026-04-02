@@ -95,6 +95,7 @@ struct Model {
 
 
 	ModelView getDefaultView();
+	ModelView& getView(std::string viewName);
 
 	void render() {
 		if (!visible)
@@ -603,4 +604,7 @@ struct Model {
 
 	std::map<std::tuple<Layer, ElementKind>, std::string> attrNameByLayerAndKind;
 	std::map<std::tuple<Layer, ElementKind>, bool> activatedLayers;
+
+	std::map<std::string, ModelView> views;
+
 };

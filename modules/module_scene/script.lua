@@ -5,7 +5,8 @@ end
 
 function draw_tree(model, k, view)
 
-	local model_view = view:get_model(model)
+	-- local model_view = view:get_model(model)
+	local model_view = model:get_view(view.name)
 
 	if (imgui.TreeNode(k)) then 
 
@@ -51,7 +52,8 @@ local sel_clipping_plane = {}
 local invert_clipping = false
 
 function draw_model_properties(model, k, view)
-	local model_view = view:get_model(model)
+	-- local model_view = view:get_model(model)
+	local model_view = model:get_view(view.name)
 	
 	local model_pos = model.world_position
 	local p = model.position
@@ -455,7 +457,8 @@ function draw_gui()
 
 			for k, model in pairs(app.scene.models) do
 
-				local model_view = app.scene.main_view:get_model(model)
+				-- local model_view = app.scene.main_view:get_model(model)
+				local model_view = model:get_view(app.scene.main_view.name)
 				
 				local sel_visible, new_visible = imgui.Checkbox(k .. "##" .. k, model_view.visible)
 				if (sel_visible) then 

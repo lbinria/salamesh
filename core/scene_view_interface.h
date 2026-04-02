@@ -4,6 +4,8 @@
 
 struct ISceneView {
 
+	virtual std::string getName() const = 0;
+
 	virtual void setup() = 0;
 	virtual void render(Shader &screenShader, unsigned int quadVAO) = 0;
 	virtual void clear() = 0;
@@ -15,7 +17,6 @@ struct ISceneView {
 
 	virtual RenderSurface &getRenderSurface() = 0;
 
-	virtual std::map<std::string, ModelView> getModelViews() = 0;
-	virtual ModelView& getModelView(Model &model) = 0;
+	// virtual ModelView& getModelView(Model &model) = 0;
 
 };
