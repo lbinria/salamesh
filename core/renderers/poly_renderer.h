@@ -45,8 +45,6 @@ struct PolyRenderer : public MeshRenderer {
 	void clear() override;
 	void clean() override;
 
-	int getRenderElementKind() override { return ElementKind::FACETS_ELT | ElementKind::CORNERS_ELT; }
-
 	std::unique_ptr<RendererView> getDefaultView() override { 
 		auto rv = std::make_unique<PolyRendererView>();
 		rv->visible = true;

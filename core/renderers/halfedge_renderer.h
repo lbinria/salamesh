@@ -33,8 +33,6 @@ struct HalfedgeRenderer : public Renderer {
 	void clear() override;
 	void clean() override;
 
-	int getRenderElementKind() override { return ElementKind::EDGES_ELT | ElementKind::CORNERS_ELT; }
-
 	std::unique_ptr<RendererView> getDefaultView() override { 
 		auto rv = std::make_unique<HalfedgeRendererView>(); 
 		rv->setThickness(2.0f);

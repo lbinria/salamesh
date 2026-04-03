@@ -32,8 +32,6 @@ struct ClippingRenderer : public Renderer {
 	void clean() override;
 	void clear() override;
 
-	int getRenderElementKind() override { return 0; }
-
 	std::unique_ptr<RendererView> getDefaultView() override { 
 		auto rv = std::make_unique<ClippingRendererView>(); 
 		// rv->setClippingPlanePoint(getCenter());

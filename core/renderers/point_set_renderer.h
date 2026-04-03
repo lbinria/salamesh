@@ -35,8 +35,6 @@ struct PointSetRenderer : public Renderer {
 	void clean() override;
 	void clear() override;
 
-	int getRenderElementKind() override { return ElementKind::POINTS_ELT; }
-
 	std::unique_ptr<RendererView> getDefaultView() override { 
 		auto rv = std::make_unique<PointSetRendererView>(); 
 		rv->setPointSize(4.0f);

@@ -30,8 +30,6 @@ struct BBoxRenderer : public Renderer {
 	void clear() override;
 	void clean() override;
 
-	int getRenderElementKind() override { return 0; }
-
 	std::unique_ptr<RendererView> getDefaultView() override { 
 		auto rv = std::make_unique<BBoxRendererView>(); 
 		rv->visible = true;

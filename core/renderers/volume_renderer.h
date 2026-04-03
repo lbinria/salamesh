@@ -41,8 +41,6 @@ struct VolumeRenderer : public MeshRenderer {
 	void clear() override;
 	void clean() override;
 
-	int getRenderElementKind() override { return ElementKind::CELLS_ELT | ElementKind::CELL_FACETS_ELT; }
-
 	std::unique_ptr<RendererView> getDefaultView() override { return std::make_unique<VolumeRendererView>(); }
 
 	protected:

@@ -31,10 +31,6 @@ struct Renderer {
 		return x;
 	}
 
-	// User must overwrite which element(s) are rendered by renderer
-	// It can render one or more primitives (ElementKind::POINTS_ELT, ...)
-	virtual int getRenderElementKind() = 0;
-
 	virtual std::unique_ptr<RendererView> getDefaultView() = 0;
 
 	std::shared_ptr<RendererView> getView(std::string viewName) {

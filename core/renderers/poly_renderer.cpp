@@ -10,25 +10,7 @@ void PolyRenderer::init() {
 	glGenVertexArrays(1, &VAO);
 	glGenBuffers(1, &VBO);
 
-	// For the moment don't use persistent mapped memory
-	sl::createTBO(bufHighlight, tboHighlight);
-	sl::createTBO(bufFilter, tboFilter);	
-	sl::createTBO(bufColormap0, tboColormap0);
-	sl::createTBO(bufColormap1, tboColormap1);
-	sl::createTBO(bufColormap2, tboColormap2);
 	sl::createTBO(bufNVertsPerFacet, texNVertsPerFacet);
-
-	shader.use();
-	shader.setInt("colormap0", 0);
-	shader.setInt("colormap1", 1);
-	shader.setInt("colormap2", 2);
-	shader.setInt("highlightBuf", 3);
-	shader.setInt("filterBuf", 4);
-	shader.setInt("colormap0Buf", 5);
-	shader.setInt("colormap1Buf", 6);
-	shader.setInt("colormap2Buf", 7);
-
-	shader.setInt("nvertsPerFacetBuf", 8);
 
 	#ifdef _DEBUG
 	std::cout << "vertex attrib setup..." << std::endl;
