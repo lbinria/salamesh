@@ -50,25 +50,16 @@ struct Scene : public IScene {
 	}
 
 	void render() override {
-		for (auto &[k, r] : renderers) {
-			glm::vec3 o{0.f};
-			r->render(o);
-		}
-
-		// for (auto &[k, model] : models) {
-		// 	// For each views
-		// 	// Get modelview associated with model
-		// 	// use shaders of modelview & render model
-		// 	// model->render(modelView);
-			
-		// 	model->setColormap0Texture(colormaps[model->getSelectedColormap(ColormapLayer::COLORMAP_LAYER_0)].tex);
-		// 	model->setColormap1Texture(colormaps[model->getSelectedColormap(ColormapLayer::COLORMAP_LAYER_1)].tex);
-		// 	model->setColormap2Texture(colormaps[model->getSelectedColormap(ColormapLayer::COLORMAP_LAYER_2)].tex);
-		// 	model->render();
-		// }
 
 		// Render view
 		for (auto &[viewName, view] : views) {
+			for (auto &[rendererName, renderer] : renderers) {
+				auto rendererView = renderer->getView(viewName);
+
+				glm::vec3 o{0.f};
+				renderer->render(*rendererView, o);
+			}
+
 			for (auto &[modelName, model] : models) {
 
 				auto &modelView = model->getView(viewName);

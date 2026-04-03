@@ -35,7 +35,6 @@ struct SurfaceRenderer : public MeshRenderer {
 		{}
 
 	void init() override;
-	void render(glm::vec3 &position) override;
 	void render(RendererView &rv, glm::vec3 &position) override;
 
 	virtual void push() override = 0;

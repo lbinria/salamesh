@@ -194,15 +194,6 @@ void ClippingRenderer::push() {
     // writeVBOBuffer(vertices);
 }
 
-void ClippingRenderer::render(glm::vec3 &position) {
-
-	// glBindVertexArray(VAO);
-
-	// setPosition(position);
-
-	// glDrawArrays(GL_TRIANGLES, 0, nelements);
-}
-
 void ClippingRenderer::render(RendererView &rv, glm::vec3 &position) {
 	if (!rv.visible)
 		return;

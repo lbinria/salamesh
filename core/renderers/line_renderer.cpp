@@ -32,18 +32,6 @@ void LineRenderer::push() {
 	writeVBOBuffer(lineComponents, true);
 }
 
-void LineRenderer::render(glm::vec3 &position) {
-
-	// if (!visible)
-	// 	return;
-
-	// glBindVertexArray(VAO);
-
-	// setPosition(position);
-
-	// glDrawArrays(GL_LINES, 0, nelements);
-}
-
 void LineRenderer::render(RendererView &rv, glm::vec3 &position) {
 	if (!rv.visible)
 		return;

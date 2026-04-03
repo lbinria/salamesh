@@ -50,9 +50,6 @@ void SurfaceRenderer::init() {
 
 }
 
-// TODO remove
-void SurfaceRenderer::render(glm::vec3 &position) {}
-
 void SurfaceRenderer::render(RendererView &rv, glm::vec3 &position) {
 	if (!rv.visible)
 		return;

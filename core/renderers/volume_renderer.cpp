@@ -139,7 +139,9 @@ void VolumeRenderer::init() {
 
 }
 
-void VolumeRenderer::render(glm::vec3 &position) {
+void VolumeRenderer::render(RendererView &rv, glm::vec3 &position) {
+
+	// TODO adapt
 
 	glBindVertexArray(VAO);
 

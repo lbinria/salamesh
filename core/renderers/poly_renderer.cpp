@@ -171,8 +171,6 @@ void PolyRenderer::push() {
 	glBufferData(GL_TEXTURE_BUFFER, nVertsPerFacet.size() * sizeof(float), nVertsPerFacet.data(), GL_STATIC_DRAW);
 }
 
-void PolyRenderer::render(glm::vec3 &position) {}
-
 void PolyRenderer::render(RendererView &rv, glm::vec3 &position) {
 	if (!rv.visible)
 		return;

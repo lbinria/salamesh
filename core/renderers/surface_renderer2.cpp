@@ -46,7 +46,7 @@ void SurfaceRenderer2::init() {
 
 }
 
-void SurfaceRenderer2::render(glm::vec3 &position) {
+void SurfaceRenderer2::render(RendererView &rv, glm::vec3 &position) {
 
 	glBindVertexArray(VAO);
 
