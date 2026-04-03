@@ -195,14 +195,6 @@ struct Model {
 		position = p;
 	}
 
-	bool getVisible() const {
-		return visible;
-	}
-
-	void setVisible(bool v) {
-		visible = v;
-	}
-
 	std::shared_ptr<Model> getParent() const {
 		return parent;
 	}
@@ -218,15 +210,6 @@ struct Model {
 			return position;
 		}
 	}
-
-
-
-
-
-
-
-
-
 
 	int getIndex() {
 		return index;
@@ -293,7 +276,6 @@ struct Model {
 
 	glm::vec3 position{0, 0, 0};
 	glm::vec3 rotation{0, 0, 0};
-	bool visible = true;
 
 	// Pointer to parent model, if there is one
 	std::shared_ptr<Model> parent;
@@ -319,8 +301,6 @@ struct Model {
 	std::string name;
 	static inline int maxIndex = 0;
 	int index;
-
-
 
 	std::map<std::string, ModelView> views;
 

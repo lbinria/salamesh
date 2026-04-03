@@ -15,11 +15,7 @@ void Model::push() {
 bool Model::saveState(std::string dirPath, json &j) /*const*/ {
 
 	// Save current mesh state into a file
-	// auto now = std::chrono::system_clock::now();
-	// auto unix_timestamp = std::to_string(std::chrono::duration_cast<std::chrono::seconds>(now.time_since_epoch()).count());
-	// auto filename = _name + "_" + unix_timestamp + ".geogram";
 	auto guid = sl::generateGuid();
-	// auto filename = guid + "_" + unix_timestamp + ".geogram";
 	auto filename = guid + ".geogram";
 	auto filepath = std::filesystem::path(dirPath) / filename;
 	
@@ -41,12 +37,9 @@ bool Model::saveState(std::string dirPath, json &j) /*const*/ {
 	j["position"] = { position.x, position.y, position.z };
 
 
-	j["visible"] = visible;
-
 	for (auto &[viewName, mv] : views) {
-		mv.saveState(j);
+		mv.saveState(j["views"][viewName]);
 	}
-
 
 	for (auto &[k, r] : _renderers) {
 		r->saveState(j["renderers"][k]);
@@ -66,16 +59,11 @@ void Model::loadState(json &j) {
 		j["position"][1].get<float>(),
 		j["position"][2].get<float>()
 	);
-	
 
 
-	for (auto &[viewName, mv] : views) {
-		mv.loadState(j);
-	}
-
-
-
-	setVisible(j["visible"].get<bool>());
+	// for (auto &[viewName, mv] : views) {
+	// 	mv.loadState(j["views"][viewName]);
+	// }
 
 	// Load renderers state
 	auto renderers = getRenderers();

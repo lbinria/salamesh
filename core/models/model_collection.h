@@ -8,7 +8,7 @@
 struct ModelCollection : public EntityCollection<Model> {
 
 	std::shared_ptr<Model> add(std::string type, std::string name) override {
-		// TODO maybe chekc type exists, else we dont understand why we get null model ?
+		// TODO maybe check type exists, else we dont understand why we get null model ?
 
 		// Check whether renderer already exists
 		if (entities.contains(name))
@@ -25,15 +25,11 @@ struct ModelCollection : public EntityCollection<Model> {
 		entities[n] = std::move(model);
 		return entities[n];
 
-		// // 
-		// // model->loadCallback = ([this](Model&, const std::string) -> bool {
-		// // 	this->computeFarPlane();
-		// // 	this->script->modelLoaded(blabla)
-		// // });
+		// Recompute far plane
 	}
 
 	void remove(std::string name) override {
-		if (entities.count(name) > 0)
+		if (entities.contains(name))
 			entities[name]->clean();
 
 		entities.erase(name);

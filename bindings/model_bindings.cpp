@@ -140,8 +140,6 @@ namespace bindings {
 
 		model_t["path"] = sol::readonly_property(&Model::getPath);
 		model_t["parent"] = sol::property(&Model::getParent, &Model::setParent);
-
-		model_t["visible"] = sol::property(&Model::getVisible, &Model::setVisible);
 		
 		model_t["position"] = sol::property(&Model::getPosition, &Model::setPosition);
 		model_t["world_position"] = sol::readonly_property(&Model::getWorldPosition);

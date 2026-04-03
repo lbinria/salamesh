@@ -53,12 +53,18 @@ struct Renderer {
 
 	void loadState(json &j) {
 
-		// TODO renderviews!
+		// for (auto &[k, rv] : views) {
+		// 	rv->loadState(j["views"][]);
+		// }
+
 		doLoadState(j);
 	}
 
 	void saveState(json &j) const {
-		// TODO renderviews!
+
+		for (auto &[k, rv] : views) {
+			rv->saveState(j["views"][k]);
+		}
 
 		doSaveState(j);
 	}

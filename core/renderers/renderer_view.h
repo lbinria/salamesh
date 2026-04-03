@@ -224,12 +224,12 @@ struct RendererView {
 
 	private:
 
-	bool isLightEnabled;
-	ClippingMode clippingMode;
-	bool isClippingEnabled;
+	bool isLightEnabled = true;
+	ClippingMode clippingMode = ClippingMode::STD;
+	bool isClippingEnabled = false;
 	glm::vec3 clippingPlanePoint;
 	glm::vec3 clippingPlaneNormal;
-	bool isInvertClipping;
+	bool isInvertClipping = false;
 	int colormapElement[3] = {-1,-1,-1};
 	int highlightElement = -1;
 	int filterElement = -1;

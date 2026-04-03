@@ -4,6 +4,9 @@ void ModelView::setSelectedAttr(int idx, ColormapLayer layer) {
 	selectedAttr[layer] = idx;
 	unsetColormaps(layer);
 
+	if (idx < 0)
+		return;
+
 	auto attr = model.getAttr(idx);
 	auto attrName = attr.name;
 	ElementKind kind = attr.kind;

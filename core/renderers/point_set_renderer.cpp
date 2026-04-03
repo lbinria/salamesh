@@ -9,16 +9,6 @@ void PointSetRenderer::init() {
 	glBindVertexArray(VAO);
 	glBindBuffer(GL_ARRAY_BUFFER, VBO);
 
-	shader.use();
-	shader.setInt("colormap0", 0);
-	shader.setInt("colormap1", 1);
-	shader.setInt("colormap2", 2);
-	shader.setInt("highlightBuf", 3);
-	shader.setInt("filterBuf", 4);
-	shader.setInt("colormap0Buf", 5);
-	shader.setInt("colormap1Buf", 6);
-	shader.setInt("colormap2Buf", 7);
-
 	// VBO
 	sl::createVBOInteger(shader.id, "vertexIndex", sizeof(Vertex), (void*)offsetof(Vertex, vertexIndex));
 	sl::createVBOVec3(shader.id, "aPos", sizeof(Vertex), (void*)offsetof(Vertex, position));
@@ -49,7 +39,7 @@ void PointSetRenderer::render(RendererView &rv, glm::vec3 &position) {
 
 	glm::mat4 model = glm::mat4(1.0f);
 	model = glm::translate(model, position);
-	
+
 	rv.use(shader);
 	shader.setMat4("model", model);
 
