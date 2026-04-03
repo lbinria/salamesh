@@ -86,7 +86,7 @@ void SurfaceRenderer2::render(RendererView &rv, glm::vec3 &position) {
 	glActiveTexture(GL_TEXTURE0 + 11);
 	glBindTexture(GL_TEXTURE_BUFFER, tboFacetIndexes);
 
-	setPosition(position);
+	// setPosition(position);
 
 	glDrawArrays(GL_TRIANGLES, 0, nelements);
 }

@@ -32,6 +32,18 @@ namespace bindings {
 			"corner_visible", sol::property(&MeshRendererView::getCornerVisible, &MeshRendererView::setCornerVisible)
 		);
 
+		sol::usertype<HalfedgeRendererView> halfedgeRendererView_t = lua.new_usertype<HalfedgeRendererView>(
+			"HalfedgeRendererView",
+			sol::base_classes, 
+			sol::bases<RendererView>(),
+			"inside_color", sol::property(&HalfedgeRendererView::getInsideColor, &HalfedgeRendererView::setInsideColor),
+			"outside_color", sol::property(&HalfedgeRendererView::getOutsideColor, &HalfedgeRendererView::setOutsideColor),
+			"thickness", sol::property(&HalfedgeRendererView::getThickness, &HalfedgeRendererView::setThickness),
+			"spacing", sol::property(&HalfedgeRendererView::getSpacing, &HalfedgeRendererView::setSpacing),
+			"padding", sol::property(&HalfedgeRendererView::getPadding, &HalfedgeRendererView::setPadding)
+		);
+
+
 		sol::usertype<Renderer> renderer_t = lua.new_usertype<Renderer>("Renderer");
 
 		renderer_t["name"] = sol::readonly_property(&Renderer::getName);
@@ -94,26 +106,7 @@ namespace bindings {
 		);
 
 
-		halfedgeRenderer_t["inside_color"] = sol::property(
-			&HalfedgeRenderer::getInsideColor,
-			&HalfedgeRenderer::setInsideColor
-		);
-		halfedgeRenderer_t["outside_color"] = sol::property(
-			&HalfedgeRenderer::getOutsideColor,
-			&HalfedgeRenderer::setOutsideColor
-		);
-		halfedgeRenderer_t["thickness"] = sol::property(
-			&HalfedgeRenderer::getThickness,
-			&HalfedgeRenderer::setThickness
-		);
-		halfedgeRenderer_t["spacing"] = sol::property(
-			&HalfedgeRenderer::getSpacing,
-			&HalfedgeRenderer::setSpacing
-		);
-		halfedgeRenderer_t["padding"] = sol::property(
-			&HalfedgeRenderer::getPadding,
-			&HalfedgeRenderer::setPadding
-		);
+
 
 
 		auto line_t = lua.new_usertype<LineRenderer::Line>(

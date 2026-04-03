@@ -31,6 +31,13 @@ struct ModelView {
 		return nullptr;
 	}
 
+	std::shared_ptr<HalfedgeRendererView> getEdges() {
+		if (rendererViews.contains("edge_renderer"))
+			return std::static_pointer_cast<HalfedgeRendererView>(rendererViews.at("edge_renderer"));
+			
+		return nullptr;
+	}
+
 	bool getLightEnabled() const {
 		return isLightEnabled;
 	}

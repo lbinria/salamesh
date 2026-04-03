@@ -81,16 +81,7 @@ struct Renderer {
 
 	float *ptrAttr;
 
-	// TODO rename to nelements
 	int nelements = 0;
-
-	void setPosition(glm::vec3 &position) {
-		glm::mat4 model = glm::mat4(1.0f);
-		model = glm::translate(model, position);
-		// Set model to shader
-		shader.use();
-		shader.setMat4("model", model);
-	}
 
 	template<typename T>
 	void writeVBOBuffer(std::vector<T> data, bool dynamicDraw = false) {

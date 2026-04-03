@@ -420,6 +420,75 @@ struct HalfedgeRendererView : public MeshRendererView {
 
 	int getRenderElementKind() override { return ElementKind::EDGES_ELT | ElementKind::CORNERS_ELT; }
 
+	float getThickness() const {
+		return edgeSize;
+	}
+
+	void setThickness(float size) {
+		shader.use();
+		shader.setFloat("thickness", size);
+		edgeSize = size;
+	}
+
+	float getSpacing() const {
+		return halfedgeSpacing;
+	}
+
+	void setSpacing(float spacing) {
+		shader.use();
+		shader.setFloat("spacing", spacing);
+		halfedgeSpacing = spacing;
+	}
+
+	float getPadding() const {
+		return halfedgePadding;
+	}
+
+	void setPadding(float padding) {
+		shader.use();
+		shader.setFloat("padding", padding);
+		halfedgePadding = padding;
+	}
+
+	glm::vec3 getInsideColor() const {
+		return edgeInsideColor;
+	}
+
+	void setInsideColor(glm::vec3 color) {
+		shader.use();
+		shader.setFloat3("uColorInside", color);
+		edgeInsideColor = color;
+	}
+
+	glm::vec3 getOutsideColor() const {
+		return edgeOutsideColor;
+	}
+
+	void setOutsideColor(glm::vec3 color) {
+		shader.use();
+		shader.setFloat3("uColorOutside", color);
+		edgeOutsideColor = color;
+	}
+
+	virtual void doLoadState(json &j) override {
+		setThickness(j["edgeSize"].get<float>());
+		setInsideColor({j["edgeInsideColor"][0].get<float>(), j["edgeInsideColor"][1].get<float>(), j["edgeInsideColor"][2].get<float>()});
+		setOutsideColor({j["edgeOutsideColor"][0].get<float>(), j["edgeOutsideColor"][1].get<float>(), j["edgeOutsideColor"][2].get<float>()});
+	}
+	
+	virtual void doSaveState(json &j) const override {
+		j["edgeSize"] = edgeSize;
+		j["edgeInsideColor"] = json::array({edgeInsideColor.x, edgeInsideColor.y, edgeInsideColor.z});
+		j["edgeOutsideColor"] = json::array({edgeOutsideColor.x, edgeOutsideColor.y, edgeOutsideColor.z});
+	}
+
+	private:
+	float edgeSize;
+	float halfedgeSpacing = 0;
+	float halfedgePadding = 0;
+	glm::vec3 edgeInsideColor;
+	glm::vec3 edgeOutsideColor;
+
 };
 
 struct VolumeRendererView : public MeshRendererView {
