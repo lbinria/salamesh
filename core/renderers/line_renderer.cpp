@@ -35,7 +35,13 @@ void LineRenderer::render(RendererView &rv, glm::vec3 &position) {
 		return;
 
 	glBindVertexArray(VAO);
-	rv.use(position);
+	
+	glm::mat4 model = glm::mat4(1.0f);
+	model = glm::translate(model, position);
+	
+	rv.use(shader);
+	shader.setMat4("model", model);
+
 	glDrawArrays(GL_LINES, 0, nelements);
 }
 

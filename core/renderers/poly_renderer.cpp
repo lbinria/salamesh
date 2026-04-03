@@ -158,10 +158,14 @@ void PolyRenderer::render(RendererView &rv, glm::vec3 &position) {
 		return;
 
 	glBindVertexArray(VAO);
-	rv.use(position);
-	
+
+	glm::mat4 model = glm::mat4(1.0f);
+	model = glm::translate(model, position);
 	auto &prv = static_cast<PolyRendererView&>(rv);
 	prv.setNVertsPerFacetBuf(8, texNVertsPerFacet);
+
+	rv.use(shader);
+	shader.setMat4("model", model);
 
 	glDrawArrays(GL_TRIANGLES, 0, nelements);
 }

@@ -45,7 +45,7 @@ struct PolyRenderer : public MeshRenderer {
 	void clear() override;
 	void clean() override;
 
-	std::unique_ptr<RendererView> getDefaultView() override { 
+	std::unique_ptr<RendererView> getDefaultView() override {
 		auto rv = std::make_unique<PolyRendererView>();
 		rv->visible = true;
 		rv->setColor({0.71f, 0.71f, 0.71f});

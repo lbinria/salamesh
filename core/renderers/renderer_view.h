@@ -16,8 +16,7 @@ struct RendererView {
 		STD = 1
 	};
 
-	RendererView(Shader shader) : 
-		shader(std::move(shader))
+	RendererView()
 	{
 		init();
 	}
@@ -30,16 +29,6 @@ struct RendererView {
 		sl::createTBO(bufColormap0, tboColormap0);
 		sl::createTBO(bufColormap1, tboColormap1);
 		sl::createTBO(bufColormap2, tboColormap2);
-
-		shader.use();
-		shader.setInt("colormap0", 0);
-		shader.setInt("colormap1", 1);
-		shader.setInt("colormap2", 2);
-		shader.setInt("highlightBuf", 3);
-		shader.setInt("filterBuf", 4);
-		shader.setInt("colormap0Buf", 5);
-		shader.setInt("colormap1Buf", 6);
-		shader.setInt("colormap2Buf", 7);
 	}
 
 	virtual int getRenderElementKind() = 0;
@@ -48,51 +37,67 @@ struct RendererView {
 		return (getRenderElementKind() & kind) == kind;
 	}
 
-	void use(glm::vec3 &position) {
-		
-		useTextures();
-
-		glm::mat4 model = glm::mat4(1.0f);
-		model = glm::translate(model, position);
-
-		shader.use();
-		shader.setMat4("model", model);
-	}
-
 	virtual void useTextures() {};
+
+	virtual void use(Shader &shader) {
+		shader.use();
+
+		shader.setInt("colormap0", 0);
+		shader.setInt("colormap1", 1);
+		shader.setInt("colormap2", 2);
+		shader.setInt("highlightBuf", 3);
+		shader.setInt("filterBuf", 4);
+		shader.setInt("colormap0Buf", 5);
+		shader.setInt("colormap1Buf", 6);
+		shader.setInt("colormap2Buf", 7);
+
+		shader.setFloat("is_light_enabled", isLightEnabled); // TODO set int here !
+		shader.setInt("clipping_mode", clippingMode);		
+		shader.setInt("is_clipping_enabled", isClippingEnabled);
+		shader.setFloat3("clipping_plane_point", clippingPlanePoint);
+		shader.setFloat3("clipping_plane_normal", clippingPlaneNormal);
+		shader.setInt("invert_clipping", isInvertClipping);
+
+		for (int i = 0; i < 3; ++i) {
+			shader.setInt("colormapElement[" + std::to_string(int(i)) + "]", colormapElement[i]);
+			shader.setInt("attrNDims[" + std::to_string(int(i)) + "]", attrNDims[i]);
+			shader.setFloat2("attrRange[" + std::to_string(int(i)) + "]", attrRange[i]);
+		}
+
+		shader.setInt("highlightElement", highlightElement);
+		shader.setInt("filterElement", filterElement);
+
+
+	}
 
 	void setColormap0Texture(unsigned int tex) { texColormap0 = tex; }
 	void setColormap1Texture(unsigned int tex) { texColormap1 = tex; }
 	void setColormap2Texture(unsigned int tex) { texColormap2 = tex; }
 
+
+
 	void setLightEnabled(bool enabled) {
-		shader.use();
-		shader.setFloat("is_light_enabled", enabled); // TODO set int here !
+		isLightEnabled = enabled;
 	}
 
 	virtual void setClippingMode(ClippingMode mode) {
-		shader.use();
-		shader.setInt("clipping_mode", mode);		
+		clippingMode = mode;
 	}
 
 	virtual void setClipping(bool enabled) {
-		shader.use();
-		shader.setInt("is_clipping_enabled", enabled);
+		isClippingEnabled = enabled;
 	}
 
 	virtual void setClippingPlanePoint(glm::vec3 p) {
-		shader.use();
-		shader.setFloat3("clipping_plane_point", p);
+		clippingPlanePoint = p;
 	}
 
 	virtual void setClippingPlaneNormal(glm::vec3 n) {
-		shader.use();
-		shader.setFloat3("clipping_plane_normal", n);
+		clippingPlaneNormal = n;
 	}
 
 	void setInvertClipping(bool invert) {
-		shader.use();
-		shader.setInt("invert_clipping", invert);
+		isInvertClipping = invert;
 	}
 
 	void setLayerElement(int element, Layer layer) {
@@ -103,16 +108,13 @@ struct RendererView {
 		case Layer::COLORMAP_0:
 		case Layer::COLORMAP_1:
 		case Layer::COLORMAP_2:
-			shader.use();
-			shader.setInt("colormapElement[" + std::to_string(int(layer)) + "]", element);
+			colormapElement[int(layer)] = element;
 			break;
 		case Layer::HIGHLIGHT:
-			shader.use();
-			shader.setInt("highlightElement", element);
+			highlightElement = element;
 			break;
 		case Layer::FILTER:
-			shader.use();
-			shader.setInt("filterElement", element);
+			filterElement = element;
 			break;
 		// Should never happen (except if all the case aren't covered)
 		default:
@@ -126,14 +128,12 @@ struct RendererView {
 
 	void setLayerNDims(Layer layer, int nDims) {
 		// TODO check layer ? only works for colormaps...
-		shader.use();
-		shader.setInt("attrNDims[" + std::to_string(int(layer)) + "]", nDims);
+		attrNDims[int(layer)] = nDims;
 	}
 
 	void setLayerRange(Layer layer, float min, float max) {
 		// TODO check layer ? only works for colormaps...
-		shader.use();
-		shader.setFloat2("attrRange[" + std::to_string(int(layer)) + "]", glm::vec2(min, max));
+		attrRange[int(layer)] = glm::vec2(min, max);
 	}
 
 	// Put data to buffer
@@ -194,9 +194,6 @@ struct RendererView {
 		glDeleteBuffers(1, &bufColormap2);
 		glDeleteTextures(1, &tboColormap2);
 		glBindBuffer(GL_TEXTURE_BUFFER, 0);
-
-		// Clean shader
-		shader.clean();
 	}
 
 	bool visible;
@@ -214,7 +211,6 @@ struct RendererView {
 
 
 	protected:
-	Shader shader;
 
 	// TODO move this to a RendererView subclass (LayeredRendererView for example)
 	unsigned int bufColormap0, bufColormap1, bufColormap2, bufHighlight, bufFilter; // Sample buffers
@@ -226,7 +222,19 @@ struct RendererView {
 	virtual void doLoadState(json &j) {};
 	virtual void doSaveState(json &j) const {};
 
+	private:
 
+	bool isLightEnabled;
+	ClippingMode clippingMode;
+	bool isClippingEnabled;
+	glm::vec3 clippingPlanePoint;
+	glm::vec3 clippingPlaneNormal;
+	bool isInvertClipping;
+	int colormapElement[3] = {-1,-1,-1};
+	int highlightElement = -1;
+	int filterElement = -1;
+	int attrNDims[3] = {1, 1, 1};
+	glm::vec2 attrRange[3];
 };
 
 struct LayeredRendererView : public RendererView {
@@ -242,8 +250,6 @@ struct MeshRendererView : public RendererView {
 	}
 
 	void setMeshSize(float val) {
-		shader.use();
-		shader.setFloat("meshSize", val);
 		meshSize = val;
 	}
 
@@ -252,8 +258,6 @@ struct MeshRendererView : public RendererView {
 	}
 
 	void setMeshShrink(float val) {
-		shader.use();
-		shader.setFloat("meshShrink", val);
 		meshShrink = val;
 	}
 
@@ -262,14 +266,11 @@ struct MeshRendererView : public RendererView {
 	}
 
 	void setCornerVisible(bool val) {
-		shader.use();
-		shader.setInt("isCornerVisible", val);
 		isCornerVisible = val;
 	}
 
 	void setMeshIndex(int index) {
-		shader.use();
-		shader.setInt("meshIndex", index);
+		meshIndex = index;
 	}
 
 	glm::vec3 getColor() const {
@@ -277,8 +278,6 @@ struct MeshRendererView : public RendererView {
 	}
 
 	void setColor(glm::vec3 c) {
-		shader.use();
-		shader.setFloat3("color", c);
 		color = c;
 	}
 
@@ -287,8 +286,6 @@ struct MeshRendererView : public RendererView {
 	}
 
 	void setHoverColor(glm::vec3 c) {
-		shader.use();
-		shader.setFloat3("hoverColor", c);
 		hoverColor = c;
 	}
 
@@ -297,12 +294,20 @@ struct MeshRendererView : public RendererView {
 	}
 
 	void setSelectColor(glm::vec3 c) {
-		shader.use();
-		shader.setFloat3("selectColor", c);
 		selectColor = c;
 	}
 
-
+	virtual void use(Shader &shader) override {
+		RendererView::use(shader);
+		shader.setFloat("meshSize", meshSize);
+		shader.setFloat("meshShrink", meshShrink);
+		shader.setInt("isCornerVisible", isCornerVisible);
+		shader.setInt("meshIndex", meshIndex);
+		shader.setFloat3("color", color);
+		shader.setFloat3("hoverColor", hoverColor);
+		shader.setFloat3("selectColor", selectColor);
+		useTextures();
+	}
 
 	virtual void useTextures() override {
 		glActiveTexture(GL_TEXTURE0 + 0);
@@ -349,7 +354,7 @@ struct MeshRendererView : public RendererView {
 	}
 
 	private:
-
+	int meshIndex;
 	float meshSize;
 	float meshShrink;
 	bool isCornerVisible;
@@ -362,7 +367,7 @@ struct MeshRendererView : public RendererView {
 
 struct ClippingRendererView : public RendererView {
 	ClippingRendererView() : 
-		RendererView(Shader(sl::shadersPath("clipping.vert"), sl::shadersPath("clipping.frag"))) 
+		RendererView() 
 	{}
 
 	int getRenderElementKind() override { return 0; }
@@ -374,13 +379,13 @@ struct ClippingRendererView : public RendererView {
 
 	void setClippingPlanePoint(glm::vec3 p) {
 		RendererView::setClippingPlanePoint(p);
-		clippingPlanePoint = p;
+		// clippingPlanePoint = p;
 		// push();
 	}
 
 	void setClippingPlaneNormal(glm::vec3 n) {
 		RendererView::setClippingPlaneNormal(n);
-		clippingPlaneNormal = n;
+		// clippingPlaneNormal = n;
 		// push();
 	}
 
@@ -389,45 +394,46 @@ struct ClippingRendererView : public RendererView {
 	}
 
 	void setColor(glm::vec3 c) {
-		shader.use();
-		shader.setFloat3("color", c);
 		color = c;
+	}
+
+	virtual void use(Shader &shader) override {
+		RendererView::use(shader);
+		shader.setFloat3("color", color);
 	}
 
 	virtual void doLoadState(json &j) override {
 		setColor({j["clippingColor"][0].get<float>(), j["clippingColor"][1].get<float>(), j["clippingColor"][2].get<float>()});
-		setClippingPlanePoint({j["clippingPlanePoint"][0].get<float>(), j["clippingPlanePoint"][1].get<float>(), j["clippingPlanePoint"][2].get<float>()});
-		setClippingPlaneNormal({j["clippingPlaneNormal"][0].get<float>(), j["clippingPlaneNormal"][1].get<float>(), j["clippingPlaneNormal"][2].get<float>()});
+		// setClippingPlanePoint({j["clippingPlanePoint"][0].get<float>(), j["clippingPlanePoint"][1].get<float>(), j["clippingPlanePoint"][2].get<float>()});
+		// setClippingPlaneNormal({j["clippingPlaneNormal"][0].get<float>(), j["clippingPlaneNormal"][1].get<float>(), j["clippingPlaneNormal"][2].get<float>()});
 	}
 	virtual void doSaveState(json &j) const override {
 		j["clippingColor"] = json::array({color.x, color.y, color.z});
-		j["clippingPlanePoint"] = json::array({clippingPlanePoint.x, clippingPlanePoint.y, clippingPlanePoint.z});
-		j["clippingPlaneNormal"] = json::array({clippingPlaneNormal.x, clippingPlaneNormal.y, clippingPlaneNormal.z});
+		// j["clippingPlanePoint"] = json::array({clippingPlanePoint.x, clippingPlanePoint.y, clippingPlanePoint.z});
+		// j["clippingPlaneNormal"] = json::array({clippingPlaneNormal.x, clippingPlaneNormal.y, clippingPlaneNormal.z});
 	}
 
 
 	private:
 	glm::vec3 color;
-	glm::vec3 clippingPlanePoint{0.0f, 0.0f, 0.0f}; // A point on the plane
-	glm::vec3 clippingPlaneNormal{1.0f, 0.0f, 0.0f}; // The normal of the plane
+	// glm::vec3 clippingPlanePoint{0.0f, 0.0f, 0.0f}; // A point on the plane
+	// glm::vec3 clippingPlaneNormal{1.0f, 0.0f, 0.0f}; // The normal of the plane
 
 };
 
 struct HalfedgeRendererView : public MeshRendererView {
 	HalfedgeRendererView() : 
-		MeshRendererView(Shader(sl::shadersPath("edge.vert"), sl::shadersPath("edge.frag"))) 
+		MeshRendererView() 
 	{}
 
 	int getRenderElementKind() override { return ElementKind::EDGES_ELT | ElementKind::CORNERS_ELT; }
 
 	float getThickness() const {
-		return edgeSize;
+		return thickness;
 	}
 
-	void setThickness(float size) {
-		shader.use();
-		shader.setFloat("thickness", size);
-		edgeSize = size;
+	void setThickness(float thick) {
+		thickness = thick;
 	}
 
 	float getSpacing() const {
@@ -435,8 +441,6 @@ struct HalfedgeRendererView : public MeshRendererView {
 	}
 
 	void setSpacing(float spacing) {
-		shader.use();
-		shader.setFloat("spacing", spacing);
 		halfedgeSpacing = spacing;
 	}
 
@@ -445,8 +449,6 @@ struct HalfedgeRendererView : public MeshRendererView {
 	}
 
 	void setPadding(float padding) {
-		shader.use();
-		shader.setFloat("padding", padding);
 		halfedgePadding = padding;
 	}
 
@@ -455,8 +457,6 @@ struct HalfedgeRendererView : public MeshRendererView {
 	}
 
 	void setInsideColor(glm::vec3 color) {
-		shader.use();
-		shader.setFloat3("uColorInside", color);
 		edgeInsideColor = color;
 	}
 
@@ -465,9 +465,16 @@ struct HalfedgeRendererView : public MeshRendererView {
 	}
 
 	void setOutsideColor(glm::vec3 color) {
-		shader.use();
-		shader.setFloat3("uColorOutside", color);
 		edgeOutsideColor = color;
+	}
+
+	virtual void use(Shader &shader) override {
+		MeshRendererView::use(shader);
+		shader.setFloat("thickness", thickness);
+		shader.setFloat("spacing", halfedgeSpacing);
+		shader.setFloat("padding", halfedgePadding);
+		shader.setFloat3("uColorInside", edgeInsideColor);
+		shader.setFloat3("uColorOutside", edgeOutsideColor);
 	}
 
 	virtual void doLoadState(json &j) override {
@@ -477,13 +484,13 @@ struct HalfedgeRendererView : public MeshRendererView {
 	}
 	
 	virtual void doSaveState(json &j) const override {
-		j["edgeSize"] = edgeSize;
+		j["edgeSize"] = thickness;
 		j["edgeInsideColor"] = json::array({edgeInsideColor.x, edgeInsideColor.y, edgeInsideColor.z});
 		j["edgeOutsideColor"] = json::array({edgeOutsideColor.x, edgeOutsideColor.y, edgeOutsideColor.z});
 	}
 
 	private:
-	float edgeSize;
+	float thickness;
 	float halfedgeSpacing = 0;
 	float halfedgePadding = 0;
 	glm::vec3 edgeInsideColor;
@@ -493,7 +500,7 @@ struct HalfedgeRendererView : public MeshRendererView {
 
 struct VolumeRendererView : public MeshRendererView {
 	VolumeRendererView() : 
-		MeshRendererView(Shader(sl::shadersPath("volume.vert"), sl::shadersPath("volume.frag"))) 
+		MeshRendererView() 
 	{}
 
 	int getRenderElementKind() override { return ElementKind::CELLS_ELT | ElementKind::CELL_FACETS_ELT; }
@@ -502,7 +509,7 @@ struct VolumeRendererView : public MeshRendererView {
 
 struct SurfaceRendererView : public MeshRendererView {
 	SurfaceRendererView() : 
-		MeshRendererView(Shader(sl::shadersPath("surface.vert"), sl::shadersPath("surface.frag"))) 
+		MeshRendererView() 
 	{}
 
 	int getRenderElementKind() override { return ElementKind::FACETS_ELT | ElementKind::CORNERS_ELT; }
@@ -511,7 +518,7 @@ struct SurfaceRendererView : public MeshRendererView {
 
 struct LineRendererView : public RendererView {
 	LineRendererView() : 
-		RendererView(Shader(sl::shadersPath("gizmo_line.vert"), sl::shadersPath("gizmo_line.frag"))) 
+		RendererView() 
 	{}
 
 	int getRenderElementKind() override { return 0; }
@@ -520,7 +527,7 @@ struct LineRendererView : public RendererView {
 
 struct BBoxRendererView : public RendererView {
 	BBoxRendererView() : 
-		RendererView(Shader(sl::shadersPath("bbox.vert"), sl::shadersPath("bbox.frag"))) 
+		RendererView() 
 	{}
 
 	int getRenderElementKind() override { return 0; }
@@ -531,9 +538,12 @@ struct BBoxRendererView : public RendererView {
 	}
 
 	void setColor(glm::vec3 c) {
-		shader.use();
-		shader.setFloat3("color", c);
 		color = c;
+	}
+
+	virtual void use(Shader &shader) override {
+		RendererView::use(shader);
+		shader.setFloat3("color", color);
 	}
 
 	void doLoadState(json &j) override {
@@ -550,26 +560,33 @@ struct BBoxRendererView : public RendererView {
 
 struct PolyRendererView : public MeshRendererView {
 	PolyRendererView() : 
-		MeshRendererView(Shader(sl::shadersPath("poly.vert"), sl::shadersPath("surface.frag"))) 
+		MeshRendererView() 
 	{}
 
-	void setNVertsPerFacetBuf(unsigned int texNumber, unsigned int texId) {
-		glActiveTexture(GL_TEXTURE0 + texNumber);
-		glBindTexture(GL_TEXTURE_BUFFER, texId);
-		// TODO Make cache to not set shader everytime
-		shader.use();
-		shader.setInt("nvertsPerFacetBuf", texNumber);
+	void setNVertsPerFacetBuf(unsigned int texUnit, unsigned int texId) {
+		_texUnit = texUnit;
+		_texId = texId;
 	}
 
 	int getRenderElementKind() override { return ElementKind::FACETS_ELT | ElementKind::CORNERS_ELT; }
 
+	virtual void use(Shader &shader) override {
+		MeshRendererView::use(shader);
+		shader.setInt("nvertsPerFacetBuf", _texUnit);
+		glActiveTexture(GL_TEXTURE0 + _texUnit);
+		glBindTexture(GL_TEXTURE_BUFFER, _texId);
+	}
+
+	private:
+	unsigned int _texUnit;
+	unsigned int _texId;
 };
 
 
 struct PointSetRendererView : public RendererView {
 
 	PointSetRendererView() : 
-		RendererView(Shader(sl::shadersPath("point.vert"), sl::shadersPath("point.frag"))) 
+		RendererView() 
 	{}
 
 	int getRenderElementKind() override { return ElementKind::POINTS_ELT; }
@@ -580,8 +597,6 @@ struct PointSetRendererView : public RendererView {
 	}
 
 	void setPointSize(float size) {
-		shader.use();
-		shader.setFloat("pointSize", size);
 		pointSize = size;
 	}
 
@@ -590,10 +605,16 @@ struct PointSetRendererView : public RendererView {
 	}
 
 	void setColor(glm::vec3 c) {
-		shader.use();
-		shader.setFloat3("pointColor", c);
 		color = c;
 	}
+
+	void use(Shader &shader) override {
+		RendererView::use(shader);
+		useTextures();
+		shader.setFloat("pointSize", pointSize);
+		shader.setFloat3("pointColor", color);
+	}
+
 
 	void useTextures() override {
 		glActiveTexture(GL_TEXTURE0 + 0);
