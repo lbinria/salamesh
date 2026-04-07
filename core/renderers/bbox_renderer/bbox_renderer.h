@@ -24,6 +24,10 @@ struct BBoxRenderer : public Renderer {
 		Renderer(name, Shader(sl::shadersPath("bbox.vert"), sl::shadersPath("bbox.frag"))),
 		ps(ps) {}
 
+	RenderPrimitive getRenderPrimitive() const override {
+		return RenderPrimitive::RENDER_LINES;
+	}
+
 	void init() override;
 	void push() override;
 	void render(RendererView &rv, glm::vec3 &position) override;

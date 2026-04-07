@@ -41,7 +41,9 @@ struct HalfedgeRenderer : public Renderer {
 		return rv;
 	}
 
-
+	RenderPrimitive getRenderPrimitive() const override {
+		return RenderPrimitive::RENDER_TRIANGLES;
+	}
 
 
 	private:

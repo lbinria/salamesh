@@ -16,6 +16,12 @@ using json = nlohmann::json;
 
 struct Renderer {
 
+	enum RenderPrimitive {
+		RENDER_POINTS,
+		RENDER_LINES,
+		RENDER_TRIANGLES
+	};
+
 	Renderer (const Renderer&) = delete;
 	Renderer& operator= (const Renderer&) = delete;
 
@@ -30,6 +36,14 @@ struct Renderer {
 		auto &x = static_cast<T&>(*this);
 		return x;
 	}
+
+	virtual RenderPrimitive getRenderPrimitive() const = 0;
+
+	void requestUpdate() const {
+		dirty = true;
+	}
+
+	int getElementsCount() const { return nelements; }
 
 	virtual std::unique_ptr<RendererView> getDefaultView() = 0;
 
@@ -71,9 +85,15 @@ struct Renderer {
 
 	std::string getName() { return name; }
 
+	Shader& getShader() { return shader; }
+
+	bool isDirty() const { return dirty; }
+
+
 	protected:
 	// TODO to remove
 	Shader shader;
+	mutable bool dirty = true;
 
 	unsigned int VAO, VBO; // Buffers
 
@@ -93,6 +113,7 @@ struct Renderer {
 		glBindBuffer(GL_ARRAY_BUFFER, VBO);
 		glBufferData(GL_ARRAY_BUFFER, nelements * sizeof(T), data.data(), drawType);
 	}
+
 
 	private:
 

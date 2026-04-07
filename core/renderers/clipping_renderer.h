@@ -26,6 +26,11 @@ struct ClippingRenderer : public Renderer {
 		ps(ps) {
 		}
 
+	RenderPrimitive getRenderPrimitive() const override {
+		return RenderPrimitive::RENDER_TRIANGLES;
+	}
+
+
 	void init() override;
 	void push() override;
 	void render(RendererView &rv, glm::vec3 &position) override;

@@ -1,5 +1,6 @@
 #pragma once
 #include "core/scene_view_interface.h"
+#include "core/material_instance.h"
 
 struct SceneView : public ISceneView {
 
@@ -37,21 +38,28 @@ struct SceneView : public ISceneView {
 
 	RenderSurface &getRenderSurface() override { return renderSurface; }
 
-	// ModelView& getModelView(Model &model) override {
-	// 	auto n = model.getName();
-	// 	model.getView()
+	ModelView& getModel(Model &model) override {
+		// auto n = model.getName();
+		// if (!models.contains(n)) {
+		// 	// TODO Create default view
+		// 	ModelView mv(model, );
+		// 	models.insert({n, model.getDefaultView()});
+		// }
 
-	// 	// Create default view
-	// 	if (!modelViews.contains(n))
-	// 		modelViews.insert({n, model.getDefaultView()});
+		// return models.at(n);
+	}
 
-	// 	return modelViews.at(n);
-	// }
-
+	MaterialInstance& getMaterial(const std::string objectName, const std::string vcName) {
+		return materials[objectName][vcName];
+	}
 
 	private:
 	std::string name;
 	glm::vec3 backgroundColor{0.05, 0.1, 0.15};
 	RenderSurface renderSurface;
+
+	std::map<std::string, ModelView> models;
+
+	std::map<std::string, std::map<std::string, MaterialInstance>> materials;
 
 };

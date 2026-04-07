@@ -30,6 +30,10 @@ set(SOURCES
 
     render_surface.cpp render_surface.h
 
+    render_system.cpp render_system.h
+    material_instance.h
+    shader_params.h
+
     instanciator.h
     cameras/camera_collection.h
     renderers/renderer_collection.h

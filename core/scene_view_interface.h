@@ -1,7 +1,7 @@
 #pragma once
 #include "render_surface.h"
 #include "models/model_view.h"
-
+#include "material_instance.h"
 struct ISceneView {
 
 	virtual std::string getName() const = 0;
@@ -17,6 +17,9 @@ struct ISceneView {
 
 	virtual RenderSurface &getRenderSurface() = 0;
 
-	// virtual ModelView& getModelView(Model &model) = 0;
+	virtual ModelView& getModel(Model &model) = 0;
+
+	virtual MaterialInstance& getMaterial(const std::string objectName, const std::string vcName) = 0;
+
 
 };

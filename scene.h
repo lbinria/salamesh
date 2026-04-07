@@ -190,6 +190,7 @@ struct Scene : public IScene {
 	void saveState(json &j, const std::string filename);
 
 	ISceneView& getMainView() { return *views["default"]; }
+	
 	std::map<std::string, std::shared_ptr<ISceneView>>& getViews() { return views; }
 
 	private:

@@ -7,10 +7,13 @@ struct MeshRenderer : public Renderer {
 		Renderer(name, std::move(shader))
 		{}
 
-
 	// TODO to remove
 	virtual void doLoadState(json &j) override {}
 	virtual void doSaveState(json &j) const override {}
+
+	RenderPrimitive getRenderPrimitive() const override {
+		return RenderPrimitive::RENDER_TRIANGLES;
+	}
 
 	protected:
 		
