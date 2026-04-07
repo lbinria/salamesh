@@ -7,6 +7,8 @@
 
 struct CameraCollection : public EntityCollection<Camera> {
 
+	using EntityCollection::EntityCollection;
+
 	std::shared_ptr<Camera> add(std::string type, std::string name) override {
 
 		// Check whether renderer already exists

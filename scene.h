@@ -16,7 +16,7 @@
 
 struct Scene : public IScene {
 	
-	Scene(IApp &app) : app(app) {}
+	Scene(IApp &app) : app(app), models(*this), cameras(*this), renderers(*this) {}
 
 
 	void init() override {

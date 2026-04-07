@@ -1,12 +1,19 @@
 #pragma once
 
 #include "instanciator.h"
+#include "scene_interface.h"
 
 #include <map>
 #include <memory>
 
+struct IScene;
+
 template<typename T>
 struct EntityCollection {
+
+	EntityCollection(IScene &scene) : scene(scene) {
+
+	}
 
 	auto begin() {
 		return entities.begin();
@@ -65,5 +72,7 @@ struct EntityCollection {
 	std::map<std::string, std::shared_ptr<T>> entities;
 	Instanciator<T> instanciator;
 
+	private:
+	IScene &scene;
 
 };

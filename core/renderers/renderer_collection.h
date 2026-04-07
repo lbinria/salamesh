@@ -7,6 +7,9 @@
 
 struct RendererCollection : public EntityCollection<Renderer> {
 
+	using EntityCollection::EntityCollection;
+
+
 	std::shared_ptr<Renderer> add(std::string type, std::string name) override {
 
 		// Check whether renderer already exists

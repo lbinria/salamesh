@@ -7,6 +7,8 @@
 
 struct ModelCollection : public EntityCollection<Model> {
 
+	using EntityCollection::EntityCollection;
+
 	std::shared_ptr<Model> add(std::string type, std::string name) override {
 		// TODO maybe check type exists, else we dont understand why we get null model ?
 
