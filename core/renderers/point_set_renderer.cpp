@@ -31,6 +31,22 @@ void PointSetRenderer::push() {
 	writeVBOBuffer(vertices);
 }
 
+const void * PointSetRenderer::getData() {
+	std::vector<Vertex> vertices(ps.size());
+	for (int i = 0; i < ps.size(); ++i) {
+		auto &v = ps[i];
+
+		vertices[i] = { 
+			.vertexIndex = i,
+			.position = glm::vec3(v.x, v.y, v.z),
+			.size = 1.f
+		};
+	}
+
+	return vertices.data();
+}
+
+
 void PointSetRenderer::render(RendererView &rv, glm::vec3 &position) {
 	if (!rv.visible)
 		return;

@@ -39,6 +39,33 @@ struct PointSetRenderer : public Renderer {
 	void clean() override;
 	void clear() override;
 
+	const void * getData() override;
+	size_t getElementSize() override {
+		return sizeof(Vertex);
+	}
+
+	std::vector<RendererElementField> getElementFields() override {
+		return {
+			{
+				.name = "vertexIndex",
+				.type = RendererElementType::RENDERER_ELEMENT_TYPE_INT,
+				.offset = static_cast<int>(offsetof(Vertex, vertexIndex))
+			},
+			{
+				.name = "aPos",
+				.type = RendererElementType::RENDERER_ELEMENT_TYPE_VEC3,
+				.offset = static_cast<int>(offsetof(Vertex, position))
+			},
+			{
+				.name = "sizeScale",
+				.type = RendererElementType::RENDERER_ELEMENT_TYPE_FLOAT,
+				.offset = static_cast<int>(offsetof(Vertex, size))
+			}
+		};
+	}
+
+
+
 	std::unique_ptr<RendererView> getDefaultView() override { 
 		auto rv = std::make_unique<PointSetRendererView>(); 
 		rv->setPointSize(4.0f);

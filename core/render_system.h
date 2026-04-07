@@ -11,7 +11,7 @@ struct RenderSystem {
 		unsigned int vertexCount = 0;
 	};
 
-	GeometricBuffer& getGeometricBuffer(std::string rendererName);
+	GeometricBuffer& getGeometricBuffer(Renderer &renderer);
 
 	void render(IScene &scene);
 	void render(Model &model, ISceneView &sceneView);

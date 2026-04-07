@@ -14,8 +14,8 @@ int getGLPrimFromRenderPrimitive(Renderer::RenderPrimitive primitive) {
 	}
 }
 
-RenderSystem::GeometricBuffer& RenderSystem::getGeometricBuffer(std::string rendererName) {
-	if (geometries.count(rendererName) > 0) {
+RenderSystem::GeometricBuffer& RenderSystem::getGeometricBuffer(Renderer &renderer) {
+	if (geometries.count(renderer.getName()) > 0) {
 		RenderSystem::GeometricBuffer gbuf;
 
 		glGenVertexArrays(1, &gbuf.vao);
@@ -23,20 +23,31 @@ RenderSystem::GeometricBuffer& RenderSystem::getGeometricBuffer(std::string rend
 
 		glBindVertexArray(gbuf.vao);
 		glBindBuffer(GL_ARRAY_BUFFER, gbuf.vbo);
-
-		// UNIFORM TYPE, UNIFORM NAME, STRUCT SIZE, OFFSET
-		// renderer->getVBOs()
-
-		// Create VBO
 		
-		geometries[rendererName] = std::move(gbuf);
-		// // VBO
-		// sl::createVBOInteger(shader.id, "vertexIndex", sizeof(Vertex), (void*)offsetof(Vertex, vertexIndex));
-		// sl::createVBOVec3(shader.id, "aPos", sizeof(Vertex), (void*)offsetof(Vertex, position));
-		// sl::createVBOFloat(shader.id, "sizeScale", sizeof(Vertex), (void*)offsetof(Vertex, size));
+		geometries[renderer.getName()] = std::move(gbuf);
+
+		// Setup VBO
+		for (auto &f : renderer.getElementFields()) {
+
+			auto sid = renderer.getShader().id;
+			GLsizei stride = renderer.getElementSize();
+			auto ptr = (void*)f.offset;
+
+			switch (f.type) {
+				case Renderer::RendererElementType::RENDERER_ELEMENT_TYPE_INT: {
+					sl::createVBOInteger(sid, f.name.c_str(), stride, ptr);
+				}
+				case Renderer::RendererElementType::RENDERER_ELEMENT_TYPE_FLOAT: {
+					sl::createVBOFloat(sid, f.name.c_str(), stride, ptr);
+				}
+				case Renderer::RendererElementType::RENDERER_ELEMENT_TYPE_VEC3: {
+					sl::createVBOVec3(sid, f.name.c_str(), stride, ptr);
+				}
+			}
+		}
 	}
 
-	return geometries.at(rendererName);
+	return geometries.at(renderer.getName());
 }
 
 void RenderSystem::render(IScene &scene) {
@@ -58,12 +69,22 @@ void RenderSystem::render(Model &model, ISceneView &sceneView) {
 
 	for (auto &[rendererName, renderer] : model.getRenderers()) {
 
+		// If data changed, push !
 		if (renderer->isDirty()) {
-			// push data
+
+			size_t size = renderer->getElementSize();
+			const void *data = renderer->getData();
+			// auto usage = renderer->isDrawDynamic() ? GL_DYNAMIC_DRAW : GL_STATIC_DRAW;
+
+			auto &gbuf = getGeometricBuffer(*renderer);
+			glBindVertexArray(gbuf.vao);
+			glBindBuffer(GL_ARRAY_BUFFER, gbuf.vbo);
+			glBufferData(GL_ARRAY_BUFFER, renderer->getElementsCount() * size, data, GL_STATIC_DRAW);
 
 		}
-		// auto &mat = sceneView.getMaterialInstance(renderer);
-		// render(*renderer, transform, mat);
+		
+		auto &mat = sceneView.getMaterial(model.getName(), renderer->getName());
+		render(*renderer, transform, mat);
 	}
 
 }
@@ -76,7 +97,7 @@ void RenderSystem::render(Renderer &renderer, glm::mat4 &transform, MaterialInst
 	shader.use();
 	shader.setMat4("model", transform);
 
-	RenderSystem::GeometricBuffer &gbuf = getGeometricBuffer(renderer.getName());
+	RenderSystem::GeometricBuffer &gbuf = getGeometricBuffer(renderer);
 
 	glBindVertexArray(gbuf.vao);
 

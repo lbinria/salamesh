@@ -16,6 +16,20 @@ using json = nlohmann::json;
 
 struct Renderer {
 
+	enum RendererElementType {
+		RENDERER_ELEMENT_TYPE_INT,
+		RENDERER_ELEMENT_TYPE_UINT,
+		RENDERER_ELEMENT_TYPE_FLOAT,
+		RENDERER_ELEMENT_TYPE_VEC2,
+		RENDERER_ELEMENT_TYPE_VEC3
+	};
+
+	struct RendererElementField {
+		std::string name;
+		RendererElementType type;
+		int offset;
+	};
+
 	enum RenderPrimitive {
 		RENDER_POINTS,
 		RENDER_LINES,
@@ -44,6 +58,11 @@ struct Renderer {
 	}
 
 	int getElementsCount() const { return nelements; }
+	virtual const void * getData() {};
+	virtual size_t getElementSize() { return 0; };
+	virtual std::vector<RendererElementField> getElementFields() {
+		return {};
+	};
 
 	virtual std::unique_ptr<RendererView> getDefaultView() = 0;
 
