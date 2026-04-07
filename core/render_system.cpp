@@ -15,7 +15,7 @@ int getGLPrimFromRenderPrimitive(Renderer::RenderPrimitive primitive) {
 }
 
 RenderSystem::GeometricBuffer& RenderSystem::getGeometricBuffer(Renderer &renderer) {
-	if (geometries.count(renderer.getName()) > 0) {
+	if (geometries.count(renderer.getName()) == 0) {
 		RenderSystem::GeometricBuffer gbuf;
 
 		glGenVertexArrays(1, &gbuf.vao);
@@ -68,6 +68,11 @@ void RenderSystem::render(Model &model, ISceneView &sceneView) {
 	transform = glm::translate(transform, model.getPosition());
 
 	for (auto &[rendererName, renderer] : model.getRenderers()) {
+
+		// For test just render pointset
+		auto psr = std::dynamic_pointer_cast<PointSetRenderer>(renderer);
+		if (!psr)
+			continue;
 
 		// If data changed, push !
 		if (renderer->isDirty()) {

@@ -56,6 +56,8 @@
 
 #include "core/navigation_path.h"
 
+#include "core/render_system.h"
+
 using namespace UM;
 
 #include <filesystem>
@@ -262,6 +264,8 @@ struct App final : public IApp {
 	std::vector<std::string> navPath; // TODO remove
 	NavigationPath navPath2;
 
+	RenderSystem renderSystem;
+
 };
 
 struct ImGuiStackState {
@@ -343,4 +347,5 @@ struct ImGuiStackState {
 
 	private:
 	ImGuiContext *ctx;
+
 };

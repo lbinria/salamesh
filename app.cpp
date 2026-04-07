@@ -610,6 +610,9 @@ void App::start() {
 
 		update(dt);
 
+		// Alternative rendering
+		renderSystem.render(scene);
+
 		// Render scene
 		scene.render();
 
