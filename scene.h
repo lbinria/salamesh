@@ -51,26 +51,26 @@ struct Scene : public IScene {
 
 	void render() override {
 
-		// Render view
-		for (auto &[viewName, view] : views) {
-			for (auto &[rendererName, renderer] : renderers) {
-				auto rendererView = renderer->getView(viewName);
+		// // Render view
+		// for (auto &[viewName, view] : views) {
+		// 	for (auto &[rendererName, renderer] : renderers) {
+		// 		auto rendererView = renderer->getView(viewName);
 
-				glm::vec3 o{0.f};
-				renderer->render(*rendererView, o);
-			}
+		// 		glm::vec3 o{0.f};
+		// 		renderer->render(*rendererView, o);
+		// 	}
 
-			for (auto &[modelName, model] : models) {
+		// 	for (auto &[modelName, model] : models) {
 
-				auto &modelView = model->getView(viewName);
+		// 		auto &modelView = model->getView(viewName);
 
-				modelView.setColormap0Texture(colormaps[modelView.getSelectedColormap(ColormapLayer::COLORMAP_LAYER_0)].tex);
-				modelView.setColormap1Texture(colormaps[modelView.getSelectedColormap(ColormapLayer::COLORMAP_LAYER_1)].tex);
-				modelView.setColormap2Texture(colormaps[modelView.getSelectedColormap(ColormapLayer::COLORMAP_LAYER_2)].tex);
+		// 		modelView.setColormap0Texture(colormaps[modelView.getSelectedColormap(ColormapLayer::COLORMAP_LAYER_0)].tex);
+		// 		modelView.setColormap1Texture(colormaps[modelView.getSelectedColormap(ColormapLayer::COLORMAP_LAYER_1)].tex);
+		// 		modelView.setColormap2Texture(colormaps[modelView.getSelectedColormap(ColormapLayer::COLORMAP_LAYER_2)].tex);
 
-				model->render(modelView);
-			}
-		}
+		// 		model->render(modelView);
+		// 	}
+		// }
 
 	}
 
@@ -83,9 +83,7 @@ struct Scene : public IScene {
 			renderer->clean();
 		}
 
-		// Clear textures
-		for (int i = 0; i < colormaps.size(); ++i)
-			glDeleteTextures(1, &colormaps[i].tex);
+
 	}
 
 	void clear() override {
@@ -94,7 +92,6 @@ struct Scene : public IScene {
 		setSelectedModel("");
 		cameras.clear();
 		setupCameras();
-		clearColormaps();
 	}
 
 	std::shared_ptr<Model> loadModel(const std::string& filename, std::string name = "") override;
@@ -169,22 +166,7 @@ struct Scene : public IScene {
 	RendererCollection& getRenderers() override { return renderers; }
 
 
-	void setupColormaps();
 
-	void addColormap(const std::string name, const std::string filename) override;
-	void removeColormap(const std::string name) override;
-
-	void clearColormaps() override {
-		colormaps.clear();
-		setupColormaps();
-	}
-
-	std::vector<Colormap> getColormaps() override {
-		return colormaps;
-	}
-
-	Colormap getColormap(const std::string name) override;
-	Colormap getColormap(int idx) override;
 
 	void loadState(json &j, const std::string filename);
 	void saveState(json &j, const std::string filename);
@@ -203,9 +185,6 @@ struct Scene : public IScene {
 	CameraCollection cameras;
 
 	RendererCollection renderers;
-
-	// display color map in good format for 2D in the UI
-	std::vector<Colormap> colormaps;
 
 	std::map<std::string, std::shared_ptr<ISceneView>> views;
 	

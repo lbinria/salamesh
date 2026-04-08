@@ -274,41 +274,52 @@ struct LayersParams : public ShaderParams {
 
 	void setColormapTex(int i, int tex) {
 		colormapTexs[i] = tex;
+		dirty = true;
 	}
 
-	// int getHighlightBuf() const {
-	// 	return highlightBuf;
-	// }
+	void setLayerNDims(Layer layer, int nDims) {
+		// TODO check layer ? only works for colormaps...
+		attrNDims[int(layer)] = nDims;
+		dirty = true;
+	}
 
-	// void setHighlightBuf(int tex) {
-	// 	highlightBuf = tex;
-	// }
+	void setLayerRange(Layer layer, float min, float max) {
+		// TODO check layer ? only works for colormaps...
+		attrRange[int(layer)] = glm::vec2(min, max);
+		dirty = true;
+	}
 
-	// int getFilterBuf() const {
-	// 	return filtertBuf;
-	// }
-
-	// void setFilterBuf(int tex) {
-	// 	filtertBuf = tex;
-	// }
-
-	// int getColormapBuf(int i) const {
-	// 	return colormapBufs[i];
-	// }
-
-	// void setColormapBuf(int i, int tex) {
-	// 	colormapBufs[i] = tex;
-	// }
+	void setLayerElement(int element, Layer layer) {
+		// I could refactor more, 
+		// but we won't understand anything after that
+		switch (layer)
+		{
+		case Layer::COLORMAP_0:
+		case Layer::COLORMAP_1:
+		case Layer::COLORMAP_2:
+			colormapElements[int(layer)] = element;
+			break;
+		case Layer::HIGHLIGHT:
+			highlightElement = element;
+			break;
+		case Layer::FILTER:
+			filterElement = element;
+			break;
+		// Should never happen (except if all the case aren't covered)
+		default:
+			throw std::runtime_error(
+				"setLayerElement for layer: " + 
+				layerToString(layer) + 
+				" is not implemented."
+			);
+		}
+		dirty = true;
+	}
 
 	void doUpdate(Shader &shader) const override {
 		shader.setInt("colormap0", 0);
 		shader.setInt("colormap1", 1);
 		shader.setInt("colormap2", 2);
-		// shader.setInt("highlightBuf", 3);
-		// shader.setInt("filterBuf", 4);
-		// shader.setInt("colormap0Buf", 5);
-		// shader.setInt("colormap1Buf", 6);
-		// shader.setInt("colormap2Buf", 7);
 
 		for (int l = 0; l < 3; ++l) {
 			shader.setInt("colormapElement[" + std::to_string(int(l)) + "]", colormapElements[l]);
@@ -322,9 +333,6 @@ struct LayersParams : public ShaderParams {
 
 	private:
 	int colormapTexs[3] = {-1, -1, -1};
-	// int colormapBufs[3] = {-1, -1, -1};
-	// int highlightBuf = -1;
-	// int filtertBuf = -1;
 
 	int colormapElements[3] = {-1,-1,-1};
 	int highlightElement = -1;
@@ -348,7 +356,7 @@ struct ShaderBuffer {
 struct ShaderBufferGroup {
 
 	void update(Shader &shader) {
-		if (!isDirty)
+		if (!dirty)
 			return;
 
 		int texUnit = 3; // Start from 3 (texUnit 0,1,2 reserved to colormap textures)
@@ -359,24 +367,24 @@ struct ShaderBufferGroup {
 			++texUnit;
 		}
 
-		isDirty = false;
+		dirty = false;
 	}
 	
 	protected:
 
-	bool isDirty = true;
+	bool dirty = true;
 	std::map<std::string, ShaderBuffer> buf;
 	
 	void writeBuf(unsigned int buf, std::vector<float> data) {
 		glBindBuffer(GL_TEXTURE_BUFFER, buf);
 		glBufferData(GL_TEXTURE_BUFFER, data.size() * sizeof(float), data.data(), GL_DYNAMIC_DRAW);
-		isDirty = true;
+		dirty = true;
 	}
 
 	void writeBuf(unsigned int buf, int idx, float val) {
 		glBindBuffer(GL_TEXTURE_BUFFER, buf);
 		glBufferSubData(GL_TEXTURE_BUFFER, idx * sizeof(float), sizeof(float), &val);
-		isDirty = true;
+		dirty = true;
 	}
 
 
@@ -392,16 +400,24 @@ struct LayerBufferGroup : public ShaderBufferGroup {
 		buf["colormap2Buf"] = ShaderBuffer();
 	}
 
-	void setHighlight(std::vector<float> data) {
-		writeBuf(buf.at("highlightBuf").buf, data);
+	void setLayer(int idx, float val, Layer layer) {
+		auto b = buf.at(binding[layer]);
+		writeBuf(b.buf, idx, val);
 	}
 
-	void setFilter(std::vector<float> data) {
-		writeBuf(buf.at("filterBuf").buf, data);
+	void setLayer(std::vector<float> data, Layer layer) {
+		auto b = buf.at(binding[layer]);
+		writeBuf(b.buf, data);
 	}
 
-	void setColormap(int i, std::vector<float> data) {
-		writeBuf(buf.at("colormap" + std::to_string(i) + "Buf").buf, data);
-	}
+	private:
 
+	// Binding between enum Layer to buffer's name
+	std::map<Layer, std::string> binding{
+		{ Layer::COLORMAP_0, "colormap0Buf"},
+		{ Layer::COLORMAP_1, "colormap1Buf"},
+		{ Layer::COLORMAP_2, "colormap2Buf"},
+		{ Layer::HIGHLIGHT, "highlightBuf"},
+		{ Layer::FILTER, "filterBuf"},
+	};
 };

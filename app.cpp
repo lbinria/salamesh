@@ -433,7 +433,7 @@ bool App::setup() {
 	}
 
 	// Load default colormap textures
-	scene.setupColormaps();
+	renderSystem.setupColormaps();
 
 	// Load icons
 	int iconWidth, iconHeight, iconChannels;
