@@ -14,9 +14,9 @@ int getGLPrimFromRenderPrimitive(Renderer::RenderPrimitive primitive) {
 	}
 }
 
-RenderSystem::GeometricBuffer& RenderSystem::getGeometricBuffer(Renderer &renderer) {
+RenderSystem::VertexBuffer& RenderSystem::getVertexBuffer(Renderer &renderer) {
 	if (geometries.count(renderer.getName()) == 0) {
-		RenderSystem::GeometricBuffer gbuf;
+		RenderSystem::VertexBuffer gbuf;
 
 		glGenVertexArrays(1, &gbuf.vao);
 		glGenBuffers(1, &gbuf.vbo);
@@ -87,9 +87,9 @@ void RenderSystem::render(Model &model, ISceneView &sceneView) {
 			const void *data = renderer->getData();
 			// auto usage = renderer->isDrawDynamic() ? GL_DYNAMIC_DRAW : GL_STATIC_DRAW;
 
-			auto &gbuf = getGeometricBuffer(*renderer);
-			glBindVertexArray(gbuf.vao);
-			glBindBuffer(GL_ARRAY_BUFFER, gbuf.vbo);
+			auto &vbuf = getVertexBuffer(*renderer);
+			glBindVertexArray(vbuf.vao);
+			glBindBuffer(GL_ARRAY_BUFFER, vbuf.vbo);
 			glBufferData(GL_ARRAY_BUFFER, renderer->getElementsCount() * size, data, GL_STATIC_DRAW);
 			renderer->setDirty(false);
 		}
@@ -112,9 +112,9 @@ void RenderSystem::render(Renderer &renderer, glm::mat4 &transform, MaterialInst
 
 
 
-	RenderSystem::GeometricBuffer &gbuf = getGeometricBuffer(renderer);
+	RenderSystem::VertexBuffer &vbuf = getVertexBuffer(renderer);
 
-	glBindVertexArray(gbuf.vao);
+	glBindVertexArray(vbuf.vao);
 
 	auto &shader = renderer.getShader();
 	shader.use();
@@ -128,8 +128,9 @@ void RenderSystem::render(Renderer &renderer, glm::mat4 &transform, MaterialInst
 
 	mat.apply(shader);
 
+	// TODO beurrk !
 	if (mat.hasParam("layers")) {
-		auto layersParams = mat.getParam<LayersParams>("layers");
+		auto layersParams = mat.getParams<LayersParams>("layers");
 		if (layersParams) {
 			for (int l = 0; l < 3; ++l) {
 				layersParams->setColormapTex(l, texColormaps[l]);

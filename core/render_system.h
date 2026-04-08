@@ -13,7 +13,7 @@ struct RenderSystem {
 
 
 
-	struct GeometricBuffer {
+	struct VertexBuffer {
 		unsigned int vao;
 		unsigned int vbo;
 	};
@@ -23,7 +23,7 @@ struct RenderSystem {
 	// 	GLuint tbo;
 	// };
 
-	GeometricBuffer& getGeometricBuffer(Renderer &renderer);
+	VertexBuffer& getVertexBuffer(Renderer &renderer);
 
 	void render(IScene &scene);
 	void render(Model &model, ISceneView &sceneView);
@@ -57,7 +57,7 @@ struct RenderSystem {
 	Colormap getColormap(int idx);
 
 	private:
-	std::map<std::string, GeometricBuffer> geometries;
+	std::map<std::string, VertexBuffer> geometries;
 	unsigned int texColormaps[3];
 
 	std::vector<Colormap> colormaps;

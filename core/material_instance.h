@@ -12,17 +12,12 @@ struct MaterialInstance {
 			return;
 		
 		for (auto &[k, p] : params) { 
-			p->update(shader);
+			p->apply(shader);
 		}
 
 		for (auto &[k, b] : buffers) {
-			b->update(shader);
+			b->apply(shader);
 		}
-	}
-
-	// TODO add saveState, loadState
-	std::shared_ptr<ShaderParams> getParam(const std::string name) const {
-		return params.at(name);
 	}
 
 	void addParam(const std::string name, std::shared_ptr<ShaderParams> param) {
@@ -34,8 +29,38 @@ struct MaterialInstance {
 	}
 
 	template<typename T>
-	std::shared_ptr<T> getParam(const std::string name) {
-		return std::dynamic_pointer_cast<T>(params.at(name));
+	std::shared_ptr<T> getParams(const std::string name) {
+		if (!params.contains(name))
+			return nullptr;
+
+		return std::static_pointer_cast<T>(params.at(name));
+	}
+
+	// Shortcuts to some common parameters
+
+	std::shared_ptr<LightParams> getLightParams() {
+		return getParams<LightParams>("light");
+	}
+
+	std::shared_ptr<ClippingParams> getClippingParams() {
+		return getParams<ClippingParams>("clipping");
+	}
+
+	std::shared_ptr<MeshParams> getMeshParams() {
+		return getParams<MeshParams>("mesh");
+	}
+
+	std::shared_ptr<HalfedgeParams> getHalfedgeParams() {
+		return getParams<HalfedgeParams>("halfedges");
+	}
+
+	std::shared_ptr<PointSetParams> getPointSetParams() {
+		return getParams<PointSetParams>("points");
+	}
+
+	// TODO add saveState, loadState
+	std::shared_ptr<ShaderParams> getParam(const std::string name) const {
+		return params.at(name);
 	}
 
 	void addBufferGroup(const std::string name, std::shared_ptr<ShaderBufferGroup> bufferGroup) {

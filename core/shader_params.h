@@ -3,17 +3,17 @@
 
 struct ShaderParams {
 
-	void update(Shader &shader) {
+	void apply(Shader &shader) {
 		if (!dirty)
 			return;
 		
-		doUpdate(shader);
+		doApply(shader);
 		dirty = false;
 	}
 
 	protected:
 
-	virtual void doUpdate(Shader &shader) const = 0;
+	virtual void doApply(Shader &shader) const = 0;
 	
 	bool dirty = true;
 };
@@ -29,7 +29,7 @@ struct LightParams : public ShaderParams {
 		return _enabled;
 	}
 
-	void doUpdate(Shader &shader) const override {
+	void doApply(Shader &shader) const override {
 		shader.setFloat("is_light_enabled", _enabled); // TODO set int here !
 	}
 
@@ -71,7 +71,7 @@ struct ClippingParams : public ShaderParams {
 	}
 
 
-	void doUpdate(Shader &shader) const override {
+	void doApply(Shader &shader) const override {
 		shader.setInt("clipping_mode", clippingMode);		
 		shader.setInt("is_clipping_enabled", isClippingEnabled);
 		shader.setFloat3("clipping_plane_point", clippingPlanePoint);
@@ -135,7 +135,7 @@ struct MeshParams : public ShaderParams {
 		dirty = true;
 	}
 
-	void doUpdate(Shader &shader) const override {
+	void doApply(Shader &shader) const override {
 		shader.setFloat("meshSize", meshSize);
 		shader.setFloat("meshShrink", meshShrink);
 		shader.setInt("isCornerVisible", isCornerVisible);
@@ -199,7 +199,7 @@ struct HalfedgeParams : public ShaderParams {
 		dirty = true;
 	}
 
-	void doUpdate(Shader &shader) const override {
+	void doApply(Shader &shader) const override {
 		shader.setFloat("thickness", thickness);
 		shader.setFloat("spacing", halfedgeSpacing);
 		shader.setFloat("padding", halfedgePadding);
@@ -245,7 +245,7 @@ struct PointSetParams : public ShaderParams {
 		color = c;
 	}
 
-	void doUpdate(Shader &shader) const override {
+	void doApply(Shader &shader) const override {
 		shader.setFloat("pointSize", pointSize);
 		shader.setFloat3("pointColor", color);
 	}
@@ -316,7 +316,7 @@ struct LayersParams : public ShaderParams {
 		dirty = true;
 	}
 
-	void doUpdate(Shader &shader) const override {
+	void doApply(Shader &shader) const override {
 		shader.setInt("colormap0", 0);
 		shader.setInt("colormap1", 1);
 		shader.setInt("colormap2", 2);
@@ -355,7 +355,7 @@ struct ShaderBuffer {
 
 struct ShaderBufferGroup {
 
-	void update(Shader &shader) {
+	void apply(Shader &shader) {
 		if (!dirty)
 			return;
 
