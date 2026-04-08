@@ -17,9 +17,9 @@ struct ISceneView {
 
 	virtual RenderSurface &getRenderSurface() = 0;
 
-	virtual ModelView& getModel(Model &model) = 0;
 
-	virtual MaterialInstance& getMaterial(const std::string objectName, const std::string vcName) = 0;
-
+	virtual MaterialInstance& getMaterial(const std::string vcName) = 0;
+	virtual bool hasMaterial(const std::string rendererName) = 0;
+	virtual void setMaterial(MaterialInstance &mat, const std::string rendererName) = 0;
 
 };

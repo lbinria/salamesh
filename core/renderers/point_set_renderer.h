@@ -40,6 +40,8 @@ struct PointSetRenderer : public Renderer {
 	void clear() override;
 
 	const void * getData() override;
+	MaterialInstance getDefaultMaterial() override;
+
 	size_t getElementSize() override {
 		return sizeof(Vertex);
 	}

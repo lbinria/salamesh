@@ -261,7 +261,76 @@ struct PointSetParams : public ShaderParams {
     // }
 
 	private:
-	float pointSize;
-	glm::vec3 color;
+	float pointSize = 4.f;
+	glm::vec3 color{0.23, 0.85, 0.66};
+
+};
+
+struct LayersParams : public ShaderParams {
+
+	int getColormapTex(int i) const {
+		return colormapsTex[i];
+	}
+
+	void setColormapTex(int i, int tex) {
+		colormapsTex[i] = tex;
+	}
+
+	int getHighlightBuf() const {
+		return highlightBuf;
+	}
+
+	void setHighlightBuf(int tex) {
+		highlightBuf = tex;
+	}
+
+	int getFilterBuf() const {
+		return filtertBuf;
+	}
+
+	void setFilterBuf(int tex) {
+		filtertBuf = tex;
+	}
+
+	int getColormapBuf(int i) const {
+		return colormapBufs[i];
+	}
+
+	void setColormapBuf(int i, int tex) {
+		colormapBufs[i] = tex;
+	}
+
+	void doUpdate(Shader &shader) const override {
+		shader.setInt("colormap0", 0);
+		shader.setInt("colormap1", 1);
+		shader.setInt("colormap2", 2);
+		shader.setInt("highlightBuf", 3);
+		shader.setInt("filterBuf", 4);
+		shader.setInt("colormap0Buf", 5);
+		shader.setInt("colormap1Buf", 6);
+		shader.setInt("colormap2Buf", 7);
+
+		for (int l = 0; l < 3; ++l) {
+			shader.setInt("colormapElement[" + std::to_string(int(l)) + "]", colormapElements[l]);
+			shader.setInt("attrNDims[" + std::to_string(int(l)) + "]", attrNDims[l]);
+			shader.setFloat2("attrRange[" + std::to_string(int(l)) + "]", attrRange[l]);
+		}
+
+		shader.setInt("highlightElement", highlightElement);
+		shader.setInt("filterElement", filterElement);
+	}
+
+	private:
+	int colormapsTex[3] = {-1, -1, -1};
+	int colormapBufs[3] = {-1, -1, -1};
+	int highlightBuf = -1;
+	int filtertBuf = -1;
+
+	int colormapElements[3] = {-1,-1,-1};
+	int highlightElement = -1;
+	int filterElement = -1;
+	int attrNDims[3] = {1, 1, 1};
+	glm::vec2 attrRange[3];
+
 
 };

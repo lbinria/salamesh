@@ -17,8 +17,21 @@ struct MaterialInstance {
 	}
 
 	// TODO add saveState, loadState
-	std::shared_ptr<ShaderParams> getParam(const std::string name) {
+	std::shared_ptr<ShaderParams> getParam(const std::string name) const {
 		return params.at(name);
+	}
+
+	void addParam(const std::string name, std::shared_ptr<ShaderParams> param) {
+		params[name] = param;
+	}
+
+	bool hasParam(const std::string name) {
+		return params.contains(name);
+	}
+
+	template<typename T>
+	std::shared_ptr<T> getParam(const std::string name) {
+		return std::dynamic_pointer_cast<T>(params.at(name));
 	}
 
 	private:

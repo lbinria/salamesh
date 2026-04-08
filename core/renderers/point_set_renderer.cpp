@@ -46,6 +46,16 @@ const void * PointSetRenderer::getData() {
 	return vertices.data();
 }
 
+MaterialInstance PointSetRenderer::getDefaultMaterial() {
+	MaterialInstance mat;
+	mat.addParam("light", std::make_shared<LightParams>());
+	mat.addParam("clipping", std::make_shared<ClippingParams>());
+	mat.addParam("points", std::make_shared<PointSetParams>());
+	mat.addParam("layers", std::make_shared<LayersParams>());
+	return mat;
+}
+
+
 
 void PointSetRenderer::render(RendererView &rv, glm::vec3 &position) {
 	if (!rv.visible)

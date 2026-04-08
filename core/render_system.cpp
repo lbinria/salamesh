@@ -36,12 +36,15 @@ RenderSystem::GeometricBuffer& RenderSystem::getGeometricBuffer(Renderer &render
 			switch (f.type) {
 				case Renderer::RendererElementType::RENDERER_ELEMENT_TYPE_INT: {
 					sl::createVBOInteger(sid, f.name.c_str(), stride, ptr);
+					break;
 				}
 				case Renderer::RendererElementType::RENDERER_ELEMENT_TYPE_FLOAT: {
 					sl::createVBOFloat(sid, f.name.c_str(), stride, ptr);
+					break;
 				}
 				case Renderer::RendererElementType::RENDERER_ELEMENT_TYPE_VEC3: {
 					sl::createVBOVec3(sid, f.name.c_str(), stride, ptr);
+					break;
 				}
 			}
 		}
@@ -85,10 +88,16 @@ void RenderSystem::render(Model &model, ISceneView &sceneView) {
 			glBindVertexArray(gbuf.vao);
 			glBindBuffer(GL_ARRAY_BUFFER, gbuf.vbo);
 			glBufferData(GL_ARRAY_BUFFER, renderer->getElementsCount() * size, data, GL_STATIC_DRAW);
-
+			renderer->setDirty(false);
 		}
 		
-		auto &mat = sceneView.getMaterial(model.getName(), renderer->getName());
+		if (!sceneView.hasMaterial(renderer->getName())) {
+			auto mat = renderer->getDefaultMaterial();
+			auto rn = renderer->getName();
+			sceneView.setMaterial(mat, rn);
+		}
+
+		auto &mat = sceneView.getMaterial(renderer->getName());
 		render(*renderer, transform, mat);
 	}
 
@@ -98,20 +107,31 @@ void RenderSystem::render(Renderer &renderer, glm::mat4 &transform, MaterialInst
 	if (!mat.getVisible())
 		return;
 
-	auto &shader = renderer.getShader();
-	shader.use();
-	shader.setMat4("model", transform);
+
 
 	RenderSystem::GeometricBuffer &gbuf = getGeometricBuffer(renderer);
 
 	glBindVertexArray(gbuf.vao);
 
+	auto &shader = renderer.getShader();
+	shader.use();
+	shader.setMat4("model", transform);
+
 	mat.apply(shader);
+
+	if (mat.hasParam("layers")) {
+		auto layersParams = mat.getParam<LayersParams>("layers");
+		if (layersParams) {
+			for (int l = 0; l < 3; ++l) {
+				layersParams->setColormapTex(l, texColormaps[l]);
+			}
+		}
+	}
 
 	// TODO maybe can move this top
 	for (int i = 0; i < 3; ++i) {
 		glActiveTexture(GL_TEXTURE0 + i);
-		glBindTexture(GL_TEXTURE_2D, texColormap[i]);
+		glBindTexture(GL_TEXTURE_2D, texColormaps[i]);
 	}
 
 	// glActiveTexture(GL_TEXTURE0 + 3);

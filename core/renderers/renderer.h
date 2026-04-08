@@ -13,6 +13,7 @@ using json = nlohmann::json;
 #include "../helpers.h"
 
 #include "../renderers/renderer_view.h"
+#include "../material_instance.h"
 
 struct Renderer {
 
@@ -63,6 +64,9 @@ struct Renderer {
 	virtual std::vector<RendererElementField> getElementFields() {
 		return {};
 	};
+	virtual MaterialInstance getDefaultMaterial() {
+		return MaterialInstance();
+	}
 
 	virtual std::unique_ptr<RendererView> getDefaultView() = 0;
 
@@ -107,6 +111,7 @@ struct Renderer {
 	Shader& getShader() { return shader; }
 
 	bool isDirty() const { return dirty; }
+	void setDirty(bool val) { dirty = val; }
 
 
 	protected:

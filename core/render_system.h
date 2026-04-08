@@ -19,11 +19,11 @@ struct RenderSystem {
 
 
 	void setTextureColormap(int colormap, int texId) {
-		texColormap[colormap] = texId;
+		texColormaps[colormap] = texId;
 	}
 
 	private:
 	std::map<std::string, GeometricBuffer> geometries;
-	unsigned int texColormap[3];
+	unsigned int texColormaps[3];
 
 };
