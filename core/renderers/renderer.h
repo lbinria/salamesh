@@ -41,9 +41,14 @@ struct Renderer {
 	Renderer& operator= (const Renderer&) = delete;
 
 	Renderer(std::string name, Shader shader) : 
-		name(name.empty() ? sl::generateGuid() : name),
+		id(sl::generateGuid()),
+		name(name.empty() ? id : name),
 		shader(std::move(shader))
 	{}
+
+	std::string getId() {
+		return id;
+	}
 
 	template<typename T>
 	T& as() {
@@ -140,6 +145,8 @@ struct Renderer {
 
 
 	private:
+
+	std::string id;
 
 	std::string name;
 

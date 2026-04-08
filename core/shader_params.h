@@ -25,7 +25,7 @@ struct LightParams : public ShaderParams {
 		dirty = true;
 	}
 
-	bool getEnabled(bool enabled) const {
+	bool getEnabled() const {
 		return _enabled;
 	}
 
@@ -235,6 +235,7 @@ struct PointSetParams : public ShaderParams {
 
 	void setPointSize(float size) {
 		pointSize = size;
+		dirty = true;
 	}
 
 	glm::vec3 getColor() const {
@@ -243,6 +244,7 @@ struct PointSetParams : public ShaderParams {
 
 	void setColor(glm::vec3 c) {
 		color = c;
+		dirty = true;
 	}
 
 	void doApply(Shader &shader) const override {
@@ -344,7 +346,6 @@ struct LayersParams : public ShaderParams {
 };
 
 struct ShaderBuffer {
-	unsigned int texUnit;
 	GLuint tbo;
 	GLuint buf;
 

@@ -54,6 +54,7 @@ local invert_clipping = false
 function draw_model_properties(model, k, view)
 	-- local model_view = view:get_model(model)
 	local model_view = model:get_view(view.name)
+	local point_mat = view:get_material(model.points)
 	
 	local model_pos = model.world_position
 	local p = model.position
@@ -212,22 +213,22 @@ function draw_model_properties(model, k, view)
 
 			end
 
-			local sel_point_visible, new_point_visible = imgui.Checkbox("Show points", model_view.points.visible)
+			local sel_point_visible, new_point_visible = imgui.Checkbox("Show points", point_mat.visible)
 			if (sel_point_visible) then 
 				print("Change point visibility: " .. tostring(new_point_visible))
-				model_view.points.visible = new_point_visible
+				point_mat.visible = new_point_visible
 			end
 
-			local sel_point_size, new_point_size = imgui.SliderFloat("Point size", model_view.points.size, 0, 50)
+			local sel_point_size, new_point_size = imgui.SliderFloat("Point size", point_mat.points.size, 0, 50)
 			if (sel_point_size) then 
 				print("Change point size: " .. tostring(new_point_size))
-				model_view.points.size = new_point_size
+				point_mat.points.size = new_point_size
 			end
 
-			local sel_point_color, new_point_color = imgui.ColorEdit3("Point color", model_view.points.color)
+			local sel_point_color, new_point_color = imgui.ColorEdit3("Point color", point_mat.points.color)
 			if (sel_point_color) then 
 				-- print("Change point color: " .. tostring(new_point_color))
-				model_view.points.color = new_point_color
+				point_mat.points.color = new_point_color
 			end
 
 			if model_view.edges then 

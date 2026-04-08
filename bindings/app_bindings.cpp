@@ -161,8 +161,27 @@ namespace bindings {
 
 		sol::usertype<ISceneView> sceneView_t = lua.new_usertype<ISceneView>(
 			"ISceneView",
-			"name", sol::readonly_property(&ISceneView::getName)
-			// "get_model", &ISceneView::getModelView
+			"name", sol::readonly_property(&ISceneView::getName),
+			"get_material", &ISceneView::getMaterial
+		);
+
+		sol::usertype<MaterialInstance> materialInstance_t = lua.new_usertype<MaterialInstance>(
+			"MaterialInstance",
+			"visible", sol::property(&MaterialInstance::getVisible, &MaterialInstance::setVisible),
+			"light", sol::readonly_property(&MaterialInstance::getLightParams),
+			"points", sol::readonly_property(&MaterialInstance::getPointSetParams),
+			"layers", sol::readonly_property(&MaterialInstance::getLayerBuffers)
+		);
+
+		sol::usertype<LightParams> lightParams_t = lua.new_usertype<LightParams>(
+			"LightParams",
+			"enabled", sol::property(&LightParams::getEnabled, &LightParams::setEnabled)
+		);
+
+		sol::usertype<PointSetParams> pointSetParams_t = lua.new_usertype<PointSetParams>(
+			"PointSetParams",
+			"color", sol::property(&PointSetParams::getColor, &PointSetParams::setColor),
+			"size", sol::property(&PointSetParams::getPointSize, &PointSetParams::setPointSize)
 		);
 
 

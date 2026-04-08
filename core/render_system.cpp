@@ -94,13 +94,15 @@ void RenderSystem::render(Model &model, ISceneView &sceneView) {
 			renderer->setDirty(false);
 		}
 		
-		if (!sceneView.hasMaterial(renderer->getName())) {
+		// Create default material if not found
+		auto modelName = model.getName();
+
+		if (!sceneView.hasMaterial(*renderer)) {
 			auto mat = renderer->getDefaultMaterial();
-			auto rn = renderer->getName();
-			sceneView.setMaterial(mat, rn);
+			sceneView.addMaterial(*renderer, mat);
 		}
 
-		auto &mat = sceneView.getMaterial(renderer->getName());
+		auto &mat = sceneView.getMaterial(*renderer);
 		render(*renderer, transform, mat);
 	}
 

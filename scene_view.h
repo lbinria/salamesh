@@ -38,19 +38,31 @@ struct SceneView : public ISceneView {
 
 	RenderSurface &getRenderSurface() override { return renderSurface; }
 
-
-
-	bool hasMaterial(const std::string rendererName) {
-		return materials.contains(rendererName);
+	MaterialInstance& getMaterial(Renderer &renderer) {
+		return materials.at(renderer.getId());
 	}
 
-	MaterialInstance& getMaterial(const std::string rendererName) {
-		return materials[rendererName];
+	// ModelMaterialInstance getMaterial(const Model &model) {
+	// 	for (auto &[k, r] : model.getRenderers()) {
+	// 		auto &mat = materials[r->getId()];
+	// 		mat
+	// 	}
+	// 	return ModelMaterialInstance(materials.at(model.getName()));
+	// }
+
+	bool hasMaterial(Renderer &renderer) {
+		return materials.contains(renderer.getId());
 	}
 
-	void setMaterial(MaterialInstance &mat, const std::string rendererName) {
-		materials[rendererName] = mat;
+	void addMaterial(Renderer &renderer, const MaterialInstance& mat) {
+		materials[renderer.getId()] = mat;
 	}
+	
+	bool removeMaterial(Renderer &renderer) {
+		return materials.erase(renderer.getId());
+	}
+
+
 
 	private:
 	std::string name;
@@ -58,7 +70,7 @@ struct SceneView : public ISceneView {
 	RenderSurface renderSurface;
 
 	std::map<std::string, ModelView> models;
-
 	std::map<std::string, MaterialInstance> materials;
+
 
 };
