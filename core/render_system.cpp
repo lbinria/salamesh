@@ -53,6 +53,9 @@ RenderSystem::GeometricBuffer& RenderSystem::getGeometricBuffer(Renderer &render
 	return geometries.at(renderer.getName());
 }
 
+
+
+
 void RenderSystem::render(IScene &scene) {
 
 	// Check deleted for cleanup
@@ -117,6 +120,12 @@ void RenderSystem::render(Renderer &renderer, glm::mat4 &transform, MaterialInst
 	shader.use();
 	shader.setMat4("model", transform);
 
+	// TODO maybe can move this top
+	for (int i = 0; i < 3; ++i) {
+		glActiveTexture(GL_TEXTURE0 + i);
+		glBindTexture(GL_TEXTURE_2D, texColormaps[i]);
+	}
+
 	mat.apply(shader);
 
 	if (mat.hasParam("layers")) {
@@ -127,27 +136,6 @@ void RenderSystem::render(Renderer &renderer, glm::mat4 &transform, MaterialInst
 			}
 		}
 	}
-
-	// TODO maybe can move this top
-	for (int i = 0; i < 3; ++i) {
-		glActiveTexture(GL_TEXTURE0 + i);
-		glBindTexture(GL_TEXTURE_2D, texColormaps[i]);
-	}
-
-	// glActiveTexture(GL_TEXTURE0 + 3);
-	// glBindTexture(GL_TEXTURE_BUFFER, tboHighlight);
-
-	// glActiveTexture(GL_TEXTURE0 + 4);
-	// glBindTexture(GL_TEXTURE_BUFFER, tboFilter);
-
-	// glActiveTexture(GL_TEXTURE0 + 5);
-	// glBindTexture(GL_TEXTURE_BUFFER, tboColormap0);
-
-	// glActiveTexture(GL_TEXTURE0 + 6);
-	// glBindTexture(GL_TEXTURE_BUFFER, tboColormap1);
-
-	// glActiveTexture(GL_TEXTURE0 + 7);
-	// glBindTexture(GL_TEXTURE_BUFFER, tboColormap2);
 
 	auto rp = renderer.getRenderPrimitive();
 	glDrawArrays(getGLPrimFromRenderPrimitive(rp), 0, renderer.getElementsCount());

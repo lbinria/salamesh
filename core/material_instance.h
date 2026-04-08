@@ -14,6 +14,10 @@ struct MaterialInstance {
 		for (auto &[k, p] : params) { 
 			p->update(shader);
 		}
+
+		for (auto &[k, b] : buffers) {
+			b->update(shader);
+		}
 	}
 
 	// TODO add saveState, loadState
@@ -34,8 +38,13 @@ struct MaterialInstance {
 		return std::dynamic_pointer_cast<T>(params.at(name));
 	}
 
+	void addBufferGroup(const std::string name, std::shared_ptr<ShaderBufferGroup> bufferGroup) {
+		buffers[name] = bufferGroup;
+	}
+
 	private:
 	bool visible = true;
 	std::map<std::string, std::shared_ptr<ShaderParams>> params;
+	std::map<std::string, std::shared_ptr<ShaderBufferGroup>> buffers;
 
 };

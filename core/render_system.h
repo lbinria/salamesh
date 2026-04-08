@@ -8,8 +8,12 @@ struct RenderSystem {
 	struct GeometricBuffer {
 		unsigned int vao;
 		unsigned int vbo;
-		unsigned int vertexCount = 0;
 	};
+
+	// struct TBO {
+	// 	GLuint buf;
+	// 	GLuint tbo;
+	// };
 
 	GeometricBuffer& getGeometricBuffer(Renderer &renderer);
 

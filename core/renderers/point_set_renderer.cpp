@@ -52,6 +52,7 @@ MaterialInstance PointSetRenderer::getDefaultMaterial() {
 	mat.addParam("clipping", std::make_shared<ClippingParams>());
 	mat.addParam("points", std::make_shared<PointSetParams>());
 	mat.addParam("layers", std::make_shared<LayersParams>());
+	mat.addBufferGroup("layers", std::make_shared<LayerBufferGroup>());
 	return mat;
 }
 

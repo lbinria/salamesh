@@ -269,46 +269,46 @@ struct PointSetParams : public ShaderParams {
 struct LayersParams : public ShaderParams {
 
 	int getColormapTex(int i) const {
-		return colormapsTex[i];
+		return colormapTexs[i];
 	}
 
 	void setColormapTex(int i, int tex) {
-		colormapsTex[i] = tex;
+		colormapTexs[i] = tex;
 	}
 
-	int getHighlightBuf() const {
-		return highlightBuf;
-	}
+	// int getHighlightBuf() const {
+	// 	return highlightBuf;
+	// }
 
-	void setHighlightBuf(int tex) {
-		highlightBuf = tex;
-	}
+	// void setHighlightBuf(int tex) {
+	// 	highlightBuf = tex;
+	// }
 
-	int getFilterBuf() const {
-		return filtertBuf;
-	}
+	// int getFilterBuf() const {
+	// 	return filtertBuf;
+	// }
 
-	void setFilterBuf(int tex) {
-		filtertBuf = tex;
-	}
+	// void setFilterBuf(int tex) {
+	// 	filtertBuf = tex;
+	// }
 
-	int getColormapBuf(int i) const {
-		return colormapBufs[i];
-	}
+	// int getColormapBuf(int i) const {
+	// 	return colormapBufs[i];
+	// }
 
-	void setColormapBuf(int i, int tex) {
-		colormapBufs[i] = tex;
-	}
+	// void setColormapBuf(int i, int tex) {
+	// 	colormapBufs[i] = tex;
+	// }
 
 	void doUpdate(Shader &shader) const override {
 		shader.setInt("colormap0", 0);
 		shader.setInt("colormap1", 1);
 		shader.setInt("colormap2", 2);
-		shader.setInt("highlightBuf", 3);
-		shader.setInt("filterBuf", 4);
-		shader.setInt("colormap0Buf", 5);
-		shader.setInt("colormap1Buf", 6);
-		shader.setInt("colormap2Buf", 7);
+		// shader.setInt("highlightBuf", 3);
+		// shader.setInt("filterBuf", 4);
+		// shader.setInt("colormap0Buf", 5);
+		// shader.setInt("colormap1Buf", 6);
+		// shader.setInt("colormap2Buf", 7);
 
 		for (int l = 0; l < 3; ++l) {
 			shader.setInt("colormapElement[" + std::to_string(int(l)) + "]", colormapElements[l]);
@@ -321,10 +321,10 @@ struct LayersParams : public ShaderParams {
 	}
 
 	private:
-	int colormapsTex[3] = {-1, -1, -1};
-	int colormapBufs[3] = {-1, -1, -1};
-	int highlightBuf = -1;
-	int filtertBuf = -1;
+	int colormapTexs[3] = {-1, -1, -1};
+	// int colormapBufs[3] = {-1, -1, -1};
+	// int highlightBuf = -1;
+	// int filtertBuf = -1;
 
 	int colormapElements[3] = {-1,-1,-1};
 	int highlightElement = -1;
@@ -332,5 +332,76 @@ struct LayersParams : public ShaderParams {
 	int attrNDims[3] = {1, 1, 1};
 	glm::vec2 attrRange[3];
 
+
+};
+
+struct ShaderBuffer {
+	unsigned int texUnit;
+	GLuint tbo;
+	GLuint buf;
+
+	ShaderBuffer() {
+		sl::createTBO(buf, tbo);
+	}
+};
+
+struct ShaderBufferGroup {
+
+	void update(Shader &shader) {
+		if (!isDirty)
+			return;
+
+		int texUnit = 3; // Start from 3 (texUnit 0,1,2 reserved to colormap textures)
+		for (auto &[k, b] : buf) {
+			shader.setInt(k.c_str(), texUnit);
+			glActiveTexture(GL_TEXTURE0 + texUnit);
+			glBindTexture(GL_TEXTURE_BUFFER, b.tbo);
+			++texUnit;
+		}
+
+		isDirty = false;
+	}
+	
+	protected:
+
+	bool isDirty = true;
+	std::map<std::string, ShaderBuffer> buf;
+	
+	void writeBuf(unsigned int buf, std::vector<float> data) {
+		glBindBuffer(GL_TEXTURE_BUFFER, buf);
+		glBufferData(GL_TEXTURE_BUFFER, data.size() * sizeof(float), data.data(), GL_DYNAMIC_DRAW);
+		isDirty = true;
+	}
+
+	void writeBuf(unsigned int buf, int idx, float val) {
+		glBindBuffer(GL_TEXTURE_BUFFER, buf);
+		glBufferSubData(GL_TEXTURE_BUFFER, idx * sizeof(float), sizeof(float), &val);
+		isDirty = true;
+	}
+
+
+};
+
+struct LayerBufferGroup : public ShaderBufferGroup {
+
+	LayerBufferGroup() {
+		buf["highlightBuf"] = ShaderBuffer();
+		buf["filterBuf"] = ShaderBuffer();
+		buf["colormap0Buf"] = ShaderBuffer();
+		buf["colormap1Buf"] = ShaderBuffer();
+		buf["colormap2Buf"] = ShaderBuffer();
+	}
+
+	void setHighlight(std::vector<float> data) {
+		writeBuf(buf.at("highlightBuf").buf, data);
+	}
+
+	void setFilter(std::vector<float> data) {
+		writeBuf(buf.at("filterBuf").buf, data);
+	}
+
+	void setColormap(int i, std::vector<float> data) {
+		writeBuf(buf.at("colormap" + std::to_string(i) + "Buf").buf, data);
+	}
 
 };
