@@ -31,20 +31,7 @@ struct ClippingRenderer : public Renderer {
 	}
 
 
-	void init() override;
-	void push() override;
-	void render(RendererView &rv, glm::vec3 &position) override;
-	void clean() override;
 	void clear() override;
-
-	std::unique_ptr<RendererView> getDefaultView() override { 
-		auto rv = std::make_unique<ClippingRendererView>(); 
-		// rv->setClippingPlanePoint(getCenter());
-		rv->setClippingPlaneNormal({1, 0, 0});
-		return rv;
-	}
-
-
 
 
 	private:

@@ -1,392 +1,392 @@
-#pragma once
-#include "../renderers/renderer_view.h"
-#include "../renderers/renderer.h"
+// #pragma once
+// #include "../renderers/renderer_view.h"
+// #include "../renderers/renderer.h"
 
-#include <map>
-#include <string>
-#include "model.h"
+// #include <map>
+// #include <string>
+// #include "model.h"
 
-struct ModelView {
+// struct ModelView {
 
-	ModelView(Model &m, std::map<std::string, std::shared_ptr<RendererView>> rendererViews) : rendererViews(rendererViews), model(m) {
+// 	ModelView(Model &m, std::map<std::string, std::shared_ptr<RendererView>> rendererViews) : rendererViews(rendererViews), model(m) {
 
-	}
+// 	}
 
-	std::map<std::string, std::shared_ptr<RendererView>> getRendererViews() {
-		return rendererViews;
-	}
+// 	std::map<std::string, std::shared_ptr<RendererView>> getRendererViews() {
+// 		return rendererViews;
+// 	}
 
-	std::shared_ptr<RendererView> getRendererView(std::string name) {
-		return rendererViews.at(name);
-	}
+// 	std::shared_ptr<RendererView> getRendererView(std::string name) {
+// 		return rendererViews.at(name);
+// 	}
 
-	PointSetRendererView& getPoints() {
-		return *std::static_pointer_cast<PointSetRendererView>(rendererViews.at("point_renderer"));
-	}
+// 	PointSetRendererView& getPoints() {
+// 		return *std::static_pointer_cast<PointSetRendererView>(rendererViews.at("point_renderer"));
+// 	}
 
-	std::shared_ptr<MeshRendererView> getMesh() const {
-		if(rendererViews.contains("mesh_renderer"))
-			return std::static_pointer_cast<MeshRendererView>(rendererViews.at("mesh_renderer"));
+// 	std::shared_ptr<MeshRendererView> getMesh() const {
+// 		if(rendererViews.contains("mesh_renderer"))
+// 			return std::static_pointer_cast<MeshRendererView>(rendererViews.at("mesh_renderer"));
 		
-		return nullptr;
-	}
+// 		return nullptr;
+// 	}
 
-	std::shared_ptr<HalfedgeRendererView> getEdges() {
-		if (rendererViews.contains("edge_renderer"))
-			return std::static_pointer_cast<HalfedgeRendererView>(rendererViews.at("edge_renderer"));
+// 	std::shared_ptr<HalfedgeRendererView> getEdges() {
+// 		if (rendererViews.contains("edge_renderer"))
+// 			return std::static_pointer_cast<HalfedgeRendererView>(rendererViews.at("edge_renderer"));
 			
-		return nullptr;
-	}
+// 		return nullptr;
+// 	}
 
-	bool getLightEnabled() const {
-		return isLightEnabled;
-	}
+// 	bool getLightEnabled() const {
+// 		return isLightEnabled;
+// 	}
 
-	void setLightEnabled(bool enabled) {
-		for (auto const &[k, rv] : rendererViews)
-			rv->setLightEnabled(enabled);
+// 	void setLightEnabled(bool enabled) {
+// 		for (auto const &[k, rv] : rendererViews)
+// 			rv->setLightEnabled(enabled);
 
-		isLightEnabled = enabled;
-	}
+// 		isLightEnabled = enabled;
+// 	}
 
-	RendererView::ClippingMode getClippingMode() const {
-		return clippingMode;
-	}
+// 	RendererView::ClippingMode getClippingMode() const {
+// 		return clippingMode;
+// 	}
 
-	void setClippingMode(RendererView::ClippingMode mode) {
-		for (auto const &[k, rv] : rendererViews)
-			rv->setClippingMode(mode);
+// 	void setClippingMode(RendererView::ClippingMode mode) {
+// 		for (auto const &[k, rv] : rendererViews)
+// 			rv->setClippingMode(mode);
 
-		clippingMode = mode;
-	}
+// 		clippingMode = mode;
+// 	}
 
-	bool getClipping() const {
-		return isClipping;
-	}
+// 	bool getClipping() const {
+// 		return isClipping;
+// 	}
 
-	void setClipping(bool enabled) {
-		for (auto const &[k, rv] : rendererViews)
-			rv->setClipping(enabled);
+// 	void setClipping(bool enabled) {
+// 		for (auto const &[k, rv] : rendererViews)
+// 			rv->setClipping(enabled);
 
-		isClipping = enabled;
-	}
+// 		isClipping = enabled;
+// 	}
 
-	glm::vec3 getClippingPlanePoint() const {
-		return clippingPlanePoint;
-	}
+// 	glm::vec3 getClippingPlanePoint() const {
+// 		return clippingPlanePoint;
+// 	}
 
-	void setClippingPlanePoint(glm::vec3 p) {
-		for (auto const &[k, rv] : rendererViews)
-			rv->setClippingPlanePoint(p);
+// 	void setClippingPlanePoint(glm::vec3 p) {
+// 		for (auto const &[k, rv] : rendererViews)
+// 			rv->setClippingPlanePoint(p);
 
-		clippingPlanePoint = p;
-	}
+// 		clippingPlanePoint = p;
+// 	}
 
-	glm::vec3 getClippingPlaneNormal() const {
-		return clippingPlaneNormal;
-	}
+// 	glm::vec3 getClippingPlaneNormal() const {
+// 		return clippingPlaneNormal;
+// 	}
 
-	void setClippingPlaneNormal(glm::vec3 n) {
-		for (auto const &[k, rv] : rendererViews)
-			rv->setClippingPlaneNormal(n);
+// 	void setClippingPlaneNormal(glm::vec3 n) {
+// 		for (auto const &[k, rv] : rendererViews)
+// 			rv->setClippingPlaneNormal(n);
 
-		clippingPlaneNormal = n;
-	}
+// 		clippingPlaneNormal = n;
+// 	}
 
-	bool getInvertClipping() const {
-		return invertClipping;
-	}
+// 	bool getInvertClipping() const {
+// 		return invertClipping;
+// 	}
 
-	void setInvertClipping(bool invert) {
-		for (auto const &[k, rv] : rendererViews)
-			rv->setInvertClipping(invert);
+// 	void setInvertClipping(bool invert) {
+// 		for (auto const &[k, rv] : rendererViews)
+// 			rv->setInvertClipping(invert);
 
-		invertClipping = invert;
-	}
+// 		invertClipping = invert;
+// 	}
 
-	void push() {
-		// Push highlight and filter attributes if they exist
-		for (auto [k, isActivated] : activatedLayers) {
-			if (!isActivated) 
-				continue;
+// 	void push() {
+// 		// Push highlight and filter attributes if they exist
+// 		for (auto [k, isActivated] : activatedLayers) {
+// 			if (!isActivated) 
+// 				continue;
 
-			auto [layer, kind] = k;
-			updateLayer(layer, kind);
-		}
-	}
+// 			auto [layer, kind] = k;
+// 			updateLayer(layer, kind);
+// 		}
+// 	}
 
-	int getSelectedAttr(ColormapLayer colormapLayer) {
-		return selectedAttr[static_cast<int>(colormapLayer)];
-	}
+// 	int getSelectedAttr(ColormapLayer colormapLayer) {
+// 		return selectedAttr[static_cast<int>(colormapLayer)];
+// 	}
 
-	void setSelectedAttr(int idx, ColormapLayer layer);
+// 	void setSelectedAttr(int idx, ColormapLayer layer);
 
-	void setSelectedColormap(int idx, ColormapLayer layer) {
-		selectedColormap[static_cast<int>(layer)] = idx;
-	}
+// 	void setSelectedColormap(int idx, ColormapLayer layer) {
+// 		selectedColormap[static_cast<int>(layer)] = idx;
+// 	}
 
-	int getSelectedColormap(ColormapLayer layer) const {
-		return selectedColormap[static_cast<int>(layer)];
-	}
+// 	int getSelectedColormap(ColormapLayer layer) const {
+// 		return selectedColormap[static_cast<int>(layer)];
+// 	}
 
-	bool isLayerActivated(ElementKind kind, Layer layer) {
-		return activatedLayers[{layer, kind}];
-	}
+// 	bool isLayerActivated(ElementKind kind, Layer layer) {
+// 		return activatedLayers[{layer, kind}];
+// 	}
 
-	void resetLayer(ElementKind kind, Layer layer);
+// 	void resetLayer(ElementKind kind, Layer layer);
 
-	void setLayer(ElementKind kind, Layer layer, bool update = true);
-	// TODO maybe reset parameter won't be used, so layer never need to be reseted in this context
-	void unsetLayer(ElementKind kind, Layer layer, bool reset = false);
+// 	void setLayer(ElementKind kind, Layer layer, bool update = true);
+// 	// TODO maybe reset parameter won't be used, so layer never need to be reseted in this context
+// 	void unsetLayer(ElementKind kind, Layer layer, bool reset = false);
 
-	inline void setColormap(ElementKind kind, ColormapLayer layer, bool update = true) {
-		setLayer(kind, static_cast<Layer>(layer), update);
-	}
+// 	inline void setColormap(ElementKind kind, ColormapLayer layer, bool update = true) {
+// 		setLayer(kind, static_cast<Layer>(layer), update);
+// 	}
 
-	void unsetColormap(ElementKind kind, ColormapLayer colormapLayer) {
-		unsetLayer(kind, static_cast<Layer>(colormapLayer));
-	}
+// 	void unsetColormap(ElementKind kind, ColormapLayer colormapLayer) {
+// 		unsetLayer(kind, static_cast<Layer>(colormapLayer));
+// 	}
 
-	void unsetColormaps(ColormapLayer colormapLayer) {
-		// Unset all
-		for (int i = 0; i < 7; ++i) {
-			int kind = 1 << i;
-			unsetColormap((ElementKind)kind, colormapLayer);
-		}
-	}
+// 	void unsetColormaps(ColormapLayer colormapLayer) {
+// 		// Unset all
+// 		for (int i = 0; i < 7; ++i) {
+// 			int kind = 1 << i;
+// 			unsetColormap((ElementKind)kind, colormapLayer);
+// 		}
+// 	}
 
-	void unsetColormaps(ElementKind kind) {
-		for (int l = 0; l < 3; ++l)
-			unsetColormap(kind, static_cast<ColormapLayer>(l));
-	}
+// 	void unsetColormaps(ElementKind kind) {
+// 		for (int l = 0; l < 3; ++l)
+// 			unsetColormap(kind, static_cast<ColormapLayer>(l));
+// 	}
 
-	void unsetColormaps() {
-		// Unset all
-		for (int l = 0; l < 3; ++l) {
-			for (int i = 0; i < 7; ++i) {
-				int kind = 1 << i;
-				unsetColormap((ElementKind)kind, static_cast<ColormapLayer>(l));
-			}
-		}
-	}
+// 	void unsetColormaps() {
+// 		// Unset all
+// 		for (int l = 0; l < 3; ++l) {
+// 			for (int i = 0; i < 7; ++i) {
+// 				int kind = 1 << i;
+// 				unsetColormap((ElementKind)kind, static_cast<ColormapLayer>(l));
+// 			}
+// 		}
+// 	}
 
-	inline void setHighlight(ElementKind kind, bool update = true) {
-		setLayer(kind, Layer::HIGHLIGHT, update);
-	}
+// 	inline void setHighlight(ElementKind kind, bool update = true) {
+// 		setLayer(kind, Layer::HIGHLIGHT, update);
+// 	}
 
-	inline void unsetHighlight(ElementKind kind) {
-		unsetLayer(kind, Layer::HIGHLIGHT);
-	}
+// 	inline void unsetHighlight(ElementKind kind) {
+// 		unsetLayer(kind, Layer::HIGHLIGHT);
+// 	}
 
-	void unsetHighlights() {
-		// Unset all
-		for (int i = 0; i < 7; ++i) {
-			int kind = 1 << i;
-			unsetHighlight((ElementKind)kind);
-		}
-	}
+// 	void unsetHighlights() {
+// 		// Unset all
+// 		for (int i = 0; i < 7; ++i) {
+// 			int kind = 1 << i;
+// 			unsetHighlight((ElementKind)kind);
+// 		}
+// 	}
 
-	inline void setFilter(ElementKind kind, bool update = true) {
-		setLayer(kind, Layer::FILTER, update);
-	}
+// 	inline void setFilter(ElementKind kind, bool update = true) {
+// 		setLayer(kind, Layer::FILTER, update);
+// 	}
 
-	inline void unsetFilter(ElementKind kind) {
-		unsetLayer(kind, Layer::FILTER);
-	}
+// 	inline void unsetFilter(ElementKind kind) {
+// 		unsetLayer(kind, Layer::FILTER);
+// 	}
 
-	void unsetFilters() {
-		// Unset all
-		for (int i = 0; i < 7; ++i) {
-			int kind = 1 << i;
-			unsetFilter((ElementKind)kind);
-		}
-	}
+// 	void unsetFilters() {
+// 		// Unset all
+// 		for (int i = 0; i < 7; ++i) {
+// 			int kind = 1 << i;
+// 			unsetFilter((ElementKind)kind);
+// 		}
+// 	}
 
-	// TODO maybe protected
-	void setColormap0Texture(unsigned int tex) {
-		for (auto const &[k, rv] : rendererViews)
-			rv->setColormap0Texture(tex);
-	}
-	// TODO maybe protected
-	void setColormap1Texture(unsigned int tex) {
-		for (auto const &[k, rv] : rendererViews)
-			rv->setColormap1Texture(tex);
-	}
-	// TODO maybe protected
-	void setColormap2Texture(unsigned int tex) {
-		for (auto const &[k, rv] : rendererViews)
-			rv->setColormap2Texture(tex);
-	}
+// 	// TODO maybe protected
+// 	void setColormap0Texture(unsigned int tex) {
+// 		for (auto const &[k, rv] : rendererViews)
+// 			rv->setColormap0Texture(tex);
+// 	}
+// 	// TODO maybe protected
+// 	void setColormap1Texture(unsigned int tex) {
+// 		for (auto const &[k, rv] : rendererViews)
+// 			rv->setColormap1Texture(tex);
+// 	}
+// 	// TODO maybe protected
+// 	void setColormap2Texture(unsigned int tex) {
+// 		for (auto const &[k, rv] : rendererViews)
+// 			rv->setColormap2Texture(tex);
+// 	}
 
-	// Choose which attribute to bind to layer / kind
-	void setLayerAttr(std::string name, Layer layer, ElementKind kind) {
-		attrNameByLayerAndKind[{layer, kind}] = name;
-	}
+// 	// Choose which attribute to bind to layer / kind
+// 	void setLayerAttr(std::string name, Layer layer, ElementKind kind) {
+// 		attrNameByLayerAndKind[{layer, kind}] = name;
+// 	}
 
-	std::string getLayerAttr(Layer layer, ElementKind kind) {
-		std::tuple<Layer, ElementKind> k = {layer, kind};
-		if (attrNameByLayerAndKind.contains(k))
-			return attrNameByLayerAndKind[k];
+// 	std::string getLayerAttr(Layer layer, ElementKind kind) {
+// 		std::tuple<Layer, ElementKind> k = {layer, kind};
+// 		if (attrNameByLayerAndKind.contains(k))
+// 			return attrNameByLayerAndKind[k];
 		
-		return defaultAttrName(layer);
-	}
+// 		return defaultAttrName(layer);
+// 	}
 
-	inline std::string getColormapAttr(ElementKind kind, ColormapLayer layer) {
-		return getLayerAttr(static_cast<Layer>(layer), kind);
-	}
+// 	inline std::string getColormapAttr(ElementKind kind, ColormapLayer layer) {
+// 		return getLayerAttr(static_cast<Layer>(layer), kind);
+// 	}
 
-	inline void setColormapAttr(std::string name, ElementKind kind, ColormapLayer layer) {
-		setLayerAttr(name, static_cast<Layer>(layer), kind);
-	}
+// 	inline void setColormapAttr(std::string name, ElementKind kind, ColormapLayer layer) {
+// 		setLayerAttr(name, static_cast<Layer>(layer), kind);
+// 	}
 
-	inline std::string getHighlightAttr(ElementKind kind) {
-		return getLayerAttr(Layer::HIGHLIGHT, kind);
-	}
+// 	inline std::string getHighlightAttr(ElementKind kind) {
+// 		return getLayerAttr(Layer::HIGHLIGHT, kind);
+// 	}
 
-	inline void setHighlightAttr(std::string name, ElementKind kind) {
-		setLayerAttr(name, Layer::HIGHLIGHT, kind);
-	}
+// 	inline void setHighlightAttr(std::string name, ElementKind kind) {
+// 		setLayerAttr(name, Layer::HIGHLIGHT, kind);
+// 	}
 
-	inline std::string getFilterAttr(ElementKind kind) {
-		return getLayerAttr(Layer::HIGHLIGHT, kind);
-	}
+// 	inline std::string getFilterAttr(ElementKind kind) {
+// 		return getLayerAttr(Layer::HIGHLIGHT, kind);
+// 	}
 
-	inline void setFilterAttr(std::string name, ElementKind kind) {
-		setLayerAttr(name, Layer::FILTER, kind);
-	}
+// 	inline void setFilterAttr(std::string name, ElementKind kind) {
+// 		setLayerAttr(name, Layer::FILTER, kind);
+// 	}
 
 
-	bool saveState(json &j) /*const*/ {
-		j["is_light_enabled"] = isLightEnabled;
+// 	bool saveState(json &j) /*const*/ {
+// 		j["is_light_enabled"] = isLightEnabled;
 
-		// TODO save directly as arrays
-		j["selected_colormap0"] = selectedColormap[0];
-		j["selected_colormap1"] = selectedColormap[1];
-		j["selected_colormap2"] = selectedColormap[2];
-		j["selected_attr0"] = selectedAttr[0];
-		j["selected_attr1"] = selectedAttr[1];
-		j["selected_attr2"] = selectedAttr[2];
+// 		// TODO save directly as arrays
+// 		j["selected_colormap0"] = selectedColormap[0];
+// 		j["selected_colormap1"] = selectedColormap[1];
+// 		j["selected_colormap2"] = selectedColormap[2];
+// 		j["selected_attr0"] = selectedAttr[0];
+// 		j["selected_attr1"] = selectedAttr[1];
+// 		j["selected_attr2"] = selectedAttr[2];
 
-		j["attr_name_by_layer_and_kind"] = attrNameByLayerAndKind;
-		j["activated_layers"] = activatedLayers;
+// 		j["attr_name_by_layer_and_kind"] = attrNameByLayerAndKind;
+// 		j["activated_layers"] = activatedLayers;
 
-		j["is_clipping"] = isClipping;
-		j["clipping_plane_point"] = { clippingPlanePoint.x, clippingPlanePoint.y, clippingPlanePoint.z };
-		j["clipping_plane_normal"] = { clippingPlaneNormal.x, clippingPlaneNormal.y, clippingPlaneNormal.z };
-		j["invert_clipping"] = invertClipping;
+// 		j["is_clipping"] = isClipping;
+// 		j["clipping_plane_point"] = { clippingPlanePoint.x, clippingPlanePoint.y, clippingPlanePoint.z };
+// 		j["clipping_plane_normal"] = { clippingPlaneNormal.x, clippingPlaneNormal.y, clippingPlaneNormal.z };
+// 		j["invert_clipping"] = invertClipping;
 
-		return true;
-	}
+// 		return true;
+// 	}
 
-	void loadState(json &j) {
-		setLightEnabled(j["is_light_enabled"].get<bool>());
+// 	void loadState(json &j) {
+// 		setLightEnabled(j["is_light_enabled"].get<bool>());
 
-		// TODO load directly as array
-		selectedAttr[0] = j["selected_attr0"].get<int>();
-		selectedAttr[1] = j["selected_attr1"].get<int>();
-		selectedAttr[2] = j["selected_attr2"].get<int>();
+// 		// TODO load directly as array
+// 		selectedAttr[0] = j["selected_attr0"].get<int>();
+// 		selectedAttr[1] = j["selected_attr1"].get<int>();
+// 		selectedAttr[2] = j["selected_attr2"].get<int>();
 			
-		selectedColormap[0] = j["selected_colormap0"].get<int>();
-		selectedColormap[1] = j["selected_colormap1"].get<int>();
-		selectedColormap[2] = j["selected_colormap2"].get<int>();
+// 		selectedColormap[0] = j["selected_colormap0"].get<int>();
+// 		selectedColormap[1] = j["selected_colormap1"].get<int>();
+// 		selectedColormap[2] = j["selected_colormap2"].get<int>();
 
-		for (auto &j : j["attr_name_by_layer_and_kind"]) {
-			auto key = j[0];
-			Layer l = (Layer)key[0].get<int>();
-			ElementKind k = (ElementKind)key[1].get<int>();
-			auto attrName = j[1].get<std::string>();
-			attrNameByLayerAndKind[{l, k}] = attrName;
-		}
+// 		for (auto &j : j["attr_name_by_layer_and_kind"]) {
+// 			auto key = j[0];
+// 			Layer l = (Layer)key[0].get<int>();
+// 			ElementKind k = (ElementKind)key[1].get<int>();
+// 			auto attrName = j[1].get<std::string>();
+// 			attrNameByLayerAndKind[{l, k}] = attrName;
+// 		}
 
-		// Set layers
-		for (auto &j : j["activated_layers"]) {
-			auto key = j[0];
-			Layer l = (Layer)key[0].get<int>();
-			ElementKind k = (ElementKind)key[1].get<int>();
-			auto val = j[1].get<bool>();
-			if (val) {
-				setLayer(k, l);
-			}
-		}
+// 		// Set layers
+// 		for (auto &j : j["activated_layers"]) {
+// 			auto key = j[0];
+// 			Layer l = (Layer)key[0].get<int>();
+// 			ElementKind k = (ElementKind)key[1].get<int>();
+// 			auto val = j[1].get<bool>();
+// 			if (val) {
+// 				setLayer(k, l);
+// 			}
+// 		}
 
-		setClipping(j["is_clipping"].get<bool>());
+// 		setClipping(j["is_clipping"].get<bool>());
 
-		setClippingPlanePoint(glm::vec3(
-			j["clipping_plane_point"][0].get<float>(),
-			j["clipping_plane_point"][1].get<float>(),
-			j["clipping_plane_point"][2].get<float>()
-		));
+// 		setClippingPlanePoint(glm::vec3(
+// 			j["clipping_plane_point"][0].get<float>(),
+// 			j["clipping_plane_point"][1].get<float>(),
+// 			j["clipping_plane_point"][2].get<float>()
+// 		));
 
-		setClippingPlaneNormal(glm::vec3(
-			j["clipping_plane_normal"][0].get<float>(),
-			j["clipping_plane_normal"][1].get<float>(),
-			j["clipping_plane_normal"][2].get<float>()
-		));
+// 		setClippingPlaneNormal(glm::vec3(
+// 			j["clipping_plane_normal"][0].get<float>(),
+// 			j["clipping_plane_normal"][1].get<float>(),
+// 			j["clipping_plane_normal"][2].get<float>()
+// 		));
 
-		setInvertClipping(j["invert_clipping"].get<bool>());
-	}
-
-
-	bool visible;
-
-	protected:
+// 		setInvertClipping(j["invert_clipping"].get<bool>());
+// 	}
 
 
+// 	bool visible;
+
+// 	protected:
 
 
-	void updateLayer(Layer layer, ElementKind kind) {
 
-		auto attrName = getLayerAttr(layer, kind);
 
-		int nDims = model.getAttributeNDims(attrName, kind);
+// 	void updateLayer(Layer layer, ElementKind kind) {
 
-		// Extract selectedDim from string
-		int selectedDim = -1;
-		auto lbrPos = attrName.find('[');
-		auto rbrPos = attrName.find(']');
-		// if "attr[0]" requested for example, we would like to see selectedDim=0, so nDims of attribute = 1
-		if (lbrPos != std::string::npos && rbrPos != std::string::npos) {
-			selectedDim = std::stoi(attrName.substr(lbrPos + 1, rbrPos - lbrPos));
-			attrName = attrName.substr(0, lbrPos);
-			nDims = 1;
-		}
+// 		auto attrName = getLayerAttr(layer, kind);
 
-		auto data_opt = model.getAttrData(attrName, kind, selectedDim);
+// 		int nDims = model.getAttributeNDims(attrName, kind);
 
-		// Silent when no data ?
-		// If no data => it means that attr name wasn't found
-		if (!data_opt.has_value())
-			return;
+// 		// Extract selectedDim from string
+// 		int selectedDim = -1;
+// 		auto lbrPos = attrName.find('[');
+// 		auto rbrPos = attrName.find(']');
+// 		// if "attr[0]" requested for example, we would like to see selectedDim=0, so nDims of attribute = 1
+// 		if (lbrPos != std::string::npos && rbrPos != std::string::npos) {
+// 			selectedDim = std::stoi(attrName.substr(lbrPos + 1, rbrPos - lbrPos));
+// 			attrName = attrName.substr(0, lbrPos);
+// 			nDims = 1;
+// 		}
 
-		auto data = data_opt.value();
+// 		auto data_opt = model.getAttrData(attrName, kind, selectedDim);
 
-		auto [min, max] = sl::getRange(data);
+// 		// Silent when no data ?
+// 		// If no data => it means that attr name wasn't found
+// 		if (!data_opt.has_value())
+// 			return;
 
-		for (auto const &[k, rv] : rendererViews) {
-			if (rv->isRenderElement(kind)) {
-				rv->setLayerRange(layer, min, max);
-				rv->setLayerNDims(layer, nDims);
-				rv->setLayer(data, layer);
-			}
-		}
-	}
+// 		auto data = data_opt.value();
 
-	private:
-	Model &model;
+// 		auto [min, max] = sl::getRange(data);
 
-	bool isLightEnabled;
-	RendererView::ClippingMode clippingMode = RendererView::ClippingMode::STD;
-	bool isClipping = false;
-	glm::vec3 clippingPlanePoint{0.f, 0.f, 0.f};
-	glm::vec3 clippingPlaneNormal{0.f, 0.f, 1.f};
-	bool invertClipping = false;
+// 		for (auto const &[k, rv] : rendererViews) {
+// 			if (rv->isRenderElement(kind)) {
+// 				rv->setLayerRange(layer, min, max);
+// 				rv->setLayerNDims(layer, nDims);
+// 				rv->setLayer(data, layer);
+// 			}
+// 		}
+// 	}
 
-	int selectedAttr[3] = {-1, -1, -1};
-	int selectedColormap[3] = {0, 0, 0};
+// 	private:
+// 	Model &model;
 
-	std::map<std::tuple<Layer, ElementKind>, bool> activatedLayers;
-	std::map<std::tuple<Layer, ElementKind>, std::string> attrNameByLayerAndKind;
+// 	bool isLightEnabled;
+// 	RendererView::ClippingMode clippingMode = RendererView::ClippingMode::STD;
+// 	bool isClipping = false;
+// 	glm::vec3 clippingPlanePoint{0.f, 0.f, 0.f};
+// 	glm::vec3 clippingPlaneNormal{0.f, 0.f, 1.f};
+// 	bool invertClipping = false;
 
-	std::map<std::string, std::shared_ptr<RendererView>> rendererViews;
+// 	int selectedAttr[3] = {-1, -1, -1};
+// 	int selectedColormap[3] = {0, 0, 0};
 
-};
+// 	std::map<std::tuple<Layer, ElementKind>, bool> activatedLayers;
+// 	std::map<std::tuple<Layer, ElementKind>, std::string> attrNameByLayerAndKind;
+
+// 	std::map<std::string, std::shared_ptr<RendererView>> rendererViews;
+
+// };

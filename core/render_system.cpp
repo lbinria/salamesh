@@ -79,6 +79,7 @@ void RenderSystem::render(Model &model, ISceneView &sceneView) {
 		auto psr = std::dynamic_pointer_cast<PointSetRenderer>(renderer);
 		auto msr = std::dynamic_pointer_cast<MeshRenderer>(renderer);
 		auto hsr = std::dynamic_pointer_cast<HalfedgeRenderer>(renderer);
+		// if (!msr)
 		if (!psr && !msr && !hsr)
 		// if (!psr && !msr )
 			continue;
@@ -105,6 +106,7 @@ void RenderSystem::render(Model &model, ISceneView &sceneView) {
 			sceneView.addMaterial(*renderer, mat);
 		}
 
+		// auto &mat = sceneView.getMaterial(*renderer);
 		auto &mat = sceneView.getMaterial(*renderer);
 		render(*renderer, transform, mat);
 	}

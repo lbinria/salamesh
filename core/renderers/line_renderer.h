@@ -35,14 +35,8 @@ struct LineRenderer : public Renderer {
 		return RenderPrimitive::RENDER_LINES;
 	}
 
-	void init() override;
-	void push() override;
-	void render(RendererView &rv, glm::vec3 &position) override;
-
-	void clean() override;
 	void clear() override;
 
-	std::unique_ptr<RendererView> getDefaultView() override { return std::make_unique<LineRendererView>(); }
 
 
 	void clearLines() {
@@ -56,14 +50,14 @@ struct LineRenderer : public Renderer {
 		lines.push_back(line);
 
 		if (autoUpdate)
-			push();
+			requestUpdate();
 	}
 
 	void addLines(std::vector<Line> allLines) {
 		lines.insert(lines.end(), allLines.begin(), allLines.end());
 
 		if (autoUpdate)
-			push();
+			requestUpdate();
 	}
 
 	// TODO removeLine by guid / idx / range

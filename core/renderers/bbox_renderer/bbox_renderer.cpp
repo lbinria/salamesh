@@ -2,103 +2,6 @@
 #include "../../../core/graphic_api.h"
 #include "../../helpers.h"
 
-void BBoxRenderer::init() {
-
-	glGenVertexArrays(1, &VAO);
-	glGenBuffers(1, &VBO);
-
-	glBindVertexArray(VAO);
-	glBindBuffer(GL_ARRAY_BUFFER, VBO);
-
-	// VBO
-	sl::createVBOVec3(shader.id, "p", sizeof(Vertex), (void*)offsetof(Vertex, p));
-
-}
-
-void BBoxRenderer::push() {
-
-	
-	std::vector<Vertex> vertices;
-
-	// Search bbox
-	glm::vec3 pMin{FLT_MAX, FLT_MAX, FLT_MAX};
-	glm::vec3 pMax{-FLT_MAX, -FLT_MAX, -FLT_MAX};
-	for (auto &p : ps) {
-		glm::vec3 glmP = sl::um2glm(p);
-		pMin = glm::min(pMin, glmP);
-		pMax = glm::max(pMax, glmP);
-	}
-
-	// Create bbox lines
-	vertices.push_back({ glm::vec3(pMin.x, pMin.y, pMin.z) });
-	vertices.push_back({ glm::vec3(pMax.x, pMin.y, pMin.z) });
-
-	vertices.push_back({ glm::vec3(pMax.x, pMin.y, pMin.z) });
-	vertices.push_back({ glm::vec3(pMax.x, pMax.y, pMin.z) });
-
-	vertices.push_back({ glm::vec3(pMax.x, pMax.y, pMin.z) });
-	vertices.push_back({ glm::vec3(pMin.x, pMax.y, pMin.z) });
-
-	vertices.push_back({ glm::vec3(pMin.x, pMax.y, pMin.z) });
-	vertices.push_back({ glm::vec3(pMin.x, pMin.y, pMin.z) });
-
-	// Frame
-	vertices.push_back({ glm::vec3(pMin.x, pMin.y, pMax.z) });
-	vertices.push_back({ glm::vec3(pMax.x, pMin.y, pMax.z) });
-
-	vertices.push_back({ glm::vec3(pMax.x, pMin.y, pMax.z) });
-	vertices.push_back({ glm::vec3(pMax.x, pMax.y, pMax.z) });
-
-	vertices.push_back({ glm::vec3(pMax.x, pMax.y, pMax.z) });
-	vertices.push_back({ glm::vec3(pMin.x, pMax.y, pMax.z) });
-
-	vertices.push_back({ glm::vec3(pMin.x, pMax.y, pMax.z) });
-	vertices.push_back({ glm::vec3(pMin.x, pMin.y, pMax.z) });
-
-	// Frame
-	vertices.push_back({ glm::vec3(pMin.x, pMin.y, pMin.z) });
-	vertices.push_back({ glm::vec3(pMin.x, pMin.y, pMax.z) });
-
-	vertices.push_back({ glm::vec3(pMin.x, pMin.y, pMax.z) });
-	vertices.push_back({ glm::vec3(pMin.x, pMax.y, pMax.z) });
-
-	vertices.push_back({ glm::vec3(pMin.x, pMax.y, pMax.z) });
-	vertices.push_back({ glm::vec3(pMin.x, pMax.y, pMin.z) });
-
-	vertices.push_back({ glm::vec3(pMin.x, pMax.y, pMin.z) });
-	vertices.push_back({ glm::vec3(pMin.x, pMin.y, pMin.z) });
-
-	// Frame
-	vertices.push_back({ glm::vec3(pMax.x, pMin.y, pMin.z) });
-	vertices.push_back({ glm::vec3(pMax.x, pMin.y, pMax.z) });
-
-	vertices.push_back({ glm::vec3(pMax.x, pMin.y, pMax.z) });
-	vertices.push_back({ glm::vec3(pMax.x, pMax.y, pMax.z) });
-
-	vertices.push_back({ glm::vec3(pMax.x, pMax.y, pMax.z) });
-	vertices.push_back({ glm::vec3(pMax.x, pMax.y, pMin.z) });
-
-	vertices.push_back({ glm::vec3(pMax.x, pMax.y, pMin.z) });
-	vertices.push_back({ glm::vec3(pMax.x, pMin.y, pMin.z) });
-
-	writeVBOBuffer(vertices);
-}
-	
-void BBoxRenderer::render(RendererView &rv, glm::vec3 &position) {
-	if (!rv.visible)
-		return;
-
-	glBindVertexArray(VAO);
-	
-	glm::mat4 model = glm::mat4(1.0f);
-	model = glm::translate(model, position);
-	
-	rv.use(shader);
-	shader.setMat4("model", model);
-
-	glDrawArrays(GL_LINES, 0, nelements);
-}
-
 void BBoxRenderer::clear() {
 	glBindVertexArray(VAO);
 	glBindBuffer(GL_ARRAY_BUFFER, VBO);
@@ -106,9 +9,106 @@ void BBoxRenderer::clear() {
 	nelements = 0;
 }
 
-void BBoxRenderer::clean() {
-	// Clean up
-	glDeleteVertexArrays(1, &VAO);
-	glDeleteBuffers(1, &VBO);
-	shader.clean();
-}
+// void BBoxRenderer::init() {
+
+// 	glGenVertexArrays(1, &VAO);
+// 	glGenBuffers(1, &VBO);
+
+// 	glBindVertexArray(VAO);
+// 	glBindBuffer(GL_ARRAY_BUFFER, VBO);
+
+// 	// VBO
+// 	sl::createVBOVec3(shader.id, "p", sizeof(Vertex), (void*)offsetof(Vertex, p));
+
+// }
+
+// void BBoxRenderer::push() {
+
+	
+// 	std::vector<Vertex> vertices;
+
+// 	// Search bbox
+// 	glm::vec3 pMin{FLT_MAX, FLT_MAX, FLT_MAX};
+// 	glm::vec3 pMax{-FLT_MAX, -FLT_MAX, -FLT_MAX};
+// 	for (auto &p : ps) {
+// 		glm::vec3 glmP = sl::um2glm(p);
+// 		pMin = glm::min(pMin, glmP);
+// 		pMax = glm::max(pMax, glmP);
+// 	}
+
+// 	// Create bbox lines
+// 	vertices.push_back({ glm::vec3(pMin.x, pMin.y, pMin.z) });
+// 	vertices.push_back({ glm::vec3(pMax.x, pMin.y, pMin.z) });
+
+// 	vertices.push_back({ glm::vec3(pMax.x, pMin.y, pMin.z) });
+// 	vertices.push_back({ glm::vec3(pMax.x, pMax.y, pMin.z) });
+
+// 	vertices.push_back({ glm::vec3(pMax.x, pMax.y, pMin.z) });
+// 	vertices.push_back({ glm::vec3(pMin.x, pMax.y, pMin.z) });
+
+// 	vertices.push_back({ glm::vec3(pMin.x, pMax.y, pMin.z) });
+// 	vertices.push_back({ glm::vec3(pMin.x, pMin.y, pMin.z) });
+
+// 	// Frame
+// 	vertices.push_back({ glm::vec3(pMin.x, pMin.y, pMax.z) });
+// 	vertices.push_back({ glm::vec3(pMax.x, pMin.y, pMax.z) });
+
+// 	vertices.push_back({ glm::vec3(pMax.x, pMin.y, pMax.z) });
+// 	vertices.push_back({ glm::vec3(pMax.x, pMax.y, pMax.z) });
+
+// 	vertices.push_back({ glm::vec3(pMax.x, pMax.y, pMax.z) });
+// 	vertices.push_back({ glm::vec3(pMin.x, pMax.y, pMax.z) });
+
+// 	vertices.push_back({ glm::vec3(pMin.x, pMax.y, pMax.z) });
+// 	vertices.push_back({ glm::vec3(pMin.x, pMin.y, pMax.z) });
+
+// 	// Frame
+// 	vertices.push_back({ glm::vec3(pMin.x, pMin.y, pMin.z) });
+// 	vertices.push_back({ glm::vec3(pMin.x, pMin.y, pMax.z) });
+
+// 	vertices.push_back({ glm::vec3(pMin.x, pMin.y, pMax.z) });
+// 	vertices.push_back({ glm::vec3(pMin.x, pMax.y, pMax.z) });
+
+// 	vertices.push_back({ glm::vec3(pMin.x, pMax.y, pMax.z) });
+// 	vertices.push_back({ glm::vec3(pMin.x, pMax.y, pMin.z) });
+
+// 	vertices.push_back({ glm::vec3(pMin.x, pMax.y, pMin.z) });
+// 	vertices.push_back({ glm::vec3(pMin.x, pMin.y, pMin.z) });
+
+// 	// Frame
+// 	vertices.push_back({ glm::vec3(pMax.x, pMin.y, pMin.z) });
+// 	vertices.push_back({ glm::vec3(pMax.x, pMin.y, pMax.z) });
+
+// 	vertices.push_back({ glm::vec3(pMax.x, pMin.y, pMax.z) });
+// 	vertices.push_back({ glm::vec3(pMax.x, pMax.y, pMax.z) });
+
+// 	vertices.push_back({ glm::vec3(pMax.x, pMax.y, pMax.z) });
+// 	vertices.push_back({ glm::vec3(pMax.x, pMax.y, pMin.z) });
+
+// 	vertices.push_back({ glm::vec3(pMax.x, pMax.y, pMin.z) });
+// 	vertices.push_back({ glm::vec3(pMax.x, pMin.y, pMin.z) });
+
+// 	writeVBOBuffer(vertices);
+// }
+	
+// void BBoxRenderer::render(RendererView &rv, glm::vec3 &position) {
+// 	if (!rv.visible)
+// 		return;
+
+// 	glBindVertexArray(VAO);
+	
+// 	glm::mat4 model = glm::mat4(1.0f);
+// 	model = glm::translate(model, position);
+	
+// 	rv.use(shader);
+// 	shader.setMat4("model", model);
+
+// 	glDrawArrays(GL_LINES, 0, nelements);
+// }
+
+// void BBoxRenderer::clean() {
+// 	// Clean up
+// 	glDeleteVertexArrays(1, &VAO);
+// 	glDeleteBuffers(1, &VBO);
+// 	shader.clean();
+// }

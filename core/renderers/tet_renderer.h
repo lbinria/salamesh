@@ -18,5 +18,4 @@ using namespace UM;
 
 struct TetRenderer : public VolumeRenderer {
 	using VolumeRenderer::VolumeRenderer;
-	void push() override;
 };

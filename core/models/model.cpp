@@ -1,16 +1,4 @@
 #include "model.h"
-#include "model_view.h"
-
-void Model::push() {
-
-	for (auto const &[k, r] : _renderers)
-		r->push();
-
-	// Update model views
-	for (auto &[viewName, mv] : views) {
-		mv.push();
-	}
-}
 
 bool Model::saveState(std::string dirPath, json &j) /*const*/ {
 
@@ -37,9 +25,6 @@ bool Model::saveState(std::string dirPath, json &j) /*const*/ {
 	j["position"] = { position.x, position.y, position.z };
 
 
-	for (auto &[viewName, mv] : views) {
-		mv.saveState(j["views"][viewName]);
-	}
 
 	for (auto &[k, r] : _renderers) {
 		r->saveState(j["renderers"][k]);
@@ -120,47 +105,3 @@ void Model::removeAttr(ElementKind kind, std::string name) {
 		attrs.erase(attrs.begin() + idx);
 }
 
-ModelView Model::getDefaultView(std::string viewName) {
-
-	// Get / create (if not exists) default views of renderers
-	std::map<std::string, std::shared_ptr<RendererView>> rendererViews;
-	for (auto &[k, r] : _renderers) {
-		rendererViews[k] = r->getView(viewName);
-	}
-
-	ModelView mv(*this, rendererViews);
-	mv.visible = true;
-	mv.setLightEnabled(true);
-	
-
-
-	auto meshRenderer = getMeshRenderer();
-	if (meshRenderer) {
-		auto rv = meshRenderer->getView(viewName);
-		auto mrv = std::static_pointer_cast<MeshRendererView>(rv);
-		mrv->setMeshIndex(index);
-	}
-
-	return mv;
-}
-
-ModelView& Model::getView(std::string viewName) {
-	// Create default view
-	if (!views.contains(viewName))
-		views.insert({viewName, getDefaultView(viewName)});
-
-	return views.at(viewName);
-}
-
-void Model::render(ModelView &modelView) {
-
-	if (!modelView.visible)
-		return;
-
-	glm::vec3 pos = getWorldPosition();
-
-	for (auto const &[k, r] : _renderers) {
-		auto rv = modelView.getRendererView(k);
-		r->render(*rv, pos);
-	}
-}

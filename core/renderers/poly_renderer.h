@@ -38,21 +38,7 @@ struct PolyRenderer : public MeshRenderer {
 		{}
 
 
-	void init() override;
-	void render(RendererView &rv, glm::vec3 &position) override;
-
-	void push() override;
 	void clear() override;
-	void clean() override;
-
-	std::unique_ptr<RendererView> getDefaultView() override {
-		auto rv = std::make_unique<PolyRendererView>();
-		rv->visible = true;
-		rv->setColor({0.71f, 0.71f, 0.71f});
-		rv->setMeshShrink(0.f);
-		rv->setMeshSize(0.0f);
-		return rv;
-	}
 
 
 	protected:

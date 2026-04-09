@@ -51,37 +51,10 @@ struct Scene : public IScene {
 
 	void render() override {
 
-		// // Render view
-		// for (auto &[viewName, view] : views) {
-		// 	for (auto &[rendererName, renderer] : renderers) {
-		// 		auto rendererView = renderer->getView(viewName);
-
-		// 		glm::vec3 o{0.f};
-		// 		renderer->render(*rendererView, o);
-		// 	}
-
-		// 	for (auto &[modelName, model] : models) {
-
-		// 		auto &modelView = model->getView(viewName);
-
-		// 		modelView.setColormap0Texture(colormaps[modelView.getSelectedColormap(ColormapLayer::COLORMAP_LAYER_0)].tex);
-		// 		modelView.setColormap1Texture(colormaps[modelView.getSelectedColormap(ColormapLayer::COLORMAP_LAYER_1)].tex);
-		// 		modelView.setColormap2Texture(colormaps[modelView.getSelectedColormap(ColormapLayer::COLORMAP_LAYER_2)].tex);
-
-		// 		model->render(modelView);
-		// 	}
-		// }
-
 	}
 
 	void clean() override {
-		for (auto &[k, model] : models) {
-			model->clean();
-		}
-
-		for (auto &[k, renderer] : renderers) {
-			renderer->clean();
-		}
+		// TODO clean model, renderrers
 
 
 	}

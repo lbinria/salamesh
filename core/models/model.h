@@ -8,7 +8,6 @@
 #include "../renderers/point_set_renderer.h"
 #include "../renderers/halfedge_renderer.h"
 
-// #include "../models/model_view.h"
 
 #include "../../include/glm/glm.hpp"
 #include "../../include/json.hpp"
@@ -20,7 +19,6 @@
 using namespace UM;
 using json = nlohmann::json;
 
-struct ModelView;
 
 struct Model {
 
@@ -62,33 +60,17 @@ struct Model {
 	virtual void doLoadState(json &j) {};
 	virtual void doSaveState(json &j) const {};
 
+	void requestUpdate() {
+		for (auto &[k, r] : _renderers) {
+			r->requestUpdate();
+		}
+	}
+
 	std::string getPath() const { return _path; }
 
 	static constexpr const char* clippingModeStrings[2] = {"Cell", "Std"};
 	constexpr std::array<std::string_view, 2> getClippingModeStrings() {
 		return {clippingModeStrings[0], clippingModeStrings[1]};
-	}
-
-	// Lifecycle functions
-	void init() {
-		for (auto const &[k, r] : _renderers) {
-			r->init();
-		}
-	}
-
-	void push();
-
-
-
-	ModelView getDefaultView(std::string viewName);
-	ModelView& getView(std::string viewName);
-
-	void render(ModelView &modelView);
-
-
-	void clean() {
-		for (auto const &[k, r] : _renderers)
-			r->clean();
 	}
 
 	// Mesh info
@@ -301,7 +283,5 @@ struct Model {
 	std::string name;
 	static inline int maxIndex = 0;
 	int index;
-
-	std::map<std::string, ModelView> views;
 
 };

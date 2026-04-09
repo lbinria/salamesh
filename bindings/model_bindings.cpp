@@ -89,19 +89,10 @@ namespace bindings {
 		createAttributeContainerType<vec2>(lua, "Vec2Container");
 		createAttributeContainerType<vec3>(lua, "Vec3Container");
 
-		sol::usertype<ModelView> modelView_t = lua.new_usertype<ModelView>(
-			"ModelView",
-			"points", sol::readonly_property(&ModelView::getPoints),
-			"mesh", sol::readonly_property(&ModelView::getMesh),
-			"edges", sol::readonly_property(&ModelView::getEdges),
-			"light_enabled", sol::property(&ModelView::getLightEnabled, &ModelView::setLightEnabled),
-			"visible", sol::property(&ModelView::visible, &ModelView::visible)
-		);
 
 
 		sol::usertype<Model> model_t = lua.new_usertype<Model>("Model");
 
-		model_t.set_function("get_view", &Model::getView);
 
 		model_t.set_function("bind_attr", &Model::bindAttr);
 
@@ -135,7 +126,7 @@ namespace bindings {
 			self.loadState(j);
 		});
 
-		model_t.set_function("push", &Model::push);
+		model_t.set_function("requestUpdate", &Model::requestUpdate);
 
 
 		model_t["path"] = sol::readonly_property(&Model::getPath);
@@ -170,31 +161,6 @@ namespace bindings {
 
 		model_t["center"] = sol::readonly_property(&Model::getCenter);
 		model_t["radius"] = sol::readonly_property(&Model::getRadius);
-
-		modelView_t["light"] = sol::property(&ModelView::getLightEnabled, &ModelView::setLightEnabled);
-
-		modelView_t["clipping_mode"] = sol::property([](ModelView &self) {
-			return self.getClippingMode() + 1;
-		}, [](ModelView &self, int selected) {
-			self.setClippingMode(static_cast<RendererView::ClippingMode>(selected - 1));
-		});
-
-		modelView_t["clipping"] = sol::property(&ModelView::getClipping, &ModelView::setClipping);
-
-		modelView_t["clipping_plane_point"] = sol::property(
-			&ModelView::getClippingPlanePoint,
-			&ModelView::setClippingPlanePoint
-		);
-
-		modelView_t["clipping_plane_normal"] = sol::property(
-			&ModelView::getClippingPlaneNormal,
-			&ModelView::setClippingPlaneNormal
-		);
-
-		modelView_t["invert_clipping"] = sol::property(
-			&ModelView::getInvertClipping,
-			&ModelView::setInvertClipping
-		);
 
 
 		model_t["clipping_mode_strings"] = sol::readonly_property(&Model::getClippingModeStrings);
@@ -241,115 +207,6 @@ namespace bindings {
 
 		model_t.set_function("clear_attrs", &Model::clearAttrs);
 
-		modelView_t.set_function("get_selected_attr", [](ModelView &self, ColormapLayer layer) {
-			return self.getSelectedAttr(layer) + 1;
-		});
-
-		modelView_t.set_function("set_selected_attr", [](ModelView &self, int idx, ColormapLayer layer) {
-			self.setSelectedAttr(idx - 1, layer);
-		});
-
-		modelView_t["selected_attr0"] = sol::property([](ModelView &self) {
-			return self.getSelectedAttr(ColormapLayer::COLORMAP_LAYER_0) + 1;
-		}, [](ModelView &self, int selected) {
-			self.setSelectedAttr(selected - 1, ColormapLayer::COLORMAP_LAYER_0);
-		});
-
-		modelView_t["selected_attr1"] = sol::property([](ModelView &self) {
-			return self.getSelectedAttr(ColormapLayer::COLORMAP_LAYER_1) + 1;
-		}, [](ModelView &self, int selected) {
-			self.setSelectedAttr(selected - 1, ColormapLayer::COLORMAP_LAYER_1);
-		});
-
-		modelView_t["selected_attr2"] = sol::property([](ModelView &self) {
-			return self.getSelectedAttr(ColormapLayer::COLORMAP_LAYER_2) + 1;
-		}, [](ModelView &self, int selected) {
-			self.setSelectedAttr(selected - 1, ColormapLayer::COLORMAP_LAYER_2);
-		});
-
-		modelView_t.set_function("get_selected_colormap", [](ModelView &self, ColormapLayer layer) {
-			return self.getSelectedColormap(layer) + 1;
-		});
-
-		modelView_t.set_function("set_selected_colormap", [](ModelView &self, int idx, ColormapLayer layer) {
-			self.setSelectedColormap(idx - 1, layer);
-		});
-
-		modelView_t["selected_colormap0"] = sol::property([](ModelView &self) {
-			return self.getSelectedColormap(ColormapLayer::COLORMAP_LAYER_0) + 1;
-		}, [](ModelView &self, int selected) {
-			self.setSelectedColormap(selected - 1, ColormapLayer::COLORMAP_LAYER_0);
-		});
-
-		modelView_t["selected_colormap1"] = sol::property([](ModelView &self) {
-			return self.getSelectedColormap(ColormapLayer::COLORMAP_LAYER_1) + 1;
-		}, [](ModelView &self, int selected) {
-			self.setSelectedColormap(selected - 1, ColormapLayer::COLORMAP_LAYER_1);
-		});
-
-		modelView_t["selected_colormap2"] = sol::property([](ModelView &self) {
-			return self.getSelectedColormap(ColormapLayer::COLORMAP_LAYER_2) + 1;
-		}, [](ModelView &self, int selected) {
-			self.setSelectedColormap(selected - 1, ColormapLayer::COLORMAP_LAYER_2);
-		});
-
-		// Layers
-		modelView_t.set_function("is_layer_activated", &ModelView::isLayerActivated);
-		modelView_t.set_function("reset_layer", &ModelView::resetLayer);
-
-
-		modelView_t.set_function("get_layer_attr", &ModelView::getLayerAttr);
-		modelView_t.set_function("set_layer_attr", &ModelView::setLayerAttr);
-
-		modelView_t.set_function("set_layer", 
-			[](ModelView &self, ElementKind kind, Layer layer, std::optional<bool> update) {
-				self.setLayer(kind, layer, update.value_or(true));
-			}
-		);
-
-		modelView_t.set_function("unset_layer", 
-			[](ModelView &self, ElementKind kind, Layer layer, std::optional<bool> reset) {
-				self.unsetLayer(kind, layer, reset.value_or(true));
-			}
-		);
-
-		
-		modelView_t.set_function("get_colormap_attr", &ModelView::getColormapAttr);
-		modelView_t.set_function("set_colormap_attr", &ModelView::setColormapAttr);
-		modelView_t.set_function("set_colormap", 
-			[](ModelView &self, ElementKind kind, ColormapLayer layer, std::optional<bool> update) {
-				self.setColormap(kind, layer, update.value_or(true));
-			}
-		);
-
-		modelView_t.set_function("unset_colormap", &ModelView::unsetColormap);
-		
-		modelView_t.set_function("unset_colormaps", sol::overload(
-			[](ModelView &self) { self.unsetColormaps(); },
-			[](ModelView &self, ElementKind kind) { self.unsetColormaps(kind); },
-			[](ModelView &self, ColormapLayer layer) { self.unsetColormaps(layer); }
-		));
-
-		modelView_t.set_function("get_highlight_attr", &ModelView::getHighlightAttr);
-		modelView_t.set_function("set_highlight_attr", &ModelView::setHighlightAttr);
-		modelView_t.set_function("set_highlight", 
-			[](ModelView &self, ElementKind kind, std::optional<bool> update) {
-				self.setHighlight(kind, update.value_or(true));
-			}
-		);
-
-		modelView_t.set_function("unset_highlight", &ModelView::unsetHighlight);
-		modelView_t.set_function("unset_highlights", &ModelView::unsetHighlights);
-
-		modelView_t.set_function("get_filter_attr", &ModelView::getFilterAttr);
-		modelView_t.set_function("set_filter_attr", &ModelView::setFilterAttr);
-		modelView_t.set_function("set_filter", 
-			[](ModelView &self, ElementKind kind, std::optional<bool> update) {
-				self.setFilter(kind, update.value_or(true));
-			}
-		);
-		modelView_t.set_function("unset_filter", &ModelView::unsetFilter);
-		modelView_t.set_function("unset_filters", &ModelView::unsetFilters);
 
 
 		model_t["model_type"] = sol::readonly_property(&Model::getModelType);

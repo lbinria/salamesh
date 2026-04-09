@@ -95,8 +95,7 @@ struct VolumeModel final : public VolModel {
 			addAttr(k, c);
 		}
 
-		init();
-		push();
+		requestUpdate();
 
 		return true;
 	}

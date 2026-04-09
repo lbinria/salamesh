@@ -34,28 +34,13 @@ struct SurfaceRenderer : public MeshRenderer {
 		_m(m)
 		{}
 
-	void init() override;
-	void render(RendererView &rv, glm::vec3 &position) override;
-
-	virtual void push() override = 0;
 	void clear() override;
-	void clean() override;
-
 
 	MaterialInstance getDefaultMaterial() override;
 	std::vector<RendererElementField> getElementFields() override;
 
 	size_t getElementSize() override {
 		return sizeof(Vertex);
-	}
-
-	std::unique_ptr<RendererView> getDefaultView() override {
-		auto rv = std::make_unique<SurfaceRendererView>();
-		rv->visible = true;
-		rv->setColor({0.71f, 0.71f, 0.71f});
-		rv->setMeshShrink(0.f);
-		rv->setMeshSize(0.0f);
-		return rv;
 	}
 
 

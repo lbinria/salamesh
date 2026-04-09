@@ -5,8 +5,6 @@ end
 
 function draw_tree(model, k, view)
 
-	-- local model_view = view:get_model(model)
-	local model_view = model:get_view(view.name)
 
 	if (imgui.TreeNode(k)) then 
 

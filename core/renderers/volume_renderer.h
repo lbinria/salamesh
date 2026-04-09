@@ -36,12 +36,8 @@ struct VolumeRenderer : public MeshRenderer {
 		{}
 
 
-	void init() override;
-	void render(RendererView &rv, glm::vec3 &position) override;
 	void clear() override;
-	void clean() override;
 
-	std::unique_ptr<RendererView> getDefaultView() override { return std::make_unique<VolumeRendererView>(); }
 
 	protected:
 

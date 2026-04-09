@@ -69,7 +69,6 @@ struct SceneView : public ISceneView {
 	glm::vec3 backgroundColor{0.05, 0.1, 0.15};
 	RenderSurface renderSurface;
 
-	std::map<std::string, ModelView> models;
 	std::map<std::string, MaterialInstance> materials;
 
 

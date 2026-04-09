@@ -28,18 +28,7 @@ struct BBoxRenderer : public Renderer {
 		return RenderPrimitive::RENDER_LINES;
 	}
 
-	void init() override;
-	void push() override;
-	void render(RendererView &rv, glm::vec3 &position) override;
 	void clear() override;
-	void clean() override;
-
-	std::unique_ptr<RendererView> getDefaultView() override { 
-		auto rv = std::make_unique<BBoxRendererView>(); 
-		rv->visible = true;
-		rv->setColor({0.78, 0.32, 0.67});
-		return rv;
-	}
 
 	// TODO to remove
 	void doLoadState(json &j) override {}

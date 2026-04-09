@@ -1,39 +1,10 @@
 #include "surface_renderer.h"
 #include "../../core/graphic_api.h"
 
-void SurfaceRenderer::init() {
-
-}
-
-void SurfaceRenderer::render(RendererView &rv, glm::vec3 &position) {
-
-}
-
 void SurfaceRenderer::clear() {
 	glBindVertexArray(VAO);
 	glBindBuffer(GL_ARRAY_BUFFER, VBO);
 	glBufferData(GL_ARRAY_BUFFER, nelements * sizeof(Vertex), nullptr, GL_STATIC_DRAW);
-}
-
-void SurfaceRenderer::clean() {
-	// // Clean up
-	// glDeleteVertexArrays(1, &VAO);
-	// glDeleteBuffers(1, &VBO);
-
-	// glDeleteBuffers(1, &bufHighlight);
-	// glDeleteTextures(1, &tboHighlight);
-	// glDeleteBuffers(1, &bufFilter);
-	// glDeleteTextures(1, &tboFilter);
-	// glDeleteBuffers(1, &bufColormap0);
-	// glDeleteTextures(1, &tboColormap0);
-	// glDeleteBuffers(1, &bufColormap1);
-	// glDeleteTextures(1, &tboColormap1);
-	// glDeleteBuffers(1, &bufColormap2);
-	// glDeleteTextures(1, &tboColormap2);
-	// glBindBuffer(GL_TEXTURE_BUFFER, 0);
-
-	// // Clean shader
-	// shader.clean();
 }
 
 MaterialInstance SurfaceRenderer::getDefaultMaterial() {

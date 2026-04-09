@@ -27,19 +27,8 @@ struct HalfedgeRenderer : public Renderer {
 
 	using Renderer::Renderer;
 
-	void init() override;
-	virtual void push() = 0;
-	void render(RendererView &rv, glm::vec3 &position) override;
 	void clear() override;
-	void clean() override;
 
-	std::unique_ptr<RendererView> getDefaultView() override { 
-		auto rv = std::make_unique<HalfedgeRendererView>(); 
-		rv->setThickness(2.0f);
-		rv->setInsideColor({0.0, 0.97, 0.73});
-		rv->setOutsideColor({0.0, 0.6, 0.45});
-		return rv;
-	}
 
 	MaterialInstance getDefaultMaterial() override;
 	std::vector<RendererElementField> getElementFields() override;
@@ -77,7 +66,6 @@ struct SurfaceHalfedgeRenderer : public HalfedgeRenderer {
 		HalfedgeRenderer(name, Shader(sl::shadersPath("edge.vert"), sl::shadersPath("edge.frag"))),
 		_m(m) {}
 
-	void push() override;
 	const void * getData() override;
 
 	Surface &_m;
@@ -92,7 +80,6 @@ struct VolumeHalfedgeRenderer : public HalfedgeRenderer {
 		HalfedgeRenderer(name, Shader(sl::shadersPath("edge.vert"), sl::shadersPath("edge.frag"))),
 		_m(m) {}
 
-	void push() override;
 	const void * getData() override;
 
 	Volume &_m;
@@ -104,7 +91,6 @@ struct PolylineRenderer : public HalfedgeRenderer {
 		HalfedgeRenderer(name, Shader(sl::shadersPath("edge.vert"), sl::shadersPath("edge.frag"))),
 		_m(m) {}
 
-	void push() override;
 	const void * getData() override;
 
 	PolyLine &_m;

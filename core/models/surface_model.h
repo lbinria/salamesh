@@ -108,8 +108,7 @@ struct SurfaceModel : public SurfModel {
 			addAttr(k, c);
 		}
 
-		init();
-		push();
+		requestUpdate();
 
 		return true;
 	}

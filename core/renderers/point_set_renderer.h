@@ -33,10 +33,6 @@ struct PointSetRenderer : public Renderer {
 		return RenderPrimitive::RENDER_POINTS;
 	}
 
-	void init() override;
-	void push() override;
-	void render(RendererView &rv, glm::vec3 &position) override;
-	void clean() override;
 	void clear() override;
 
 	const void * getData() override;
@@ -68,19 +64,13 @@ struct PointSetRenderer : public Renderer {
 
 
 
-	std::unique_ptr<RendererView> getDefaultView() override { 
-		auto rv = std::make_unique<PointSetRendererView>(); 
-		rv->setPointSize(4.0f);
-		rv->setColor({0.23, 0.85, 0.66});
-		return rv;
-	}
 
 	int addPoint(glm::vec3 p) {
 		int off = ps.create_points(1);
 		ps[off] = sl::glm2um(p);
 
 		if (autoUpdate)
-			push();
+			requestUpdate();
 
 		return off;
 	}
@@ -91,7 +81,7 @@ struct PointSetRenderer : public Renderer {
 			ps[i] = sl::glm2um(points[i]);
 
 		if (autoUpdate)
-			push();
+			requestUpdate();
 
 		return off;
 	}
@@ -101,7 +91,7 @@ struct PointSetRenderer : public Renderer {
 		ps.delete_points(toKill);
 
 		if (autoUpdate)
-			push();
+			requestUpdate();
 	}
 
 	void clearPoints() {
@@ -109,7 +99,7 @@ struct PointSetRenderer : public Renderer {
 		ps.delete_points(toKill);
 
 		if (autoUpdate)
-			push();
+			requestUpdate();
 	}
 
 	inline int count() {

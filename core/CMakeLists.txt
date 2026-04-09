@@ -61,7 +61,6 @@ set(SOURCES
     renderers/tet_renderer.cpp renderers/tet_renderer.h
     renderers/hex_renderer.cpp renderers/hex_renderer.h
 
-    models/model_view.h models/model_view.cpp
     models/model.h models/model.cpp
     models/polyline_model.h
     models/surface_model.h

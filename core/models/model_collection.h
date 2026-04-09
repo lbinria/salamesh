@@ -23,7 +23,6 @@ struct ModelCollection : public EntityCollection<Model> {
 		
 		auto n = model->getName();
 		
-		model->init();
 		entities[n] = std::move(model);
 		return entities[n];
 
@@ -31,9 +30,6 @@ struct ModelCollection : public EntityCollection<Model> {
 	}
 
 	void remove(std::string name) override {
-		if (entities.contains(name))
-			entities[name]->clean();
-
 		entities.erase(name);
 	}
 	
@@ -49,10 +45,6 @@ struct ModelCollection : public EntityCollection<Model> {
 	}
 
 	void clear() override {
-		for (auto &[k, m] : entities) {
-			m->clean();
-		}
-
 		entities.clear();
 		Model::clearIndex();
 	}

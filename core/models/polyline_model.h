@@ -54,8 +54,7 @@ struct PolylineModel : public Model {
 			addAttr(k, c);
 		}
 
-		init();
-		push();
+		requestUpdate();
 
 		return true;
 	}

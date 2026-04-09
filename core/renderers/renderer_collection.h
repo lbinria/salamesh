@@ -23,23 +23,15 @@ struct RendererCollection : public EntityCollection<Renderer> {
 
 		auto n = renderer->getName();
 
-		renderer->init();
 		entities[n] = std::move(renderer);
 		return entities[n];
 	}
 
 	void remove(std::string name) override {
-		if (entities.count(name) > 0)
-			entities[name]->clean();
-
 		entities.erase(name);
 	}
 	
 	void clear() override {
-		for (auto &[k, r] : entities) {
-			r->clean();
-		}
-
 		entities.clear();
 	}
 
