@@ -171,6 +171,7 @@ namespace bindings {
 			"light", sol::readonly_property(&MaterialInstance::getLightParams),
 			"points", sol::readonly_property(&MaterialInstance::getPointSetParams),
 			"mesh", sol::readonly_property(&MaterialInstance::getMeshParams),
+			"edges", sol::readonly_property(&MaterialInstance::getHalfedgeParams),
 			"layers", sol::readonly_property(&MaterialInstance::getLayerBuffers)
 		);
 
@@ -191,6 +192,15 @@ namespace bindings {
 			"size", sol::property(&MeshParams::getMeshSize, &MeshParams::setMeshSize),
 			"shrink", sol::property(&MeshParams::getMeshShrink, &MeshParams::setMeshShrink),
 			"corner_visible", sol::property(&MeshParams::getCornerVisible, &MeshParams::setCornerVisible)
+		);
+
+		sol::usertype<HalfedgeParams> halfedgeParams_t = lua.new_usertype<HalfedgeParams>(
+			"HalfedgeParams",
+			"inside_color", sol::property(&HalfedgeParams::getInsideColor, &HalfedgeParams::setInsideColor),
+			"outside_color", sol::property(&HalfedgeParams::getOutsideColor, &HalfedgeParams::setOutsideColor),
+			"thickness", sol::property(&HalfedgeParams::getThickness, &HalfedgeParams::setThickness),
+			"spacing", sol::property(&HalfedgeParams::getSpacing, &HalfedgeParams::setSpacing),
+			"padding", sol::property(&HalfedgeParams::getPadding, &HalfedgeParams::setPadding)
 		);
 
 

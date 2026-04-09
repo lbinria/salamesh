@@ -56,6 +56,7 @@ function draw_model_properties(model, k, view)
 	local model_view = model:get_view(view.name)
 	local point_mat = view:get_material(model.points)
 	local mesh_mat = view:get_material(model.mesh)
+	local edge_mat = view:get_material(model.edges)
 	
 	local model_pos = model.world_position
 	local p = model.position
@@ -232,42 +233,42 @@ function draw_model_properties(model, k, view)
 				point_mat.points.color = new_point_color
 			end
 
-			if model_view.edges then 
+			if model.edges then 
 
-				local sel_edge_visible, new_edge_visible = imgui.Checkbox("Show edges", model_view.edges.visible)
+				local sel_edge_visible, new_edge_visible = imgui.Checkbox("Show edges", edge_mat.visible)
 				if (sel_edge_visible) then 
 					print("Change edge visibility: " .. tostring(new_edge_visible))
-					model_view.edges.visible = new_edge_visible
+					edge_mat.visible = new_edge_visible
 				end
 
-				local sel_edge_thickness, new_edge_thickness = imgui.SliderFloat("Edge thickness", model_view.edges.thickness, 0, 50)
+				local sel_edge_thickness, new_edge_thickness = imgui.SliderFloat("Edge thickness", edge_mat.edges.thickness, 0, 50)
 				if (sel_edge_thickness) then 
 					print("Change edge thickness: " .. tostring(new_edge_thickness))
-					model_view.edges.thickness = new_edge_thickness
+					edge_mat.edges.thickness = new_edge_thickness
 				end
 
-				local sel_edge_spacing, new_edge_spacing = imgui.SliderFloat("Edge spacing", model_view.edges.spacing, 0, 1)
+				local sel_edge_spacing, new_edge_spacing = imgui.SliderFloat("Edge spacing", edge_mat.edges.spacing, 0, 1)
 				if (sel_edge_spacing) then 
 					print("Change edge spacing: " .. tostring(new_edge_spacing))
-					model_view.edges.spacing = new_edge_spacing
+					edge_mat.edges.spacing = new_edge_spacing
 				end
 
-				local sel_edge_padding, new_edge_padding = imgui.SliderFloat("Edge padding", model_view.edges.padding, 0, 1)
+				local sel_edge_padding, new_edge_padding = imgui.SliderFloat("Edge padding", edge_mat.edges.padding, 0, 1)
 				if (sel_edge_padding) then 
 					print("Change edge padding: " .. tostring(new_edge_padding))
-					model_view.edges.padding = new_edge_padding
+					edge_mat.edges.padding = new_edge_padding
 				end
 
-				local sel_edge_inside_color, new_edge_inside_color = imgui.ColorEdit3("Edge inside color", model_view.edges.inside_color)
+				local sel_edge_inside_color, new_edge_inside_color = imgui.ColorEdit3("Edge inside color", edge_mat.edges.inside_color)
 				if (sel_edge_inside_color) then 
 					print("Change edge inside color: " .. tostring(new_edge_inside_color))
-					model_view.edges.inside_color = new_edge_inside_color
+					edge_mat.edges.inside_color = new_edge_inside_color
 				end
 
-				local sel_edge_outside_color, new_edge_outside_color = imgui.ColorEdit3("Edge outside color", model_view.edges.outside_color)
+				local sel_edge_outside_color, new_edge_outside_color = imgui.ColorEdit3("Edge outside color", edge_mat.edges.outside_color)
 				if (sel_edge_outside_color) then 
 					print("Change edge outside color: " .. tostring(new_edge_outside_color))
-					model_view.edges.outside_color = new_edge_outside_color
+					edge_mat.edges.outside_color = new_edge_outside_color
 				end
 			end
 

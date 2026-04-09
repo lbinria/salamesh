@@ -17,6 +17,11 @@ using json = nlohmann::json;
 
 struct Renderer {
 
+	struct GeometricData {
+		const void * vboBuffer;
+		std::vector<const void *> buffers;
+	};
+
 	enum RendererElementType {
 		RENDERER_ELEMENT_TYPE_INT,
 		RENDERER_ELEMENT_TYPE_UINT,
@@ -143,6 +148,7 @@ struct Renderer {
 		glBufferData(GL_ARRAY_BUFFER, nelements * sizeof(T), data.data(), drawType);
 	}
 
+	protected: 
 
 	private:
 
@@ -154,5 +160,6 @@ struct Renderer {
 	virtual void doSaveState(json &j) const = 0;
 
 	std::map<std::string, std::shared_ptr<RendererView>> views;
+
 
 };

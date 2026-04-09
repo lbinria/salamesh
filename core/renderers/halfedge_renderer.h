@@ -41,10 +41,21 @@ struct HalfedgeRenderer : public Renderer {
 		return rv;
 	}
 
+	MaterialInstance getDefaultMaterial() override;
+	std::vector<RendererElementField> getElementFields() override;
+
+	size_t getElementSize() override {
+		return sizeof(LineVert);
+	}
+
 	RenderPrimitive getRenderPrimitive() const override {
 		return RenderPrimitive::RENDER_TRIANGLES;
 	}
 
+
+	protected:
+
+	std::vector<LineVert> vertices;
 
 	private:
 
@@ -67,6 +78,7 @@ struct SurfaceHalfedgeRenderer : public HalfedgeRenderer {
 		_m(m) {}
 
 	void push() override;
+	const void * getData() override;
 
 	Surface &_m;
 
@@ -81,6 +93,7 @@ struct VolumeHalfedgeRenderer : public HalfedgeRenderer {
 		_m(m) {}
 
 	void push() override;
+	const void * getData() override;
 
 	Volume &_m;
 };
@@ -92,6 +105,7 @@ struct PolylineRenderer : public HalfedgeRenderer {
 		_m(m) {}
 
 	void push() override;
+	const void * getData() override;
 
 	PolyLine &_m;
 };

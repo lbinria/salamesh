@@ -68,7 +68,7 @@ struct MaterialInstance {
 	}
 
 	std::shared_ptr<HalfedgeParams> getHalfedgeParams() const {
-		return getParams<HalfedgeParams>("halfedges");
+		return getParams<HalfedgeParams>("edges");
 	}
 
 	std::shared_ptr<PointSetParams> getPointSetParams() const {

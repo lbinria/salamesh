@@ -43,6 +43,7 @@ const void * PointSetRenderer::getData() {
 		};
 	}
 
+	nelements = vertices.size();
 	return vertices.data();
 }
 

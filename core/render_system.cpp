@@ -78,7 +78,9 @@ void RenderSystem::render(Model &model, ISceneView &sceneView) {
 		// For test just render pointset
 		auto psr = std::dynamic_pointer_cast<PointSetRenderer>(renderer);
 		auto msr = std::dynamic_pointer_cast<MeshRenderer>(renderer);
-		if (!psr && !msr)
+		auto hsr = std::dynamic_pointer_cast<HalfedgeRenderer>(renderer);
+		if (!psr && !msr && !hsr)
+		// if (!psr && !msr )
 			continue;
 
 		// If data changed, push !

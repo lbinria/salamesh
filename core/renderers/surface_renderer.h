@@ -41,45 +41,12 @@ struct SurfaceRenderer : public MeshRenderer {
 	void clear() override;
 	void clean() override;
 
+
 	MaterialInstance getDefaultMaterial() override;
+	std::vector<RendererElementField> getElementFields() override;
 
 	size_t getElementSize() override {
 		return sizeof(Vertex);
-	}
-
-	std::vector<RendererElementField> getElementFields() override {
-		return {
-			{
-				.name = "p0",
-				.type = RendererElementType::RENDERER_ELEMENT_TYPE_VEC3,
-				.offset = static_cast<int>(offsetof(Vertex, p0))
-			},
-			{
-				.name = "p1",
-				.type = RendererElementType::RENDERER_ELEMENT_TYPE_VEC3,
-				.offset = static_cast<int>(offsetof(Vertex, p1))
-			},
-			{
-				.name = "p2",
-				.type = RendererElementType::RENDERER_ELEMENT_TYPE_VEC3,
-				.offset = static_cast<int>(offsetof(Vertex, p2))
-			},
-			{
-				.name = "facetIndex",
-				.type = RendererElementType::RENDERER_ELEMENT_TYPE_INT,
-				.offset = static_cast<int>(offsetof(Vertex, facetIndex))
-			},
-			{
-				.name = "localIndex",
-				.type = RendererElementType::RENDERER_ELEMENT_TYPE_INT,
-				.offset = static_cast<int>(offsetof(Vertex, localIndex))
-			},
-			{
-				.name = "cornerIndex",
-				.type = RendererElementType::RENDERER_ELEMENT_TYPE_INT,
-				.offset = static_cast<int>(offsetof(Vertex, cornerIndex))
-			}
-		};
 	}
 
 	std::unique_ptr<RendererView> getDefaultView() override {

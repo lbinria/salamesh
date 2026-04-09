@@ -220,11 +220,11 @@ struct HalfedgeParams : public ShaderParams {
 	// }
 
 	private:
-	float thickness;
-	float halfedgeSpacing = 0;
-	float halfedgePadding = 0;
-	glm::vec3 edgeInsideColor;
-	glm::vec3 edgeOutsideColor;
+	float thickness = 2.f;
+	float halfedgeSpacing = 0.f;
+	float halfedgePadding = 0.f;
+	glm::vec3 edgeInsideColor{0.0, 0.97, 0.73};
+	glm::vec3 edgeOutsideColor{0.0, 0.6, 0.45};
 };
 
 struct PointSetParams : public ShaderParams {
