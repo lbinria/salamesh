@@ -68,6 +68,10 @@ struct Renderer {
 		dirty = true;
 	}
 
+	void requestRemove() const {
+		isRemoveRequested = true;
+	}
+
 	int getElementsCount() const { return nelements; }
 	virtual const void * getData() {};
 	virtual size_t getElementSize() { return 0; };
@@ -104,6 +108,7 @@ struct Renderer {
 	protected:
 	Shader shader;
 	mutable bool dirty = true;
+	mutable bool isRemoveRequested = false;
 
 	unsigned int VAO, VBO; // Buffers
 
