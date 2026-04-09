@@ -20,5 +20,6 @@ struct TriRenderer : public SurfaceRenderer {
 
 	using SurfaceRenderer::SurfaceRenderer;
 	void push() override;
+	const void * getData() override;
 
 };

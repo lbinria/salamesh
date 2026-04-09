@@ -93,4 +93,18 @@ struct MaterialInstance {
 // Proxy
 struct ModelMaterialInstance {
 
+	// ModelMaterialInstance(Model &model, std::map<std::string, MaterialInstance> &materials) : 
+	// 	model(model), 
+	// 	materials(materials) 
+	// 	{}
+
+	// void setVisible(bool val) {
+	// 	for (auto &[rendererName, r] : model.getRenderers()) {
+	// 		materials[r->getId()].setVisible(val);
+	// 	}
+	// }
+
+	// private:
+	// Model &model;
+	// std::map<std::string, MaterialInstance>& materials;
 };

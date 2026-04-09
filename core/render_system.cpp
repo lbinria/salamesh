@@ -77,7 +77,8 @@ void RenderSystem::render(Model &model, ISceneView &sceneView) {
 
 		// For test just render pointset
 		auto psr = std::dynamic_pointer_cast<PointSetRenderer>(renderer);
-		if (!psr)
+		auto msr = std::dynamic_pointer_cast<MeshRenderer>(renderer);
+		if (!psr && !msr)
 			continue;
 
 		// If data changed, push !

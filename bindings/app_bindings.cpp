@@ -170,6 +170,7 @@ namespace bindings {
 			"visible", sol::property(&MaterialInstance::getVisible, &MaterialInstance::setVisible),
 			"light", sol::readonly_property(&MaterialInstance::getLightParams),
 			"points", sol::readonly_property(&MaterialInstance::getPointSetParams),
+			"mesh", sol::readonly_property(&MaterialInstance::getMeshParams),
 			"layers", sol::readonly_property(&MaterialInstance::getLayerBuffers)
 		);
 
@@ -182,6 +183,14 @@ namespace bindings {
 			"PointSetParams",
 			"color", sol::property(&PointSetParams::getColor, &PointSetParams::setColor),
 			"size", sol::property(&PointSetParams::getPointSize, &PointSetParams::setPointSize)
+		);
+
+		sol::usertype<MeshParams> meshParams_t = lua.new_usertype<MeshParams>(
+			"MeshParams",
+			"color", sol::property(&MeshParams::getColor, &MeshParams::setColor),
+			"size", sol::property(&MeshParams::getMeshSize, &MeshParams::setMeshSize),
+			"shrink", sol::property(&MeshParams::getMeshShrink, &MeshParams::setMeshShrink),
+			"corner_visible", sol::property(&MeshParams::getCornerVisible, &MeshParams::setCornerVisible)
 		);
 
 

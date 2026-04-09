@@ -31,6 +31,16 @@ void SurfaceRenderer::init() {
 
 }
 
+MaterialInstance SurfaceRenderer::getDefaultMaterial() {
+	MaterialInstance mat;
+	mat.addParam("light", std::make_shared<LightParams>());
+	mat.addParam("clipping", std::make_shared<ClippingParams>());
+	mat.addParam("mesh", std::make_shared<MeshParams>());
+	mat.addParam("layers", std::make_shared<LayersParams>());
+	mat.addBufferGroup("layers", std::make_shared<LayerBufferGroup>());
+	return mat;
+}
+
 void SurfaceRenderer::render(RendererView &rv, glm::vec3 &position) {
 	if (!rv.visible)
 		return;

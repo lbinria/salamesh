@@ -19,7 +19,7 @@ struct ISceneView {
 
 
 	virtual MaterialInstance& getMaterial(Renderer &renderer) = 0;
-	virtual bool hasMaterial(Renderer &renderer) = 0;
-	virtual void addMaterial(Renderer &renderer, const MaterialInstance& mat) = 0;
-	virtual bool removeMaterial(Renderer &renderer) = 0;
+	virtual bool hasMaterial(const Renderer &renderer) const = 0;
+	virtual void addMaterial(const Renderer &renderer, const MaterialInstance& mat) = 0;
+	virtual bool removeMaterial(const Renderer &renderer) = 0;
 };

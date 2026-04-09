@@ -50,15 +50,15 @@ struct SceneView : public ISceneView {
 	// 	return ModelMaterialInstance(materials.at(model.getName()));
 	// }
 
-	bool hasMaterial(Renderer &renderer) {
+	bool hasMaterial(const Renderer &renderer) const {
 		return materials.contains(renderer.getId());
 	}
 
-	void addMaterial(Renderer &renderer, const MaterialInstance& mat) {
+	void addMaterial(const Renderer &renderer, const MaterialInstance& mat) {
 		materials[renderer.getId()] = mat;
 	}
 	
-	bool removeMaterial(Renderer &renderer) {
+	bool removeMaterial(const Renderer &renderer) {
 		return materials.erase(renderer.getId());
 	}
 

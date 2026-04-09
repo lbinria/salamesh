@@ -46,7 +46,7 @@ struct Renderer {
 		shader(std::move(shader))
 	{}
 
-	std::string getId() {
+	std::string getId() const {
 		return id;
 	}
 
