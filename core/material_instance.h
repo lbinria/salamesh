@@ -1,5 +1,6 @@
 #pragma once
 #include "shader_params.h"
+#include <optional>
 
 struct MaterialInstance {
 
@@ -99,9 +100,19 @@ struct MaterialInstanceCollection {
 		materials(materials), 
 		rendererInfos(rendererInfos) {}
 
-	MaterialInstance& getMaterial(const std::string rendererName) {
-		auto rendererId = rendererInfos[rendererName];
-		return materials.at(rendererId);
+	// MaterialInstance& getMaterial(const std::string rendererName) const {
+	// 	auto rendererId = rendererInfos.at(rendererName);
+	// 	return materials.at(rendererId);
+	// }
+
+	std::optional<std::reference_wrapper<MaterialInstance>> getMaterial(const std::string rendererName) const {
+		auto it = rendererInfos.find(rendererName);
+		if (it == rendererInfos.end()) return std::nullopt;
+
+		auto matIt = materials.find(it->second);
+		if (matIt == materials.end()) return std::nullopt;
+
+		return std::ref(matIt->second);
 	}
 
 	bool getVisible() {
@@ -120,7 +131,7 @@ struct MaterialInstanceCollection {
 	}
 
 	private:
-	std::map<std::string, MaterialInstance>& materials;
-	std::map<std::string, std::string> rendererInfos;
+	std::map<std::string, MaterialInstance>& materials; // ref to all materials map
+	std::map<std::string, std::string> rendererInfos; // key: renderer type, value: renderer id, allow to filter materials
 
 };

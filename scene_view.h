@@ -42,7 +42,7 @@ struct SceneView : public ISceneView {
 		return materials.at(renderer.getId());
 	}
 
-	MaterialInstanceCollection getMaterial(const Model &model) {
+	MaterialInstanceCollection getMaterials(const Model &model) {
 		std::map<std::string, std::string> rendererInfos;
 		for (auto &[k, r] : model.getRenderers()) {
 			rendererInfos[r->getType()] = r->getId();

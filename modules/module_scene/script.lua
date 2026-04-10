@@ -51,9 +51,12 @@ local invert_clipping = false
 
 function draw_model_properties(model, k, view)
 
-	local point_mat = view:get_material(model.points)
-	local mesh_mat = view:get_material(model.mesh)
-	local edge_mat = view:get_material(model.edges)
+	local model_mats = view:get_materials(model)
+
+	-- local point_mat = view:get_material(model.points)
+	local point_mat = model_mats["points"]
+	local mesh_mat = model_mats["mesh"]
+	local edge_mat = model_mats["edges"]
 	
 	local model_pos = model.world_position
 	local p = model.position
@@ -457,7 +460,7 @@ function draw_gui()
 
 			for k, model in pairs(app.scene.models) do
 
-				local model_mat = app.scene.main_view:get_material(model)
+				local model_mat = app.scene.main_view:get_materials(model)
 				local sel_visible, new_visible = imgui.Checkbox(k .. "##" .. k, model_mat.visible)
 				if (sel_visible) then 
 					model_mat.visible = new_visible
