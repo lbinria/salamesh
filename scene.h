@@ -14,6 +14,8 @@
 
 #include <map>
 
+
+
 struct Scene : public IScene {
 	
 	Scene(IApp &app) : app(app), models(*this), cameras(*this), renderers(*this) {}
@@ -144,6 +146,8 @@ struct Scene : public IScene {
 	void loadState(json &j, const std::string filename);
 	void saveState(json &j, const std::string filename);
 
+
+
 	ISceneView& getMainView() { return *views["default"]; }
 	
 	std::map<std::string, std::shared_ptr<ISceneView>>& getViews() { return views; }
@@ -161,4 +165,6 @@ struct Scene : public IScene {
 
 	std::map<std::string, std::shared_ptr<ISceneView>> views;
 	
+
+
 };

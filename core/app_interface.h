@@ -130,6 +130,12 @@ struct NavigationPath {
 
 };
 
+struct Colormap {
+	std::string name;
+	int width, height;
+	unsigned int tex;
+};
+
 struct IApp {
 
 	virtual void quit() = 0;
@@ -170,6 +176,14 @@ struct IApp {
 	virtual std::vector<long> pick_facets(double x, double y, int radius) = 0;
 	virtual std::vector<long> pick_cells(double x, double y, int radius) = 0;
 
+
+	virtual void setupColormaps() = 0;
+	virtual void addColormap(const std::string name, const std::string filename) = 0;
+	virtual void removeColormap(const std::string name) = 0;
+	virtual void clearColormaps() = 0;
+	virtual std::vector<Colormap> getColormaps() = 0;
+	virtual Colormap getColormap(const std::string name) = 0;
+	virtual Colormap getColormap(int idx) = 0;
 
 	// Navigation
 	virtual NavigationPath getNavigationPath() = 0;

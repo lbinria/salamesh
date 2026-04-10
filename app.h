@@ -95,7 +95,21 @@ struct App final : public IApp {
 	glm::vec3 pickPoint(double x, double y) override;
 
 	
+	void setupColormaps() override;
+	void addColormap(const std::string name, const std::string filename) override;
+	void removeColormap(const std::string name) override;
 
+	void clearColormaps() override {
+		colormaps.clear();
+		setupColormaps();
+	}
+
+	std::vector<Colormap> getColormaps() override {
+		return colormaps;
+	}
+
+	Colormap getColormap(const std::string name) override;
+	Colormap getColormap(int idx) override;
 
 
 
@@ -233,7 +247,8 @@ struct App final : public IApp {
 	unsigned int quadVAO, quadVBO;
 
 
-
+	unsigned int texColormaps[3];
+	std::vector<Colormap> colormaps;
 
 
 	Scene scene;

@@ -138,7 +138,7 @@ void RenderSystem::render(Renderer &renderer, glm::mat4 &transform, MaterialInst
 
 	mat.apply(shader);
 
-	// TODO beurrk !
+	// TODO beurrk ! replace by UBO
 	if (mat.hasParam("layers")) {
 		auto layersParams = mat.getParams<LayersParams>("layers");
 		if (layersParams) {
@@ -153,62 +153,3 @@ void RenderSystem::render(Renderer &renderer, glm::mat4 &transform, MaterialInst
 }
 
 
-void RenderSystem::setupColormaps() {
-	// Load default colormap textures
-	addColormap("CET-R41", sl::assetsPath("CET-R41px.png"));
-	addColormap("CET-L08", sl::assetsPath("CET-L08px.png"));
-	addColormap("alpha", sl::assetsPath("colormap_alpha.png"));
-	addColormap("cat", "/home/tex/Models/cat/Cat_diffuse.jpg");
-	addColormap("extended", sl::assetsPath("extended.png"));
-}
-
-void RenderSystem::addColormap(const std::string name, const std::string filename) {
-
-	for (const auto& cm : colormaps) {
-		if (cm.name == name) {
-			std::cerr << "App::addColormap: colormap '" << name << "' already exists." << std::endl;
-			return;
-		}
-	}
-
-	int width, height, nrChannels;
-	
-	Colormap cm{
-		name,
-		0,
-		0,
-		0
-	};
-
-	if(!sl::load_texture_2d(filename, cm.tex, width, height, nrChannels)) {
-		std::cerr << "App::addColormap: unable to load colormap " << name << " at " << filename << "." << std::endl;
-		return;
-	}
-
-	cm.width = width;
-	cm.height = height;
-
-	colormaps.push_back(cm);
-}
-
-void RenderSystem::removeColormap(const std::string name) {
-	for (int i = 0; i < colormaps.size(); ++i) {
-		if (colormaps[i].name == name) {
-			colormaps.erase(colormaps.begin() + i);
-			return;
-		}
-	}
-}
-
-Colormap RenderSystem::getColormap(const std::string name) {
-	for (int i = 0; i < colormaps.size(); ++i) {
-		if (colormaps[i].name == name) {
-			return colormaps[i];
-		}
-	}
-	throw std::runtime_error("Colormap " + name + " not found.");
-}
-
-Colormap RenderSystem::getColormap(int idx) {
-	return colormaps[idx];
-}

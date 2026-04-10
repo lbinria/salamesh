@@ -326,17 +326,17 @@ namespace bindings {
 
 		app_type["input_state"] = sol::readonly_property(&IApp::getInputState);
 
-		// scene_t["colormaps"] = sol::readonly_property(&IScene::getColormaps);
-		// scene_t.set_function("add_colormap", &IScene::addColormap);
-		// scene_t.set_function("remove_colormap", &IScene::removeColormap);
-		// scene_t.set_function("get_colormap", sol::overload(
-		// 	[](IScene &self, int idx) {
-		// 		return self.getColormap(idx);
-		// 	},
-		// 	[](IScene &self, const std::string name) {
-		// 		return self.getColormap(name);
-		// 	}
-		// ));
+		app_type["colormaps"] = sol::readonly_property(&IApp::getColormaps);
+		app_type.set_function("add_colormap", &IApp::addColormap);
+		app_type.set_function("remove_colormap", &IApp::removeColormap);
+		app_type.set_function("get_colormap", sol::overload(
+			[](IApp &self, int idx) {
+				return self.getColormap(idx);
+			},
+			[](IApp &self, const std::string name) {
+				return self.getColormap(name);
+			}
+		));
 
 		app_type.set_function("screenshot", [&app = app](const std::string& filename, std::optional<int> targetWidth, std::optional<int> targetHeight) {
 				app.screenshot(filename, targetWidth.value_or(-1), targetHeight.value_or(-1));
