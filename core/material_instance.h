@@ -4,6 +4,12 @@
 
 struct MaterialInstance {
 
+	MaterialInstance() = default;
+	MaterialInstance(const MaterialInstance&) = delete;
+    MaterialInstance& operator=(const MaterialInstance&) = delete;
+
+	MaterialInstance(MaterialInstance&&) noexcept = default;
+    MaterialInstance& operator=(MaterialInstance&&) noexcept = default;
 
 	bool getVisible() const { 
 		return visible; 
@@ -26,8 +32,13 @@ struct MaterialInstance {
 		}
 	}
 
-	void addParam(const std::string name, std::shared_ptr<ShaderParams> param) {
-		params[name] = param;
+	// void addParamold(const std::string name, ShaderParams &param) {
+	// 	params[name] = param;
+	// }
+
+	template<class TParam>
+	void addParam(const std::string name) {
+		params[name] = std::make_unique<TParam>();
 	}
 
 	bool hasParam(const std::string name) {
@@ -38,13 +49,13 @@ struct MaterialInstance {
 		buffers[name] = bufferGroup;
 	}
 
-	template<typename T>
-	std::shared_ptr<T> getParams(const std::string name) const {
-		if (!params.contains(name))
-			return nullptr;
+	// template<typename T>
+	// std::shared_ptr<T> getParams(const std::string name) const {
+	// 	if (!params.contains(name))
+	// 		return nullptr;
 
-		return std::static_pointer_cast<T>(params.at(name));
-	}
+	// 	return std::static_pointer_cast<T>(params.at(name));
+	// }
 
 	template<typename T>
 	std::shared_ptr<T> getBuffers(const std::string name) const {
@@ -54,27 +65,33 @@ struct MaterialInstance {
 		return std::static_pointer_cast<T>(buffers.at(name));
 	}
 
-	// Shortcuts to some common parameters
 
-	std::shared_ptr<LightParams> getLightParams() const {
-		return getParams<LightParams>("light");
+	std::optional<std::reference_wrapper<ShaderParams>> getParams(const std::string name) {
+		auto it = params.find(name);
+		if (it == params.end()) return std::nullopt;
+		return std::ref(*it->second);
 	}
 
-	std::shared_ptr<ClippingParams> getClippingParams() const {
-		return getParams<ClippingParams>("clipping");
-	}
+	// // Shortcuts to some common parameters
+	// std::shared_ptr<LightParams> getLightParams() const {
+	// 	return getParams<LightParams>("light");
+	// }
 
-	std::shared_ptr<MeshParams> getMeshParams() const {
-		return getParams<MeshParams>("mesh");
-	}
+	// std::shared_ptr<ClippingParams> getClippingParams() const {
+	// 	return getParams<ClippingParams>("clipping");
+	// }
 
-	std::shared_ptr<HalfedgeParams> getHalfedgeParams() const {
-		return getParams<HalfedgeParams>("edges");
-	}
+	// std::shared_ptr<MeshParams> getMeshParams() const {
+	// 	return getParams<MeshParams>("mesh");
+	// }
 
-	std::shared_ptr<PointSetParams> getPointSetParams() const {
-		return getParams<PointSetParams>("points");
-	}
+	// std::shared_ptr<HalfedgeParams> getHalfedgeParams() const {
+	// 	return getParams<HalfedgeParams>("edges");
+	// }
+
+	// std::shared_ptr<PointSetParams> getPointSetParams() const {
+	// 	return getParams<PointSetParams>("points");
+	// }
 	
 	std::shared_ptr<LayerBufferGroup> getLayerBuffers() const {
 		return getBuffers<LayerBufferGroup>("layers");
@@ -86,7 +103,7 @@ struct MaterialInstance {
 
 	private:
 	bool visible = true;
-	std::map<std::string, std::shared_ptr<ShaderParams>> params;
+	std::map<std::string, std::unique_ptr<ShaderParams>> params;
 	std::map<std::string, std::shared_ptr<ShaderBufferGroup>> buffers;
 
 };
@@ -129,6 +146,7 @@ struct MaterialInstanceCollection {
 			materials[rid].setVisible(val);
 		}
 	}
+
 
 	private:
 	std::map<std::string, MaterialInstance>& materials; // ref to all materials map

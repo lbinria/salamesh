@@ -105,8 +105,7 @@ void RenderSystem::render(Model &model, ISceneView &sceneView) {
 		auto modelName = model.getName();
 
 		if (!sceneView.hasMaterial(*renderer)) {
-			auto mat = renderer->getDefaultMaterial();
-			sceneView.addMaterial(*renderer, mat);
+			sceneView.addMaterial(*renderer, renderer->getDefaultMaterial());
 		}
 
 		// auto &mat = sceneView.getMaterial(*renderer);
@@ -138,15 +137,17 @@ void RenderSystem::render(Renderer &renderer, glm::mat4 &transform, MaterialInst
 
 	mat.apply(shader);
 
-	// TODO beurrk ! replace by UBO
-	if (mat.hasParam("layers")) {
-		auto layersParams = mat.getParams<LayersParams>("layers");
-		if (layersParams) {
-			for (int l = 0; l < 3; ++l) {
-				layersParams->setColormapTex(l, texColormaps[l]);
-			}
-		}
-	}
+	// // TODO beurrk ! replace by UBO
+	// if (mat.hasParam("layers")) {
+	// 	// auto layersParams = mat.getParams<LayersParams>("layers");
+	// 	auto params = mat.getParams("layers");
+	// 	if (params) {
+	// 		for (int l = 0; l < 3; ++l) {
+	// 			auto &layersParams = static_cast<LayersParams&>(params.value().get());
+	// 			layersParams.setColormapTex(l, texColormaps[l]);
+	// 		}
+	// 	}
+	// }
 
 	auto rp = renderer.getRenderPrimitive();
 	glDrawArrays(getGLPrimFromRenderPrimitive(rp), 0, renderer.getElementsCount());

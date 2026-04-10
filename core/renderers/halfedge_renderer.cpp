@@ -3,11 +3,12 @@
 #include "../helpers.h"
 
 MaterialInstance HalfedgeRenderer::getDefaultMaterial() {
-	MaterialInstance mat;
-	mat.addParam("light", std::make_shared<LightParams>());
-	mat.addParam("clipping", std::make_shared<ClippingParams>());
-	mat.addParam("edges", std::make_shared<HalfedgeParams>());
-	mat.addParam("layers", std::make_shared<LayersParams>());
+	MaterialInstance mat;	
+	mat.addParam<LightParams>("light");
+	mat.addParam<ClippingParams>("clipping");
+	mat.addParam<HalfedgeParams>("edges");
+	mat.addParam<LayersParams>("layers");
+
 	mat.addBufferGroup("layers", std::make_shared<LayerBufferGroup>());
 	return mat;
 }

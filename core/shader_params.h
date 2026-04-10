@@ -3,7 +3,11 @@
 
 struct ShaderParams {
 
-	void apply(Shader &shader) {
+	ShaderParams() = default;
+	ShaderParams(const ShaderParams&) = delete;
+    ShaderParams& operator=(const ShaderParams&) = delete;
+
+	void apply(Shader &shader) const {
 		if (!dirty)
 			return;
 		
@@ -15,7 +19,7 @@ struct ShaderParams {
 
 	virtual void doApply(Shader &shader) const = 0;
 	
-	bool dirty = true;
+	mutable bool dirty = true;
 };
 
 struct StyleParams : public ShaderParams {

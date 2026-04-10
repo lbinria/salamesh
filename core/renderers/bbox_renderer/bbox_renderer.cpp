@@ -4,7 +4,7 @@
 
 MaterialInstance BBoxRenderer::getDefaultMaterial() {
 	MaterialInstance mat;
-	mat.addParam("style", std::make_shared<StyleParams>());
+	mat.addParam<StyleParams>("style");
 	return mat;
 }
 

@@ -80,6 +80,7 @@ struct Renderer {
 	virtual std::vector<RendererElementField> getElementFields() {
 		return {};
 	};
+	
 	virtual MaterialInstance getDefaultMaterial() {
 		return MaterialInstance();
 	}

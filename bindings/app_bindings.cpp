@@ -169,10 +169,8 @@ namespace bindings {
 		auto materialInstance_t = lua.new_usertype<MaterialInstance>(
 			"MaterialInstance",
 			"visible", sol::property(&MaterialInstance::getVisible, &MaterialInstance::setVisible),
-			"light", sol::readonly_property(&MaterialInstance::getLightParams),
-			"points", sol::readonly_property(&MaterialInstance::getPointSetParams),
-			"mesh", sol::readonly_property(&MaterialInstance::getMeshParams),
-			"edges", sol::readonly_property(&MaterialInstance::getHalfedgeParams),
+			"get_params", &MaterialInstance::getParams,
+			sol::meta_function::index, &MaterialInstance::getParams,
 			"layers", sol::readonly_property(&MaterialInstance::getLayerBuffers)
 		);
 

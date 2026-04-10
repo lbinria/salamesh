@@ -54,8 +54,8 @@ struct SceneView : public ISceneView {
 		return materials.contains(renderer.getId());
 	}
 
-	void addMaterial(const Renderer &renderer, const MaterialInstance mat) {
-		materials[renderer.getId()] = mat;
+	void addMaterial(const Renderer &renderer, MaterialInstance mat) {
+		materials[renderer.getId()] = std::move(mat);
 	}
 	
 	bool removeMaterial(const Renderer &renderer) {

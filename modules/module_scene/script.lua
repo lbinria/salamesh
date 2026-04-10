@@ -221,7 +221,7 @@ function draw_model_properties(model, k, view)
 				point_mat.visible = new_point_visible
 			end
 
-			local sel_point_size, new_point_size = imgui.SliderFloat("Point size", point_mat.points.size, 0, 50)
+			local sel_point_size, new_point_size = imgui.SliderFloat("Point size", point_mat["points"].size, 0, 50)
 			if (sel_point_size) then 
 				print("Change point size: " .. tostring(new_point_size))
 				point_mat.points.size = new_point_size

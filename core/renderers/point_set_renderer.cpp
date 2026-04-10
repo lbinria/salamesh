@@ -20,10 +20,10 @@ const void * PointSetRenderer::getData() {
 
 MaterialInstance PointSetRenderer::getDefaultMaterial() {
 	MaterialInstance mat;
-	mat.addParam("light", std::make_shared<LightParams>());
-	mat.addParam("clipping", std::make_shared<ClippingParams>());
-	mat.addParam("points", std::make_shared<PointSetParams>());
-	mat.addParam("layers", std::make_shared<LayersParams>());
+	mat.addParam<LightParams>("light");
+	mat.addParam<ClippingParams>("clipping");
+	mat.addParam<PointSetParams>("points");
+	mat.addParam<LayersParams>("layers");
 	mat.addBufferGroup("layers", std::make_shared<LayerBufferGroup>());
 	return mat;
 }
