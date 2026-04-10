@@ -21,4 +21,7 @@ struct TriRenderer : public SurfaceRenderer {
 	using SurfaceRenderer::SurfaceRenderer;
 	const void * getData() override;
 
+	private:
+	std::vector<Vertex> vertices;
+
 };

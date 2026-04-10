@@ -2,7 +2,8 @@
 #include "../../core/graphic_api.h"
 
 const void * PointSetRenderer::getData() {
-	std::vector<Vertex> vertices(ps.size());
+	vertices.clear();
+	vertices.resize(ps.size());
 	for (int i = 0; i < ps.size(); ++i) {
 		auto &v = ps[i];
 
@@ -35,57 +36,4 @@ void PointSetRenderer::clear() {
 	clearPoints();
 }
 
-
-// void PointSetRenderer::init() {
-
-// 	glGenVertexArrays(1, &VAO);
-// 	glGenBuffers(1, &VBO);
-
-// 	glBindVertexArray(VAO);
-// 	glBindBuffer(GL_ARRAY_BUFFER, VBO);
-
-// 	// VBO
-// 	sl::createVBOInteger(shader.id, "vertexIndex", sizeof(Vertex), (void*)offsetof(Vertex, vertexIndex));
-// 	sl::createVBOVec3(shader.id, "aPos", sizeof(Vertex), (void*)offsetof(Vertex, position));
-// 	sl::createVBOFloat(shader.id, "sizeScale", sizeof(Vertex), (void*)offsetof(Vertex, size));
-// }
-
-// void PointSetRenderer::push() {	
-
-// 	std::vector<Vertex> vertices(ps.size());
-// 	for (int i = 0; i < ps.size(); ++i) {
-// 		auto &v = ps[i];
-
-// 		vertices[i] = { 
-// 			.vertexIndex = i,
-// 			.position = glm::vec3(v.x, v.y, v.z),
-// 			.size = 1.f
-// 		};
-// 	}
-
-// 	writeVBOBuffer(vertices);
-// }
-
-// void PointSetRenderer::render(RendererView &rv, glm::vec3 &position) {
-// 	if (!rv.visible)
-// 		return;
-
-// 	glBindVertexArray(VAO);
-
-// 	glm::mat4 model = glm::mat4(1.0f);
-// 	model = glm::translate(model, position);
-
-// 	rv.use(shader);
-// 	shader.setMat4("model", model);
-
-// 	glDrawArrays(GL_POINTS, 0, nelements);
-// }
-
-// void PointSetRenderer::clean() {
-// 	// Clean up
-// 	glDeleteVertexArrays(1, &VAO);
-// 	glDeleteBuffers(1, &VBO);
-
-// 	// Clean shader
-// 	shader.clean();
-// }
+// TODO clean shader

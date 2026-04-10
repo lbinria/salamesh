@@ -3,7 +3,8 @@
 const void * TriRenderer::getData() {
 	nelements = _m.nfacets() * 3 /* 3 points per tri */;
 
-	std::vector<Vertex> vertices(nelements);
+	vertices.clear();
+	vertices.resize(nelements);
 	for (auto &f : _m.iter_facets()) {
 
 		auto p0 = f.vertex(0).pos();

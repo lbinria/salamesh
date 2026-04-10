@@ -122,7 +122,9 @@ struct PointSetRenderer : public Renderer {
 
     private:
     PointSet &ps;
-	bool autoUpdate = false;
+	bool autoUpdate = true;
+	std::vector<Vertex> vertices;
+
 
     float pointSize;
     glm::vec3 color;
