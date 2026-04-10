@@ -181,19 +181,28 @@ namespace bindings {
 			sol::meta_function::index, &MaterialInstanceCollection::getMaterial
 		);
 
+		sol::usertype<ShaderParams> shaderParams_t = lua.new_usertype<ShaderParams>(
+			"ShaderParams",
+			"get", &ShaderParams::get,
+			"set", &ShaderParams::set
+		);
+
 		sol::usertype<LightParams> lightParams_t = lua.new_usertype<LightParams>(
+			sol::base_classes, sol::bases<ShaderParams>(),
 			"LightParams",
 			"enabled", sol::property(&LightParams::getEnabled, &LightParams::setEnabled)
 		);
 
 		sol::usertype<PointSetParams> pointSetParams_t = lua.new_usertype<PointSetParams>(
+			sol::base_classes, sol::bases<ShaderParams>(),
 			"PointSetParams",
 			"color", sol::property(&PointSetParams::getColor, &PointSetParams::setColor),
-			"size", sol::property(&PointSetParams::getPointSize, &PointSetParams::setPointSize)
+			"size", sol::property(&PointSetParams::getSize, &PointSetParams::setSize)
 		);
 
 		sol::usertype<MeshParams> meshParams_t = lua.new_usertype<MeshParams>(
 			"MeshParams",
+			sol::base_classes, sol::bases<ShaderParams>(),
 			"color", sol::property(&MeshParams::getColor, &MeshParams::setColor),
 			"size", sol::property(&MeshParams::getMeshSize, &MeshParams::setMeshSize),
 			"shrink", sol::property(&MeshParams::getMeshShrink, &MeshParams::setMeshShrink),
@@ -202,6 +211,7 @@ namespace bindings {
 
 		sol::usertype<HalfedgeParams> halfedgeParams_t = lua.new_usertype<HalfedgeParams>(
 			"HalfedgeParams",
+			sol::base_classes, sol::bases<ShaderParams>(),
 			"inside_color", sol::property(&HalfedgeParams::getInsideColor, &HalfedgeParams::setInsideColor),
 			"outside_color", sol::property(&HalfedgeParams::getOutsideColor, &HalfedgeParams::setOutsideColor),
 			"thickness", sol::property(&HalfedgeParams::getThickness, &HalfedgeParams::setThickness),

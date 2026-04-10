@@ -1,11 +1,15 @@
 #pragma once 
 #include "shader.h"
+#include <variant>
 
 struct ShaderParams {
 
+	// A simple variant to hold any data a shader might need
+	using ParamValue = std::variant<float, int, bool, glm::vec2, glm::vec3, glm::vec4>;
+
 	ShaderParams() = default;
 	ShaderParams(const ShaderParams&) = delete;
-    ShaderParams& operator=(const ShaderParams&) = delete;
+	ShaderParams& operator=(const ShaderParams&) = delete;
 
 	void apply(Shader &shader) const {
 		if (!dirty)
@@ -14,6 +18,14 @@ struct ShaderParams {
 		doApply(shader);
 		dirty = false;
 	}
+
+	// TODO add index operator for access to get/set
+
+	// virtual void set(const std::string& name, ParamValue value) = 0;
+	// virtual ParamValue get(const std::string& name) = 0;
+	// TODO pass to virtual pure, just for testing
+	virtual void set(const std::string& name, ParamValue value) {};
+	virtual ParamValue get(const std::string& name) { return 0.f; };
 
 	protected:
 
@@ -37,9 +49,27 @@ struct StyleParams : public ShaderParams {
 		return color;
 	}
 
+	void set(const std::string& name, ParamValue value) override {
+		if (name == "color") {
+			if (auto val = std::get_if<glm::vec3>(&value)) {
+				setColor(*val);
+			}
+		}
+	}
+
+	ParamValue get(const std::string& name) {
+		if (name == "color") {
+			return color;
+		}
+		return 0.0f;
+	}
+
+
 	void doApply(Shader &shader) const override {
 		shader.setFloat3(colorUniformName, color);
 	}
+
+
 
 	private:
 	std::string colorUniformName = "color";
@@ -55,6 +85,21 @@ struct LightParams : public ShaderParams {
 
 	bool getEnabled() const {
 		return _enabled;
+	}
+
+	void set(const std::string& name, ParamValue value) override {
+		if (name == "enabled") {
+			if (auto val = std::get_if<bool>(&value)) {
+				setEnabled(*val);
+			}
+		}
+	}
+
+	ParamValue get(const std::string& name) override {
+		if (name == "enabled") {
+			return _enabled;
+		}
+		return 0.0f;
 	}
 
 	void doApply(Shader &shader) const override {
@@ -73,46 +118,105 @@ struct ClippingParams : public ShaderParams {
 		STD = 1
 	};
 
-	virtual void setClippingMode(ClippingMode mode) {
-		clippingMode = mode;
+	void setMode(ClippingMode val) {
+		mode = val;
 		dirty = true;
 	}
 
-	virtual void setClipping(bool enabled) {
-		isClippingEnabled = enabled;
+	ClippingMode getMode() {
+		return mode;
+	}
+
+	void setEnabled(bool val) {
+		enabled = val;
 		dirty = true;
 	}
 
-	virtual void setClippingPlanePoint(glm::vec3 p) {
-		clippingPlanePoint = p;
+	bool getEnabled() {
+		return enabled;
+	}
+
+	void setPlanePoint(glm::vec3 p) {
+		planePoint = p;
 		dirty = true;
 	}
 
-	virtual void setClippingPlaneNormal(glm::vec3 n) {
-		clippingPlaneNormal = n;
+	glm::vec3 getPlanePoint() {
+		return planePoint;
+	}
+
+	void setPlaneNormal(glm::vec3 n) {
+		planeNormal = n;
 		dirty = true;
 	}
 
-	void setInvertClipping(bool invert) {
-		isInvertClipping = invert;
+	glm::vec3 getPlaneNormal() {
+		return planeNormal;
+	}
+
+	void setInvert(bool val) {
+		invert = val;
 		dirty = true;
+	}
+
+	bool getInvert() {
+		return invert;
+	}
+
+	void set(const std::string& name, ParamValue value) override {
+		if (name == "mode") {
+			if (auto val = std::get_if<int>(&value)) {
+				setMode(static_cast<ClippingMode>(*val));
+			}
+		} else if (name == "enabled") {
+			if (auto val = std::get_if<bool>(&value)) {
+				setEnabled(*val);
+			}
+		} else if (name == "plane_point") {
+			if (auto val = std::get_if<glm::vec3>(&value)) {
+				setPlanePoint(*val);
+			}
+		} else if (name == "plane_normal") {
+			if (auto val = std::get_if<glm::vec3>(&value)) {
+				setPlaneNormal(*val);
+			}
+		} else if (name == "invert") {
+			if (auto val = std::get_if<bool>(&value)) {
+				setInvert(*val);
+			}
+		}
+	}
+
+	ParamValue get(const std::string& name) override {
+		if (name == "mode") {
+			return static_cast<int>(getMode());
+		} else if (name == "enabled") {
+			return getEnabled();
+		} else if (name == "plane_point") {
+			return getPlanePoint();
+		} else if (name == "plane_normal") {
+			return getPlaneNormal();
+		} else if (name == "invert") {
+			return getInvert();
+		}
+		return 0.0f;
 	}
 
 
 	void doApply(Shader &shader) const override {
-		shader.setInt("clipping_mode", clippingMode);		
-		shader.setInt("is_clipping_enabled", isClippingEnabled);
-		shader.setFloat3("clipping_plane_point", clippingPlanePoint);
-		shader.setFloat3("clipping_plane_normal", clippingPlaneNormal);
-		shader.setInt("invert_clipping", isInvertClipping);
+		shader.setInt("clipping_mode", mode);		
+		shader.setInt("is_clipping_enabled", enabled);
+		shader.setFloat3("clipping_plane_point", planePoint);
+		shader.setFloat3("clipping_plane_normal", planeNormal);
+		shader.setInt("invert_clipping", invert);
 	}
 
 	private:
-	ClippingMode clippingMode = ClippingMode::STD;
-	bool isClippingEnabled = false;
-	glm::vec3 clippingPlanePoint;
-	glm::vec3 clippingPlaneNormal;
-	bool isInvertClipping = false;
+	ClippingMode mode = ClippingMode::STD;
+	bool enabled = false;
+	glm::vec3 planePoint;
+	glm::vec3 planeNormal;
+	bool invert = false;
 
 };
 
@@ -257,12 +361,12 @@ struct HalfedgeParams : public ShaderParams {
 
 struct PointSetParams : public ShaderParams {
 
-	float getPointSize() const {
-		return pointSize;
+	float getSize() const {
+		return size;
 	}
 
-	void setPointSize(float size) {
-		pointSize = size;
+	void setSize(float val) {
+		size = val;
 		dirty = true;
 	}
 
@@ -275,8 +379,29 @@ struct PointSetParams : public ShaderParams {
 		dirty = true;
 	}
 
+	void set(const std::string& name, ParamValue value) override {
+		if (name == "color") {
+			if (auto val = std::get_if<glm::vec3>(&value)) {
+				setColor(*val);
+			}
+		} else if (name == "size") {
+			if (auto val = std::get_if<float>(&value)) {
+				setSize(*val);
+			}
+		}
+	}
+
+	ParamValue get(const std::string& name) override {
+		if (name == "color") {
+			return getColor();
+		} else if (name == "size") {
+			return getSize();
+		}
+		return 0.0f;
+	}
+
 	void doApply(Shader &shader) const override {
-		shader.setFloat("pointSize", pointSize);
+		shader.setFloat("pointSize", size);
 		shader.setFloat3("pointColor", color);
 	}
 
@@ -291,7 +416,7 @@ struct PointSetParams : public ShaderParams {
     // }
 
 	private:
-	float pointSize = 4.f;
+	float size = 4.f;
 	glm::vec3 color{0.23, 0.85, 0.66};
 
 };
