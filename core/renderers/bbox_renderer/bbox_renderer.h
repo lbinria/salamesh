@@ -28,6 +28,8 @@ struct BBoxRenderer : public Renderer {
 		return RenderPrimitive::RENDER_LINES;
 	}
 
+	std::string getType() const { return "bbox"; }
+
 	const void * getData() override;
 	MaterialInstance getDefaultMaterial() override;
 

@@ -7,6 +7,9 @@ struct MeshRenderer : public Renderer {
 		Renderer(name, std::move(shader))
 		{}
 
+	std::string getType() const { return "mesh"; }
+
+
 	// TODO to remove
 	virtual void doLoadState(json &j) override {}
 	virtual void doSaveState(json &j) const override {}

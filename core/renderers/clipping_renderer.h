@@ -26,9 +26,13 @@ struct ClippingRenderer : public Renderer {
 		ps(ps) {
 		}
 
+	std::string getType() const { return "clipping"; }
+
+
 	RenderPrimitive getRenderPrimitive() const override {
 		return RenderPrimitive::RENDER_TRIANGLES;
 	}
+
 
 
 	void clear() override;

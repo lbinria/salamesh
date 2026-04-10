@@ -162,10 +162,13 @@ namespace bindings {
 		sol::usertype<ISceneView> sceneView_t = lua.new_usertype<ISceneView>(
 			"ISceneView",
 			"name", sol::readonly_property(&ISceneView::getName),
-			"get_material", &ISceneView::getMaterial
+			"get_material", sol::overload(
+				sol::resolve<MaterialInstanceCollection(const Model&)>(&ISceneView::getMaterial),
+				sol::resolve<MaterialInstance&(Renderer&)>(&ISceneView::getMaterial)
+			)
 		);
 
-		sol::usertype<MaterialInstance> materialInstance_t = lua.new_usertype<MaterialInstance>(
+		auto materialInstance_t = lua.new_usertype<MaterialInstance>(
 			"MaterialInstance",
 			"visible", sol::property(&MaterialInstance::getVisible, &MaterialInstance::setVisible),
 			"light", sol::readonly_property(&MaterialInstance::getLightParams),
@@ -173,6 +176,11 @@ namespace bindings {
 			"mesh", sol::readonly_property(&MaterialInstance::getMeshParams),
 			"edges", sol::readonly_property(&MaterialInstance::getHalfedgeParams),
 			"layers", sol::readonly_property(&MaterialInstance::getLayerBuffers)
+		);
+
+		auto materialInstanceCollection_t = lua.new_usertype<MaterialInstanceCollection>(
+			"MaterialInstanceCollection",
+			"visible", sol::property(&MaterialInstanceCollection::getVisible, &MaterialInstanceCollection::setVisible)
 		);
 
 		sol::usertype<LightParams> lightParams_t = lua.new_usertype<LightParams>(

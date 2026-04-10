@@ -55,6 +55,8 @@ struct Renderer {
 		return id;
 	}
 
+	virtual std::string getType() const = 0;
+
 	template<typename T>
 	T& as() {
 		static_assert(std::is_base_of_v<Renderer, T>, "Renderer::as() can only be used with derived classes of Renderer");

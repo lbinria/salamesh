@@ -18,4 +18,6 @@ using namespace UM;
 
 struct HexRenderer : public VolumeRenderer {
 	using VolumeRenderer::VolumeRenderer;
+
+
 };

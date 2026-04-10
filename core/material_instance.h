@@ -91,20 +91,36 @@ struct MaterialInstance {
 };
 
 // Proxy
-struct ModelMaterialInstance {
+struct MaterialInstanceCollection {
 
-	// ModelMaterialInstance(Model &model, std::map<std::string, MaterialInstance> &materials) : 
-	// 	model(model), 
-	// 	materials(materials) 
-	// 	{}
+	MaterialInstanceCollection(
+		std::map<std::string, MaterialInstance>& materials, 
+		std::map<std::string, std::string> rendererInfos) : 
+		materials(materials), 
+		rendererInfos(rendererInfos) {}
 
-	// void setVisible(bool val) {
-	// 	for (auto &[rendererName, r] : model.getRenderers()) {
-	// 		materials[r->getId()].setVisible(val);
-	// 	}
-	// }
+	MaterialInstance& getMaterial(const std::string rendererName) {
+		auto rendererId = rendererInfos[rendererName];
+		return materials.at(rendererId);
+	}
 
-	// private:
-	// Model &model;
-	// std::map<std::string, MaterialInstance>& materials;
+	bool getVisible() {
+		// At least one
+		for (auto &[rn, rid] : rendererInfos) {
+			if (materials[rid].getVisible())
+				return true;
+		}
+		return false;
+	}
+
+	void setVisible(bool val) {
+		for (auto &[rn, rid] : rendererInfos) {
+			materials[rid].setVisible(val);
+		}
+	}
+
+	private:
+	std::map<std::string, MaterialInstance>& materials;
+	std::map<std::string, std::string> rendererInfos;
+
 };

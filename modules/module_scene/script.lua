@@ -457,11 +457,11 @@ function draw_gui()
 
 			for k, model in pairs(app.scene.models) do
 
-				
-				-- local sel_visible, new_visible = imgui.Checkbox(k .. "##" .. k, model_view.visible)
-				-- if (sel_visible) then 
-				-- 	model_view.visible = new_visible
-				-- end
+				local model_mat = app.scene.main_view:get_material(model)
+				local sel_visible, new_visible = imgui.Checkbox(k .. "##" .. k, model_mat.visible)
+				if (sel_visible) then 
+					model_mat.visible = new_visible
+				end
 
 				imgui.SameLine()
 				if (imgui.Button("View##" .. "btn_view_" .. k)) then

@@ -29,6 +29,10 @@ struct PointSetRenderer : public Renderer {
 	PointSetRenderer(std::string name) : 
 		Renderer(name, Shader(sl::shadersPath("point.vert"), sl::shadersPath("point.frag"))), ps(*new PointSet()) {}
 
+
+	std::string getType() const { return "points"; }
+
+
 	RenderPrimitive getRenderPrimitive() const override {
 		return RenderPrimitive::RENDER_POINTS;
 	}

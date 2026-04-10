@@ -27,6 +27,9 @@ struct HalfedgeRenderer : public Renderer {
 
 	using Renderer::Renderer;
 
+	std::string getType() const { return "edges"; }
+
+
 	void clear() override;
 
 

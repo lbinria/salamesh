@@ -31,6 +31,9 @@ struct LineRenderer : public Renderer {
 			
 		}
 
+	std::string getType() const { return "lines"; }
+
+
 	RenderPrimitive getRenderPrimitive() const override {
 		return RenderPrimitive::RENDER_LINES;
 	}
