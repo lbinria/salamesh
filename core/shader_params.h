@@ -18,6 +18,30 @@ struct ShaderParams {
 	bool dirty = true;
 };
 
+struct StyleParams : public ShaderParams {
+
+	void setColorUniformName(const std::string val) {
+		colorUniformName = val;
+	}
+
+	void setColor(glm::vec3 val) {
+		color = val;
+		dirty = true;
+	}
+
+	glm::vec3 getColor() const {
+		return color;
+	}
+
+	void doApply(Shader &shader) const override {
+		shader.setFloat3(colorUniformName, color);
+	}
+
+	private:
+	std::string colorUniformName = "color";
+	glm::vec3 color{1.f, 1.f, 1.f};
+};
+
 struct LightParams : public ShaderParams {
 
 	void setEnabled(bool enabled) {

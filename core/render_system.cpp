@@ -1,5 +1,7 @@
 #include "render_system.h"
 
+#include "renderers/bbox_renderer/bbox_renderer.h"
+
 int getGLPrimFromRenderPrimitive(Renderer::RenderPrimitive primitive) {
 	switch (primitive)
 	{
@@ -79,8 +81,9 @@ void RenderSystem::render(Model &model, ISceneView &sceneView) {
 		auto psr = std::dynamic_pointer_cast<PointSetRenderer>(renderer);
 		auto msr = std::dynamic_pointer_cast<MeshRenderer>(renderer);
 		auto hsr = std::dynamic_pointer_cast<HalfedgeRenderer>(renderer);
+		auto bbr = std::dynamic_pointer_cast<BBoxRenderer>(renderer);
 		// if (!msr)
-		if (!psr && !msr && !hsr)
+		if (!psr && !msr && !hsr && !bbr)
 		// if (!psr && !msr )
 			continue;
 

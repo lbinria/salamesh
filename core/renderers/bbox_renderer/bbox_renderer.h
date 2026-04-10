@@ -28,6 +28,15 @@ struct BBoxRenderer : public Renderer {
 		return RenderPrimitive::RENDER_LINES;
 	}
 
+	const void * getData() override;
+	MaterialInstance getDefaultMaterial() override;
+
+	size_t getElementSize() override {
+		return sizeof(Vertex);
+	}
+
+	std::vector<RendererElementField> getElementFields() override;
+
 	void clear() override;
 
 	// TODO to remove
@@ -36,5 +45,6 @@ struct BBoxRenderer : public Renderer {
 
 	private:
 	PointSet &ps;
+	std::vector<Vertex> vertices;
 	
 };
