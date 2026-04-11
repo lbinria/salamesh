@@ -33,10 +33,6 @@ struct MaterialInstance {
 		}
 	}
 
-	// void addParamold(const std::string name, ShaderParams &param) {
-	// 	params[name] = param;
-	// }
-
 	template<class TParam>
 	void addParam(const std::string name) {
 		params[name] = std::make_unique<TParam>();
@@ -49,14 +45,6 @@ struct MaterialInstance {
 	void addBufferGroup(const std::string name, std::shared_ptr<ShaderBufferGroup> bufferGroup) {
 		buffers[name] = bufferGroup;
 	}
-
-	// template<typename T>
-	// std::shared_ptr<T> getParams(const std::string name) const {
-	// 	if (!params.contains(name))
-	// 		return nullptr;
-
-	// 	return std::static_pointer_cast<T>(params.at(name));
-	// }
 
 	template<typename T>
 	std::shared_ptr<T> getBuffers(const std::string name) const {
@@ -72,27 +60,6 @@ struct MaterialInstance {
 		if (it == params.end()) return std::nullopt;
 		return std::ref(*it->second);
 	}
-
-	// // Shortcuts to some common parameters
-	// std::shared_ptr<LightParams> getLightParams() const {
-	// 	return getParams<LightParams>("light");
-	// }
-
-	// std::shared_ptr<ClippingParams> getClippingParams() const {
-	// 	return getParams<ClippingParams>("clipping");
-	// }
-
-	// std::shared_ptr<MeshParams> getMeshParams() const {
-	// 	return getParams<MeshParams>("mesh");
-	// }
-
-	// std::shared_ptr<HalfedgeParams> getHalfedgeParams() const {
-	// 	return getParams<HalfedgeParams>("edges");
-	// }
-
-	// std::shared_ptr<PointSetParams> getPointSetParams() const {
-	// 	return getParams<PointSetParams>("points");
-	// }
 	
 	std::shared_ptr<LayerBufferGroup> getLayerBuffers() const {
 		return getBuffers<LayerBufferGroup>("layers");
@@ -110,6 +77,7 @@ struct MaterialInstance {
 };
 
 // Proxy
+// Group materials of given renderers together to make some operations
 struct MaterialInstanceCollection {
 
 	MaterialInstanceCollection(
@@ -158,6 +126,8 @@ struct MaterialInstanceCollection {
 		}
 	}
 
+	// Check whether all param of name paramName in params group paramsName are true
+	// If any value is not bool, return false
 	bool all(const std::string paramsName, const std::string paramName) {
 		for (auto &[rn, rid] : rendererInfos) {
 			auto paramsRef = materials[rid].getParams(paramsName);
@@ -174,6 +144,8 @@ struct MaterialInstanceCollection {
 		return true;
 	}
 
+	// Check whether any param of name paramName in params group paramsName is true
+	// If any value is not bool, return false
 	bool any(const std::string paramsName, const std::string paramName) {
 		for (auto &[rn, rid] : rendererInfos) {
 			auto paramsRef = materials[rid].getParams(paramsName);
