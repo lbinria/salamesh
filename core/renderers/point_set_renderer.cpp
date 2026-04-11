@@ -22,7 +22,7 @@ MaterialInstance PointSetRenderer::getDefaultMaterial() {
 	MaterialInstance mat;
 	mat.addParam<LightParams>("light");
 	mat.addParam<ClippingParams>("clipping");
-	mat.addParam<PointSetParams>("points");
+	mat.addParam<PointSetParams>("style");
 	mat.addParam<LayersParams>("layers");
 	mat.addBufferGroup("layers", std::make_shared<LayerBufferGroup>());
 	return mat;

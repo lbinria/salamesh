@@ -184,7 +184,9 @@ namespace bindings {
 		sol::usertype<ShaderParams> shaderParams_t = lua.new_usertype<ShaderParams>(
 			"ShaderParams",
 			"get", &ShaderParams::get,
-			"set", &ShaderParams::set
+			"set", &ShaderParams::set,
+			sol::meta_function::index, &ShaderParams::get,
+			sol::meta_function::new_index, &ShaderParams::set
 		);
 
 		sol::usertype<LightParams> lightParams_t = lua.new_usertype<LightParams>(

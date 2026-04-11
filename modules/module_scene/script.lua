@@ -53,8 +53,7 @@ function draw_model_properties(model, k, view)
 
 	local model_mats = view:get_materials(model)
 
-	-- local point_mat = view:get_material(model.points)
-	local point_mat = model_mats["points"]
+	local point_mat = model_mats.points
 	local mesh_mat = model_mats["mesh"]
 	local edge_mat = model_mats["edges"]
 	
@@ -221,16 +220,16 @@ function draw_model_properties(model, k, view)
 				point_mat.visible = new_point_visible
 			end
 
-			local sel_point_size, new_point_size = imgui.SliderFloat("Point size", point_mat["points"]:get("size"), 0, 50)
+			local sel_point_size, new_point_size = imgui.SliderFloat("Point size", point_mat.style.size, 0, 50)
 			if (sel_point_size) then 
 				print("Change point size: " .. tostring(new_point_size))
-				point_mat["points"]:set("size", new_point_size)
+				point_mat.style.size = new_point_size
 			end
 
-			local sel_point_color, new_point_color = imgui.ColorEdit3("Point color", point_mat["points"]:get("color"))
+			local sel_point_color, new_point_color = imgui.ColorEdit3("Point color", point_mat.style.color)
 			if (sel_point_color) then 
 				-- print("Change point color: " .. tostring(new_point_color))
-				point_mat["points"]:set("color", new_point_color)
+				point_mat.style.color = new_point_color
 			end
 
 			if model.edges then 
