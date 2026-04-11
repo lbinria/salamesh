@@ -79,11 +79,11 @@ function draw_model_properties(model, k, view)
 
 		if (imgui.CollapsingHeader("Light##" .. k .. "_properties_light")) then 
 
-			local sel_chk_enable_light, new_enable_light = imgui.Checkbox("Enable light", model_view.light_enabled)
+			local sel_chk_enable_light, new_enable_light = imgui.Checkbox("Enable light", model_mats:any("light", "enabled"))
 
 			if (sel_chk_enable_light) then 
 				print("Enable light: " .. tostring(new_enable_light))
-				model_view.light_enabled = new_enable_light
+				model_mats:set("light", "enabled", new_enable_light)
 			end
 
 		end
@@ -242,34 +242,34 @@ function draw_model_properties(model, k, view)
 					edge_mat.visible = new_edge_visible
 				end
 
-				local sel_edge_thickness, new_edge_thickness = imgui.SliderFloat("Edge thickness", edge_mat.edges.thickness, 0, 50)
+				local sel_edge_thickness, new_edge_thickness = imgui.SliderFloat("Edge thickness", edge_mat.style.thickness, 0, 50)
 				if (sel_edge_thickness) then 
 					print("Change edge thickness: " .. tostring(new_edge_thickness))
-					edge_mat.edges.thickness = new_edge_thickness
+					edge_mat.style.thickness = new_edge_thickness
 				end
 
-				local sel_edge_spacing, new_edge_spacing = imgui.SliderFloat("Edge spacing", edge_mat.edges.spacing, 0, 1)
+				local sel_edge_spacing, new_edge_spacing = imgui.SliderFloat("Edge spacing", edge_mat.style.spacing, 0, 1)
 				if (sel_edge_spacing) then 
 					print("Change edge spacing: " .. tostring(new_edge_spacing))
-					edge_mat.edges.spacing = new_edge_spacing
+					edge_mat.style.spacing = new_edge_spacing
 				end
 
-				local sel_edge_padding, new_edge_padding = imgui.SliderFloat("Edge padding", edge_mat.edges.padding, 0, 1)
+				local sel_edge_padding, new_edge_padding = imgui.SliderFloat("Edge padding", edge_mat.style.padding, 0, 1)
 				if (sel_edge_padding) then 
 					print("Change edge padding: " .. tostring(new_edge_padding))
-					edge_mat.edges.padding = new_edge_padding
+					edge_mat.style.padding = new_edge_padding
 				end
 
-				local sel_edge_inside_color, new_edge_inside_color = imgui.ColorEdit3("Edge inside color", edge_mat.edges.inside_color)
+				local sel_edge_inside_color, new_edge_inside_color = imgui.ColorEdit3("Edge inside color", edge_mat.style.inside_color)
 				if (sel_edge_inside_color) then 
 					print("Change edge inside color: " .. tostring(new_edge_inside_color))
-					edge_mat.edges.inside_color = new_edge_inside_color
+					edge_mat.style.inside_color = new_edge_inside_color
 				end
 
-				local sel_edge_outside_color, new_edge_outside_color = imgui.ColorEdit3("Edge outside color", edge_mat.edges.outside_color)
+				local sel_edge_outside_color, new_edge_outside_color = imgui.ColorEdit3("Edge outside color", edge_mat.style.outside_color)
 				if (sel_edge_outside_color) then 
 					print("Change edge outside color: " .. tostring(new_edge_outside_color))
-					edge_mat.edges.outside_color = new_edge_outside_color
+					edge_mat.style.outside_color = new_edge_outside_color
 				end
 			end
 

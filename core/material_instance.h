@@ -1,6 +1,7 @@
 #pragma once
 #include "shader_params.h"
 #include <optional>
+#include <variant>
 
 struct MaterialInstance {
 
@@ -147,9 +148,47 @@ struct MaterialInstanceCollection {
 		}
 	}
 
-	// TODO set param to all of collection if exists (exemple setLight)
-	void setParams(const std::string name) {
+	// Set value for all params of a material collection if exists (exemple ("light", "enabled", true))
+	void set(const std::string paramsName, const std::string paramName, ShaderParams::ParamValue val) {
+		for (auto &[rn, rid] : rendererInfos) {
+			auto paramsRef = materials[rid].getParams(paramsName);
+			if (paramsRef.has_value()) {
+				paramsRef.value().get().set(paramName, val);
+			}
+		}
+	}
 
+	bool all(const std::string paramsName, const std::string paramName) {
+		for (auto &[rn, rid] : rendererInfos) {
+			auto paramsRef = materials[rid].getParams(paramsName);
+			if (!paramsRef.has_value()) {
+				continue;
+			}
+			auto pval = paramsRef.value().get().get(paramName);
+			bool *val = std::get_if<bool>(&pval);
+			if (!val || !(*val)) 
+				return false;
+
+		}
+
+		return true;
+	}
+
+	bool any(const std::string paramsName, const std::string paramName) {
+		for (auto &[rn, rid] : rendererInfos) {
+			auto paramsRef = materials[rid].getParams(paramsName);
+			if (!paramsRef.has_value()) {
+				continue;
+			}
+			auto pval = paramsRef.value().get().get(paramName);
+			bool *val = std::get_if<bool>(&pval);
+			if (!val) 
+				return false;
+			if (*val)
+				return true;
+		}
+
+		return false;
 	}
 
 	private:

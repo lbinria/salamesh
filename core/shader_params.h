@@ -331,6 +331,46 @@ struct HalfedgeParams : public ShaderParams {
 		dirty = true;
 	}
 
+	void set(const std::string& name, ParamValue value) override {
+		if (name == "thickness") {
+			if (auto val = std::get_if<float>(&value)) {
+				setThickness(*val);
+			}
+		} else if (name == "spacing") {
+			if (auto val = std::get_if<float>(&value)) {
+				setSpacing(*val);
+			}
+		} else if (name == "padding") {
+			if (auto val = std::get_if<float>(&value)) {
+				setPadding(*val);
+			}
+		} else if (name == "inside_color") {
+			if (auto val = std::get_if<glm::vec3>(&value)) {
+				setInsideColor(*val);
+			}
+		} else if (name == "outside_color") {
+			if (auto val = std::get_if<glm::vec3>(&value)) {
+				setOutsideColor(*val);
+			}
+		}
+	}
+
+	ParamValue get(const std::string& name) override {
+		if (name == "thickness") {
+			return getThickness();
+		} else if (name == "spacing") {
+			return getSpacing();
+		} else if (name == "padding") {
+			return getPadding();
+		} else if (name == "inside_color") {
+			return getInsideColor();
+		} else if (name == "outside_color") {
+			return getOutsideColor();
+		}
+		return 0.0f;
+	}
+
+
 	void doApply(Shader &shader) const override {
 		shader.setFloat("thickness", thickness);
 		shader.setFloat("spacing", halfedgeSpacing);

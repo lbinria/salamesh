@@ -178,6 +178,9 @@ namespace bindings {
 			"MaterialInstanceCollection",
 			"visible", sol::property(&MaterialInstanceCollection::getVisible, &MaterialInstanceCollection::setVisible),
 			"get_material", &MaterialInstanceCollection::getMaterial,
+			"set", &MaterialInstanceCollection::set,
+			"all", &MaterialInstanceCollection::all,
+			"any", &MaterialInstanceCollection::any,
 			sol::meta_function::index, &MaterialInstanceCollection::getMaterial
 		);
 

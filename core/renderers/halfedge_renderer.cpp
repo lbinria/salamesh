@@ -6,7 +6,7 @@ MaterialInstance HalfedgeRenderer::getDefaultMaterial() {
 	MaterialInstance mat;	
 	mat.addParam<LightParams>("light");
 	mat.addParam<ClippingParams>("clipping");
-	mat.addParam<HalfedgeParams>("edges");
+	mat.addParam<HalfedgeParams>("style");
 	mat.addParam<LayersParams>("layers");
 
 	mat.addBufferGroup("layers", std::make_shared<LayerBufferGroup>());
