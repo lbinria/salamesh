@@ -51,11 +51,13 @@ local invert_clipping = false
 
 function draw_model_properties(model, k, view)
 
+	-- Get all model materials (material collection of renderers)
 	local model_mats = view:get_materials(model)
 
+	-- Get material by renderer
 	local point_mat = model_mats.points
-	local mesh_mat = model_mats["mesh"]
-	local edge_mat = model_mats["edges"]
+	local mesh_mat = model_mats.mesh
+	local edge_mat = model_mats.edges
 	
 	local model_pos = model.world_position
 	local p = model.position

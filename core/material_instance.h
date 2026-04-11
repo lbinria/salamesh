@@ -147,6 +147,10 @@ struct MaterialInstanceCollection {
 		}
 	}
 
+	// TODO set param to all of collection if exists (exemple setLight)
+	void setParams(const std::string name) {
+
+	}
 
 	private:
 	std::map<std::string, MaterialInstance>& materials; // ref to all materials map
