@@ -11,13 +11,13 @@ MaterialInstance SurfaceRenderer::getDefaultMaterial() {
 	MaterialInstance mat;
 	// mat.addParam("light", std::make_shared<LightParams>());
 	// mat.addParam("clipping", std::make_shared<ClippingParams>());
-	// mat.addParam("mesh", std::make_shared<MeshParams>());
+	// mat.addParam("mesh", std::make_shared<MeshStyleParams>());
 	// mat.addParam("layers", std::make_shared<LayersParams>());
 	mat.addParam<LightParams>("light");
 	mat.addParam<ClippingParams>("clipping");
-	mat.addParam<MeshParams>("mesh");
+	mat.addParam<MeshStyleParams>("mesh");
 	mat.addParam<LayersParams>("layers");
-	mat.addBufferGroup("layers", std::make_shared<LayerBufferGroup>());
+	mat.addBuffers<LayerBufferGroup>("layers");
 	return mat;
 }
 

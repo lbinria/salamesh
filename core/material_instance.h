@@ -42,27 +42,25 @@ struct MaterialInstance {
 		return params.contains(name);
 	}
 
-	void addBufferGroup(const std::string name, std::shared_ptr<ShaderBufferGroup> bufferGroup) {
-		buffers[name] = bufferGroup;
+	template<class TBuffers>
+	void addBuffers(const std::string name) {
+		buffers[name] = std::make_unique<TBuffers>();
 	}
 
-	template<typename T>
-	std::shared_ptr<T> getBuffers(const std::string name) const {
-		if (!buffers.contains(name))
-			return nullptr;
-
-		return std::static_pointer_cast<T>(buffers.at(name));
+	bool hasBuffers(const std::string name) {
+		return buffers.contains(name);
 	}
-
 
 	std::optional<std::reference_wrapper<ShaderParams>> getParams(const std::string name) {
 		auto it = params.find(name);
 		if (it == params.end()) return std::nullopt;
 		return std::ref(*it->second);
 	}
-	
-	std::shared_ptr<LayerBufferGroup> getLayerBuffers() const {
-		return getBuffers<LayerBufferGroup>("layers");
+
+	std::optional<std::reference_wrapper<ShaderBuffers>> getBuffers(const std::string name) {
+		auto it = buffers.find(name);
+		if (it == buffers.end()) return std::nullopt;
+		return std::ref(*it->second);
 	}
 
 	// TODO add saveState, loadState
@@ -72,7 +70,7 @@ struct MaterialInstance {
 	private:
 	bool visible = true;
 	std::map<std::string, std::unique_ptr<ShaderParams>> params;
-	std::map<std::string, std::shared_ptr<ShaderBufferGroup>> buffers;
+	std::map<std::string, std::unique_ptr<ShaderBuffers>> buffers;
 
 };
 

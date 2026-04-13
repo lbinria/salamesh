@@ -2,6 +2,7 @@
 #include "shader.h"
 #include <variant>
 
+// A group of uniforms
 struct ShaderParams {
 
 	// A simple variant to hold any data a shader might need
@@ -220,7 +221,7 @@ struct ClippingParams : public ShaderParams {
 
 };
 
-struct MeshParams : public ShaderParams {
+struct MeshStyleParams : public ShaderParams {
 
 	float getMeshSize() const {
 		return meshSize;
@@ -296,38 +297,38 @@ struct HalfedgeParams : public ShaderParams {
 	}
 
 	float getSpacing() const {
-		return halfedgeSpacing;
+		return spacing;
 	}
 
 	void setSpacing(float spacing) {
-		halfedgeSpacing = spacing;
+		spacing = spacing;
 		dirty = true;
 	}
 
 	float getPadding() const {
-		return halfedgePadding;
+		return padding;
 	}
 
 	void setPadding(float padding) {
-		halfedgePadding = padding;
+		padding = padding;
 		dirty = true;
 	}
 
 	glm::vec3 getInsideColor() const {
-		return edgeInsideColor;
+		return insideColor;
 	}
 
 	void setInsideColor(glm::vec3 color) {
-		edgeInsideColor = color;
+		insideColor = color;
 		dirty = true;
 	}
 
 	glm::vec3 getOutsideColor() const {
-		return edgeOutsideColor;
+		return outsideColor;
 	}
 
 	void setOutsideColor(glm::vec3 color) {
-		edgeOutsideColor = color;
+		outsideColor = color;
 		dirty = true;
 	}
 
@@ -373,10 +374,10 @@ struct HalfedgeParams : public ShaderParams {
 
 	void doApply(Shader &shader) const override {
 		shader.setFloat("thickness", thickness);
-		shader.setFloat("spacing", halfedgeSpacing);
-		shader.setFloat("padding", halfedgePadding);
-		shader.setFloat3("uColorInside", edgeInsideColor);
-		shader.setFloat3("uColorOutside", edgeOutsideColor);
+		shader.setFloat("spacing", spacing);
+		shader.setFloat("padding", padding);
+		shader.setFloat3("uColorInside", insideColor);
+		shader.setFloat3("uColorOutside", outsideColor);
 	}
 
 	// virtual void doLoadState(json &j) override {
@@ -393,10 +394,10 @@ struct HalfedgeParams : public ShaderParams {
 
 	private:
 	float thickness = 2.f;
-	float halfedgeSpacing = 0.f;
-	float halfedgePadding = 0.f;
-	glm::vec3 edgeInsideColor{0.0, 0.97, 0.73};
-	glm::vec3 edgeOutsideColor{0.0, 0.6, 0.45};
+	float spacing = 0.f;
+	float padding = 0.f;
+	glm::vec3 insideColor{0.0, 0.97, 0.73};
+	glm::vec3 outsideColor{0.0, 0.6, 0.45};
 };
 
 struct PointSetParams : public ShaderParams {
@@ -539,79 +540,75 @@ struct LayersParams : public ShaderParams {
 };
 
 struct ShaderBuffer {
+	std::string name; // name in shader
 	GLuint tbo;
 	GLuint buf;
 
-	ShaderBuffer() {
+	ShaderBuffer(const std::string name) : name(name)  {
 		sl::createTBO(buf, tbo);
 	}
 };
 
-struct ShaderBufferGroup {
+struct ShaderBuffers {
+
+	ShaderBuffers() = default;
+	ShaderBuffers(const ShaderBuffers&) = delete;
+	ShaderBuffers& operator=(const ShaderBuffers&) = delete;
+
+	void set(const std::string name, int idx, float val) {
+		auto b = buf.at(name);
+		glBindBuffer(GL_TEXTURE_BUFFER, b.buf);
+		glBufferSubData(GL_TEXTURE_BUFFER, idx * sizeof(float), sizeof(float), &val);
+	}
+
+	void set(const std::string name, std::vector<float>& data) {
+		auto b = buf.at(name);
+		glBindBuffer(GL_TEXTURE_BUFFER, b.buf);
+		glBufferData(GL_TEXTURE_BUFFER, data.size() * sizeof(float), data.data(), GL_DYNAMIC_DRAW);
+	}
 
 	void apply(Shader &shader) {
-		if (!dirty)
-			return;
-
 		int texUnit = 3; // Start from 3 (texUnit 0,1,2 reserved to colormap textures)
 		for (auto &[k, b] : buf) {
-			shader.setInt(k.c_str(), texUnit);
+			shader.setInt(b.name.c_str(), texUnit);
+			// Set TBO as texture for texUnit
 			glActiveTexture(GL_TEXTURE0 + texUnit);
 			glBindTexture(GL_TEXTURE_BUFFER, b.tbo);
 			++texUnit;
 		}
-
-		dirty = false;
 	}
 	
 	protected:
 
-	bool dirty = true;
 	std::map<std::string, ShaderBuffer> buf;
-	
-	void writeBuf(unsigned int buf, std::vector<float> data) {
-		glBindBuffer(GL_TEXTURE_BUFFER, buf);
-		glBufferData(GL_TEXTURE_BUFFER, data.size() * sizeof(float), data.data(), GL_DYNAMIC_DRAW);
-		dirty = true;
-	}
-
-	void writeBuf(unsigned int buf, int idx, float val) {
-		glBindBuffer(GL_TEXTURE_BUFFER, buf);
-		glBufferSubData(GL_TEXTURE_BUFFER, idx * sizeof(float), sizeof(float), &val);
-		dirty = true;
-	}
 
 
 };
 
-struct LayerBufferGroup : public ShaderBufferGroup {
+struct LayerBufferGroup : public ShaderBuffers {
 
 	LayerBufferGroup() {
-		buf["highlightBuf"] = ShaderBuffer();
-		buf["filterBuf"] = ShaderBuffer();
-		buf["colormap0Buf"] = ShaderBuffer();
-		buf["colormap1Buf"] = ShaderBuffer();
-		buf["colormap2Buf"] = ShaderBuffer();
+		// buf.emplace("highlightBuf", ShaderBuffer("highlight"));
+		// buf.emplace("filterBuf", ShaderBuffer("filter"));
+		// buf.emplace("colormap0Buf", ShaderBuffer("colormap_0"));
+		// buf.emplace("colormap1Buf", ShaderBuffer("colormap_1"));
+		// buf.emplace("colormap2Buf", ShaderBuffer("colormap_2"));
+		buf.emplace("highlight", ShaderBuffer("highlightBuf"));
+		buf.emplace("filter", ShaderBuffer("filterBuf"));
+		buf.emplace("colormap_0", ShaderBuffer("colormap0Buf"));
+		buf.emplace("colormap_1", ShaderBuffer("colormap1Buf"));
+		buf.emplace("colormap_2", ShaderBuffer("colormap2Buf"));
 	}
 
-	void setLayer(int idx, float val, Layer layer) {
-		auto b = buf.at(binding[layer]);
-		writeBuf(b.buf, idx, val);
-	}
-
-	void setLayer(std::vector<float> data, Layer layer) {
-		auto b = buf.at(binding[layer]);
-		writeBuf(b.buf, data);
-	}
 
 	private:
 
-	// Binding between enum Layer to buffer's name
-	std::map<Layer, std::string> binding{
-		{ Layer::COLORMAP_0, "colormap0Buf"},
-		{ Layer::COLORMAP_1, "colormap1Buf"},
-		{ Layer::COLORMAP_2, "colormap2Buf"},
-		{ Layer::HIGHLIGHT, "highlightBuf"},
-		{ Layer::FILTER, "filterBuf"},
-	};
+	// // Binding between enum Layer to buffer's name
+	// std::map<Layer, std::string> binding{
+	// 	{ Layer::COLORMAP_0, "colormap0Buf"},
+	// 	{ Layer::COLORMAP_1, "colormap1Buf"},
+	// 	{ Layer::COLORMAP_2, "colormap2Buf"},
+	// 	{ Layer::HIGHLIGHT, "highlightBuf"},
+	// 	{ Layer::FILTER, "filterBuf"},
+	// };
 };

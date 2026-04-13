@@ -170,8 +170,7 @@ namespace bindings {
 			"MaterialInstance",
 			"visible", sol::property(&MaterialInstance::getVisible, &MaterialInstance::setVisible),
 			"get_params", &MaterialInstance::getParams,
-			sol::meta_function::index, &MaterialInstance::getParams,
-			"layers", sol::readonly_property(&MaterialInstance::getLayerBuffers)
+			sol::meta_function::index, &MaterialInstance::getParams
 		);
 
 		auto materialInstanceCollection_t = lua.new_usertype<MaterialInstanceCollection>(
@@ -205,13 +204,13 @@ namespace bindings {
 			"size", sol::property(&PointSetParams::getSize, &PointSetParams::setSize)
 		);
 
-		sol::usertype<MeshParams> meshParams_t = lua.new_usertype<MeshParams>(
-			"MeshParams",
+		sol::usertype<MeshStyleParams> meshParams_t = lua.new_usertype<MeshStyleParams>(
+			"MeshStyleParams",
 			sol::base_classes, sol::bases<ShaderParams>(),
-			"color", sol::property(&MeshParams::getColor, &MeshParams::setColor),
-			"size", sol::property(&MeshParams::getMeshSize, &MeshParams::setMeshSize),
-			"shrink", sol::property(&MeshParams::getMeshShrink, &MeshParams::setMeshShrink),
-			"corner_visible", sol::property(&MeshParams::getCornerVisible, &MeshParams::setCornerVisible)
+			"color", sol::property(&MeshStyleParams::getColor, &MeshStyleParams::setColor),
+			"size", sol::property(&MeshStyleParams::getMeshSize, &MeshStyleParams::setMeshSize),
+			"shrink", sol::property(&MeshStyleParams::getMeshShrink, &MeshStyleParams::setMeshShrink),
+			"corner_visible", sol::property(&MeshStyleParams::getCornerVisible, &MeshStyleParams::setCornerVisible)
 		);
 
 		sol::usertype<HalfedgeParams> halfedgeParams_t = lua.new_usertype<HalfedgeParams>(
