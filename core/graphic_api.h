@@ -75,14 +75,14 @@ namespace sl {
 	}
 
 	// UBO
-	inline void createUBO(GLuint &ubo, size_t size) {
+	inline void createUBO(GLuint &ubo, unsigned int binding, size_t size) {
 		// Init
 		glGenBuffers(1, &ubo);
 		// Setup
 		glBindBuffer(GL_UNIFORM_BUFFER, ubo);
 		glBufferData(GL_UNIFORM_BUFFER, size, nullptr, GL_DYNAMIC_DRAW);
 		glBindBuffer(GL_UNIFORM_BUFFER, 0);
-		glBindBufferRange(GL_UNIFORM_BUFFER, 0, ubo, 0, size);
+		glBindBufferRange(GL_UNIFORM_BUFFER, binding, ubo, 0, size);
 	}
 
 	inline void updateUBOData(GLuint &ubo, size_t size, const void* data) {

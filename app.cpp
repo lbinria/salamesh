@@ -353,8 +353,8 @@ bool App::setup() {
 
 	std::cout << "GLFW current context created !" << std::endl;
 
-	// Disable VSync
-	glfwSwapInterval(0);
+	// Disable / Enable VSync
+	glfwSwapInterval(1);
 
 	// Setup inputs
 	glfwSetKeyCallback(window, key_callback);
@@ -456,7 +456,7 @@ bool App::setup() {
 	// renderSurfaces.push_back(std::move(renderSurface2));
 
 	// Init UBO
-	sl::createUBO(uboMatrices, sizeof(UBOMatrices));
+	sl::createUBO(uboMatrices, 0, sizeof(UBOMatrices));
 
 
 	glViewport(0, 0, windowWidth, windowHeight);

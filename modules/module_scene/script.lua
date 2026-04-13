@@ -190,28 +190,28 @@ function draw_model_properties(model, k, view)
 					mesh_mat.visible = new_mesh_visible
 				end
 
-				local sel_color, new_color = imgui.ColorEdit3("Color", mesh_mat.mesh.color)
+				local sel_color, new_color = imgui.ColorEdit3("Color", mesh_mat.style.color)
 				if (sel_color) then 
 					print("Change color: " .. tostring(new_color))
-					mesh_mat.mesh.color = new_color
+					mesh_mat.style.color = new_color
 				end
 
-				local sel_slider_mesh_size, new_mesh_size = imgui.SliderFloat("Mesh size", mesh_mat.mesh.size, 0, 20)
+				local sel_slider_mesh_size, new_mesh_size = imgui.SliderFloat("Mesh size", mesh_mat.style.size, 0, 20)
 				if (sel_slider_mesh_size) then 
 					print("Change mesh size: " .. tostring(new_mesh_size))
-					mesh_mat.mesh.size = new_mesh_size
+					mesh_mat.style.size = new_mesh_size
 				end
 
-				local sel_slider_mesh_shrink, new_mesh_shrink = imgui.SliderFloat("Mesh shrink", mesh_mat.mesh.shrink, 0, 1)
+				local sel_slider_mesh_shrink, new_mesh_shrink = imgui.SliderFloat("Mesh shrink", mesh_mat.style.shrink, 0, 1)
 				if (sel_slider_mesh_shrink) then 
 					print("Change mesh shrink: " .. tostring(new_mesh_shrink))
-					mesh_mat.mesh.shrink = new_mesh_shrink
+					mesh_mat.style.shrink = new_mesh_shrink
 				end
 
-				local sel_corner_visible, new_corner_visible = imgui.Checkbox("Show corners", mesh_mat.mesh.corner_visible)
+				local sel_corner_visible, new_corner_visible = imgui.Checkbox("Show corners", mesh_mat.style.corner_visible)
 				if (sel_corner_visible) then 
 					print("Change corner visibility: " .. tostring(new_corner_visible))
-					mesh_mat.mesh.corner_visible = new_corner_visible
+					mesh_mat.style.corner_visible = new_corner_visible
 				end
 
 			end

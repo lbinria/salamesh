@@ -15,7 +15,7 @@ MaterialInstance SurfaceRenderer::getDefaultMaterial() {
 	// mat.addParam("layers", std::make_shared<LayersParams>());
 	mat.addParam<LightParams>("light");
 	mat.addParam<ClippingParams>("clipping");
-	mat.addParam<MeshStyleParams>("mesh");
+	mat.addParam<MeshStyleParams>("style");
 	mat.addParam<LayersParams>("layers");
 	mat.addBuffers<LayerBufferGroup>("layers");
 	return mat;

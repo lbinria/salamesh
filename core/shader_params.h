@@ -223,21 +223,21 @@ struct ClippingParams : public ShaderParams {
 
 struct MeshStyleParams : public ShaderParams {
 
-	float getMeshSize() const {
-		return meshSize;
+	float getSize() const {
+		return size;
 	}
 
-	void setMeshSize(float val) {
-		meshSize = val;
+	void setSize(float val) {
+		size = val;
 		dirty = true;
 	}
 
-	float getMeshShrink() const {
-		return meshShrink;
+	float getShrink() const {
+		return shrink;
 	}
 
-	void setMeshShrink(float val) {
-		meshShrink = val;
+	void setShrink(float val) {
+		shrink = val;
 		dirty = true;
 	}
 
@@ -250,12 +250,15 @@ struct MeshStyleParams : public ShaderParams {
 		dirty = true;
 	}
 
-	int getMeshIndex() const {
-		return meshIndex;
+	int getIndex() const {
+		return index;
 	}
 
-	void setMeshIndex(int index) {
-		meshIndex = index;
+	void setIndex(int val) {
+		if (val == index)
+			return;
+		
+		index = val;
 		dirty = true;
 	}
 
@@ -268,18 +271,51 @@ struct MeshStyleParams : public ShaderParams {
 		dirty = true;
 	}
 
+	void set(const std::string& name, ParamValue value) override {
+		if (name == "color") {
+			if (auto val = std::get_if<glm::vec3>(&value)) {
+				setColor(glm::vec3(*val));
+			}
+		} else if (name == "size") {
+			if (auto val = std::get_if<float>(&value)) {
+				setSize(*val);
+			}
+		} else if (name == "shrink") {
+			if (auto val = std::get_if<float>(&value)) {
+				setShrink(*val);
+			}
+		} else if (name == "corner_visible") {
+			if (auto val = std::get_if<bool>(&value)) {
+				setCornerVisible(*val);
+			}
+		}
+	}
+
+	ParamValue get(const std::string& name) override {
+		if (name == "color") {
+			return getColor();
+		} else if (name == "size") {
+			return getSize();
+		} else if (name == "shrink") {
+			return getShrink();
+		} else if (name == "corner_visible") {
+			return getCornerVisible();
+		}
+		return 0.0f;
+	}
+
 	void doApply(Shader &shader) const override {
-		shader.setFloat("meshSize", meshSize);
-		shader.setFloat("meshShrink", meshShrink);
+		shader.setFloat("meshSize", size);
+		shader.setFloat("meshShrink", shrink);
 		shader.setInt("isCornerVisible", isCornerVisible);
-		shader.setInt("meshIndex", meshIndex);
+		shader.setInt("meshIndex", index);
 		shader.setFloat3("color", color);
 	}
 
 	private:
-	int meshIndex = -1;
-	float meshSize = 0.f;
-	float meshShrink = 0.f;
+	int index = -1;
+	float size = 0.f;
+	float shrink = 0.f;
 	bool isCornerVisible = false;
 	glm::vec3 color{0.7f, 0.7f, 0.7f};
 

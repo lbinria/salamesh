@@ -209,8 +209,8 @@ namespace bindings {
 			"MeshStyleParams",
 			sol::base_classes, sol::bases<ShaderParams>(),
 			"color", sol::property(&MeshStyleParams::getColor, &MeshStyleParams::setColor),
-			"size", sol::property(&MeshStyleParams::getMeshSize, &MeshStyleParams::setMeshSize),
-			"shrink", sol::property(&MeshStyleParams::getMeshShrink, &MeshStyleParams::setMeshShrink),
+			"size", sol::property(&MeshStyleParams::getSize, &MeshStyleParams::setSize),
+			"shrink", sol::property(&MeshStyleParams::getShrink, &MeshStyleParams::setShrink),
 			"corner_visible", sol::property(&MeshStyleParams::getCornerVisible, &MeshStyleParams::setCornerVisible)
 		);
 

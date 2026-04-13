@@ -253,6 +253,9 @@ struct Model {
 
 	std::string getName() { return name; }
 
+	bool isDirty() const { return dirty; }
+	void setDirty(bool val) { dirty = val; }
+
 	protected:
 	std::string _path;
 
@@ -279,9 +282,12 @@ struct Model {
 
 
 
+
 	private:
 	std::string name;
 	static inline int maxIndex = 0;
 	int index;
+
+	bool dirty = true;
 
 };

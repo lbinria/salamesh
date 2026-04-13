@@ -108,8 +108,18 @@ void RenderSystem::render(Model &model, ISceneView &sceneView) {
 			sceneView.addMaterial(*renderer, renderer->getDefaultMaterial());
 		}
 
-		// auto &mat = sceneView.getMaterial(*renderer);
 		auto &mat = sceneView.getMaterial(*renderer);
+
+
+		// TODO refactor set index (beuuurk !!!)
+		auto styleParamsOpt = mat.getParams("style");
+		if (styleParamsOpt.has_value()) {
+			auto &styleParams = styleParamsOpt.value().get();
+			if (auto meshStyleParams = dynamic_cast<MeshStyleParams*>(&styleParams)) {
+				meshStyleParams->setIndex(model.getIndex());
+			}
+		}
+
 		render(*renderer, transform, mat);
 	}
 

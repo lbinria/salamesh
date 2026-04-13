@@ -27,7 +27,7 @@ struct RenderSystem {
 
 
 	private:
-	std::map<std::string, VertexBuffer> geometries;
+	std::map<std::string, VertexBuffer> geometries; // vao, vbo per renderer
 	unsigned int texColormaps[3];
 
 };
