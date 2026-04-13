@@ -336,8 +336,8 @@ struct HalfedgeParams : public ShaderParams {
 		return spacing;
 	}
 
-	void setSpacing(float spacing) {
-		spacing = spacing;
+	void setSpacing(float val) {
+		spacing = val;
 		dirty = true;
 	}
 
@@ -345,8 +345,8 @@ struct HalfedgeParams : public ShaderParams {
 		return padding;
 	}
 
-	void setPadding(float padding) {
-		padding = padding;
+	void setPadding(float val) {
+		padding = val;
 		dirty = true;
 	}
 
