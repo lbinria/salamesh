@@ -15,7 +15,7 @@ struct RenderSystem {
 
 	void render(IScene &scene);
 	void render(Model &model, ISceneView &sceneView);
-	void render(Renderer &renderer, glm::mat4 &transform, MaterialInstance &mat);
+	void render(Renderer &renderer, glm::mat4 &transform, int meshIndex, MaterialInstance &mat);
 
 	void clean() {
 

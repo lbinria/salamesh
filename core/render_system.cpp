@@ -111,21 +111,21 @@ void RenderSystem::render(Model &model, ISceneView &sceneView) {
 		auto &mat = sceneView.getMaterial(*renderer);
 
 
-		// TODO refactor set index (beuuurk !!!)
-		auto styleParamsOpt = mat.getParams("style");
-		if (styleParamsOpt.has_value()) {
-			auto &styleParams = styleParamsOpt.value().get();
-			if (auto meshStyleParams = dynamic_cast<MeshStyleParams*>(&styleParams)) {
-				meshStyleParams->setIndex(model.getIndex());
-			}
-		}
+		// // TODO refactor set index (beuuurk !!!)
+		// auto styleParamsOpt = mat.getParams("style");
+		// if (styleParamsOpt.has_value()) {
+		// 	auto &styleParams = styleParamsOpt.value().get();
+		// 	if (auto meshStyleParams = dynamic_cast<MeshStyleParams*>(&styleParams)) {
+		// 		meshStyleParams->setIndex(model.getIndex());
+		// 	}
+		// }
 
-		render(*renderer, transform, mat);
+		render(*renderer, transform, model.getIndex(), mat);
 	}
 
 }
 
-void RenderSystem::render(Renderer &renderer, glm::mat4 &transform, MaterialInstance &mat) {
+void RenderSystem::render(Renderer &renderer, glm::mat4 &transform, int meshIndex, MaterialInstance &mat) {
 	if (!mat.getVisible())
 		return;
 
@@ -138,6 +138,7 @@ void RenderSystem::render(Renderer &renderer, glm::mat4 &transform, MaterialInst
 	auto &shader = renderer.getShader();
 	shader.use();
 	shader.setMat4("model", transform);
+	shader.setInt("meshIndex", meshIndex);
 
 	// TODO maybe can move this top
 	for (int i = 0; i < 3; ++i) {

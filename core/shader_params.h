@@ -250,18 +250,6 @@ struct MeshStyleParams : public ShaderParams {
 		dirty = true;
 	}
 
-	int getIndex() const {
-		return index;
-	}
-
-	void setIndex(int val) {
-		if (val == index)
-			return;
-		
-		index = val;
-		dirty = true;
-	}
-
 	glm::vec3 getColor() const {
 		return color;
 	}
@@ -308,12 +296,10 @@ struct MeshStyleParams : public ShaderParams {
 		shader.setFloat("meshSize", size);
 		shader.setFloat("meshShrink", shrink);
 		shader.setInt("isCornerVisible", isCornerVisible);
-		shader.setInt("meshIndex", index);
 		shader.setFloat3("color", color);
 	}
 
 	private:
-	int index = -1;
 	float size = 0.f;
 	float shrink = 0.f;
 	bool isCornerVisible = false;
