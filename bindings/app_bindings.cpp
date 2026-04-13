@@ -180,6 +180,7 @@ namespace bindings {
 			"set", &MaterialInstanceCollection::set,
 			"all", &MaterialInstanceCollection::all,
 			"any", &MaterialInstanceCollection::any,
+			"first", &MaterialInstanceCollection::first,
 			sol::meta_function::index, &MaterialInstanceCollection::getMaterial
 		);
 

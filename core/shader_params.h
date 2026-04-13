@@ -588,11 +588,6 @@ struct ShaderBuffers {
 struct LayerBufferGroup : public ShaderBuffers {
 
 	LayerBufferGroup() {
-		// buf.emplace("highlightBuf", ShaderBuffer("highlight"));
-		// buf.emplace("filterBuf", ShaderBuffer("filter"));
-		// buf.emplace("colormap0Buf", ShaderBuffer("colormap_0"));
-		// buf.emplace("colormap1Buf", ShaderBuffer("colormap_1"));
-		// buf.emplace("colormap2Buf", ShaderBuffer("colormap_2"));
 		buf.emplace("highlight", ShaderBuffer("highlightBuf"));
 		buf.emplace("filter", ShaderBuffer("filterBuf"));
 		buf.emplace("colormap_0", ShaderBuffer("colormap0Buf"));

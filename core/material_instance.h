@@ -124,6 +124,16 @@ struct MaterialInstanceCollection {
 		}
 	}
 
+	ShaderParams::ParamValue first(const std::string paramsName, const std::string paramName) {
+		for (auto &[rn, rid] : rendererInfos) {
+			auto paramsRef = materials[rid].getParams(paramsName);
+			if (paramsRef.has_value()) {
+				return paramsRef.value().get().get(paramName);
+			}
+		}
+		return 0.f;
+	}
+
 	// Check whether all param of name paramName in params group paramsName are true
 	// If any value is not bool, return false
 	bool all(const std::string paramsName, const std::string paramName) {
