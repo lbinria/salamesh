@@ -17,6 +17,11 @@ struct RenderSystem {
 	void render(Model &model, ISceneView &sceneView);
 	void render(Renderer &renderer, glm::mat4 &transform, int meshIndex, MaterialInstance &mat);
 
+	void createMaterial(ISceneView &sceneView, Renderer &renderer);
+	void pushVBO(Renderer &renderer);
+
+	void processRequests(ISceneView &sceneView, Model &model);
+
 	void clean() {
 
 	}

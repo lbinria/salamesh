@@ -62,6 +62,11 @@ uniform int colormapElement[3] = {-1, -1, -1};
 uniform int highlightElement;
 uniform int filterElement;
 
+const int N_LAYERS = 5;
+const int N_KINDS = 7;
+
+uniform bool activatedLayers[N_LAYERS][N_KINDS];
+
 uniform samplerBuffer nvertsPerFacetBuf;
 
 vec3 encode_id(int id) {
@@ -243,17 +248,15 @@ vec4 showCornerAttributes(int layer) {
 }
 
 vec4 showColormap(int layer) {
-    int kind = colormapElement[layer];
     
-    if (kind == 8 /* facets */) {
+    
+    if (activatedLayers[layer][3 /* facets */]) {
         return getLayerColor(fragFacetIndex, layer);
     }
-
-    if (kind == 2 /* corners */) {
+    else if (activatedLayers[layer][1 /* corners */]) {
         return showCornerAttributes(layer);
     }
-    
-    if (kind == -1 /* Layer deactivated */) {
+    else {
         return vec4(0., 0., 0., -1.);
     }
 
@@ -261,7 +264,7 @@ vec4 showColormap(int layer) {
 }
 
 void _filter(inout vec3 col) {
-    if (filterElement == -1)
+    if (!activatedLayers[4 /* filter */][3 /* facets */])
         return;
         
     bool filtered = texelFetch(filterBuf, fragFacetIndex).x >= .5;
@@ -294,7 +297,7 @@ void clip(inout vec3 col) {
 
 void highlight(inout vec3 col) {
     // Only highlight facets
-    if (highlightElement != 8)
+    if (!activatedLayers[3 /* highlight */][3 /* facets */])
         return;
 
     // Highlight

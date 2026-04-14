@@ -273,6 +273,12 @@ function draw_model_properties(model, k, view)
 				end
 			end
 
+			if imgui.Button("ok") then 
+				local model_state = view:get_state(model) 
+				model_state:set_selected_attr(0, ColormapLayer.COLORMAP_LAYER_0)
+				model_state:set_selected_attr(1, ColormapLayer.COLORMAP_LAYER_1)
+			end
+
 		end
 
 		if (imgui.CollapsingHeader("Attributes##" .. k .. "_properties_attributes")) then 

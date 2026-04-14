@@ -2,6 +2,8 @@
 #include "core/scene_view_interface.h"
 #include "core/material_instance.h"
 
+
+
 struct SceneView : public ISceneView {
 
 	SceneView(std::string name, int width, int height) : name(name), renderSurface(width, height) {}
@@ -62,6 +64,13 @@ struct SceneView : public ISceneView {
 		return materials.erase(renderer.getId());
 	}
 
+	ModelState& getState(Model &model) {
+		if (!modelStates.contains(model.getName()))
+			modelStates.emplace(model.getName(), ModelState());
+
+		return modelStates.at(model.getName());
+	}
+
 
 
 	private:
@@ -69,7 +78,7 @@ struct SceneView : public ISceneView {
 	glm::vec3 backgroundColor{0.05, 0.1, 0.15};
 	RenderSurface renderSurface;
 
-	std::map<std::string, MaterialInstance> materials;
-
+	std::map<std::string, MaterialInstance> materials; // material by renderer
+	std::map<std::string, ModelState> modelStates; // model state by model
 
 };

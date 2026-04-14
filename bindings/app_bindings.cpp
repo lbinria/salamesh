@@ -163,7 +163,13 @@ namespace bindings {
 			"ISceneView",
 			"name", sol::readonly_property(&ISceneView::getName),
 			"get_material", &ISceneView::getMaterial,
-			"get_materials", &ISceneView::getMaterials
+			"get_materials", &ISceneView::getMaterials,
+			"get_state", &ISceneView::getState
+		);
+
+		auto modelState_t = lua.new_usertype<ModelState>(
+			"ModelState",
+			"set_selected_attr", &ModelState::setSelectedAttr
 		);
 
 		auto materialInstance_t = lua.new_usertype<MaterialInstance>(

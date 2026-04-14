@@ -534,25 +534,45 @@ struct LayersParams : public ShaderParams {
 		dirty = true;
 	}
 
+	void setLayerActivation(Layer layer, ElementKind kind, bool val) {
+		activatedLayers[static_cast<int>(layer)][static_cast<int>(kind)] = val;
+		dirty = true;
+	}
+
+	void setLayerActivation(Layer layer, bool val) {
+		for (int k = 0; k < 7; ++k)
+			activatedLayers[static_cast<int>(layer)][k] = val;
+
+		dirty = true;
+	}
+
 	void doApply(Shader &shader) const override {
 		shader.setInt("colormap0", 0);
 		shader.setInt("colormap1", 1);
 		shader.setInt("colormap2", 2);
 
 		for (int l = 0; l < 3; ++l) {
-			shader.setInt("colormapElement[" + std::to_string(int(l)) + "]", colormapElements[l]);
+			// shader.setInt("colormapElement[" + std::to_string(int(l)) + "]", colormapElements[l]);
 			shader.setInt("attrNDims[" + std::to_string(int(l)) + "]", attrNDims[l]);
 			shader.setFloat2("attrRange[" + std::to_string(int(l)) + "]", attrRange[l]);
 		}
 
-		shader.setInt("highlightElement", highlightElement);
-		shader.setInt("filterElement", filterElement);
+		for (int l = 0; l < 5; ++l) {
+			for (int k = 0; k < 7; ++k) {
+				shader.setBool("activatedLayers[" + std::to_string(int(l)) + "][" + std::to_string(int(k)) + "]", activatedLayers[l][k]);
+			}
+		}
+
+
+		// shader.setInt("highlightElement", highlightElement);
+		// shader.setInt("filterElement", filterElement);
 	}
 
 	private:
 	int colormapTexs[3] = {-1, -1, -1};
 
 	int colormapElements[3] = {-1,-1,-1};
+	bool activatedLayers[5][7] = {};
 	int highlightElement = -1;
 	int filterElement = -1;
 	int attrNDims[3] = {1, 1, 1};
@@ -610,22 +630,10 @@ struct ShaderBuffers {
 struct LayerBufferGroup : public ShaderBuffers {
 
 	LayerBufferGroup() {
-		buf.emplace("highlight", ShaderBuffer("highlightBuf"));
-		buf.emplace("filter", ShaderBuffer("filterBuf"));
-		buf.emplace("colormap_0", ShaderBuffer("colormap0Buf"));
-		buf.emplace("colormap_1", ShaderBuffer("colormap1Buf"));
-		buf.emplace("colormap_2", ShaderBuffer("colormap2Buf"));
+		buf.emplace(layerToString(Layer::COLORMAP_0), ShaderBuffer("colormap0Buf"));
+		buf.emplace(layerToString(Layer::COLORMAP_1), ShaderBuffer("colormap1Buf"));
+		buf.emplace(layerToString(Layer::COLORMAP_2), ShaderBuffer("colormap2Buf"));
+		buf.emplace(layerToString(Layer::HIGHLIGHT), ShaderBuffer("highlightBuf"));
+		buf.emplace(layerToString(Layer::FILTER), ShaderBuffer("filterBuf"));
 	}
-
-
-	private:
-
-	// // Binding between enum Layer to buffer's name
-	// std::map<Layer, std::string> binding{
-	// 	{ Layer::COLORMAP_0, "colormap0Buf"},
-	// 	{ Layer::COLORMAP_1, "colormap1Buf"},
-	// 	{ Layer::COLORMAP_2, "colormap2Buf"},
-	// 	{ Layer::HIGHLIGHT, "highlightBuf"},
-	// 	{ Layer::FILTER, "filterBuf"},
-	// };
 };

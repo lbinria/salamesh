@@ -16,13 +16,13 @@ enum ModelType {
 };
 
 enum ElementKind {
-	POINTS_ELT = 1,
-	CORNERS_ELT = 2,
-	EDGES_ELT = 4,
-	FACETS_ELT = 8,
-	CELLS_ELT = 16,
-	CELL_FACETS_ELT = 32,
-	CELL_CORNERS_ELT = 64
+	POINTS_ELT,
+	CORNERS_ELT,
+	EDGES_ELT,
+	FACETS_ELT,
+	CELLS_ELT,
+	CELL_FACETS_ELT,
+	CELL_CORNERS_ELT
 };
 
 enum ElementType {
