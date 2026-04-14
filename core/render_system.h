@@ -15,12 +15,14 @@ struct RenderSystem {
 
 	void render(IScene &scene);
 	void render(Model &model, ISceneView &sceneView);
-	void render(Renderer &renderer, glm::mat4 &transform, int meshIndex, MaterialInstance &mat);
+	void render(Renderer &renderer, ModelState &modelState, glm::mat4 &transform, int meshIndex, MaterialInstance &mat);
 
 	void createMaterial(ISceneView &sceneView, Renderer &renderer);
-	void pushVBO(Renderer &renderer);
+	void updateGeometry(Renderer &renderer);
 
-	void processRequests(ISceneView &sceneView, Model &model);
+	void updateAttr(Model &model, ModelState &modelState, MaterialInstance &mat);
+	void updateLayer(Model &model, ModelState &modelState, MaterialInstance &mat);
+
 
 	void clean() {
 

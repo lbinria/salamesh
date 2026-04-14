@@ -29,52 +29,53 @@ struct ModelState {
 		updateAttrRequests.insert(layer);
 	}
 
-	void setLayer(ElementKind kind, Layer layer, bool update) {
+	void setLayer(Layer layer, ElementKind kind, bool update) {
 		if (activatedLayers[{layer, kind}] && !update)
 			return;
 
 		activatedLayers[{layer, kind}] = true;
-		updateLayerRequest = {layer, kind};
+		updateLayerRequests.insert({layer, kind});
 	}
 
-	void unsetLayer(ElementKind kind, Layer layer, bool reset) {
+	void unsetLayer(Layer layer, ElementKind kind, bool reset) {
 		// Little optimisation, doesn't update data
 		// if layer isn't activated, no need to unset
 		if (!activatedLayers[{layer, kind}])
 			return;
 		
-
-		// for (auto const &[k ,r] : rendererViews) {
-		// 	if (r->isRenderElement(kind)) {
-		// 		r->setLayerElement(-1, layer); // element -1 means => deactivate layer
-		// 	}
-		// }
-
 		activatedLayers[{layer, kind}] = false;
-		updateLayerRequest = {layer, kind};
+		updateLayerRequests.insert({layer, kind});
 	}
 
-	// std::optional<ColormapLayer> getUpdateAttrRequest() { return updateAttrRequest; }
-	std::optional<std::pair<Layer, ElementKind>> getUpdateLayerRequest() { return updateLayerRequest; }
+	void setSelectedColormap(int idx, ColormapLayer layer) {
+		selectedColormap[static_cast<int>(layer)] = idx;
+	}
 
-	// void updateAttrRequestDone() {
-	// 	updateAttrRequest = std::nullopt;
-	// }
+	int getSelectedColormap(ColormapLayer layer) const {
+		return selectedColormap[static_cast<int>(layer)];
+	}
 
-	std::optional<ColormapLayer> popUpdateAttrRequest() {
-		if (updateAttrRequests.size() <= 0)
-			return std::nullopt;
-		
-		auto l = *updateAttrRequests.begin();
-		updateAttrRequests.erase(l);
-		return l;
+
+	std::set<ColormapLayer> getUpdateAttrRequest() {
+		return updateAttrRequests;
+	}
+
+	std::set<std::pair<Layer, ElementKind>> getUpdateLayerRequests() {
+		return updateLayerRequests;
+	}
+
+	void cleanUpdateAttrRequests() {
+		updateAttrRequests.clear();
+	}
+
+	void cleanUpdateLayerRequests() {
+		updateLayerRequests.clear();
 	}
 
 	private:
 
 	std::set<ColormapLayer> updateAttrRequests;
-
-	std::optional<std::pair<Layer, ElementKind>> updateLayerRequest = std::nullopt;
+	std::set<std::pair<Layer, ElementKind>> updateLayerRequests;
 
 	int selectedAttr[3] = {-1, -1, -1};
 	int selectedColormap[3] = {0, 0, 0};

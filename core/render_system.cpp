@@ -70,86 +70,160 @@ void RenderSystem::render(IScene &scene) {
 
 }
 
-void RenderSystem::processRequests(ISceneView &sceneView, Model &model) {
-	auto &modelState = sceneView.getState(model);
+// void RenderSystem::processRequests(ISceneView &sceneView, Model &model) {
+// 	auto &modelState = sceneView.getState(model);
 
-	// auto updateAttrRequestOpt = modelState.getUpdateAttrRequest();
-	// auto updateLayerRequestOpt = modelState.getUpdateLayerRequest();
+// 	// auto updateAttrRequestOpt = modelState.getUpdateAttrRequest();
+// 	// auto updateLayerRequestOpt = modelState.getUpdateLayerRequest();
 
-	// if (updateAttrRequestOpt.has_value()) {
-	while (auto layerOpt = modelState.popUpdateAttrRequest()) {
-		auto layer = layerOpt.value();
-		auto selectedAttrIdx = modelState.getSelectedAttr(layer);
+// 	// if (updateAttrRequestOpt.has_value()) {
+// 	while (auto layerOpt = modelState.fetchUpdateAttrRequest()) {
+// 		auto layer = layerOpt.value();
+// 		auto selectedAttrIdx = modelState.getSelectedAttr(layer);
 
-		// TODO Unset before check below
+// 		// TODO Unset before check below
 
-		if (selectedAttrIdx < 0) {
-			continue;
-		}
+// 		if (selectedAttrIdx < 0) {
+// 			continue;
+// 		}
 
-		for (auto &[rendererName, renderer] : model.getRenderers()) {
+// 		for (auto &[rendererName, renderer] : model.getRenderers()) {
 
-			// For test just render pointset
-			auto psr = std::dynamic_pointer_cast<PointSetRenderer>(renderer);
-			auto msr = std::dynamic_pointer_cast<MeshRenderer>(renderer);
-			auto hsr = std::dynamic_pointer_cast<HalfedgeRenderer>(renderer);
-			auto bbr = std::dynamic_pointer_cast<BBoxRenderer>(renderer);
-			if (!psr && !msr)
-			// if (!psr && !msr && !hsr && !bbr)
-				continue;
+// 			// For test just render pointset
+// 			auto psr = std::dynamic_pointer_cast<PointSetRenderer>(renderer);
+// 			auto msr = std::dynamic_pointer_cast<MeshRenderer>(renderer);
+// 			auto hsr = std::dynamic_pointer_cast<HalfedgeRenderer>(renderer);
+// 			auto bbr = std::dynamic_pointer_cast<BBoxRenderer>(renderer);
+// 			if (!psr && !msr)
+// 			// if (!psr && !msr && !hsr && !bbr)
+// 				continue;
 
-			auto &mat = sceneView.getMaterial(*renderer);
+// 			auto &mat = sceneView.getMaterial(*renderer);
 
 			
-			auto paramsOpt = mat.getParams("layers");
-			if (paramsOpt.has_value()) {
-				auto attr = model.getAttr(modelState.getSelectedAttr(layer));
+// 			auto paramsOpt = mat.getParams("layers");
+// 			if (paramsOpt.has_value()) {
+// 				auto attr = model.getAttr(modelState.getSelectedAttr(layer));
 
-				// Deactivate layer for all primitives
-				auto &p = paramsOpt.value().get();
-				auto &lp = static_cast<LayersParams&>(p);
-				// lp.setLayerActivation(static_cast<Layer>(layer), attr.kind, false);
+// 				// Deactivate layer for all primitives
+// 				auto &p = paramsOpt.value().get();
+// 				auto &lp = static_cast<LayersParams&>(p);
+// 				// lp.setLayerActivation(static_cast<Layer>(layer), attr.kind, false);
 
-				// Set layer buffers
-				auto layerBuffers = mat.getBuffers("layers");
-				if (layerBuffers.has_value()) {
-					auto &lb = layerBuffers.value().get();
+// 				// Set layer buffers
+// 				auto layerBuffers = mat.getBuffers("layers");
+// 				if (layerBuffers.has_value()) {
+// 					auto &lb = layerBuffers.value().get();
 
-					auto attr = model.getAttr(modelState.getSelectedAttr(layer));
-					int nDims = model.getAttributeNDims(attr.name, attr.kind);
+// 					auto attr = model.getAttr(modelState.getSelectedAttr(layer));
+// 					int nDims = model.getAttributeNDims(attr.name, attr.kind);
 
-					// Attach attribute name to layer
-					modelState.setLayerAttrName(attr.name, static_cast<Layer>(layer), attr.kind);
+// 					// Attach attribute name to layer
+// 					modelState.setLayerAttrName(attr.name, static_cast<Layer>(layer), attr.kind);
 
-					// Extract selectedDim from string
-					int selectedDim = -1;
-					auto lbrPos = attr.name.find('[');
-					auto rbrPos = attr.name.find(']');
-					// if "attr[0]" requested for example, we would like to see selectedDim=0, so nDims of attribute = 1
-					if (lbrPos != std::string::npos && rbrPos != std::string::npos) {
-						selectedDim = std::stoi(attr.name.substr(lbrPos + 1, rbrPos - lbrPos));
-						attr.name = attr.name.substr(0, lbrPos);
-						nDims = 1;
-					}
+// 					// Extract selectedDim from string
+// 					int selectedDim = -1;
+// 					auto lbrPos = attr.name.find('[');
+// 					auto rbrPos = attr.name.find(']');
+// 					// if "attr[0]" requested for example, we would like to see selectedDim=0, so nDims of attribute = 1
+// 					if (lbrPos != std::string::npos && rbrPos != std::string::npos) {
+// 						selectedDim = std::stoi(attr.name.substr(lbrPos + 1, rbrPos - lbrPos));
+// 						attr.name = attr.name.substr(0, lbrPos);
+// 						nDims = 1;
+// 					}
 
-					auto dataOpt = model.getAttrData(attr.name, attr.kind, selectedDim);
+// 					auto dataOpt = model.getAttrData(attr.name, attr.kind, selectedDim);
 
-					// Silent when no data ?
-					// If no data => it means that attr name wasn't found
-					if (!dataOpt.has_value())
-						continue;
+// 					// Silent when no data ?
+// 					// If no data => it means that attr name wasn't found
+// 					if (!dataOpt.has_value())
+// 						continue;
 
-					auto data = dataOpt.value();
-					auto [min, max] = sl::getRange(data);
+// 					auto data = dataOpt.value();
+// 					auto [min, max] = sl::getRange(data);
 
-					lp.setLayerRange(static_cast<Layer>(layer), min, max);
-					lp.setLayerNDims(static_cast<Layer>(layer), nDims);
-					lp.setLayerActivation(static_cast<Layer>(layer), attr.kind, true);
-					lb.set(layerToString(static_cast<Layer>(layer)), data);
-				}
+// 					lp.setLayerRange(static_cast<Layer>(layer), min, max);
+// 					lp.setLayerNDims(static_cast<Layer>(layer), nDims);
+// 					lp.setLayerActivation(static_cast<Layer>(layer), attr.kind, true);
+// 					lb.set(layerToString(static_cast<Layer>(layer)), data);
+// 				}
 				
-			}
+// 			}
+// 		}
+// 	}
+// }
+
+void RenderSystem::updateAttr(Model &model, ModelState &modelState, MaterialInstance &mat) {
+
+	for (auto layer : modelState.getUpdateAttrRequest()) {
+		auto selectedAttrIdx = modelState.getSelectedAttr(layer);
+		auto attr = model.getAttr(selectedAttrIdx);
+
+		auto layerParams = mat.getParams("layers");
+
+		if (layerParams.has_value()) {
+			// Deactivate last layer
+			auto &p = layerParams.value().get();
+			auto &lp = static_cast<LayersParams&>(p);
+			// TODO MUST DEACTIVE LAST !!!
+			lp.setLayerActivation(static_cast<Layer>(layer), attr.kind, false);
 		}
+
+		if (selectedAttrIdx < 0)
+			continue;
+
+		// Bind attribute name to layer / primitive
+		modelState.setLayerAttrName(attr.name, static_cast<Layer>(layer), attr.kind);
+		// Request set layer
+		modelState.setLayer(static_cast<Layer>(layer), attr.kind, true);
+	}
+}
+
+void RenderSystem::updateLayer(Model &model, ModelState &modelState, MaterialInstance &mat) {
+
+	for (auto request : modelState.getUpdateLayerRequests()) {
+		auto [layer, kind] = request;
+
+		// TODO maybe check mat visibility ? but if i do that i should postpone update
+
+		auto layerParams = mat.getParams("layers");
+		auto layerBuffers = mat.getBuffers("layers");
+
+		if (!layerParams.has_value() || !layerBuffers.has_value())
+			return;
+		
+		auto attrName = modelState.getLayerAttrName(layer, kind);
+		int nDims = model.getAttributeNDims(attrName, kind);
+
+		// Extract selectedDim from string
+		int selectedDim = -1;
+		auto lbrPos = attrName.find('[');
+		auto rbrPos = attrName.find(']');
+		// if "attr[0]" requested for example, we would like to see selectedDim=0, so nDims of attribute = 1
+		if (lbrPos != std::string::npos && rbrPos != std::string::npos) {
+			selectedDim = std::stoi(attrName.substr(lbrPos + 1, rbrPos - lbrPos));
+			attrName = attrName.substr(0, lbrPos);
+			nDims = 1;
+		}
+
+		auto dataOpt = model.getAttrData(attrName, kind, selectedDim);
+
+		// Silent when no data ?
+		// If no data => it means that attr name wasn't found
+		if (!dataOpt.has_value())
+			continue;
+
+		auto data = dataOpt.value();
+		auto [min, max] = sl::getRange(data);
+
+		auto &lb = layerBuffers.value().get();
+		auto &lp = static_cast<LayersParams&>(layerParams.value().get());
+
+		lp.setLayerRange(layer, min, max);
+		lp.setLayerNDims(layer, nDims);
+		lp.setLayerActivation(layer, kind, true);
+		lb.set(layerToString(layer), data);
+		
 	}
 }
 
@@ -158,7 +232,7 @@ void RenderSystem::createMaterial(ISceneView &sceneView, Renderer &renderer) {
 		sceneView.addMaterial(renderer, renderer.getDefaultMaterial());
 }
 
-void RenderSystem::pushVBO(Renderer &renderer) {
+void RenderSystem::updateGeometry(Renderer &renderer) {
 	if (!renderer.isDirty())
 		return;
 
@@ -173,15 +247,14 @@ void RenderSystem::pushVBO(Renderer &renderer) {
 	renderer.setDirty(false);
 }
 
-void RenderSystem::render(Model &model, ISceneView &sceneView) {
+void RenderSystem::render(Model &model, ISceneView &view) {
+
+	auto &modelState = view.getState(model);
 
 	glm::mat4 transform = glm::mat4(1.0f);
 	transform = glm::translate(transform, model.getPosition());
 
 	// Update model data, if request made
-	processRequests(sceneView, model);
-
-
 	for (auto &[rendererName, renderer] : model.getRenderers()) {
 
 		// For test just render pointset
@@ -195,21 +268,27 @@ void RenderSystem::render(Model &model, ISceneView &sceneView) {
 			continue;
 
 		// Create default material for renderer if not found
-		createMaterial(sceneView, *renderer);
-		// If data changed, push !
-		pushVBO(*renderer);
+		if (!view.hasMaterial(*renderer))
+			view.addMaterial(*renderer, renderer->getDefaultMaterial());
 
-		auto &mat = sceneView.getMaterial(*renderer);
-		render(*renderer, transform, model.getIndex(), mat);
+		auto &mat = view.getMaterial(*renderer);
+
+		updateGeometry(*renderer);
+
+		updateAttr(model, modelState, mat);
+		updateLayer(model, modelState, mat);
+
+
+		render(*renderer, modelState, transform, model.getIndex(), mat);
 	}
 
+	modelState.cleanUpdateAttrRequests();
+	modelState.cleanUpdateLayerRequests();
 }
 
-void RenderSystem::render(Renderer &renderer, glm::mat4 &transform, int meshIndex, MaterialInstance &mat) {
+void RenderSystem::render(Renderer &renderer, ModelState &modelState, glm::mat4 &transform, int meshIndex, MaterialInstance &mat) {
 	if (!mat.getVisible())
 		return;
-
-
 
 	RenderSystem::VertexBuffer &vbuf = getVertexBuffer(renderer);
 
@@ -218,28 +297,17 @@ void RenderSystem::render(Renderer &renderer, glm::mat4 &transform, int meshInde
 	auto &shader = renderer.getShader();
 	shader.use();
 	shader.setMat4("model", transform);
-	shader.setInt("meshIndex", meshIndex);
+	shader.setInt("meshIndex", meshIndex); // TODO not doing this everytime as meshIndex doesnt change
 
 	// TODO maybe can move this top
-	for (int i = 0; i < 3; ++i) {
-		shader.setInt("colormap" + std::to_string(i), i);
-		glActiveTexture(GL_TEXTURE0 + i);
+	for (int l = 0; l < 3; ++l) {
+		shader.setInt("colormap" + std::to_string(l), l);
+		glActiveTexture(GL_TEXTURE0 + l);
+		int i = modelState.getSelectedColormap(static_cast<ColormapLayer>(l));
 		glBindTexture(GL_TEXTURE_2D, texColormaps[i]);
 	}
 
 	mat.apply(shader);
-
-	// // TODO beurrk ! replace by UBO
-	// if (mat.hasParam("layers")) {
-	// 	// auto layersParams = mat.getParams<LayersParams>("layers");
-	// 	auto params = mat.getParams("layers");
-	// 	if (params) {
-	// 		for (int l = 0; l < 3; ++l) {
-	// 			auto &layersParams = static_cast<LayersParams&>(params.value().get());
-	// 			layersParams.setColormapTex(l, texColormaps[l]);
-	// 		}
-	// 	}
-	// }
 
 	auto rp = renderer.getRenderPrimitive();
 	glDrawArrays(getGLPrimFromRenderPrimitive(rp), 0, renderer.getElementsCount());
