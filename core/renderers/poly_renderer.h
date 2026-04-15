@@ -38,6 +38,8 @@ struct PolyRenderer : public MeshRenderer {
 		{}
 
 
+	std::vector<RendererElementField> getElementFields() override;
+	std::vector<std::string> getBuffers() override;
 	Renderer::GeometricData getData() override;
 	void clear() override;
 

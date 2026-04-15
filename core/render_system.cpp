@@ -16,17 +16,17 @@ int getGLPrimFromRenderPrimitive(Renderer::RenderPrimitive primitive) {
 	}
 }
 
-RenderSystem::VertexBuffer& RenderSystem::getVertexBuffer(Renderer &renderer) {
+RenderSystem::GeometricBuffers& RenderSystem::getGeometricBuffers(Renderer &renderer) {
 	if (geometries.count(renderer.getName()) == 0) {
-		RenderSystem::VertexBuffer gbuf;
+		RenderSystem::VertexBuffer vb;
 
-		glGenVertexArrays(1, &gbuf.vao);
-		glGenBuffers(1, &gbuf.vbo);
+		// Create VAO / VBO
+		glGenVertexArrays(1, &vb.vao);
+		glGenBuffers(1, &vb.vbo);
 
-		glBindVertexArray(gbuf.vao);
-		glBindBuffer(GL_ARRAY_BUFFER, gbuf.vbo);
+		glBindVertexArray(vb.vao);
+		glBindBuffer(GL_ARRAY_BUFFER, vb.vbo);
 		
-		geometries[renderer.getName()] = std::move(gbuf);
 
 		// Setup VBO
 		for (auto &f : renderer.getElementFields()) {
@@ -50,6 +50,17 @@ RenderSystem::VertexBuffer& RenderSystem::getVertexBuffer(Renderer &renderer) {
 				}
 			}
 		}
+
+		// Create TBOs
+		std::map<std::string, TextureBuffer> texBuffers;
+		for (auto name : renderer.getBuffers()) {
+			unsigned int tbo, buf;
+			sl::createTBO(buf, tbo);
+			texBuffers[name] = { .tbo = tbo, .buf = buf };
+		}
+
+		GeometricBuffers gb{ .vertexBuffer = std::move(vb), .texBuffers = std::move(texBuffers) };
+		geometries[renderer.getName()] = std::move(gb);
 	}
 
 	return geometries.at(renderer.getName());
@@ -159,9 +170,9 @@ void RenderSystem::updateGeometry(Renderer &renderer) {
 	Renderer::GeometricData data = renderer.getData();
 	// auto usage = renderer->isDrawDynamic() ? GL_DYNAMIC_DRAW : GL_STATIC_DRAW;
 
-	auto &vbuf = getVertexBuffer(renderer);
-	glBindVertexArray(vbuf.vao);
-	glBindBuffer(GL_ARRAY_BUFFER, vbuf.vbo);
+	auto &gb = getGeometricBuffers(renderer);
+	glBindVertexArray(gb.vertexBuffer.vao);
+	glBindBuffer(GL_ARRAY_BUFFER, gb.vertexBuffer.vbo);
 	glBufferData(GL_ARRAY_BUFFER, renderer.getElementsCount() * size, data.vboBuffer, GL_STATIC_DRAW);
 	renderer.setDirty(false);
 }
@@ -209,9 +220,9 @@ void RenderSystem::render(Renderer &renderer, ModelState &modelState, glm::mat4 
 	if (!mat.getVisible())
 		return;
 
-	RenderSystem::VertexBuffer &vbuf = getVertexBuffer(renderer);
+	auto &gb = getGeometricBuffers(renderer);
 
-	glBindVertexArray(vbuf.vao);
+	glBindVertexArray(gb.vertexBuffer.vao);
 
 	auto &shader = renderer.getShader();
 	shader.use();

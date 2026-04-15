@@ -11,7 +11,17 @@ struct RenderSystem {
 		unsigned int vbo;
 	};
 
-	VertexBuffer& getVertexBuffer(Renderer &renderer);
+	struct TextureBuffer {
+		unsigned int tbo;
+		unsigned int buf;
+	};
+
+	struct GeometricBuffers {
+		VertexBuffer vertexBuffer;
+		std::map<std::string, TextureBuffer> texBuffers;
+	};
+
+	RenderSystem::GeometricBuffers& getGeometricBuffers(Renderer &renderer);
 
 	void render(IScene &scene);
 	void render(Model &model, ISceneView &sceneView);
@@ -33,7 +43,7 @@ struct RenderSystem {
 
 
 	private:
-	std::map<std::string, VertexBuffer> geometries; // vao, vbo per renderer
+	std::map<std::string, GeometricBuffers> geometries; // vao, vbo per renderer
 	unsigned int texColormaps[3];
 
 };

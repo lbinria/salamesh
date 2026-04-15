@@ -79,7 +79,9 @@ struct Renderer {
 	virtual size_t getElementSize() { return 0; };
 	virtual std::vector<RendererElementField> getElementFields() {
 		return {};
-	};
+	}
+
+	virtual std::vector<std::string> getBuffers() { return {}; }
 	
 	virtual MaterialInstance getDefaultMaterial() {
 		return MaterialInstance();
