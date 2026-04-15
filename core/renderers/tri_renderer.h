@@ -19,7 +19,7 @@ using namespace UM;
 struct TriRenderer : public SurfaceRenderer {
 
 	using SurfaceRenderer::SurfaceRenderer;
-	const void * getData() override;
+	Renderer::GeometricData getData() override;
 
 	private:
 	std::vector<Vertex> vertices;

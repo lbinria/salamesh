@@ -69,7 +69,7 @@ struct SurfaceHalfedgeRenderer : public HalfedgeRenderer {
 		HalfedgeRenderer(name, Shader(sl::shadersPath("edge.vert"), sl::shadersPath("edge.frag"))),
 		_m(m) {}
 
-	const void * getData() override;
+	Renderer::GeometricData getData() override;
 
 	Surface &_m;
 
@@ -83,7 +83,7 @@ struct VolumeHalfedgeRenderer : public HalfedgeRenderer {
 		HalfedgeRenderer(name, Shader(sl::shadersPath("edge.vert"), sl::shadersPath("edge.frag"))),
 		_m(m) {}
 
-	const void * getData() override;
+	Renderer::GeometricData getData() override;
 
 	Volume &_m;
 };
@@ -94,7 +94,7 @@ struct PolylineRenderer : public HalfedgeRenderer {
 		HalfedgeRenderer(name, Shader(sl::shadersPath("edge.vert"), sl::shadersPath("edge.frag"))),
 		_m(m) {}
 
-	const void * getData() override;
+	Renderer::GeometricData getData() override;
 
 	PolyLine &_m;
 };

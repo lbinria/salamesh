@@ -38,6 +38,7 @@ struct PolyRenderer : public MeshRenderer {
 		{}
 
 
+	Renderer::GeometricData getData() override;
 	void clear() override;
 
 

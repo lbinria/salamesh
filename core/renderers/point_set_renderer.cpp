@@ -1,7 +1,7 @@
 #include "point_set_renderer.h"
 #include "../../core/graphic_api.h"
 
-const void * PointSetRenderer::getData() {
+Renderer::GeometricData PointSetRenderer::getData() {
 	vertices.clear();
 	vertices.resize(ps.size());
 	for (int i = 0; i < ps.size(); ++i) {
@@ -15,7 +15,7 @@ const void * PointSetRenderer::getData() {
 	}
 
 	nelements = vertices.size();
-	return vertices.data();
+	return Renderer::GeometricData{ .vboBuffer = vertices.data(), .tboBuffers = {} };
 }
 
 MaterialInstance PointSetRenderer::getDefaultMaterial() {

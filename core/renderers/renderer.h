@@ -19,7 +19,7 @@ struct Renderer {
 
 	struct GeometricData {
 		const void * vboBuffer;
-		std::vector<const void *> buffers;
+		std::map<std::string, const void *> tboBuffers;
 	};
 
 	enum RendererElementType {
@@ -75,7 +75,7 @@ struct Renderer {
 	}
 
 	int getElementsCount() const { return nelements; }
-	virtual const void * getData() {};
+	virtual GeometricData getData() {};
 	virtual size_t getElementSize() { return 0; };
 	virtual std::vector<RendererElementField> getElementFields() {
 		return {};

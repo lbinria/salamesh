@@ -354,20 +354,20 @@ function draw_model_properties(model, k, view)
 					-- print("second attr:" .. attr_element)
 					
 					local selName = "None" 
-					local selected_attr_0 = model_state:get_selected_attr(l)
-					if selected_attr_0 > 0 then 
-						selName = model.attrs[selected_attr_0].name
+					local selected_attr_idx = model_state:get_selected_attr(l)
+					if selected_attr_idx > 0 then 
+						selName = model.attrs[selected_attr_idx].name
 					end
 
 					if (imgui.BeginCombo("##combo_attribute" .. tostring(l) .. "_selection", selName)) then
 
-						local is_selected = selected_attr_0 == 0
+						local is_selected = selected_attr_idx == 0
 						if (imgui.Selectable("None", is_selected)) then
 							model_state:set_selected_attr(0, l)
 						end
 
 						for n = 1, #model.attrs do
-							local is_selected = n == selected_attr_0
+							local is_selected = n == selected_attr_idx
 							local label = model.attrs[n].name 
 							.. " (" .. element_kind_to_string(model.attrs[n].kind) .. ")" 
 							.. " (" .. element_type_to_string(model.attrs[n].type) .. ")"

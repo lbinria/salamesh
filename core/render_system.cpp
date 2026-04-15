@@ -156,13 +156,13 @@ void RenderSystem::updateGeometry(Renderer &renderer) {
 		return;
 
 	size_t size = renderer.getElementSize();
-	const void *data = renderer.getData();
+	Renderer::GeometricData data = renderer.getData();
 	// auto usage = renderer->isDrawDynamic() ? GL_DYNAMIC_DRAW : GL_STATIC_DRAW;
 
 	auto &vbuf = getVertexBuffer(renderer);
 	glBindVertexArray(vbuf.vao);
 	glBindBuffer(GL_ARRAY_BUFFER, vbuf.vbo);
-	glBufferData(GL_ARRAY_BUFFER, renderer.getElementsCount() * size, data, GL_STATIC_DRAW);
+	glBufferData(GL_ARRAY_BUFFER, renderer.getElementsCount() * size, data.vboBuffer, GL_STATIC_DRAW);
 	renderer.setDirty(false);
 }
 

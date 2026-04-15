@@ -1,6 +1,6 @@
 #include "tri_renderer.h"
 
-const void * TriRenderer::getData() {
+Renderer::GeometricData TriRenderer::getData() {
 	nelements = _m.nfacets() * 3 /* 3 points per tri */;
 
 	vertices.clear();
@@ -28,5 +28,5 @@ const void * TriRenderer::getData() {
 		}
 	}
 
-	return vertices.data();
+	return Renderer::GeometricData{ .vboBuffer = vertices.data(), .tboBuffers = {} };
 }

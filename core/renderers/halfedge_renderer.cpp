@@ -49,7 +49,7 @@ std::vector<Renderer::RendererElementField> HalfedgeRenderer::getElementFields()
 
 
 
-const void * SurfaceHalfedgeRenderer::getData() {
+Renderer::GeometricData SurfaceHalfedgeRenderer::getData() {
 	vertices.clear();
 	// pre-allocate to speed-up
 	vertices.reserve(_m.nfacets() * 4 /* reserve for 4 side facets */ * 6 /* 1 quad, 2 tri per quad, 3 points per tri */); 
@@ -94,12 +94,12 @@ const void * SurfaceHalfedgeRenderer::getData() {
 	}
 
 	nelements = vertices.size();
-	return vertices.data();
+	return Renderer::GeometricData{ .vboBuffer = vertices.data(), .tboBuffers = {} };
 }
 
 
 
-const void * VolumeHalfedgeRenderer::getData() {
+Renderer::GeometricData VolumeHalfedgeRenderer::getData() {
 	// nverts = 24 * _m.ncells() * 6;
 	std::vector<LineVert> vertices;
 
@@ -149,10 +149,11 @@ const void * VolumeHalfedgeRenderer::getData() {
 
 	nelements = vertices.size();
 
-	return vertices.data();
+	return Renderer::GeometricData{ .vboBuffer = vertices.data(), .tboBuffers = {} };
+
 }
 
-const void * PolylineRenderer::getData() {
+Renderer::GeometricData PolylineRenderer::getData() {
 	// Create vertices
 	/* 6 vertices per edges : 2 triangles for a rect with each 3 vertices */
 	std::vector<LineVert> vertices(_m.nedges() * 6); 
@@ -179,7 +180,7 @@ const void * PolylineRenderer::getData() {
 	}
 
 	nelements = vertices.size();
-	return vertices.data();
+	return Renderer::GeometricData{ .vboBuffer = vertices.data(), .tboBuffers = {} };
 }
 
 void HalfedgeRenderer::clear() {

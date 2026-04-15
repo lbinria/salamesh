@@ -30,7 +30,7 @@ struct BBoxRenderer : public Renderer {
 
 	std::string getType() const { return "bbox"; }
 
-	const void * getData() override;
+	Renderer::GeometricData getData() override;
 	MaterialInstance getDefaultMaterial() override;
 
 	size_t getElementSize() override {

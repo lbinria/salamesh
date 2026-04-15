@@ -18,7 +18,7 @@ std::vector<Renderer::RendererElementField> BBoxRenderer::getElementFields() {
 	};
 }
 
-const void * BBoxRenderer::getData() {
+Renderer::GeometricData BBoxRenderer::getData() {
 	vertices.clear();
 	vertices.reserve(32);
 
@@ -84,7 +84,7 @@ const void * BBoxRenderer::getData() {
 	vertices.push_back({ glm::vec3(pMax.x, pMin.y, pMin.z) });
 
 	nelements = vertices.size();
-	return vertices.data();
+	return Renderer::GeometricData{ .vboBuffer = vertices.data(), .tboBuffers = {} };
 }
 
 void BBoxRenderer::clear() {
