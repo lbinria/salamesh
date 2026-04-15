@@ -291,174 +291,98 @@ function draw_model_properties(model, k, view)
 
 			local model_state = view:get_state(model) 
 
+			for l = 0, 1 do
 
-			imgui.Text("Colormap 0")
+				imgui.Text("Colormap " .. tostring(l))
 
-			local colormaps = app.colormaps
-			local items = {}
-			for i = 1, #colormaps do 
-				table.insert(items, colormaps[i].name)
-			end
+				local colormaps = app.colormaps
+				local items = {}
+				for i = 1, #colormaps do 
+					table.insert(items, colormaps[i].name)
+				end
+				local colormap_size = imgui.ImVec2(320, 35)
 
-			local colormap_size = imgui.ImVec2(320, 35)
+				local selected_colormap_idx = model_state:get_selected_colormap(l)
 
+				if (imgui.BeginCombo("##combo_colormaps" .. tostring(l) .. "_selection", items[selected_colormap_idx])) then
+					-- Display items in the popup
+					for i = 1, #items do
+						local is_selected = selected_colormap_idx == i
+						-- Create a unique ID for each item to prevent conflicts
+						imgui.PushID(i)
 
-			if (imgui.BeginCombo("##combo_colormaps0_selection", items[model_state:get_selected_colormap(ColormapLayer.COLORMAP_LAYER_0)])) then
-				-- Display items in the popup
-				for i = 1, #items do
-					local is_selected = model_state:get_selected_colormap(ColormapLayer.COLORMAP_LAYER_0) == i
-					-- Create a unique ID for each item to prevent conflicts
-					imgui.PushID(i)
+						-- Calculate total width including spacing
+						-- local total_width = imgui.CalcTextSize(items[i]).x + colormap_size.x + 10.0
 
-					-- Calculate total width including spacing
-					-- local total_width = imgui.CalcTextSize(items[i]).x + colormap_size.x + 10.0
+						-- Display the item with both text and image
+						if (imgui.Selectable(items[i], is_selected)) then
+							model_state:set_selected_colormap(i, l)
+						end
 
-					-- Display the item with both text and image
-					if (imgui.Selectable(items[i], is_selected)) then
-						model_state:set_selected_colormap(i, ColormapLayer.COLORMAP_LAYER_0)
+						-- Display the image after the text
+						imgui.Image(app.colormaps[i].tex, colormap_size)
+
+						imgui.PopID()
 					end
 
-					-- Display the image after the text
-					imgui.Image(app.colormaps[i].tex, colormap_size)
-
-					imgui.PopID()
+					imgui.EndCombo()
 				end
 
-				imgui.EndCombo()
+				local selected_cm = app.colormaps[selected_colormap_idx]
+				if selected_cm.height > 1 then 
+					local h = selected_cm.height / selected_cm.width * 320
+					colormap_size = imgui.ImVec2(320, h)
+				end
+
+				imgui.Image(
+					selected_cm.tex, 
+					colormap_size
+				)
+
 			end
 
-			local selected_cm = app.colormaps[model_state:get_selected_colormap(ColormapLayer.COLORMAP_LAYER_0)]
-			if selected_cm.height > 1 then 
-				local h = selected_cm.height / selected_cm.width * 320
-				colormap_size = imgui.ImVec2(320, h)
-			end
+			for l = 0, 1 do
 
-			imgui.Image(
-				selected_cm.tex, 
-				colormap_size
-			)
+				imgui.Text("Attribute " .. tostring(l))
 
-			imgui.Text("Colormap 1")
-
-			local colormaps = app.colormaps
-			local items = {}
-			for i = 1, #colormaps do 
-				table.insert(items, colormaps[i].name)
-			end
-			local colormap_size = imgui.ImVec2(320, 35)
-
-			if (imgui.BeginCombo("##combo_colormaps1_selection", items[model_state:get_selected_colormap(ColormapLayer.COLORMAP_LAYER_1)])) then
-				-- Display items in the popup
-				for i = 1, #items do
-					local is_selected = model_state:get_selected_colormap(ColormapLayer.COLORMAP_LAYER_1) == i
-					-- Create a unique ID for each item to prevent conflicts
-					imgui.PushID(i)
-
-					-- Calculate total width including spacing
-					-- local total_width = imgui.CalcTextSize(items[i]).x + colormap_size.x + 10.0
-
-					-- Display the item with both text and image
-					if (imgui.Selectable(items[i], is_selected)) then
-						model_state:set_selected_colormap(i, ColormapLayer.COLORMAP_LAYER_1)
+				if (#model.attrs > 0) then
+					-- local attr_name, attr_element = model.attrs[1]
+					local attr_name = model.attrs[1].name
+					local attr_element = model.attrs[1].kind
+					-- local attr_name, attr_element = model.get_attr(1);
+					-- print("first attr:" .. attr_name)
+					-- print("second attr:" .. attr_element)
+					
+					local selName = "None" 
+					local selected_attr_0 = model_state:get_selected_attr(l)
+					if selected_attr_0 > 0 then 
+						selName = model.attrs[selected_attr_0].name
 					end
 
-					-- Display the image after the text
-					imgui.Image(app.colormaps[i].tex, colormap_size)
+					if (imgui.BeginCombo("##combo_attribute" .. tostring(l) .. "_selection", selName)) then
 
-					imgui.PopID()
+						local is_selected = selected_attr_0 == 0
+						if (imgui.Selectable("None", is_selected)) then
+							model_state:set_selected_attr(0, l)
+						end
+
+						for n = 1, #model.attrs do
+							local is_selected = n == selected_attr_0
+							local label = model.attrs[n].name 
+							.. " (" .. element_kind_to_string(model.attrs[n].kind) .. ")" 
+							.. " (" .. element_type_to_string(model.attrs[n].type) .. ")"
+							.. " (" .. tostring(model.attrs[n].dim) .. ")"
+
+							if (imgui.Selectable(label, is_selected)) then
+								model_state:set_selected_attr(n, l)
+								-- print("set attr: " .. model.attrs[n][1] .. ":" .. model.attrs[n][2] .. ":" .. model.attrs[n][3])
+							end
+						end
+						imgui.EndCombo()
+					end
 				end
 
-				imgui.EndCombo()
 			end
-
-			local selected_cm = app.colormaps[model_state:get_selected_colormap(ColormapLayer.COLORMAP_LAYER_1)]
-			if selected_cm.height > 1 then 
-				local h = selected_cm.height / selected_cm.width * 320
-				colormap_size = imgui.ImVec2(320, h)
-			end
-
-			imgui.Image(
-				selected_cm.tex, 
-				colormap_size
-			)
-
-			-- imgui.Text("Attribute 0")
-
-			-- if (#model.attrs > 0) then
-			-- 	-- local attr_name, attr_element = model.attrs[1]
-			-- 	local attr_name = model.attrs[1].name
-			-- 	local attr_element = model.attrs[1].kind
-			-- 	-- local attr_name, attr_element = model.get_attr(1);
-			-- 	-- print("first attr:" .. attr_name)
-			-- 	-- print("second attr:" .. attr_element)
-				
-			-- 	local selName = "None" 
-			-- 	if model_view.selected_attr0 > 0 then 
-			-- 		selName = model.attrs[model_view.selected_attr0].name
-			-- 	end
-
-			-- 	if (imgui.BeginCombo("##combo_attribute0_selection", selName)) then
-
-			-- 		local is_selected = model_view.selected_attr0 == 0
-			-- 		if (imgui.Selectable("None", is_selected)) then
-			-- 			model_view.selected_attr0 = 0
-			-- 		end
-
-			-- 		for n = 1, #model.attrs do
-			-- 			local is_selected = n == model_view.selected_attr0
-			-- 			local label = model.attrs[n].name 
-			-- 			.. " (" .. element_kind_to_string(model.attrs[n].kind) .. ")" 
-			-- 			.. " (" .. element_type_to_string(model.attrs[n].type) .. ")"
-			-- 			.. " (" .. tostring(model.attrs[n].dim) .. ")"
-
-			-- 			if (imgui.Selectable(label, is_selected)) then
-			-- 				model_view.selected_attr0 = n
-
-			-- 				-- print("set attr: " .. model.attrs[n][1] .. ":" .. model.attrs[n][2] .. ":" .. model.attrs[n][3])
-			-- 			end
-			-- 		end
-			-- 		imgui.EndCombo()
-			-- 	end
-			-- end
-
-			-- imgui.Text("Attribute 1")
-
-			-- if (#model.attrs > 0) then
-			-- 	-- local attr_name, attr_element = model.attrs[1]
-			-- 	local attr_name = model.attrs[1].name
-			-- 	local attr_element = model.attrs[1].kind
-			-- 	-- local attr_name, attr_element = model.get_attr(1);
-			-- 	-- print("first attr:" .. attr_name)
-			-- 	-- print("second attr:" .. attr_element)
-
-			-- 	local selName = "None" 
-			-- 	if model_view.selected_attr1 > 0 then 
-			-- 		selName = model.attrs[model_view.selected_attr1].name
-			-- 	end
-
-			-- 	if (imgui.BeginCombo("##combo_attribute1_selection", selName)) then
-
-			-- 		local is_selected = model_view.selected_attr1 == 0
-			-- 		if (imgui.Selectable("None", is_selected)) then
-			-- 			model_view.selected_attr1 = 0
-			-- 		end
-
-			-- 		for n = 1, #model.attrs do
-			-- 			local is_selected = n == model_view.selected_attr1
-			-- 			local label = model.attrs[n].name 
-			-- 			.. " (" .. element_kind_to_string(model.attrs[n].kind) .. ")" 
-			-- 			.. " (" .. element_type_to_string(model.attrs[n].type) .. ")"
-			-- 			.. " (" .. tostring(model.attrs[n].dim) .. ")"
-
-			-- 			if (imgui.Selectable(label, is_selected)) then
-			-- 				model_view.selected_attr1 = n
-
-			-- 				-- print("set attr: " .. model.attrs[n][1] .. ":" .. model.attrs[n][2] .. ":" .. model.attrs[n][3])
-			-- 			end
-			-- 		end
-			-- 		imgui.EndCombo()
-			-- 	end
-			-- end
 
 		end
 	-- end
