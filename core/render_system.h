@@ -17,7 +17,6 @@ struct RenderSystem {
 	void render(Model &model, ISceneView &sceneView);
 	void render(Renderer &renderer, ModelState &modelState, glm::mat4 &transform, int meshIndex, MaterialInstance &mat);
 
-	void createMaterial(ISceneView &sceneView, Renderer &renderer);
 	void updateGeometry(Renderer &renderer);
 
 	void updateAttr(Model &model, ModelState &modelState, MaterialInstance &mat);

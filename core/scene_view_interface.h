@@ -23,9 +23,13 @@ struct ModelState {
 		return selectedAttr[static_cast<int>(colormapLayer)];
 	}
 
+	int getOldSelectedAttr(ColormapLayer colormapLayer) {
+		return oldSelectedAttr[static_cast<int>(colormapLayer)];
+	}
+
 	void setSelectedAttr(int idx, ColormapLayer layer) {
+		oldSelectedAttr[layer] = selectedAttr[layer];
 		selectedAttr[layer] = idx;
-		// updateAttrRequest = layer;
 		updateAttrRequests.insert(layer);
 	}
 
@@ -77,6 +81,7 @@ struct ModelState {
 	std::set<ColormapLayer> updateAttrRequests;
 	std::set<std::pair<Layer, ElementKind>> updateLayerRequests;
 
+	int oldSelectedAttr[3] = {-1, -1, -1};
 	int selectedAttr[3] = {-1, -1, -1};
 	int selectedColormap[3] = {0, 0, 0};
 	std::map<std::tuple<Layer, ElementKind>, bool> activatedLayers;

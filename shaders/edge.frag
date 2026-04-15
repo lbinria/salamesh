@@ -41,6 +41,11 @@ uniform int colormapElement[3] = {-1, -1, -1};
 uniform int highlightElement;
 uniform int filterElement;
 
+const int N_LAYERS = 5;
+const int N_KINDS = 7;
+
+uniform bool activatedLayers[N_LAYERS][N_KINDS];
+
 vec3 encode_id(int id) {
     int r = id & 0x000000FF;
     int g = (id & 0x0000FF00) >> 8;
@@ -102,7 +107,7 @@ float sdfEquilateralTriangle(vec2 p) {
 }
 
 void _filter(inout vec3 col) {
-    if (filterElement == -1)
+    if (!activatedLayers[4 /* filter */][1 /* corner */])
         return;
 
     bool filtered = texelFetch(filterBuf, FragHalfedgeIndex).x > 0;
@@ -146,7 +151,7 @@ vec4 trace(inout vec3 col) {
 }
 
 void highlight(inout vec3 col) {
-    if (highlightElement == -1) 
+    if (!activatedLayers[3 /* highlight */][1 /* corner */]) 
         return;
 
     // Highlight
@@ -169,13 +174,10 @@ void shading(inout vec3 col, vec3 N, float t) {
 }
 
 vec4 showColormap(int layer) {
-    int kind = colormapElement[layer];
-    
-    if (kind == 2 /* corners */) {
+    if (activatedLayers[layer][1 /* corners */]) {
         return getLayerColor(FragHalfedgeIndex, layer);
     } 
-    
-    if (kind == -1 /* no element => layer deactivated */) {
+    else {
         return vec4(0., 0., 0., -1.);
     }
 
