@@ -507,33 +507,6 @@ struct LayersParams : public ShaderParams {
 		dirty = true;
 	}
 
-	void setLayerElement(int element, Layer layer) {
-		// I could refactor more, 
-		// but we won't understand anything after that
-		switch (layer)
-		{
-		case Layer::COLORMAP_0:
-		case Layer::COLORMAP_1:
-		case Layer::COLORMAP_2:
-			colormapElements[int(layer)] = element;
-			break;
-		case Layer::HIGHLIGHT:
-			highlightElement = element;
-			break;
-		case Layer::FILTER:
-			filterElement = element;
-			break;
-		// Should never happen (except if all the case aren't covered)
-		default:
-			throw std::runtime_error(
-				"setLayerElement for layer: " + 
-				layerToString(layer) + 
-				" is not implemented."
-			);
-		}
-		dirty = true;
-	}
-
 	void setLayerActivation(Layer layer, ElementKind kind, bool val) {
 		activatedLayers[static_cast<int>(layer)][static_cast<int>(kind)] = val;
 		dirty = true;
@@ -552,7 +525,6 @@ struct LayersParams : public ShaderParams {
 		shader.setInt("colormap2", 2);
 
 		for (int l = 0; l < 3; ++l) {
-			// shader.setInt("colormapElement[" + std::to_string(int(l)) + "]", colormapElements[l]);
 			shader.setInt("attrNDims[" + std::to_string(int(l)) + "]", attrNDims[l]);
 			shader.setFloat2("attrRange[" + std::to_string(int(l)) + "]", attrRange[l]);
 		}
@@ -563,18 +535,11 @@ struct LayersParams : public ShaderParams {
 			}
 		}
 
-
-		// shader.setInt("highlightElement", highlightElement);
-		// shader.setInt("filterElement", filterElement);
 	}
 
 	private:
 	int colormapTexs[3] = {-1, -1, -1};
-
-	int colormapElements[3] = {-1,-1,-1};
 	bool activatedLayers[5][7] = {};
-	int highlightElement = -1;
-	int filterElement = -1;
 	int attrNDims[3] = {1, 1, 1};
 	glm::vec2 attrRange[3];
 

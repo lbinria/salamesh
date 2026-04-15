@@ -58,10 +58,6 @@ uniform vec2 attrRange[3];
 uniform int attrRepeat[3] = {1, 1, 1};
 uniform int attrNDims[3] = {1, 1, 1};
 
-uniform int colormapElement[3] = {-1, -1, -1};
-uniform int highlightElement;
-uniform int filterElement;
-
 const int N_LAYERS = 5;
 const int N_KINDS = 7;
 

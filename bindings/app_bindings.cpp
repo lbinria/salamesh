@@ -169,7 +169,22 @@ namespace bindings {
 
 		auto modelState_t = lua.new_usertype<ModelState>(
 			"ModelState",
-			"set_selected_attr", &ModelState::setSelectedAttr
+			"get_selected_attr", [](ModelState &self, ColormapLayer layer) {
+				return self.getSelectedAttr(layer) + 1;
+			},
+			"set_selected_attr", [](ModelState &self, int idx, ColormapLayer layer) {
+				self.setSelectedAttr(idx - 1, layer);
+			},
+			"get_selected_colormap", [](ModelState &self, ColormapLayer layer) {
+				return self.getSelectedColormap(layer) + 1;
+			},
+			"set_selected_colormap", [](ModelState &self, int idx, ColormapLayer layer) {
+				self.setSelectedColormap(idx - 1, layer);
+			},
+			"get_layer_attr_name", &ModelState::getLayerAttrName,
+			"set_layer_attr_name", &ModelState::setLayerAttrName,
+			"set_layer", &ModelState::setLayer,
+			"unset_layer", &ModelState::unsetLayer
 		);
 
 		auto materialInstance_t = lua.new_usertype<MaterialInstance>(
