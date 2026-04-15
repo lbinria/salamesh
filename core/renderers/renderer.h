@@ -18,8 +18,20 @@ using json = nlohmann::json;
 struct Renderer {
 
 	struct GeometricData {
-		const void * vboBuffer;
-		std::map<std::string, const void *> tboBuffers;
+
+		struct TextureBufferData {
+			const void * data;
+			size_t size;
+		};
+
+		struct VertexBufferData {
+			const void * data;
+			size_t size;
+		};
+
+		const void * vboBuffer; // TODO important transform to struct with size (and remove useless nelement variable)
+		// VertexBufferData vboBuffer;
+		std::map<std::string, TextureBufferData> texBuffers;
 	};
 
 	enum RendererElementType {
@@ -77,6 +89,9 @@ struct Renderer {
 	int getElementsCount() const { return nelements; }
 	virtual GeometricData getData() {};
 	virtual size_t getElementSize() { return 0; };
+
+
+	// TODO replace the two function by one getGeometricStructure() that return GeometricStructure struct 
 	virtual std::vector<RendererElementField> getElementFields() {
 		return {};
 	}

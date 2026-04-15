@@ -17,7 +17,7 @@ int getGLPrimFromRenderPrimitive(Renderer::RenderPrimitive primitive) {
 }
 
 RenderSystem::GeometricBuffers& RenderSystem::getGeometricBuffers(Renderer &renderer) {
-	if (geometries.count(renderer.getName()) == 0) {
+	if (geometricBuffers.count(renderer.getName()) == 0) {
 		RenderSystem::VertexBuffer vb;
 
 		// Create VAO / VBO
@@ -60,10 +60,10 @@ RenderSystem::GeometricBuffers& RenderSystem::getGeometricBuffers(Renderer &rend
 		}
 
 		GeometricBuffers gb{ .vertexBuffer = std::move(vb), .texBuffers = std::move(texBuffers) };
-		geometries[renderer.getName()] = std::move(gb);
+		geometricBuffers[renderer.getName()] = std::move(gb);
 	}
 
-	return geometries.at(renderer.getName());
+	return geometricBuffers.at(renderer.getName());
 }
 
 
@@ -167,13 +167,24 @@ void RenderSystem::updateGeometry(Renderer &renderer) {
 		return;
 
 	size_t size = renderer.getElementSize();
-	Renderer::GeometricData data = renderer.getData();
+	Renderer::GeometricData geometricData = renderer.getData();
 	// auto usage = renderer->isDrawDynamic() ? GL_DYNAMIC_DRAW : GL_STATIC_DRAW;
 
 	auto &gb = getGeometricBuffers(renderer);
+	
+	// Write VBO
 	glBindVertexArray(gb.vertexBuffer.vao);
 	glBindBuffer(GL_ARRAY_BUFFER, gb.vertexBuffer.vbo);
-	glBufferData(GL_ARRAY_BUFFER, renderer.getElementsCount() * size, data.vboBuffer, GL_STATIC_DRAW);
+	glBufferData(GL_ARRAY_BUFFER, renderer.getElementsCount() * size, geometricData.vboBuffer, GL_STATIC_DRAW);
+
+	// Write TBOs
+	for (auto [bufName, tb] : gb.texBuffers) {
+		// TODO warning if (!geometricData.texBuffers.contains(bufName))
+		auto texData = geometricData.texBuffers.at(bufName);
+		glBindBuffer(GL_TEXTURE_BUFFER, tb.buf);
+		glBufferData(GL_TEXTURE_BUFFER, texData.size * sizeof(float), texData.data, GL_DYNAMIC_DRAW);
+	}
+
 	renderer.setDirty(false);
 }
 
@@ -235,6 +246,15 @@ void RenderSystem::render(Renderer &renderer, ModelState &modelState, glm::mat4 
 		glActiveTexture(GL_TEXTURE0 + l);
 		int i = modelState.getSelectedColormap(static_cast<ColormapLayer>(l));
 		glBindTexture(GL_TEXTURE_2D, texColormaps[i]);
+	}
+
+	// Eventually bind extras texture buffers
+	int i = 8;
+	for (auto [bufName, tb] : gb.texBuffers) {
+		shader.setInt(bufName, i);
+		glActiveTexture(GL_TEXTURE0 + i);
+		glBindTexture(GL_TEXTURE_2D, tb.tbo);
+		++i;
 	}
 
 	mat.apply(shader);

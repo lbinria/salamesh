@@ -84,7 +84,7 @@ Renderer::GeometricData BBoxRenderer::getData() {
 	vertices.push_back({ glm::vec3(pMax.x, pMin.y, pMin.z) });
 
 	nelements = vertices.size();
-	return Renderer::GeometricData{ .vboBuffer = vertices.data(), .tboBuffers = {} };
+	return Renderer::GeometricData{ .vboBuffer = vertices.data(), .texBuffers = {} };
 }
 
 void BBoxRenderer::clear() {

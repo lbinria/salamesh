@@ -34,7 +34,9 @@ struct RenderSystem {
 
 
 	void clean() {
-
+		// TODO Clean geometricBuffers list !
+		// TODO clean all materials for renderer
+		// TODO clean all model -> renderers
 	}
 
 	void setTextureColormap(int colormap, int texId) {
@@ -43,7 +45,7 @@ struct RenderSystem {
 
 
 	private:
-	std::map<std::string, GeometricBuffers> geometries; // vao, vbo per renderer
+	std::map<std::string, GeometricBuffers> geometricBuffers;
 	unsigned int texColormaps[3];
 
 };

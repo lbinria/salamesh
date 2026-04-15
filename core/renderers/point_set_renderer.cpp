@@ -15,7 +15,7 @@ Renderer::GeometricData PointSetRenderer::getData() {
 	}
 
 	nelements = vertices.size();
-	return Renderer::GeometricData{ .vboBuffer = vertices.data(), .tboBuffers = {} };
+	return Renderer::GeometricData{ .vboBuffer = vertices.data(), .texBuffers = {} };
 }
 
 MaterialInstance PointSetRenderer::getDefaultMaterial() {

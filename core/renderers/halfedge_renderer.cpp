@@ -94,7 +94,7 @@ Renderer::GeometricData SurfaceHalfedgeRenderer::getData() {
 	}
 
 	nelements = vertices.size();
-	return Renderer::GeometricData{ .vboBuffer = vertices.data(), .tboBuffers = {} };
+	return Renderer::GeometricData{ .vboBuffer = vertices.data(), .texBuffers = {} };
 }
 
 
@@ -149,7 +149,7 @@ Renderer::GeometricData VolumeHalfedgeRenderer::getData() {
 
 	nelements = vertices.size();
 
-	return Renderer::GeometricData{ .vboBuffer = vertices.data(), .tboBuffers = {} };
+	return Renderer::GeometricData{ .vboBuffer = vertices.data(), .texBuffers = {} };
 
 }
 
@@ -180,7 +180,7 @@ Renderer::GeometricData PolylineRenderer::getData() {
 	}
 
 	nelements = vertices.size();
-	return Renderer::GeometricData{ .vboBuffer = vertices.data(), .tboBuffers = {} };
+	return Renderer::GeometricData{ .vboBuffer = vertices.data(), .texBuffers = {} };
 }
 
 void HalfedgeRenderer::clear() {

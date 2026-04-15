@@ -9,10 +9,6 @@ void SurfaceRenderer::clear() {
 
 MaterialInstance SurfaceRenderer::getDefaultMaterial() {
 	MaterialInstance mat;
-	// mat.addParam("light", std::make_shared<LightParams>());
-	// mat.addParam("clipping", std::make_shared<ClippingParams>());
-	// mat.addParam("mesh", std::make_shared<MeshStyleParams>());
-	// mat.addParam("layers", std::make_shared<LayersParams>());
 	mat.addParam<LightParams>("light");
 	mat.addParam<ClippingParams>("clipping");
 	mat.addParam<MeshStyleParams>("style");

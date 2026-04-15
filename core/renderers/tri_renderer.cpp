@@ -28,5 +28,5 @@ Renderer::GeometricData TriRenderer::getData() {
 		}
 	}
 
-	return Renderer::GeometricData{ .vboBuffer = vertices.data(), .tboBuffers = {} };
+	return Renderer::GeometricData{ .vboBuffer = vertices.data(), .texBuffers = {} };
 }

@@ -1,8 +1,21 @@
 #include "poly_renderer.h"
 #include "../../core/graphic_api.h"
 
+MaterialInstance PolyRenderer::getDefaultMaterial() {
+	MaterialInstance mat;
+	mat.addParam<LightParams>("light");
+	mat.addParam<ClippingParams>("clipping");
+	mat.addParam<MeshStyleParams>("style");
+	mat.addParam<LayersParams>("layers");
+	mat.addBuffers<LayerBufferGroup>("layers");
+	return mat;
+}
+
 Renderer::GeometricData PolyRenderer::getData() {
-	std::vector<float> nVertsPerFacet(_m.nfacets());
+	vertices.clear();
+
+	nVertsPerFacet.clear();
+	nVertsPerFacet.resize(_m.nfacets());
 
 	// Compute number of triangles needed to represent a facet
 	int ntri = 0;
@@ -14,7 +27,6 @@ Renderer::GeometricData PolyRenderer::getData() {
 	nelements = 3 * ntri /* 3 points per tri, n tri per facet */;
 
 	int cornerOff = 0;
-	std::vector<Vertex> vertices;
 	for (auto &f : _m.iter_facets()) {
 
 		// There is as much triangles as vertices in facet,
@@ -75,25 +87,8 @@ Renderer::GeometricData PolyRenderer::getData() {
 		cornerOff += f.size();
 	}
 
-	return Renderer::GeometricData{ .vboBuffer = vertices.data(), .tboBuffers = {{"nvertsPerFacetBuf", nVertsPerFacet.data()}} };
+	return Renderer::GeometricData{ .vboBuffer = vertices.data(), .texBuffers = {{"nvertsPerFacetBuf", GeometricData::TextureBufferData{ .data = nVertsPerFacet.data(), .size = nVertsPerFacet.size() }}} };
 }
-
-// void PolyRenderer::render(RendererView &rv, glm::vec3 &position) {
-// 	if (!rv.visible)
-// 		return;
-
-// 	glBindVertexArray(VAO);
-
-// 	glm::mat4 model = glm::mat4(1.0f);
-// 	model = glm::translate(model, position);
-// 	auto &prv = static_cast<PolyRendererView&>(rv);
-// 	prv.setNVertsPerFacetBuf(8, texNVertsPerFacet);
-
-// 	rv.use(shader);
-// 	shader.setMat4("model", model);
-
-// 	glDrawArrays(GL_TRIANGLES, 0, nelements);
-// }
 
 void PolyRenderer::clear() {
 	glBindVertexArray(VAO);
@@ -101,6 +96,7 @@ void PolyRenderer::clear() {
 	glBufferData(GL_ARRAY_BUFFER, nelements * sizeof(Vertex), nullptr, GL_STATIC_DRAW);
 	nelements = 0;
 }
+
 
 std::vector<std::string> PolyRenderer::getBuffers() {
 	return {"nvertsPerFacetBuf"};

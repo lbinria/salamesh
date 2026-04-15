@@ -41,6 +41,8 @@ struct PolyRenderer : public MeshRenderer {
 	std::vector<RendererElementField> getElementFields() override;
 	std::vector<std::string> getBuffers() override;
 	Renderer::GeometricData getData() override;
+	MaterialInstance getDefaultMaterial() override;
+
 	void clear() override;
 
 
@@ -50,8 +52,9 @@ struct PolyRenderer : public MeshRenderer {
 
 	private:
 
-	unsigned int bufNVertsPerFacet; 
-	unsigned int texNVertsPerFacet;
+	std::vector<Vertex> vertices;
+	std::vector<float> nVertsPerFacet;
+
 
 	void doLoadState(json &j) override {
 		MeshRenderer::doLoadState(j);
