@@ -105,6 +105,7 @@ struct ISceneView {
 
 
 	virtual MaterialInstance& getMaterial(Renderer &renderer) = 0;
+	virtual MaterialInstance& getMaterialOrDefault(Renderer &renderer) = 0;
 	virtual MaterialInstanceCollection getMaterials(const Model &model) = 0;
 	virtual bool hasMaterial(const Renderer &renderer) const = 0;
 	virtual void addMaterial(const Renderer &renderer, MaterialInstance mat) = 0;

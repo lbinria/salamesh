@@ -154,6 +154,14 @@ struct Scene : public IScene {
 	
 	std::map<std::string, std::shared_ptr<ISceneView>>& getViews() { return views; }
 
+	ISceneView& addView(const std::string name) {
+		// Init default view
+		auto view = std::make_shared<SceneView>(name, 1024, 768);
+		view->setup();
+		views[view->getName()] = std::move(view);
+		return *views[view->getName()];
+	}
+
 	private:
 	IApp &app;
 

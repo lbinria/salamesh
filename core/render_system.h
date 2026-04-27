@@ -24,7 +24,7 @@ struct RenderSystem {
 	RenderSystem::GeometricBuffers& getGeometricBuffers(Renderer &renderer);
 
 	void render(IScene &scene);
-	void render(Model &model, ISceneView &sceneView);
+	void render(IScene &scene, Model &model);
 	void render(Renderer &renderer, ModelState &modelState, glm::mat4 &transform, int meshIndex, MaterialInstance &mat);
 
 	void updateGeometry(Renderer &renderer);

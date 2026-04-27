@@ -49,6 +49,13 @@ struct SceneView : public ISceneView {
 		return materials.at(renderer.getId());
 	}
 
+	MaterialInstance& getMaterialOrDefault(Renderer &renderer) {
+		if (!hasMaterial(renderer))
+			addMaterial(renderer, renderer.getDefaultMaterial());
+
+		return getMaterial(renderer);
+	}
+
 	MaterialInstanceCollection getMaterials(const Model &model) {
 		std::map<std::string, std::string> rendererInfos;
 		for (auto &[k, r] : model.getRenderers()) {
@@ -76,7 +83,9 @@ struct SceneView : public ISceneView {
 		return modelStates.at(model.getName());
 	}
 
+	// ISceneView& copy(const std::string name) {
 
+	// }
 
 	private:
 	std::string name;

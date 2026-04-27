@@ -68,21 +68,6 @@ RenderSystem::GeometricBuffers& RenderSystem::getGeometricBuffers(Renderer &rend
 	return geometricBuffers.at(renderer.getName());
 }
 
-
-
-
-void RenderSystem::render(IScene &scene) {
-
-	// Check deleted for cleanup
-
-	for (auto &[viewName, view] : scene.getViews()) {
-		for (auto &[modelName, model] : scene.getModels()) {
-			render(*model, *view);
-		}
-	}
-
-}
-
 void RenderSystem::updateAttr(Model &model, ModelState &modelState, MaterialInstance &mat) {
 
 	for (auto layer : modelState.getUpdateAttrRequest()) {
@@ -190,33 +175,43 @@ void RenderSystem::updateGeometry(Renderer &renderer) {
 	renderer.setDirty(false);
 }
 
-void RenderSystem::render(Model &model, ISceneView &view) {
+void RenderSystem::render(IScene &scene) {
 
-	auto &modelState = view.getState(model);
+	// Check deleted for cleanup
+	for (auto &[modelName, model] : scene.getModels()) {
+		render(scene, *model);
+	}
+
+}
+
+void RenderSystem::render(IScene &scene, Model &model) {
 
 	glm::mat4 transform = glm::mat4(1.0f);
 	transform = glm::translate(transform, model.getPosition());
 
-	// Update model data, if request made
+	// Update model geometric data, if request made
 	for (auto &[rendererName, renderer] : model.getRenderers()) {
-
-		// Create default material for renderer if not found
-		if (!view.hasMaterial(*renderer))
-			view.addMaterial(*renderer, renderer->getDefaultMaterial());
-
-		auto &mat = view.getMaterial(*renderer);
-
 		updateGeometry(*renderer);
-
-		updateAttr(model, modelState, mat);
-		updateLayer(model, modelState, mat);
-
-
-		render(*renderer, modelState, transform, model.getIndex(), mat);
 	}
 
-	modelState.cleanUpdateAttrRequests();
-	modelState.cleanUpdateLayerRequests();
+	// 
+	for (auto &[viewName, view] : scene.getViews()) {
+
+		auto &modelState = view->getState(model);
+		
+		for (auto &[rendererName, renderer] : model.getRenderers()) {
+			// Create default material for renderer if not found
+			auto &mat = view->getMaterialOrDefault(*renderer);
+
+			updateAttr(model, modelState, mat);
+			updateLayer(model, modelState, mat);
+			render(*renderer, modelState, transform, model.getIndex(), mat);
+		}
+
+		modelState.cleanUpdateAttrRequests();
+		modelState.cleanUpdateLayerRequests();
+	}
+
 }
 
 void RenderSystem::render(Renderer &renderer, ModelState &modelState, glm::mat4 &transform, int meshIndex, MaterialInstance &mat) {
