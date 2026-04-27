@@ -9,7 +9,6 @@ struct IScene {
 	virtual void init() = 0;
 	virtual void clean() = 0;
 	virtual void clear() = 0;
-	virtual void render() = 0;
 
 
 	virtual std::shared_ptr<Model> loadModel(const std::string& filename, std::string name = "") = 0;

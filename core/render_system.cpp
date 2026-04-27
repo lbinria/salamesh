@@ -174,12 +174,12 @@ void RenderSystem::updateGeometry(Renderer &renderer) {
 
 	auto &gb = getGeometricBuffers(renderer);
 	
-	// Write VBO
+	// Write data to VBO
 	glBindVertexArray(gb.vertexBuffer.vao);
 	glBindBuffer(GL_ARRAY_BUFFER, gb.vertexBuffer.vbo);
 	glBufferData(GL_ARRAY_BUFFER, renderer.getElementsCount() * size, geometricData.vboBuffer, GL_STATIC_DRAW);
 
-	// Write TBOs
+	// Write data to TBOs
 	for (auto [bufName, tb] : gb.texBuffers) {
 		// TODO warning if (!geometricData.texBuffers.contains(bufName))
 		auto texData = geometricData.texBuffers.at(bufName);
@@ -199,16 +199,6 @@ void RenderSystem::render(Model &model, ISceneView &view) {
 
 	// Update model data, if request made
 	for (auto &[rendererName, renderer] : model.getRenderers()) {
-
-		// For test just render pointset
-		auto psr = std::dynamic_pointer_cast<PointSetRenderer>(renderer);
-		auto msr = std::dynamic_pointer_cast<MeshRenderer>(renderer);
-		auto hsr = std::dynamic_pointer_cast<HalfedgeRenderer>(renderer);
-		auto bbr = std::dynamic_pointer_cast<BBoxRenderer>(renderer);
-		// if (!msr)
-		if (!psr && !msr && !hsr && !bbr)
-		// if (!psr && !msr )
-			continue;
 
 		// Create default material for renderer if not found
 		if (!view.hasMaterial(*renderer))
@@ -266,3 +256,15 @@ void RenderSystem::render(Renderer &renderer, ModelState &modelState, glm::mat4 
 }
 
 
+void RenderSystem::clean() {
+	for (auto &[gbName, gb] : geometricBuffers) {
+		glDeleteBuffers(1, &gb.vertexBuffer.vbo);
+		glDeleteVertexArrays(1, &gb.vertexBuffer.vao);
+
+		for (auto &[tbName, tb] : gb.texBuffers) {
+			glDeleteTextures(1, &tb.tbo);
+			glDeleteBuffers(1, &tb.buf);
+		}
+
+	}
+}

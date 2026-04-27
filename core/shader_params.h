@@ -556,6 +556,7 @@ struct ShaderBuffer {
 	}
 };
 
+// A group of shader buffers
 struct ShaderBuffers {
 
 	ShaderBuffers() = default;
@@ -582,6 +583,13 @@ struct ShaderBuffers {
 			glActiveTexture(GL_TEXTURE0 + texUnit);
 			glBindTexture(GL_TEXTURE_BUFFER, b.tbo);
 			++texUnit;
+		}
+	}
+
+	void clean() {
+		for (auto &[bufName, b] : buf) {
+			glDeleteTextures(1, &b.tbo);
+			glDeleteBuffers(1, &b.buf);
 		}
 	}
 	

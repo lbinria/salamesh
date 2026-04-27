@@ -29,11 +29,10 @@ MaterialInstance PointSetRenderer::getDefaultMaterial() {
 }
 
 void PointSetRenderer::clear() {
-	glBindVertexArray(VAO);
-	glBindBuffer(GL_ARRAY_BUFFER, VBO);
-	glBufferData(GL_ARRAY_BUFFER, nelements * sizeof(Vertex), nullptr, GL_DYNAMIC_DRAW);
-
+	vertices.clear();
+	nelements = 0;
 	clearPoints();
+	dirty = true;
 }
 
 // TODO clean shader

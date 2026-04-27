@@ -31,6 +31,11 @@ struct SceneView : public ISceneView {
 	}
 
 	void clean() override {
+		// Clean materials
+		for (auto &[matName, mat] : materials) {
+			mat.clean();
+		}
+		
 		renderSurface.clean();
 	}
 

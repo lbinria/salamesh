@@ -2,9 +2,8 @@
 #include "../../core/graphic_api.h"
 
 void SurfaceRenderer::clear() {
-	glBindVertexArray(VAO);
-	glBindBuffer(GL_ARRAY_BUFFER, VBO);
-	glBufferData(GL_ARRAY_BUFFER, nelements * sizeof(Vertex), nullptr, GL_STATIC_DRAW);
+	nelements = 0;
+	dirty = true;
 }
 
 MaterialInstance SurfaceRenderer::getDefaultMaterial() {

@@ -1,9 +1,10 @@
 #include "volume_renderer.h"
 
 void VolumeRenderer::clear() {
-	glBindVertexArray(VAO);
-	glBindBuffer(GL_ARRAY_BUFFER, VBO);
-	glBufferData(GL_ARRAY_BUFFER, nelements * sizeof(Vertex), nullptr, GL_STATIC_DRAW);
+	// vertices.clear();
+	nelements = 0;
+	dirty = true;
+
 }
 
 std::vector<Renderer::RendererElementField> VolumeRenderer::getElementFields() {

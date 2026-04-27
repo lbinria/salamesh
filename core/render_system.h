@@ -33,11 +33,7 @@ struct RenderSystem {
 	void updateLayer(Model &model, ModelState &modelState, MaterialInstance &mat);
 
 
-	void clean() {
-		// TODO Clean geometricBuffers list !
-		// TODO clean all materials for renderer
-		// TODO clean all model -> renderers
-	}
+	void clean();
 
 	void setTextureColormap(int colormap, int texId) {
 		texColormaps[colormap] = texId;

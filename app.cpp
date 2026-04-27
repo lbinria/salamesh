@@ -617,8 +617,8 @@ void App::start() {
 		}
 		renderSystem.render(scene);
 
-		// Render scene
-		scene.render();
+		// // Render scene
+		// scene.render();
 
 		// Go back to default framebuffer to draw the screen quad
 		glBindFramebuffer(GL_FRAMEBUFFER, 0);
@@ -887,14 +887,13 @@ void App::clean() {
 		script->cleanup();
 	}
 
+	renderSystem.clean();
+
+	// Clean screen geometry
 	glDeleteVertexArrays(1, &quadVAO);
 	glDeleteBuffers(1, &quadVBO);
 
-	// Clean views (can be merge into scene.clean() i think )
-	for (auto &[viewName, view] : scene.getViews())
-		view->clean();
-
-	// Clear textures
+	// Clear colormap textures
 	for (int i = 0; i < colormaps.size(); ++i)
 		glDeleteTextures(1, &colormaps[i].tex);
 

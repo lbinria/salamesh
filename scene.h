@@ -51,14 +51,18 @@ struct Scene : public IScene {
 		getMainView().getRenderSurface().setCamera(cameras["default"]);
 	}
 
-	void render() override {
-
-	}
-
 	void clean() override {
-		// TODO clean model, renderrers
+		// TODO important clean renderers
+		for (auto &[modelName, model] : models) {
+			for (auto &[rendererName, renderer] : model->getRenderers()) {
+				// renderer->clean();
+			}
+		}
 
-
+		// Clean views
+		for (auto &[viewName, view] : views) {
+			view->clean();
+		}
 	}
 
 	void clear() override {

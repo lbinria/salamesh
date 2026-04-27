@@ -92,11 +92,7 @@ struct Renderer {
 
 
 	// TODO replace the two function by one getGeometricStructure() that return GeometricStructure struct
-	// TODO to pure 
-	virtual std::vector<RendererElementField> getElementFields() {
-		return {};
-	}
-
+	virtual std::vector<RendererElementField> getElementFields() = 0;
 	virtual std::vector<std::string> getBuffers() { return {}; }
 	
 	virtual MaterialInstance getDefaultMaterial() {
@@ -131,7 +127,7 @@ struct Renderer {
 	mutable bool dirty = true;
 	mutable bool isRemoveRequested = false;
 
-	unsigned int VAO, VBO; // Buffers
+	// unsigned int VAO, VBO; // Buffers
 
 
 

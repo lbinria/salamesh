@@ -92,9 +92,7 @@
 // }
 
 void SurfaceRenderer2::clear() {
-	glBindVertexArray(VAO);
-	glBindBuffer(GL_ARRAY_BUFFER, VBO);
-	// glBufferData(GL_ARRAY_BUFFER, nelements * sizeof(Vertex), nullptr, GL_STATIC_DRAW);
+
 }
 
 // void SurfaceRenderer2::clean() {

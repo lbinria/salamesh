@@ -186,10 +186,9 @@ Renderer::GeometricData PolylineRenderer::getData() {
 }
 
 void HalfedgeRenderer::clear() {
-	glBindVertexArray(VAO);
-	glBindBuffer(GL_ARRAY_BUFFER, VBO);
-	glBufferData(GL_ARRAY_BUFFER, nelements * sizeof(LineVert), nullptr, GL_STATIC_DRAW);
+	vertices.clear();
 	nelements = 0;
+	dirty = true;
 }
 
 

@@ -236,6 +236,12 @@ vec4 showCornerAttributes(int layer) {
 
             p1Col = getLayerColor(fragCornerOff + fragCornerIndex, layer);
             p2Col = getLayerColor(fragCornerOff + ((fragCornerIndex + 1) % nvertsPerFacet), layer);
+
+            if (nvertsPerFacet == 0) {
+                p0Col = vec4(1.);
+                p1Col = vec4(1.);
+                p2Col = vec4(1.);
+            }
         }
 
         // Compute color from barycentric coords

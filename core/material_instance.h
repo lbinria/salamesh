@@ -65,7 +65,11 @@ struct MaterialInstance {
 
 	// TODO add saveState, loadState
 
-
+	void clean() {
+		for (auto &[bufName, buf] : buffers) {
+			buf->clean();
+		}
+	}
 
 	private:
 	bool visible = true;
