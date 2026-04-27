@@ -28,19 +28,26 @@ struct ClippingRenderer : public Renderer {
 
 	std::string getType() const { return "clipping"; }
 
+	Renderer::GeometricData getData() override;
+	std::vector<RendererElementField> getElementFields() override;
 
 	RenderPrimitive getRenderPrimitive() const override {
 		return RenderPrimitive::RENDER_TRIANGLES;
 	}
 
-
+	size_t getElementSize() override {
+		return sizeof(Vertex);
+	}
 
 	void clear() override;
 
 
 	private:
 	PointSet &ps;
+	std::vector<Vertex> vertices;
 
+	glm::vec3 point;
+	glm::vec3 plane;
 
 	void doLoadState(json &j) override {
 	}

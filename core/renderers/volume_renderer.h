@@ -35,6 +35,11 @@ struct VolumeRenderer : public MeshRenderer {
 		_m(m)
 		{}
 
+	std::vector<RendererElementField> getElementFields() override;
+
+	size_t getElementSize() override {
+		return sizeof(Vertex);
+	}
 
 	void clear() override;
 

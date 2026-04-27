@@ -38,6 +38,13 @@ struct LineRenderer : public Renderer {
 		return RenderPrimitive::RENDER_LINES;
 	}
 
+	Renderer::GeometricData getData() override;
+	std::vector<RendererElementField> getElementFields() override;
+
+	size_t getElementSize() override {
+		return sizeof(LineComponent);
+	}
+
 	void clear() override;
 
 
@@ -70,6 +77,9 @@ struct LineRenderer : public Renderer {
 
 	private:
 	
+	private:
+	std::vector<LineComponent> lineComponents;
+
 	std::vector<Line> lines;
 	bool autoUpdate = false;
 

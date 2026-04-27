@@ -18,4 +18,10 @@ using namespace UM;
 
 struct TetRenderer : public VolumeRenderer {
 	using VolumeRenderer::VolumeRenderer;
+
+	Renderer::GeometricData getData() override;
+
+	private:
+	std::vector<Vertex> vertices;
+	
 };

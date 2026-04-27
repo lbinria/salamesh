@@ -16,6 +16,7 @@ int getGLPrimFromRenderPrimitive(Renderer::RenderPrimitive primitive) {
 	}
 }
 
+// Get or create a buffer that contains geometric info of the renderer
 RenderSystem::GeometricBuffers& RenderSystem::getGeometricBuffers(Renderer &renderer) {
 	if (geometricBuffers.count(renderer.getName()) == 0) {
 		RenderSystem::VertexBuffer vb;
@@ -59,6 +60,7 @@ RenderSystem::GeometricBuffers& RenderSystem::getGeometricBuffers(Renderer &rend
 			texBuffers[name] = { .tbo = tbo, .buf = buf };
 		}
 
+		// Create the geometric buffer that contains VBO / TBOs
 		GeometricBuffers gb{ .vertexBuffer = std::move(vb), .texBuffers = std::move(texBuffers) };
 		geometricBuffers[renderer.getName()] = std::move(gb);
 	}

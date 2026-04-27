@@ -63,7 +63,7 @@ struct Renderer {
 		shader(std::move(shader))
 	{}
 
-	std::string getId() const {
+	std::string getId() const { 
 		return id;
 	}
 
@@ -87,11 +87,12 @@ struct Renderer {
 	}
 
 	int getElementsCount() const { return nelements; }
-	virtual GeometricData getData() {}; // TODO to pure
-	virtual size_t getElementSize() { return 0; };
+	virtual GeometricData getData() = 0;
+	virtual size_t getElementSize() = 0;
 
 
-	// TODO replace the two function by one getGeometricStructure() that return GeometricStructure struct 
+	// TODO replace the two function by one getGeometricStructure() that return GeometricStructure struct
+	// TODO to pure 
 	virtual std::vector<RendererElementField> getElementFields() {
 		return {};
 	}

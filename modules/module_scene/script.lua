@@ -411,7 +411,7 @@ function draw_gui()
 				if (imgui.Button("View##" .. "btn_view_" .. k)) then
 					app.scene.selected_model = k
 					-- Set camera position !
-					local model_pos = model.center
+					-- local model_pos = model.center
 					-- app.scene.camera.position = vec3.new(model_pos.x, model_pos.y, model_pos.z - model.radius * 2.);
 					-- app.scene.camera.look_at = vec3.new(model_pos.x, model_pos.y, model_pos.z);
 					app.scene.camera:look_at_box(model.bbox)

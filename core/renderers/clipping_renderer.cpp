@@ -149,74 +149,50 @@ void ClippingRenderer::clear() {
 	nelements = 0;
 }
 
-// void ClippingRenderer::init() {
+std::vector<Renderer::RendererElementField> ClippingRenderer::getElementFields() {
+	return {
+		{
+			.name = "p",
+			.type = RendererElementType::RENDERER_ELEMENT_TYPE_VEC3,
+			.offset = static_cast<int>(offsetof(Vertex, p))
+		}
+	};
+}
 
-// 	glGenVertexArrays(1, &VAO);
-// 	glGenBuffers(1, &VBO);
+Renderer::GeometricData ClippingRenderer::getData() {
 
-// 	glBindVertexArray(VAO);
-// 	glBindBuffer(GL_ARRAY_BUFFER, VBO);
+	vertices.clear();
 
-// 	// VBO
-// 	sl::createVBOVec3(shader.id, "p", sizeof(Vertex), (void*)offsetof(Vertex, p));
-// }
+	// Search bbox
+	glm::vec3 pMin{FLT_MAX, FLT_MAX, FLT_MAX};
+	glm::vec3 pMax{-FLT_MAX, -FLT_MAX, -FLT_MAX};
+	for (auto &p : ps) {
+		glm::vec3 glmP = sl::um2glm(p);
+		pMin = glm::min(pMin, glmP);
+		pMax = glm::max(pMax, glmP);
+	}
 
-// void ClippingRenderer::push() {
+	auto res = intersectPlaneAABB(
+		glm::dvec3(pMin), glm::dvec3(pMax),
+		glm::dvec3(point),
+		glm::dvec3(plane)
+	);
 
-// 	std::vector<Vertex> vertices;
+	if (res.valid) {
+		if (res.points.size() == 3) {
+			for (auto &p : res.points) {
+				vertices.push_back({ glm::vec3(p) });
+			}
+		} else if (res.points.size() >= 4) {
+			// quad -> 2 triangles
+			vertices.push_back({ glm::vec3(res.points[0]) });
+			vertices.push_back({ glm::vec3(res.points[1]) });
+			vertices.push_back({ glm::vec3(res.points[2]) });
+			vertices.push_back({ glm::vec3(res.points[0]) });
+			vertices.push_back({ glm::vec3(res.points[2]) });
+			vertices.push_back({ glm::vec3(res.points[3]) });
+		}
+	}
 
-// 	// Search bbox
-// 	glm::vec3 pMin{FLT_MAX, FLT_MAX, FLT_MAX};
-// 	glm::vec3 pMax{-FLT_MAX, -FLT_MAX, -FLT_MAX};
-// 	for (auto &p : ps) {
-// 		glm::vec3 glmP = sl::um2glm(p);
-// 		pMin = glm::min(pMin, glmP);
-// 		pMax = glm::max(pMax, glmP);
-// 	}
-
-// 	auto res = intersectPlaneAABB(
-// 		glm::dvec3(pMin), glm::dvec3(pMax),
-// 		glm::dvec3(clippingPlanePoint),
-// 		glm::dvec3(clippingPlaneNormal)
-// 	);
-
-// 	if (res.valid) {
-// 		if (res.points.size() == 3) {
-// 			for (auto &p : res.points) {
-// 				vertices.push_back({ glm::vec3(p) });
-// 			}
-// 		} else if (res.points.size() >= 4) {
-// 			// quad -> 2 triangles
-// 			vertices.push_back({ glm::vec3(res.points[0]) });
-// 			vertices.push_back({ glm::vec3(res.points[1]) });
-// 			vertices.push_back({ glm::vec3(res.points[2]) });
-// 			vertices.push_back({ glm::vec3(res.points[0]) });
-// 			vertices.push_back({ glm::vec3(res.points[2]) });
-// 			vertices.push_back({ glm::vec3(res.points[3]) });
-// 		}
-// 	}
-
-//     writeVBOBuffer(vertices);
-// }
-
-// void ClippingRenderer::render(RendererView &rv, glm::vec3 &position) {
-// 	if (!rv.visible)
-// 		return;
-
-// 	glBindVertexArray(VAO);
-	
-// 	glm::mat4 model = glm::mat4(1.0f);
-// 	model = glm::translate(model, position);
-	
-// 	rv.use(shader);
-// 	shader.setMat4("model", model);
-
-// 	glDrawArrays(GL_TRIANGLES, 0, nelements);
-// }
-
-// void ClippingRenderer::clean() {
-// 	// Clean up
-// 	glDeleteVertexArrays(1, &VAO);
-// 	glDeleteBuffers(1, &VBO);
-// 	shader.clean();
-// }
+	return Renderer::GeometricData{ .vboBuffer = vertices.data(), .texBuffers = {} };
+}

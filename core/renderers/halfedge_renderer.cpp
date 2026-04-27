@@ -101,7 +101,8 @@ Renderer::GeometricData SurfaceHalfedgeRenderer::getData() {
 
 Renderer::GeometricData VolumeHalfedgeRenderer::getData() {
 	// nverts = 24 * _m.ncells() * 6;
-	std::vector<LineVert> vertices;
+	vertices.clear();
+
 
 	for (auto &c : _m.iter_cells()) {
 		int nf = _m.nfacets_per_cell();
@@ -155,8 +156,9 @@ Renderer::GeometricData VolumeHalfedgeRenderer::getData() {
 
 Renderer::GeometricData PolylineRenderer::getData() {
 	// Create vertices
+	vertices.clear();
 	/* 6 vertices per edges : 2 triangles for a rect with each 3 vertices */
-	std::vector<LineVert> vertices(_m.nedges() * 6); 
+	vertices.resize(_m.nedges() * 6);
 
 	for (auto &e : _m.iter_edges()) {
 
@@ -190,40 +192,6 @@ void HalfedgeRenderer::clear() {
 	nelements = 0;
 }
 
-
-
-// void HalfedgeRenderer::init() {
-
-// 	glGenVertexArrays(1, &VAO);
-// 	glGenBuffers(1, &VBO);
-
-// 	glBindVertexArray(VAO);
-// 	glBindBuffer(GL_ARRAY_BUFFER, VBO);
-
-// 	// VBO
-// 	sl::createVBOInteger(shader.id, "halfedgeIndex", sizeof(LineVert), (void*)offsetof(LineVert, halfedgeIndex));
-// 	sl::createVBOVec3(shader.id, "aP0", sizeof(LineVert), (void*)offsetof(LineVert, P0));
-// 	sl::createVBOVec3(shader.id, "aP1", sizeof(LineVert), (void*)offsetof(LineVert, P1));
-// 	sl::createVBOFloat(shader.id, "aSide", sizeof(LineVert), (void*)offsetof(LineVert, side));
-// 	sl::createVBOFloat(shader.id, "aEnd", sizeof(LineVert), (void*)offsetof(LineVert, end));
-// 	sl::createVBOVec3(shader.id, "bary", sizeof(LineVert), (void*)offsetof(LineVert, bary));
-
-// }
-
-// void HalfedgeRenderer::render(RendererView &rv, glm::vec3 &position) {
-// 	if (!rv.visible)
-// 		return;
-
-// 	glBindVertexArray(VAO);
-	
-// 	glm::mat4 model = glm::mat4(1.0f);
-// 	model = glm::translate(model, position);
-	
-// 	rv.use(shader);
-// 	shader.setMat4("model", model);
-
-// 	glDrawArrays(GL_TRIANGLES, 0, nelements);
-// }
 
 // void SurfaceHalfedgeRenderer::push() {
 
