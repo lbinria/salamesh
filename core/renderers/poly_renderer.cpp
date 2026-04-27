@@ -87,7 +87,18 @@ Renderer::GeometricData PolyRenderer::getData() {
 		cornerOff += f.size();
 	}
 
-	return Renderer::GeometricData{ .vboBuffer = vertices.data(), .texBuffers = {{"nvertsPerFacetBuf", GeometricData::TextureBufferData{ .data = nVertsPerFacet.data(), .size = nVertsPerFacet.size() }}} };
+	return Renderer::GeometricData{ 
+		.vboBuffer = vertices.data(), 
+		.texBuffers = {
+			{
+				"nvertsPerFacetBuf", 
+				GeometricData::TextureBufferData{ 
+					.data = nVertsPerFacet.data(), 
+					.size = nVertsPerFacet.size() 
+				}
+			}
+		} 
+	};
 }
 
 void PolyRenderer::clear() {

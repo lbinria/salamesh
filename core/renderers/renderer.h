@@ -87,7 +87,7 @@ struct Renderer {
 	}
 
 	int getElementsCount() const { return nelements; }
-	virtual GeometricData getData() {};
+	virtual GeometricData getData() {}; // TODO to pure
 	virtual size_t getElementSize() { return 0; };
 
 

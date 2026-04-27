@@ -43,6 +43,10 @@ struct PolyRenderer : public MeshRenderer {
 	Renderer::GeometricData getData() override;
 	MaterialInstance getDefaultMaterial() override;
 
+	size_t getElementSize() override {
+		return sizeof(Vertex);
+	}
+
 	void clear() override;
 
 

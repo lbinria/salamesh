@@ -167,7 +167,7 @@ void RenderSystem::updateGeometry(Renderer &renderer) {
 		return;
 
 	size_t size = renderer.getElementSize();
-	Renderer::GeometricData geometricData = renderer.getData();
+	auto geometricData = renderer.getData();
 	// auto usage = renderer->isDrawDynamic() ? GL_DYNAMIC_DRAW : GL_STATIC_DRAW;
 
 	auto &gb = getGeometricBuffers(renderer);
@@ -249,7 +249,7 @@ void RenderSystem::render(Renderer &renderer, ModelState &modelState, glm::mat4 
 	}
 
 	// Eventually bind extras texture buffers
-	int i = 8;
+	int i = 8; // Offset start at 8
 	for (auto [bufName, tb] : gb.texBuffers) {
 		shader.setInt(bufName, i);
 		glActiveTexture(GL_TEXTURE0 + i);
@@ -259,8 +259,8 @@ void RenderSystem::render(Renderer &renderer, ModelState &modelState, glm::mat4 
 
 	mat.apply(shader);
 
-	auto rp = renderer.getRenderPrimitive();
-	glDrawArrays(getGLPrimFromRenderPrimitive(rp), 0, renderer.getElementsCount());
+	auto rp = getGLPrimFromRenderPrimitive(renderer.getRenderPrimitive());
+	glDrawArrays(rp, 0, renderer.getElementsCount());
 }
 
 
