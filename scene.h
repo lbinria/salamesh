@@ -41,14 +41,14 @@ struct Scene : public IScene {
 		renderers.getInstanciator().registerType("PointSetRenderer", [](std::string name) { return std::make_unique<PointSetRenderer>(name); });
 
 		// Init default view
-		auto view = std::make_shared<SceneView>("default", 1024, 768);
-		view->setup();
-		views[view->getName()] = std::move(view);
+		addView("default");
+		addView("test");
 
 		setupCameras();
 
 		// TODO replace by getMainView.setCamera
 		getMainView().getRenderSurface().setCamera(cameras["default"]);
+		views["test"]->getRenderSurface().setCamera(cameras["default"]);
 	}
 
 	void clean() override {
@@ -150,20 +150,40 @@ struct Scene : public IScene {
 
 
 
-	ISceneView& getMainView() { return *views["default"]; }
+	ISceneView& getMainView() override { return *views["default"]; }
+	ISceneView& getCurrentView() override { return *views[selectedView]; }
 	
 	std::map<std::string, std::shared_ptr<ISceneView>>& getViews() { return views; }
 
-	ISceneView& addView(const std::string name) {
+	ISceneView& addView(const std::string name) override {
 		// Init default view
 		auto view = std::make_shared<SceneView>(name, 1024, 768);
 		view->setup();
-		views[view->getName()] = std::move(view);
-		return *views[view->getName()];
+		views[name] = std::move(view);
+		return *views[name];
+	}
+
+	std::string getSelectedView() override {
+		return selectedView;
+	}
+
+	bool setSelectedView(const std::string name) override {
+		if (name.empty())
+			return false;
+
+		if (!views.contains(name)) {
+			std::cerr << "Invalid view selection: " << name << std::endl;
+			return false;
+		}
+
+		selectedView = name;
+		return true;
 	}
 
 	private:
 	IApp &app;
+
+	std::string selectedView = "default";
 
 	std::string selectedModel = "";
 	ModelCollection models;

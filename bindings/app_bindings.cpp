@@ -157,7 +157,13 @@ namespace bindings {
 		scene_t["selected_model"] = sol::property(&IScene::getSelectedModel, &IScene::setSelectedModel);
 		scene_t.set_function("focus", &IScene::focus);
 		scene_t["views"] = sol::readonly_property(&IScene::getViews);
+		
 		scene_t["main_view"] = sol::readonly_property(&IScene::getMainView);
+		scene_t["current_view"] = sol::readonly_property(&IScene::getCurrentView);
+		scene_t["selected_view"] = sol::property(&IScene::getSelectedView, &IScene::setSelectedView);
+
+		scene_t.set_function("add_view", &IScene::addView);
+
 
 		auto sceneView_t = lua.new_usertype<ISceneView>(
 			"ISceneView",

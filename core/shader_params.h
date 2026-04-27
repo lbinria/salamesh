@@ -13,8 +13,8 @@ struct ShaderParams {
 	ShaderParams& operator=(const ShaderParams&) = delete;
 
 	void apply(Shader &shader) const {
-		if (!dirty)
-			return;
+		// if (!dirty)
+		// 	return;
 		
 		doApply(shader);
 		dirty = false;

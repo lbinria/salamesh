@@ -29,5 +29,10 @@ struct IScene {
 	virtual RendererCollection& getRenderers() = 0;
 
 	virtual ISceneView& getMainView() = 0;
+	virtual ISceneView& getCurrentView() = 0;
 	virtual std::map<std::string, std::shared_ptr<ISceneView>>& getViews() = 0;
+	virtual ISceneView& addView(const std::string name) = 0;
+	virtual std::string getSelectedView() = 0;
+	virtual bool setSelectedView(const std::string name) = 0;
+
 };

@@ -29,14 +29,14 @@ function draw_tree(model, k, view)
 			app.scene.camera:look_at_box(model.bbox)
 		end
 
-		draw_model_properties(model, k, app.scene.main_view)
+		draw_model_properties(model, k, app.scene.current_view)
 
 		imgui.Separator()
 
 		for k, child in pairs(app.scene.models) do
 			-- TODO ImGuiTreeNodeFlags_Selected if model selected
 			if (child.parent == model) then 
-				draw_tree(child, k, app.scene.main_view)
+				draw_tree(child, k, app.scene.current_view)
 			end
 		end
 
@@ -401,7 +401,7 @@ function draw_gui()
 
 			for k, model in pairs(app.scene.models) do
 
-				local model_mat = app.scene.main_view:get_materials(model)
+				local model_mat = app.scene.current_view:get_materials(model)
 				local sel_visible, new_visible = imgui.Checkbox(k .. "##" .. k, model_mat.visible)
 				if (sel_visible) then 
 					model_mat.visible = new_visible
@@ -423,7 +423,7 @@ function draw_gui()
 
 			-- Check if app has at least one model, to draw properties of current one (if exists)
 			if (app.scene.models.any) then
-				draw_model_properties(app.scene.model, app.scene.selected_model, app.scene.main_view)
+				draw_model_properties(app.scene.model, app.scene.selected_model, app.scene.current_view)
 			end
 
 			imgui.EndTabItem()
@@ -440,7 +440,7 @@ function draw_gui()
 				for k, model in pairs(app.scene.models) do
 					-- TODO ImGuiTreeNodeFlags_Selected if model selected
 					if (model.parent == nil) then 
-						draw_tree(model, k, app.scene.main_view)
+						draw_tree(model, k, app.scene.current_view)
 					end
 				end
 
@@ -496,6 +496,27 @@ function draw_gui()
 			imgui.Text("Look at: " .. camera.look_at:to_string());
 
 			imgui.EndTabItem()
+		end
+
+		if (imgui.BeginTabItem("Views")) then
+			imgui.Text("Views")
+			imgui.Separator()
+
+			if (imgui.BeginListBox("##list_box_views")) then
+				for k, _ in pairs(app.scene.views) do
+
+					local is_selected = k == app.scene.selected_view
+
+					-- Add unique id to prevent conflicts
+					if (imgui.Selectable(k .. "##list_box_selectable_view_" .. k, is_selected)) then
+						app.scene.selected_view = k
+					end
+					
+				end
+				imgui.EndListBox()
+			end
+			imgui.EndTabItem()
+
 		end
 
 		imgui.EndTabBar()
