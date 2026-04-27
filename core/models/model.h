@@ -249,12 +249,19 @@ struct Model {
 		throw std::runtime_error("Container " + name + " of kind " + elementKindToString(kind) + " not found.");
 	}
 
-	virtual Attribute bindAttr(std::string attrName, ElementKind kind, ElementType type) = 0;
+	// virtual Attribute bindAttr(std::string attrName, ElementKind kind, ElementType type) = 0;
 
 	std::string getName() { return name; }
 
 	bool isDirty() const { return dirty; }
 	void setDirty(bool val) { dirty = val; }
+
+	void clean() {
+		// TODO important clean renderers
+		for (auto &[rendererName, renderer] : _renderers) {
+			// renderer->clean();
+		}
+	}
 
 	protected:
 	std::string _path;

@@ -28,7 +28,7 @@ struct Scene : public IScene {
 		models.getInstanciator().registerType("PolyModel", [](std::string name) { return std::make_unique<PolyModel>(name); });
 		models.getInstanciator().registerType("TetModel", [](std::string name) { return std::make_unique<TetModel>(name); });
 		models.getInstanciator().registerType("HexModel", [](std::string name) { return std::make_unique<HexModel>(name); });
-		// models.getInstanciator().registerType("PolylineModel", [](std::string name) { return std::make_unique<PolylineModel>(name); });
+		models.getInstanciator().registerType("PolylineModel", [](std::string name) { return std::make_unique<PolylineModel>(name); });
 		// models.getInstanciator().registerType("PyramidModel", [](std::string name) { return std::make_unique<PyramidModel>(name); });
 		// models.getInstanciator().registerType("PrismModel", [](std::string name) { return std::make_unique<PrismModel>(name); });
 
@@ -52,11 +52,9 @@ struct Scene : public IScene {
 	}
 
 	void clean() override {
-		// TODO important clean renderers
+		// Clean models
 		for (auto &[modelName, model] : models) {
-			for (auto &[rendererName, renderer] : model->getRenderers()) {
-				// renderer->clean();
-			}
+			model->clean();
 		}
 
 		// Clean views
