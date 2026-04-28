@@ -35,7 +35,7 @@
 #include <iostream>
 #include <cmath>
 
-#include "scene.h"
+#include "core/scene.h"
 #include "core/shader.h"
 
 #include "core/models/model.h"
@@ -114,7 +114,7 @@ struct App final : public IApp {
 
 
 
-	IScene& getScene() override { return scene; }
+	Scene& getScene() override { return scene; }
 
 
 	void clearScene() override;

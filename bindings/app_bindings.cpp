@@ -148,29 +148,29 @@ namespace bindings {
 
 		app_type["scene"] = sol::readonly_property(&IApp::getScene);
 
-		sol::usertype<IScene> scene_t = lua.new_usertype<IScene>("IScene");
+		sol::usertype<Scene> scene_t = lua.new_usertype<Scene>("Scene");
 
-		scene_t.set_function("load_model", &IScene::loadModel);
-		scene_t["models"] = sol::readonly_property(&IScene::getModels);
-		scene_t["model"] = sol::readonly_property(&IScene::getCurrentModel);
-		scene_t["hovered_model"] = sol::readonly_property(&IScene::getHoveredModel);
-		scene_t["selected_model"] = sol::property(&IScene::getSelectedModel, &IScene::setSelectedModel);
-		scene_t.set_function("focus", &IScene::focus);
-		scene_t["views"] = sol::readonly_property(&IScene::getViews);
+		scene_t.set_function("load_model", &Scene::loadModel);
+		scene_t["models"] = sol::readonly_property(&Scene::getModels);
+		scene_t["model"] = sol::readonly_property(&Scene::getCurrentModel);
+		scene_t["hovered_model"] = sol::readonly_property(&Scene::getHoveredModel);
+		scene_t["selected_model"] = sol::property(&Scene::getSelectedModel, &Scene::setSelectedModel);
+		scene_t.set_function("focus", &Scene::focus);
+		scene_t["views"] = sol::readonly_property(&Scene::getViews);
 		
-		scene_t["main_view"] = sol::readonly_property(&IScene::getMainView);
-		scene_t["current_view"] = sol::readonly_property(&IScene::getCurrentView);
-		scene_t["selected_view"] = sol::property(&IScene::getSelectedView, &IScene::setSelectedView);
+		scene_t["main_view"] = sol::readonly_property(&Scene::getMainView);
+		scene_t["current_view"] = sol::readonly_property(&Scene::getCurrentView);
+		scene_t["selected_view"] = sol::property(&Scene::getSelectedView, &Scene::setSelectedView);
 
-		scene_t.set_function("add_view", &IScene::addView);
+		scene_t.set_function("add_view", &Scene::addView);
 
 
-		auto sceneView_t = lua.new_usertype<ISceneView>(
-			"ISceneView",
-			"name", sol::readonly_property(&ISceneView::getName),
-			"get_material", &ISceneView::getMaterial,
-			"get_materials", &ISceneView::getMaterials,
-			"get_state", &ISceneView::getState
+		auto sceneView_t = lua.new_usertype<SceneView>(
+			"SceneView",
+			"name", sol::readonly_property(&SceneView::getName),
+			"get_material", &SceneView::getMaterial,
+			"get_materials", &SceneView::getMaterials,
+			"get_state", &SceneView::getState
 		);
 
 		auto modelState_t = lua.new_usertype<ModelState>(
@@ -295,11 +295,11 @@ namespace bindings {
 		};
 
 
-		scene_t["camera"] = sol::readonly_property(&IScene::getCurrentCamera);
-		scene_t["cameras"] = sol::readonly_property(&IScene::getCameras);
-		scene_t["selected_camera"] = sol::property([](IScene &self) {
+		scene_t["camera"] = sol::readonly_property(&Scene::getCurrentCamera);
+		scene_t["cameras"] = sol::readonly_property(&Scene::getCameras);
+		scene_t["selected_camera"] = sol::property([](Scene &self) {
 			return self.getSelectedCamera();
-		}, [](IScene &self, std::string selected) {
+		}, [](Scene &self, std::string selected) {
 			self.setSelectedCamera(selected);
 		});
 
@@ -369,7 +369,7 @@ namespace bindings {
 		};
 
 
-		scene_t["renderers"] = sol::readonly_property(&IScene::getRenderers);
+		scene_t["renderers"] = sol::readonly_property(&Scene::getRenderers);
 
 
 		app_type["input_state"] = sol::readonly_property(&IApp::getInputState);

@@ -1,6 +1,6 @@
 #pragma once
 
-#include "scene_interface.h"
+#include "scene.h"
 #include "render_surface.h"
 #include "models/model.h"
 #include "input_states.h"
@@ -153,7 +153,7 @@ struct IApp {
 	virtual void clearScene() = 0;
 
 
-	virtual IScene& getScene() = 0;
+	virtual Scene& getScene() = 0;
 
 
 	virtual Snapshot snapshot() = 0;

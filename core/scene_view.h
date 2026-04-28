@@ -1,10 +1,14 @@
 #pragma once
-#include "core/scene_view_interface.h"
-#include "core/material_instance.h"
+#include "material_instance.h"
+#include "model_state.h"
+#include "cameras/camera.h"
+#include "models/model.h"
+#include "renderers/renderer.h"
+#include "render_surface.h"
 
 
 
-struct SceneView : public ISceneView {
+struct SceneView {
 
 	SceneView(std::string name, int width, int height) : name(name), renderSurface(width, height) {}
 
@@ -13,24 +17,24 @@ struct SceneView : public ISceneView {
 	}
 
 	// TODO pass width, height on setup, remove from constructor
-	void setup() override {
+	void setup() {
 		renderSurface.setBackgroundColor(backgroundColor);
 		renderSurface.setup(); 
 	}
 
-	void render(Shader &screenShader, unsigned int quadVAO) override {
+	void render(Shader &screenShader, unsigned int quadVAO) {
 		renderSurface.render(screenShader, quadVAO);
 	}
 
-	void clear() override {
+	void clear() {
 		renderSurface.clear();
 	}
 
-	void resize(int w, int h) override {
+	void resize(int w, int h) {
 		renderSurface.resize(w, h);
 	}
 
-	void clean() override {
+	void clean() {
 		// Clean materials
 		for (auto &[matName, mat] : materials) {
 			mat.clean();
@@ -43,7 +47,7 @@ struct SceneView : public ISceneView {
 		renderSurface.setCamera(camera);
 	}
 
-	RenderSurface &getRenderSurface() override { return renderSurface; }
+	RenderSurface &getRenderSurface() { return renderSurface; }
 
 	MaterialInstance& getMaterial(Renderer &renderer) {
 		return materials.at(renderer.getId());
@@ -83,7 +87,7 @@ struct SceneView : public ISceneView {
 		return modelStates.at(model.getName());
 	}
 
-	// ISceneView& copy(const std::string name) {
+	// SceneView& copy(const std::string name) {
 
 	// }
 

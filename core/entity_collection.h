@@ -1,17 +1,17 @@
 #pragma once
 
 #include "instanciator.h"
-#include "scene_interface.h"
+#include "scene.h"
 
 #include <map>
 #include <memory>
 
-struct IScene;
+struct Scene;
 
 template<typename T>
 struct EntityCollection {
 
-	EntityCollection(IScene &scene) : scene(scene) {
+	EntityCollection(Scene &scene) : scene(scene) {
 
 	}
 
@@ -73,6 +73,6 @@ struct EntityCollection {
 	Instanciator<T> instanciator;
 
 	private:
-	IScene &scene;
+	Scene &scene;
 
 };

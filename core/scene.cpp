@@ -1,4 +1,60 @@
 #include "scene.h"
+#include "app_interface.h"
+
+void Scene::init() {
+	// Register model types
+	models.getInstanciator().registerType("TriModel", [](std::string name) { return std::make_unique<TriModel>(name); });
+	models.getInstanciator().registerType("QuadModel", [](std::string name) { return std::make_unique<QuadModel>(name); });
+	models.getInstanciator().registerType("PolyModel", [](std::string name) { return std::make_unique<PolyModel>(name); });
+	models.getInstanciator().registerType("TetModel", [](std::string name) { return std::make_unique<TetModel>(name); });
+	models.getInstanciator().registerType("HexModel", [](std::string name) { return std::make_unique<HexModel>(name); });
+	models.getInstanciator().registerType("PolylineModel", [](std::string name) { return std::make_unique<PolylineModel>(name); });
+	// models.getInstanciator().registerType("PyramidModel", [](std::string name) { return std::make_unique<PyramidModel>(name); });
+	// models.getInstanciator().registerType("PrismModel", [](std::string name) { return std::make_unique<PrismModel>(name); });
+
+	// Register cameras types
+	cameras.getInstanciator().registerType("DescentCamera", [](std::string name) { return std::make_unique<DescentCamera>(name); });
+	cameras.getInstanciator().registerType("TrackBallCamera", [](std::string name) { return std::make_unique<TrackBallCamera>(name); });
+
+	// Register renderers types
+	renderers.getInstanciator().registerType("LineRenderer", [](std::string name) { return std::make_unique<LineRenderer>(name); });
+	renderers.getInstanciator().registerType("PointSetRenderer", [](std::string name) { return std::make_unique<PointSetRenderer>(name); });
+
+	// Init default view
+	addView("default");
+	addView("test");
+
+	setupCameras();
+
+	// TODO replace by getMainView.setCamera
+	getMainView().getRenderSurface().setCamera(cameras["default"]);
+	views["test"]->getRenderSurface().setCamera(cameras["default"]);
+}
+
+void Scene::clean() {
+	// Clean models
+	for (auto &[modelName, model] : models) {
+		model->clean();
+	}
+
+	// Clean views
+	for (auto &[viewName, view] : views) {
+		view->clean();
+	}
+}
+
+void Scene::clear() {
+	renderers.clear();
+	models.clear();
+	setSelectedModel("");
+	cameras.clear();
+	setupCameras();
+}
+
+std::shared_ptr<Model> Scene::getHoveredModel() {
+	auto hoveredIndex = app.getInputState().mesh.getHovered();
+	return models.getByIndex(hoveredIndex);
+}
 
 std::shared_ptr<Model> Scene::loadModel(const std::string& filename, std::string name) {
 

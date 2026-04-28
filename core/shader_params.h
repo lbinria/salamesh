@@ -1,6 +1,10 @@
 #pragma once 
 #include "shader.h"
+#include "layer.h"
+#include "graphic_api.h"
+
 #include <variant>
+#include <map>
 
 // A group of uniforms
 struct ShaderParams {

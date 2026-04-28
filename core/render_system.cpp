@@ -175,7 +175,7 @@ void RenderSystem::updateGeometry(Renderer &renderer) {
 	renderer.setDirty(false);
 }
 
-void RenderSystem::render(IScene &scene) {
+void RenderSystem::render(Scene &scene) {
 
 	// Check deleted for cleanup
 	for (auto &[modelName, model] : scene.getModels()) {
@@ -184,7 +184,7 @@ void RenderSystem::render(IScene &scene) {
 
 }
 
-void RenderSystem::render(IScene &scene, Model &model) {
+void RenderSystem::render(Scene &scene, Model &model) {
 
 	glm::mat4 transform = glm::mat4(1.0f);
 	transform = glm::translate(transform, model.getPosition());
