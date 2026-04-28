@@ -5,7 +5,8 @@
 #include "models/model.h"
 #include "renderers/renderer.h"
 
-
+#include "../include/json.hpp"
+using json = nlohmann::json;
 
 struct SceneView {
 
@@ -59,6 +60,23 @@ struct SceneView {
 
 		return modelStates.at(model.getName());
 	}
+
+	void saveState(json &j) {
+		j["name"] = name;
+
+		// Save materials states
+		j["materials"] = json::object();
+		for (auto &[k, m] : materials) {
+			m.saveState(j["materials"][k]);
+		}
+		
+		// Save models view states
+		j["model_views"] = json::object();
+		for (auto &[k, m] : modelStates) {
+			m.saveState(j["model_views"][k]);
+		}
+	}
+
 
 	// SceneView& copy(const std::string name) {
 

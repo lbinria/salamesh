@@ -3,6 +3,9 @@
 #include <optional>
 #include <variant>
 
+#include "../include/json.hpp"
+using json = nlohmann::json;
+
 struct MaterialInstance {
 
 	MaterialInstance() = default;
@@ -63,12 +66,19 @@ struct MaterialInstance {
 		return std::ref(*it->second);
 	}
 
-	// TODO add saveState, loadState
 
 	void clean() {
 		for (auto &[bufName, buf] : buffers) {
 			buf->clean();
 		}
+	}
+	
+	// TODO add saveState, loadState
+	void saveState(json &j) {
+		j["visible"] = visible;
+
+		// TODO important implement
+
 	}
 
 	private:

@@ -205,17 +205,23 @@ void Scene::saveState(json &j, const std::string filename) {
 
 	j["selected_model"] = selectedModel;
 	j["selected_camera"] = selectedCamera;
-	j["models"] = json::object();
-	j["cameras"] = json::object();
 
 	// Save models states
+	j["models"] = json::object();
 	for (auto &[k, m] : models) {
 		m->saveState(p.parent_path().string(), j["models"][k]);
 	}
 
 	// Save cameras states
+	j["cameras"] = json::object();
 	for (auto &[k, c] : cameras) {
 		c->saveState(j["cameras"][k]);
+	}
+
+	// Save views states
+	j["views"] = json::object();
+	for (auto &[k, v] : views) {
+		v->saveState(j["views"][k]);
 	}
 
 	// TODO important save renderer states

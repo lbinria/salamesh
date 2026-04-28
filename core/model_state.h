@@ -4,6 +4,9 @@
 #include <set>
 #include <map>
 
+#include "../include/json.hpp"
+using json = nlohmann::json;
+
 struct ModelState {
 
 	std::string getLayerAttrName(Layer layer, ElementKind kind) {
@@ -88,6 +91,20 @@ struct ModelState {
 
 	void cleanUpdateLayerRequests() {
 		updateLayerRequests.clear();
+	}
+
+	void saveState(json &j) {
+		// j["update_attr_requests"] = json::array();
+		// for (auto x : updateAttrRequests) {
+		// 	j["update_attr_requests"].push_back(x);
+		// }
+
+		// j["update_layer_requests"] = updateLayerRequests;
+
+		// j["selected_attr"] = selectedAttr;
+		// j["selected_colormap"] = selectedColormap;
+		// j["activated_layers"] = activatedLayers;
+		// j["attr_name_by_layer_and_kind"] = attrNameByLayerAndKind;
 	}
 
 	private:

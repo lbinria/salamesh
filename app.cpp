@@ -1269,19 +1269,14 @@ void App::saveState(const std::string filename) {
 	std::filesystem::path p = filename;
 
 	json j;
-
-	// Save app states
 	j["header"]["type"] = "state";
+	
 	j["cull_mode"] = cull_mode;
-
-
+	j["nav_path"] = navPath2;
 
 	scene.saveState(j, filename);
 
-	// Save navigation path
-
-
-
+	// Write state file
 	std::ofstream ofs(filename);
 	if (!ofs.is_open()) {
 		std::cerr << "Failed to open file for saving state: " << filename << std::endl;
