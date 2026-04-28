@@ -26,9 +26,10 @@ void Scene::init() {
 
 	setupCameras();
 
-	// TODO replace by getMainView.setCamera
-	getMainView().getRenderSurface().setCamera(cameras["default"]);
-	views["test"]->getRenderSurface().setCamera(cameras["default"]);
+	glm::vec3 backgroundColor{0.05, 0.1, 0.15};
+	renderSurface.setBackgroundColor(backgroundColor);
+	renderSurface.init();
+	renderSurface.setCamera(cameras["default"]);
 }
 
 void Scene::clean() {

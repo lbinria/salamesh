@@ -233,7 +233,6 @@ struct App final : public IApp {
 	Args args;
 
 	GLFWwindow* window;
-	glm::vec3 backgroundColor{0.05, 0.1, 0.15};
 
 	float fps = 0.f;
 	int frameCount = 0;

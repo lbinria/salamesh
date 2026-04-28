@@ -2,7 +2,7 @@
 
 #include <iostream>
 
-void RenderSurface::setup() {
+void RenderSurface::init() {
 	// Framebuffer !
 	glGenFramebuffers(1, &fbo);
 	glBindFramebuffer(GL_FRAMEBUFFER, fbo);

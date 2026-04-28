@@ -10,28 +10,10 @@
 
 struct SceneView {
 
-	SceneView(std::string name, int width, int height) : name(name), renderSurface(width, height) {}
+	SceneView(std::string name, int width, int height) : name(name) {}
 
 	std::string getName() const {
 		return name;
-	}
-
-	// TODO pass width, height on setup, remove from constructor
-	void setup() {
-		renderSurface.setBackgroundColor(backgroundColor);
-		renderSurface.setup(); 
-	}
-
-	void render(Shader &screenShader, unsigned int quadVAO) {
-		renderSurface.render(screenShader, quadVAO);
-	}
-
-	void clear() {
-		renderSurface.clear();
-	}
-
-	void resize(int w, int h) {
-		renderSurface.resize(w, h);
 	}
 
 	void clean() {
@@ -39,15 +21,7 @@ struct SceneView {
 		for (auto &[matName, mat] : materials) {
 			mat.clean();
 		}
-		
-		renderSurface.clean();
 	}
-
-	void setCamera(std::shared_ptr<Camera> camera) {
-		renderSurface.setCamera(camera);
-	}
-
-	RenderSurface &getRenderSurface() { return renderSurface; }
 
 	MaterialInstance& getMaterial(Renderer &renderer) {
 		return materials.at(renderer.getId());
@@ -93,8 +67,6 @@ struct SceneView {
 
 	private:
 	std::string name;
-	glm::vec3 backgroundColor{0.05, 0.1, 0.15};
-	RenderSurface renderSurface;
 
 	std::map<std::string, MaterialInstance> materials; // material by renderer
 	std::map<std::string, ModelState> modelStates; // model state by model

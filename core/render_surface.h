@@ -28,7 +28,7 @@ struct RenderSurface {
 	glm::vec3 backgroundColor;
 
 
-	void setup();
+	void init();
 	void bind();
 	void clear();
 	void render(Shader &screenShader, unsigned int quadVAO);
