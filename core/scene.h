@@ -117,19 +117,46 @@ struct Scene {
 	
 	std::map<std::string, std::shared_ptr<SceneView>>& getViews() { return views; }
 	std::shared_ptr<SceneView> getView(const std::string name) { return views[name]; }
-	
-	std::map<std::string, std::shared_ptr<RenderSurface>>& getRenderSurfaces() { return renderSurfaces; }
+	SceneView& getDefaultView() { return *getView("default"); }
 
-	SceneView& addView(const std::string name) {
-		// Init default view
-		auto view = std::make_shared<SceneView>(name, 1024, 768);
-		views[name] = std::move(view);
-		return *views[name];
+	std::shared_ptr<SceneView> addView(const std::string name) {
+		if (views.contains(name))
+			return views.at(name);
+		
+		auto view = std::make_shared<SceneView>(name);
+		views[name] = view;
+		return views[name];
+	}
+
+	bool removeView(const std::string name) {
+		if (name == "default" || !views.contains(name))
+			return false;
+
+		views.erase(name);
+		return true;
 	}
 
 
+	std::map<std::string, std::shared_ptr<RenderSurface>>& getRenderSurfaces() { return renderSurfaces; }
+	std::shared_ptr<RenderSurface> getRenderSurface(const std::string name) { return renderSurfaces[name]; }
+	RenderSurface& getDefaultRenderSurface() { return *getRenderSurface("default"); }
 
-	RenderSurface &getDefaultRenderSurface() { return *renderSurfaces["default"]; }
+	// bool addRenderSurface(const std::string name) {
+	// 	if (renderSurfaces.contains(name))
+	// 		return false;
+		
+	// 	auto renderSurface = std::make_shared<RenderSurface>(name);
+	// 	renderSurfaces[name] = renderSurface;
+	// 	return true;
+	// }
+
+	// bool removeRenderSurface(const std::string name) {
+	// 	if (name == "default" || !renderSurfaces.contains(name))
+	// 		return false;
+
+	// 	renderSurfaces.erase(name);
+	// 	return true;
+	// }
 
 	private:
 	IApp &app;

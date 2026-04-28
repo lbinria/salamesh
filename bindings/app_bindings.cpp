@@ -158,8 +158,11 @@ namespace bindings {
 		scene_t.set_function("focus", &Scene::focus);
 
 		scene_t["views"] = sol::readonly_property(&Scene::getViews);
+		scene_t["default_view"] = sol::readonly_property(&Scene::getDefaultView);
 		scene_t.set_function("get_view", &Scene::getView);
+		
 		scene_t.set_function("add_view", &Scene::addView);
+		scene_t.set_function("remove_view", &Scene::removeView);
 
 		auto sceneView_t = lua.new_usertype<SceneView>(
 			"SceneView",

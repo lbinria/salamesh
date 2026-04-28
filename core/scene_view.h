@@ -9,7 +9,7 @@
 
 struct SceneView {
 
-	SceneView(std::string name, int width, int height) : name(name) {}
+	SceneView(std::string name) : name(name) {}
 
 	std::string getName() const {
 		return name;

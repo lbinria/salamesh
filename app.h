@@ -275,7 +275,6 @@ struct App final : public IApp {
 
 
 	// Current navigation path of the app
-	std::vector<std::string> navPath; // TODO remove
 	NavigationPath navPath2;
 
 	RenderSystem renderSystem;

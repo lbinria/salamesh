@@ -27,7 +27,7 @@ void Scene::init() {
 	setupCameras();
 
 	// Init default render surface
-	auto renderSurface = std::make_shared<RenderSurface>(0, 0);
+	auto renderSurface = std::make_shared<RenderSurface>(1, 1);
 	renderSurface->setBackgroundColor({0.05, 0.1, 0.15});
 	renderSurface->init();
 	// Set default camera to default render surface

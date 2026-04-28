@@ -1,3 +1,5 @@
+view_count = 0
+
 function init()
 	print("Load scene module")
 	print("Number of models: " .. tostring(app.scene.models.count))
@@ -397,11 +399,20 @@ function draw_gui()
 
 	if (imgui.BeginTabBar("Scene Tabs")) then 
 
+		local default_view = app.scene.default_render_surface.view
+
 		if (imgui.BeginTabItem("Flat view")) then
+
+
+			-- No view set to render surface => skip !
+			if not default_view then 
+				return
+			end
+
 
 			for k, model in pairs(app.scene.models) do
 
-				local model_mat = app.scene.default_render_surface.view:get_materials(model)
+				local model_mat = default_view:get_materials(model)
 				local sel_visible, new_visible = imgui.Checkbox(k .. "##" .. k, model_mat.visible)
 				if (sel_visible) then 
 					model_mat.visible = new_visible
@@ -423,7 +434,7 @@ function draw_gui()
 
 			-- Check if app has at least one model, to draw properties of current one (if exists)
 			if (app.scene.models.any) then
-				draw_model_properties(app.scene.model, app.scene.selected_model, app.scene.default_render_surface.view)
+				draw_model_properties(app.scene.model, app.scene.selected_model, default_view)
 			end
 
 			imgui.EndTabItem()
@@ -440,7 +451,7 @@ function draw_gui()
 				for k, model in pairs(app.scene.models) do
 					-- TODO ImGuiTreeNodeFlags_Selected if model selected
 					if (model.parent == nil) then 
-						draw_tree(model, k, app.scene.default_render_surface.view)
+						draw_tree(model, k, default_view)
 					end
 				end
 
@@ -505,7 +516,10 @@ function draw_gui()
 			if (imgui.BeginListBox("##list_box_views")) then
 				for k, _ in pairs(app.scene.views) do
 
-					local is_selected = k == app.scene.default_render_surface.view.name
+					local is_selected = false 
+					if default_view then 
+						is_selected = k ==  default_view.name
+					end
 
 					-- Add unique id to prevent conflicts
 					if (imgui.Selectable(k .. "##list_box_selectable_view_" .. k, is_selected)) then
@@ -517,6 +531,17 @@ function draw_gui()
 				imgui.EndListBox()
 			end
 			imgui.EndTabItem()
+
+			if (imgui.SmallButton("+##btn_add_view")) then
+				view_count = view_count + 1
+				app.scene:add_view("view_" .. view_count)
+			end
+			imgui.SameLine()
+			if (imgui.SmallButton("-##btn_remove_view")) then
+				local cur_view_name = default_view.name
+				app.scene:remove_view(cur_view_name)
+				app.scene.default_render_surface.view = app.scene.default_view
+			end
 
 		end
 

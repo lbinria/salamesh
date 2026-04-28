@@ -1279,7 +1279,6 @@ void App::saveState(const std::string filename) {
 	scene.saveState(j, filename);
 
 	// Save navigation path
-	j["nav_path"] = navPath;
 
 
 
