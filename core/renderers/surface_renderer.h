@@ -14,7 +14,6 @@
 using json = nlohmann::json;
 
 #include "mesh_renderer.h"
-#include "../element.h"
 using namespace UM;
 
 struct SurfaceRenderer : public MeshRenderer {

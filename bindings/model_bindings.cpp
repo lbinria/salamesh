@@ -5,7 +5,7 @@
 #include "../core/models/polyline_model.h"
 #include "../core/models/surface_model.h"
 #include "../core/models/volume_model.h"
-#include "../core/attribute.h"
+#include "../core/data/attribute.h"
 
 namespace bindings {
 

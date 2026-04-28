@@ -22,10 +22,9 @@ set(SOURCES
     script.h
     lua_script.h
     module.h
-    attribute.h
-    element.h
+    
     input_states.h 
-    data/all.h data/image.h data/snapshot.h data/colormap.h
+    data/all.h data/image.h data/snapshot.h data/colormap.h data/attribute.h data/element.h
     navigation_path.h 
 
     shader.cpp shader.h 
@@ -48,7 +47,6 @@ set(SOURCES
 
     renderers/renderer_info.h
     renderers/renderer.h
-    renderers/renderer_view.h
     renderers/mesh_renderer.h
     renderers/line_renderer.cpp renderers/line_renderer.h
     renderers/point_set_renderer.cpp renderers/point_set_renderer.h

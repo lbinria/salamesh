@@ -1,10 +1,10 @@
 #pragma once
 
-#include "../element.h"
+#include "../data/element.h"
 #include "../layer.h"
 
 #include "../shader.h"
-#include "../attribute.h"
+#include "../data/attribute.h"
 #include "../../include/glm/glm.hpp"
 
 #include "../../include/json.hpp"
@@ -12,7 +12,6 @@ using json = nlohmann::json;
 
 #include "../helpers.h"
 
-#include "../renderers/renderer_view.h"
 #include "../material_instance.h"
 
 struct Renderer {
@@ -127,20 +126,9 @@ struct Renderer {
 	mutable bool dirty = true;
 	mutable bool isRemoveRequested = false;
 
-	// unsigned int VAO, VBO; // Buffers
-
-
 
 	int nelements = 0;
 
-	// template<typename T>
-	// void writeVBOBuffer(std::vector<T> data, bool dynamicDraw = false) {
-	// 	auto drawType = dynamicDraw ? GL_DYNAMIC_DRAW : GL_STATIC_DRAW;
-	// 	nelements = data.size();
-	// 	glBindVertexArray(VAO);
-	// 	glBindBuffer(GL_ARRAY_BUFFER, VBO);
-	// 	glBufferData(GL_ARRAY_BUFFER, nelements * sizeof(T), data.data(), drawType);
-	// }
 
 	protected: 
 
@@ -153,7 +141,6 @@ struct Renderer {
 	virtual void doLoadState(json &j) = 0;
 	virtual void doSaveState(json &j) const = 0;
 
-	std::map<std::string, std::shared_ptr<RendererView>> views;
 
 
 };

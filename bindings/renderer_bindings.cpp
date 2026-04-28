@@ -1,7 +1,6 @@
 #include "renderer_bindings.h"
 
 #include "../core/renderers/renderer.h"
-#include "../core/renderers/renderer_view.h"
 #include "../core/renderers/mesh_renderer.h"
 #include "../core/renderers/point_set_renderer.h"
 #include "../core/renderers/halfedge_renderer.h"
@@ -10,38 +9,6 @@
 namespace bindings {
 
 	void RendererBindings::loadBindings(sol::state &lua, IApp &app) {
-
-		sol::usertype<RendererView> rendererView_t = lua.new_usertype<RendererView>("RendererView");
-		rendererView_t["visible"] = sol::property(&RendererView::visible, &RendererView::visible);
-
-		sol::usertype<PointSetRendererView> pointSetRendererView_t = lua.new_usertype<PointSetRendererView>(
-			"PointSetRendererView",
-			sol::base_classes, 
-			sol::bases<RendererView>(),
-			"color", sol::property(&PointSetRendererView::getColor, &PointSetRendererView::setColor),
-			"size", sol::property(&PointSetRendererView::getPointSize, &PointSetRendererView::setPointSize)
-		);
-
-		sol::usertype<MeshRendererView> meshRendererView = lua.new_usertype<MeshRendererView>(
-			"MeshRendererView",
-			sol::base_classes, 
-			sol::bases<RendererView>(),
-			"color", sol::property(&MeshRendererView::getColor, &MeshRendererView::setColor),
-			"size", sol::property(&MeshRendererView::getMeshSize, &MeshRendererView::setMeshSize),
-			"shrink", sol::property(&MeshRendererView::getMeshShrink, &MeshRendererView::setMeshShrink),
-			"corner_visible", sol::property(&MeshRendererView::getCornerVisible, &MeshRendererView::setCornerVisible)
-		);
-
-		sol::usertype<HalfedgeRendererView> halfedgeRendererView_t = lua.new_usertype<HalfedgeRendererView>(
-			"HalfedgeRendererView",
-			sol::base_classes, 
-			sol::bases<RendererView>(),
-			"inside_color", sol::property(&HalfedgeRendererView::getInsideColor, &HalfedgeRendererView::setInsideColor),
-			"outside_color", sol::property(&HalfedgeRendererView::getOutsideColor, &HalfedgeRendererView::setOutsideColor),
-			"thickness", sol::property(&HalfedgeRendererView::getThickness, &HalfedgeRendererView::setThickness),
-			"spacing", sol::property(&HalfedgeRendererView::getSpacing, &HalfedgeRendererView::setSpacing),
-			"padding", sol::property(&HalfedgeRendererView::getPadding, &HalfedgeRendererView::setPadding)
-		);
 
 
 		sol::usertype<Renderer> renderer_t = lua.new_usertype<Renderer>("Renderer");
