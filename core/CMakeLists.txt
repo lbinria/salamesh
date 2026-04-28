@@ -25,6 +25,7 @@ set(SOURCES
     attribute.h
     element.h
     input_states.h 
+    data/all.h data/image.h data/snapshot.h data/colormap.h
     navigation_path.h 
 
     shader.cpp shader.h 
