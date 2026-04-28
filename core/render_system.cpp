@@ -149,9 +149,9 @@ void RenderSystem::updateLayer(Model &model, ModelState &modelState, MaterialIns
 	}
 }
 
-void RenderSystem::updateGeometry(Renderer &renderer) {
+bool RenderSystem::updateGeometry(Renderer &renderer) {
 	if (!renderer.isDirty())
-		return;
+		return false;
 
 	size_t size = renderer.getElementSize();
 	auto geometricData = renderer.getData();
@@ -173,6 +173,7 @@ void RenderSystem::updateGeometry(Renderer &renderer) {
 	}
 
 	renderer.setDirty(false);
+	return true;
 }
 
 void RenderSystem::render(Scene &scene) {
@@ -191,15 +192,19 @@ void RenderSystem::render(Scene &scene, Model &model) {
 
 	// Update model geometric data, if request made
 	for (auto &[rendererName, renderer] : model.getRenderers()) {
-		updateGeometry(*renderer);
+		if (updateGeometry(*renderer)) {
+			// Geometry was update ? request refresh layers for all views
+			for (auto &[renderSurfaceName, renderSurface] : scene.getRenderSurfaces()) {
+				auto view = renderSurface->getView();
+				auto &modelState = view->getState(model);
+				modelState.refreshLayers();
+			}
+		}
 	}
 
-	// 
-	// for (auto &[viewName, view] : scene.getViews()) {
 	for (auto &[renderSurfaceName, renderSurface] : scene.getRenderSurfaces()) {
 
 		auto view = renderSurface->getView();
-
 		auto &modelState = view->getState(model);
 		
 		for (auto &[rendererName, renderer] : model.getRenderers()) {
@@ -209,6 +214,8 @@ void RenderSystem::render(Scene &scene, Model &model) {
 			updateAttr(model, modelState, mat);
 			updateLayer(model, modelState, mat);
 			render(*renderer, modelState, transform, model.getIndex(), mat);
+
+			renderer->setDirty(false);
 		}
 
 		modelState.cleanUpdateAttrRequests();

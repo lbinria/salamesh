@@ -26,7 +26,7 @@ struct RenderSystem {
 	void render(Scene &scene, Model &model);
 	void render(Renderer &renderer, ModelState &modelState, glm::mat4 &transform, int meshIndex, MaterialInstance &mat);
 
-	void updateGeometry(Renderer &renderer);
+	bool updateGeometry(Renderer &renderer);
 
 	void updateAttr(Model &model, ModelState &modelState, MaterialInstance &mat);
 	void updateLayer(Model &model, ModelState &modelState, MaterialInstance &mat);

@@ -51,6 +51,20 @@ struct ModelState {
 		updateLayerRequests.insert({layer, kind});
 	}
 
+	// Use when geometry changed to refresh activated layers according to new geometry
+	void refreshLayers() {
+		for (auto &[lk, activated] : activatedLayers) {
+			if (!activated)
+				continue;
+
+			auto layer = std::get<0>(lk);
+			auto kind = std::get<1>(lk);
+
+			// Request the layer update to render system !
+			updateLayerRequests.insert({layer, kind});
+		}
+	}
+
 	void setSelectedColormap(int idx, ColormapLayer layer) {
 		selectedColormap[static_cast<int>(layer)] = idx;
 	}
