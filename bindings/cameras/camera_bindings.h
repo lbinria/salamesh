@@ -1,5 +1,5 @@
 #pragma once 
-#include "lua_binding.h"
+#include "../lua_binding.h"
 
 namespace bindings {
 

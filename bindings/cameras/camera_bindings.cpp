@@ -1,6 +1,5 @@
 #include "camera_bindings.h"
-
-#include "../core/cameras/camera.h"
+#include "../../core/cameras/camera.h"
 
 namespace bindings {
 

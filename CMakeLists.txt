@@ -120,13 +120,23 @@ add_executable(salamesh
 
 
   bindings/imgui_bindings.h bindings/imgui_bindings.cpp
+
+  bindings/scene_bindings.h
+  bindings/data/element_bindings.h
+  bindings/data/image_bindings.h
+  bindings/data/colormap_bindings.h
+  bindings/data/snapshot_bindings.h
+  bindings/cameras/camera_bindings.h
+  bindings/cameras/camera_bindings.cpp
+  bindings/models/model_bindings.h
+  bindings/models/model_bindings.cpp
+
   bindings/app_bindings.h bindings/app_bindings.cpp
-  bindings/camera_bindings.h bindings/camera_bindings.cpp
-  bindings/model_bindings.h bindings/model_bindings.cpp
   bindings/glm_bindings.h bindings/glm_bindings.cpp
   bindings/fs_bindings.h bindings/fs_bindings.cpp
   bindings/um_bindings.h bindings/um_bindings.cpp
   bindings/renderer_bindings.h bindings/renderer_bindings.cpp
+  
 
   # some include files to build with the executable
   include/stb_include.cpp 

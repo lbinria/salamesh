@@ -7,22 +7,6 @@ namespace bindings {
 
 	void AppBindings::loadBindings(sol::state &lua, IApp &app) {
 
-		// Image type binding
-		sol::usertype<Image> image_t = lua.new_usertype<Image>("Image", 
-			sol::constructors<Image()>(),
-			"tex_id", sol::readonly_property(&Image::getTexId),
-			"width", sol::readonly_property(&Image::getWidth),
-			"height", sol::readonly_property(&Image::getHeight),
-			"channels", sol::readonly_property(&Image::getChannels)
-		);
-
-		// Snapshot type binding
-		sol::usertype<Snapshot> snapshot_t = lua.new_usertype<Snapshot>("Snapshot", 
-			sol::constructors<Snapshot()>(),
-			"state_filename", sol::readonly_property(&Snapshot::getStateFilename),
-			"thumb_filename", sol::readonly_property(&Snapshot::getThumbfilename),
-			"image", sol::readonly_property(&Snapshot::getImage)
-		);
 
 		// Instanciator type binding
 		lua.new_usertype<Instanciator<Model>>("ModelInstanciator", 
@@ -97,13 +81,7 @@ namespace bindings {
 
 
 
-		sol::usertype<Colormap> colormap_t = lua.new_usertype<Colormap>("Colormap", 
-			sol::constructors<Colormap()>(),
-			"name", sol::readonly_property(&Colormap::name),
-			"width", sol::readonly_property(&Colormap::width),
-			"height", sol::readonly_property(&Colormap::height),
-			"tex", sol::readonly_property(&Colormap::tex)
-		);
+
 
 		sol::usertype<NavigationPath> navigationPath_t = lua.new_usertype<NavigationPath>("NavigationPath",
 			"get", &NavigationPath::get,
@@ -125,9 +103,6 @@ namespace bindings {
 			// }
 		);
 
-		// General functions 
-		lua.set_function("element_kind_to_string", &elementKindToString);
-		lua.set_function("element_type_to_string", &elementTypeToString);
 
 		// App bindings
 		lua["app"] = &app;
@@ -148,21 +123,7 @@ namespace bindings {
 
 		app_type["scene"] = sol::readonly_property(&IApp::getScene);
 
-		sol::usertype<Scene> scene_t = lua.new_usertype<Scene>("Scene");
 
-		scene_t.set_function("load_model", &Scene::loadModel);
-		scene_t["models"] = sol::readonly_property(&Scene::getModels);
-		scene_t["model"] = sol::readonly_property(&Scene::getCurrentModel);
-		scene_t["hovered_model"] = sol::readonly_property(&Scene::getHoveredModel);
-		scene_t["selected_model"] = sol::property(&Scene::getSelectedModel, &Scene::setSelectedModel);
-		scene_t.set_function("focus", &Scene::focus);
-
-		scene_t["views"] = sol::readonly_property(&Scene::getViews);
-		scene_t["default_view"] = sol::readonly_property(&Scene::getDefaultView);
-		scene_t.set_function("get_view", &Scene::getView);
-		
-		scene_t.set_function("add_view", &Scene::addView);
-		scene_t.set_function("remove_view", &Scene::removeView);
 
 		auto sceneView_t = lua.new_usertype<SceneView>(
 			"SceneView",
@@ -172,8 +133,7 @@ namespace bindings {
 			"get_state", &SceneView::getState
 		);
 
-		scene_t["default_render_surface"] = sol::readonly_property(&Scene::getDefaultRenderSurface);
-		scene_t["render_surfaces"] = sol::readonly_property(&Scene::getRenderSurfaces);
+
 
 		auto renderSurface_t = lua.new_usertype<RenderSurface>(
 			"RenderSurface",
@@ -303,13 +263,7 @@ namespace bindings {
 		};
 
 
-		scene_t["camera"] = sol::readonly_property(&Scene::getCurrentCamera);
-		scene_t["cameras"] = sol::readonly_property(&Scene::getCameras);
-		scene_t["selected_camera"] = sol::property([](Scene &self) {
-			return self.getSelectedCamera();
-		}, [](Scene &self, std::string selected) {
-			self.setSelectedCamera(selected);
-		});
+
 
 		sol::usertype<CameraCollection> cameraCollection_t = lua.new_usertype<CameraCollection>("CameraCollection",
 			"add", &CameraCollection::add,
@@ -377,7 +331,6 @@ namespace bindings {
 		};
 
 
-		scene_t["renderers"] = sol::readonly_property(&Scene::getRenderers);
 
 
 		app_type["input_state"] = sol::readonly_property(&IApp::getInputState);
@@ -434,8 +387,6 @@ namespace bindings {
 		app_type["is_ui_hovered"] = sol::readonly_property(&IApp::isUIHovered);
 
 		// Modules
-		// app_type.set_function("load_module", &IApp::loadModule);
-
 		app_type["is_debug"] = sol::readonly_property(&IApp::isDebug);
 	}
 }

@@ -6,8 +6,7 @@
 namespace bindings {
 
 	struct LuaBinding {
-    	// LuaBinding() = default;
-		// virtual ~LuaBinding() = default;
+
 		virtual void loadBindings(sol::state &lua, IApp &app) = 0;
 
 	};
