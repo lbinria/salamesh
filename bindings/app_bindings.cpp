@@ -156,14 +156,10 @@ namespace bindings {
 		scene_t["hovered_model"] = sol::readonly_property(&Scene::getHoveredModel);
 		scene_t["selected_model"] = sol::property(&Scene::getSelectedModel, &Scene::setSelectedModel);
 		scene_t.set_function("focus", &Scene::focus);
+
 		scene_t["views"] = sol::readonly_property(&Scene::getViews);
-		
-		scene_t["main_view"] = sol::readonly_property(&Scene::getMainView);
-		scene_t["current_view"] = sol::readonly_property(&Scene::getCurrentView);
-		scene_t["selected_view"] = sol::property(&Scene::getSelectedView, &Scene::setSelectedView);
-
+		scene_t.set_function("get_view", &Scene::getView);
 		scene_t.set_function("add_view", &Scene::addView);
-
 
 		auto sceneView_t = lua.new_usertype<SceneView>(
 			"SceneView",
@@ -172,6 +168,15 @@ namespace bindings {
 			"get_materials", &SceneView::getMaterials,
 			"get_state", &SceneView::getState
 		);
+
+		scene_t["default_render_surface"] = sol::readonly_property(&Scene::getDefaultRenderSurface);
+		scene_t["render_surfaces"] = sol::readonly_property(&Scene::getRenderSurfaces);
+
+		auto renderSurface_t = lua.new_usertype<RenderSurface>(
+			"RenderSurface",
+			"view", sol::property(&RenderSurface::getView, &RenderSurface::setView)
+		);
+
 
 		auto modelState_t = lua.new_usertype<ModelState>(
 			"ModelState",

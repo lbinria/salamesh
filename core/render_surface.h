@@ -1,4 +1,6 @@
 #pragma once
+
+#include "scene_view.h"
 #include "cameras/camera.h"
 #include "shader.h"
 
@@ -11,7 +13,6 @@ struct RenderSurface {
 	
 	RenderSurface(int w, int h) : width(w), height(h) {
 
-		
 	}
 
 	unsigned int fbo;
@@ -42,6 +43,14 @@ struct RenderSurface {
 		_camera->updateScreenSize(width, height);
 	}
 
+	std::shared_ptr<SceneView> getView() {
+		return _view;
+	}
+
+	void setView(std::shared_ptr<SceneView> view) {
+		_view = view;
+	}
+
 	void setBackgroundColor(glm::vec3 color) {
 		backgroundColor = color;
 	}
@@ -49,6 +58,7 @@ struct RenderSurface {
 	Camera& getCamera() { return *_camera; }
 
 	private:
+	std::shared_ptr<SceneView> _view;
 	std::shared_ptr<Camera> _camera;
 
 };

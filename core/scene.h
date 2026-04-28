@@ -1,5 +1,7 @@
 #pragma once
 #include "app_interface.h"
+
+#include "render_surface.h"
 #include "scene_view.h"
 
 #include "cameras/trackball_camera.h"
@@ -112,11 +114,11 @@ struct Scene {
 	void saveState(json &j, const std::string filename);
 
 
-
-	SceneView& getMainView() { return *views["default"]; }
-	SceneView& getCurrentView() { return *views[selectedView]; }
 	
 	std::map<std::string, std::shared_ptr<SceneView>>& getViews() { return views; }
+	std::shared_ptr<SceneView> getView(const std::string name) { return views[name]; }
+	
+	std::map<std::string, std::shared_ptr<RenderSurface>>& getRenderSurfaces() { return renderSurfaces; }
 
 	SceneView& addView(const std::string name) {
 		// Init default view
@@ -125,29 +127,12 @@ struct Scene {
 		return *views[name];
 	}
 
-	std::string getSelectedView() {
-		return selectedView;
-	}
 
-	bool setSelectedView(const std::string name) {
-		if (name.empty())
-			return false;
 
-		if (!views.contains(name)) {
-			std::cerr << "Invalid view selection: " << name << std::endl;
-			return false;
-		}
-
-		selectedView = name;
-		return true;
-	}
-
-	RenderSurface &getRenderSurface() { return *renderSurfaces["default"]; }
+	RenderSurface &getDefaultRenderSurface() { return *renderSurfaces["default"]; }
 
 	private:
 	IApp &app;
-
-	std::string selectedView = "default";
 
 	std::string selectedModel = "";
 	ModelCollection models;

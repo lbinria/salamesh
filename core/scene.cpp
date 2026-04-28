@@ -30,8 +30,13 @@ void Scene::init() {
 	auto renderSurface = std::make_shared<RenderSurface>(0, 0);
 	renderSurface->setBackgroundColor({0.05, 0.1, 0.15});
 	renderSurface->init();
+	// Set default camera to default render surface
 	renderSurface->setCamera(cameras["default"]);
+	// Set default view to default render surface
+	renderSurface->setView(views["default"]);
 	renderSurfaces.emplace("default", renderSurface);
+
+
 }
 
 void Scene::clean() {

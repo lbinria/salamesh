@@ -195,7 +195,10 @@ void RenderSystem::render(Scene &scene, Model &model) {
 	}
 
 	// 
-	for (auto &[viewName, view] : scene.getViews()) {
+	// for (auto &[viewName, view] : scene.getViews()) {
+	for (auto &[renderSurfaceName, renderSurface] : scene.getRenderSurfaces()) {
+
+		auto view = renderSurface->getView();
 
 		auto &modelState = view->getState(model);
 		
