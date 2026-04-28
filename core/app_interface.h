@@ -15,18 +15,6 @@
 #include "models/model_collection.h"
 #include <string>
 
-
-
-
-
-
-
-
-
-
-
-
-
 struct IApp {
 
 	virtual void quit() = 0;

@@ -56,7 +56,7 @@ set(SOURCES
     renderers/bbox_renderer/bbox_renderer.cpp renderers/bbox_renderer/bbox_renderer.h
     renderers/clipping_renderer.cpp renderers/clipping_renderer.h
     renderers/surface_renderer.cpp renderers/surface_renderer.h
-    renderers/surface_renderer2.cpp renderers/surface_renderer2.h
+
     renderers/volume_renderer.cpp renderers/volume_renderer.h
     renderers/tri_renderer.cpp renderers/tri_renderer.h
     renderers/poly_renderer.cpp renderers/poly_renderer.h
