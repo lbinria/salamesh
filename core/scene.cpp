@@ -26,10 +26,12 @@ void Scene::init() {
 
 	setupCameras();
 
-	glm::vec3 backgroundColor{0.05, 0.1, 0.15};
-	renderSurface.setBackgroundColor(backgroundColor);
-	renderSurface.init();
-	renderSurface.setCamera(cameras["default"]);
+	// Init default render surface
+	auto renderSurface = std::make_shared<RenderSurface>(0, 0);
+	renderSurface->setBackgroundColor({0.05, 0.1, 0.15});
+	renderSurface->init();
+	renderSurface->setCamera(cameras["default"]);
+	renderSurfaces.emplace("default", renderSurface);
 }
 
 void Scene::clean() {

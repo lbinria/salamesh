@@ -25,7 +25,7 @@ struct IApp;
 
 struct Scene {
 	
-	Scene(IApp &app) : app(app), models(*this), cameras(*this), renderers(*this), renderSurface(0, 0) {}
+	Scene(IApp &app) : app(app), models(*this), cameras(*this), renderers(*this) {}
 
 
 	void init();
@@ -87,8 +87,11 @@ struct Scene {
 			return false;
 		}
 
-		// Set camera to render surface
-		renderSurface.setCamera(cameras[selected]);
+		// Set camera to render surfaces (same camera for all for now)
+		for (auto &[renderSurfaceName, renderSurface] : renderSurfaces) {
+			renderSurface->setCamera(cameras[selected]);
+		}
+
 		selectedCamera = selected;
 		return true;
 	}
@@ -139,7 +142,7 @@ struct Scene {
 		return true;
 	}
 
-	RenderSurface &getRenderSurface() { return renderSurface; }
+	RenderSurface &getRenderSurface() { return *renderSurfaces["default"]; }
 
 	private:
 	IApp &app;
@@ -155,8 +158,7 @@ struct Scene {
 	RendererCollection renderers;
 
 	std::map<std::string, std::shared_ptr<SceneView>> views;
-
-	RenderSurface renderSurface;
+	std::map<std::string, std::shared_ptr<RenderSurface>> renderSurfaces;
 	
 
 
