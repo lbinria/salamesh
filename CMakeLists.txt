@@ -27,7 +27,7 @@ IF(WIN32)
 	add_subdirectory(include/glfw)
 
   # Set the path to the Lua library and include directory
-  set(LUA_DIR "${CMAKE_SOURCE_DIR}/libs/lua-5.4.2_Win64_dll17_lib")
+  set(LUA_DIR "${CMAKE_CURRENT_SOURCE_DIR}/libs/lua-5.4.2_Win64_dll17_lib")
   set(LUA_INCLUDE_DIR "${LUA_DIR}/include")
   set(LUA_LIB_DIR "${LUA_DIR}")
 
