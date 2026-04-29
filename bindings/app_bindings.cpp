@@ -193,31 +193,31 @@ namespace bindings {
 			"enabled", sol::property(&LightParams::getEnabled, &LightParams::setEnabled)
 		);
 
-		sol::usertype<PointSetParams> pointSetParams_t = lua.new_usertype<PointSetParams>(
-			sol::base_classes, sol::bases<ShaderParams>(),
-			"PointSetParams",
-			"color", sol::property(&PointSetParams::getColor, &PointSetParams::setColor),
-			"size", sol::property(&PointSetParams::getSize, &PointSetParams::setSize)
-		);
+		// sol::usertype<PointSetParams> pointSetParams_t = lua.new_usertype<PointSetParams>(
+		// 	sol::base_classes, sol::bases<ShaderParams>(),
+		// 	"PointSetParams",
+		// 	"color", sol::property(&PointSetParams::getColor, &PointSetParams::setColor),
+		// 	"size", sol::property(&PointSetParams::getSize, &PointSetParams::setSize)
+		// );
 
-		sol::usertype<MeshStyleParams> meshParams_t = lua.new_usertype<MeshStyleParams>(
-			"MeshStyleParams",
-			sol::base_classes, sol::bases<ShaderParams>(),
-			"color", sol::property(&MeshStyleParams::getColor, &MeshStyleParams::setColor),
-			"size", sol::property(&MeshStyleParams::getSize, &MeshStyleParams::setSize),
-			"shrink", sol::property(&MeshStyleParams::getShrink, &MeshStyleParams::setShrink),
-			"corner_visible", sol::property(&MeshStyleParams::getCornerVisible, &MeshStyleParams::setCornerVisible)
-		);
+		// sol::usertype<MeshStyleParams> meshParams_t = lua.new_usertype<MeshStyleParams>(
+		// 	"MeshStyleParams",
+		// 	sol::base_classes, sol::bases<ShaderParams>(),
+		// 	"color", sol::property(&MeshStyleParams::getColor, &MeshStyleParams::setColor),
+		// 	"size", sol::property(&MeshStyleParams::getSize, &MeshStyleParams::setSize),
+		// 	"shrink", sol::property(&MeshStyleParams::getShrink, &MeshStyleParams::setShrink),
+		// 	"corner_visible", sol::property(&MeshStyleParams::getCornerVisible, &MeshStyleParams::setCornerVisible)
+		// );
 
-		sol::usertype<HalfedgeParams> halfedgeParams_t = lua.new_usertype<HalfedgeParams>(
-			"HalfedgeParams",
-			sol::base_classes, sol::bases<ShaderParams>(),
-			"inside_color", sol::property(&HalfedgeParams::getInsideColor, &HalfedgeParams::setInsideColor),
-			"outside_color", sol::property(&HalfedgeParams::getOutsideColor, &HalfedgeParams::setOutsideColor),
-			"thickness", sol::property(&HalfedgeParams::getThickness, &HalfedgeParams::setThickness),
-			"spacing", sol::property(&HalfedgeParams::getSpacing, &HalfedgeParams::setSpacing),
-			"padding", sol::property(&HalfedgeParams::getPadding, &HalfedgeParams::setPadding)
-		);
+		// sol::usertype<HalfedgeParams> halfedgeParams_t = lua.new_usertype<HalfedgeParams>(
+		// 	"HalfedgeParams",
+		// 	sol::base_classes, sol::bases<ShaderParams>(),
+		// 	"inside_color", sol::property(&HalfedgeParams::getInsideColor, &HalfedgeParams::setInsideColor),
+		// 	"outside_color", sol::property(&HalfedgeParams::getOutsideColor, &HalfedgeParams::setOutsideColor),
+		// 	"thickness", sol::property(&HalfedgeParams::getThickness, &HalfedgeParams::setThickness),
+		// 	"spacing", sol::property(&HalfedgeParams::getSpacing, &HalfedgeParams::setSpacing),
+		// 	"padding", sol::property(&HalfedgeParams::getPadding, &HalfedgeParams::setPadding)
+		// );
 
 
 		sol::usertype<ModelCollection> modelCollection_t = lua.new_usertype<ModelCollection>("ModelCollection",

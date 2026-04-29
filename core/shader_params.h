@@ -26,11 +26,10 @@ struct ShaderParams {
 
 	// TODO add index operator for access to get/set
 
-	// virtual void set(const std::string& name, ParamValue value) = 0;
-	// virtual ParamValue get(const std::string& name) = 0;
+
 	// TODO pass to virtual pure, just for testing
-	virtual void set(const std::string& name, ParamValue value) {};
-	virtual ParamValue get(const std::string& name) { return 0.f; };
+	virtual void set(const std::string& name, ParamValue value) = 0;
+	virtual ParamValue get(const std::string& name) = 0;
 
 	protected:
 
@@ -490,19 +489,18 @@ struct PointSetParams : public ShaderParams {
 
 struct LayersParams : public ShaderParams {
 
-	int getColormapTex(int i) const {
-		return colormapTexs[i];
-	}
-
-	void setColormapTex(int i, int tex) {
-		colormapTexs[i] = tex;
-		dirty = true;
+	int getLayerNDims(Layer layer) {
+		return attrNDims[int(layer)];
 	}
 
 	void setLayerNDims(Layer layer, int nDims) {
 		// TODO check layer ? only works for colormaps...
 		attrNDims[int(layer)] = nDims;
 		dirty = true;
+	}
+
+	glm::vec2 getLayerRange(Layer layer) {
+		return attrRange[int(layer)];
 	}
 
 	void setLayerRange(Layer layer, float min, float max) {
@@ -523,10 +521,14 @@ struct LayersParams : public ShaderParams {
 		dirty = true;
 	}
 
+	ParamValue get(const std::string& name) override {
+		return 0.0f;
+	}
+
+	void set(const std::string& name, ParamValue value) override {
+	}
+
 	void doApply(Shader &shader) const override {
-		shader.setInt("colormap0", 0);
-		shader.setInt("colormap1", 1);
-		shader.setInt("colormap2", 2);
 
 		for (int l = 0; l < 3; ++l) {
 			shader.setInt("attrNDims[" + std::to_string(int(l)) + "]", attrNDims[l]);
@@ -542,11 +544,9 @@ struct LayersParams : public ShaderParams {
 	}
 
 	private:
-	int colormapTexs[3] = {-1, -1, -1};
 	bool activatedLayers[5][7] = {};
 	int attrNDims[3] = {1, 1, 1};
 	glm::vec2 attrRange[3];
-
 
 };
 
