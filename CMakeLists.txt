@@ -41,6 +41,14 @@ IF(WIN32)
       message(FATAL_ERROR "Could not find Lua library")
   endif()
 
+
+  # Create an imported library target for Lua
+  add_library(lua_lib UNKNOWN IMPORTED)
+  set_target_properties(lua_lib PROPERTIES
+      IMPORTED_LOCATION "${LUA_DIR}/lua54.lib"
+      INTERFACE_INCLUDE_DIRECTORIES "${LUA_DIR}/include"
+  )
+
   set(OPENGL_FILES)
 
 	SET(OPENGL_LIBS
@@ -148,7 +156,8 @@ target_include_directories(salamesh PRIVATE ${LUA_INCLUDE_DIR})
 target_link_libraries(salamesh PRIVATE salamesh_core)
 target_link_libraries(salamesh PRIVATE glfw)
 target_link_libraries(salamesh PRIVATE ImGuiFileDialog ${CMAKE_DL_LIBS} ultimaille $<$<BOOL:${OpenMP_CXX_FOUND}>:OpenMP::OpenMP_CXX>)
-target_link_libraries(salamesh PRIVATE ${LUA_LIBRARIES})
+# target_link_libraries(salamesh PRIVATE ${LUA_LIBRARIES})
+target_link_libraries(salamesh PUBLIC lua_lib)
 target_link_libraries(salamesh PRIVATE ${OPENGL_LIBS})
 
 if (NOT WIN32)
