@@ -9,6 +9,11 @@
 #include <sstream>
 #include <iomanip>
 
+#ifdef _WIN32
+#define NOMINMAX
+#include <windows.h>
+#endif
+
 namespace fs = std::filesystem;
 using namespace UM;
 
@@ -129,9 +134,19 @@ namespace sl {
 		return filenames;
 	}
 
+	#ifdef _WIN32
+	static std::string exePath(std::string filename) {
+		char buffer[MAX_PATH];
+		GetModuleFileNameA(NULL, buffer, MAX_PATH);
+		return std::filesystem::path(buffer).parent_path().string() + "\\" + filename;
+	}
+	#else
 	static std::string exePath(std::string filename) {
 		return std::filesystem::canonical("/proc/self/exe").parent_path().string() + "/" + filename;
 	}
+	#endif
+
+
 
 	static std::string shadersPath(std::string filename) {
 		return exePath("") + "shaders/" + filename;
