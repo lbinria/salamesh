@@ -103,7 +103,7 @@ set(IMGUI_SOURCES
 
 
 set(JSON_SOURCES
-    ../include/json.hpp
+    include/json.hpp
 )
 
 add_subdirectory(include/ImGuiFileDialog-0.6.7)
