@@ -185,6 +185,7 @@ add_library(salamesh_core SHARED
 
 # Move include directories to the library target
 target_include_directories(salamesh_core PUBLIC 
+    ${CMAKE_CURRENT_SOURCE_DIR}/core
     include 
     include/imgui
     ${LUA_INCLUDE_DIR}
