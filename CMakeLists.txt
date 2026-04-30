@@ -55,9 +55,7 @@ FetchContent_Declare(
   GIT_TAG        bed2ad0
 )
 FetchContent_MakeAvailable(ultimaille)
-include_directories(${ultimaille_SOURCE_DIR})
-include_directories(${stlbfgs_SOURCE_DIR})
-include_directories(${OpenNL_psm_SOURCE_DIR})
+
 
 # LUA
 IF(WIN32)
@@ -133,20 +131,6 @@ endif()
 
 set(SOURCES
 
-    main.cpp 
-    app.cpp app.h
-    scene.cpp scene.h
-    scene_view.h
-
-    bindings/imgui_bindings.h bindings/imgui_bindings.cpp
-    bindings/app_bindings.h bindings/app_bindings.cpp
-    bindings/camera_bindings.h bindings/camera_bindings.cpp
-    bindings/model_bindings.h bindings/model_bindings.cpp
-    bindings/glm_bindings.h bindings/glm_bindings.cpp
-    bindings/fs_bindings.h bindings/fs_bindings.cpp
-    bindings/um_bindings.h bindings/um_bindings.cpp
-    bindings/renderer_bindings.h bindings/renderer_bindings.cpp
-
     core/app_interface.h
     core/scene_interface.h
     core/scene_view_interface.h
@@ -199,10 +183,8 @@ set(SOURCES
   ${OPENGL_FILES} 
 )
 
-
-# Add the executable
-add_executable(salamesh 
-
+# Add the library
+add_library(salamesh_core
   # some include files to build with the executable
   include/stb_include.cpp 
   ${SOURCES}
@@ -212,17 +194,60 @@ add_executable(salamesh
   ${JSON_SOURCES}
 )
 
-target_include_directories(salamesh PRIVATE include)
-target_include_directories(salamesh PRIVATE include/imgui)
-target_include_directories(salamesh PUBLIC ${LUA_INCLUDE_DIR})
+# Move include directories to the library target
+target_include_directories(salamesh_core PUBLIC 
+    include 
+    include/imgui
+    ${LUA_INCLUDE_DIR}
+    ${ultimaille_SOURCE_DIR}
+)
+target_include_directories(salamesh_core PRIVATE 
+    ${stlbfgs_SOURCE_DIR}
+    ${OpenNL_psm_SOURCE_DIR}
+)
+
+# Move the dependencies to the library
+target_link_libraries(salamesh_core PUBLIC 
+    glfw  
+    ultimaille 
+    ${LUA_LIBRARIES}
+    ${OPENGL_LIBS}
+    $<$<BOOL:${OpenMP_CXX_FOUND}>:OpenMP::OpenMP_CXX>
+)
+
+if (NOT WIN32)
+    target_link_libraries(salamesh_core PRIVATE m)
+endif()
+
+
+# Add the executable
+add_executable(salamesh 
+    main.cpp
+    app.cpp app.h
+    scene.cpp scene.h
+    scene_view.h
+
+    bindings/imgui_bindings.h bindings/imgui_bindings.cpp
+    bindings/app_bindings.h bindings/app_bindings.cpp
+    bindings/camera_bindings.h bindings/camera_bindings.cpp
+    bindings/model_bindings.h bindings/model_bindings.cpp
+    bindings/glm_bindings.h bindings/glm_bindings.cpp
+    bindings/fs_bindings.h bindings/fs_bindings.cpp
+    bindings/um_bindings.h bindings/um_bindings.cpp
+    bindings/renderer_bindings.h bindings/renderer_bindings.cpp
+)
+# Link the executable to your core library
+target_link_libraries(salamesh PRIVATE salamesh_core ImGuiFileDialog)
+
+
+
 
 
 # Link the libraries
-target_link_libraries(salamesh PRIVATE glfw)
-target_link_libraries(salamesh PRIVATE ImGuiFileDialog ${CMAKE_DL_LIBS} ultimaille $<$<BOOL:${OpenMP_CXX_FOUND}>:OpenMP::OpenMP_CXX>)
-# target_link_libraries(salamesh PUBLIC lua_lib)
-target_link_libraries(salamesh PRIVATE ${OPENGL_LIBS})
-target_link_libraries(salamesh PUBLIC ${LUA_LIBRARIES})
+# target_link_libraries(salamesh PRIVATE glfw)
+# target_link_libraries(salamesh PRIVATE ImGuiFileDialog ${CMAKE_DL_LIBS} ultimaille $<$<BOOL:${OpenMP_CXX_FOUND}>:OpenMP::OpenMP_CXX>)
+# target_link_libraries(salamesh PRIVATE ${OPENGL_LIBS})
+# target_link_libraries(salamesh PUBLIC ${LUA_LIBRARIES})
 
 if (NOT WIN32)
 target_link_libraries(salamesh PRIVATE m)
