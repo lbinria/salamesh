@@ -1,5 +1,6 @@
-cmake_minimum_required(VERSION 3.5...4.1.2)
+cmake_minimum_required(VERSION 3.10)
 
+# Project configuration
 project(salamesh LANGUAGES C CXX)
 set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
@@ -26,29 +27,6 @@ IF(WIN32)
 	add_subdirectory(include/glew)
 	add_subdirectory(include/glfw)
 
-  # Set the path to the Lua library and include directory
-  set(LUA_DIR "${CMAKE_CURRENT_SOURCE_DIR}/libs/lua-5.4.2_Win64_dll17_lib")
-  set(LUA_INCLUDE_DIR "${LUA_DIR}/include")
-  set(LUA_LIB_DIR "${LUA_DIR}")
-
-  # Include the lib directory
-  include_directories(${LUA_INCLUDE_DIR})
-  # Directly link the Lua library
-  set(LUA_LIBRARIES "${LUA_LIB_DIR}/lua54.lib") # Change this to the actual library filename
-
-  # Ensure that the library was found
-  if(NOT LUA_LIBRARIES)
-      message(FATAL_ERROR "Could not find Lua library")
-  endif()
-
-
-  # Create an imported library target for Lua
-  add_library(lua_lib UNKNOWN IMPORTED)
-  set_target_properties(lua_lib PROPERTIES
-      IMPORTED_LOCATION "${LUA_DIR}/lua54.lib"
-      INTERFACE_INCLUDE_DIRECTORIES "${LUA_DIR}/include"
-  )
-
   set(OPENGL_FILES)
 
 	SET(OPENGL_LIBS
@@ -59,7 +37,6 @@ IF(WIN32)
 ELSE()
 	# find_package(OpenGL REQUIRED)
   find_package(glfw3 REQUIRED)
-  find_package(Lua REQUIRED)
   set(OPENGL_FILES include/glad.c)
 
 	SET(OPENGL_LIBS
@@ -109,15 +86,15 @@ endif()
 
 
 
-set(SOL_SOURCES
-    include/sol/sol.hpp
-    include/sol/config.hpp
-    include/sol/forward.hpp
-)
+# set(SOL_SOURCES
+#     include/sol/sol.hpp
+#     include/sol/config.hpp
+#     include/sol/forward.hpp
+# )
 
-set(JSON_SOURCES
-    include/json.hpp
-)
+# set(JSON_SOURCES
+#     include/json.hpp
+# )
 
 add_subdirectory(core)
 
@@ -141,14 +118,13 @@ add_executable(salamesh
   # some include files to build with the executable
   include/stb_include.cpp 
   ${OPENGL_FILES}
-  ${SOL_SOURCES}
+  # ${SOL_SOURCES}
   ${IMGUI_SOURCES}
-  ${JSON_SOURCES}
+  # ${JSON_SOURCES}
 )
 
 target_include_directories(salamesh PRIVATE include)
 target_include_directories(salamesh PRIVATE include/imgui)
-target_include_directories(salamesh PRIVATE ${LUA_INCLUDE_DIR})
 
 
 
@@ -156,8 +132,7 @@ target_include_directories(salamesh PRIVATE ${LUA_INCLUDE_DIR})
 target_link_libraries(salamesh PRIVATE salamesh_core)
 target_link_libraries(salamesh PRIVATE glfw)
 target_link_libraries(salamesh PRIVATE ImGuiFileDialog ${CMAKE_DL_LIBS} ultimaille $<$<BOOL:${OpenMP_CXX_FOUND}>:OpenMP::OpenMP_CXX>)
-# target_link_libraries(salamesh PRIVATE ${LUA_LIBRARIES})
-target_link_libraries(salamesh PUBLIC lua_lib)
+# target_link_libraries(salamesh PUBLIC lua_lib)
 target_link_libraries(salamesh PRIVATE ${OPENGL_LIBS})
 
 if (NOT WIN32)
@@ -182,7 +157,7 @@ add_custom_command(
     TARGET ${PROJECT_NAME}
     POST_BUILD
     # Shared librairies copy
-    COMMAND ${CMAKE_COMMAND} -E copy_if_different ${PROJECT_SOURCE_DIR}/libs/lua-5.4.2_Win64_dll17_lib/lua54.dll ${CMAKE_CURRENT_BINARY_DIR}/$<CONFIG>/
+    # COMMAND ${CMAKE_COMMAND} -E copy_if_different ${PROJECT_SOURCE_DIR}/libs/lua-5.4.2_Win64_dll17_lib/lua54.dll ${CMAKE_CURRENT_BINARY_DIR}/$<CONFIG>/
     COMMAND ${CMAKE_COMMAND} -E copy_if_different ${PROJECT_SOURCE_DIR}/include/glew/bin/Release/x64/glew32.dll ${CMAKE_CURRENT_BINARY_DIR}/$<CONFIG>/
     # Default settings copy
     COMMAND ${CMAKE_COMMAND} -E copy_if_different ${PROJECT_SOURCE_DIR}/settings.json ${CMAKE_CURRENT_BINARY_DIR}/$<CONFIG>/
