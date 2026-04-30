@@ -106,12 +106,6 @@ set(JSON_SOURCES
     ../include/json.hpp
 )
 
-if(WIN32)
-  set(OPENGL_FILES)
-else()
-  set(OPENGL_FILES ../include/glad.c)
-endif(WIN32)
-
 add_subdirectory(include/ImGuiFileDialog-0.6.7)
 get_target_property(_IFD_INCS ImGuiFileDialog INTERFACE_INCLUDE_DIRECTORIES)
 if(_IFD_INCS)
