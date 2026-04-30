@@ -184,7 +184,7 @@ set(SOURCES
 )
 
 # Add the library
-add_library(salamesh_core
+add_library(salamesh_core SHARED
   # some include files to build with the executable
   include/stb_include.cpp 
   ${SOURCES}
