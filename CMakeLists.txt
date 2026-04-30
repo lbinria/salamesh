@@ -59,6 +59,34 @@ include_directories(${ultimaille_SOURCE_DIR})
 include_directories(${stlbfgs_SOURCE_DIR})
 include_directories(${OpenNL_psm_SOURCE_DIR})
 
+# LUA
+IF(WIN32)
+  # Set the path to the Lua library and include directory
+  set(LUA_DIR "${CMAKE_CURRENT_SOURCE_DIR}/libs/lua-5.4.2_Win64_dll17_lib")
+  set(LUA_INCLUDE_DIR "${LUA_DIR}/include")
+  set(LUA_LIB_DIR "${LUA_DIR}")
+
+  # Include the lib directory
+  include_directories(${LUA_INCLUDE_DIR})
+  # Directly link the Lua library
+  set(LUA_LIBRARIES "${LUA_LIB_DIR}/lua54.lib") # Change this to the actual library filename
+
+  # Ensure that the library was found
+  if(NOT LUA_LIBRARIES)
+      message(FATAL_ERROR "Could not find Lua library")
+  endif()
+
+
+  # Create an imported library target for Lua
+  add_library(lua_lib UNKNOWN IMPORTED)
+  set_target_properties(lua_lib PROPERTIES
+      IMPORTED_LOCATION "${LUA_DIR}/lua54.lib"
+      INTERFACE_INCLUDE_DIRECTORIES "${LUA_DIR}/include"
+  )
+ELSE()
+  find_package(Lua REQUIRED)
+ENDIF(WIN32)
+
 set(IMGUI_SOURCES
     include/imgui/imgui.cpp
     include/imgui/imgui.h
@@ -74,6 +102,17 @@ set(IMGUI_SOURCES
     include/imgui/backends/imgui_impl_opengl3.cpp
     include/imgui/backends/imgui_impl_opengl3_loader.h
 )
+
+
+set(JSON_SOURCES
+    ../include/json.hpp
+)
+
+if(WIN32)
+  set(OPENGL_FILES)
+else()
+  set(OPENGL_FILES ../include/glad.c)
+endif(WIN32)
 
 add_subdirectory(include/ImGuiFileDialog-0.6.7)
 get_target_property(_IFD_INCS ImGuiFileDialog INTERFACE_INCLUDE_DIRECTORIES)
@@ -92,48 +131,98 @@ endif()
 #     include/sol/forward.hpp
 # )
 
-# set(JSON_SOURCES
-#     include/json.hpp
-# )
+set(SOURCES
 
-add_subdirectory(core)
+    main.cpp 
+    app.cpp app.h
+    scene.cpp scene.h
+    scene_view.h
+
+    bindings/imgui_bindings.h bindings/imgui_bindings.cpp
+    bindings/app_bindings.h bindings/app_bindings.cpp
+    bindings/camera_bindings.h bindings/camera_bindings.cpp
+    bindings/model_bindings.h bindings/model_bindings.cpp
+    bindings/glm_bindings.h bindings/glm_bindings.cpp
+    bindings/fs_bindings.h bindings/fs_bindings.cpp
+    bindings/um_bindings.h bindings/um_bindings.cpp
+    bindings/renderer_bindings.h bindings/renderer_bindings.cpp
+
+    core/app_interface.h
+    core/scene_interface.h
+    core/scene_view_interface.h
+    core/script.h
+    core/lua_script.h
+    core/module.h
+    core/attribute.h
+    core/element.h
+    core/input_states.h 
+    core/navigation_path.h 
+
+    core/shader.cpp core/shader.h 
+
+    core/render_surface.cpp core/render_surface.h
+
+    core/instanciator.h
+    core/cameras/camera_collection.h
+    core/renderers/renderer_collection.h
+    core/models/model_collection.h
+
+
+    core/cameras/camera.h
+    core/cameras/trackball_camera.h
+    core/cameras/descent_camera.h
+
+    core/renderers/renderer_info.h
+    core/renderers/renderer.h
+    core/renderers/mesh_renderer.h
+    core/renderers/line_renderer.cpp core/renderers/line_renderer.h
+    core/renderers/point_set_renderer.cpp core/renderers/point_set_renderer.h
+    core/renderers/halfedge_renderer.cpp core/renderers/halfedge_renderer.h
+    core/renderers/bbox_renderer/bbox_renderer.cpp core/renderers/bbox_renderer/bbox_renderer.h
+    core/renderers/clipping_renderer.cpp core/renderers/clipping_renderer.h
+    core/renderers/surface_renderer.cpp core/renderers/surface_renderer.h
+    core/renderers/surface_renderer2.cpp core/renderers/surface_renderer2.h
+    core/renderers/volume_renderer.cpp core/renderers/volume_renderer.h
+    core/renderers/tri_renderer.cpp core/renderers/tri_renderer.h
+    core/renderers/poly_renderer.cpp core/renderers/poly_renderer.h
+    core/renderers/tet_renderer.cpp core/renderers/tet_renderer.h
+    core/renderers/hex_renderer.cpp core/renderers/hex_renderer.h
+
+    core/models/model.h 
+    core/models/model.cpp
+    core/models/polyline_model.h
+    core/models/surface_model.h
+    core/models/volume_model.h
+
+  # some include files to build with the lib
+  ../include/stb_include.cpp 
+  ${OPENGL_FILES} 
+)
+
 
 # Add the executable
 add_executable(salamesh 
-  main.cpp 
-  app.cpp app.h
-  scene.cpp scene.h
-  scene_view.h
-
-
-  bindings/imgui_bindings.h bindings/imgui_bindings.cpp
-  bindings/app_bindings.h bindings/app_bindings.cpp
-  bindings/camera_bindings.h bindings/camera_bindings.cpp
-  bindings/model_bindings.h bindings/model_bindings.cpp
-  bindings/glm_bindings.h bindings/glm_bindings.cpp
-  bindings/fs_bindings.h bindings/fs_bindings.cpp
-  bindings/um_bindings.h bindings/um_bindings.cpp
-  bindings/renderer_bindings.h bindings/renderer_bindings.cpp
 
   # some include files to build with the executable
   include/stb_include.cpp 
+  ${SOURCES}
   ${OPENGL_FILES}
-  # ${SOL_SOURCES}
+  ${SOL_SOURCES}
   ${IMGUI_SOURCES}
-  # ${JSON_SOURCES}
+  ${JSON_SOURCES}
 )
 
 target_include_directories(salamesh PRIVATE include)
 target_include_directories(salamesh PRIVATE include/imgui)
-
+target_include_directories(salamesh PUBLIC ${LUA_INCLUDE_DIR})
 
 
 # Link the libraries
-target_link_libraries(salamesh PRIVATE salamesh_core)
 target_link_libraries(salamesh PRIVATE glfw)
 target_link_libraries(salamesh PRIVATE ImGuiFileDialog ${CMAKE_DL_LIBS} ultimaille $<$<BOOL:${OpenMP_CXX_FOUND}>:OpenMP::OpenMP_CXX>)
 # target_link_libraries(salamesh PUBLIC lua_lib)
 target_link_libraries(salamesh PRIVATE ${OPENGL_LIBS})
+target_link_libraries(salamesh PUBLIC ${LUA_LIBRARIES})
 
 if (NOT WIN32)
 target_link_libraries(salamesh PRIVATE m)
@@ -157,7 +246,7 @@ add_custom_command(
     TARGET ${PROJECT_NAME}
     POST_BUILD
     # Shared librairies copy
-    # COMMAND ${CMAKE_COMMAND} -E copy_if_different ${PROJECT_SOURCE_DIR}/libs/lua-5.4.2_Win64_dll17_lib/lua54.dll ${CMAKE_CURRENT_BINARY_DIR}/$<CONFIG>/
+    COMMAND ${CMAKE_COMMAND} -E copy_if_different ${PROJECT_SOURCE_DIR}/libs/lua-5.4.2_Win64_dll17_lib/lua54.dll ${CMAKE_CURRENT_BINARY_DIR}/$<CONFIG>/
     COMMAND ${CMAKE_COMMAND} -E copy_if_different ${PROJECT_SOURCE_DIR}/include/glew/bin/Release/x64/glew32.dll ${CMAKE_CURRENT_BINARY_DIR}/$<CONFIG>/
     # Default settings copy
     COMMAND ${CMAKE_COMMAND} -E copy_if_different ${PROJECT_SOURCE_DIR}/settings.json ${CMAKE_CURRENT_BINARY_DIR}/$<CONFIG>/
