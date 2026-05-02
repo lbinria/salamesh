@@ -5,6 +5,7 @@ project(salamesh LANGUAGES C CXX)
 set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_BUILD_RPATH_USE_ORIGIN TRUE)
+set(CMAKE_WINDOWS_EXPORT_ALL_SYMBOLS ON)
 
 get_property(is_multi_config GLOBAL PROPERTY GENERATOR_IS_MULTI_CONFIG)
 if(NOT is_multi_config AND NOT (CMAKE_BUILD_TYPE OR DEFINED ENV{CMAKE_BUILD_TYPE}))
@@ -101,6 +102,16 @@ set(IMGUI_SOURCES
     include/imgui/backends/imgui_impl_opengl3_loader.h
 )
 
+# Create an IMGUI static target (so its objects are linked into salamesh_core and consumers)
+add_library(imgui STATIC ${IMGUI_SOURCES})
+target_include_directories(imgui PUBLIC
+  ${CMAKE_CURRENT_SOURCE_DIR}/include/imgui
+  ${CMAKE_CURRENT_SOURCE_DIR}/include/imgui/backends
+)
+
+# Link any backend deps if needed (glfw, OpenGL libs) as PRIVATE or PUBLIC appropriately:
+target_link_libraries(imgui PRIVATE glfw ${OPENGL_LIBS})
+
 
 set(JSON_SOURCES
     include/json.hpp
@@ -179,7 +190,7 @@ add_library(salamesh_core SHARED
   ${SOURCES}
   ${OPENGL_FILES}
   ${SOL_SOURCES}
-  ${IMGUI_SOURCES}
+  # ${IMGUI_SOURCES}
   ${JSON_SOURCES}
 )
 
@@ -203,6 +214,7 @@ target_link_libraries(salamesh_core PUBLIC
     ${LUA_LIBRARIES}
     ${OPENGL_LIBS}
     $<$<BOOL:${OpenMP_CXX_FOUND}>:OpenMP::OpenMP_CXX>
+    imgui
 )
 
 if (NOT WIN32)
