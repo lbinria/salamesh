@@ -1,9 +1,9 @@
 function update(dt)
 
-	-- for n, m in pairs(app.models) do 
-	-- 	-- print(m.path)
-	-- 	app:testos(m)
-	-- end
+	if app.scene.models.any then 
+		print("ok")
+		app.test_variant(app.scene.model.attributes)
+	end
 
 
 end

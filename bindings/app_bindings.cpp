@@ -1,6 +1,7 @@
 #include "app_bindings.h"
 
 #include "../core/data/element_type.h"
+#include <variant>
 
 namespace bindings {
 
@@ -82,25 +83,7 @@ namespace bindings {
 
 
 
-		sol::usertype<NavigationPath> navigationPath_t = lua.new_usertype<NavigationPath>("NavigationPath",
-			"get", &NavigationPath::get,
-			"str", &NavigationPath::str,
-			"starts_with", sol::overload(
-				[](NavigationPath &self, std::vector<std::string> head) { self.startsWith(head); },
-				[](NavigationPath &self, std::string head) { self.startsWith(head); }
-			),
-			sol::meta_function::to_string, [](NavigationPath& self) {
-				return self.str();
-			}//,
-			// sol::meta_function::equal_to, [](const NavigationPath& self, const sol::object& other) {
-			// 	if (other.is<std::string>()) {
-			// 		return self.str() == other.as<std::string>();
-			// 	} else if (other.is<NavigationPath>()) {
-			// 		return self == other.as<NavigationPath>();
-			// 	}
-			// 	return false;
-			// }
-		);
+
 
 		// General functions 
 		lua.set_function("element_kind_to_string", &elementKindToString);
@@ -109,6 +92,10 @@ namespace bindings {
 		// App bindings
 		lua["app"] = &app;
 		sol::usertype<IApp> app_type = lua.new_usertype<IApp>("IApp");
+
+		app_type.set_function("test_variant", [](IApp &self, UM::SurfaceAttributes &attr) {
+			std::cout << attr.points.size() << std::endl;
+		});
 
 		app_type.set_function("quit", &IApp::quit);
 		app_type.set_function("clear_scene", &IApp::clearScene);

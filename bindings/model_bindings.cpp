@@ -346,6 +346,10 @@ namespace bindings {
 
 		model_t["model_type"] = sol::readonly_property(&Model::getModelType);
 
+		// model_t["surface_attributes_opt"] = sol::readonly_property([](Model &self) {
+		// 	self.
+		// });
+
 		// TODO do the same for other types of meshes
 		// & maybe refactor, we can add these properties directly to Model I think
 		auto tri_model_t = lua.new_usertype<TriModel>("TriModel", sol::base_classes, sol::bases<Model>());
