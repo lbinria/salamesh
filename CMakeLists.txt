@@ -134,54 +134,60 @@ endif()
 #     include/sol/forward.hpp
 # )
 
-set(SOURCES
+# set(SOURCES
 
-  core/app_interface.h
-  core/scene_interface.h
-  core/scene_view_interface.h
-  core/script.h
-  core/lua_script.h
-  core/module.h
-  core/attribute.h
-  core/element.h
-  core/input_states.h 
-  core/navigation_path.h 
+#   core/app_interface.h
+#   core/scene_interface.h
+#   core/scene_view_interface.h
+#   core/script.h
+#   core/lua_script.h
+#   core/module.h
+#   core/attribute.h
+#   core/element.h
+#   core/input_states.h 
+#   core/navigation_path.h 
 
-  core/shader.cpp core/shader.h 
+#   core/shader.cpp core/shader.h 
 
-  core/render_surface.cpp core/render_surface.h
+#   core/render_surface.cpp core/render_surface.h
 
-  core/instanciator.h
-  core/cameras/camera_collection.h
-  core/renderers/renderer_collection.h
-  core/models/model_collection.h
+#   core/instanciator.h
+#   core/cameras/camera_collection.h
+#   core/renderers/renderer_collection.h
+#   core/models/model_collection.h
 
 
-  core/cameras/camera.h
-  core/cameras/trackball_camera.h
-  core/cameras/descent_camera.h
+#   core/cameras/camera.h
+#   core/cameras/trackball_camera.h
+#   core/cameras/descent_camera.h
 
-  core/renderers/renderer_info.h
-  core/renderers/renderer.h
-  core/renderers/mesh_renderer.h
-  core/renderers/line_renderer.cpp core/renderers/line_renderer.h
-  core/renderers/point_set_renderer.cpp core/renderers/point_set_renderer.h
-  core/renderers/halfedge_renderer.cpp core/renderers/halfedge_renderer.h
-  core/renderers/bbox_renderer.cpp core/renderers/bbox_renderer.h
-  core/renderers/clipping_renderer.cpp core/renderers/clipping_renderer.h
-  core/renderers/surface_renderer.cpp core/renderers/surface_renderer.h
-  core/renderers/surface_renderer2.cpp core/renderers/surface_renderer2.h
-  core/renderers/volume_renderer.cpp core/renderers/volume_renderer.h
-  core/renderers/tri_renderer.cpp core/renderers/tri_renderer.h
-  core/renderers/poly_renderer.cpp core/renderers/poly_renderer.h
-  core/renderers/tet_renderer.cpp core/renderers/tet_renderer.h
-  core/renderers/hex_renderer.cpp core/renderers/hex_renderer.h
+#   core/renderers/renderer_info.h
+#   core/renderers/renderer.h
+#   core/renderers/mesh_renderer.h
+#   core/renderers/line_renderer.cpp core/renderers/line_renderer.h
+#   core/renderers/point_set_renderer.cpp core/renderers/point_set_renderer.h
+#   core/renderers/halfedge_renderer.cpp core/renderers/halfedge_renderer.h
+#   core/renderers/bbox_renderer.cpp core/renderers/bbox_renderer.h
+#   core/renderers/clipping_renderer.cpp core/renderers/clipping_renderer.h
+#   core/renderers/surface_renderer.cpp core/renderers/surface_renderer.h
+#   core/renderers/surface_renderer2.cpp core/renderers/surface_renderer2.h
+#   core/renderers/volume_renderer.cpp core/renderers/volume_renderer.h
+#   core/renderers/tri_renderer.cpp core/renderers/tri_renderer.h
+#   core/renderers/poly_renderer.cpp core/renderers/poly_renderer.h
+#   core/renderers/tet_renderer.cpp core/renderers/tet_renderer.h
+#   core/renderers/hex_renderer.cpp core/renderers/hex_renderer.h
 
-  core/models/model.h 
-  core/models/model.cpp
-  core/models/polyline_model.h
-  core/models/surface_model.h
-  core/models/volume_model.h
+#   core/models/model.h 
+#   core/models/model.cpp
+#   core/models/polyline_model.h
+#   core/models/surface_model.h
+#   core/models/volume_model.h
+# )
+file(GLOB SOURCES 
+  "core/*.h" 
+  "core/*.cpp"
+  "core/**/*.h" 
+  "core/**/*.cpp"
 )
 
 # Add the library

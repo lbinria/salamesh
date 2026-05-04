@@ -5,11 +5,7 @@
 
 #include "scene_view_interface.h"
 
-struct Colormap {
-	std::string name;
-	int width, height;
-	unsigned int tex;
-};
+#include "data/colormap.h"
 
 struct IScene {
 	virtual void init() = 0;
