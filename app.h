@@ -98,7 +98,7 @@ struct App final : public IApp {
 
 
 
-	IScene& getScene() override { return scene; }
+	Scene& getScene() override { return scene; }
 
 
 	void clearScene() override;

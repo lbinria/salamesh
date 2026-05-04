@@ -147,14 +147,14 @@ namespace bindings {
 
 		app_type["scene"] = sol::readonly_property(&IApp::getScene);
 
-		sol::usertype<IScene> scene_t = lua.new_usertype<IScene>("IScene");
+		sol::usertype<Scene> scene_t = lua.new_usertype<Scene>("Scene");
 
-		scene_t.set_function("load_model", &IScene::loadModel);
-		scene_t["models"] = sol::readonly_property(&IScene::getModels);
-		scene_t["model"] = sol::readonly_property(&IScene::getCurrentModel);
-		scene_t["hovered_model"] = sol::readonly_property(&IScene::getHoveredModel);
-		scene_t["selected_model"] = sol::property(&IScene::getSelectedModel, &IScene::setSelectedModel);
-		scene_t.set_function("focus", &IScene::focus);
+		scene_t.set_function("load_model", &Scene::loadModel);
+		scene_t["models"] = sol::readonly_property(&Scene::getModels);
+		scene_t["model"] = sol::readonly_property(&Scene::getCurrentModel);
+		scene_t["hovered_model"] = sol::readonly_property(&Scene::getHoveredModel);
+		scene_t["selected_model"] = sol::property(&Scene::getSelectedModel, &Scene::setSelectedModel);
+		scene_t.set_function("focus", &Scene::focus);
 
 
 		sol::usertype<ModelCollection> modelCollection_t = lua.new_usertype<ModelCollection>("ModelCollection",
@@ -200,11 +200,11 @@ namespace bindings {
 		};
 
 
-		scene_t["camera"] = sol::readonly_property(&IScene::getCurrentCamera);
-		scene_t["cameras"] = sol::readonly_property(&IScene::getCameras);
-		scene_t["selected_camera"] = sol::property([](IScene &self) {
+		scene_t["camera"] = sol::readonly_property(&Scene::getCurrentCamera);
+		scene_t["cameras"] = sol::readonly_property(&Scene::getCameras);
+		scene_t["selected_camera"] = sol::property([](Scene &self) {
 			return self.getSelectedCamera();
-		}, [](IScene &self, std::string selected) {
+		}, [](Scene &self, std::string selected) {
 			self.setSelectedCamera(selected);
 		});
 
@@ -274,19 +274,19 @@ namespace bindings {
 		};
 
 
-		scene_t["renderers"] = sol::readonly_property(&IScene::getRenderers);
+		scene_t["renderers"] = sol::readonly_property(&Scene::getRenderers);
 
 
 		app_type["input_state"] = sol::readonly_property(&IApp::getInputState);
 
-		scene_t["colormaps"] = sol::readonly_property(&IScene::getColormaps);
-		scene_t.set_function("add_colormap", &IScene::addColormap);
-		scene_t.set_function("remove_colormap", &IScene::removeColormap);
+		scene_t["colormaps"] = sol::readonly_property(&Scene::getColormaps);
+		scene_t.set_function("add_colormap", &Scene::addColormap);
+		scene_t.set_function("remove_colormap", &Scene::removeColormap);
 		scene_t.set_function("get_colormap", sol::overload(
-			[](IScene &self, int idx) {
+			[](Scene &self, int idx) {
 				return self.getColormap(idx);
 			},
-			[](IScene &self, const std::string name) {
+			[](Scene &self, const std::string name) {
 				return self.getColormap(name);
 			}
 		));

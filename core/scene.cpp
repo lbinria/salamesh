@@ -1,4 +1,5 @@
 #include "scene.h"
+#include "app_interface.h"
 
 std::shared_ptr<Model> Scene::loadModel(const std::string& filename, std::string name) {
 
@@ -239,4 +240,9 @@ void Scene::saveState(json &j, const std::string filename) {
 
 	// TODO important save renderer states
 	// TODO important save colormaps states
+}
+
+std::shared_ptr<Model> Scene::getHoveredModel() {
+	auto hoveredIndex = app.getInputState().mesh.getHovered();
+	return models.getByIndex(hoveredIndex);
 }

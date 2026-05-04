@@ -232,8 +232,6 @@ endif()
 add_executable(salamesh 
     main.cpp
     app.cpp app.h
-    scene.cpp scene.h
-    scene_view.h
 
     bindings/imgui_bindings.h bindings/imgui_bindings.cpp
     bindings/app_bindings.h bindings/app_bindings.cpp

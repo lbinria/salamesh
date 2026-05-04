@@ -1,29 +1,30 @@
 #pragma once
-#include "core/scene_view_interface.h"
+#include "shader.h"
+#include "render_surface.h"
 
-struct SceneView : public ISceneView {
+struct SceneView {
 
 	SceneView(int width, int height) : renderSurface(width, height) {}
 
 	// TODO pass width, height on setup, remove from constructor
-	void setup() override {
+	void setup() {
 		renderSurface.setBackgroundColor(backgroundColor);
 		renderSurface.setup(); 
 	}
 
-	void render(Shader &screenShader, unsigned int quadVAO) override {
+	void render(Shader &screenShader, unsigned int quadVAO) {
 		renderSurface.render(screenShader, quadVAO);
 	}
 
-	void clear() override {
+	void clear() {
 		renderSurface.clear();
 	}
 
-	void resize(int w, int h) override {
+	void resize(int w, int h) {
 		renderSurface.resize(w, h);
 	}
 
-	void clean() override {
+	void clean() {
 		renderSurface.clean();
 	}
 
@@ -31,7 +32,7 @@ struct SceneView : public ISceneView {
 		renderSurface.setCamera(camera);
 	}
 
-	RenderSurface &getRenderSurface() override { return renderSurface; }
+	RenderSurface &getRenderSurface() { return renderSurface; }
 
 	private:
 	glm::vec3 backgroundColor{0.05, 0.1, 0.15};
