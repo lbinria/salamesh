@@ -1,7 +1,7 @@
 #pragma once
 
 #include "../data/element_type.h"
-#include "../layer.h"
+#include "../data/layer.h"
 
 #include "../shader.h"
 #include "../data/attribute.h"

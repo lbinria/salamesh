@@ -8,7 +8,7 @@
 #include "../renderers/halfedge_renderer.h"
 #include "../renderers/bbox_renderer.h"
 #include "../renderers/clipping_renderer.h"
-#include "../layer.h"
+#include "../data/layer.h"
 #include "../helpers.h"
 
 struct PolylineModel : public Model {

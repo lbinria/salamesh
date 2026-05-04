@@ -13,6 +13,10 @@
 #include "../bindings/um_bindings.h"
 #include "../bindings/imgui_bindings.h"
 #include "../bindings/app_bindings.h"
+#include "../bindings/scene_bindings.h"
+#include "../bindings/image_bindings.h"
+#include "../bindings/snapshot_bindings.h"
+#include "../bindings/colormap_bindings.h"
 #include "../bindings/glm_bindings.h"
 #include "../bindings/camera_bindings.h"
 #include "../bindings/model_bindings.h"
@@ -90,6 +94,10 @@ struct LuaScript final : public Script {
 		bindings.push_back(std::make_unique<bindings::FsBindings>());
 		bindings.push_back(std::make_unique<bindings::ImGuiBindings>());
 		bindings.push_back(std::make_unique<bindings::AppBindings>());
+		bindings.push_back(std::make_unique<bindings::SceneBindings>());
+		bindings.push_back(std::make_unique<bindings::ImageBindings>());
+		bindings.push_back(std::make_unique<bindings::SnapshotBindings>());
+		bindings.push_back(std::make_unique<bindings::ColormapBindings>());
 		bindings.push_back(std::make_unique<bindings::GlmBindings>());
 		bindings.push_back(std::make_unique<bindings::CameraBindings>());
 		bindings.push_back(std::make_unique<bindings::ModelBindings>());

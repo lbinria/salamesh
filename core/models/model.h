@@ -1,7 +1,7 @@
 #pragma once
 
 #include "../data/element_type.h"
-#include "../layer.h"
+#include "../data/layer.h"
 #include "../data/attribute.h"
 #include "../renderers/renderer.h"
 #include "../renderers/mesh_renderer.h"
