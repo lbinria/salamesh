@@ -6,7 +6,6 @@ int main(int argc, char** argv) {
 	Args args;
 
 	bool isJsonNext = false;
-	std::vector<std::filesystem::path> paths;
 	for (int i = 1; i < argc; ++i) {
 		
 		if (strcmp(argv[i], "-j") == 0) {

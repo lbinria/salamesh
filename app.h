@@ -70,7 +70,7 @@ struct App final : public IApp {
 		args(args),
 		windowWidth(1024), 
 		windowHeight(768),
-		navPath2(),
+		navPath(),
 		scene(*this)
 	{}
 
@@ -176,31 +176,31 @@ struct App final : public IApp {
 	void updateCamera(float dt);
 
 	NavigationPath getNavigationPath() override {
-		return navPath2;
+		return navPath;
 	}
 
 	void setNavigationPath(std::vector<std::string> path) override {
-		auto oldPath = navPath2;
-		navPath2.set(path);
-		notifyNavigationPathChanged(oldPath, navPath2);
+		auto oldPath = navPath;
+		navPath.set(path);
+		notifyNavigationPathChanged(oldPath, navPath);
 	}
 
 	void setNavigationPath(std::string strPath) override {
-		auto oldPath = navPath2;
-		navPath2.set(strPath);
-		notifyNavigationPathChanged(oldPath, navPath2);
+		auto oldPath = navPath;
+		navPath.set(strPath);
+		notifyNavigationPathChanged(oldPath, navPath);
 	}
 
 	void addNavigationPath(std::string pathComponent) {
-		auto oldPath = navPath2;
-		navPath2.push(pathComponent);
-		notifyNavigationPathChanged(oldPath, navPath2);
+		auto oldPath = navPath;
+		navPath.push(pathComponent);
+		notifyNavigationPathChanged(oldPath, navPath);
 	}
 
 	void topNavigationPath() override {
-		auto oldPath = navPath2;
-		navPath2.pop();
-		notifyNavigationPathChanged(oldPath, navPath2);
+		auto oldPath = navPath;
+		navPath.pop();
+		notifyNavigationPathChanged(oldPath, navPath);
 	}
 
 	bool isUIHovered() const override { return _isUIHovered; }
@@ -258,9 +258,8 @@ struct App final : public IApp {
 	bool _isUIHovered = false;
 
 
-	// Current navigation path of the app
-	std::vector<std::string> navPath; // TODO remove
-	NavigationPath navPath2;
+	// Current navigation path of the app	
+	NavigationPath navPath;
 
 };
 

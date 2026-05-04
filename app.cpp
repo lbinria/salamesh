@@ -799,7 +799,7 @@ void App::drawGui() {
 		ImGuiWindowFlags_NoDecoration         // Remove default title bar (optional)
 	);
 
-	ImGui::Text(navPath2.str().c_str());
+	ImGui::Text(navPath.str().c_str());
 
 	ImGui::End();
 
@@ -1211,7 +1211,7 @@ void App::saveState(const std::string filename) {
 	scene.saveState(j, filename);
 
 	// Save navigation path
-	j["nav_path"] = navPath;
+	j["nav_path"] = navPath.get();
 
 
 

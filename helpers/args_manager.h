@@ -11,8 +11,6 @@ using json = nlohmann::json;
 
 struct Args {
 	std::string settings_path = sl::exePath("settings.json");
-	std::vector<std::string> models = {};
-	std::vector<std::string> scripts = {};
 	std::vector<std::filesystem::path> paths = {};
 
 	bool parse(std::string content) {
@@ -24,11 +22,13 @@ struct Args {
 		}
 
 		if (j_content.contains("models") && !j_content["models"].is_null() && j_content["models"].is_array()) {
-			models = j_content["models"].get<std::vector<std::string>>();
+			auto modelPaths = j_content["models"].get<std::vector<std::string>>();
+			paths.insert(paths.end(), modelPaths.begin(), modelPaths.end());
 		}
 
 		if (j_content.contains("scripts") && !j_content["scripts"].is_null() && j_content["scripts"].is_array()) {
-			scripts = j_content["scripts"].get<std::vector<std::string>>();
+			auto scriptPaths = j_content["scripts"].get<std::vector<std::string>>();
+			paths.insert(paths.end(), scriptPaths.begin(), scriptPaths.end());
 		}
 
 		return true;
