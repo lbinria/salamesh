@@ -167,7 +167,7 @@ set(SOURCES
   core/renderers/line_renderer.cpp core/renderers/line_renderer.h
   core/renderers/point_set_renderer.cpp core/renderers/point_set_renderer.h
   core/renderers/halfedge_renderer.cpp core/renderers/halfedge_renderer.h
-  core/renderers/bbox_renderer/bbox_renderer.cpp core/renderers/bbox_renderer/bbox_renderer.h
+  core/renderers/bbox_renderer.cpp core/renderers/bbox_renderer.h
   core/renderers/clipping_renderer.cpp core/renderers/clipping_renderer.h
   core/renderers/surface_renderer.cpp core/renderers/surface_renderer.h
   core/renderers/surface_renderer2.cpp core/renderers/surface_renderer2.h

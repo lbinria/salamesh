@@ -1,6 +1,6 @@
 #include "bbox_renderer.h"
-#include "../../../core/graphic_api.h"
-#include "../../helpers.h"
+#include "../../core/graphic_api.h"
+#include "../helpers.h"
 
 void BBoxRenderer::init() {
 

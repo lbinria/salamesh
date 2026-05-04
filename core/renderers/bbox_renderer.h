@@ -1,7 +1,7 @@
 #pragma once
 
-#include "../renderer.h"
-#include "../../shader.h"
+#include "renderer.h"
+#include "../shader.h"
 
 #include <vector>
 #include <ultimaille/all.h>

@@ -9,7 +9,7 @@
 #include "../renderers/tri_renderer.h"
 #include "../renderers/poly_renderer.h"
 #include "../renderers/surface_renderer2.h"
-#include "../renderers/bbox_renderer/bbox_renderer.h"
+#include "../renderers/bbox_renderer.h"
 #include "../renderers/clipping_renderer.h"
 #include "../layer.h"
 #include "../helpers.h"
