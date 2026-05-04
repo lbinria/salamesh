@@ -1,6 +1,8 @@
 #include "scene.h"
 #include "app_interface.h"
 
+#include "utils/opengl_helper.h"
+
 std::shared_ptr<Model> Scene::loadModel(const std::string& filename, std::string name) {
 
 	auto begin = std::chrono::steady_clock::now();

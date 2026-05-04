@@ -1,6 +1,6 @@
 #include "line_renderer.h"
 #include "../helpers.h"
-#include "../../core/graphic_api.h"
+#include "../../core/utils/opengl_helper.h"
 
 void LineRenderer::init() {
 

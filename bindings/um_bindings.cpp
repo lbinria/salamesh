@@ -1,7 +1,7 @@
 #include "um_bindings.h"
 
 #include <filesystem>
-#include "../core/graphic_api.h"
+#include "../core/utils/opengl_helper.h"
 #include "../core/helpers.h"
 #include <ultimaille/all.h>
 

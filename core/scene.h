@@ -20,8 +20,6 @@
 #include "renderers/line_renderer.h"
 #include "renderers/renderer_collection.h"
 
-#include "graphic_api.h"
-
 #include <map>
 
 class IApp;

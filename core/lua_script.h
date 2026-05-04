@@ -9,7 +9,6 @@
 #include "input_states.h"
 
 #include "../bindings/lua_binding.h"
-#include "../bindings/fs_bindings.h"
 #include "../bindings/um_bindings.h"
 #include "../bindings/imgui_bindings.h"
 #include "../bindings/app_bindings.h"
@@ -91,7 +90,6 @@ struct LuaScript final : public Script {
 
 		// TODO maybe pass all bindings as parameter of loadBinding !
 		std::vector<std::unique_ptr<bindings::LuaBinding>> bindings;
-		bindings.push_back(std::make_unique<bindings::FsBindings>());
 		bindings.push_back(std::make_unique<bindings::ImGuiBindings>());
 		bindings.push_back(std::make_unique<bindings::AppBindings>());
 		bindings.push_back(std::make_unique<bindings::SceneBindings>());

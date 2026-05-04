@@ -1,5 +1,5 @@
 #include "surface_renderer2.h"
-#include "../../core/graphic_api.h"
+#include "../../core/utils/opengl_helper.h"
 
 void SurfaceRenderer2::init() {
 

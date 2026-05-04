@@ -1,5 +1,7 @@
 #include "app.h"
 
+#include "core/utils/opengl_helper.h"
+
 #include "core/cameras/trackball_camera.h"
 #include "core/cameras/descent_camera.h"
 #include "core/renderers/line_renderer.h"
