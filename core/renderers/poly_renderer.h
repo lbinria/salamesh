@@ -14,7 +14,7 @@
 using json = nlohmann::json;
 
 #include "mesh_renderer.h"
-#include "../element.h"
+#include "../data/element_type.h"
 using namespace UM;
 
 struct PolyRenderer : public MeshRenderer {

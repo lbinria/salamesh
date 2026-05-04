@@ -1,8 +1,8 @@
 #pragma once
 
-#include "../element.h"
+#include "../data/element_type.h"
 #include "../layer.h"
-#include "../attribute.h"
+#include "../data/attribute.h"
 #include "../renderers/renderer.h"
 #include "../renderers/mesh_renderer.h"
 #include "../renderers/point_set_renderer.h"

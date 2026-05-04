@@ -1,5 +1,5 @@
 #pragma once 
-#include "element.h"
+#include "data/element_type.h"
 
 #include <ultimaille/all.h>
 

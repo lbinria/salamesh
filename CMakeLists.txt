@@ -188,6 +188,8 @@ file(GLOB SOURCES
   "core/*.cpp"
   "core/**/*.h" 
   "core/**/*.cpp"
+  include/stb_include.cpp 
+
 )
 
 # Add the library

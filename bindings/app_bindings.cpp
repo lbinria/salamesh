@@ -1,6 +1,6 @@
 #include "app_bindings.h"
 
-#include "../core/element.h"
+#include "../core/data/element_type.h"
 
 namespace bindings {
 

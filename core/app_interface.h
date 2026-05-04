@@ -8,7 +8,7 @@
 #include "navigation_path.h"
 
 #include "input_states.h"
-#include "element.h"
+#include "data/element_type.h"
 #include "cameras/camera.h"
 #include "cameras/camera_collection.h"
 #include "renderers/renderer_collection.h"

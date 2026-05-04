@@ -1,10 +1,10 @@
 #pragma once
 
-#include "../element.h"
+#include "../data/element_type.h"
 #include "../layer.h"
 
 #include "../shader.h"
-#include "../attribute.h"
+#include "../data/attribute.h"
 #include "../../include/glm/glm.hpp"
 
 #include "../../include/json.hpp"

@@ -11,7 +11,7 @@
 #include "../../include/glm/gtc/type_ptr.hpp"
 
 #include "volume_renderer.h"
-#include "../element.h"
+#include "../data/element_type.h"
 #include "../shader.h"
 
 using namespace UM;
