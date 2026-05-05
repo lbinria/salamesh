@@ -8,6 +8,8 @@
 #include "script.h"
 #include "input_states.h"
 
+#include "utils/logger.h"
+
 #include "../bindings/lua_binding.h"
 #include "../bindings/um_bindings.h"
 #include "../bindings/imgui_bindings.h"
@@ -21,6 +23,7 @@
 #include "../bindings/camera_bindings.h"
 #include "../bindings/model_bindings.h"
 #include "../bindings/renderer_bindings.h"
+
 
 struct LuaScript final : public Script {
 
@@ -71,6 +74,22 @@ struct LuaScript final : public Script {
 		has_modelLoaded = modelLoaded_func.valid();
 		has_selectedModelChanged = selectedModelChanged_func.valid();
 		has_sceneCleared = sceneCleared_func.valid();
+
+		Logger::infoln("Load script: " + script);
+		Logger::infoln(" - has_init=" + std::to_string(has_init));
+		Logger::infoln(" - has_draw_gui=" + std::to_string(has_draw_gui));
+		Logger::infoln(" - has_layout_gui=" + std::to_string(has_layout_gui));
+		Logger::infoln(" - has_update=" + std::to_string(has_update));
+		Logger::infoln(" - has_cleanup=" + std::to_string(has_cleanup));
+
+		Logger::infoln(" - has_mouse_button=" + std::to_string(has_mouse_button));
+		Logger::infoln(" - has_mouse_move=" + std::to_string(has_mouse_move));
+		Logger::infoln(" - has_mouse_scroll=" + std::to_string(has_mouse_scroll));
+		Logger::infoln(" - has_key_event=" + std::to_string(has_key_event));
+		Logger::infoln(" - has_navigationPathChanged=" + std::to_string(has_navigationPathChanged));
+		Logger::infoln(" - has_modelLoaded=" + std::to_string(has_modelLoaded));
+		Logger::infoln(" - has_selectedModelChanged=" + std::to_string(has_selectedModelChanged));
+		Logger::infoln(" - has_sceneCleared=" + std::to_string(has_sceneCleared));
 	}
 
 
