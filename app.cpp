@@ -10,6 +10,7 @@
 #include "core/models/surface_model.h"
 #include "core/models/volume_model.h"
 
+#include "core/utils/logger.h"
 
 #include <ranges>
 
@@ -204,9 +205,13 @@ static void scroll_callback(GLFWwindow* window, double xoffset, double yoffset) 
 }
 
 static void mouse_button_callback(GLFWwindow* window, int button, int action, int mods) {
-    App* app = static_cast<App*>(glfwGetWindowUserPointer(window));
-    if (!app)
+    Logger::infoln("mouse_button_callback");
+	
+	App* app = static_cast<App*>(glfwGetWindowUserPointer(window));
+    if (!app) {
+		Logger::warningln("mouse_button_callback - app = nullptr");
 		return;
+	}
 
 	// Dbl clicks detection
 	if (action == GLFW_PRESS) {
