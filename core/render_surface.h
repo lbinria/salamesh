@@ -3,8 +3,6 @@
 #include "shader.h"
 
 #include "../include/glm/glm.hpp"
-#include "../include/glm/gtc/matrix_transform.hpp"
-#include "../include/glm/gtc/type_ptr.hpp"
 #include <memory>
 
 struct RenderSurface {

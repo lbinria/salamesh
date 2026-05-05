@@ -1,9 +1,9 @@
 #pragma once
 
-#include "scene_view.h"
-
 #include "data/colormap.h"
 #include "input_states.h"
+
+#include "render_surface.h"
 
 #include "cameras/camera.h"
 #include "cameras/trackball_camera.h"
@@ -19,6 +19,7 @@
 #include "renderers/renderer.h"
 #include "renderers/line_renderer.h"
 #include "renderers/renderer_collection.h"
+
 
 #include <map>
 
@@ -48,15 +49,15 @@ struct Scene {
 		renderers.getInstanciator().registerType("LineRenderer", [](std::string name) { return std::make_unique<LineRenderer>(name); });
 		renderers.getInstanciator().registerType("PointSetRenderer", [](std::string name) { return std::make_unique<PointSetRenderer>(name); });
 
-		// Init default view
-		auto view = std::make_shared<SceneView>(1024, 768);
-		view->setup();
-		views["default"] = std::move(view);
+		// Init default render surface
+		auto renderSurface = std::make_shared<RenderSurface>(1024, 768);
+		renderSurface->setBackgroundColor({0.05, 0.1, 0.15});
+		renderSurface->setup(); 
+		renderSurfaces["default"] = std::move(renderSurface);
 
 		setupCameras();
 
-		// TODO replace by getMainView.setCamera
-		getMainView().getRenderSurface().setCamera(cameras["default"]);
+		getDefaultRenderSurface().setCamera(cameras["default"]);
 	}
 
 	void render() {
@@ -155,7 +156,7 @@ struct Scene {
 		}
 
 		// Set camera to render surface
-		getMainView().setCamera(cameras[selected]);
+		getDefaultRenderSurface().setCamera(cameras[selected]);
 		selectedCamera = selected;
 		return true;
 	}
@@ -190,8 +191,8 @@ struct Scene {
 	void loadState(json &j, const std::string filename);
 	void saveState(json &j, const std::string filename);
 
-	SceneView& getMainView() { return *views["default"]; }
-	std::map<std::string, std::shared_ptr<SceneView>>& getViews() { return views; }
+	RenderSurface& getDefaultRenderSurface() { return *renderSurfaces["default"]; }
+	std::map<std::string, std::shared_ptr<RenderSurface>>& getRenderSurfaces() { return renderSurfaces; }
 
 	private:
 	IApp &app;
@@ -207,6 +208,6 @@ struct Scene {
 	// display color map in good format for 2D in the UI
 	std::vector<Colormap> colormaps;
 
-	std::map<std::string, std::shared_ptr<SceneView>> views;
+	std::map<std::string, std::shared_ptr<RenderSurface>> renderSurfaces;
 	
 };

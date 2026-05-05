@@ -30,14 +30,23 @@ struct Logger {
 	static void infoln(const std::string s) {
 		std::ofstream f;
 		f.open("logs.txt", std::ios::app);
-		f << " - INFO - " << s << std::endl;
+		f << " - INFO: " << s << std::endl;
 		f.close();
 	}
 
 	static void warningln(const std::string s) {
 		std::ofstream f;
 		f.open("logs.txt", std::ios::app);
-		f << " - WARNING - " << s << std::endl;
+		f << " - WARNING: " << s << std::endl;
+		f.close();
+	}
+
+	static void errorln(const std::string s) {
+		std::cerr << s << std::endl;
+
+		std::ofstream f;
+		f.open("logs.txt", std::ios::app);
+		f << " - ERROR: " << s << std::endl;
 		f.close();
 	}
 
