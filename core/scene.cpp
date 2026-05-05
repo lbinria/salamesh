@@ -1,7 +1,110 @@
 #include "scene.h"
 #include "app_interface.h"
+#include "point_shader.h"
 
 #include "utils/opengl_helper.h"
+
+std::shared_ptr<TrianglesGeometry> loadTrianglesGeometry(const std::string &filename) {
+	auto geometry = std::make_shared<TrianglesGeometry>();
+
+	try {
+
+		auto &m = geometry->getMesh();
+		auto attr = read_by_extension(filename, m);
+
+		if (m.nfacets() <= 0)
+			return nullptr;
+		
+		int fs = m.facet(0).size();
+
+		return geometry;
+
+	} catch (std::runtime_error &ex) {
+		std::cerr << "Unable to read " << filename << ": " << ex.what() << std::endl;
+		return nullptr;
+	}
+}
+
+// template<typename TMesh>
+// std::shared_ptr<Geometry> loadGeometry(const std::string &filename) {
+// 	TMesh m;
+
+// 	try {
+
+// 		auto attr = read_by_extension(filename, m);
+// 		if (m.nfacets() <= 0)
+// 			return nullptr;
+
+		
+// 		int fs = m.facet(0).size();
+
+// 		// Check TMesh is Polygon
+// 		bool isPoly = false;
+// 		if constexpr (std::is_same_v<TMesh, Polygons>) {
+// 			// N vert per facet greater than quad
+// 			if (fs > 4) {
+// 				isPoly = true;
+// 			} else {
+// 				// Or irregular number of vertices
+// 				for (auto &f : m.iter_facets()) {
+// 					if (fs != f.size())
+// 						isPoly = true;
+// 						break;
+// 				}
+// 			}
+
+// 			if (!isPoly)
+// 				return nullptr;
+// 		}
+
+// 		return std::make_shared<SurfaceGeometry>(std::move(m));
+
+// 	} catch (std::runtime_error &ex) {
+// 		std::cerr << "Unable to read " << filename << ": " << ex.what() << std::endl;
+// 		return nullptr;
+// 	}
+// }
+
+std::shared_ptr<SceneNode> Scene::load(const std::string& filename, const std::string name) {
+
+	std::string modelName = name.empty() ? 
+		std::filesystem::path(filename).stem().string() + std::to_string(models.count()) : 
+		name;
+
+	// auto geometry = loadGeometry<Triangles>(filename);
+	// if (!geometry) {
+	// 	geometry = loadGeometry<Quads>(filename);
+	// }
+
+	auto geometry = loadTrianglesGeometry(filename);
+
+	auto ss = std::dynamic_pointer_cast<SurfaceGeometry>(geometry);
+	auto &s= ss->getSurface();
+	auto bf= s.nfacets();
+
+	// Create default materials
+	auto pointMaterial = _shaderPasses["point_shader_pass"]->createMaterial();
+	// Create scene node
+	auto node = std::make_shared<SceneNode>(name);
+	node->setGeometry(geometry);
+	node->addMaterial("point", pointMaterial);
+
+	return node;
+
+
+	// // We can load Triangles / Quads as Polygons, it works, i know
+	// // but there is maybe some optimisations for Triangles, Quads...
+	// // Note: check this improve the loading time of big models
+	// if (getModelType() == ModelType::POLYGON_MODEL && !mustLoadedAsPoly()) {
+	// 	return false;
+	// }
+	// clearAttrs();
+	// auto containers = getAttributeContainers();
+	// for (auto &[k, c] : containers) {
+	// 	addAttr(k, c);
+	// }
+}
+
 
 std::shared_ptr<Model> Scene::loadModel(const std::string& filename, std::string name) {
 

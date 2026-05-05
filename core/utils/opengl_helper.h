@@ -68,6 +68,12 @@ namespace sl {
 		glVertexAttribIPointer(halfedgeIndexLoc, 1, GL_INT, stride, ptr);
 	}
 
+	inline void createVBOVec2(GLuint shaderId, const GLchar *name, GLsizei stride, const void *ptr) {
+		GLuint p0Loc = glGetAttribLocation(shaderId, name);
+		glEnableVertexAttribArray(p0Loc);
+		glVertexAttribPointer(p0Loc, 2, GL_FLOAT, GL_FALSE, stride, ptr);
+	}
+
 	inline void createVBOVec3(GLuint shaderId, const GLchar *name, GLsizei stride, const void *ptr) {
 		GLuint p0Loc = glGetAttribLocation(shaderId, name);
 		glEnableVertexAttribArray(p0Loc);

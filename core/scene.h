@@ -20,6 +20,11 @@
 #include "renderers/line_renderer.h"
 #include "renderers/renderer_collection.h"
 
+#include "scene_node.h"
+#include "data/material.h"
+
+#include "shader_pass.h"
+#include "point_shader.h"
 
 #include <map>
 
@@ -31,6 +36,12 @@ struct Scene {
 
 
 	void init() {
+
+		// Init passes and their layouts
+		auto pointShaderPass = std::make_unique<PointShaderPass>();
+		pointShaderPass->init();
+		_shaderPasses["point_shader_pass"] = std::move(pointShaderPass);
+
 		// Register model types
 		models.getInstanciator().registerType("TriModel", [](std::string name) { return std::make_unique<TriModel>(name); });
 		models.getInstanciator().registerType("QuadModel", [](std::string name) { return std::make_unique<QuadModel>(name); });
@@ -104,6 +115,8 @@ struct Scene {
 
 	std::shared_ptr<Model> loadModel(const std::string& filename, std::string name = "");
 
+
+	std::shared_ptr<SceneNode> load(const std::string& filename, const std::string name);
 
 
 	ModelCollection& getModels() { return models; }
@@ -194,6 +207,63 @@ struct Scene {
 	RenderSurface& getDefaultRenderSurface() { return *renderSurfaces["default"]; }
 	std::map<std::string, std::shared_ptr<RenderSurface>>& getRenderSurfaces() { return renderSurfaces; }
 
+	std::map<std::string, std::shared_ptr<SceneNode>> getNodes() {
+		return _nodes;
+	}
+
+	void addNode(std::shared_ptr<SceneNode> node) {
+		_nodes[node->getName()] = node;
+	}
+
+
+
+
+
+	void render2() {
+		for (auto &[shaderPassName, shaderPass] : _shaderPasses) {
+			for (auto &[nodeId, node] : getNodes()) {
+
+				auto geometry = node->getGeometry();
+
+				if (!geometry)
+					continue;
+
+				for (auto &[materialName, material] : node->getMaterials()) {
+					
+					// Check whether the material is supported by shader pass
+					if (!shaderPass->isMaterialSupported(material))
+						continue;
+
+					if (node->isDirty()) {
+						// Dirty ? 
+						// Get geometry data
+						material->fill(*geometry);
+						auto &geometryBuffer = material->getGeometryBuffer();
+						// Write VBO to GPU
+						glBindVertexArray(material->vao());
+						glBindBuffer(GL_ARRAY_BUFFER, material->vbo());
+						glBufferData(GL_ARRAY_BUFFER, geometryBuffer.vboBuffer.size, geometryBuffer.vboBuffer.data, GL_STATIC_DRAW);
+						// TODO important Write TBO to GPU
+						for (auto &[texBufferName, texBuffer] : geometryBuffer.texBuffers) {
+							
+						}
+						node->cleanDirty();
+					}
+
+					// Render node for shader pass
+					shaderPass->render(*material, node->getWorldPosition());
+					
+				}
+			}
+		}
+	}
+
+	std::map<std::string, std::unique_ptr<ShaderPass>> _shaderPasses; // all shader passes
+
+
+
+
+
 	private:
 	IApp &app;
 
@@ -210,4 +280,29 @@ struct Scene {
 
 	std::map<std::string, std::shared_ptr<RenderSurface>> renderSurfaces;
 	
+
+
+	// You load meshes with ResoureLoader
+	// You load materials with ResourceLoader
+	// You can create / update SceneNode from meshes
+
+	// Meshes (geometry data)
+	// std::map<std::string, UM::PointSet> _pointsets;
+	// std::map<std::string, UM::Surface> _surfaces;
+	// std::map<std::string, UM::Volume> _volumes;
+	// std::map<std::string, UM::PolyLine> _polylines;
+
+	// std::map<std::string, UM::SurfaceAttributes> _surfaceAttributes;
+	// std::map<std::string, UM::VolumeAttributes> _volumeAttributes;
+	// std::map<std::string, UM::PolyLineAttributes> _polylineAttributes;
+
+
+
+
+	// Materials
+	// std::map<std::string, Material> _materials;
+	// Scene objects
+	std::map<std::string, std::shared_ptr<SceneNode>> _nodes;
+
+
 };

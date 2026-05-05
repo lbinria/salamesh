@@ -110,6 +110,10 @@ void Shader::setFloat2AtIndex(const std::string &name, int i, glm::vec2 value) c
     glUniform2fv(glGetUniformLocation(id, name.c_str()) + i, 1, glm::value_ptr(value));
 }
 
+unsigned int Shader::getLoc(const std::string name) const {
+    return glGetUniformLocation(id, name.c_str());
+}
+
 void Shader::clean() {
     glDeleteProgram(id);
 }

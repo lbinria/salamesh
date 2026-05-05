@@ -619,6 +619,7 @@ void App::start() {
 
 		// Render scene
 		scene.render();
+		scene.render2();
 
 		// Go back to default framebuffer to draw the screen quad
 		glBindFramebuffer(GL_FRAMEBUFFER, 0);
@@ -827,6 +828,9 @@ void App::drawGui() {
 				std::cout << "filename: " << filename << ", fullpath: " << fullpath << std::endl;
 				std::cout << "read model..." << std::endl;
 				scene.loadModel(fullpath);
+				// Test
+				auto node = scene.load(fullpath, "");
+				scene.addNode(node);
 			}
 		}
 		
