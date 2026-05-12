@@ -1,7 +1,7 @@
 #include "poly_renderer.h"
 #include "../../core/utils/opengl_helper.h"
 
-void PolyRenderer::init() {
+void PolyMaterial::init() {
 
 	// TODO maybe update buffer size of ptr on push ? move ncells somewher eelse
 
@@ -89,7 +89,7 @@ void PolyRenderer::init() {
 
 }
 
-void PolyRenderer::push() {
+void PolyMaterial::push() {
  
 	std::vector<float> nVertsPerFacet(_m.nfacets());
 
@@ -171,7 +171,7 @@ void PolyRenderer::push() {
 	glBufferData(GL_TEXTURE_BUFFER, nVertsPerFacet.size() * sizeof(float), nVertsPerFacet.data(), GL_STATIC_DRAW);
 }
 
-void PolyRenderer::render(glm::vec3 &position) {
+void PolyMaterial::render(glm::vec3 &position) {
 
 	if (!visible)
 		return;
@@ -210,14 +210,14 @@ void PolyRenderer::render(glm::vec3 &position) {
 	glDrawArrays(GL_TRIANGLES, 0, nelements);
 }
 
-void PolyRenderer::clear() {
+void PolyMaterial::clear() {
 	glBindVertexArray(VAO);
 	glBindBuffer(GL_ARRAY_BUFFER, VBO);
 	glBufferData(GL_ARRAY_BUFFER, nelements * sizeof(Vertex), nullptr, GL_STATIC_DRAW);
 	nelements = 0;
 }
 
-void PolyRenderer::clean() {
+void PolyMaterial::clean() {
 	// Clean up
 	glDeleteVertexArrays(1, &VAO);
 	glDeleteBuffers(1, &VBO);

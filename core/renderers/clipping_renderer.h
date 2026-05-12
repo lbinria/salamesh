@@ -15,14 +15,14 @@ using json = nlohmann::json;
 
 using namespace UM;
 
-struct ClippingRenderer : public Renderer {
+struct ClippingMaterial : public Material {
 
 	struct Vertex {
 		glm::vec3 p;
 	};
 
-	ClippingRenderer(std::string name, PointSet &ps) : 
-		Renderer(name, Shader(sl::shadersPath("clipping.vert"), sl::shadersPath("clipping.frag"))),
+	ClippingMaterial(std::string name, PointSet &ps) : 
+		Material(name, Shader(sl::shadersPath("clipping.vert"), sl::shadersPath("clipping.frag"))),
 		ps(ps) {
 			visible = false;
 			// setColor(glm::vec3(1.0, 1.0, 1.0));
@@ -37,18 +37,18 @@ struct ClippingRenderer : public Renderer {
 	int getRenderElementKind() override { return 0; }
 
 	void setClipping(bool enabled) {
-		Renderer::setClipping(enabled);
+		Material::setClipping(enabled);
 		visible = enabled;
 	}
 
 	void setClippingPlanePoint(glm::vec3 p) {
-		Renderer::setClippingPlanePoint(p);
+		Material::setClippingPlanePoint(p);
 		clippingPlanePoint = p;
 		push();
 	}
 
 	void setClippingPlaneNormal(glm::vec3 n) {
-		Renderer::setClippingPlaneNormal(n);
+		Material::setClippingPlaneNormal(n);
 		clippingPlaneNormal = n;
 		push();
 	}

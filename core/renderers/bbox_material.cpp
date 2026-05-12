@@ -1,8 +1,8 @@
-#include "bbox_renderer.h"
+#include "bbox_material.h"
 #include "../../core/utils/opengl_helper.h"
 #include "../helpers.h"
 
-void BBoxRenderer::init() {
+void BBoxMaterial::init() {
 
 	glGenVertexArrays(1, &VAO);
 	glGenBuffers(1, &VBO);
@@ -17,7 +17,7 @@ void BBoxRenderer::init() {
 
 }
 
-void BBoxRenderer::push() {
+void BBoxMaterial::push() {
 
 	
 	std::vector<Vertex> vertices;
@@ -86,7 +86,7 @@ void BBoxRenderer::push() {
 	writeVBOBuffer(vertices);
 }
 
-void BBoxRenderer::render(glm::vec3 &position) {
+void BBoxMaterial::render(glm::vec3 &position) {
 
 	if (!visible)
 		return;
@@ -98,14 +98,14 @@ void BBoxRenderer::render(glm::vec3 &position) {
 	glDrawArrays(GL_LINES, 0, nelements);
 }
 
-void BBoxRenderer::clear() {
+void BBoxMaterial::clear() {
 	glBindVertexArray(VAO);
 	glBindBuffer(GL_ARRAY_BUFFER, VBO);
 	glBufferData(GL_ARRAY_BUFFER, nelements * sizeof(Vertex), nullptr, GL_STATIC_DRAW);
 	nelements = 0;
 }
 
-void BBoxRenderer::clean() {
+void BBoxMaterial::clean() {
 	// Clean up
 	glDeleteVertexArrays(1, &VAO);
 	glDeleteBuffers(1, &VBO);

@@ -1,6 +1,6 @@
 #include "hex_renderer.h"
 
-void HexRenderer::push() {
+void HexMaterial::push() {
 
 	nelements = _m.nfacets() * 2 /* 2 tri per facet */ * 3 /* 3 points per tri */;
 	std::vector<Vertex> vertices(nelements);
@@ -75,6 +75,6 @@ void HexRenderer::push() {
 		}
 	}
 
-	VolumeRenderer::push_bary(vertices);
+	VolumeMaterial::push_bary(vertices);
 
 }

@@ -16,7 +16,7 @@
 
 using namespace UM;
 
-struct TetRenderer : public VolumeRenderer {
-	using VolumeRenderer::VolumeRenderer;
+struct TetMaterial : public VolumeMaterial {
+	using VolumeMaterial::VolumeMaterial;
 	void push() override;
 };

@@ -2,7 +2,7 @@
 #include "../../core/utils/opengl_helper.h"
 #include "../helpers.h"
 
-void HalfedgeRenderer::init() {
+void HalfedgeMaterial::init() {
 
 	glGenVertexArrays(1, &VAO);
 	glGenBuffers(1, &VBO);
@@ -38,7 +38,7 @@ void HalfedgeRenderer::init() {
 
 }
 
-void HalfedgeRenderer::render(glm::vec3 &position) {
+void HalfedgeMaterial::render(glm::vec3 &position) {
 
 	if (!visible)
 		return;
@@ -218,14 +218,14 @@ void PolylineRenderer::push() {
 	nelements = vertices.size();
 }
 
-void HalfedgeRenderer::clear() {
+void HalfedgeMaterial::clear() {
 	glBindVertexArray(VAO);
 	glBindBuffer(GL_ARRAY_BUFFER, VBO);
 	glBufferData(GL_ARRAY_BUFFER, nelements * sizeof(LineVert), nullptr, GL_STATIC_DRAW);
 	nelements = 0;
 }
 
-void HalfedgeRenderer::clean() {
+void HalfedgeMaterial::clean() {
 	// Clean up
 	glDeleteVertexArrays(1, &VAO);
 	glDeleteBuffers(1, &VBO);

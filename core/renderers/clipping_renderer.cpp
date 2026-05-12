@@ -142,7 +142,7 @@ Result intersectPlaneAABB(const glm::dvec3 &a, const glm::dvec3 &b,
     return res;
 }
 
-void ClippingRenderer::init() {
+void ClippingMaterial::init() {
 
 	glGenVertexArrays(1, &VAO);
 	glGenBuffers(1, &VBO);
@@ -156,7 +156,7 @@ void ClippingRenderer::init() {
 	sl::createVBOVec3(shader.id, "p", sizeof(Vertex), (void*)offsetof(Vertex, p));
 }
 
-void ClippingRenderer::push() {
+void ClippingMaterial::push() {
 
 	std::vector<Vertex> vertices;
 
@@ -194,7 +194,7 @@ void ClippingRenderer::push() {
     writeVBOBuffer(vertices);
 }
 
-void ClippingRenderer::render(glm::vec3 &position) {
+void ClippingMaterial::render(glm::vec3 &position) {
 
 	if (!visible)
 		return;
@@ -206,14 +206,14 @@ void ClippingRenderer::render(glm::vec3 &position) {
 	glDrawArrays(GL_TRIANGLES, 0, nelements);
 }
 
-void ClippingRenderer::clear() {
+void ClippingMaterial::clear() {
 	glBindVertexArray(VAO);
 	glBindBuffer(GL_ARRAY_BUFFER, VBO);
 	glBufferData(GL_ARRAY_BUFFER, nelements * sizeof(Vertex), nullptr, GL_DYNAMIC_DRAW);
 	nelements = 0;
 }
 
-void ClippingRenderer::clean() {
+void ClippingMaterial::clean() {
 	// Clean up
 	glDeleteVertexArrays(1, &VAO);
 	glDeleteBuffers(1, &VBO);

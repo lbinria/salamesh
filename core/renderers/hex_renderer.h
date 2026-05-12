@@ -16,7 +16,7 @@
 
 using namespace UM;
 
-struct HexRenderer : public VolumeRenderer {
-	using VolumeRenderer::VolumeRenderer;
+struct HexMaterial : public VolumeMaterial {
+	using VolumeMaterial::VolumeMaterial;
 	void push() override;
 };

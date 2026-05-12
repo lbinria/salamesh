@@ -10,26 +10,26 @@ namespace bindings {
 
 	void RendererBindings::loadBindings(sol::state &lua, IApp &app) {
 
-		sol::usertype<Renderer> renderer_t = lua.new_usertype<Renderer>("Renderer");
+		sol::usertype<Material> renderer_t = lua.new_usertype<Material>("Material");
 
-		renderer_t["name"] = sol::readonly_property(&Renderer::getName);
+		renderer_t["name"] = sol::readonly_property(&Material::getName);
 
 		renderer_t["visible"] = sol::property(
-			&Renderer::getVisible,
-			&Renderer::setVisible
+			&Material::getVisible,
+			&Material::setVisible
 		);
 
-		renderer_t["light"] = sol::writeonly_property(&Renderer::setLight);
+		renderer_t["light"] = sol::writeonly_property(&Material::setLight);
 
 
 		// TODO important missing cases
-		renderer_t.set_function("as", [](sol::this_state s, Renderer& self, const std::string& typeName) -> sol::object {
-			if (typeName == "LineRenderer") {
-				if (auto r = dynamic_cast<LineRenderer*>(&self)) {
+		renderer_t.set_function("as", [](sol::this_state s, Material& self, const std::string& typeName) -> sol::object {
+			if (typeName == "LineMaterial") {
+				if (auto r = dynamic_cast<LineMaterial*>(&self)) {
 					return sol::make_object(s, r);
 				}
-			} else if (typeName == "PointSetRenderer") {
-				if (auto r = dynamic_cast<PointSetRenderer*>(&self)) {
+			} else if (typeName == "PointMaterial") {
+				if (auto r = dynamic_cast<PointMaterial*>(&self)) {
 					return sol::make_object(s, r);
 				}
 			}
@@ -37,108 +37,108 @@ namespace bindings {
 			return sol::nil;
 		});
 
-		renderer_t.set_function("push", &Renderer::push);
+		renderer_t.set_function("push", &Material::push);
 
 
-		sol::usertype<MeshRenderer> meshRenderer_t = lua.new_usertype<MeshRenderer>(
-			"MeshRenderer",
+		sol::usertype<MeshMaterial> meshRenderer_t = lua.new_usertype<MeshMaterial>(
+			"MeshMaterial",
 			sol::base_classes, 
-			sol::bases<Renderer>()
+			sol::bases<Material>()
 		);
 
 		meshRenderer_t["color"] = sol::property(
-			&MeshRenderer::getColor,
-			&MeshRenderer::setColor
+			&MeshMaterial::getColor,
+			&MeshMaterial::setColor
 		);
 
 		meshRenderer_t["size"] = sol::property(
-			&MeshRenderer::getMeshSize,
-			&MeshRenderer::setMeshSize
+			&MeshMaterial::getMeshSize,
+			&MeshMaterial::setMeshSize
 		);
 
 		meshRenderer_t["shrink"] = sol::property(
-			&MeshRenderer::getMeshShrink,
-			&MeshRenderer::setMeshShrink
+			&MeshMaterial::getMeshShrink,
+			&MeshMaterial::setMeshShrink
 		);
 
 		meshRenderer_t["corner_visible"] = sol::property(
-			&MeshRenderer::getCornerVisible,
-			&MeshRenderer::setCornerVisible
+			&MeshMaterial::getCornerVisible,
+			&MeshMaterial::setCornerVisible
 		);
 
 
-		sol::usertype<PointSetRenderer> pointSetRenderer_t = lua.new_usertype<PointSetRenderer>(
-			"PointSetRenderer",
+		sol::usertype<PointMaterial> pointSetRenderer_t = lua.new_usertype<PointMaterial>(
+			"PointMaterial",
 			sol::base_classes, 
-			sol::bases<Renderer>(),
-			"auto_update", sol::writeonly_property(&PointSetRenderer::setAutoUpdate)
+			sol::bases<Material>(),
+			"auto_update", sol::writeonly_property(&PointMaterial::setAutoUpdate)
 		);
 
-		pointSetRenderer_t[sol::meta_function::index] = [](PointSetRenderer& self, int i) -> vec3 {
+		pointSetRenderer_t[sol::meta_function::index] = [](PointMaterial& self, int i) -> vec3 {
 			return self[i - 1];
 		};
 
-		pointSetRenderer_t[sol::meta_function::new_index] = [](PointSetRenderer& self, int i, vec3 value) {
+		pointSetRenderer_t[sol::meta_function::new_index] = [](PointMaterial& self, int i, vec3 value) {
 			self[i - 1] = value;
 		};
 
 		pointSetRenderer_t["visible"] = sol::property(
-			&PointSetRenderer::getVisible,
-			&PointSetRenderer::setVisible
+			&PointMaterial::getVisible,
+			&PointMaterial::setVisible
 		);
 		pointSetRenderer_t["color"] = sol::property(
-			&PointSetRenderer::getColor,
-			&PointSetRenderer::setColor
+			&PointMaterial::getColor,
+			&PointMaterial::setColor
 		);
 		pointSetRenderer_t["size"] = sol::property(
-			&PointSetRenderer::getPointSize,
-			&PointSetRenderer::setPointSize
+			&PointMaterial::getPointSize,
+			&PointMaterial::setPointSize
 		);
-		pointSetRenderer_t.set_function("add_point", &PointSetRenderer::addPoint);
-		pointSetRenderer_t.set_function("add_points", &PointSetRenderer::addPoints);
-		pointSetRenderer_t.set_function("remove_points", &PointSetRenderer::removePoints);
-		pointSetRenderer_t.set_function("clear_points", &PointSetRenderer::clearPoints);
-		pointSetRenderer_t.set_function("push", &PointSetRenderer::push);
+		pointSetRenderer_t.set_function("add_point", &PointMaterial::addPoint);
+		pointSetRenderer_t.set_function("add_points", &PointMaterial::addPoints);
+		pointSetRenderer_t.set_function("remove_points", &PointMaterial::removePoints);
+		pointSetRenderer_t.set_function("clear_points", &PointMaterial::clearPoints);
+		pointSetRenderer_t.set_function("push", &PointMaterial::push);
 
-		pointSetRenderer_t["count"] = sol::readonly_property(&PointSetRenderer::count);
+		pointSetRenderer_t["count"] = sol::readonly_property(&PointMaterial::count);
 
 
-		sol::usertype<HalfedgeRenderer> halfedgeRenderer_t = lua.new_usertype<HalfedgeRenderer>(
-			"HalfedgeRenderer",
+		sol::usertype<HalfedgeMaterial> halfedgeRenderer_t = lua.new_usertype<HalfedgeMaterial>(
+			"HalfedgeMaterial",
 			sol::base_classes, 
-			sol::bases<Renderer>()
+			sol::bases<Material>()
 		);
 
 		halfedgeRenderer_t["visible"] = sol::property(
-			&HalfedgeRenderer::getVisible,
-			&HalfedgeRenderer::setVisible
+			&HalfedgeMaterial::getVisible,
+			&HalfedgeMaterial::setVisible
 		);
 		halfedgeRenderer_t["inside_color"] = sol::property(
-			&HalfedgeRenderer::getInsideColor,
-			&HalfedgeRenderer::setInsideColor
+			&HalfedgeMaterial::getInsideColor,
+			&HalfedgeMaterial::setInsideColor
 		);
 		halfedgeRenderer_t["outside_color"] = sol::property(
-			&HalfedgeRenderer::getOutsideColor,
-			&HalfedgeRenderer::setOutsideColor
+			&HalfedgeMaterial::getOutsideColor,
+			&HalfedgeMaterial::setOutsideColor
 		);
 		halfedgeRenderer_t["thickness"] = sol::property(
-			&HalfedgeRenderer::getThickness,
-			&HalfedgeRenderer::setThickness
+			&HalfedgeMaterial::getThickness,
+			&HalfedgeMaterial::setThickness
 		);
 		halfedgeRenderer_t["spacing"] = sol::property(
-			&HalfedgeRenderer::getSpacing,
-			&HalfedgeRenderer::setSpacing
+			&HalfedgeMaterial::getSpacing,
+			&HalfedgeMaterial::setSpacing
 		);
 		halfedgeRenderer_t["padding"] = sol::property(
-			&HalfedgeRenderer::getPadding,
-			&HalfedgeRenderer::setPadding
+			&HalfedgeMaterial::getPadding,
+			&HalfedgeMaterial::setPadding
 		);
 
 
-		auto line_t = lua.new_usertype<LineRenderer::Line>(
+		auto line_t = lua.new_usertype<LineMaterial::Line>(
 			"Line",
 			sol::call_constructor, [](sol::table t) {
-				LineRenderer::Line line;
+				LineMaterial::Line line;
 				
 				if (t["a"].valid() && t["a"].is<glm::vec3>())
 					line.a = t["a"].get<glm::vec3>();
@@ -149,34 +149,34 @@ namespace bindings {
 				
 				return line;
 			},
-			"a", &LineRenderer::Line::a,
-			"b", &LineRenderer::Line::b,
-			"color", &LineRenderer::Line::color
+			"a", &LineMaterial::Line::a,
+			"b", &LineMaterial::Line::b,
+			"color", &LineMaterial::Line::color
 		);
 
-		auto lineRenderer_t = lua.new_usertype<LineRenderer>(
-			"LineRenderer",
+		auto lineRenderer_t = lua.new_usertype<LineMaterial>(
+			"LineMaterial",
 			sol::base_classes, 
-			sol::bases<Renderer>(),
-			"auto_update", sol::writeonly_property(&LineRenderer::setAutoUpdate)
+			sol::bases<Material>(),
+			"auto_update", sol::writeonly_property(&LineMaterial::setAutoUpdate)
 		);
 
-		lineRenderer_t.set_function("add_line", &LineRenderer::addLine);
-		lineRenderer_t.set_function("add_lines", &LineRenderer::addLines);
-		lineRenderer_t.set_function("clear_lines", &LineRenderer::clearLines);
-		lineRenderer_t.set_function("push", &LineRenderer::push);
+		lineRenderer_t.set_function("add_line", &LineMaterial::addLine);
+		lineRenderer_t.set_function("add_lines", &LineMaterial::addLines);
+		lineRenderer_t.set_function("clear_lines", &LineMaterial::clearLines);
+		lineRenderer_t.set_function("push", &LineMaterial::push);
 
-		// auto pointSetRenderer_t = lua.new_usertype<PointSetRenderer>(
-		// 	"PointSetRenderer",
+		// auto pointSetRenderer_t = lua.new_usertype<PointMaterial>(
+		// 	"PointMaterial",
 		// 	sol::base_classes, 
-		// 	sol::bases<Renderer>(),
-		// 	"auto_update", sol::writeonly_property(&PointSetRenderer::setAutoUpdate)
+		// 	sol::bases<Material>(),
+		// 	"auto_update", sol::writeonly_property(&PointMaterial::setAutoUpdate)
 		// );
 
-		// pointSetRenderer_t.set_function("push", &PointSetRenderer::push);
-		// pointSetRenderer_t.set_function("clear_points", &PointSetRenderer::clearPoints);
-		// pointSetRenderer_t.set_function("add_point", &PointSetRenderer::addPoint);
-		// pointSetRenderer_t.set_function("add_points", &PointSetRenderer::addPoints);
+		// pointSetRenderer_t.set_function("push", &PointMaterial::push);
+		// pointSetRenderer_t.set_function("clear_points", &PointMaterial::clearPoints);
+		// pointSetRenderer_t.set_function("add_point", &PointMaterial::addPoint);
+		// pointSetRenderer_t.set_function("add_points", &PointMaterial::addPoints);
 
 	}
 }

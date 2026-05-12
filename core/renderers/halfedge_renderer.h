@@ -14,7 +14,7 @@ using json = nlohmann::json;
 
 using namespace UM;
 
-struct HalfedgeRenderer : public Renderer {
+struct HalfedgeMaterial : public Material {
 
 	struct LineVert {
 		int halfedgeIndex;
@@ -25,7 +25,7 @@ struct HalfedgeRenderer : public Renderer {
 		glm::vec3 bary;
 	};
 
-	using Renderer::Renderer;
+	using Material::Material;
 
 	void init() override;
 	virtual void push() = 0;
@@ -107,10 +107,10 @@ struct HalfedgeRenderer : public Renderer {
 	
 };
 
-struct SurfaceHalfedgeRenderer : public HalfedgeRenderer {
+struct SurfaceHalfedgeRenderer : public HalfedgeMaterial {
 
 	SurfaceHalfedgeRenderer(std::string name, Surface &m) : 
-		HalfedgeRenderer(name, Shader(sl::shadersPath("edge.vert"), sl::shadersPath("edge.frag"))),
+		HalfedgeMaterial(name, Shader(sl::shadersPath("edge.vert"), sl::shadersPath("edge.frag"))),
 		_m(m) {
 			setThickness(2.0f);
 			setInsideColor({0.0, 0.97, 0.73});
@@ -123,10 +123,10 @@ struct SurfaceHalfedgeRenderer : public HalfedgeRenderer {
 
 };
 
-struct VolumeHalfedgeRenderer : public HalfedgeRenderer {
+struct VolumeHalfedgeRenderer : public HalfedgeMaterial {
 
 	VolumeHalfedgeRenderer(std::string name, Volume &m) : 
-		HalfedgeRenderer(name, Shader(sl::shadersPath("edge.vert"), sl::shadersPath("edge.frag"))),
+		HalfedgeMaterial(name, Shader(sl::shadersPath("edge.vert"), sl::shadersPath("edge.frag"))),
 		_m(m) {
 			setThickness(2.0f);
 			setInsideColor({0.0, 0.97, 0.73});
@@ -138,10 +138,10 @@ struct VolumeHalfedgeRenderer : public HalfedgeRenderer {
 	Volume &_m;
 };
 
-struct PolylineRenderer : public HalfedgeRenderer {
+struct PolylineRenderer : public HalfedgeMaterial {
 
 		PolylineRenderer(std::string name, PolyLine &m) : 
-		HalfedgeRenderer(name, Shader(sl::shadersPath("edge.vert"), sl::shadersPath("edge.frag"))),
+		HalfedgeMaterial(name, Shader(sl::shadersPath("edge.vert"), sl::shadersPath("edge.frag"))),
 		_m(m) {
 			setThickness(2.0f);
 			setInsideColor({0.0, 0.97, 0.73});

@@ -167,7 +167,7 @@ namespace bindings {
 		model_t["clipping_mode"] = sol::property([](Model &self) {
 			return self.getClippingMode() + 1;
 		}, [](Model &self, int selected) {
-			self.setClippingMode(static_cast<Renderer::ClippingMode>(selected - 1));
+			self.setClippingMode(static_cast<Material::ClippingMode>(selected - 1));
 		});
 
 		model_t["clipping"] = sol::property(&Model::getClipping, &Model::setClipping);
@@ -199,7 +199,7 @@ namespace bindings {
 
 
 		// TODO add: getRenderers
-		// std::shared_ptr<Renderer> getRenderer(const std::string name)
+		// std::shared_ptr<Material> getRenderer(const std::string name)
 
 		// TODO add add_attr it must bind UM attr to Model
 		// model_t.set_function("add_attr", &Model::addAttr);

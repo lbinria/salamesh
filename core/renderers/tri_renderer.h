@@ -16,9 +16,9 @@
 
 using namespace UM;
 
-struct TriRenderer : public SurfaceRenderer {
+struct TriMaterial : public SurfaceMaterial {
 
-	using SurfaceRenderer::SurfaceRenderer;
+	using SurfaceMaterial::SurfaceMaterial;
 	void push() override;
 
 };

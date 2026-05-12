@@ -1,7 +1,7 @@
 #include "point_set_renderer.h"
 #include "../../core/utils/opengl_helper.h"
 
-void PointSetRenderer::init() {
+void PointMaterial::init() {
 
 	glGenVertexArrays(1, &VAO);
 	glGenBuffers(1, &VBO);
@@ -35,7 +35,7 @@ void PointSetRenderer::init() {
 
 }
 
-void PointSetRenderer::push() {	
+void PointMaterial::push() {	
 
 	std::vector<Vertex> vertices(ps.size());
 	for (int i = 0; i < ps.size(); ++i) {
@@ -51,7 +51,7 @@ void PointSetRenderer::push() {
 	writeVBOBuffer(vertices);
 }
 
-void PointSetRenderer::render(glm::vec3 &position) {
+void PointMaterial::render(glm::vec3 &position) {
 
 	if (!visible)
 		return;
@@ -88,7 +88,7 @@ void PointSetRenderer::render(glm::vec3 &position) {
 	glDrawArrays(GL_POINTS, 0, ps.size());
 }
 
-void PointSetRenderer::clear() {
+void PointMaterial::clear() {
 	glBindVertexArray(VAO);
 	glBindBuffer(GL_ARRAY_BUFFER, VBO);
 	glBufferData(GL_ARRAY_BUFFER, nelements * sizeof(Vertex), nullptr, GL_DYNAMIC_DRAW);
@@ -96,7 +96,7 @@ void PointSetRenderer::clear() {
 	clearPoints();
 }
 
-void PointSetRenderer::clean() {
+void PointMaterial::clean() {
 	// Clean up
 	glDeleteVertexArrays(1, &VAO);
 	glDeleteBuffers(1, &VBO);

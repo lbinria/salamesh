@@ -5,9 +5,9 @@
 #include <map>
 #include <memory>
 
-struct RendererCollection : public EntityCollection<Renderer> {
+struct RendererCollection : public EntityCollection<Material> {
 
-	std::shared_ptr<Renderer> add(std::string type, std::string name) override {
+	std::shared_ptr<Material> add(std::string type, std::string name) override {
 
 		// Check whether renderer already exists
 		if (entities.contains(name))

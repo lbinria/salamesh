@@ -17,9 +17,9 @@ namespace bindings {
 			// "register_type", &Instanciator<Camera>::registerType,
 			"list_available_types", &Instanciator<Camera>::listAvailableTypes
 		);
-		lua.new_usertype<Instanciator<Renderer>>("RendererInstanciator", 
-			// "register_type", &Instanciator<Renderer>::registerType,
-			"list_available_types", &Instanciator<Renderer>::listAvailableTypes
+		lua.new_usertype<Instanciator<Material>>("RendererInstanciator", 
+			// "register_type", &Instanciator<Material>::registerType,
+			"list_available_types", &Instanciator<Material>::listAvailableTypes
 		);
 
 		// Input state binding
@@ -196,8 +196,8 @@ namespace bindings {
 		sol::usertype<RendererCollection> rendererCollection_t = lua.new_usertype<RendererCollection>("RendererCollection",
 			"add", &RendererCollection::add,
 			"remove", &RendererCollection::remove,
-			"get", sol::resolve<Renderer&(std::string)>(&RendererCollection::get),
-			"all", sol::resolve<std::map<std::string, std::shared_ptr<Renderer>>&()>(&RendererCollection::get),
+			"get", sol::resolve<Material&(std::string)>(&RendererCollection::get),
+			"all", sol::resolve<std::map<std::string, std::shared_ptr<Material>>&()>(&RendererCollection::get),
 			"count", sol::readonly_property(&RendererCollection::count),
 			"has", &RendererCollection::has,
 			"any", sol::readonly_property(&RendererCollection::any),
@@ -219,7 +219,7 @@ namespace bindings {
 			});
 		});
 		
-		rendererCollection_t[sol::meta_function::index] = [](RendererCollection& self, const std::string name) -> const std::shared_ptr<Renderer> {
+		rendererCollection_t[sol::meta_function::index] = [](RendererCollection& self, const std::string name) -> const std::shared_ptr<Material> {
 			// Check existence before return, elsewhere self[name] is added to map with nullptr
 			// for example doing app.scene.renderers:missing_function() (equivalent to: app.scene.models["missing_function"]) will add a key "missing_function" to map with nullptr !!!
 			return self.has(name) ? self[name] : nullptr;

@@ -6,7 +6,7 @@
 #include "model.h"
 #include "../renderers/point_set_renderer.h"
 #include "../renderers/halfedge_renderer.h"
-#include "../renderers/bbox_renderer.h"
+#include "../renderers/bbox_material.h"
 #include "../renderers/clipping_renderer.h"
 #include "../data/layer.h"
 #include "../helpers.h"
@@ -16,10 +16,10 @@ struct PolylineModel : public Model {
 	PolylineModel(std::string name) : 
 		_m(),
 		Model::Model(name, {
-			{"point_renderer", std::make_shared<PointSetRenderer>("", _m.points) },
+			{"point_renderer", std::make_shared<PointMaterial>("", _m.points) },
 			{"edge_renderer", std::make_shared<PolylineRenderer>("", _m)}, 
-			{"bbox_renderer", std::make_shared<BBoxRenderer>("", _m.points) },
-			{"zclipping_renderer", std::make_shared<ClippingRenderer>("", _m.points) }
+			{"bbox_renderer", std::make_shared<BBoxMaterial>("", _m.points) },
+			{"zclipping_renderer", std::make_shared<ClippingMaterial>("", _m.points) }
 		})
 		{
 			getPointsRenderer().setVisible(false);

@@ -1,6 +1,6 @@
 #include "volume_renderer.h"
 
-void VolumeRenderer::init() {
+void VolumeMaterial::init() {
 
 	// TODO maybe update buffer size of ptr on push ? move ncells somewher eelse
 
@@ -139,7 +139,7 @@ void VolumeRenderer::init() {
 
 }
 
-void VolumeRenderer::render(glm::vec3 &position) {
+void VolumeMaterial::render(glm::vec3 &position) {
 
 	if (!visible)
 		return;
@@ -166,13 +166,13 @@ void VolumeRenderer::render(glm::vec3 &position) {
 	glDrawArrays(GL_TRIANGLES, 0, nelements);
 }
 
-void VolumeRenderer::clear() {
+void VolumeMaterial::clear() {
 	glBindVertexArray(VAO);
 	glBindBuffer(GL_ARRAY_BUFFER, VBO);
 	glBufferData(GL_ARRAY_BUFFER, nelements * sizeof(Vertex), nullptr, GL_STATIC_DRAW);
 }
 
-void VolumeRenderer::clean() {
+void VolumeMaterial::clean() {
 	// Clean up
 	glDeleteVertexArrays(1, &VAO);
 	glDeleteBuffers(1, &VBO);

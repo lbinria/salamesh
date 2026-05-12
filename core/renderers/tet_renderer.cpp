@@ -1,6 +1,6 @@
 #include "tet_renderer.h"
 
-void TetRenderer::push() {
+void TetMaterial::push() {
 
 	nelements = _m.nfacets() * 3 /* 3 points per tri */;
 	std::vector<Vertex> vertices(nelements);
@@ -47,6 +47,6 @@ void TetRenderer::push() {
 		}
 	}
 
-	VolumeRenderer::push_bary(vertices);
+	VolumeMaterial::push_bary(vertices);
 
 }

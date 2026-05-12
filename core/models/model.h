@@ -25,7 +25,7 @@ struct Model {
 	Model (const Model&) = delete;
 	Model& operator= (const Model&) = delete;
 
-	Model(std::string name, std::map<std::string, std::shared_ptr<Renderer>> renderers) :  
+	Model(std::string name, std::map<std::string, std::shared_ptr<Material>> renderers) :  
 	name(name.empty() ? sl::generateGuid() : name),
 	_path(""),
 	_renderers(std::move(renderers)) {
@@ -72,7 +72,7 @@ struct Model {
 		for (auto const &[k, r] : _renderers) {
 			r->init();
 			// r->setMeshIndex(index);
-			if (auto mesh_renderer = std::dynamic_pointer_cast<MeshRenderer>(r)) {
+			if (auto mesh_renderer = std::dynamic_pointer_cast<MeshMaterial>(r)) {
 				mesh_renderer->setMeshIndex(index);
 			}
 		}
@@ -314,7 +314,7 @@ struct Model {
 		}
 	}
 
-	// Renderer functions
+	// Material functions
 
 	// TODO maybe protected
 	void setColormap0Texture(unsigned int tex) {
@@ -354,11 +354,11 @@ struct Model {
 		isLightFollowView = follow;
 	}
 
-	Renderer::ClippingMode getClippingMode() const {
+	Material::ClippingMode getClippingMode() const {
 		return clippingMode;
 	}
 
-	void setClippingMode(Renderer::ClippingMode mode) {
+	void setClippingMode(Material::ClippingMode mode) {
 		for (auto const &[k, r] : _renderers)
 			r->setClippingMode(mode);
 
@@ -426,21 +426,21 @@ struct Model {
 		maxIndex = 0;
 	}
 
-	// Renderer getters
-	PointSetRenderer& getPointsRenderer() {
-		return *static_cast<PointSetRenderer*>(_renderers.at("point_renderer").get());
+	// Material getters
+	PointMaterial& getPointsRenderer() {
+		return *static_cast<PointMaterial*>(_renderers.at("point_renderer").get());
 	}
 
-	std::shared_ptr<HalfedgeRenderer> getEdgesRenderer() {
+	std::shared_ptr<HalfedgeMaterial> getEdgesRenderer() {
 		if (_renderers.contains("edge_renderer"))
-			return  std::static_pointer_cast<HalfedgeRenderer>(_renderers.at("edge_renderer"));
+			return  std::static_pointer_cast<HalfedgeMaterial>(_renderers.at("edge_renderer"));
 			
 		return nullptr;
 	}
 
-	std::shared_ptr<MeshRenderer> getMeshRenderer() const {
+	std::shared_ptr<MeshMaterial> getMeshRenderer() const {
 		if(_renderers.contains("mesh_renderer"))
-			return std::static_pointer_cast<MeshRenderer>(_renderers.at("mesh_renderer"));
+			return std::static_pointer_cast<MeshMaterial>(_renderers.at("mesh_renderer"));
 		
 		return nullptr;
 	}
@@ -449,11 +449,11 @@ struct Model {
 		return _renderers.contains(name);
 	}
 
-	std::map<std::string, std::shared_ptr<Renderer>> getRenderers() const {
+	std::map<std::string, std::shared_ptr<Material>> getRenderers() const {
 		return _renderers;
 	}
 
-	std::shared_ptr<Renderer> getRenderer(const std::string name) const {
+	std::shared_ptr<Material> getRenderer(const std::string name) const {
 		return _renderers.at(name);
 	}
 
@@ -492,7 +492,7 @@ struct Model {
 	bool isLightEnabled = true;
 	bool isLightFollowView = false;
 
-	Renderer::ClippingMode clippingMode = Renderer::ClippingMode::STD;
+	Material::ClippingMode clippingMode = Material::ClippingMode::STD;
 	bool isClipping = false;
 	glm::vec3 clippingPlanePoint{0.f, 0.f, 0.f};
 	glm::vec3 clippingPlaneNormal{0.f, 0.f, 1.f};
@@ -502,7 +502,7 @@ struct Model {
 	int selectedColormap[3] = {0, 0, 0};
 
 	// Renderers
-	std::map<std::string, std::shared_ptr<Renderer>> _renderers;
+	std::map<std::string, std::shared_ptr<Material>> _renderers;
 
 	virtual std::vector<std::pair<ElementKind, NamedContainer>> getAttributeContainers() const = 0;
 

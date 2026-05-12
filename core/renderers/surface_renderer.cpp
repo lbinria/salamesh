@@ -1,7 +1,7 @@
 #include "surface_renderer.h"
 #include "../../core/utils/opengl_helper.h"
 
-void SurfaceRenderer::init() {
+void SurfaceMaterial::init() {
 
 	std::chrono::steady_clock::time_point begin = std::chrono::steady_clock::now();
 
@@ -50,7 +50,7 @@ void SurfaceRenderer::init() {
 
 }
 
-void SurfaceRenderer::render(/* RendererView rv */ glm::vec3 &position) {
+void SurfaceMaterial::render(/* RendererView rv */ glm::vec3 &position) {
 
 	if (!visible)
 		return;
@@ -89,13 +89,13 @@ void SurfaceRenderer::render(/* RendererView rv */ glm::vec3 &position) {
 	glDrawArrays(GL_TRIANGLES, 0, nelements);
 }
 
-void SurfaceRenderer::clear() {
+void SurfaceMaterial::clear() {
 	glBindVertexArray(VAO);
 	glBindBuffer(GL_ARRAY_BUFFER, VBO);
 	glBufferData(GL_ARRAY_BUFFER, nelements * sizeof(Vertex), nullptr, GL_STATIC_DRAW);
 }
 
-void SurfaceRenderer::clean() {
+void SurfaceMaterial::clean() {
 	// Clean up
 	glDeleteVertexArrays(1, &VAO);
 	glDeleteBuffers(1, &VBO);

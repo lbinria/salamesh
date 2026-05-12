@@ -18,7 +18,7 @@ using json = nlohmann::json;
 
 using namespace UM;
 
-struct VolumeRenderer : public MeshRenderer {
+struct VolumeMaterial : public MeshMaterial {
 
 	struct Vertex {
 		int vertexIndex;
@@ -30,8 +30,8 @@ struct VolumeRenderer : public MeshRenderer {
 		int cellIndex;
 	};
 
-	VolumeRenderer(std::string name, Volume &m) : 
-		MeshRenderer(name, Shader(sl::shadersPath("volume.vert"), sl::shadersPath("volume.frag"))),
+	VolumeMaterial(std::string name, Volume &m) : 
+		MeshMaterial(name, Shader(sl::shadersPath("volume.vert"), sl::shadersPath("volume.frag"))),
 		_m(m)
 		{}
 
@@ -94,10 +94,10 @@ struct VolumeRenderer : public MeshRenderer {
 	unsigned int texColorMap;
 
 	void doLoadState(json &j) override {
-		MeshRenderer::doLoadState(j);
+		MeshMaterial::doLoadState(j);
 	}
 	void doSaveState(json &j) const override {
-		MeshRenderer::doSaveState(j);
+		MeshMaterial::doSaveState(j);
 	}
 
 };

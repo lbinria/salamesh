@@ -17,7 +17,7 @@ using json = nlohmann::json;
 #include "../data/element_type.h"
 using namespace UM;
 
-struct PolyRenderer : public MeshRenderer {
+struct PolyMaterial : public MeshMaterial {
 
 	struct Vertex {
 		int vertexIndex;
@@ -32,8 +32,8 @@ struct PolyRenderer : public MeshRenderer {
 		glm::vec3 n;
 	};
 
-	PolyRenderer(std::string name, Surface &m) : 
-		MeshRenderer(name, Shader(sl::shadersPath("poly.vert"), sl::shadersPath("surface.frag"))),
+	PolyMaterial(std::string name, Surface &m) : 
+		MeshMaterial(name, Shader(sl::shadersPath("poly.vert"), sl::shadersPath("surface.frag"))),
 		_m(m)
 		{
 			shader.use();
@@ -60,10 +60,10 @@ struct PolyRenderer : public MeshRenderer {
 	unsigned int texNVertsPerFacet;
 
 	void doLoadState(json &j) override {
-		MeshRenderer::doLoadState(j);
+		MeshMaterial::doLoadState(j);
 	}
 	
 	void doSaveState(json &j) const override {
-		MeshRenderer::doSaveState(j);
+		MeshMaterial::doSaveState(j);
 	}
 };

@@ -8,7 +8,7 @@
 #include "../renderers/halfedge_renderer.h"
 #include "../renderers/tet_renderer.h"
 #include "../renderers/hex_renderer.h"
-#include "../renderers/bbox_renderer.h"
+#include "../renderers/bbox_material.h"
 #include "../renderers/clipping_renderer.h"
 #include "../data/layer.h"
 #include "../helpers.h"
@@ -18,7 +18,7 @@ template<typename T>
 concept VolumeDerived = std::is_base_of_v<Volume, std::remove_cv_t<T>> && 
 	!std::is_same_v<Volume, std::remove_cv_t<T>>;
 
-// This code allow selection of the Renderer type according to a given Volume type
+// This code allow selection of the Material type according to a given Volume type
 // It looks like to module functor in ocaml
 namespace RendererSpecialization {
 	template<typename T>
@@ -26,19 +26,19 @@ namespace RendererSpecialization {
 
 	template<>
 	struct RendererSelector<UM::Tetrahedra> {
-		using type = TetRenderer;
+		using type = TetMaterial;
 	};
 
 	template<>
 	struct RendererSelector<UM::Hexahedra> {
-		using type = HexRenderer;
+		using type = HexMaterial;
 	};
 
 }
 
 struct VolModel : public Model {
 
-	VolModel(std::string name, std::map<std::string, std::shared_ptr<Renderer>> renderers) : Model::Model(name, renderers) {}
+	VolModel(std::string name, std::map<std::string, std::shared_ptr<Material>> renderers) : Model::Model(name, renderers) {}
 
 	VolumeAttributes& getVolumeAttributes() { return _volumeAttributes; }
 	const VolumeAttributes& getVolumeAttributes() const { return _volumeAttributes; }
@@ -56,10 +56,10 @@ struct VolumeModel final : public VolModel {
 		_m(), 
 		VolModel::VolModel(name, {
 			{"mesh_renderer", std::make_shared<typename RendererSpecialization::RendererSelector<TVolume>::type>("", _m)}, 
-			{"point_renderer", std::make_shared<PointSetRenderer>("", _m.points) },
+			{"point_renderer", std::make_shared<PointMaterial>("", _m.points) },
 			{"edge_renderer", std::make_shared<VolumeHalfedgeRenderer>("", _m) },
-			{"bbox_renderer", std::make_shared<BBoxRenderer>("", _m.points) },
-			{"zclipping_renderer", std::make_shared<ClippingRenderer>("", _m.points) }
+			{"bbox_renderer", std::make_shared<BBoxMaterial>("", _m.points) },
+			{"zclipping_renderer", std::make_shared<ClippingMaterial>("", _m.points) }
 		})
 		{
 			getPointsRenderer().setVisible(false);

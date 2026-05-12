@@ -17,7 +17,7 @@ using json = nlohmann::json;
 #include "../data/element_type.h"
 using namespace UM;
 
-struct SurfaceRenderer : public MeshRenderer {
+struct SurfaceMaterial : public MeshMaterial {
 	
 	struct Vertex {
 		// int vertexIndex;
@@ -29,8 +29,8 @@ struct SurfaceRenderer : public MeshRenderer {
 		int facetIndex;
 	};
 
-	SurfaceRenderer(std::string name, Surface &m) : 
-		MeshRenderer(name, Shader(sl::shadersPath("surface.vert"), sl::shadersPath("surface.frag"))),
+	SurfaceMaterial(std::string name, Surface &m) : 
+		MeshMaterial(name, Shader(sl::shadersPath("surface.vert"), sl::shadersPath("surface.frag"))),
 		_m(m)
 		{}
 
@@ -50,9 +50,9 @@ struct SurfaceRenderer : public MeshRenderer {
 	private:
 
 	void doLoadState(json &j) override {
-		MeshRenderer::doLoadState(j);
+		MeshMaterial::doLoadState(j);
 	}
 	void doSaveState(json &j) const override {
-		MeshRenderer::doSaveState(j);
+		MeshMaterial::doSaveState(j);
 	}
 };
