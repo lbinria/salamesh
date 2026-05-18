@@ -19,7 +19,7 @@ struct LayersParams : MaterialParams {
 			shader.setInt("attrNDims[" + std::to_string(int(layer)) + "]", nDims[layer]);
 			shader.setFloat2("attrRange[" + std::to_string(int(layer)) + "]", glm::vec2(range[layer].x, range[layer].y));
 
-			// TODO refactor this, just to do transition during refactorign
+			// TODO important refactor this, just to do transition during refactorign
 			if (layer < 3)
 				shader.setInt("colormapElement[" + std::to_string(int(layer)) + "]", layerElement[layer]);
 			else if (layer == 3)

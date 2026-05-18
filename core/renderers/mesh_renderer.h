@@ -56,17 +56,15 @@ struct MeshMaterial : public Material {
 	}
 
 	virtual void doLoadState(json &j) override {
-		setColor(glm::vec3(j["color"][0].get<float>(), j["color"][1].get<float>(), j["color"][2].get<float>()));
-		setMeshSize(j["meshSize"].get<float>());
-		setMeshShrink(j["meshShrink"].get<float>());
-		setCornerVisible(j["isCornerVisible"].get<bool>());
+		for (auto &[paramsName, params] : _params) {
+			params->loadState(j);
+		}
 	}
 
 	virtual void doSaveState(json &j) const override {
-		j["color"] = json::array({color.x, color.y, color.z});
-		j["meshSize"] = meshSize;
-		j["meshShrink"] = meshShrink;
-		j["isCornerVisible"] = isCornerVisible;
+		for (auto &[paramsName, params] : _params) {
+			params->saveState(j);
+		}
 	}
 
 	protected:

@@ -1,36 +1,19 @@
 #include "surface_renderer.h"
 #include "../../core/utils/opengl_helper.h"
+#include "mesh_style_params.h"
+#include "layer_params.h"
 
 void SurfaceMaterial::init() {
 
-	std::chrono::steady_clock::time_point begin = std::chrono::steady_clock::now();
+	_params["style"] = std::make_shared<MeshStyleParams>();
+	_params["layers"] = std::make_shared<LayersParams>();
+	
+	for (auto &[k, p] : _params) {
+		p->init();
+	}
 
 	glGenVertexArrays(1, &VAO);
 	glGenBuffers(1, &VBO);
-
-	// For the moment don't use persistent mapped memory
-	// TODO clean DO THAT IN RENDERER ?
-	sl::createTBO(bufHighlight, tboHighlight);
-	sl::createTBO(bufFilter, tboFilter);
-	sl::createTBO(bufColormap0, tboColormap0);
-	sl::createTBO(bufColormap1, tboColormap1);
-	sl::createTBO(bufColormap2, tboColormap2);
-
-	shader.use();
-
-	shader.setInt("colormap0", 0);
-	shader.setInt("colormap1", 1);
-	shader.setInt("colormap2", 2);
-	shader.setInt("highlightBuf", 3);
-	shader.setInt("filterBuf", 4);
-	shader.setInt("colormap0Buf", 5);
-	shader.setInt("colormap1Buf", 6);
-	shader.setInt("colormap2Buf", 7);
-
-	#ifdef _DEBUG
-	std::cout << "vertex attrib setup..." << std::endl;
-	#endif
-
 
 	glBindVertexArray(VAO);
 	glBindBuffer(GL_ARRAY_BUFFER, VBO);
@@ -42,49 +25,21 @@ void SurfaceMaterial::init() {
 	sl::createVBOInteger(shader.id, "localIndex", sizeof(Vertex), (void*)offsetof(Vertex, localIndex));
 	sl::createVBOInteger(shader.id, "cornerIndex", sizeof(Vertex), (void*)offsetof(Vertex, cornerIndex));
 	
-	std::chrono::steady_clock::time_point end = std::chrono::steady_clock::now();
-
-	#ifdef _DEBUG
-	std::cout << "mesh setup in: " << std::chrono::duration_cast<std::chrono::milliseconds>(end - begin).count() << "ms" << std::endl;
-	#endif
-
 }
 
-void SurfaceMaterial::render(/* RendererView rv */ glm::vec3 &position) {
+void SurfaceMaterial::render(glm::vec3 &position) {
 
 	if (!visible)
 		return;
 
 	glBindVertexArray(VAO);
 
-	glActiveTexture(GL_TEXTURE0 + 0);
-	glBindTexture(GL_TEXTURE_2D, texColormap0);
 
-	glActiveTexture(GL_TEXTURE0 + 1);
-	glBindTexture(GL_TEXTURE_2D, texColormap1);
 
-	glActiveTexture(GL_TEXTURE0 + 2);
-	glBindTexture(GL_TEXTURE_2D, texColormap2);
 
-	glActiveTexture(GL_TEXTURE0 + 3);
-	glBindTexture(GL_TEXTURE_BUFFER, tboHighlight);
-
-	glActiveTexture(GL_TEXTURE0 + 4);
-	glBindTexture(GL_TEXTURE_BUFFER, tboFilter);
-
-	glActiveTexture(GL_TEXTURE0 + 5);
-	glBindTexture(GL_TEXTURE_BUFFER, tboColormap0);
-
-	glActiveTexture(GL_TEXTURE0 + 6);
-	glBindTexture(GL_TEXTURE_BUFFER, tboColormap1);
-
-	glActiveTexture(GL_TEXTURE0 + 7);
-	glBindTexture(GL_TEXTURE_BUFFER, tboColormap2);
-
-	// rv.setLayerTextures();
-	// rv.shader.use();
-	// rv.render(pos) do the same as setPosition
 	setPosition(position);
+	for (auto &[paramsName, params] : _params)
+		params->apply(shader);
 
 	glDrawArrays(GL_TRIANGLES, 0, nelements);
 }
@@ -100,16 +55,18 @@ void SurfaceMaterial::clean() {
 	glDeleteVertexArrays(1, &VAO);
 	glDeleteBuffers(1, &VBO);
 
-	glDeleteBuffers(1, &bufHighlight);
-	glDeleteTextures(1, &tboHighlight);
-	glDeleteBuffers(1, &bufFilter);
-	glDeleteTextures(1, &tboFilter);
-	glDeleteBuffers(1, &bufColormap0);
-	glDeleteTextures(1, &tboColormap0);
-	glDeleteBuffers(1, &bufColormap1);
-	glDeleteTextures(1, &tboColormap1);
-	glDeleteBuffers(1, &bufColormap2);
-	glDeleteTextures(1, &tboColormap2);
+	// TODO important clean params
+
+	// glDeleteBuffers(1, &bufHighlight);
+	// glDeleteTextures(1, &tboHighlight);
+	// glDeleteBuffers(1, &bufFilter);
+	// glDeleteTextures(1, &tboFilter);
+	// glDeleteBuffers(1, &bufColormap0);
+	// glDeleteTextures(1, &tboColormap0);
+	// glDeleteBuffers(1, &bufColormap1);
+	// glDeleteTextures(1, &tboColormap1);
+	// glDeleteBuffers(1, &bufColormap2);
+	// glDeleteTextures(1, &tboColormap2);
 	glBindBuffer(GL_TEXTURE_BUFFER, 0);
 
 	// Clean shader

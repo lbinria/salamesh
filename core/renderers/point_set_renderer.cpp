@@ -79,16 +79,17 @@ void PointMaterial::clean() {
 	glDeleteVertexArrays(1, &VAO);
 	glDeleteBuffers(1, &VBO);
 
-	glDeleteBuffers(1, &bufHighlight);
-	glDeleteTextures(1, &tboHighlight);
-	glDeleteBuffers(1, &bufFilter);
-	glDeleteTextures(1, &tboFilter);
-	glDeleteBuffers(1, &bufColormap0);
-	glDeleteTextures(1, &tboColormap0);
-	glDeleteBuffers(1, &bufColormap1);
-	glDeleteTextures(1, &tboColormap1);
-	glDeleteBuffers(1, &bufColormap2);
-	glDeleteTextures(1, &tboColormap2);
+	// TODO important clean params
+	// glDeleteBuffers(1, &bufHighlight);
+	// glDeleteTextures(1, &tboHighlight);
+	// glDeleteBuffers(1, &bufFilter);
+	// glDeleteTextures(1, &tboFilter);
+	// glDeleteBuffers(1, &bufColormap0);
+	// glDeleteTextures(1, &tboColormap0);
+	// glDeleteBuffers(1, &bufColormap1);
+	// glDeleteTextures(1, &tboColormap1);
+	// glDeleteBuffers(1, &bufColormap2);
+	// glDeleteTextures(1, &tboColormap2);
 	glBindBuffer(GL_TEXTURE_BUFFER, 0);
 
 	// Clean shader

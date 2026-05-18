@@ -17,6 +17,8 @@ using json = nlohmann::json;
 #include "../data/element_type.h"
 using namespace UM;
 
+#include "material_params.h"
+
 struct SurfaceMaterial : public MeshMaterial {
 	
 	struct Vertex {
