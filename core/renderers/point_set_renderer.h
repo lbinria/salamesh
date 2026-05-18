@@ -101,13 +101,16 @@ struct PointMaterial : public Material {
 
 	void doLoadState(json &j) override {
 		for (auto &[paramsName, params] : _params) {
-			params->loadState(j);
+			params->loadState(j[paramsName]);
 		}
 	}
 
-    void doSaveState(json &j) const override {
+
+
+	void doSaveState(json &j) const override {
 		for (auto &[paramsName, params] : _params) {
-			params->saveState(j);
+			j[paramsName] = json::object();
+			params->saveState(j[paramsName]);
 		}
 	}
 

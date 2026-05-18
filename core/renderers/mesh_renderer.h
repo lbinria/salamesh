@@ -57,13 +57,14 @@ struct MeshMaterial : public Material {
 
 	virtual void doLoadState(json &j) override {
 		for (auto &[paramsName, params] : _params) {
-			params->loadState(j);
+			params->loadState(j[paramsName]);
 		}
 	}
 
 	virtual void doSaveState(json &j) const override {
 		for (auto &[paramsName, params] : _params) {
-			params->saveState(j);
+			j[paramsName] = json::object();
+			params->saveState(j[paramsName]);
 		}
 	}
 
