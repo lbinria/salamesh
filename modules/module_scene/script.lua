@@ -218,16 +218,16 @@ function draw_model_properties(model, k, view)
 				model.points.visible = new_point_visible
 			end
 
-			local sel_point_size, new_point_size = imgui.SliderFloat("Point size", model.points.size, 0, 50)
+			local sel_point_size, new_point_size = imgui.SliderFloat("Point size", model.points:get_params("style")["size"], 0, 50)
 			if (sel_point_size) then 
 				print("Change point size: " .. tostring(new_point_size))
-				model.points.size = new_point_size
+				model.points:get_params("style")["size"] = new_point_size
 			end
 
-			local sel_point_color, new_point_color = imgui.ColorEdit3("Point color", model.points.color)
+			local sel_point_color, new_point_color = imgui.ColorEdit3("Point color", model.points:get_params("style")["color"])
 			if (sel_point_color) then 
 				-- print("Change point color: " .. tostring(new_point_color))
-				model.points.color = new_point_color
+				model.points:get_params("style")["color"] = new_point_color
 			end
 
 			if model.edges then 

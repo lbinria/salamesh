@@ -5,12 +5,17 @@
 
 #include "../shader.h"
 #include "../data/attribute.h"
+
+#include "material_params.h"
+
 #include "../../include/glm/glm.hpp"
 
 #include "../../include/json.hpp"
 using json = nlohmann::json;
 
 #include "../helpers.h"
+
+
 
 struct Material {
 
@@ -229,6 +234,10 @@ struct Material {
 
 	std::string getName() { return name; }
 
+	std::shared_ptr<MaterialParams> getParams(const std::string name) {
+		return _params.contains(name) ? _params.at(name) : nullptr;
+	}
+
 	protected:
 	Shader shader;
 
@@ -266,11 +275,18 @@ struct Material {
 		glBufferData(GL_ARRAY_BUFFER, nelements * sizeof(T), data.data(), drawType);
 	}
 
+
+
+
+	std::map<std::string, std::shared_ptr<MaterialParams>> _params;
+
+
 	private:
 
 	std::string name;
 
 	virtual void doLoadState(json &j) = 0;
 	virtual void doSaveState(json &j) const = 0;
+
 
 };

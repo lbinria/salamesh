@@ -7,6 +7,7 @@
 #include "../renderers/mesh_renderer.h"
 #include "../renderers/point_set_renderer.h"
 #include "../renderers/halfedge_renderer.h"
+#include "../renderers/layer_params.h"
 
 #include "../../include/glm/glm.hpp"
 #include "../../include/json.hpp"
@@ -583,13 +584,36 @@ struct Model {
 
 		auto [min, max] = sl::getRange(data);
 
+		// for (auto const &[k, r] : _renderers) {
+		// 	if (r->isRenderElement(kind)) {
+		// 		r->setLayerRange(layer, min, max);
+		// 		r->setLayerNDims(layer, nDims);
+		// 		r->setLayer(data, layer);
+		// 	}
+		// }
+
 		for (auto const &[k, r] : _renderers) {
 			if (r->isRenderElement(kind)) {
-				r->setLayerRange(layer, min, max);
-				r->setLayerNDims(layer, nDims);
-				r->setLayer(data, layer);
+
+				auto params = r->getParams("layers");
+
+				if (!params)
+					continue;
+
+				// Try convert
+				auto layerParams = std::static_pointer_cast<LayersParams>(params);
+
+				if (!layerParams)
+					continue;
+				
+				int l = static_cast<int>(layer);
+				layerParams->range[layer] = glm::vec2(min, max);
+				layerParams->nDims[layer] = nDims;
+				layerParams->setLayer(data, layer);
 			}
 		}
+
+
 	}
 
 	private:

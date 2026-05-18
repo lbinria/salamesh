@@ -1,7 +1,17 @@
 #include "point_set_renderer.h"
 #include "../../core/utils/opengl_helper.h"
+#include "material_params.h"
+#include "layer_params.h"
+#include "point_style_params.h"
 
 void PointMaterial::init() {
+
+	_params["style"] = std::make_shared<PointStyleParams>();
+	_params["layers"] = std::make_shared<LayersParams>();
+	
+	for (auto &[k, p] : _params) {
+		p->init();
+	}
 
 	glGenVertexArrays(1, &VAO);
 	glGenBuffers(1, &VBO);
@@ -9,24 +19,6 @@ void PointMaterial::init() {
 	glBindVertexArray(VAO);
 	glBindBuffer(GL_ARRAY_BUFFER, VBO);
 
-	
-	// For the moment don't use persistent mapped memory
-	// TODO clean DO THAT IN RENDERER ?
-	sl::createTBO(bufHighlight, tboHighlight);
-	sl::createTBO(bufFilter, tboFilter);
-	sl::createTBO(bufColormap0, tboColormap0);
-	sl::createTBO(bufColormap1, tboColormap1);
-	sl::createTBO(bufColormap2, tboColormap2);
-
-	shader.use();
-	shader.setInt("colormap0", 0);
-	shader.setInt("colormap1", 1);
-	shader.setInt("colormap2", 2);
-	shader.setInt("highlightBuf", 3);
-	shader.setInt("filterBuf", 4);
-	shader.setInt("colormap0Buf", 5);
-	shader.setInt("colormap1Buf", 6);
-	shader.setInt("colormap2Buf", 7);
 
 	// VBO
 	sl::createVBOInteger(shader.id, "vertexIndex", sizeof(Vertex), (void*)offsetof(Vertex, vertexIndex));
@@ -51,39 +43,25 @@ void PointMaterial::push() {
 	writeVBOBuffer(vertices);
 }
 
+
+
 void PointMaterial::render(glm::vec3 &position) {
 
 	if (!visible)
 		return;
 
+
+
 	glBindVertexArray(VAO);
 
-	glActiveTexture(GL_TEXTURE0 + 0);
-	glBindTexture(GL_TEXTURE_2D, texColormap0);
 
-	glActiveTexture(GL_TEXTURE0 + 1);
-	glBindTexture(GL_TEXTURE_2D, texColormap1);
-
-	glActiveTexture(GL_TEXTURE0 + 2);
-	glBindTexture(GL_TEXTURE_2D, texColormap2);
-
-	glActiveTexture(GL_TEXTURE0 + 3);
-	glBindTexture(GL_TEXTURE_BUFFER, tboHighlight);
-
-	glActiveTexture(GL_TEXTURE0 + 4);
-	glBindTexture(GL_TEXTURE_BUFFER, tboFilter);
-
-	glActiveTexture(GL_TEXTURE0 + 5);
-	glBindTexture(GL_TEXTURE_BUFFER, tboColormap0);
-
-	glActiveTexture(GL_TEXTURE0 + 6);
-	glBindTexture(GL_TEXTURE_BUFFER, tboColormap1);
-
-	glActiveTexture(GL_TEXTURE0 + 7);
-	glBindTexture(GL_TEXTURE_BUFFER, tboColormap2);
 
 
 	setPosition(position);
+
+	for (auto &[paramsName, params] : _params)
+		params->apply(shader);
+
 
 	glDrawArrays(GL_POINTS, 0, ps.size());
 }

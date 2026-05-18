@@ -75,6 +75,16 @@ struct Scene {
 			model->setColormap0Texture(colormaps[model->getSelectedColormap(ColormapLayer::COLORMAP_LAYER_0)].tex);
 			model->setColormap1Texture(colormaps[model->getSelectedColormap(ColormapLayer::COLORMAP_LAYER_1)].tex);
 			model->setColormap2Texture(colormaps[model->getSelectedColormap(ColormapLayer::COLORMAP_LAYER_2)].tex);
+
+			glActiveTexture(GL_TEXTURE0 + 0);
+			glBindTexture(GL_TEXTURE_2D, colormaps[model->getSelectedColormap(ColormapLayer::COLORMAP_LAYER_0)].tex);
+
+			glActiveTexture(GL_TEXTURE0 + 1);
+			glBindTexture(GL_TEXTURE_2D, colormaps[model->getSelectedColormap(ColormapLayer::COLORMAP_LAYER_1)].tex);
+
+			glActiveTexture(GL_TEXTURE0 + 2);
+			glBindTexture(GL_TEXTURE_2D, colormaps[model->getSelectedColormap(ColormapLayer::COLORMAP_LAYER_2)].tex);
+
 			model->render();
 		}
 	}
