@@ -51,26 +51,6 @@ namespace bindings {
 			sol::bases<Material>()
 		);
 
-		meshRenderer_t["color"] = sol::property(
-			&MeshMaterial::getColor,
-			&MeshMaterial::setColor
-		);
-
-		meshRenderer_t["size"] = sol::property(
-			&MeshMaterial::getMeshSize,
-			&MeshMaterial::setMeshSize
-		);
-
-		meshRenderer_t["shrink"] = sol::property(
-			&MeshMaterial::getMeshShrink,
-			&MeshMaterial::setMeshShrink
-		);
-
-		meshRenderer_t["corner_visible"] = sol::property(
-			&MeshMaterial::getCornerVisible,
-			&MeshMaterial::setCornerVisible
-		);
-
 
 		sol::usertype<PointMaterial> pointSetRenderer_t = lua.new_usertype<PointMaterial>(
 			"PointMaterial",
@@ -128,27 +108,6 @@ namespace bindings {
 			&HalfedgeMaterial::getVisible,
 			&HalfedgeMaterial::setVisible
 		);
-		halfedgeRenderer_t["inside_color"] = sol::property(
-			&HalfedgeMaterial::getInsideColor,
-			&HalfedgeMaterial::setInsideColor
-		);
-		halfedgeRenderer_t["outside_color"] = sol::property(
-			&HalfedgeMaterial::getOutsideColor,
-			&HalfedgeMaterial::setOutsideColor
-		);
-		halfedgeRenderer_t["thickness"] = sol::property(
-			&HalfedgeMaterial::getThickness,
-			&HalfedgeMaterial::setThickness
-		);
-		halfedgeRenderer_t["spacing"] = sol::property(
-			&HalfedgeMaterial::getSpacing,
-			&HalfedgeMaterial::setSpacing
-		);
-		halfedgeRenderer_t["padding"] = sol::property(
-			&HalfedgeMaterial::getPadding,
-			&HalfedgeMaterial::setPadding
-		);
-
 
 		auto line_t = lua.new_usertype<LineMaterial::Line>(
 			"Line",

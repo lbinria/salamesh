@@ -1,32 +1,23 @@
 #include "halfedge_renderer.h"
 #include "../../core/utils/opengl_helper.h"
 #include "../helpers.h"
+#include "layer_params.h"
+#include "edge_style_params.h"
 
 void HalfedgeMaterial::init() {
+
+	_params["style"] = std::make_shared<EdgeStyleParams>();
+	_params["layers"] = std::make_shared<LayersParams>();
+	
+	for (auto &[k, p] : _params) {
+		p->init();
+	}
 
 	glGenVertexArrays(1, &VAO);
 	glGenBuffers(1, &VBO);
 
 	glBindVertexArray(VAO);
 	glBindBuffer(GL_ARRAY_BUFFER, VBO);
-
-	// For the moment don't use persistent mapped memory
-	// TODO clean DO THAT IN RENDERER ?
-	sl::createTBO(bufHighlight, tboHighlight);
-	sl::createTBO(bufFilter, tboFilter);	
-	sl::createTBO(bufColormap0, tboColormap0);
-	sl::createTBO(bufColormap1, tboColormap1);
-	sl::createTBO(bufColormap2, tboColormap2);
-
-	shader.use();
-	shader.setInt("colormap0", 0);
-	shader.setInt("colormap1", 1);
-	shader.setInt("colormap2", 2);
-	shader.setInt("highlightBuf", 3);
-	shader.setInt("filterBuf", 4);
-	shader.setInt("colormap0Buf", 5);
-	shader.setInt("colormap1Buf", 6);
-	shader.setInt("colormap2Buf", 7);
 
 	// VBO
 	sl::createVBOInteger(shader.id, "halfedgeIndex", sizeof(LineVert), (void*)offsetof(LineVert, halfedgeIndex));
@@ -45,31 +36,10 @@ void HalfedgeMaterial::render(glm::vec3 &position) {
 
 	glBindVertexArray(VAO);
 
-	glActiveTexture(GL_TEXTURE0 + 0);
-	glBindTexture(GL_TEXTURE_2D, texColormap0);
-
-	glActiveTexture(GL_TEXTURE0 + 1);
-	glBindTexture(GL_TEXTURE_2D, texColormap1);
-
-	glActiveTexture(GL_TEXTURE0 + 2);
-	glBindTexture(GL_TEXTURE_2D, texColormap2);
-
-	glActiveTexture(GL_TEXTURE0 + 3);
-	glBindTexture(GL_TEXTURE_BUFFER, tboHighlight);
-
-	glActiveTexture(GL_TEXTURE0 + 4);
-	glBindTexture(GL_TEXTURE_BUFFER, tboFilter);
-
-	glActiveTexture(GL_TEXTURE0 + 5);
-	glBindTexture(GL_TEXTURE_BUFFER, tboColormap0);
-
-	glActiveTexture(GL_TEXTURE0 + 6);
-	glBindTexture(GL_TEXTURE_BUFFER, tboColormap1);
-
-	glActiveTexture(GL_TEXTURE0 + 7);
-	glBindTexture(GL_TEXTURE_BUFFER, tboColormap2);
-
 	setPosition(position);
+
+	for (auto &[paramsName, params] : _params)
+		params->apply(shader);
 
 	glDrawArrays(GL_TRIANGLES, 0, nelements);
 }
@@ -230,16 +200,16 @@ void HalfedgeMaterial::clean() {
 	glDeleteVertexArrays(1, &VAO);
 	glDeleteBuffers(1, &VBO);
 
-	glDeleteBuffers(1, &bufHighlight);
-	glDeleteTextures(1, &tboHighlight);
-	glDeleteBuffers(1, &bufFilter);
-	glDeleteTextures(1, &tboFilter);
-	glDeleteBuffers(1, &bufColormap0);
-	glDeleteTextures(1, &tboColormap0);
-	glDeleteBuffers(1, &bufColormap1);
-	glDeleteTextures(1, &tboColormap1);
-	glDeleteBuffers(1, &bufColormap2);
-	glDeleteTextures(1, &tboColormap2);
+	// glDeleteBuffers(1, &bufHighlight);
+	// glDeleteTextures(1, &tboHighlight);
+	// glDeleteBuffers(1, &bufFilter);
+	// glDeleteTextures(1, &tboFilter);
+	// glDeleteBuffers(1, &bufColormap0);
+	// glDeleteTextures(1, &tboColormap0);
+	// glDeleteBuffers(1, &bufColormap1);
+	// glDeleteTextures(1, &tboColormap1);
+	// glDeleteBuffers(1, &bufColormap2);
+	// glDeleteTextures(1, &tboColormap2);
 	glBindBuffer(GL_TEXTURE_BUFFER, 0);
 
 	// Clean shader

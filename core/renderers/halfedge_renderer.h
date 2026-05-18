@@ -35,74 +35,19 @@ struct HalfedgeMaterial : public Material {
 
 	int getRenderElementKind() override { return ElementKind::EDGES_ELT | ElementKind::CORNERS_ELT; }
 
-	float getThickness() const {
-		return edgeSize;
-	}
-
-	void setThickness(float size) {
-		shader.use();
-		shader.setFloat("thickness", size);
-		edgeSize = size;
-	}
-
-	float getSpacing() const {
-		return halfedgeSpacing;
-	}
-
-	void setSpacing(float spacing) {
-		shader.use();
-		shader.setFloat("spacing", spacing);
-		halfedgeSpacing = spacing;
-	}
-
-	float getPadding() const {
-		return halfedgePadding;
-	}
-
-	void setPadding(float padding) {
-		shader.use();
-		shader.setFloat("padding", padding);
-		halfedgePadding = padding;
-	}
-
-	glm::vec3 getInsideColor() const {
-		return edgeInsideColor;
-	}
-
-	void setInsideColor(glm::vec3 color) {
-		shader.use();
-		shader.setFloat3("uColorInside", color);
-		edgeInsideColor = color;
-	}
-
-	glm::vec3 getOutsideColor() const {
-		return edgeOutsideColor;
-	}
-
-	void setOutsideColor(glm::vec3 color) {
-		shader.use();
-		shader.setFloat3("uColorOutside", color);
-		edgeOutsideColor = color;
-	}
-
 	private:
 
-	float edgeSize;
-	float halfedgeSpacing = 0;
-	float halfedgePadding = 0;
-	glm::vec3 edgeInsideColor;
-	glm::vec3 edgeOutsideColor;
-
 	void doLoadState(json &j) override {
-		setThickness(j["edgeSize"].get<float>());
-		setInsideColor({j["edgeInsideColor"][0].get<float>(), j["edgeInsideColor"][1].get<float>(), j["edgeInsideColor"][2].get<float>()});
-		setOutsideColor({j["edgeOutsideColor"][0].get<float>(), j["edgeOutsideColor"][1].get<float>(), j["edgeOutsideColor"][2].get<float>()});
+		for (auto &[paramsName, params] : _params) {
+			params->loadState(j[paramsName]);
+		}
 	}
 
 	void doSaveState(json &j) const override {
-		j["edgeSize"] = edgeSize;
-		j["edgeInsideColor"] = json::array({edgeInsideColor.x, edgeInsideColor.y, edgeInsideColor.z});
-		j["edgeOutsideColor"] = json::array({edgeOutsideColor.x, edgeOutsideColor.y, edgeOutsideColor.z});
+		for (auto &[paramsName, params] : _params) {
+			j[paramsName] = json::object();
+			params->saveState(j[paramsName]);
+		}
 	}
 	
 };
@@ -112,9 +57,7 @@ struct SurfaceHalfedgeRenderer : public HalfedgeMaterial {
 	SurfaceHalfedgeRenderer(std::string name, Surface &m) : 
 		HalfedgeMaterial(name, Shader(sl::shadersPath("edge.vert"), sl::shadersPath("edge.frag"))),
 		_m(m) {
-			setThickness(2.0f);
-			setInsideColor({0.0, 0.97, 0.73});
-			setOutsideColor({0.0, 0.6, 0.45});
+
 		}
 
 	void push() override;
@@ -128,9 +71,7 @@ struct VolumeHalfedgeRenderer : public HalfedgeMaterial {
 	VolumeHalfedgeRenderer(std::string name, Volume &m) : 
 		HalfedgeMaterial(name, Shader(sl::shadersPath("edge.vert"), sl::shadersPath("edge.frag"))),
 		_m(m) {
-			setThickness(2.0f);
-			setInsideColor({0.0, 0.97, 0.73});
-			setOutsideColor({0.0, 0.6, 0.45});
+
 		}
 
 	void push() override;
@@ -143,9 +84,7 @@ struct PolylineRenderer : public HalfedgeMaterial {
 		PolylineRenderer(std::string name, PolyLine &m) : 
 		HalfedgeMaterial(name, Shader(sl::shadersPath("edge.vert"), sl::shadersPath("edge.frag"))),
 		_m(m) {
-			setThickness(2.0f);
-			setInsideColor({0.0, 0.97, 0.73});
-			setOutsideColor({0.0, 0.6, 0.45});
+
 		}
 
 	void push() override;

@@ -49,11 +49,11 @@ std::shared_ptr<Model> Scene::loadModel(const std::string& filename, std::string
 
 	// Setup default gfx
 	model->setLight(true);
-	auto meshRenderer = model->getMeshRenderer();
-	if (meshRenderer) {
-		meshRenderer->setMeshShrink(0.f);
-		meshRenderer->setMeshSize(0.0f);
-	}
+	// auto meshRenderer = model->getMeshRenderer();
+	// if (meshRenderer) {
+	// 	meshRenderer->setMeshShrink(0.f);
+	// 	meshRenderer->setMeshSize(0.0f);
+	// }
 	
 	// auto edges = model->getEdgesRenderer();
 	// if (edges && model->getModelType() == ModelType::POLYLINE_MODEL) {

@@ -11,7 +11,6 @@ using json = nlohmann::json;
 #include "renderer.h"
 
 #include "../shader.h"
-#include "material_params.h"
 
 using namespace UM;
 

@@ -50,12 +50,7 @@ void PointMaterial::render(glm::vec3 &position) {
 	if (!visible)
 		return;
 
-
-
 	glBindVertexArray(VAO);
-
-
-
 
 	setPosition(position);
 
