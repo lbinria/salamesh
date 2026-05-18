@@ -19,10 +19,7 @@ using json = nlohmann::json;
 
 struct Material {
 
-	enum ClippingMode {
-		CELL = 0,
-		STD = 1
-	};
+
 
 	Material (const Material&) = delete;
 	Material& operator= (const Material&) = delete;
@@ -130,33 +127,6 @@ struct Material {
 		shader.setInt("is_light_follow_view", follow);
 	}
 
-	virtual void setClippingMode(ClippingMode mode) {
-		shader.use();
-		shader.setInt("clipping_mode", mode);		
-	}
-
-	virtual void setClipping(bool enabled) {
-		shader.use();
-		shader.setInt("is_clipping_enabled", enabled);
-	}
-
-	virtual void setClippingPlanePoint(glm::vec3 p) {
-		shader.use();
-		shader.setFloat3("clipping_plane_point", p);
-	}
-
-	virtual void setClippingPlaneNormal(glm::vec3 n) {
-		shader.use();
-		shader.setFloat3("clipping_plane_normal", n);
-	}
-
-	void setInvertClipping(bool invert) {
-		shader.use();
-		shader.setInt("invert_clipping", invert);
-	}
-
-
-
 	void setLayerNDims(Layer layer, int nDims) {
 		// TODO check layer ? only works for colormaps...
 		shader.use();
@@ -236,6 +206,11 @@ struct Material {
 
 	std::shared_ptr<MaterialParams> getParams(const std::string name) {
 		return _params.contains(name) ? _params.at(name) : nullptr;
+	}
+
+	template<typename TParams>
+	std::shared_ptr<TParams> getParams(const std::string name) {
+		return _params.contains(name) ? std::static_pointer_cast<TParams>(_params.at(name)) : nullptr;
 	}
 
 	protected:

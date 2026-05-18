@@ -8,6 +8,8 @@
 #include "../renderers/point_set_renderer.h"
 #include "../renderers/halfedge_renderer.h"
 #include "../renderers/layer_params.h"
+#include "../renderers/clipping_mode.h"
+#include "../renderers/clipping_params.h"
 
 #include "../../include/glm/glm.hpp"
 #include "../../include/json.hpp"
@@ -355,13 +357,19 @@ struct Model {
 		isLightFollowView = follow;
 	}
 
-	Material::ClippingMode getClippingMode() const {
+	ClippingMode getClippingMode() const {
 		return clippingMode;
 	}
 
-	void setClippingMode(Material::ClippingMode mode) {
-		for (auto const &[k, r] : _renderers)
-			r->setClippingMode(mode);
+	void setClippingMode(ClippingMode mode) {
+		for (auto const &[k, r] : _renderers) {
+			auto clippingParams = r->getParams<ClippingParams>("clipping");
+
+			if (!clippingParams)
+				continue;
+
+			clippingParams->mode = mode;
+		}
 
 		clippingMode = mode;
 	}
@@ -371,8 +379,15 @@ struct Model {
 	}
 
 	void setClipping(bool enabled) {
-		for (auto const &[k, r] : _renderers)
-			r->setClipping(enabled);
+		for (auto const &[k, r] : _renderers) {
+
+			auto clippingParams = r->getParams<ClippingParams>("clipping");
+
+			if (!clippingParams)
+				continue;
+
+			clippingParams->enabled = enabled;
+		}
 
 		isClipping = enabled;
 	}
@@ -382,8 +397,14 @@ struct Model {
 	}
 
 	void setClippingPlanePoint(glm::vec3 p) {
-		for (auto const &[k, r] : _renderers)
-			r->setClippingPlanePoint(p);
+		for (auto const &[k, r] : _renderers) {
+			auto clippingParams = r->getParams<ClippingParams>("clipping");
+
+			if (!clippingParams)
+				continue;
+
+			clippingParams->point = p;
+		}
 
 		clippingPlanePoint = p;
 	}
@@ -393,8 +414,14 @@ struct Model {
 	}
 
 	void setClippingPlaneNormal(glm::vec3 n) {
-		for (auto const &[k, r] : _renderers)
-			r->setClippingPlaneNormal(n);
+		for (auto const &[k, r] : _renderers) {
+			auto clippingParams = r->getParams<ClippingParams>("clipping");
+
+			if (!clippingParams)
+				continue;
+
+			clippingParams->normal = n;
+		}
 
 		clippingPlaneNormal = n;
 	}
@@ -404,8 +431,14 @@ struct Model {
 	}
 
 	void setInvertClipping(bool invert) {
-		for (auto const &[k, r] : _renderers)
-			r->setInvertClipping(invert);
+		for (auto const &[k, r] : _renderers) {
+			auto clippingParams = r->getParams<ClippingParams>("clipping");
+
+			if (!clippingParams)
+				continue;
+
+			clippingParams->invert = invert;
+		}
 
 		invertClipping = invert;
 	}
@@ -493,7 +526,7 @@ struct Model {
 	bool isLightEnabled = true;
 	bool isLightFollowView = false;
 
-	Material::ClippingMode clippingMode = Material::ClippingMode::STD;
+	ClippingMode clippingMode = ClippingMode::STD;
 	bool isClipping = false;
 	glm::vec3 clippingPlanePoint{0.f, 0.f, 0.f};
 	glm::vec3 clippingPlaneNormal{0.f, 0.f, 1.f};

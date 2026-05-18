@@ -103,7 +103,6 @@ struct LayersParams : MaterialParams {
 		}
 	}
 
-	
 	void setLayer(int idx, float val, Layer layer) {
 		unsigned int buf = getLayerBuffer(layer);
 		setBuf(buf, idx, val);
@@ -122,6 +121,8 @@ struct LayersParams : MaterialParams {
 			return nDims[index];
 		} else if (name == "range") {
 			return range[index];
+		} else if (name == "layer_element") {
+			return layerElement[index];
 		} else {
 			return 0.f;
 		}
@@ -129,11 +130,14 @@ struct LayersParams : MaterialParams {
 
 	void set(const std::string name, int index, ParamValue value) override {
 		if (name == "nDims") {
-			if (auto* pNDims = std::get_if<int>(&value))
-				nDims[index] = *pNDims;
+			if (auto* pVal = std::get_if<int>(&value))
+				nDims[index] = *pVal;
 		} else if (name == "range") {
-			if (auto* pRange = std::get_if<glm::vec3>(&value))
-				range[index] = *pRange;
+			if (auto* pVal = std::get_if<glm::vec2>(&value))
+				range[index] = *pVal;
+		} else if (name == "layer_element") {
+			if (auto* pVal = std::get_if<int>(&value))
+				layerElement[index] = *pVal;
 		}
 	}
 
@@ -152,7 +156,6 @@ struct LayersParams : MaterialParams {
 	int nDims[5];
 	glm::vec2 range[5];
 	int layerElement[5] = {-1, -1, -1, -1, -1};
-	unsigned int texColormap0, texColormap1, texColormap2;
 
 	private:
 	unsigned int bufColormap0, bufColormap1, bufColormap2, bufHighlight, bufFilter; // Sample buffers

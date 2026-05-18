@@ -167,7 +167,7 @@ namespace bindings {
 		model_t["clipping_mode"] = sol::property([](Model &self) {
 			return self.getClippingMode() + 1;
 		}, [](Model &self, int selected) {
-			self.setClippingMode(static_cast<Material::ClippingMode>(selected - 1));
+			self.setClippingMode(static_cast<ClippingMode>(selected - 1));
 		});
 
 		model_t["clipping"] = sol::property(&Model::getClipping, &Model::setClipping);

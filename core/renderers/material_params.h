@@ -9,7 +9,7 @@ using json = nlohmann::json;
 #include <variant>
 
 
-using ParamValue = std::variant<float, int, glm::vec2, glm::vec3>;
+using ParamValue = std::variant<bool, float, int, glm::vec2, glm::vec3>;
 struct MaterialParams {
 	virtual void init() = 0;
 	virtual void apply(Shader &shader) = 0;

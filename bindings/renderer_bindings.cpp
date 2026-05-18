@@ -11,7 +11,9 @@ namespace bindings {
 	void RendererBindings::loadBindings(sol::state &lua, IApp &app) {
 
 		sol::usertype<Material> renderer_t = lua.new_usertype<Material>("Material",
-			"get_params", &Material::getParams,
+			"get_params", [](Material &self, const std::string &name) {
+				return self.getParams(name);
+			},
 			"__index", [](Material& self, const std::string& name) {
 				return self.getParams(name);
 			}
