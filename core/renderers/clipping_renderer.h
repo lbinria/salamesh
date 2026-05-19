@@ -37,18 +37,18 @@ struct ClippingMaterial : public Material {
 	int getRenderElementKind() override { return 0; }
 
 	void setClipping(bool enabled) {
-		Material::setClipping(enabled);
+		// Material::setClipping(enabled);
 		visible = enabled;
 	}
 
 	void setClippingPlanePoint(glm::vec3 p) {
-		Material::setClippingPlanePoint(p);
+		// Material::setClippingPlanePoint(p);
 		clippingPlanePoint = p;
 		push();
 	}
 
 	void setClippingPlaneNormal(glm::vec3 n) {
-		Material::setClippingPlaneNormal(n);
+		// Material::setClippingPlaneNormal(n);
 		clippingPlaneNormal = n;
 		push();
 	}

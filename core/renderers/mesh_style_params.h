@@ -63,7 +63,7 @@ struct MeshStyleParams : MaterialParams {
 
 
 	glm::vec3 color{0.71f, 0.71f, 0.71f};
-	float meshSize = 0.01f;
+	float meshSize = 0.f;
 	float meshShrink = 0.f;
 	bool isCornerVisible = false;
 };

@@ -57,14 +57,22 @@ struct ClippingParams : MaterialParams {
 	void set(const std::string name, int index, ParamValue value) override {}
 
 	void loadState(json &j) {
-
+		mode = static_cast<ClippingMode>(j["mode"].get<int>());
+		enabled = j["enabled"].get<bool>();
+		point = glm::vec3(j["point"][0].get<float>(), j["point"][1].get<float>(), j["point"][2].get<float>());
+		normal = glm::vec3(j["normal"][0].get<float>(), j["normal"][1].get<float>(), j["normal"][2].get<float>());
+		invert = j["invert"].get<bool>();
 	}
 
 	void saveState(json &j) const {
-
+		j["mode"] = static_cast<int>(mode);
+		j["enabled"] = enabled;
+		j["point"] = json::array({point.x, point.y, point.z});
+		j["normal"] = json::array({normal.x, normal.y, normal.z});
+		j["invert"] = invert;
 	}
 
-	ClippingMode mode;
+	ClippingMode mode = ClippingMode::STD;
 	bool enabled = false;
 	glm::vec3 point{0.,0.,0.};
 	glm::vec3 normal{0.,1.,0.};

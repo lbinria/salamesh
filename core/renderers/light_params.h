@@ -30,13 +30,13 @@ struct LightParams : MaterialParams {
 	void set(const std::string name, int index, ParamValue value) override {}
 
 	void loadState(json &j) {
-
+		enabled = j["enabled"].get<bool>();
 	}
 
 	void saveState(json &j) const {
-
+		j["enabled"] = enabled;
 	}
 
-	bool enabled = false;
+	bool enabled = true;
 
 };

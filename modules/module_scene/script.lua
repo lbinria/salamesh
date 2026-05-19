@@ -75,13 +75,6 @@ function draw_model_properties(model, k, view)
 				model.light = new_enable_light
 			end
 
-			local sel_chk_light_follow_view, new_light_follow_view = imgui.Checkbox("Light follow view", model.is_light_follow_view)
-
-			if (sel_chk_light_follow_view) then 
-				print("Enable light: " .. tostring(new_light_follow_view))
-				model.is_light_follow_view = new_light_follow_view
-			end
-
 		end
 
 		if (imgui.CollapsingHeader("Clipping##" .. k .. "_properties_clipping")) then 

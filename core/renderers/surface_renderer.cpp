@@ -2,6 +2,7 @@
 #include "../../core/utils/opengl_helper.h"
 #include "mesh_style_params.h"
 #include "layer_params.h"
+#include "light_params.h"
 #include "clipping_params.h"
 
 void SurfaceMaterial::init() {
@@ -9,6 +10,7 @@ void SurfaceMaterial::init() {
 	_params["style"] = std::make_shared<MeshStyleParams>();
 	_params["layers"] = std::make_shared<LayersParams>();
 	_params["clipping"] = std::make_shared<ClippingParams>();
+	_params["light"] = std::make_shared<LightParams>();
 	
 	for (auto &[k, p] : _params) {
 		p->init();

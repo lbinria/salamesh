@@ -9,6 +9,9 @@ layout(location = 0) out vec4 FragColor;
 flat in int FragHalfedgeIndex;
 
 in vec3 fragWorldPos;
+
+uniform bool is_light_enabled;
+
 uniform bool is_clipping_enabled = false;
 uniform vec3 clipping_plane_normal; // (a, b, c)
 uniform vec3 clipping_plane_point;  // A point on the plane
@@ -164,7 +167,9 @@ void highlight(inout vec3 col) {
 }
 
 void shading(inout vec3 col, vec3 N, float t) {
-    float light = 1. - dot(N, vec3(0.35,0.45,1.)) /** .5 + .5*/;
+    // Diffuse light
+    float lightPower = is_light_enabled ? dot(N, vec3(0.35,0.45,1.)) : 0.;
+    float light = 1. - lightPower /** .5 + .5*/;
     col *= light * 0.5 + 0.5;
 }
 

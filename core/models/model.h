@@ -8,6 +8,7 @@
 #include "../renderers/point_set_renderer.h"
 #include "../renderers/halfedge_renderer.h"
 #include "../renderers/layer_params.h"
+#include "../renderers/light_params.h"
 #include "../renderers/clipping_mode.h"
 #include "../renderers/clipping_params.h"
 
@@ -340,21 +341,16 @@ struct Model {
 	}
 
 	void setLight(bool enabled) {
-		for (auto const &[k, r] : _renderers)
-			r->setLight(enabled);
+		for (auto const &[k, r] : _renderers) {
+			auto lightParams = r->getParams<LightParams>("light");
+
+			if (!lightParams)
+				continue;
+
+			lightParams->enabled = enabled;
+		}
 
 		isLightEnabled = enabled;
-	}
-
-	bool getLightFollowView() const {
-		return isLightFollowView;
-	}
-
-	void setLightFollowView(bool follow) {
-		for (auto const &[k, r] : _renderers)
-			r->setLightFollowView(follow);
-
-		isLightFollowView = follow;
 	}
 
 	ClippingMode getClippingMode() const {
@@ -524,7 +520,6 @@ struct Model {
 
 
 	bool isLightEnabled = true;
-	bool isLightFollowView = false;
 
 	ClippingMode clippingMode = ClippingMode::STD;
 	bool isClipping = false;

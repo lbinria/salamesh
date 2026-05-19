@@ -118,13 +118,13 @@ struct Material {
 	}
 
 	void setLight(bool enabled) {
-		shader.use();
-		shader.setFloat("is_light_enabled", enabled); // TODO set int here !
+		// shader.use();
+		// shader.setFloat("is_light_enabled", enabled); // TODO set int here !
 	}
 
 	void setLightFollowView(bool follow) {
-		shader.use();
-		shader.setInt("is_light_follow_view", follow);
+		// shader.use();
+		// shader.setInt("is_light_follow_view", follow);
 	}
 
 	void setLayerNDims(Layer layer, int nDims) {

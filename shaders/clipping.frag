@@ -18,6 +18,6 @@ void main() {
         // Adjust the test sign as required by your coordinate convention.
         if (d > 0.0) discard;
     }
-    // Optional: smooth the plane edge with a soft falloff near the plane (small epsilon)
+    
     fragColor = planeColor;
 }
