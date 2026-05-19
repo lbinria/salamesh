@@ -10,15 +10,18 @@ void TetMaterial::push() {
 	for (int ci = 0; ci < _m.ncells(); ++ci) {
 		for (int lfi = 0; lfi < 4; ++lfi) {
 
-
 			// Compute normal
 			Volume::Facet f(_m, _m.facet(ci, lfi));
 			Triangle3 t = f;
 			auto n = t.normal();
 
-			const double a = (f.vertex(1).pos() - f.vertex(0).pos()).norm();
-			const double b = (f.vertex(2).pos() - f.vertex(1).pos()).norm();
-			const double c = (f.vertex(2).pos() - f.vertex(0).pos()).norm();
+			vec3 v0 = f.vertex(0);
+			vec3 v1 = f.vertex(1);
+			vec3 v2 = f.vertex(2);
+
+			const double a = (v1 - v0).norm();
+			const double b = (v2 - v1).norm();
+			const double c = (v2 - v0).norm();
 
 			const double side_lengths[] = {a, b, c};
 			const double s = a + b + c;
@@ -26,7 +29,7 @@ void TetMaterial::push() {
 
 			for (int lv = 0; lv < 3; ++lv) {
 				auto v = f.vertex(lv);
-				auto &p = v.pos();
+				vec3 p = v;
 
 				// Compute height
 				const double h = area / (.5 * side_lengths[(lv + 1) % 3]);

@@ -806,7 +806,8 @@ void App::drawGui() {
 		ImGuiWindowFlags_NoDecoration         // Remove default title bar (optional)
 	);
 
-	ImGui::Text(navPath.str().c_str());
+	ImGui::TextUnformatted(navPath.str().c_str());
+
 
 	ImGui::End();
 
