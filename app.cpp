@@ -813,7 +813,7 @@ void App::drawGui() {
 
 	
 	// display
-	if (ImGuiFileDialog::Instance()->Display("OpenModelDlg", 32, ImVec2(600, 300))) {
+	if (ImGuiFileDialog::Instance()->Display("OpenModelDlg", 32, ImVec2(800, 400))) {
 		if (ImGuiFileDialog::Instance()->IsOk()) { // action if OK
 
 			std::string directoryPath = ImGuiFileDialog::Instance()->GetCurrentPath();
@@ -836,7 +836,7 @@ void App::drawGui() {
 	}
 
 	// display save dialog
-	if (ImGuiFileDialog::Instance()->Display("SaveModelAsDlg", 32, ImVec2(600, 300))) {
+	if (ImGuiFileDialog::Instance()->Display("SaveModelAsDlg", 32, ImVec2(800, 400))) {
 		if (ImGuiFileDialog::Instance()->IsOk()) { // action if OK
 			std::string filename = ImGuiFileDialog::Instance()->GetFilePathName();
 			std::string directoryPath = ImGuiFileDialog::Instance()->GetCurrentPath();

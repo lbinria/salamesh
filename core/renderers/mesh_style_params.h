@@ -21,7 +21,7 @@ struct MeshStyleParams : MaterialParams {
 			return meshSize;
 		} else if (name == "shrink") {
 			return meshShrink;
-		} else if (name == "isCornerVisible") {
+		} else if (name == "corner_visible") {
 			return isCornerVisible;
 		} else {
 			return 0.f;
@@ -38,8 +38,8 @@ struct MeshStyleParams : MaterialParams {
 		} else if (name == "shrink") {
 			if (auto* pVal = std::get_if<float>(&value))
 				meshShrink = *pVal;
-		} else if (name == "isCornerVisible") {
-			if (auto* pVal = std::get_if<float>(&value))
+		} else if (name == "corner_visible") {
+			if (auto* pVal = std::get_if<bool>(&value))
 				isCornerVisible = *pVal;
 		}
 	}
@@ -49,16 +49,16 @@ struct MeshStyleParams : MaterialParams {
 
 	void loadState(json &j) {
 		color = glm::vec3(j["color"][0].get<float>(), j["color"][1].get<float>(), j["color"][2].get<float>());
-		meshSize = j["meshSize"].get<float>();
-		meshShrink = j["meshShrink"].get<float>();
-		isCornerVisible = j["isCornerVisible"].get<bool>();
+		meshSize = j["size"].get<float>();
+		meshShrink = j["shrink"].get<float>();
+		isCornerVisible = j["corner_visible"].get<bool>();
 	}
 
 	void saveState(json &j) const {
 		j["color"] = json::array({color.x, color.y, color.z});
-		j["meshSize"] = meshSize;
-		j["meshShrink"] = meshShrink;
-		j["isCornerVisible"] = isCornerVisible;
+		j["size"] = meshSize;
+		j["shrink"] = meshShrink;
+		j["corner_visible"] = isCornerVisible;
 	}
 
 

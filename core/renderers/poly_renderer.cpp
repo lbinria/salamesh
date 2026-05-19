@@ -1,91 +1,41 @@
 #include "poly_renderer.h"
 #include "../../core/utils/opengl_helper.h"
+#include "mesh_style_params.h"
+#include "layer_params.h"
+#include "light_params.h"
+#include "clipping_params.h"
 
 void PolyMaterial::init() {
 
-	// TODO maybe update buffer size of ptr on push ? move ncells somewher eelse
-
-	std::chrono::steady_clock::time_point begin = std::chrono::steady_clock::now();
+	_params["style"] = std::make_shared<MeshStyleParams>();
+	_params["layers"] = std::make_shared<LayersParams>();
+	_params["clipping"] = std::make_shared<ClippingParams>();
+	_params["light"] = std::make_shared<LightParams>();
+	
+	for (auto &[k, p] : _params) {
+		p->init();
+	}
 
 	glGenVertexArrays(1, &VAO);
 	glGenBuffers(1, &VBO);
 
-	// For the moment don't use persistent mapped memory
-	// sl::createTBO(bufHighlight, tboHighlight);
-	// sl::createTBO(bufFilter, tboFilter);	
-	// sl::createTBO(bufColormap0, tboColormap0);
-	// sl::createTBO(bufColormap1, tboColormap1);
-	// sl::createTBO(bufColormap2, tboColormap2);
-	sl::createTBO(bufNVertsPerFacet, texNVertsPerFacet);
-
-	shader.use();
-	shader.setInt("colormap0", 0);
-	shader.setInt("colormap1", 1);
-	shader.setInt("colormap2", 2);
-	shader.setInt("highlightBuf", 3);
-	shader.setInt("filterBuf", 4);
-	shader.setInt("colormap0Buf", 5);
-	shader.setInt("colormap1Buf", 6);
-	shader.setInt("colormap2Buf", 7);
-
-	shader.setInt("nvertsPerFacetBuf", 8);
-
-	#ifdef _DEBUG
-	std::cout << "vertex attrib setup..." << std::endl;
-	#endif
-
-	// TODO create mesh_renderer with virual function setupVBO
-	// TODO factorize to opengl function setupAttrib
-
 	glBindVertexArray(VAO);
 	glBindBuffer(GL_ARRAY_BUFFER, VBO);
 
-	GLuint vertexIndexLoc = glGetAttribLocation(shader.id, "vertexIndex");
-	glEnableVertexAttribArray(vertexIndexLoc);
-	glVertexAttribIPointer(vertexIndexLoc, 1, GL_INT, sizeof(Vertex), (void*)offsetof(Vertex, vertexIndex));
 
-	GLuint localIndexLoc = glGetAttribLocation(shader.id, "localIndex");
-	glEnableVertexAttribArray(localIndexLoc);
-	glVertexAttribIPointer(localIndexLoc, 1, GL_INT, sizeof(Vertex), (void*)offsetof(Vertex, localIndex));
+	sl::createVBOInteger(shader.id, "vertexIndex", sizeof(Vertex), (void*)offsetof(Vertex, vertexIndex));
+	sl::createVBOInteger(shader.id, "localIndex", sizeof(Vertex), (void*)offsetof(Vertex, localIndex));
+	sl::createVBOInteger(shader.id, "cornerIndex", sizeof(Vertex), (void*)offsetof(Vertex, cornerIndex));
+	sl::createVBOInteger(shader.id, "cornerOff", sizeof(Vertex), (void*)offsetof(Vertex, cornerOff));
+	sl::createVBOInteger(shader.id, "facetIndex", sizeof(Vertex), (void*)offsetof(Vertex, facetIndex));
 
-	GLuint cornerIndexLoc = glGetAttribLocation(shader.id, "cornerIndex");
-	glEnableVertexAttribArray(cornerIndexLoc);
-	glVertexAttribIPointer(cornerIndexLoc, 1, GL_INT, sizeof(Vertex), (void*)offsetof(Vertex, cornerIndex));
+	sl::createVBOVec3(shader.id, "p", sizeof(Vertex), (void*)offsetof(Vertex, p));
+	sl::createVBOVec3(shader.id, "p0", sizeof(Vertex), (void*)offsetof(Vertex, p0));
+	sl::createVBOVec3(shader.id, "p1", sizeof(Vertex), (void*)offsetof(Vertex, p1));
+	sl::createVBOVec3(shader.id, "p2", sizeof(Vertex), (void*)offsetof(Vertex, p2));
+	sl::createVBOVec3(shader.id, "n", sizeof(Vertex), (void*)offsetof(Vertex, n));
 
-	GLuint cornerOffLoc = glGetAttribLocation(shader.id, "cornerOff");
-	glEnableVertexAttribArray(cornerOffLoc);
-	glVertexAttribIPointer(cornerOffLoc, 1, GL_INT, sizeof(Vertex), (void*)offsetof(Vertex, cornerOff));
-
-	GLuint facetIndexLoc = glGetAttribLocation(shader.id, "facetIndex");
-	glEnableVertexAttribArray(facetIndexLoc);
-	glVertexAttribIPointer(facetIndexLoc, 1, GL_INT, sizeof(Vertex), (void*)offsetof(Vertex, facetIndex));
-
-	GLuint pLoc = glGetAttribLocation(shader.id, "p");
-	glEnableVertexAttribArray(pLoc);
-	glVertexAttribPointer(pLoc, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)offsetof(Vertex, p));
-
-	GLuint p0Loc = glGetAttribLocation(shader.id, "p0");
-	glEnableVertexAttribArray(p0Loc);
-	glVertexAttribPointer(p0Loc, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)offsetof(Vertex, p0));
-
-	GLuint p1Loc = glGetAttribLocation(shader.id, "p1");
-	glEnableVertexAttribArray(p1Loc);
-	glVertexAttribPointer(p1Loc, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)offsetof(Vertex, p1));
-
-	GLuint p2Loc = glGetAttribLocation(shader.id, "p2");
-	glEnableVertexAttribArray(p2Loc);
-	glVertexAttribPointer(p2Loc, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)offsetof(Vertex, p2));
-
-	GLuint nLoc = glGetAttribLocation(shader.id, "n");
-	glEnableVertexAttribArray(nLoc);
-	glVertexAttribPointer(nLoc, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)offsetof(Vertex, n));
-
-	
-	std::chrono::steady_clock::time_point end = std::chrono::steady_clock::now();
-
-	#ifdef _DEBUG
-	std::cout << "mesh setup in: " << std::chrono::duration_cast<std::chrono::milliseconds>(end - begin).count() << "ms" << std::endl;
-	#endif
+	sl::createTBO(bufNVertsPerFacet, texNVertsPerFacet);
 
 }
 
@@ -178,34 +128,15 @@ void PolyMaterial::render(glm::vec3 &position) {
 
 	glBindVertexArray(VAO);
 
-	// glActiveTexture(GL_TEXTURE0 + 0);
-	// glBindTexture(GL_TEXTURE_2D, texColormap0);
-
-	// glActiveTexture(GL_TEXTURE0 + 1);
-	// glBindTexture(GL_TEXTURE_2D, texColormap1);
-
-	// glActiveTexture(GL_TEXTURE0 + 2);
-	// glBindTexture(GL_TEXTURE_2D, texColormap2);
-
-	// glActiveTexture(GL_TEXTURE0 + 3);
-	// glBindTexture(GL_TEXTURE_BUFFER, tboHighlight);
-
-	// glActiveTexture(GL_TEXTURE0 + 4);
-	// glBindTexture(GL_TEXTURE_BUFFER, tboFilter);
-
-	// glActiveTexture(GL_TEXTURE0 + 5);
-	// glBindTexture(GL_TEXTURE_BUFFER, tboColormap0);
-
-	// glActiveTexture(GL_TEXTURE0 + 6);
-	// glBindTexture(GL_TEXTURE_BUFFER, tboColormap1);
-
-	// glActiveTexture(GL_TEXTURE0 + 7);
-	// glBindTexture(GL_TEXTURE_BUFFER, tboColormap2);
-
 	glActiveTexture(GL_TEXTURE0 + 8);
 	glBindTexture(GL_TEXTURE_BUFFER, texNVertsPerFacet);
 
 	setPosition(position);
+
+	for (auto &[paramsName, params] : _params)
+		params->apply(shader);
+	
+	shader.setInt("nvertsPerFacetBuf", 8);
 
 	glDrawArrays(GL_TRIANGLES, 0, nelements);
 }
@@ -222,16 +153,6 @@ void PolyMaterial::clean() {
 	glDeleteVertexArrays(1, &VAO);
 	glDeleteBuffers(1, &VBO);
 
-	// glDeleteBuffers(1, &bufHighlight);
-	// glDeleteTextures(1, &tboHighlight);
-	// glDeleteBuffers(1, &bufFilter);
-	// glDeleteTextures(1, &tboFilter);
-	// glDeleteBuffers(1, &bufColormap0);
-	// glDeleteTextures(1, &tboColormap0);
-	// glDeleteBuffers(1, &bufColormap1);
-	// glDeleteTextures(1, &tboColormap1);
-	// glDeleteBuffers(1, &bufColormap2);
-	// glDeleteTextures(1, &tboColormap2);
 	glDeleteBuffers(1, &bufNVertsPerFacet);
 	glDeleteTextures(1, &texNVertsPerFacet);
 	glBindBuffer(GL_TEXTURE_BUFFER, 0);

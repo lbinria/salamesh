@@ -38,10 +38,8 @@ void SurfaceMaterial::render(glm::vec3 &position) {
 
 	glBindVertexArray(VAO);
 
-
-
-
 	setPosition(position);
+	
 	for (auto &[paramsName, params] : _params)
 		params->apply(shader);
 
