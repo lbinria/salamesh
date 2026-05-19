@@ -26,7 +26,6 @@ namespace bindings {
 			&Material::setVisible
 		);
 
-		renderer_t["light"] = sol::writeonly_property(&Material::setLight);
 
 
 		// TODO important missing cases

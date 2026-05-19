@@ -17,7 +17,8 @@ struct MeshMaterial : public Material {
 
 	virtual void doLoadState(json &j) override {
 		for (auto &[paramsName, params] : _params) {
-			params->loadState(j[paramsName]);
+			if (j.contains(paramsName))
+				params->loadState(j[paramsName]);
 		}
 	}
 

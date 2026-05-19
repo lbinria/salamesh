@@ -218,9 +218,16 @@ void Model::resetLayer(ElementKind kind, Layer layer) {
 	// If renderer is rendering this kind of element, set requested layer data to zeros
 	for (auto const &[k ,r] : _renderers) {
 		if (r->isRenderElement(kind)) {
-			r->setLayer(zeros, layer);
+			auto layerParams = r->getParams<LayersParams>("layers");
+
+			if (!layerParams)
+				continue;
+
+			layerParams->setLayer(zeros, layer);
 		}
 	}
+
+
 }
 
 void Model::setLayer(ElementKind kind, Layer layer, bool update) {
@@ -228,22 +235,10 @@ void Model::setLayer(ElementKind kind, Layer layer, bool update) {
 	if (activatedLayers[{layer, kind}] && !update)
 		return;
 
-	// for (auto const &[k, r] : _renderers) {
-	// 	if (r->isRenderElement(kind)) {
-	// 		r->setLayerElement(kind, layer);
-	// 	}
-	// }
-
 	for (auto const &[k, r] : _renderers) {
 		if (r->isRenderElement(kind)) {
 
-			auto params = r->getParams("layers");
-
-			if (!params)
-				continue;
-
-			// Try convert
-			auto layerParams = std::static_pointer_cast<LayersParams>(params);
+			auto layerParams = r->getParams<LayersParams>("layers");
 
 			if (!layerParams)
 				continue;
@@ -269,22 +264,10 @@ void Model::unsetLayer(ElementKind kind, Layer layer, bool reset) {
 	if (reset)
 		resetLayer(kind, layer);
 
-	for (auto const &[k ,r] : _renderers) {
-		if (r->isRenderElement(kind)) {
-			r->setLayerElement(-1, layer); // element -1 means => deactivate layer
-		}
-	}
-
 	for (auto const &[k, r] : _renderers) {
 		if (r->isRenderElement(kind)) {
 
-			auto params = r->getParams("layers");
-
-			if (!params)
-				continue;
-
-			// Try convert
-			auto layerParams = std::static_pointer_cast<LayersParams>(params);
+			auto layerParams = r->getParams<LayersParams>("layers");
 
 			if (!layerParams)
 				continue;

@@ -44,7 +44,6 @@ struct Model {
 	}
 
 	virtual ModelType getModelType() const = 0; 
-	virtual int getDim() const = 0; 
 
 	virtual bool load(const std::string path) = 0;
 	virtual bool saveAs(const std::string path, std::vector<Attribute> attrs) const = 0;
@@ -318,23 +317,6 @@ struct Model {
 		}
 	}
 
-	// Material functions
-
-	// TODO maybe protected
-	void setColormap0Texture(unsigned int tex) {
-		for (auto const &[k, r] : _renderers)
-			r->setColormap0Texture(tex);
-	}
-	// TODO maybe protected
-	void setColormap1Texture(unsigned int tex) {
-		for (auto const &[k, r] : _renderers)
-			r->setColormap1Texture(tex);
-	}
-	// TODO maybe protected
-	void setColormap2Texture(unsigned int tex) {
-		for (auto const &[k, r] : _renderers)
-			r->setColormap2Texture(tex);
-	}
 
 	bool getLight() const {
 		return isLightEnabled;
@@ -500,7 +482,6 @@ struct Model {
 		throw std::runtime_error("Container " + name + " of kind " + elementKindToString(kind) + " not found.");
 	}
 
-	virtual Attribute bindAttr(std::string attrName, ElementKind kind, ElementType type) = 0;
 
 	std::string getName() { return name; }
 

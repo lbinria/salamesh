@@ -11,11 +11,11 @@ void PolyMaterial::init() {
 	glGenBuffers(1, &VBO);
 
 	// For the moment don't use persistent mapped memory
-	sl::createTBO(bufHighlight, tboHighlight);
-	sl::createTBO(bufFilter, tboFilter);	
-	sl::createTBO(bufColormap0, tboColormap0);
-	sl::createTBO(bufColormap1, tboColormap1);
-	sl::createTBO(bufColormap2, tboColormap2);
+	// sl::createTBO(bufHighlight, tboHighlight);
+	// sl::createTBO(bufFilter, tboFilter);	
+	// sl::createTBO(bufColormap0, tboColormap0);
+	// sl::createTBO(bufColormap1, tboColormap1);
+	// sl::createTBO(bufColormap2, tboColormap2);
 	sl::createTBO(bufNVertsPerFacet, texNVertsPerFacet);
 
 	shader.use();
@@ -178,29 +178,29 @@ void PolyMaterial::render(glm::vec3 &position) {
 
 	glBindVertexArray(VAO);
 
-	glActiveTexture(GL_TEXTURE0 + 0);
-	glBindTexture(GL_TEXTURE_2D, texColormap0);
+	// glActiveTexture(GL_TEXTURE0 + 0);
+	// glBindTexture(GL_TEXTURE_2D, texColormap0);
 
-	glActiveTexture(GL_TEXTURE0 + 1);
-	glBindTexture(GL_TEXTURE_2D, texColormap1);
+	// glActiveTexture(GL_TEXTURE0 + 1);
+	// glBindTexture(GL_TEXTURE_2D, texColormap1);
 
-	glActiveTexture(GL_TEXTURE0 + 2);
-	glBindTexture(GL_TEXTURE_2D, texColormap2);
+	// glActiveTexture(GL_TEXTURE0 + 2);
+	// glBindTexture(GL_TEXTURE_2D, texColormap2);
 
-	glActiveTexture(GL_TEXTURE0 + 3);
-	glBindTexture(GL_TEXTURE_BUFFER, tboHighlight);
+	// glActiveTexture(GL_TEXTURE0 + 3);
+	// glBindTexture(GL_TEXTURE_BUFFER, tboHighlight);
 
-	glActiveTexture(GL_TEXTURE0 + 4);
-	glBindTexture(GL_TEXTURE_BUFFER, tboFilter);
+	// glActiveTexture(GL_TEXTURE0 + 4);
+	// glBindTexture(GL_TEXTURE_BUFFER, tboFilter);
 
-	glActiveTexture(GL_TEXTURE0 + 5);
-	glBindTexture(GL_TEXTURE_BUFFER, tboColormap0);
+	// glActiveTexture(GL_TEXTURE0 + 5);
+	// glBindTexture(GL_TEXTURE_BUFFER, tboColormap0);
 
-	glActiveTexture(GL_TEXTURE0 + 6);
-	glBindTexture(GL_TEXTURE_BUFFER, tboColormap1);
+	// glActiveTexture(GL_TEXTURE0 + 6);
+	// glBindTexture(GL_TEXTURE_BUFFER, tboColormap1);
 
-	glActiveTexture(GL_TEXTURE0 + 7);
-	glBindTexture(GL_TEXTURE_BUFFER, tboColormap2);
+	// glActiveTexture(GL_TEXTURE0 + 7);
+	// glBindTexture(GL_TEXTURE_BUFFER, tboColormap2);
 
 	glActiveTexture(GL_TEXTURE0 + 8);
 	glBindTexture(GL_TEXTURE_BUFFER, texNVertsPerFacet);
@@ -222,16 +222,16 @@ void PolyMaterial::clean() {
 	glDeleteVertexArrays(1, &VAO);
 	glDeleteBuffers(1, &VBO);
 
-	glDeleteBuffers(1, &bufHighlight);
-	glDeleteTextures(1, &tboHighlight);
-	glDeleteBuffers(1, &bufFilter);
-	glDeleteTextures(1, &tboFilter);
-	glDeleteBuffers(1, &bufColormap0);
-	glDeleteTextures(1, &tboColormap0);
-	glDeleteBuffers(1, &bufColormap1);
-	glDeleteTextures(1, &tboColormap1);
-	glDeleteBuffers(1, &bufColormap2);
-	glDeleteTextures(1, &tboColormap2);
+	// glDeleteBuffers(1, &bufHighlight);
+	// glDeleteTextures(1, &tboHighlight);
+	// glDeleteBuffers(1, &bufFilter);
+	// glDeleteTextures(1, &tboFilter);
+	// glDeleteBuffers(1, &bufColormap0);
+	// glDeleteTextures(1, &tboColormap0);
+	// glDeleteBuffers(1, &bufColormap1);
+	// glDeleteTextures(1, &tboColormap1);
+	// glDeleteBuffers(1, &bufColormap2);
+	// glDeleteTextures(1, &tboColormap2);
 	glDeleteBuffers(1, &bufNVertsPerFacet);
 	glDeleteTextures(1, &texNVertsPerFacet);
 	glBindBuffer(GL_TEXTURE_BUFFER, 0);

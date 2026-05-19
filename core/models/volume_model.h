@@ -69,11 +69,7 @@ struct VolumeModel final : public VolModel {
 	ModelType getModelType() const override {
 		return modelTypeFromMeshType<TVolume>();
 	}
-
-	int getDim() const override {
-		return modelDimFromModelType<modelTypeFromMeshType<TVolume>()>();
-	}
-
+	
 	bool load(const std::string path) override {
 		
 		// Load the mesh
@@ -146,25 +142,6 @@ struct VolumeModel final : public VolModel {
 		write_by_extension(path, _m, attributes);
 
 		return true;
-	}
-
-	// Move to VolModel
-	// Wrapper for simple attribute binding
-	Attribute bindAttr(std::string attrName, ElementKind kind, ElementType type) override {
-
-		// size_t typeIndex = static_cast<size_t>(type);
-		
-		// if (kind == ElementKind::POINTS_ELT) {
-		// 	BinderTable<PointAttribute>::table[typeIndex](attrName, _surfaceAttributes, _m);
-		// } else if (kind == ElementKind::FACETS_ELT) {
-		// 	BinderTable<FacetAttribute>::table[typeIndex](attrName, _surfaceAttributes, _m);
-		// } else if (kind == ElementKind::CORNERS_ELT) {
-		// 	BinderTable<CornerAttribute>::table[typeIndex](attrName, _surfaceAttributes, _m);
-		// }
-
-		// auto container = getAttributeContainer(attrName, kind);
-		// return Attribute{name, kind, type, container.ptr};
-		return Attribute{};
 	}
 
 	TVolume& getMesh() { return _m; }

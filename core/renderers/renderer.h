@@ -50,10 +50,6 @@ struct Material {
 		return (getRenderElementKind() & kind) == kind;
 	}
 
-	void setColormap0Texture(unsigned int tex) { texColormap0 = tex; }
-	void setColormap1Texture(unsigned int tex) { texColormap1 = tex; }
-	void setColormap2Texture(unsigned int tex) { texColormap2 = tex; }
-
 	void setVisible(bool v) {
 		visible = v;
 
@@ -65,37 +61,6 @@ struct Material {
 	bool getVisible() const {
 		return visible;
 	}
-
-	void setLayerElement(int element, Layer layer) {
-		// I could refactor more, 
-		// but we won't understand anything after that
-		switch (layer)
-		{
-		case Layer::COLORMAP_0:
-		case Layer::COLORMAP_1:
-		case Layer::COLORMAP_2:
-			shader.use();
-			shader.setInt("colormapElement[" + std::to_string(int(layer)) + "]", element);
-			break;
-		case Layer::HIGHLIGHT:
-			shader.use();
-			shader.setInt("highlightElement", element);
-			break;
-		case Layer::FILTER:
-			shader.use();
-			shader.setInt("filterElement", element);
-			break;
-		// Should never happen (except if all the case aren't covered)
-		default:
-			throw std::runtime_error(
-				"setLayerElement for layer: " + 
-				layerToString(layer) + 
-				" is not implemented."
-			);
-		}
-	}
-
-
 
 	glm::vec3 getHoverColor() const {
 		return hoverColor;
@@ -115,75 +80,6 @@ struct Material {
 		shader.use();
 		shader.setFloat3("selectColor", c);
 		selectColor = c;
-	}
-
-	void setLight(bool enabled) {
-		// shader.use();
-		// shader.setFloat("is_light_enabled", enabled); // TODO set int here !
-	}
-
-	void setLightFollowView(bool follow) {
-		// shader.use();
-		// shader.setInt("is_light_follow_view", follow);
-	}
-
-	void setLayerNDims(Layer layer, int nDims) {
-		// TODO check layer ? only works for colormaps...
-		shader.use();
-		shader.setInt("attrNDims[" + std::to_string(int(layer)) + "]", nDims);
-	}
-
-	void setLayerRange(Layer layer, float min, float max) {
-		// TODO check layer ? only works for colormaps...
-		shader.use();
-		shader.setFloat2("attrRange[" + std::to_string(int(layer)) + "]", glm::vec2(min, max));
-	}
-
-	// Put data to buffer
-	void setBuf(unsigned int buf, std::vector<float> data) {
-		glBindBuffer(GL_TEXTURE_BUFFER, buf);
-		glBufferData(GL_TEXTURE_BUFFER, data.size() * sizeof(float), data.data(), GL_DYNAMIC_DRAW);
-	}
-
-	// Put data chunk to buffer
-	void setBuf(unsigned int buf, int idx, float val) {
-		glBindBuffer(GL_TEXTURE_BUFFER, buf);
-		glBufferSubData(GL_TEXTURE_BUFFER, idx * sizeof(float), sizeof(float), &val);
-	}
-
-	// Obtain buffer that matches with requested layer
-	unsigned int getLayerBuffer(Layer layer) {
-		switch (layer)
-		{
-		case Layer::COLORMAP_0:
-			return bufColormap0;
-		case Layer::COLORMAP_1:
-			return bufColormap1;
-		case Layer::COLORMAP_2:
-			return bufColormap2;
-		case Layer::HIGHLIGHT:
-			return bufHighlight;
-		case Layer::FILTER:
-			return bufFilter;
-		// Should never happen (except if all the case aren't covered)
-		default:
-			throw std::runtime_error(
-				"getLayerBuffer for layer: " + 
-				layerToString(layer) + 
-				" is not implemented."
-			);
-		}
-	}
-
-	
-	void setLayer(int idx, float val, Layer layer) {
-		unsigned int buf = getLayerBuffer(layer);
-		setBuf(buf, idx, val);
-	}
-
-	void setLayer(std::vector<float> data, Layer layer) {
-		unsigned int buf = getLayerBuffer(layer);
-		setBuf(buf, data);
 	}
 
 	void loadState(json &j) {
@@ -225,12 +121,7 @@ struct Material {
 	int attrRepeat = 1;
 
 	unsigned int VAO, VBO; // Buffers
-	unsigned int bufColormap0, bufColormap1, bufColormap2, bufHighlight, bufFilter; // Sample buffers
-	unsigned int texColormap0, texColormap1, texColormap2, tboColormap0, tboColormap1, tboColormap2, tboHighlight, tboFilter; // Textures
 
-	float *ptrAttr;
-
-	// TODO rename to nelements
 	int nelements = 0;
 
 	void setPosition(glm::vec3 &position) {
