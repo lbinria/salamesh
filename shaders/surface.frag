@@ -61,6 +61,7 @@ uniform int attrNDims[3] = {1, 1, 1};
 uniform int colormapElement[3] = {-1, -1, -1};
 uniform int highlightElement;
 uniform int filterElement;
+uniform bool activatedLayers[5 /* layer */][7 /* element kind */];
 
 uniform samplerBuffer nvertsPerFacetBuf;
 
@@ -263,6 +264,10 @@ vec4 showColormap(int layer) {
 void _filter(inout vec3 col) {
     if (filterElement == -1)
         return;
+
+    // // Check whether layer filter is activated on facet
+    // if (!activatedLayers[4 /* filter */][3 /* facet */])
+    //     return;
         
     bool filtered = texelFetch(filterBuf, fragFacetIndex).x >= .5;
 
@@ -296,6 +301,10 @@ void highlight(inout vec3 col) {
     // Only highlight facets
     if (highlightElement != 8)
         return;
+
+    // // Check whether layer highlight on facet is activated
+    // if (!activatedLayers[3 /* hightlight */][3 /* facet */])
+    //     return;
 
     // Highlight
     float highlightVal = texelFetch(highlightBuf, fragFacetIndex).x;

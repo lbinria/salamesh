@@ -8,7 +8,7 @@ struct LightParams : MaterialParams {
 	}
 
 	void apply(Shader &shader) override {
-		shader.setFloat("is_light_enabled", static_cast<float>(enabled)); // TODO set int here !
+		shader.setInt("is_light_enabled", static_cast<int>(enabled));
 	}
 
 	ParamValue get(const std::string name) override {

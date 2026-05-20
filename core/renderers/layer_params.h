@@ -29,6 +29,9 @@ struct LayersParams : MaterialParams {
 
 		}
 
+		shader.setFloat3("selectColor", selectColor);
+		shader.setFloat3("hoverColor", hoverColor);
+
 		shader.setInt("colormap0", 0);
 		shader.setInt("colormap1", 1);
 		shader.setInt("colormap2", 2);
@@ -123,6 +126,10 @@ struct LayersParams : MaterialParams {
 			return range[index];
 		} else if (name == "layer_element") {
 			return layerElement[index];
+		} else if (name == "hover_color") {
+			return hoverColor;
+		} else if (name == "select_color") {
+			return selectColor;
 		} else {
 			return 0.f;
 		}
@@ -138,24 +145,44 @@ struct LayersParams : MaterialParams {
 		} else if (name == "layer_element") {
 			if (auto* pVal = std::get_if<int>(&value))
 				layerElement[index] = *pVal;
+		} else if (name == "hover_color") {
+			if (auto* pVal = std::get_if<glm::vec3>(&value))
+				hoverColor = *pVal;
+		} else if (name == "select_color") {
+			if (auto* pVal = std::get_if<glm::vec3>(&value))
+				selectColor = *pVal;
 		}
 	}
 
 	void loadState(json &j) {
-		// TODO implement
-			// size = j["pointSize"].get<float>();
-			// color = {j["pointColor"][0].get<float>(), j["pointColor"][1].get<float>(), j["pointColor"][2].get<float>()};
+
+		for (int i = 0; i < 5; ++i) {
+			nDims[i] = j["n_dims"][i].get<int>();
+			range[i] = {j["range"][i][0].get<float>(), j["range"][i][1].get<float>()};
+			layerElement[i] = j["layer_element"][i].get<int>();
+		}
+
+		hoverColor = {j["hover_color"][0].get<float>(), j["hover_color"][1].get<float>(), j["hover_color"][2].get<float>()};
+		selectColor = {j["select_color"][0].get<float>(), j["select_color"][1].get<float>(), j["select_color"][2].get<float>()};
 	}
 
 	void saveState(json &j) const {
-		// TODO implement
-		// j["pointSize"] = size;
-		// j["pointColor"] = json::array({color.x, color.y, color.z});
+
+		for (int i = 0; i < 5; ++i) {
+			j["n_dims"][i] = nDims[i];
+			j["range"][i] = {range[i][0], range[i][1]};
+			j["layer_element"][i] = layerElement[i];
+		}
+
+		j["hover_color"] = json::array({hoverColor.x, hoverColor.y, hoverColor.z});
+		j["select_color"] = json::array({selectColor.x, selectColor.y, selectColor.z});
 	}
 
 	int nDims[5];
 	glm::vec2 range[5];
 	int layerElement[5] = {-1, -1, -1, -1, -1};
+	glm::vec3 hoverColor{1.f, 1.f, 1.f};
+	glm::vec3 selectColor{0.f, 0.22f, 1.f};
 
 	private:
 	unsigned int bufColormap0, bufColormap1, bufColormap2, bufHighlight, bufFilter; // Sample buffers

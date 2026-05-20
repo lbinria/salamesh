@@ -62,38 +62,14 @@ struct Material {
 		return visible;
 	}
 
-	glm::vec3 getHoverColor() const {
-		return hoverColor;
-	}
-
-	void setHoverColor(glm::vec3 c) {
-		shader.use();
-		shader.setFloat3("hoverColor", c);
-		hoverColor = c;
-	}
-
-	glm::vec3 getSelectColor() const {
-		return selectColor;
-	}
-
-	void setSelectColor(glm::vec3 c) {
-		shader.use();
-		shader.setFloat3("selectColor", c);
-		selectColor = c;
-	}
-
 	void loadState(json &j) {
 		setVisible(j["visible"].get<bool>());
-		setHoverColor(glm::vec3(j["hoverColor"][0].get<float>(), j["hoverColor"][1].get<float>(), j["hoverColor"][2].get<float>()));
-		setSelectColor(glm::vec3(j["selectColor"][0].get<float>(), j["selectColor"][1].get<float>(), j["selectColor"][2].get<float>()));
 
 		doLoadState(j);
 	}
 
 	void saveState(json &j) const {
 		j["visible"] = visible;
-		j["hoverColor"] = json::array({hoverColor.x, hoverColor.y, hoverColor.z});
-		j["selectColor"] = json::array({selectColor.x, selectColor.y, selectColor.z});
 
 		doSaveState(j);
 	}
@@ -114,11 +90,6 @@ struct Material {
 
 	bool visible = true;
 	bool shouldPush = false;
-
-	glm::vec3 hoverColor{1.f, 1.f, 1.f};
-	glm::vec3 selectColor{0.f, 0.22f, 1.f};
-
-	int attrRepeat = 1;
 
 	unsigned int VAO, VBO; // Buffers
 
