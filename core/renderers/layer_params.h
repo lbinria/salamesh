@@ -5,12 +5,17 @@
 
 struct LayersParams : MaterialParams {
 
-	void init() override {
+
+	LayersParams() {
 		sl::createTBO(bufHighlight, tboHighlight);
 		sl::createTBO(bufFilter, tboFilter);
 		sl::createTBO(bufColormap0, tboColormap0);
 		sl::createTBO(bufColormap1, tboColormap1);
 		sl::createTBO(bufColormap2, tboColormap2);
+	}
+
+	void init() override {
+
 	}
 
 	void apply(Shader &shader) override {

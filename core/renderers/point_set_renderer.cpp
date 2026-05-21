@@ -6,6 +6,10 @@
 #include "light_params.h"
 #include "clipping_params.h"
 
+// Node = { Mesh, ShaderBuffers }
+// Node::addShader(PointShader::createBuffer())
+// ShaderStructure::createBuffer() => ShaderBuffer{vao, vbo, shader, ShaderParams }
+
 void PointMaterial::init() {
 
 	_params["style"] = std::make_shared<PointStyleParams>();
