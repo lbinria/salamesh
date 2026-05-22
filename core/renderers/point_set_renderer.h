@@ -32,6 +32,9 @@ struct PointMaterial : public Material {
 		Material(name, Shader(sl::shadersPath("point.vert"), sl::shadersPath("point.frag"))), ps(*new PointSet()) {
 		}
 
+	virtual ShaderBuffer createShaderBuffer() override;
+	virtual void fill(Geometry &geometry, ShaderBuffer &shaderBuffer) override;
+
 	void init() override;
 	void push() override;
 	void render(glm::vec3 &position) override;

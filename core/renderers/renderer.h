@@ -15,7 +15,8 @@ using json = nlohmann::json;
 
 #include "../helpers.h"
 
-
+#include "../shader_buffer.h"
+#include "../geometry.h"
 
 struct Material {
 
@@ -34,6 +35,20 @@ struct Material {
 		static_assert(std::is_base_of_v<Material, T>, "Renderer::as() can only be used with derived classes of Renderer");
 		auto &x = static_cast<T&>(*this);
 		return x;
+	}
+
+
+	virtual ShaderBuffer createShaderBuffer() {
+		unsigned int vao, vbo;
+		glGenVertexArrays(1, &vao);
+		glGenBuffers(1, &vbo);
+
+		std::map<std::string, std::shared_ptr<MaterialParams>> params;
+		return ShaderBuffer(shader, vao, vbo, params);
+	};
+
+	virtual void fill(Geometry &geometry, ShaderBuffer &shaderBuffer) {
+
 	}
 
 	// User must overwrite which element(s) are rendered by renderer
@@ -84,6 +99,9 @@ struct Material {
 	std::shared_ptr<TParams> getParams(const std::string name) {
 		return _params.contains(name) ? std::static_pointer_cast<TParams>(_params.at(name)) : nullptr;
 	}
+
+
+	Shader &getShader() { return shader; }
 
 	protected:
 	Shader shader;

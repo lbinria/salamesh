@@ -10,6 +10,55 @@
 // Node::addShader(PointShader::createBuffer())
 // ShaderStructure::createBuffer() => ShaderBuffer{vao, vbo, shader, ShaderParams }
 
+ShaderBuffer PointMaterial::createShaderBuffer() {
+	unsigned int vao, vbo;
+	glGenVertexArrays(1, &vao);
+	glGenBuffers(1, &vbo);
+
+	glBindVertexArray(vao);
+	glBindBuffer(GL_ARRAY_BUFFER, vbo);
+	// setup VBO
+	sl::createVBOInteger(shader.id, "vertexIndex", sizeof(Vertex), (void*)offsetof(Vertex, vertexIndex));
+	sl::createVBOVec3(shader.id, "aPos", sizeof(Vertex), (void*)offsetof(Vertex, position));
+	sl::createVBOFloat(shader.id, "sizeScale", sizeof(Vertex), (void*)offsetof(Vertex, size));
+
+	std::map<std::string, std::shared_ptr<MaterialParams>> params;
+	params["style"] = std::make_shared<PointStyleParams>();
+	params["layers"] = std::make_shared<LayersParams>();
+	params["clipping"] = std::make_shared<ClippingParams>();
+	params["light"] = std::make_shared<LightParams>();
+	return ShaderBuffer(shader, vao, vbo, params);
+};
+
+void PointMaterial::fill(Geometry &geometry, ShaderBuffer &shaderBuffer) {
+	auto trianglesGeometry = dynamic_cast<TrianglesGeometry*>(&geometry);
+
+	if (trianglesGeometry) {
+		auto &ps = trianglesGeometry->_m.points;
+		std::vector<Vertex> vertices(ps.size());
+		for (int i = 0; i < ps.size(); ++i) {
+			auto &v = ps[i];
+
+			vertices[i] = { 
+				.vertexIndex = i,
+				.position = glm::vec3(v.x, v.y, v.z),
+				.size = 1.f
+			};
+		}
+
+		// shaderBuffer.rawData.clear();
+		// shaderBuffer.rawData.resize(vertices.size() * sizeof(Vertex));
+		// std::memcpy(shaderBuffer.rawData.data(), vertices.data(), shaderBuffer.rawData.size());
+
+		shaderBuffer.nelements = vertices.size();
+		glBindVertexArray(shaderBuffer.vao());
+		glBindBuffer(GL_ARRAY_BUFFER, shaderBuffer.vbo());
+		glBufferData(GL_ARRAY_BUFFER, vertices.size() * sizeof(Vertex), vertices.data(), GL_STATIC_DRAW);
+		// glBufferData(GL_ARRAY_BUFFER, shaderBuffer.rawData.size(), shaderBuffer.rawData.data(), GL_STATIC_DRAW);
+	}
+
+}
+
 void PointMaterial::init() {
 
 	_params["style"] = std::make_shared<PointStyleParams>();

@@ -20,6 +20,7 @@
 #include "renderers/line_renderer.h"
 #include "renderers/renderer_collection.h"
 
+#include "scene_node.h"
 
 #include <map>
 
@@ -58,6 +59,29 @@ struct Scene {
 		setupCameras();
 
 		getDefaultRenderSurface().setCamera(cameras["default"]);
+
+
+		// Test
+		cameras["default"]->lookAtBox({{-1,-1,-1}, {1,1,1}});
+
+		auto pointMat = std::make_unique<PointMaterial>("points");
+
+		auto geo = std::make_unique<TrianglesGeometry>();
+		geo->_m.points.create_points(3);
+		geo->_m.create_facets(1);
+		geo->_m.points[0] = {0.,0.,0.};
+		geo->_m.points[1] = {1.,0.,0.};
+		geo->_m.points[2] = {0.5,0.5,0.};
+		geo->_m.vert(0, 0) = 0;
+		geo->_m.vert(0, 1) = 1;
+		geo->_m.vert(0, 2) = 2;
+
+		SceneNode node;
+		node.addShader(*pointMat);
+		node.setGeometry(std::move(geo));
+		nodes.emplace("node_1", std::move(node));
+
+		materials.emplace("points", std::move(pointMat));
 	}
 
 	void render() {
@@ -78,6 +102,41 @@ struct Scene {
 
 			model->render();
 		}
+
+		// Test
+		for (auto &[matName, mat] : materials) {
+
+			for (auto &[nodeName, node] : nodes) {
+
+				auto shaderBufferOpt = node.getShaderBuffer(*mat);
+
+				if (!shaderBufferOpt.has_value())
+					continue;
+
+				auto &shaderBuffer = shaderBufferOpt.value().get();
+
+				if (node.getGeometry().isDirty()) {
+					// Update shader buffers
+					mat->fill(node.getGeometry(), shaderBuffer);
+				}
+
+				auto sh0 = mat->getShader();
+				auto sh1 = shaderBuffer.getShader();
+
+				glBindVertexArray(shaderBuffer.vao());
+				shaderBuffer.setPosition(node.position);
+				shaderBuffer.apply();
+
+				glDrawArrays(GL_POINTS, 0, shaderBuffer.nelements);
+
+			}
+
+		}
+
+		for (auto &[nodeName, node] : nodes) {
+			node.getGeometry().updateDone();
+		}
+
 	}
 
 	void clean() {
@@ -205,6 +264,9 @@ struct Scene {
 	CameraCollection cameras;
 
 	RendererCollection renderers;
+
+	std::map<std::string, SceneNode> nodes;
+	std::map<std::string, std::unique_ptr<Material>> materials;
 
 	// display color map in good format for 2D in the UI
 	std::vector<Colormap> colormaps;
