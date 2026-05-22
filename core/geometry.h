@@ -12,7 +12,7 @@ struct Geometry {
 		_dirty = true;
 	}
 
-	bool isDirty() const {
+	bool shouldUpdate() const {
 		return _dirty;
 	}
 
@@ -30,11 +30,12 @@ struct SurfaceGeometry : public Geometry {
 
 struct TrianglesGeometry : public Geometry {
 
-    TrianglesGeometry() = default;
-    TrianglesGeometry(const TrianglesGeometry&) = delete;
-    TrianglesGeometry(TrianglesGeometry&&) = default;           // Allow moves
-    TrianglesGeometry& operator=(const TrianglesGeometry&) = delete;
-    TrianglesGeometry& operator=(TrianglesGeometry&&) = default;
+	// Remove copy constructors, allow moves
+	TrianglesGeometry() = default;
+	TrianglesGeometry(const TrianglesGeometry&) = delete;
+	TrianglesGeometry(TrianglesGeometry&&) = default;
+	TrianglesGeometry& operator=(const TrianglesGeometry&) = delete;
+	TrianglesGeometry& operator=(TrianglesGeometry&&) = default;
 
 	Triangles _m;
 };

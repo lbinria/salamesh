@@ -21,6 +21,7 @@
 #include "renderers/renderer_collection.h"
 
 #include "scene_node.h"
+#include "renderers/point_style_params.h" // TODO remove
 
 #include <map>
 
@@ -65,6 +66,7 @@ struct Scene {
 		cameras["default"]->lookAtBox({{-1,-1,-1}, {1,1,1}});
 
 		auto pointMat = std::make_unique<PointMaterial>("points");
+		auto surfaceMat = std::make_unique<TriMaterial>("tri");
 
 		auto geo = std::make_unique<TrianglesGeometry>();
 		geo->_m.points.create_points(3);
@@ -81,7 +83,31 @@ struct Scene {
 		node.setGeometry(std::move(geo));
 		nodes.emplace("node_1", std::move(node));
 
+		auto geo2 = std::make_unique<TrianglesGeometry>();
+		geo2->_m.points.create_points(3);
+		geo2->_m.create_facets(1);
+		geo2->_m.points[0] = {0.2,0.,0.};
+		geo2->_m.points[1] = {0.8,0.,0.};
+		geo2->_m.points[2] = {0.3,0.2,0.};
+		geo2->_m.vert(0, 0) = 0;
+		geo2->_m.vert(0, 1) = 1;
+		geo2->_m.vert(0, 2) = 2;
+
+		SceneNode node2;
+		node2.addShader(*pointMat);
+		node2.addShader(*surfaceMat);
+		node2.setGeometry(std::move(geo2));
+		auto sb = node2.getShaderBuffer("points");
+		auto ps = sb.value().get().getParams<PointStyleParams>("style");
+		ps->size = 10.f;
+		ps->color = {1.f, 0.4f, 0.2f};
+
+		nodes.emplace("node_2", std::move(node2));
+
+
+
 		materials.emplace("points", std::move(pointMat));
+		materials.emplace("tri", std::move(surfaceMat));
 	}
 
 	void render() {
@@ -115,19 +141,16 @@ struct Scene {
 
 				auto &shaderBuffer = shaderBufferOpt.value().get();
 
-				if (node.getGeometry().isDirty()) {
-					// Update shader buffers
-					mat->fill(node.getGeometry(), shaderBuffer);
+				if (node.getGeometry().shouldUpdate()) {
+					// Update current shader buffers for given geometry
+					mat->update(shaderBuffer, node.getGeometry());
 				}
-
-				auto sh0 = mat->getShader();
-				auto sh1 = shaderBuffer.getShader();
 
 				glBindVertexArray(shaderBuffer.vao());
 				shaderBuffer.setPosition(node.position);
 				shaderBuffer.apply();
 
-				glDrawArrays(GL_POINTS, 0, shaderBuffer.nelements);
+				glDrawArrays(mat->renderElement(), 0, shaderBuffer.nelements);
 
 			}
 

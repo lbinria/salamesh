@@ -33,7 +33,7 @@ struct PointMaterial : public Material {
 		}
 
 	virtual ShaderBuffer createShaderBuffer() override;
-	virtual void fill(Geometry &geometry, ShaderBuffer &shaderBuffer) override;
+	virtual void update(ShaderBuffer &shaderBuffer, Geometry &geometry) override;
 
 	void init() override;
 	void push() override;

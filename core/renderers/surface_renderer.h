@@ -36,6 +36,18 @@ struct SurfaceMaterial : public MeshMaterial {
 		_m(m)
 		{}
 
+	SurfaceMaterial(std::string name) : 
+		MeshMaterial(name, Shader(sl::shadersPath("surface.vert"), sl::shadersPath("surface.frag"))),
+		_m(*new Triangles())
+		{}
+
+	virtual ShaderBuffer createShaderBuffer() override;
+	virtual void update(ShaderBuffer &shaderBuffer, Geometry &geometry) override;
+
+	virtual unsigned int renderElement() override {
+		return GL_TRIANGLES;
+	}
+
 	void init() override;
 	void render(glm::vec3 &position) override;
 	virtual void push() override = 0;

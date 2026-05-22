@@ -34,10 +34,14 @@ struct SceneNode {
 	}
 
 	std::optional<std::reference_wrapper<ShaderBuffer>> getShaderBuffer(Material &material) {
-		if (!_shaders.contains(material.getName()))
+		return getShaderBuffer(material.getName());
+	}
+
+	std::optional<std::reference_wrapper<ShaderBuffer>> getShaderBuffer(const std::string name) {
+		if (!_shaders.contains(name))
 			return std::nullopt;
 		
-		return _shaders.at(material.getName());
+		return _shaders.at(name);
 	}
 
 	glm::vec3 position{0,0,0};

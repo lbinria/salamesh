@@ -47,8 +47,12 @@ struct Material {
 		return ShaderBuffer(shader, vao, vbo, params);
 	};
 
-	virtual void fill(Geometry &geometry, ShaderBuffer &shaderBuffer) {
+	virtual void update(ShaderBuffer &shaderBuffer, Geometry &geometry) {
 
+	}
+
+	virtual unsigned int renderElement() {
+		return GL_POINTS;
 	}
 
 	// User must overwrite which element(s) are rendered by renderer

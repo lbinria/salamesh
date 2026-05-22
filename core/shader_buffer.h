@@ -32,6 +32,15 @@ struct ShaderBuffer {
 		return _params;
 	}
 
+	std::shared_ptr<MaterialParams> getParams(const std::string name) {
+		return _params.contains(name) ? _params.at(name) : nullptr;
+	}
+
+	template<typename TParams>
+	std::shared_ptr<TParams> getParams(const std::string name) {
+		return _params.contains(name) ? std::static_pointer_cast<TParams>(_params.at(name)) : nullptr;
+	}
+
 	// TODO move that, just for test
 	void setPosition(glm::vec3 position) {
 		glm::mat4 model = glm::mat4(1.0f);

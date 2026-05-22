@@ -30,7 +30,7 @@ ShaderBuffer PointMaterial::createShaderBuffer() {
 	return ShaderBuffer(shader, vao, vbo, params);
 };
 
-void PointMaterial::fill(Geometry &geometry, ShaderBuffer &shaderBuffer) {
+void PointMaterial::update(ShaderBuffer &shaderBuffer, Geometry &geometry) {
 	auto trianglesGeometry = dynamic_cast<TrianglesGeometry*>(&geometry);
 
 	if (trianglesGeometry) {
