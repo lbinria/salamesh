@@ -36,32 +36,55 @@ ShaderBuffer PointMaterial::createShaderBuffer() {
 	return ShaderBuffer(shader, vao, vbo, params);
 };
 
+void PointMaterial::updatePointSet(ShaderBuffer &shaderBuffer, PointSet &ps) {
+	std::vector<Vertex> vertices(ps.size());
+	for (int i = 0; i < ps.size(); ++i) {
+		auto &v = ps[i];
+
+		vertices[i] = { 
+			.vertexIndex = i,
+			.position = glm::vec3(v.x, v.y, v.z),
+			.size = 1.f
+		};
+	}
+
+	shaderBuffer.nelements = vertices.size();
+	glBindVertexArray(shaderBuffer.vao());
+	glBindBuffer(GL_ARRAY_BUFFER, shaderBuffer.vbo());
+	glBufferData(GL_ARRAY_BUFFER, vertices.size() * sizeof(Vertex), vertices.data(), GL_STATIC_DRAW);
+}
+
+
 void PointMaterial::update(ShaderBuffer &shaderBuffer, Geometry &geometry) {
 	auto trianglesGeometry = dynamic_cast<TrianglesGeometry*>(&geometry);
+	if (trianglesGeometry)
+		updatePointSet(shaderBuffer, trianglesGeometry->_m.points);
+	else if (auto quadsGeometry = dynamic_cast<QuadsGeometry*>(&geometry))
+		updatePointSet(shaderBuffer, quadsGeometry->_m.points);
 
-	if (trianglesGeometry) {
-		auto &ps = trianglesGeometry->_m.points;
-		std::vector<Vertex> vertices(ps.size());
-		for (int i = 0; i < ps.size(); ++i) {
-			auto &v = ps[i];
+	// if (trianglesGeometry) {
+	// 	auto &ps = trianglesGeometry->_m.points;
+	// 	std::vector<Vertex> vertices(ps.size());
+	// 	for (int i = 0; i < ps.size(); ++i) {
+	// 		auto &v = ps[i];
 
-			vertices[i] = { 
-				.vertexIndex = i,
-				.position = glm::vec3(v.x, v.y, v.z),
-				.size = 1.f
-			};
-		}
+	// 		vertices[i] = { 
+	// 			.vertexIndex = i,
+	// 			.position = glm::vec3(v.x, v.y, v.z),
+	// 			.size = 1.f
+	// 		};
+	// 	}
 
-		// shaderBuffer.rawData.clear();
-		// shaderBuffer.rawData.resize(vertices.size() * sizeof(Vertex));
-		// std::memcpy(shaderBuffer.rawData.data(), vertices.data(), shaderBuffer.rawData.size());
+	// 	// shaderBuffer.rawData.clear();
+	// 	// shaderBuffer.rawData.resize(vertices.size() * sizeof(Vertex));
+	// 	// std::memcpy(shaderBuffer.rawData.data(), vertices.data(), shaderBuffer.rawData.size());
 
-		shaderBuffer.nelements = vertices.size();
-		glBindVertexArray(shaderBuffer.vao());
-		glBindBuffer(GL_ARRAY_BUFFER, shaderBuffer.vbo());
-		glBufferData(GL_ARRAY_BUFFER, vertices.size() * sizeof(Vertex), vertices.data(), GL_STATIC_DRAW);
-		// glBufferData(GL_ARRAY_BUFFER, shaderBuffer.rawData.size(), shaderBuffer.rawData.data(), GL_STATIC_DRAW);
-	}
+	// 	shaderBuffer.nelements = vertices.size();
+	// 	glBindVertexArray(shaderBuffer.vao());
+	// 	glBindBuffer(GL_ARRAY_BUFFER, shaderBuffer.vbo());
+	// 	glBufferData(GL_ARRAY_BUFFER, vertices.size() * sizeof(Vertex), vertices.data(), GL_STATIC_DRAW);
+	// 	// glBufferData(GL_ARRAY_BUFFER, shaderBuffer.rawData.size(), shaderBuffer.rawData.data(), GL_STATIC_DRAW);
+	// }
 
 }
 

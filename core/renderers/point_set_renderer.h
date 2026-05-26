@@ -100,7 +100,7 @@ struct PointMaterial : public Material {
 	PointSet &ps;
 	bool autoUpdate = false;
 
-
+	void updatePointSet(ShaderBuffer &shaderBuffer, PointSet &ps);
 
 	void doLoadState(json &j) override {
 		for (auto &[paramsName, params] : _params) {
