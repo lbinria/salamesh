@@ -431,6 +431,7 @@ void App::init() {
 	std::cout << "Init" << std::endl;
 
 	scene.init();
+	scene.getDefaultRenderSurface().resize(windowWidth, windowHeight);
 
 	// renderSurfaces[1]->setCamera(cameras[1]);
 
