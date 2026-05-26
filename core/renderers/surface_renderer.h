@@ -41,6 +41,7 @@ struct SurfaceMaterial : public MeshMaterial {
 		_m(*new Triangles())
 		{}
 
+	virtual bool isCompatible(Geometry &geometry) override;
 	virtual ShaderBuffer createShaderBuffer() override;
 	virtual void update(ShaderBuffer &shaderBuffer, Geometry &geometry) override;
 

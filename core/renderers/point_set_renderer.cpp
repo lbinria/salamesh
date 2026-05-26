@@ -10,6 +10,12 @@
 // Node::addShader(PointShader::createBuffer())
 // ShaderStructure::createBuffer() => ShaderBuffer{vao, vbo, shader, ShaderParams }
 
+bool PointMaterial::isCompatible(Geometry &geometry) {
+	auto trianglesGeometry = dynamic_cast<TrianglesGeometry*>(&geometry);
+	auto quadsGeometry = dynamic_cast<QuadsGeometry*>(&geometry);
+	return trianglesGeometry || quadsGeometry;
+}
+
 ShaderBuffer PointMaterial::createShaderBuffer() {
 	unsigned int vao, vbo;
 	glGenVertexArrays(1, &vao);

@@ -40,6 +40,18 @@ struct TrianglesGeometry : public Geometry {
 	Triangles _m;
 };
 
+struct QuadsGeometry : public Geometry {
+
+	// Remove copy constructors, allow moves
+	QuadsGeometry() = default;
+	QuadsGeometry(const QuadsGeometry&) = delete;
+	QuadsGeometry(QuadsGeometry&&) = default;
+	QuadsGeometry& operator=(const QuadsGeometry&) = delete;
+	QuadsGeometry& operator=(QuadsGeometry&&) = default;
+
+	Quads _m;
+};
+
 struct VolumeGeometry : public Geometry {
 	std::unique_ptr<Volume> _m;
 };

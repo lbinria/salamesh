@@ -5,6 +5,11 @@
 #include "light_params.h"
 #include "clipping_params.h"
 
+bool SurfaceMaterial::isCompatible(Geometry &geometry) {
+	auto trianglesGeometry = dynamic_cast<TrianglesGeometry*>(&geometry);
+	return trianglesGeometry;
+}
+
 ShaderBuffer SurfaceMaterial::createShaderBuffer() {
 	unsigned int vao, vbo;
 	glGenVertexArrays(1, &vao);

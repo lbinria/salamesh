@@ -40,6 +40,18 @@ struct PolyMaterial : public MeshMaterial {
 			shader.setFloat3("color", {0.71f, 0.71f, 0.71f});
 		}
 
+	PolyMaterial(std::string name) : 
+		MeshMaterial(name, Shader(sl::shadersPath("poly.vert"), sl::shadersPath("surface.frag"))),
+		_m(*new Polygons())
+		{}
+
+	virtual bool isCompatible(Geometry &geometry) override;
+	virtual ShaderBuffer createShaderBuffer() override;
+	virtual void update(ShaderBuffer &shaderBuffer, Geometry &geometry) override;
+
+	virtual unsigned int renderElement() override {
+		return GL_TRIANGLES;
+	}
 
 	void init() override;
 	void render(glm::vec3 &position) override;

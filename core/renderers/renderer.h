@@ -37,6 +37,7 @@ struct Material {
 		return x;
 	}
 
+	virtual bool isCompatible(Geometry &geometry) { return false; }
 
 	virtual ShaderBuffer createShaderBuffer() {
 		unsigned int vao, vbo;
@@ -138,7 +139,6 @@ struct Material {
 
 
 	std::map<std::string, std::shared_ptr<MaterialParams>> _params;
-
 
 	private:
 

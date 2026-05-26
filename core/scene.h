@@ -21,7 +21,8 @@
 #include "renderers/renderer_collection.h"
 
 #include "scene_node.h"
-#include "renderers/point_style_params.h" // TODO remove
+#include "renderers/point_style_params.h" // TODO remove test
+#include "model_loader.h"// TODO remove test
 
 #include <map>
 
@@ -67,6 +68,7 @@ struct Scene {
 
 		auto pointMat = std::make_unique<PointMaterial>("points");
 		auto surfaceMat = std::make_unique<TriMaterial>("tri");
+		auto polyMat = std::make_unique<PolyMaterial>("poly");
 
 		auto geo = std::make_unique<TrianglesGeometry>();
 		geo->_m.points.create_points(3);
@@ -104,10 +106,27 @@ struct Scene {
 
 		nodes.emplace("node_2", std::move(node2));
 
+		_shaders.emplace("points", std::move(pointMat));
+		_shaders.emplace("tri", std::move(surfaceMat));
+		_shaders.emplace("poly", std::move(polyMat));
 
+		loadus("assets/catorus_quad.geogram", "catorus");
+	}
 
-		materials.emplace("points", std::move(pointMat));
-		materials.emplace("tri", std::move(surfaceMat));
+	void loadus(const std::string filename, const std::string name) {
+		// SceneNode parent;
+
+		auto node = ModelLoader::load(filename);
+
+		// Put all compatible shaders on model
+		for (auto &[shaderName, shader] : _shaders) {
+			if (shader->isCompatible(node.getGeometry()))
+				node.addShader(*shader);
+		}
+
+		// node.setParent(parent);
+
+		nodes.emplace(name, std::move(node));
 	}
 
 	void render() {
@@ -130,7 +149,7 @@ struct Scene {
 		}
 
 		// Test
-		for (auto &[matName, mat] : materials) {
+		for (auto &[matName, mat] : _shaders) {
 
 			for (auto &[nodeName, node] : nodes) {
 
@@ -149,6 +168,13 @@ struct Scene {
 				glBindVertexArray(shaderBuffer.vao());
 				shaderBuffer.setPosition(node.position);
 				shaderBuffer.apply();
+
+				// Set textures
+				for (auto &tbo : shaderBuffer.tbos) {
+					glActiveTexture(GL_TEXTURE0 + tbo.texUnit);
+					glBindTexture(GL_TEXTURE_BUFFER, tbo.tex);
+					mat->getShader().setInt(tbo.name, tbo.texUnit);
+				}
 
 				glDrawArrays(mat->renderElement(), 0, shaderBuffer.nelements);
 
@@ -289,7 +315,7 @@ struct Scene {
 	RendererCollection renderers;
 
 	std::map<std::string, SceneNode> nodes;
-	std::map<std::string, std::unique_ptr<Material>> materials;
+	std::map<std::string, std::unique_ptr<Material>> _shaders;
 
 	// display color map in good format for 2D in the UI
 	std::vector<Colormap> colormaps;

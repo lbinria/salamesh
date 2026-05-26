@@ -32,6 +32,7 @@ struct PointMaterial : public Material {
 		Material(name, Shader(sl::shadersPath("point.vert"), sl::shadersPath("point.frag"))), ps(*new PointSet()) {
 		}
 
+	virtual bool isCompatible(Geometry &geometry) override;
 	virtual ShaderBuffer createShaderBuffer() override;
 	virtual void update(ShaderBuffer &shaderBuffer, Geometry &geometry) override;
 

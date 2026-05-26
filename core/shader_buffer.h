@@ -52,11 +52,19 @@ struct ShaderBuffer {
 
 
 	std::vector<unsigned char> rawData;
-	unsigned int nelements;
+	unsigned int nelements = 0;
 
 	Shader &getShader() {
 		return _shader;
 	}
+
+	struct TBO {
+		std::string name;
+		unsigned int texUnit;
+		unsigned int tex;
+	};
+
+	std::vector<TBO> tbos;
 
 	private:
 	unsigned int _vao;
