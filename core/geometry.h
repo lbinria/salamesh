@@ -6,7 +6,7 @@ using namespace UM;
 
 struct Geometry {
 
-	virtual ~Geometry() {}
+	virtual std::tuple<glm::vec3, glm::vec3> bbox() = 0;
 
 	void requestUpdate() {
 		_dirty = true;
@@ -24,10 +24,6 @@ struct Geometry {
 	bool _dirty = true;
 };
 
-struct SurfaceGeometry : public Geometry {
-	std::unique_ptr<Surface> _m;
-};
-
 struct TrianglesGeometry : public Geometry {
 
 	// Remove copy constructors, allow moves
@@ -36,6 +32,20 @@ struct TrianglesGeometry : public Geometry {
 	TrianglesGeometry(TrianglesGeometry&&) = default;
 	TrianglesGeometry& operator=(const TrianglesGeometry&) = delete;
 	TrianglesGeometry& operator=(TrianglesGeometry&&) = default;
+
+	std::tuple<glm::vec3, glm::vec3> bbox() override {
+		glm::vec3 min = glm::vec3(FLT_MAX);
+		glm::vec3 max = glm::vec3(-FLT_MAX);
+
+		for (auto &v : _m.iter_vertices()) {
+			glm::vec3 p = sl::um2glm(v);
+			min = glm::min(min, p);
+			max = glm::max(max, p);
+		}
+
+		return {min, max};
+	}
+
 
 	Triangles _m;
 };
@@ -49,11 +59,20 @@ struct QuadsGeometry : public Geometry {
 	QuadsGeometry& operator=(const QuadsGeometry&) = delete;
 	QuadsGeometry& operator=(QuadsGeometry&&) = default;
 
-	Quads _m;
-};
+	std::tuple<glm::vec3, glm::vec3> bbox() override {
+		glm::vec3 min = glm::vec3(FLT_MAX);
+		glm::vec3 max = glm::vec3(-FLT_MAX);
 
-struct VolumeGeometry : public Geometry {
-	std::unique_ptr<Volume> _m;
+		for (auto &v : _m.iter_vertices()) {
+			glm::vec3 p = sl::um2glm(v);
+			min = glm::min(min, p);
+			max = glm::max(max, p);
+		}
+
+		return {min, max};
+	}
+
+	Quads _m;
 };
 
 struct LinesGeometry : public Geometry {
@@ -71,12 +90,23 @@ struct LinesGeometry : public Geometry {
 	LinesGeometry& operator=(const LinesGeometry&) = delete;
 	LinesGeometry& operator=(LinesGeometry&&) = default;
 
+	std::tuple<glm::vec3, glm::vec3> bbox() override {
+		glm::vec3 min(FLT_MAX);
+		glm::vec3 max(-FLT_MAX);
+
+		for (auto &l : _lines) {
+			min = glm::min(glm::min(min, l.a), l.b);
+			max = glm::max(glm::max(max, l.a), l.b);
+		}
+
+		return {min, max};
+	}
+
 	void clearLines() {
 		_lines.clear();
 	}
 
 	// TODO generate guid for line
-	// TODO maybe push partially data to GPU instead of all data
 	void addLine(Line line) {
 		_lines.push_back(line);
 	}

@@ -9,8 +9,19 @@ using namespace UM;
 
 #include <map>
 
-struct SceneNode {
+struct SceneNode : std::enable_shared_from_this<SceneNode> {
 
+	std::tuple<glm::vec3, glm::vec3> bbox() {
+		auto [min, max] = _geometry->bbox();
+
+		for (auto child : _children) {
+			auto [childMin, childMax] = child->bbox();
+			min = glm::min(min, childMin);
+			max = glm::max(max, childMax);
+		}
+
+		return {min, max};
+	}
 
 	Geometry& getGeometry() {
 		return *_geometry;
@@ -18,6 +29,12 @@ struct SceneNode {
 
 	void setGeometry(std::unique_ptr<Geometry> geometry) {
 		_geometry = std::move(geometry);
+	}
+
+	template<typename TGeometry>
+	TGeometry& createGeometry() {
+		_geometry = std::make_unique<TGeometry>();
+		return *static_cast<TGeometry*>(_geometry.get());
 	}
 
 	// TODO add getShader
@@ -47,17 +64,17 @@ struct SceneNode {
 	}
 
 	std::shared_ptr<SceneNode> getParent() const {
-		return _parent;
+		return _parent.lock();
 	}
 
-	void setParent(std::shared_ptr<SceneNode> parent) {
-			_parent = parent;
+	void add(std::shared_ptr<SceneNode> child) {
+		child->_parent = shared_from_this();
+		_children.push_back(child);
 	}
-
 
 	glm::vec3 getWorldPosition() const {
-		if (_parent) {
-			return _parent->getWorldPosition() + position;
+		if (auto p = _parent.lock()) {
+			return p->getWorldPosition() + position;
 		} else {
 			return position;
 		}
@@ -67,6 +84,9 @@ struct SceneNode {
 	private:
 	std::unique_ptr<Geometry> _geometry;
 	std::map<std::string, ShaderBuffer> _shaders;
-	std::shared_ptr<SceneNode> _parent;
+
+	
+	std::weak_ptr<SceneNode> _parent;
+	std::vector<std::shared_ptr<SceneNode>> _children;
 
 };

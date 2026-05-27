@@ -81,9 +81,9 @@ struct Scene {
 		geo->_m.vert(0, 1) = 1;
 		geo->_m.vert(0, 2) = 2;
 
-		SceneNode node;
-		node.addShader(*pointMat);
-		node.setGeometry(std::move(geo));
+		auto node = std::make_shared<SceneNode>();
+		node->addShader(*pointMat);
+		node->setGeometry(std::move(geo));
 		nodes.emplace("node_1", std::move(node));
 
 		auto geo2 = std::make_unique<TrianglesGeometry>();
@@ -96,11 +96,11 @@ struct Scene {
 		geo2->_m.vert(0, 1) = 1;
 		geo2->_m.vert(0, 2) = 2;
 
-		SceneNode node2;
-		node2.addShader(*pointMat);
-		node2.addShader(*surfaceMat);
-		node2.setGeometry(std::move(geo2));
-		auto sb = node2.getShaderBuffer("points");
+		auto node2 = std::make_shared<SceneNode>();
+		node2->addShader(*pointMat);
+		node2->addShader(*surfaceMat);
+		node2->setGeometry(std::move(geo2));
+		auto sb = node2->getShaderBuffer("points");
 		auto ps = sb.value().get().getParams<PointStyleParams>("style");
 		ps->size = 10.f;
 		ps->color = {1.f, 0.4f, 0.2f};
@@ -116,31 +116,27 @@ struct Scene {
 	}
 
 	void loadus(const std::string filename, const std::string name) {
-		std::shared_ptr<SceneNode> parent;
-
 		// Mesh node
-		auto node = ModelLoader::load(filename);
+		auto node = std::make_shared<SceneNode>(ModelLoader::load(filename));
 
 		// Put all compatible shaders on model
 		for (auto &[shaderName, shader] : _shaders) {
-			if (shader->isCompatible(node.getGeometry()))
-				node.addShader(*shader);
+			if (shader->isCompatible(node->getGeometry()))
+				node->addShader(*shader);
 		}
 
-		node.setParent(parent);
-
 		// BBox
-		SceneNode bbox;
-		bbox.addShader(*_shaders.at("line_shader"));
-		bbox.setParent(parent);
-		auto lineGeo = std::make_unique<LinesGeometry>();
-		lineGeo->addLine({ .a = {0.,0.,0.}, .b = {1.,0.,0.}, .color = {1., 0., 0.}});
-		bbox.setGeometry(std::move(lineGeo));
+		auto bboxNode = std::make_shared<SceneNode>();
+		bboxNode->addShader(*_shaders.at("line_shader"));
+		
+		auto bbox = node->bbox();
+		auto &lineGeo = bboxNode->createGeometry<LinesGeometry>();
+		lineGeo.addLine({ .a = {0.,0.,0.}, .b = {1.,0.,0.}, .color = {1., 1., 1.}});
 
-		// nodes.emplace(name, std::move(*parent));
-		// nodes.emplace(name, *parent);
+		bboxNode->add(node);
+
 		nodes.emplace(name, std::move(node));
-		nodes.emplace(name + "_bbox", std::move(bbox));
+		nodes.emplace(name + "_bbox", std::move(bboxNode));
 	}
 
 	void render() {
@@ -167,20 +163,20 @@ struct Scene {
 
 			for (auto &[nodeName, node] : nodes) {
 
-				auto shaderBufferOpt = node.getShaderBuffer(*mat);
+				auto shaderBufferOpt = node->getShaderBuffer(*mat);
 
 				if (!shaderBufferOpt.has_value())
 					continue;
 
 				auto &shaderBuffer = shaderBufferOpt.value().get();
 
-				if (node.getGeometry().shouldUpdate()) {
+				if (node->getGeometry().shouldUpdate()) {
 					// Update current shader buffers for given geometry
-					mat->update(shaderBuffer, node.getGeometry());
+					mat->update(shaderBuffer, node->getGeometry());
 				}
 
 				glBindVertexArray(shaderBuffer.vao());
-				shaderBuffer.setPosition(node.getWorldPosition());
+				shaderBuffer.setPosition(node->getWorldPosition());
 				shaderBuffer.apply();
 
 				// Set textures
@@ -197,7 +193,7 @@ struct Scene {
 		}
 
 		for (auto &[nodeName, node] : nodes) {
-			node.getGeometry().updateDone();
+			node->getGeometry().updateDone();
 		}
 
 	}
@@ -328,7 +324,7 @@ struct Scene {
 
 	RendererCollection renderers;
 
-	std::map<std::string, SceneNode> nodes;
+	std::map<std::string, std::shared_ptr<SceneNode>> nodes;
 	std::map<std::string, std::unique_ptr<Material>> _shaders;
 
 	// display color map in good format for 2D in the UI
