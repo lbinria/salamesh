@@ -31,6 +31,15 @@ struct LineMaterial : public Material {
 			
 		}
 
+
+	virtual bool isCompatible(Geometry &geometry) override;
+	virtual ShaderBuffer createShaderBuffer() override;
+	virtual void update(ShaderBuffer &shaderBuffer, Geometry &geometry) override;
+	virtual unsigned int renderElement() override {
+		return GL_LINES;
+	}
+
+
 	void init() override;
 	void push() override;
 	void render(glm::vec3 &position) override;

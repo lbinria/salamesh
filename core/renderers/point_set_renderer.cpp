@@ -6,10 +6,6 @@
 #include "light_params.h"
 #include "clipping_params.h"
 
-// Node = { Mesh, ShaderBuffers }
-// Node::addShader(PointShader::createBuffer())
-// ShaderStructure::createBuffer() => ShaderBuffer{vao, vbo, shader, ShaderParams }
-
 bool PointMaterial::isCompatible(Geometry &geometry) {
 	auto trianglesGeometry = dynamic_cast<TrianglesGeometry*>(&geometry);
 	auto quadsGeometry = dynamic_cast<QuadsGeometry*>(&geometry);
@@ -61,31 +57,6 @@ void PointMaterial::update(ShaderBuffer &shaderBuffer, Geometry &geometry) {
 		updatePointSet(shaderBuffer, trianglesGeometry->_m.points);
 	else if (auto quadsGeometry = dynamic_cast<QuadsGeometry*>(&geometry))
 		updatePointSet(shaderBuffer, quadsGeometry->_m.points);
-
-	// if (trianglesGeometry) {
-	// 	auto &ps = trianglesGeometry->_m.points;
-	// 	std::vector<Vertex> vertices(ps.size());
-	// 	for (int i = 0; i < ps.size(); ++i) {
-	// 		auto &v = ps[i];
-
-	// 		vertices[i] = { 
-	// 			.vertexIndex = i,
-	// 			.position = glm::vec3(v.x, v.y, v.z),
-	// 			.size = 1.f
-	// 		};
-	// 	}
-
-	// 	// shaderBuffer.rawData.clear();
-	// 	// shaderBuffer.rawData.resize(vertices.size() * sizeof(Vertex));
-	// 	// std::memcpy(shaderBuffer.rawData.data(), vertices.data(), shaderBuffer.rawData.size());
-
-	// 	shaderBuffer.nelements = vertices.size();
-	// 	glBindVertexArray(shaderBuffer.vao());
-	// 	glBindBuffer(GL_ARRAY_BUFFER, shaderBuffer.vbo());
-	// 	glBufferData(GL_ARRAY_BUFFER, vertices.size() * sizeof(Vertex), vertices.data(), GL_STATIC_DRAW);
-	// 	// glBufferData(GL_ARRAY_BUFFER, shaderBuffer.rawData.size(), shaderBuffer.rawData.data(), GL_STATIC_DRAW);
-	// }
-
 }
 
 void PointMaterial::init() {

@@ -69,6 +69,7 @@ struct Scene {
 		auto pointMat = std::make_unique<PointMaterial>("points");
 		auto surfaceMat = std::make_unique<TriMaterial>("tri");
 		auto polyMat = std::make_unique<PolyMaterial>("poly");
+		auto lineShader = std::make_unique<LineMaterial>("line_shader");
 
 		auto geo = std::make_unique<TrianglesGeometry>();
 		geo->_m.points.create_points(3);
@@ -109,13 +110,15 @@ struct Scene {
 		_shaders.emplace("points", std::move(pointMat));
 		_shaders.emplace("tri", std::move(surfaceMat));
 		_shaders.emplace("poly", std::move(polyMat));
+		_shaders.emplace("line_shader", std::move(lineShader));
 
 		loadus("assets/catorus_quad.geogram", "catorus");
 	}
 
 	void loadus(const std::string filename, const std::string name) {
-		// SceneNode parent;
+		std::shared_ptr<SceneNode> parent;
 
+		// Mesh node
 		auto node = ModelLoader::load(filename);
 
 		// Put all compatible shaders on model
@@ -124,9 +127,20 @@ struct Scene {
 				node.addShader(*shader);
 		}
 
-		// node.setParent(parent);
+		node.setParent(parent);
 
+		// BBox
+		SceneNode bbox;
+		bbox.addShader(*_shaders.at("line_shader"));
+		bbox.setParent(parent);
+		auto lineGeo = std::make_unique<LinesGeometry>();
+		lineGeo->addLine({ .a = {0.,0.,0.}, .b = {1.,0.,0.}, .color = {1., 0., 0.}});
+		bbox.setGeometry(std::move(lineGeo));
+
+		// nodes.emplace(name, std::move(*parent));
+		// nodes.emplace(name, *parent);
 		nodes.emplace(name, std::move(node));
+		nodes.emplace(name + "_bbox", std::move(bbox));
 	}
 
 	void render() {
@@ -166,7 +180,7 @@ struct Scene {
 				}
 
 				glBindVertexArray(shaderBuffer.vao());
-				shaderBuffer.setPosition(node.position);
+				shaderBuffer.setPosition(node.getWorldPosition());
 				shaderBuffer.apply();
 
 				// Set textures

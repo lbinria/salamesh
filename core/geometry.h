@@ -55,3 +55,42 @@ struct QuadsGeometry : public Geometry {
 struct VolumeGeometry : public Geometry {
 	std::unique_ptr<Volume> _m;
 };
+
+struct LinesGeometry : public Geometry {
+
+	struct Line {
+		glm::vec3 a;
+		glm::vec3 b;
+		glm::vec3 color;
+	};
+
+	// Remove copy constructors, allow moves
+	LinesGeometry() = default;
+	LinesGeometry(const LinesGeometry&) = delete;
+	LinesGeometry(LinesGeometry&&) = default;
+	LinesGeometry& operator=(const LinesGeometry&) = delete;
+	LinesGeometry& operator=(LinesGeometry&&) = default;
+
+	void clearLines() {
+		_lines.clear();
+	}
+
+	// TODO generate guid for line
+	// TODO maybe push partially data to GPU instead of all data
+	void addLine(Line line) {
+		_lines.push_back(line);
+	}
+
+	void addLines(std::vector<Line> allLines) {
+		_lines.insert(_lines.end(), allLines.begin(), allLines.end());
+	}
+
+	const std::vector<Line> getLines() const {
+		return _lines;
+	}
+
+	private:
+
+	std::vector<Line> _lines;
+
+};

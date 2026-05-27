@@ -40,6 +40,9 @@ struct ModelLoader {
 		if (!success)
 			success = loadQuads(filename, node);
 
+		// Compute bbox
+		
+
 		return node;
 	}
 
