@@ -48,16 +48,19 @@ ShaderBuffer PolyMaterial::createShaderBuffer() {
 bool PolyMaterial::isCompatible(Geometry &geometry) {
 	// Accept QuadsGeometry / PolyGeometry
 	auto quadsGeometry = dynamic_cast<QuadsGeometry*>(&geometry);
-	// auto polyGeometry = dynamic_cast<PolyGeometry*>(&geometry);
-	return quadsGeometry;
+	auto polygonsGeometry = dynamic_cast<PolygonsGeometry*>(&geometry);
+	return quadsGeometry || polygonsGeometry;
 }
 
 void PolyMaterial::update(ShaderBuffer &shaderBuffer, Geometry &geometry) {
 	auto quadsGeometry = dynamic_cast<QuadsGeometry*>(&geometry);
+	auto polygonsGeometry = dynamic_cast<PolygonsGeometry*>(&geometry);
 
-	if (quadsGeometry) {
+	if (quadsGeometry || polygonsGeometry) {
 
-		auto &m = quadsGeometry->_m;
+		Surface& m = quadsGeometry ? static_cast<Surface&>(quadsGeometry->_m) : polygonsGeometry->_m;
+
+		// auto &m = quadsGeometry->_m;
 		std::vector<float> nVertsPerFacet(m.nfacets());
 
 		// Compute number of triangles needed to represent a facet

@@ -9,7 +9,8 @@
 bool PointMaterial::isCompatible(Geometry &geometry) {
 	auto trianglesGeometry = dynamic_cast<TrianglesGeometry*>(&geometry);
 	auto quadsGeometry = dynamic_cast<QuadsGeometry*>(&geometry);
-	return trianglesGeometry || quadsGeometry;
+	auto polygonsGeometry = dynamic_cast<PolygonsGeometry*>(&geometry);
+	return trianglesGeometry || quadsGeometry || polygonsGeometry;
 }
 
 ShaderBuffer PointMaterial::createShaderBuffer() {
@@ -57,6 +58,8 @@ void PointMaterial::update(ShaderBuffer &shaderBuffer, Geometry &geometry) {
 		updatePointSet(shaderBuffer, trianglesGeometry->_m.points);
 	else if (auto quadsGeometry = dynamic_cast<QuadsGeometry*>(&geometry))
 		updatePointSet(shaderBuffer, quadsGeometry->_m.points);
+	else if (auto polygonsGeometry = dynamic_cast<PolygonsGeometry*>(&geometry))
+		updatePointSet(shaderBuffer, polygonsGeometry->_m.points);
 }
 
 void PointMaterial::init() {

@@ -75,6 +75,56 @@ struct QuadsGeometry : public Geometry {
 	Quads _m;
 };
 
+struct PolygonsGeometry : public Geometry {
+
+	// Remove copy constructors, allow moves
+	PolygonsGeometry() = default;
+	PolygonsGeometry(const PolygonsGeometry&) = delete;
+	PolygonsGeometry(PolygonsGeometry&&) = default;
+	PolygonsGeometry& operator=(const PolygonsGeometry&) = delete;
+	PolygonsGeometry& operator=(PolygonsGeometry&&) = default;
+
+	std::tuple<glm::vec3, glm::vec3> bbox() override {
+		glm::vec3 min = glm::vec3(FLT_MAX);
+		glm::vec3 max = glm::vec3(-FLT_MAX);
+
+		for (auto &v : _m.iter_vertices()) {
+			glm::vec3 p = sl::um2glm(v);
+			min = glm::min(min, p);
+			max = glm::max(max, p);
+		}
+
+		return {min, max};
+	}
+
+	Polygons _m;
+};
+
+struct PolyLineGeometry : public Geometry {
+
+	// Remove copy constructors, allow moves
+	PolyLineGeometry() = default;
+	PolyLineGeometry(const PolyLineGeometry&) = delete;
+	PolyLineGeometry(PolyLineGeometry&&) = default;
+	PolyLineGeometry& operator=(const PolyLineGeometry&) = delete;
+	PolyLineGeometry& operator=(PolyLineGeometry&&) = default;
+
+	std::tuple<glm::vec3, glm::vec3> bbox() override {
+		glm::vec3 min = glm::vec3(FLT_MAX);
+		glm::vec3 max = glm::vec3(-FLT_MAX);
+
+		for (auto &v : _m.iter_vertices()) {
+			glm::vec3 p = sl::um2glm(v);
+			min = glm::min(min, p);
+			max = glm::max(max, p);
+		}
+
+		return {min, max};
+	}
+
+	PolyLine _m;
+};
+
 struct LinesGeometry : public Geometry {
 
 	struct Line {

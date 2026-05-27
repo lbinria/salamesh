@@ -112,10 +112,11 @@ struct Scene {
 		_shaders.emplace("poly", std::move(polyMat));
 		_shaders.emplace("line_shader", std::move(lineShader));
 
-		loadus("assets/catorus_quad.geogram", "catorus");
+		// loadModel2("assets/catorus_quad.geogram", "catorus");
+		loadModel2("assets/simple_poly.geogram", "catorus");
 	}
 
-	void loadus(const std::string filename, const std::string name) {
+	void loadModel2(const std::string filename, const std::string name) {
 		// Mesh node
 		auto node = std::make_shared<SceneNode>(ModelLoader::load(filename));
 
@@ -125,18 +126,19 @@ struct Scene {
 				node->addShader(*shader);
 		}
 
-		// BBox
-		auto bboxNode = std::make_shared<SceneNode>();
-		bboxNode->addShader(*_shaders.at("line_shader"));
-		
-		auto bbox = node->bbox();
-		auto &lineGeo = bboxNode->createGeometry<LinesGeometry>();
-		lineGeo.addLine({ .a = {0.,0.,0.}, .b = {1.,0.,0.}, .color = {1., 1., 1.}});
-
-		bboxNode->add(node);
-
 		nodes.emplace(name, std::move(node));
-		nodes.emplace(name + "_bbox", std::move(bboxNode));
+
+		// // BBox
+		// auto bboxNode = std::make_shared<SceneNode>();
+		// bboxNode->addShader(*_shaders.at("line_shader"));
+		
+		// auto bbox = node->bbox();
+		// auto &lineGeo = bboxNode->createGeometry<LinesGeometry>();
+		// lineGeo.addLine({ .a = {0.,0.,0.}, .b = {1.,0.,0.}, .color = {1., 1., 1.}});
+
+		// node->add(bboxNode);
+		// nodes.emplace(name + "_bbox", std::move(bboxNode));
+
 	}
 
 	void render() {
@@ -159,11 +161,11 @@ struct Scene {
 		}
 
 		// Test
-		for (auto &[matName, mat] : _shaders) {
+		for (auto &[shaderName, shader] : _shaders) {
 
 			for (auto &[nodeName, node] : nodes) {
 
-				auto shaderBufferOpt = node->getShaderBuffer(*mat);
+				auto shaderBufferOpt = node->getShaderBuffer(*shader);
 
 				if (!shaderBufferOpt.has_value())
 					continue;
@@ -172,7 +174,7 @@ struct Scene {
 
 				if (node->getGeometry().shouldUpdate()) {
 					// Update current shader buffers for given geometry
-					mat->update(shaderBuffer, node->getGeometry());
+					shader->update(shaderBuffer, node->getGeometry());
 				}
 
 				glBindVertexArray(shaderBuffer.vao());
@@ -183,10 +185,10 @@ struct Scene {
 				for (auto &tbo : shaderBuffer.tbos) {
 					glActiveTexture(GL_TEXTURE0 + tbo.texUnit);
 					glBindTexture(GL_TEXTURE_BUFFER, tbo.tex);
-					mat->getShader().setInt(tbo.name, tbo.texUnit);
+					shader->getShader().setInt(tbo.name, tbo.texUnit);
 				}
 
-				glDrawArrays(mat->renderElement(), 0, shaderBuffer.nelements);
+				glDrawArrays(shader->renderElement(), 0, shaderBuffer.nelements);
 
 			}
 

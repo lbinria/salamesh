@@ -33,15 +33,43 @@ struct ModelLoader {
 		return true;
 	}
 
+	static bool loadPolygons(const std::string &filename, SceneNode &node) {
+		auto geometry = std::make_unique<PolygonsGeometry>();
+
+		SurfaceAttributes attr = read_by_extension(filename, geometry->_m);
+		if (geometry->_m.nfacets() <= 0)
+			return false;
+
+		node.setGeometry(std::move(geometry));
+
+		return true;
+	}
+
+	static bool loadPolyLine(const std::string &filename, SceneNode &node) {
+		auto geometry = std::make_unique<PolyLineGeometry>();
+
+		EdgeAttribute attr = read_by_extension(filename, geometry->_m);
+		if (geometry->_m.nedges() <= 0)
+			return false;
+
+		node.setGeometry(std::move(geometry));
+
+		return true;
+	}
+
 	static SceneNode load(const std::string filename) {
 		SceneNode node;
 
 		bool success = loadTriangles(filename, node);
+		
 		if (!success)
 			success = loadQuads(filename, node);
 
-		// Compute bbox
+		if (!success)
+			success = loadPolygons(filename, node);
 		
+		if (!success)
+			success = loadPolyLine(filename, node);
 
 		return node;
 	}

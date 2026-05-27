@@ -1,5 +1,6 @@
 #pragma once
 #include "material_params.h"
+#include "../data/colormap.h"
 #include "../data/layer.h"
 #include "../utils/opengl_helper.h"
 
@@ -46,14 +47,14 @@ struct LayersParams : MaterialParams {
 		shader.setInt("colormap1Buf", 6);
 		shader.setInt("colormap2Buf", 7);
 
-		// glActiveTexture(GL_TEXTURE0 + 0);
-		// glBindTexture(GL_TEXTURE_2D, texColormap0);
+		glActiveTexture(GL_TEXTURE0 + 0);
+		glBindTexture(GL_TEXTURE_2D, texColormaps[0]);
 
-		// glActiveTexture(GL_TEXTURE0 + 1);
-		// glBindTexture(GL_TEXTURE_2D, texColormap1);
+		glActiveTexture(GL_TEXTURE0 + 1);
+		glBindTexture(GL_TEXTURE_2D, texColormaps[1]);
 
-		// glActiveTexture(GL_TEXTURE0 + 2);
-		// glBindTexture(GL_TEXTURE_2D, texColormap2);
+		glActiveTexture(GL_TEXTURE0 + 2);
+		glBindTexture(GL_TEXTURE_2D, texColormaps[2]);
 
 		glActiveTexture(GL_TEXTURE0 + 3);
 		glBindTexture(GL_TEXTURE_BUFFER, tboHighlight);
@@ -159,6 +160,10 @@ struct LayersParams : MaterialParams {
 		}
 	}
 
+	void setColormapTexture(int i, Colormap &colormap) {
+		texColormaps[i] = colormap.tex;
+	}
+
 	void loadState(json &j) {
 
 		for (int i = 0; i < 5; ++i) {
@@ -190,6 +195,7 @@ struct LayersParams : MaterialParams {
 	glm::vec3 selectColor{0.f, 0.22f, 1.f};
 
 	private:
+	unsigned int texColormaps[3]; // Colormap textures
 	unsigned int bufColormap0, bufColormap1, bufColormap2, bufHighlight, bufFilter; // Sample buffers
 	unsigned int tboColormap0, tboColormap1, tboColormap2, tboHighlight, tboFilter; // Textures
 };
