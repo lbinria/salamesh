@@ -3,6 +3,90 @@
 
 #include "utils/opengl_helper.h"
 
+void Scene::init() {
+	// Register model types
+	models.getInstanciator().registerType("TriModel", [](std::string name) { return std::make_unique<TriModel>(name); });
+	models.getInstanciator().registerType("QuadModel", [](std::string name) { return std::make_unique<QuadModel>(name); });
+	models.getInstanciator().registerType("PolyModel", [](std::string name) { return std::make_unique<PolyModel>(name); });
+	models.getInstanciator().registerType("TetModel", [](std::string name) { return std::make_unique<TetModel>(name); });
+	models.getInstanciator().registerType("HexModel", [](std::string name) { return std::make_unique<HexModel>(name); });
+	models.getInstanciator().registerType("PolylineModel", [](std::string name) { return std::make_unique<PolylineModel>(name); });
+	// models.getInstanciator().registerType("PyramidModel", [](std::string name) { return std::make_unique<PyramidModel>(name); });
+	// models.getInstanciator().registerType("PrismModel", [](std::string name) { return std::make_unique<PrismModel>(name); });
+
+	// Register cameras types
+	cameras.getInstanciator().registerType("DescentCamera", [](std::string name) { return std::make_unique<DescentCamera>(name); });
+	cameras.getInstanciator().registerType("TrackBallCamera", [](std::string name) { return std::make_unique<TrackBallCamera>(name); });
+
+	// Register renderers types
+	renderers.getInstanciator().registerType("LineMaterial", [](std::string name) { return std::make_unique<LineMaterial>(name); });
+	renderers.getInstanciator().registerType("PointMaterial", [](std::string name) { return std::make_unique<PointMaterial>(name); });
+
+	// Init default render surface
+	auto renderSurface = std::make_shared<RenderSurface>(1024, 768);
+	renderSurface->setBackgroundColor({0.05, 0.1, 0.15});
+	renderSurface->setup(); 
+	renderSurfaces["default"] = std::move(renderSurface);
+
+	setupCameras();
+
+	getDefaultRenderSurface().setCamera(cameras["default"]);
+
+
+	// Test
+	cameras["default"]->lookAtBox({{-1,-1,-1}, {1,1,1}});
+
+	auto pointMat = std::make_unique<PointMaterial>("points");
+	auto surfaceMat = std::make_unique<TriMaterial>("tri");
+	auto polyMat = std::make_unique<PolyMaterial>("poly");
+	auto lineShader = std::make_unique<LineMaterial>("line_shader");
+
+	auto geo = std::make_unique<TrianglesGeometry>();
+	geo->_m.points.create_points(3);
+	geo->_m.create_facets(1);
+	geo->_m.points[0] = {0.,0.,0.};
+	geo->_m.points[1] = {1.,0.,0.};
+	geo->_m.points[2] = {0.5,0.5,0.};
+	geo->_m.vert(0, 0) = 0;
+	geo->_m.vert(0, 1) = 1;
+	geo->_m.vert(0, 2) = 2;
+
+	auto node = std::make_shared<SceneNode>();
+	node->addShader(*pointMat);
+	node->setGeometry(std::move(geo));
+	_nodes.emplace("node_1", std::move(node));
+
+	auto geo2 = std::make_unique<TrianglesGeometry>();
+	geo2->_m.points.create_points(3);
+	geo2->_m.create_facets(1);
+	geo2->_m.points[0] = {0.2,0.,0.};
+	geo2->_m.points[1] = {0.8,0.,0.};
+	geo2->_m.points[2] = {0.3,0.2,0.};
+	geo2->_m.vert(0, 0) = 0;
+	geo2->_m.vert(0, 1) = 1;
+	geo2->_m.vert(0, 2) = 2;
+
+	auto node2 = std::make_shared<SceneNode>();
+	node2->addShader(*pointMat);
+	node2->addShader(*surfaceMat);
+	node2->setGeometry(std::move(geo2));
+	auto sb = node2->getShaderBuffer("points");
+	auto ps = sb.value().get().getParams<PointStyleParams>("style");
+	ps->size = 10.f;
+	ps->color = {1.f, 0.4f, 0.2f};
+
+	_nodes.emplace("node_2", std::move(node2));
+
+	_shaders.emplace("points", std::move(pointMat));
+	_shaders.emplace("tri", std::move(surfaceMat));
+	_shaders.emplace("poly", std::move(polyMat));
+	_shaders.emplace("line_shader", std::move(lineShader));
+
+	loadModel2("assets/catorus_tri.geogram", "catorus");
+	// loadModel2("assets/catorus_quad.geogram", "catorus");
+	// loadModel2("assets/simple_poly.geogram", "catorus");
+}
+
 std::shared_ptr<Model> Scene::loadModel(const std::string& filename, std::string name) {
 
 	auto begin = std::chrono::steady_clock::now();
@@ -87,10 +171,55 @@ std::shared_ptr<Model> Scene::loadModel(const std::string& filename, std::string
 	return models[modelName];
 }
 
+std::shared_ptr<SceneNode> Scene::loadModel2(const std::string filename, const std::string name) {
+
+	std::string nodeName = name.empty() ? 
+		std::filesystem::path(filename).stem().string() + std::to_string(models.count()) : 
+		name;
+		
+	// Mesh node
+	auto node = std::make_shared<SceneNode>(ModelLoader::load(filename));
+
+	// Put all compatible shaders on model
+	for (auto &[shaderName, shader] : _shaders) {
+		if (shader->isCompatible(node->getGeometry()))
+			node->addShader(*shader);
+	}
+
+	// node->getShaderBuffer("points").value().get().getParams("light")->set("enabled", false);
+
+	_nodes.emplace(nodeName, std::move(node));
+
+	// // BBox
+	// auto bboxNode = std::make_shared<SceneNode>();
+	// bboxNode->addShader(*_shaders.at("line_shader"));
+	
+	// auto bbox = node->bbox();
+	// auto &lineGeo = bboxNode->createGeometry<LinesGeometry>();
+	// lineGeo.addLine({ .a = {0.,0.,0.}, .b = {1.,0.,0.}, .color = {1., 1., 1.}});
+
+	// node->add(bboxNode);
+	// _nodes.emplace(name + "_bbox", std::move(bboxNode));
+
+	// A model was loaded ? focus it !
+	if (!nodeName.empty())
+		focus2(nodeName);
+
+	return _nodes.at(nodeName);
+}
+
 void Scene::focus(std::string modelName) {
 	setSelectedModel(modelName);
 	auto &model = models[modelName];
 	getCurrentCamera().lookAtBox(model->bbox());
+}
+
+void Scene::focus2(const std::string nodeName) {
+	if (!selectNode(nodeName))
+		return;
+	
+	auto bbox = _nodes.at(nodeName)->bbox();
+	getCurrentCamera().lookAtBox(bbox);
 }
 
 std::tuple<glm::vec3, glm::vec3> Scene::computeSceneBBox() {

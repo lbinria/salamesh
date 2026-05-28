@@ -33,113 +33,8 @@ struct Scene {
 	Scene(IApp &app) : app(app) {}
 
 
-	void init() {
-		// Register model types
-		models.getInstanciator().registerType("TriModel", [](std::string name) { return std::make_unique<TriModel>(name); });
-		models.getInstanciator().registerType("QuadModel", [](std::string name) { return std::make_unique<QuadModel>(name); });
-		models.getInstanciator().registerType("PolyModel", [](std::string name) { return std::make_unique<PolyModel>(name); });
-		models.getInstanciator().registerType("TetModel", [](std::string name) { return std::make_unique<TetModel>(name); });
-		models.getInstanciator().registerType("HexModel", [](std::string name) { return std::make_unique<HexModel>(name); });
-		models.getInstanciator().registerType("PolylineModel", [](std::string name) { return std::make_unique<PolylineModel>(name); });
-		// models.getInstanciator().registerType("PyramidModel", [](std::string name) { return std::make_unique<PyramidModel>(name); });
-		// models.getInstanciator().registerType("PrismModel", [](std::string name) { return std::make_unique<PrismModel>(name); });
-
-		// Register cameras types
-		cameras.getInstanciator().registerType("DescentCamera", [](std::string name) { return std::make_unique<DescentCamera>(name); });
-		cameras.getInstanciator().registerType("TrackBallCamera", [](std::string name) { return std::make_unique<TrackBallCamera>(name); });
-
-		// Register renderers types
-		renderers.getInstanciator().registerType("LineMaterial", [](std::string name) { return std::make_unique<LineMaterial>(name); });
-		renderers.getInstanciator().registerType("PointMaterial", [](std::string name) { return std::make_unique<PointMaterial>(name); });
-
-		// Init default render surface
-		auto renderSurface = std::make_shared<RenderSurface>(1024, 768);
-		renderSurface->setBackgroundColor({0.05, 0.1, 0.15});
-		renderSurface->setup(); 
-		renderSurfaces["default"] = std::move(renderSurface);
-
-		setupCameras();
-
-		getDefaultRenderSurface().setCamera(cameras["default"]);
-
-
-		// Test
-		cameras["default"]->lookAtBox({{-1,-1,-1}, {1,1,1}});
-
-		auto pointMat = std::make_unique<PointMaterial>("points");
-		auto surfaceMat = std::make_unique<TriMaterial>("tri");
-		auto polyMat = std::make_unique<PolyMaterial>("poly");
-		auto lineShader = std::make_unique<LineMaterial>("line_shader");
-
-		auto geo = std::make_unique<TrianglesGeometry>();
-		geo->_m.points.create_points(3);
-		geo->_m.create_facets(1);
-		geo->_m.points[0] = {0.,0.,0.};
-		geo->_m.points[1] = {1.,0.,0.};
-		geo->_m.points[2] = {0.5,0.5,0.};
-		geo->_m.vert(0, 0) = 0;
-		geo->_m.vert(0, 1) = 1;
-		geo->_m.vert(0, 2) = 2;
-
-		auto node = std::make_shared<SceneNode>();
-		node->addShader(*pointMat);
-		node->setGeometry(std::move(geo));
-		nodes.emplace("node_1", std::move(node));
-
-		auto geo2 = std::make_unique<TrianglesGeometry>();
-		geo2->_m.points.create_points(3);
-		geo2->_m.create_facets(1);
-		geo2->_m.points[0] = {0.2,0.,0.};
-		geo2->_m.points[1] = {0.8,0.,0.};
-		geo2->_m.points[2] = {0.3,0.2,0.};
-		geo2->_m.vert(0, 0) = 0;
-		geo2->_m.vert(0, 1) = 1;
-		geo2->_m.vert(0, 2) = 2;
-
-		auto node2 = std::make_shared<SceneNode>();
-		node2->addShader(*pointMat);
-		node2->addShader(*surfaceMat);
-		node2->setGeometry(std::move(geo2));
-		auto sb = node2->getShaderBuffer("points");
-		auto ps = sb.value().get().getParams<PointStyleParams>("style");
-		ps->size = 10.f;
-		ps->color = {1.f, 0.4f, 0.2f};
-
-		nodes.emplace("node_2", std::move(node2));
-
-		_shaders.emplace("points", std::move(pointMat));
-		_shaders.emplace("tri", std::move(surfaceMat));
-		_shaders.emplace("poly", std::move(polyMat));
-		_shaders.emplace("line_shader", std::move(lineShader));
-
-		// loadModel2("assets/catorus_quad.geogram", "catorus");
-		loadModel2("assets/simple_poly.geogram", "catorus");
-	}
-
-	void loadModel2(const std::string filename, const std::string name) {
-		// Mesh node
-		auto node = std::make_shared<SceneNode>(ModelLoader::load(filename));
-
-		// Put all compatible shaders on model
-		for (auto &[shaderName, shader] : _shaders) {
-			if (shader->isCompatible(node->getGeometry()))
-				node->addShader(*shader);
-		}
-
-		nodes.emplace(name, std::move(node));
-
-		// // BBox
-		// auto bboxNode = std::make_shared<SceneNode>();
-		// bboxNode->addShader(*_shaders.at("line_shader"));
-		
-		// auto bbox = node->bbox();
-		// auto &lineGeo = bboxNode->createGeometry<LinesGeometry>();
-		// lineGeo.addLine({ .a = {0.,0.,0.}, .b = {1.,0.,0.}, .color = {1., 1., 1.}});
-
-		// node->add(bboxNode);
-		// nodes.emplace(name + "_bbox", std::move(bboxNode));
-
-	}
+	void init();
+	std::shared_ptr<SceneNode> loadModel2(const std::string filename, const std::string name);
 
 	void render() {
 		for (auto &[k, r] : renderers) {
@@ -163,7 +58,7 @@ struct Scene {
 		// Test
 		for (auto &[shaderName, shader] : _shaders) {
 
-			for (auto &[nodeName, node] : nodes) {
+			for (auto &[nodeName, node] : _nodes) {
 
 				auto shaderBufferOpt = node->getShaderBuffer(*shader);
 
@@ -194,7 +89,7 @@ struct Scene {
 
 		}
 
-		for (auto &[nodeName, node] : nodes) {
+		for (auto &[nodeName, node] : _nodes) {
 			node->getGeometry().updateDone();
 		}
 
@@ -250,7 +145,28 @@ struct Scene {
 		return true;
 	}
 
+	bool selectNode(std::string name) {
+		if (name.empty())
+			return false;
+
+		if (!_nodes.contains(name)) {
+			std::cerr << "Invalid model selection: " << name << std::endl;
+			return false;
+		}
+
+		auto oldSelection = selectedNode;
+		selectedNode = name;
+		// TODO important reactivate this !
+		// notifySelectedModelChanged(oldSelection, name);
+		return true;
+	}
+
+	const std::string getSelectedNodeName() {
+		return selectedNode;
+	}
+
 	void focus(std::string modelName);
+	void focus2(std::string nodeName);
 
 
 	inline Model& getCurrentModel() {
@@ -315,8 +231,28 @@ struct Scene {
 	RenderSurface& getDefaultRenderSurface() { return *renderSurfaces["default"]; }
 	std::map<std::string, std::shared_ptr<RenderSurface>>& getRenderSurfaces() { return renderSurfaces; }
 
+	const std::map<std::string, std::shared_ptr<SceneNode>>& getNodes() const {
+		return _nodes;
+	}
+
+	std::shared_ptr<SceneNode> getNodeById(const std::string id) {
+		return _nodes.contains(id) ? _nodes.at(id) : nullptr;
+	}
+
+	const std::vector<std::shared_ptr<SceneNode>> getNodesByName(const std::string name) {
+		std::vector<std::shared_ptr<SceneNode>> results;
+		for (auto &[_, node] : _nodes) {
+			if (node->getName() == name)
+				results.push_back(node);
+		}
+		return results;
+	}
+
+
 	private:
 	IApp &app;
+
+	std::string selectedNode = "";
 
 	std::string selectedModel = "";
 	ModelCollection models;
@@ -326,7 +262,7 @@ struct Scene {
 
 	RendererCollection renderers;
 
-	std::map<std::string, std::shared_ptr<SceneNode>> nodes;
+	std::map<std::string, std::shared_ptr<SceneNode>> _nodes;
 	std::map<std::string, std::unique_ptr<Material>> _shaders;
 
 	// display color map in good format for 2D in the UI

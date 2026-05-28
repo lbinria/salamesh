@@ -1,4 +1,5 @@
 #pragma once
+#include "helpers.h"
 #include "shader.h"
 #include "geometry.h"
 #include "shader_buffer.h"
@@ -10,6 +11,14 @@ using namespace UM;
 #include <map>
 
 struct SceneNode : std::enable_shared_from_this<SceneNode> {
+
+	SceneNode() :  
+	 _id(sl::generateGuid()),
+	_name(_id) {}
+
+	SceneNode(std::string name) :  
+	 _id(sl::generateGuid()),
+	_name(name) {}
 
 	std::tuple<glm::vec3, glm::vec3> bbox() {
 		auto [min, max] = _geometry->bbox();
@@ -37,8 +46,6 @@ struct SceneNode : std::enable_shared_from_this<SceneNode> {
 		return *static_cast<TGeometry*>(_geometry.get());
 	}
 
-	// TODO add getShader
-
 	bool addShader(Material &material) {
 		if (_shaders.contains(material.getName()))
 			return false;
@@ -46,6 +53,10 @@ struct SceneNode : std::enable_shared_from_this<SceneNode> {
 		auto shaderBuffer = material.createShaderBuffer();
 		_shaders.emplace(material.getName(), std::move(shaderBuffer));
 		return true;
+	}
+
+	bool hasShader(const std::string name) {
+		return _shaders.contains(name);
 	}
 
 	std::map<std::string, ShaderBuffer>& getShaderBuffers() {
@@ -80,12 +91,23 @@ struct SceneNode : std::enable_shared_from_this<SceneNode> {
 		}
 	}
 
+	const std::string getName() const {
+		return _name;
+	}
+
+	const std::string getId() const {
+		return _id;
+	}
+
 	glm::vec3 position{0,0,0};
+
 	private:
+	std::string _id;
+	std::string _name;
+
 	std::unique_ptr<Geometry> _geometry;
 	std::map<std::string, ShaderBuffer> _shaders;
 
-	
 	std::weak_ptr<SceneNode> _parent;
 	std::vector<std::shared_ptr<SceneNode>> _children;
 

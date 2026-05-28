@@ -8,6 +8,16 @@ struct Geometry {
 
 	virtual std::tuple<glm::vec3, glm::vec3> bbox() = 0;
 
+	glm::vec3 getCenter() {
+		auto [bmin, bmax] = bbox();
+		return (bmin + bmax) / 2.f;
+	}
+
+	double getRadius() {
+		auto [bmin, bmax] = bbox();
+		return glm::length(bmax - bmin) / 2.f;
+	}
+
 	void requestUpdate() {
 		_dirty = true;
 	}
@@ -22,6 +32,63 @@ struct Geometry {
 
 	private:
 	bool _dirty = true;
+};
+
+struct MeshGeometry : public Geometry {
+	virtual int nverts() const = 0; 
+	virtual int nfacets() const = 0; 
+	virtual int ncells() const = 0; 
+	virtual int ncorners() const = 0; 
+	virtual int nhalfedges() const = 0;
+
+
+	std::vector<Attribute> getAttributes() {
+		
+		std::vector<Attribute> attributes;
+		for (auto &[kind, c] : getAttributeContainers()) {
+			auto attrs = getAttibutesFromContainer(kind, c);
+			for (auto a : attrs) {
+				attributes.push_back(a);
+			}
+		}
+		return attributes;
+
+	}
+
+
+	protected:
+
+	virtual std::vector<std::pair<ElementKind, NamedContainer>> getAttributeContainers() const = 0;
+
+	std::vector<Attribute> getAttibutesFromContainer(ElementKind kind, NamedContainer &container) {
+		std::vector<Attribute> attributes;
+		
+		// Get the type of the container
+		ElementType type = ElementType::DOUBLE_ELT; // Default type
+		if (auto a = dynamic_cast<AttributeContainer<double>*>(container.ptr.get())) {
+			type = ElementType::DOUBLE_ELT;
+		} else if (auto a = dynamic_cast<AttributeContainer<int>*>(container.ptr.get())) {
+			type = ElementType::INT_ELT;
+		} else if (auto a = dynamic_cast<AttributeContainer<bool>*>(container.ptr.get())) {
+			type = ElementType::BOOL_ELT;
+		} else if (auto a = dynamic_cast<AttributeContainer<vec2>*>(container.ptr.get())) {
+			type = ElementType::VEC2_ELT;
+			attributes.emplace_back(container.name + "[0]", kind, ElementType::DOUBLE_ELT, container.ptr, true);
+			attributes.emplace_back(container.name + "[1]", kind, ElementType::DOUBLE_ELT, container.ptr, true);
+		} else if (auto a = dynamic_cast<AttributeContainer<vec3>*>(container.ptr.get())) {
+			type = ElementType::VEC3_ELT;
+			attributes.emplace_back(container.name + "[0]", kind, ElementType::DOUBLE_ELT, container.ptr, true);
+			attributes.emplace_back(container.name + "[1]", kind, ElementType::DOUBLE_ELT, container.ptr, true);
+			attributes.emplace_back(container.name + "[2]", kind, ElementType::DOUBLE_ELT, container.ptr, true);
+		} else {
+			throw std::runtime_error("Unknown attribute type for container: " + container.name);
+		}
+
+		attributes.emplace_back(container.name, kind, type, container.ptr, false);
+
+		return attributes;
+	}
+
 };
 
 struct TrianglesGeometry : public Geometry {
@@ -46,7 +113,7 @@ struct TrianglesGeometry : public Geometry {
 		return {min, max};
 	}
 
-
+	SurfaceAttributes _attributes;
 	Triangles _m;
 };
 
@@ -71,7 +138,8 @@ struct QuadsGeometry : public Geometry {
 
 		return {min, max};
 	}
-
+	
+	SurfaceAttributes _attributes;
 	Quads _m;
 };
 
@@ -97,10 +165,11 @@ struct PolygonsGeometry : public Geometry {
 		return {min, max};
 	}
 
+	SurfaceAttributes _attributes;
 	Polygons _m;
 };
 
-struct PolyLineGeometry : public Geometry {
+struct PolyLineGeometry : public MeshGeometry {
 
 	// Remove copy constructors, allow moves
 	PolyLineGeometry() = default;
@@ -122,7 +191,42 @@ struct PolyLineGeometry : public Geometry {
 		return {min, max};
 	}
 
+	int nverts() const override {
+		return _m.nverts();
+	} 
+	
+	int nfacets() const override {
+		return 0;
+	}
+
+	int ncells() const override {
+		return 0;
+	}
+
+	int ncorners() const override {
+		return 0;
+	}
+
+	int nhalfedges() const override {
+		return _m.nedges();
+	}
+
+	PolyLineAttributes _attributes;
 	PolyLine _m;
+
+	protected:
+	std::vector<std::pair<ElementKind, NamedContainer>> getAttributeContainers() const override {
+		std::vector<std::pair<ElementKind, NamedContainer>> containers;
+		
+		for (auto &c : _attributes.points)
+			containers.push_back({ElementKind::POINTS_ELT, c});
+		for (auto &c : _attributes.edges) {
+			containers.push_back({ElementKind::EDGES_ELT, c});
+		}
+		return containers;
+	}
+
+
 };
 
 struct LinesGeometry : public Geometry {
