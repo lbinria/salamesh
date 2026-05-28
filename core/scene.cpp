@@ -377,3 +377,8 @@ std::shared_ptr<Model> Scene::getHoveredModel() {
 	auto hoveredIndex = app.getInputState().mesh.getHovered();
 	return models.getByIndex(hoveredIndex);
 }
+
+std::shared_ptr<SceneNode> Scene::getHoveredNode() {
+	auto hoveredIndex = app.getInputState().mesh.getHovered();
+	return getNodeByIndex(hoveredIndex);;
+}

@@ -15,7 +15,7 @@
 
 // Define concept to accept only types that are derived from Surface
 template<typename T>
-concept SurfaceDerived = std::is_base_of_v<Surface, std::remove_cv_t<T>> && 
+concept SurfaceDerived2 = std::is_base_of_v<Surface, std::remove_cv_t<T>> && 
 	!std::is_same_v<Surface, std::remove_cv_t<T>>;
 
 // This code allow selection of the Material type according to a given Surface type
@@ -55,7 +55,7 @@ struct SurfModel : public Model {
 
 };
 
-template<SurfaceDerived TSurface>
+template<SurfaceDerived2 TSurface>
 struct SurfaceModel : public SurfModel {
 
 	SurfaceModel(std::string name) : 

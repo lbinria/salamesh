@@ -174,6 +174,8 @@ struct Scene {
 	}
 
 	std::shared_ptr<Model> getHoveredModel();
+	std::shared_ptr<SceneNode> getHoveredNode();
+
 
 	std::tuple<glm::vec3, glm::vec3> computeSceneBBox();
 	float computeSceneDiameter();
@@ -246,6 +248,15 @@ struct Scene {
 				results.push_back(node);
 		}
 		return results;
+	}
+
+	std::shared_ptr<SceneNode> getNodeByIndex(int index) {
+		for (auto &[nodeName, node] : _nodes) {
+			if (node->getIndex() == index)
+				return node;
+		}
+
+		return nullptr;
 	}
 
 

@@ -6,6 +6,11 @@ using namespace UM;
 
 struct Geometry {
 
+
+
+	virtual bool save() = 0;
+	virtual bool saveAs(const std::string filename) = 0;
+
 	virtual std::tuple<glm::vec3, glm::vec3> bbox() = 0;
 
 	glm::vec3 getCenter() {
@@ -35,12 +40,20 @@ struct Geometry {
 };
 
 struct MeshGeometry : public Geometry {
+
 	virtual int nverts() const = 0; 
 	virtual int nfacets() const = 0; 
 	virtual int ncells() const = 0; 
 	virtual int ncorners() const = 0; 
 	virtual int nhalfedges() const = 0;
 
+
+	virtual bool save() {
+		if (path.empty())
+			return false;
+
+		return saveAs(path);
+	}
 
 	std::vector<Attribute> getAttributes() {
 		
@@ -55,6 +68,7 @@ struct MeshGeometry : public Geometry {
 
 	}
 
+	std::string path = "";
 
 	protected:
 
@@ -91,66 +105,74 @@ struct MeshGeometry : public Geometry {
 
 };
 
-struct TrianglesGeometry : public Geometry {
+// Define concept to accept only types that are derived from Surface
+template<typename T>
+concept SurfaceDerived = std::is_base_of_v<Surface, std::remove_cv_t<T>> && 
+	!std::is_same_v<Surface, std::remove_cv_t<T>>;
 
-	// Remove copy constructors, allow moves
-	TrianglesGeometry() = default;
-	TrianglesGeometry(const TrianglesGeometry&) = delete;
-	TrianglesGeometry(TrianglesGeometry&&) = default;
-	TrianglesGeometry& operator=(const TrianglesGeometry&) = delete;
-	TrianglesGeometry& operator=(TrianglesGeometry&&) = default;
+template<SurfaceDerived TSurface>
+struct SurfaceGeometry : public MeshGeometry {
 
-	std::tuple<glm::vec3, glm::vec3> bbox() override {
-		glm::vec3 min = glm::vec3(FLT_MAX);
-		glm::vec3 max = glm::vec3(-FLT_MAX);
+	bool saveAs(const std::string filename) override {
+		// Check path validity
+		if (filename.empty()) {
+			std::cerr << "Error: No path specified for saving the mesh." << std::endl;
+			return false;
+		}
+		
+		// Save attributes ! Convert back from salamesh attributes to NamedContainer vectors
+		std::vector<NamedContainer> point_attrs;
+		std::vector<NamedContainer> facet_attrs;
+		std::vector<NamedContainer> corner_attrs;
+		for (auto &a : getAttributes()) {
+			// Do not save splitted attributes 
+			// For example, attr : vec2 => attr[0], attr[1] aren't saved
+			if (a.isSplit)
+				continue;
 
-		for (auto &v : _m.iter_vertices()) {
-			glm::vec3 p = sl::um2glm(v);
-			min = glm::min(min, p);
-			max = glm::max(max, p);
+			std::string name = a.name;
+			ElementKind kind = a.kind;
+			auto &container = a.ptr;
+
+			if (kind == ElementKind::POINTS_ELT) {
+				point_attrs.push_back(NamedContainer(name, container));
+			} else if (kind == ElementKind::FACETS_ELT) {
+				facet_attrs.push_back(NamedContainer(name, container));
+			} else if (kind == ElementKind::CORNERS_ELT) {
+				corner_attrs.push_back(NamedContainer(name, container));
+			}
 		}
 
-		return {min, max};
+		SurfaceAttributes attributes(
+			point_attrs,
+			facet_attrs,
+			corner_attrs
+		);
+
+		write_by_extension(filename, getSurface(), attributes);
+
+		return true;
 	}
 
-	SurfaceAttributes _attributes;
-	Triangles _m;
-};
-
-struct QuadsGeometry : public Geometry {
-
-	// Remove copy constructors, allow moves
-	QuadsGeometry() = default;
-	QuadsGeometry(const QuadsGeometry&) = delete;
-	QuadsGeometry(QuadsGeometry&&) = default;
-	QuadsGeometry& operator=(const QuadsGeometry&) = delete;
-	QuadsGeometry& operator=(QuadsGeometry&&) = default;
-
-	std::tuple<glm::vec3, glm::vec3> bbox() override {
-		glm::vec3 min = glm::vec3(FLT_MAX);
-		glm::vec3 max = glm::vec3(-FLT_MAX);
-
-		for (auto &v : _m.iter_vertices()) {
-			glm::vec3 p = sl::um2glm(v);
-			min = glm::min(min, p);
-			max = glm::max(max, p);
-		}
-
-		return {min, max};
-	}
+	int nverts() const override {
+		return _m.nverts();
+	} 
 	
-	SurfaceAttributes _attributes;
-	Quads _m;
-};
+	int nfacets() const override {
+		return _m.nfacets();
+	}
 
-struct PolygonsGeometry : public Geometry {
+	int ncells() const override {
+		return 0;
+	}
 
-	// Remove copy constructors, allow moves
-	PolygonsGeometry() = default;
-	PolygonsGeometry(const PolygonsGeometry&) = delete;
-	PolygonsGeometry(PolygonsGeometry&&) = default;
-	PolygonsGeometry& operator=(const PolygonsGeometry&) = delete;
-	PolygonsGeometry& operator=(PolygonsGeometry&&) = default;
+	int ncorners() const override {
+		return _m.ncorners();
+	}
+
+	int nhalfedges() const override {
+		return _m.ncorners();
+	}
 
 	std::tuple<glm::vec3, glm::vec3> bbox() override {
 		glm::vec3 min = glm::vec3(FLT_MAX);
@@ -165,9 +187,34 @@ struct PolygonsGeometry : public Geometry {
 		return {min, max};
 	}
 
+	std::vector<std::pair<ElementKind, NamedContainer>> getAttributeContainers() const override {
+		std::vector<std::pair<ElementKind, NamedContainer>> containers;
+		
+		for (auto &c : _attributes.points)
+			containers.push_back({ElementKind::POINTS_ELT, c});
+		for (auto &c : _attributes.corners) {
+			containers.push_back({ElementKind::CORNERS_ELT, c});
+			// containers.push_back({ElementKind::EDGES_ELT, c}); // TODO see pertinence
+		}
+		for (auto &c : _attributes.facets)
+			containers.push_back({ElementKind::FACETS_ELT, c});
+
+		return containers;
+	}
+
+	Surface& getSurface() { return _m; }
+	const Surface& getSurface() const { return _m; }
+	TSurface& getMesh() { return _m; }
+
 	SurfaceAttributes _attributes;
-	Polygons _m;
+	TSurface _m;
+
 };
+
+typedef SurfaceGeometry<Triangles> TrianglesGeometry;
+typedef SurfaceGeometry<Quads> QuadsGeometry;
+typedef SurfaceGeometry<Polygons> PolygonsGeometry;
+
 
 struct PolyLineGeometry : public MeshGeometry {
 
@@ -177,6 +224,43 @@ struct PolyLineGeometry : public MeshGeometry {
 	PolyLineGeometry(PolyLineGeometry&&) = default;
 	PolyLineGeometry& operator=(const PolyLineGeometry&) = delete;
 	PolyLineGeometry& operator=(PolyLineGeometry&&) = default;
+
+	bool saveAs(const std::string path) override {
+		// Check path validity
+		if (path.empty()) {
+			std::cerr << "Error: No path specified for saving the mesh." << std::endl;
+			return false;
+		}
+		
+		// Save attributes ! Convert back from salamesh attributes to NamedContainer vectors
+		std::vector<NamedContainer> point_attrs;
+		std::vector<NamedContainer> edge_attrs;
+		for (auto &a : getAttributes()) {
+			// Do not save splitted attributes 
+			// For example, attr : vec2 => attr[0], attr[1] aren't saved
+			if (a.isSplit)
+				continue;
+
+			std::string name = a.name;
+			ElementKind kind = a.kind;
+			auto &container = a.ptr;
+
+			if (kind == ElementKind::POINTS_ELT) {
+				point_attrs.push_back(NamedContainer(name, container));
+			} else if (kind == ElementKind::EDGES_ELT) {
+				edge_attrs.push_back(NamedContainer(name, container));
+			}
+		}
+
+		PolyLineAttributes attributes(
+			point_attrs,
+			edge_attrs
+		);
+
+		write_by_extension(path, _m, attributes);
+
+		return true;
+	}
 
 	std::tuple<glm::vec3, glm::vec3> bbox() override {
 		glm::vec3 min = glm::vec3(FLT_MAX);
@@ -236,6 +320,14 @@ struct LinesGeometry : public Geometry {
 		glm::vec3 b;
 		glm::vec3 color;
 	};
+
+	bool save() override {
+		throw std::runtime_error("`save` is not implemented on `LineGeometry`");
+	}
+	
+	bool saveAs(const std::string filename) override {
+		throw std::runtime_error("`saveAs` is not implemented on `LineGeometry`");
+	}
 
 	// Remove copy constructors, allow moves
 	LinesGeometry() = default;

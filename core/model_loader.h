@@ -16,6 +16,7 @@ struct ModelLoader {
 		if (geometry->_m.nfacets() <= 0)
 			return false;
 
+		geometry->path = filename;
 		node.setGeometry(std::move(geometry));
 
 		return true;
@@ -28,6 +29,7 @@ struct ModelLoader {
 		if (geometry->_m.nfacets() <= 0)
 			return false;
 
+		geometry->path = filename;
 		node.setGeometry(std::move(geometry));
 
 		return true;
@@ -40,6 +42,7 @@ struct ModelLoader {
 		if (geometry->_m.nfacets() <= 0)
 			return false;
 
+		geometry->path = filename;
 		node.setGeometry(std::move(geometry));
 
 		return true;
@@ -52,6 +55,7 @@ struct ModelLoader {
 		if (geometry->_m.nedges() <= 0)
 			return false;
 
+		geometry->path = filename;
 		node.setGeometry(std::move(geometry));
 
 		return true;

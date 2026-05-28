@@ -14,11 +14,29 @@ struct SceneNode : std::enable_shared_from_this<SceneNode> {
 
 	SceneNode() :  
 	 _id(sl::generateGuid()),
-	_name(_id) {}
+	_name(_id) {
+		_index = maxIndex;
+		++maxIndex;
+	}
 
 	SceneNode(std::string name) :  
 	 _id(sl::generateGuid()),
-	_name(name) {}
+	_name(name) {
+		_index = maxIndex;
+		++maxIndex;
+	}
+
+	int getIndex() {
+		return _index;
+	}
+
+	static inline int getMaxIndex() {
+		return maxIndex;
+	}
+
+	static void clearIndex() {
+		maxIndex = 0;
+	}
 
 	std::tuple<glm::vec3, glm::vec3> bbox() {
 		auto [min, max] = _geometry->bbox();
@@ -110,5 +128,8 @@ struct SceneNode : std::enable_shared_from_this<SceneNode> {
 
 	std::weak_ptr<SceneNode> _parent;
 	std::vector<std::shared_ptr<SceneNode>> _children;
+
+	static inline int maxIndex = 0;
+	int _index;
 
 };
