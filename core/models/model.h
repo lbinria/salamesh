@@ -233,7 +233,8 @@ struct Model {
 	void unsetColormaps(ColormapLayer colormapLayer) {
 		// Unset all
 		for (int i = 0; i < 7; ++i) {
-			int kind = 1 << i;
+			// int kind = 1 << i;
+			int kind = i;
 			unsetColormap((ElementKind)kind, colormapLayer);
 		}
 	}
@@ -247,7 +248,8 @@ struct Model {
 		// Unset all
 		for (int l = 0; l < 3; ++l) {
 			for (int i = 0; i < 7; ++i) {
-				int kind = 1 << i;
+				// int kind = 1 << i;
+				int kind = i;
 				unsetColormap((ElementKind)kind, static_cast<ColormapLayer>(l));
 			}
 		}
@@ -264,7 +266,8 @@ struct Model {
 	void unsetHighlights() {
 		// Unset all
 		for (int i = 0; i < 7; ++i) {
-			int kind = 1 << i;
+			// int kind = 1 << i;
+			int kind = i;
 			unsetHighlight((ElementKind)kind);
 		}
 	}
@@ -280,7 +283,8 @@ struct Model {
 	void unsetFilters() {
 		// Unset all
 		for (int i = 0; i < 7; ++i) {
-			int kind = 1 << i;
+			// int kind = 1 << i;
+			int kind = i;
 			unsetFilter((ElementKind)kind);
 		}
 	}

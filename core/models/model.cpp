@@ -245,6 +245,7 @@ void Model::setLayer(ElementKind kind, Layer layer, bool update) {
 			
 			int l = static_cast<int>(layer);
 			layerParams->setLayerElement(kind, layer);
+			layerParams->activateLayer(layer, kind);
 		}
 	}
 
@@ -274,6 +275,7 @@ void Model::unsetLayer(ElementKind kind, Layer layer, bool reset) {
 			
 			int l = static_cast<int>(layer);
 			layerParams->setLayerElement(-1, layer);
+			layerParams->deactivateLayer(layer, kind);
 		}
 	}
 

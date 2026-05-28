@@ -33,6 +33,9 @@ struct LayersParams : MaterialParams {
 			else if (layer == 4)
 			shader.setInt("filterElement", layerElement[layer]);
 
+			for (int kind = 0; kind < 7; ++kind) {
+				shader.setBool("activatedLayers[" + std::to_string(layer) + "][" + std::to_string(kind) + "]", activatedLayers[layer][kind]);
+			}
 		}
 
 		shader.setFloat3("selectColor", selectColor);
@@ -84,8 +87,17 @@ struct LayersParams : MaterialParams {
 		glBufferSubData(GL_TEXTURE_BUFFER, idx * sizeof(float), sizeof(float), &val);
 	}
 
+	// TODO to remove
 	void setLayerElement(int element, Layer layer) {
 		layerElement[static_cast<int>(layer)] = element;
+	}
+
+	void activateLayer(Layer layer, ElementKind kind) {
+		activatedLayers[static_cast<int>(layer)][static_cast<int>(kind)] = true;
+	}
+
+	void deactivateLayer(Layer layer, ElementKind kind) {
+		activatedLayers[static_cast<int>(layer)][static_cast<int>(kind)] = false;
 	}
 
 	// Obtain buffer that matches with requested layer
@@ -182,6 +194,9 @@ struct LayersParams : MaterialParams {
 			j["n_dims"][i] = nDims[i];
 			j["range"][i] = {range[i][0], range[i][1]};
 			j["layer_element"][i] = layerElement[i];
+
+			for (int k = 0; k < 7; ++k)
+				j["activated_layers"][i][k] = activatedLayers[i][k];
 		}
 
 		j["hover_color"] = json::array({hoverColor.x, hoverColor.y, hoverColor.z});
@@ -190,7 +205,8 @@ struct LayersParams : MaterialParams {
 
 	int nDims[5];
 	glm::vec2 range[5];
-	int layerElement[5] = {-1, -1, -1, -1, -1};
+	int layerElement[5] = {-1, -1, -1, -1, -1}; // TODO to remove replaced by activatedLayers
+	bool activatedLayers[5][7] = {false};
 	glm::vec3 hoverColor{1.f, 1.f, 1.f};
 	glm::vec3 selectColor{0.f, 0.22f, 1.f};
 

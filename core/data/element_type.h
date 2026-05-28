@@ -15,14 +15,23 @@ enum ModelType {
 	HYBRID_MODEL,
 };
 
+// enum ElementKind {
+// 	POINTS_ELT = 1,
+// 	CORNERS_ELT = 2,
+// 	EDGES_ELT = 4,
+// 	FACETS_ELT = 8,
+// 	CELLS_ELT = 16,
+// 	CELL_FACETS_ELT = 32,
+// 	CELL_CORNERS_ELT = 64
+// };
 enum ElementKind {
-	POINTS_ELT = 1,
-	CORNERS_ELT = 2,
-	EDGES_ELT = 4,
-	FACETS_ELT = 8,
-	CELLS_ELT = 16,
-	CELL_FACETS_ELT = 32,
-	CELL_CORNERS_ELT = 64
+	POINTS_ELT = 0,
+	CORNERS_ELT = 1,
+	EDGES_ELT = 2,
+	FACETS_ELT = 3,
+	CELLS_ELT = 4,
+	CELL_FACETS_ELT = 5,
+	CELL_CORNERS_ELT = 6
 };
 
 enum ElementType {

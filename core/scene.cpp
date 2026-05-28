@@ -82,7 +82,7 @@ void Scene::init() {
 	_shaders.emplace("poly", std::move(polyMat));
 	_shaders.emplace("line_shader", std::move(lineShader));
 
-	loadModel2("assets/catorus_tri.geogram", "catorus");
+	// loadModel2("assets/catorus_tri.geogram", "catorus");
 	// loadModel2("assets/catorus_quad.geogram", "catorus");
 	// loadModel2("assets/simple_poly.geogram", "catorus");
 }

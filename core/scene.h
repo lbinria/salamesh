@@ -52,6 +52,16 @@ struct Scene {
 			glActiveTexture(GL_TEXTURE0 + 2);
 			glBindTexture(GL_TEXTURE_2D, colormaps[model->getSelectedColormap(ColormapLayer::COLORMAP_LAYER_2)].tex);
 
+			// Trick for test
+			for (auto &[rendererName, renderer] : model->getRenderers()) {
+				auto layerParams = renderer->getParams<LayersParams>("layers");
+				if (layerParams) {
+					layerParams->setColormapTexture(0, colormaps[model->getSelectedColormap(ColormapLayer::COLORMAP_LAYER_0)]);
+					layerParams->setColormapTexture(1, colormaps[model->getSelectedColormap(ColormapLayer::COLORMAP_LAYER_1)]);
+					layerParams->setColormapTexture(2, colormaps[model->getSelectedColormap(ColormapLayer::COLORMAP_LAYER_2)]);
+				}
+			}
+
 			model->render();
 		}
 

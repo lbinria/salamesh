@@ -44,6 +44,7 @@ uniform int attrNDims[3] = {1, 1, 1};
 uniform int colormapElement[3] = {-1, -1, -1};
 uniform int highlightElement;
 uniform int filterElement;
+uniform bool activatedLayers[5 /* layer */][7 /* element kind */];
 
 flat in float depthZ;
 
@@ -71,8 +72,11 @@ vec4 fetchColormap(int layer, vec2 coords) {
 }
 
 void _filter(inout vec3 col) {
-    if (filterElement == -1)
+    if (!activatedLayers[4 /* filter */][0 /* point*/])
         return;
+
+    // if (filterElement == -1)
+    //     return;
 
     bool filtered = texelFetch(filterBuf, FragVertexIndex).x > 0;
 
@@ -111,8 +115,12 @@ vec3 trace(inout vec3 col) {
 }
 
 void highlight(inout vec3 col) {
-    if (highlightElement == -1)
+
+    if (!activatedLayers[3 /* hightlight */][0 /* point*/])
         return;
+
+    // if (highlightElement == -1)
+    //     return;
 
     // Highlight
     float highlightVal = texelFetch(highlightBuf, FragVertexIndex).x;
@@ -171,17 +179,24 @@ vec4 getLayerColor(int idx, int layer) {
 }
 
 vec4 showColormap(int layer) {
-    int kind = colormapElement[layer];
-    
-    if (kind == 1 /* points */) {
+
+    if (activatedLayers[layer][0]) {
         return getLayerColor(FragVertexIndex, layer);
-    } 
-    
-    if (kind == -1 /* no element => layer deactivated */) {
+    } else {
         return vec4(0., 0., 0., -1.);
     }
 
-    return vec4(1., 0., 0., 1.);
+    // int kind = colormapElement[layer];
+    
+    // if (kind == 1 /* points */) {
+    //     return getLayerColor(FragVertexIndex, layer);
+    // } 
+    
+    // if (kind == -1 /* no element => layer deactivated */) {
+    //     return vec4(0., 0., 0., -1.);
+    // }
+
+    // return vec4(1., 0., 0., 1.);
 }
 
 // Mix with alpha discard

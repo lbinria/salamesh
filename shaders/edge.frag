@@ -43,6 +43,7 @@ uniform int attrNDims[3] = {1, 1, 1};
 uniform int colormapElement[3] = {-1, -1, -1};
 uniform int highlightElement;
 uniform int filterElement;
+uniform bool activatedLayers[5 /* layer */][7 /* element kind */];
 
 vec3 encode_id(int id) {
     int r = id & 0x000000FF;
@@ -105,8 +106,12 @@ float sdfEquilateralTriangle(vec2 p) {
 }
 
 void _filter(inout vec3 col) {
-    if (filterElement == -1)
+
+    if (!activatedLayers[4 /* filter */][1 /* corner */] && !activatedLayers[4 /* filter */][2 /* edge */])
         return;
+
+    // if (filterElement == -1)
+    //     return;
 
     bool filtered = texelFetch(filterBuf, FragHalfedgeIndex).x > 0;
 
@@ -149,8 +154,12 @@ vec4 trace(inout vec3 col) {
 }
 
 void highlight(inout vec3 col) {
-    if (highlightElement == -1) 
+
+    if (!activatedLayers[3 /* hightlight */][1 /* corner */] && !activatedLayers[3 /* hightlight */][2 /* edge */])
         return;
+
+    // if (highlightElement == -1) 
+    //     return;
 
     // Highlight
     float highlightVal = texelFetch(highlightBuf, FragHalfedgeIndex).x;
@@ -174,17 +183,24 @@ void shading(inout vec3 col, vec3 N, float t) {
 }
 
 vec4 showColormap(int layer) {
-    int kind = colormapElement[layer];
-    
-    if (kind == 2 /* corners */) {
+
+    if (activatedLayers[layer][1 /* corner */]) {
         return getLayerColor(FragHalfedgeIndex, layer);
-    } 
-    
-    if (kind == -1 /* no element => layer deactivated */) {
+    } else {
         return vec4(0., 0., 0., -1.);
     }
 
-    return vec4(1., 0., 0., 1.);
+    // int kind = colormapElement[layer];
+    
+    // if (kind == 2 /* corners */) {
+    //     return getLayerColor(FragHalfedgeIndex, layer);
+    // } 
+    
+    // if (kind == -1 /* no element => layer deactivated */) {
+    //     return vec4(0., 0., 0., -1.);
+    // }
+
+    // return vec4(1., 0., 0., 1.);
 }
 
 // Mix with alpha discard

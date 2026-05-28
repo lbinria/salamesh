@@ -244,30 +244,39 @@ vec4 showCornerAttributes(int layer) {
 }
 
 vec4 showColormap(int layer) {
-    int kind = colormapElement[layer];
-    
-    if (kind == 8 /* facets */) {
-        return getLayerColor(fragFacetIndex, layer);
-    }
+    // int kind = colormapElement[layer];
 
-    if (kind == 2 /* corners */) {
+    // Facet activated
+    if (activatedLayers[layer][3 /* facet */]) {
+        return getLayerColor(fragFacetIndex, layer);
+    } else if (activatedLayers[layer][1 /* corner */]) {
         return showCornerAttributes(layer);
-    }
-    
-    if (kind == -1 /* Layer deactivated */) {
+    } else {
         return vec4(0., 0., 0., -1.);
     }
+    
+    // if (kind == 8 /* facets */) {
+    //     return getLayerColor(fragFacetIndex, layer);
+    // }
 
-    return vec4(1., 0., 0., 1.);
+    // if (kind == 2 /* corners */) {
+    //     return showCornerAttributes(layer);
+    // }
+    
+    // if (kind == -1 /* Layer deactivated */) {
+    //     return vec4(0., 0., 0., -1.);
+    // }
+
+    // return vec4(1., 0., 0., 1.);
 }
 
 void _filter(inout vec3 col) {
-    if (filterElement == -1)
-        return;
-
-    // // Check whether layer filter is activated on facet
-    // if (!activatedLayers[4 /* filter */][3 /* facet */])
+    // if (filterElement == -1)
     //     return;
+
+    // Check whether layer filter is activated on facet
+    if (!activatedLayers[4 /* filter */][3 /* facet */])
+        return;
         
     bool filtered = texelFetch(filterBuf, fragFacetIndex).x >= .5;
 
@@ -298,13 +307,13 @@ void clip(inout vec3 col) {
 }
 
 void highlight(inout vec3 col) {
-    // Only highlight facets
-    if (highlightElement != 8)
-        return;
-
-    // // Check whether layer highlight on facet is activated
-    // if (!activatedLayers[3 /* hightlight */][3 /* facet */])
+    // // Only highlight facets
+    // if (highlightElement != 8)
     //     return;
+
+    // Check whether layer highlight on facet is activated
+    if (!activatedLayers[3 /* hightlight */][3 /* facet */])
+        return;
 
     // Highlight
     float highlightVal = texelFetch(highlightBuf, fragFacetIndex).x;

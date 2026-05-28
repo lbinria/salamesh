@@ -6,8 +6,6 @@ using namespace UM;
 
 struct Geometry {
 
-
-
 	virtual bool save() = 0;
 	virtual bool saveAs(const std::string filename) = 0;
 
@@ -324,7 +322,7 @@ struct LinesGeometry : public Geometry {
 	bool save() override {
 		throw std::runtime_error("`save` is not implemented on `LineGeometry`");
 	}
-	
+
 	bool saveAs(const std::string filename) override {
 		throw std::runtime_error("`saveAs` is not implemented on `LineGeometry`");
 	}
