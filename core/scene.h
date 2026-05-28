@@ -70,6 +70,9 @@ struct Scene {
 
 			for (auto &[nodeName, node] : _nodes) {
 
+				if (!node->isVisible())
+					continue;
+
 				auto shaderBufferOpt = node->getShaderBuffer(*shader);
 
 				if (!shaderBufferOpt.has_value())
@@ -247,18 +250,18 @@ struct Scene {
 		return _nodes;
 	}
 
-	std::shared_ptr<SceneNode> getNodeById(const std::string id) {
-		return _nodes.contains(id) ? _nodes.at(id) : nullptr;
+	std::shared_ptr<SceneNode> getNodeByName(const std::string name) {
+		return _nodes.contains(name) ? _nodes.at(name) : nullptr;
 	}
 
-	const std::vector<std::shared_ptr<SceneNode>> getNodesByName(const std::string name) {
-		std::vector<std::shared_ptr<SceneNode>> results;
-		for (auto &[_, node] : _nodes) {
-			if (node->getName() == name)
-				results.push_back(node);
-		}
-		return results;
-	}
+	// const std::vector<std::shared_ptr<SceneNode>> getNodesByName(const std::string name) {
+	// 	std::vector<std::shared_ptr<SceneNode>> results;
+	// 	for (auto &[_, node] : _nodes) {
+	// 		if (node->getName() == name)
+	// 			results.push_back(node);
+	// 	}
+	// 	return results;
+	// }
 
 	std::shared_ptr<SceneNode> getNodeByIndex(int index) {
 		for (auto &[nodeName, node] : _nodes) {

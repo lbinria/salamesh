@@ -13,14 +13,12 @@ using namespace UM;
 struct SceneNode : std::enable_shared_from_this<SceneNode> {
 
 	SceneNode() :  
-	 _id(sl::generateGuid()),
-	_name(_id) {
+	_name(sl::generateGuid()) {
 		_index = maxIndex;
 		++maxIndex;
 	}
 
 	SceneNode(std::string name) :  
-	 _id(sl::generateGuid()),
 	_name(name) {
 		_index = maxIndex;
 		++maxIndex;
@@ -113,14 +111,17 @@ struct SceneNode : std::enable_shared_from_this<SceneNode> {
 		return _name;
 	}
 
-	const std::string getId() const {
-		return _id;
+	void setVisible(bool visible) {
+		_visible = visible;
+	}
+
+	bool isVisible() const {
+		return _visible;
 	}
 
 	glm::vec3 position{0,0,0};
 
 	private:
-	std::string _id;
 	std::string _name;
 
 	std::unique_ptr<Geometry> _geometry;
@@ -131,5 +132,7 @@ struct SceneNode : std::enable_shared_from_this<SceneNode> {
 
 	static inline int maxIndex = 0;
 	int _index;
+
+	bool _visible = true;
 
 };
