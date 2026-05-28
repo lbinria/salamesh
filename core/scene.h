@@ -186,6 +186,10 @@ struct Scene {
 		return *models[selectedModel];
 	}
 
+	inline std::shared_ptr<SceneNode> getCurrentNode() {
+		return _nodes[selectedNode];
+	}
+
 	std::shared_ptr<Model> getHoveredModel();
 	std::shared_ptr<SceneNode> getHoveredNode();
 

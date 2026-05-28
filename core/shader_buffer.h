@@ -51,7 +51,7 @@ struct ShaderBuffer {
 	}
 
 
-	std::vector<unsigned char> rawData;
+	std::vector<unsigned char> rawData; // TODO to remove
 	unsigned int nelements = 0;
 
 	Shader &getShader() {

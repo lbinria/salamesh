@@ -137,7 +137,7 @@ struct LayersParams : MaterialParams {
 	ParamValue get(const std::string name) override { return 0.f; }
 	void set(const std::string name, ParamValue value) override {}
 
-	ParamValue get(const std::string name, int index) override {
+	ParamValue getIndex(const std::string name, int index) override {
 		if (name == "nDims") {
 			return nDims[index];
 		} else if (name == "range") {
@@ -153,7 +153,7 @@ struct LayersParams : MaterialParams {
 		}
 	}
 
-	void set(const std::string name, int index, ParamValue value) override {
+	void setIndex(const std::string name, int index, ParamValue value) override {
 		if (name == "nDims") {
 			if (auto* pVal = std::get_if<int>(&value))
 				nDims[index] = *pVal;

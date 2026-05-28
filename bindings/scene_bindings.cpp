@@ -5,12 +5,18 @@ namespace bindings {
 	void SceneBindings::loadBindings(sol::state &lua, IApp &app) {
 		type = lua.new_usertype<Scene>("Scene");
 
-		type.set_function("load_model", &Scene::loadModel);
-		type["models"] = sol::readonly_property(&Scene::getModels);
-		type["model"] = sol::readonly_property(&Scene::getCurrentModel);
-		type["hovered_model"] = sol::readonly_property(&Scene::getHoveredModel);
-		type["selected_model"] = sol::property(&Scene::getSelectedModel, &Scene::setSelectedModel);
-		type.set_function("focus", &Scene::focus);
+		// type.set_function("load_model", &Scene::loadModel);
+		type.set_function("load_model", &Scene::loadModel2);
+		// type["models"] = sol::readonly_property(&Scene::getModels);
+		type["models"] = sol::readonly_property(&Scene::getNodes);
+		// type["model"] = sol::readonly_property(&Scene::getCurrentModel);
+		type["model"] = sol::readonly_property(&Scene::getCurrentNode);
+		// type["hovered_model"] = sol::readonly_property(&Scene::getHoveredModel);
+		type["hovered_model"] = sol::readonly_property(&Scene::getHoveredNode);
+		// type["selected_model"] = sol::property(&Scene::getSelectedModel, &Scene::setSelectedModel);
+		type["selected_model"] = sol::property(&Scene::getSelectedNodeName, &Scene::selectNode);
+		// type.set_function("focus", &Scene::focus);
+		type.set_function("focus", &Scene::focus2);
 
 		type["camera"] = sol::readonly_property(&Scene::getCurrentCamera);
 		type["cameras"] = sol::readonly_property(&Scene::getCameras);

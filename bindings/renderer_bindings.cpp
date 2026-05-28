@@ -77,28 +77,6 @@ namespace bindings {
 		);
 
 
-		// auto materialParams = lua.new_usertype<MaterialParams>("MaterialParams"
-		// 	"get", &MaterialParams::get,
-		// 	"set", &MaterialParams::set
-		// );
-		auto materialParams = lua.new_usertype<MaterialParams>("MaterialParams",
-			"get", sol::overload(
-				static_cast<ParamValue (MaterialParams::*)(const std::string)>(&MaterialParams::get),
-				static_cast<ParamValue (MaterialParams::*)(const std::string, int)>(&MaterialParams::get)
-			),
-			"set", sol::overload(
-				static_cast<void (MaterialParams::*)(const std::string, ParamValue)>(&MaterialParams::set),
-				static_cast<void (MaterialParams::*)(const std::string, int, ParamValue)>(&MaterialParams::set)
-			),
-			"__index", [](MaterialParams& self, const std::string& name) {
-				return self.get(name);
-			},
-			"__newindex", [](MaterialParams& self, const std::string& name, ParamValue value) {
-				self.set(name, value);
-			}
-		);
-
-
 		sol::usertype<HalfedgeMaterial> halfedgeRenderer_t = lua.new_usertype<HalfedgeMaterial>(
 			"HalfedgeMaterial",
 			sol::base_classes, 

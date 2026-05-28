@@ -44,8 +44,8 @@ struct MeshStyleParams : MaterialParams {
 		}
 	}
 
-	ParamValue get(const std::string name, int index) override { return 0.f; }
-	void set(const std::string name, int index, ParamValue value) override {}
+	ParamValue getIndex(const std::string name, int index) override { return 0.f; }
+	void setIndex(const std::string name, int index, ParamValue value) override {}
 
 	void loadState(json &j) {
 		color = glm::vec3(j["color"][0].get<float>(), j["color"][1].get<float>(), j["color"][2].get<float>());
