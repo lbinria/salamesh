@@ -8,7 +8,12 @@ namespace bindings {
 			"parent", sol::readonly_property(&SceneNode::getParent),
 			"world_position", sol::readonly_property(&SceneNode::getWorldPosition),
 			"position", sol::property(&SceneNode::position, &SceneNode::position),
-			"bbox", sol::readonly_property(&SceneNode::bbox),
+			"bbox", sol::readonly_property([](SceneNode& m, sol::this_state s) {
+				sol::state_view lua(s);
+				auto [minv, maxv] = m.bbox();
+				sol::table t = lua.create_table_with(1, minv, 2, maxv);
+				return t;
+			}),
 			"visible", sol::property(&SceneNode::isVisible, &SceneNode::setVisible),
 			// "geometry", sol::property(&SceneNode::getGeometry, &SceneNode::setGeometry),
 			"geometry", sol::readonly_property(&SceneNode::getGeometry),

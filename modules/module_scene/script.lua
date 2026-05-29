@@ -241,7 +241,7 @@ function draw_model_properties(model, k, view)
 				end
 			end
 
-			local halfedges_shader_buffer = model:get_shader_buffer("edges")
+			local halfedges_shader_buffer = model:get_shader_buffer("halfedges")
 			if halfedges_shader_buffer then 
 
 				local haldedges_style = halfedges_shader_buffer:get_params("style")
@@ -250,6 +250,36 @@ function draw_model_properties(model, k, view)
 				if (sel_edge_visible) then 
 					print("Change edge visibility: " .. tostring(new_edge_visible))
 					halfedges_shader_buffer.visible = new_edge_visible
+				end
+
+				local sel_edge_thickness, new_edge_thickness = imgui.SliderFloat("Edge thickness", haldedges_style.thickness, 0, 50)
+				if (sel_edge_thickness) then 
+					print("Change edge thickness: " .. tostring(new_edge_thickness))
+					haldedges_style.thickness = new_edge_thickness
+				end
+
+				local sel_edge_spacing, new_edge_spacing = imgui.SliderFloat("Edge spacing", haldedges_style.spacing, 0, 1)
+				if (sel_edge_spacing) then 
+					print("Change edge spacing: " .. tostring(new_edge_spacing))
+					haldedges_style.spacing = new_edge_spacing
+				end
+
+				local sel_edge_padding, new_edge_padding = imgui.SliderFloat("Edge padding", haldedges_style.padding, 0, 1)
+				if (sel_edge_padding) then 
+					print("Change edge padding: " .. tostring(new_edge_padding))
+					haldedges_style.padding = new_edge_padding
+				end
+
+				local sel_edge_inside_color, new_edge_inside_color = imgui.ColorEdit3("Edge inside color", haldedges_style.inside_color)
+				if (sel_edge_inside_color) then 
+					print("Change edge inside color: " .. tostring(new_edge_inside_color))
+					haldedges_style.inside_color = new_edge_inside_color
+				end
+
+				local sel_edge_outside_color, new_edge_outside_color = imgui.ColorEdit3("Edge outside color", haldedges_style.outside_color)
+				if (sel_edge_outside_color) then 
+					print("Change edge outside color: " .. tostring(new_edge_outside_color))
+					haldedges_style.outside_color = new_edge_outside_color
 				end
 
 			end

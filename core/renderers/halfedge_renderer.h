@@ -25,10 +25,25 @@ struct HalfedgeMaterial : public Material {
 		glm::vec3 bary;
 	};
 
-	using Material::Material;
+	HalfedgeMaterial(std::string name) : 
+		Material(name, Shader(sl::shadersPath("edge.vert"), sl::shadersPath("edge.frag")))
+		{}
+
+	HalfedgeMaterial(std::string name, Shader shader) : 
+		Material(name, Shader(std::move(shader))) {
+		}
+
+
+	virtual bool isCompatible(Geometry &geometry) override;
+	virtual ShaderBuffer createShaderBuffer() override;
+	virtual void update(ShaderBuffer &shaderBuffer, Geometry &geometry) override;
+
+	virtual unsigned int renderElement() {
+		return GL_TRIANGLES;
+	}
 
 	void init() override;
-	virtual void push() = 0;
+	virtual void push() {};
 	void render(glm::vec3 &position) override;
 	void clear() override;
 	void clean() override;
@@ -36,6 +51,9 @@ struct HalfedgeMaterial : public Material {
 	int getRenderElementKind() override { return ElementKind::EDGES_ELT | ElementKind::CORNERS_ELT; }
 
 	private:
+
+	void updateHalfedges(ShaderBuffer &shaderBuffer, Surface &m);
+
 
 	void doLoadState(json &j) override {
 		for (auto &[paramsName, params] : _params) {

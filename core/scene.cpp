@@ -36,12 +36,10 @@ void Scene::init() {
 	// Test
 	cameras["default"]->lookAtBox({{-1,-1,-1}, {1,1,1}});
 
-	auto pointMat = std::make_unique<PointMaterial>("points");
-	
-	auto surfaceMat = std::make_unique<TriMaterial>("mesh");
-	auto polyMat = std::make_unique<PolyMaterial>("mesh");
-	// auto halfedges = std::make_unique<HalfedgeMaterial>("halfedges");
-
+	auto pointsShader = std::make_unique<PointMaterial>("points");
+	auto trianglesShader = std::make_unique<TriMaterial>("mesh");
+	auto polygonsShader = std::make_unique<PolyMaterial>("mesh");
+	auto halfedgesShader = std::make_unique<HalfedgeMaterial>("halfedges");
 	auto lineShader = std::make_unique<LineMaterial>("line_shader");
 
 	auto geo = std::make_unique<TrianglesGeometry>();
@@ -55,7 +53,7 @@ void Scene::init() {
 	geo->_m.vert(0, 2) = 2;
 
 	auto node = std::make_shared<SceneNode>();
-	node->addShader(*pointMat);
+	node->addShader(*pointsShader);
 	node->setGeometry(std::move(geo));
 	_nodes.emplace("node_1", std::move(node));
 
@@ -70,8 +68,8 @@ void Scene::init() {
 	geo2->_m.vert(0, 2) = 2;
 
 	auto node2 = std::make_shared<SceneNode>();
-	node2->addShader(*pointMat);
-	node2->addShader(*surfaceMat);
+	node2->addShader(*pointsShader);
+	node2->addShader(*trianglesShader);
 	node2->setGeometry(std::move(geo2));
 	auto sb = node2->getShaderBuffer("points");
 	auto ps = sb.value().get().getParams<PointStyleParams>("style");
@@ -80,10 +78,11 @@ void Scene::init() {
 
 	_nodes.emplace("node_2", std::move(node2));
 
-	_shaders.emplace("points_shader", std::move(pointMat));
-	_shaders.emplace("tri_shader", std::move(surfaceMat));
-	_shaders.emplace("polygons_shader", std::move(polyMat));
+	_shaders.emplace("points_shader", std::move(pointsShader));
+	_shaders.emplace("triangles_shader", std::move(trianglesShader));
+	_shaders.emplace("polygons_shader", std::move(polygonsShader));
 	_shaders.emplace("line_shader", std::move(lineShader));
+	_shaders.emplace("halfedges_shader", std::move(halfedgesShader));
 
 	// loadModel2("assets/catorus_tri.geogram", "catorus");
 	// loadModel2("assets/catorus_quad.geogram", "catorus");
