@@ -8,6 +8,7 @@ namespace bindings {
 			"parent", sol::readonly_property(&SceneNode::getParent),
 			"world_position", sol::readonly_property(&SceneNode::getWorldPosition),
 			"position", sol::property(&SceneNode::position, &SceneNode::position),
+			"bbox", sol::readonly_property(&SceneNode::bbox),
 			"visible", sol::property(&SceneNode::isVisible, &SceneNode::setVisible),
 			// "geometry", sol::property(&SceneNode::getGeometry, &SceneNode::setGeometry),
 			"geometry", sol::readonly_property(&SceneNode::getGeometry),

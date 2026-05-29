@@ -739,7 +739,8 @@ void App::drawGui() {
 				std::string fullpath = kv.second;
 				std::cout << "filename: " << filename << ", fullpath: " << fullpath << std::endl;
 				std::cout << "read model..." << std::endl;
-				scene.loadModel(fullpath);
+				// scene.loadModel(fullpath);
+				scene.loadModel2(fullpath);
 			}
 		}
 		

@@ -50,6 +50,13 @@ struct ShaderBuffer {
 		_shader.setMat4("model", model);
 	}
 
+	bool isVisible() const {
+		return _visible;
+	}
+
+	void setVisible(bool visible) {
+		_visible = visible;
+	}
 
 	std::vector<unsigned char> rawData; // TODO to remove
 	unsigned int nelements = 0;
@@ -67,6 +74,7 @@ struct ShaderBuffer {
 	std::vector<TBO> tbos;
 
 	private:
+	bool _visible = true;
 	unsigned int _vao;
 	unsigned int _vbo;
 	Shader &_shader;

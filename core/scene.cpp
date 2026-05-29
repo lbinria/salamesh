@@ -37,8 +37,11 @@ void Scene::init() {
 	cameras["default"]->lookAtBox({{-1,-1,-1}, {1,1,1}});
 
 	auto pointMat = std::make_unique<PointMaterial>("points");
-	auto surfaceMat = std::make_unique<TriMaterial>("tri");
-	auto polyMat = std::make_unique<PolyMaterial>("poly");
+	
+	auto surfaceMat = std::make_unique<TriMaterial>("mesh");
+	auto polyMat = std::make_unique<PolyMaterial>("mesh");
+	// auto halfedges = std::make_unique<HalfedgeMaterial>("halfedges");
+
 	auto lineShader = std::make_unique<LineMaterial>("line_shader");
 
 	auto geo = std::make_unique<TrianglesGeometry>();
@@ -77,9 +80,9 @@ void Scene::init() {
 
 	_nodes.emplace("node_2", std::move(node2));
 
-	_shaders.emplace("points", std::move(pointMat));
-	_shaders.emplace("tri", std::move(surfaceMat));
-	_shaders.emplace("poly", std::move(polyMat));
+	_shaders.emplace("points_shader", std::move(pointMat));
+	_shaders.emplace("tri_shader", std::move(surfaceMat));
+	_shaders.emplace("polygons_shader", std::move(polyMat));
 	_shaders.emplace("line_shader", std::move(lineShader));
 
 	// loadModel2("assets/catorus_tri.geogram", "catorus");
