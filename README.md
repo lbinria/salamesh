@@ -15,8 +15,8 @@ You may find pre-build binaries in releases.
 
 Get salamesh:
 
+##### Clone repo
 ```
-# Clone repo
 git clone https://github.com/lbinria/salamesh.git
 ```
 
@@ -34,22 +34,23 @@ if you haven't already done so, install tools for building:
 
 ```
 sudo apt-get update
+```
+```
 sudo apt install -y build-essential cmake pkg-config git
 ```
 
-Or just run the following:
-
-
+##### Install dev libs (OpenGL / GLFW / Lua)
 ```
-# Install dev libs (OpenGL / GLFW / Lua)
 sudo apt install -y libgl1-mesa-dev libglu1-mesa-dev libglfw3 libglfw3-dev lua5.4 liblua5.4-dev
 ```
+
+##### Go to the salamesh directory & configure cmake
 ```
-# Go to the salamesh directory & configure cmake
 cd salamesh && cmake -B build`
 ```
+
+##### Compile
 ```
-# Compile
 cd build &&  cmake --build . --parallel 8
 ```
 
