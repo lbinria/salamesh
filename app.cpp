@@ -12,6 +12,7 @@
 
 #include "core/utils/logger.h"
 
+#include <chrono>
 #include <ranges>
 
 struct ImGuiTheme {
@@ -1401,7 +1402,9 @@ void App::key_event(int key, int scancode, int action, int mods) {
 	}
 	
 	if (key == GLFW_KEY_P && action == GLFW_PRESS) {
-		screenshot("screenshot.png");
+		auto now = std::chrono::system_clock::now();
+		std::string time_str = std::format("{}", now);
+		screenshot("screenshot" + time_str + ".png");
 	}
 
 	if (key == GLFW_KEY_LEFT_CONTROL && action == GLFW_PRESS) {
