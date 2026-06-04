@@ -33,5 +33,7 @@ namespace bindings {
 				return self.getColormap(name);
 			}
 		));
+
+		type["default_render_surface"] = sol::readonly_property(&Scene::getDefaultRenderSurface);
 	}
 }

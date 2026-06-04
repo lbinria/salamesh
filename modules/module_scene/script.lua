@@ -455,6 +455,26 @@ function draw_gui()
 
 		if (imgui.BeginTabItem("Flat view")) then
 
+			local sel_background_color, new_background_color = imgui.ColorEdit3("Background Color", app.scene.default_render_surface.background_color)
+			if (sel_background_color) then 
+				app.scene.default_render_surface.background_color = new_background_color
+			end
+
+			local all_visible = true
+			for k, model in pairs(app.scene.models) do
+				if not model.visible then 
+					all_visible = false 
+					break 
+				end
+			end
+
+			local sel_all_visible, new_all_visible = imgui.Checkbox("All##all_visibility", all_visible)
+			if (sel_all_visible) then 
+				for k, model in pairs(app.scene.models) do
+					model.visible = new_all_visible
+				end
+			end
+
 			for k, model in pairs(app.scene.models) do
 				
 				local sel_visible, new_visible = imgui.Checkbox(k .. "##" .. k, model.visible)

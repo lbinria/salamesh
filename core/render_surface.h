@@ -40,6 +40,10 @@ struct RenderSurface {
 		_camera->updateScreenSize(width, height);
 	}
 
+	glm::vec3 getBackgroundColor() const {
+		return backgroundColor;
+	}
+
 	void setBackgroundColor(glm::vec3 color) {
 		backgroundColor = color;
 	}
