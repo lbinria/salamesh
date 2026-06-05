@@ -15,6 +15,7 @@ struct Attribute {
 	ElementType type;
 	std::shared_ptr<ContainerBase> ptr; // TODO maybe remove !
 	bool isSplit;
+	int dim;
 
 	std::string getName() const { return name; }
 	ElementKind getKind() const { return kind; }

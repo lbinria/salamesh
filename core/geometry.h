@@ -33,6 +33,11 @@ struct Geometry {
 		_dirty = false;
 	}
 
+	virtual std::optional<Attribute> getAttribute(const std::string name) {
+		return std::nullopt;
+	}
+
+
 	private:
 	bool _dirty = true;
 };
@@ -66,6 +71,27 @@ struct MeshGeometry : public Geometry {
 
 	}
 
+	std::optional<Attribute> getAttribute(const std::string name) override {
+		std::string attrName = name;
+
+		// Extract selectedDim from string
+		int selectedDim = -1;
+		auto lbrPos = name.find('[');
+		auto rbrPos = name.find(']');
+		// if "attr[0]" requested for example, we would like to see selectedDim=0, so nDims of attribute = 1
+		if (lbrPos != std::string::npos && rbrPos != std::string::npos) {
+			selectedDim = std::stoi(name.substr(lbrPos + 1, rbrPos - lbrPos));
+			attrName = name.substr(0, lbrPos);
+		}
+
+		for (auto &[kind, c] : getAttributeContainers()) {
+			if (c.name == attrName)
+				return getAttributeFromContainer(kind, c, selectedDim);
+		}
+
+		return std::nullopt;
+	}
+
 	std::string path = "";
 
 	protected:
@@ -85,20 +111,46 @@ struct MeshGeometry : public Geometry {
 			type = ElementType::BOOL_ELT;
 		} else if (auto a = dynamic_cast<AttributeContainer<vec2>*>(container.ptr.get())) {
 			type = ElementType::VEC2_ELT;
-			attributes.emplace_back(container.name + "[0]", kind, ElementType::DOUBLE_ELT, container.ptr, true);
-			attributes.emplace_back(container.name + "[1]", kind, ElementType::DOUBLE_ELT, container.ptr, true);
+			attributes.emplace_back(container.name + "[0]", kind, ElementType::DOUBLE_ELT, container.ptr, true, 0);
+			attributes.emplace_back(container.name + "[1]", kind, ElementType::DOUBLE_ELT, container.ptr, true, 1);
 		} else if (auto a = dynamic_cast<AttributeContainer<vec3>*>(container.ptr.get())) {
 			type = ElementType::VEC3_ELT;
-			attributes.emplace_back(container.name + "[0]", kind, ElementType::DOUBLE_ELT, container.ptr, true);
-			attributes.emplace_back(container.name + "[1]", kind, ElementType::DOUBLE_ELT, container.ptr, true);
-			attributes.emplace_back(container.name + "[2]", kind, ElementType::DOUBLE_ELT, container.ptr, true);
+			attributes.emplace_back(container.name + "[0]", kind, ElementType::DOUBLE_ELT, container.ptr, true, 0);
+			attributes.emplace_back(container.name + "[1]", kind, ElementType::DOUBLE_ELT, container.ptr, true, 1);
+			attributes.emplace_back(container.name + "[2]", kind, ElementType::DOUBLE_ELT, container.ptr, true, 2);
 		} else {
 			throw std::runtime_error("Unknown attribute type for container: " + container.name);
 		}
 
-		attributes.emplace_back(container.name, kind, type, container.ptr, false);
+		attributes.emplace_back(container.name, kind, type, container.ptr, false, -1);
 
 		return attributes;
+	}
+
+	Attribute getAttributeFromContainer(ElementKind kind, NamedContainer &container, int selectedDim) {
+		
+		// Get the type of the container
+		ElementType type = ElementType::DOUBLE_ELT; // Default type
+		if (auto a = dynamic_cast<AttributeContainer<double>*>(container.ptr.get())) {
+			type = ElementType::DOUBLE_ELT;
+		} else if (auto a = dynamic_cast<AttributeContainer<int>*>(container.ptr.get())) {
+			type = ElementType::INT_ELT;
+		} else if (auto a = dynamic_cast<AttributeContainer<bool>*>(container.ptr.get())) {
+			type = ElementType::BOOL_ELT;
+		} else if (auto a = dynamic_cast<AttributeContainer<vec2>*>(container.ptr.get())) {
+			type = selectedDim < 0 ? ElementType::VEC2_ELT : ElementType::DOUBLE_ELT;
+		} else if (auto a = dynamic_cast<AttributeContainer<vec3>*>(container.ptr.get())) {
+			type = selectedDim < 0 ? ElementType::VEC3_ELT : ElementType::DOUBLE_ELT;
+		} else {
+			throw std::runtime_error("Unknown attribute type for container: " + container.name);
+		}
+
+		std::string attrName = container.name;
+		if (selectedDim >= 0) {
+			attrName += "[" + std::to_string(selectedDim) + "]";
+		}
+
+		return {attrName, kind, type, container.ptr, selectedDim >= 0, selectedDim};
 	}
 
 };

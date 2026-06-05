@@ -109,6 +109,10 @@ struct LayersParams : MaterialParams {
 		activatedLayers[static_cast<int>(layer)][static_cast<int>(kind)] = false;
 	}
 
+	bool isActivatedLayer(Layer layer, ElementKind kind) const {
+		return activatedLayers[static_cast<int>(layer)][static_cast<int>(kind)];
+	}
+
 	// Obtain buffer that matches with requested layer
 	unsigned int getLayerBuffer(Layer layer) {
 		switch (layer)
