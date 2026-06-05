@@ -73,10 +73,13 @@ struct ShaderBuffer {
 
 	std::vector<TBO> tbos;
 
+
+
 	private:
 	bool _visible = true;
 	unsigned int _vao;
 	unsigned int _vbo;
 	Shader &_shader;
 	std::map<std::string, std::shared_ptr<MaterialParams>> _params;
+
 };

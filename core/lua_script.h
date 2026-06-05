@@ -27,6 +27,7 @@
 #include "../bindings/shader_buffer_bindings.h"
 #include "../bindings/material_params_bindings.h"
 #include "../bindings/geometry_bindings.h"
+#include "../bindings/model_proxy_bindings.h"
 
 
 struct LuaScript final : public Script {
@@ -130,6 +131,7 @@ struct LuaScript final : public Script {
 		bindings.push_back(std::make_unique<bindings::ShaderBufferBindings>());
 		bindings.push_back(std::make_unique<bindings::MaterialParamsBindings>());
 		bindings.push_back(std::make_unique<bindings::GeometryBindings>());
+		bindings.push_back(std::make_unique<bindings::ModelProxyBindings>());
 
 		for (auto &b : bindings) {
 			b->loadBindings(lua, app);

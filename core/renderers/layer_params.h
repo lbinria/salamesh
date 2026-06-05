@@ -50,14 +50,23 @@ struct LayersParams : MaterialParams {
 		shader.setInt("colormap1Buf", 6);
 		shader.setInt("colormap2Buf", 7);
 
+		// glActiveTexture(GL_TEXTURE0 + 0);
+		// glBindTexture(GL_TEXTURE_2D, texColormaps[0]);
+
+		// glActiveTexture(GL_TEXTURE0 + 1);
+		// glBindTexture(GL_TEXTURE_2D, texColormaps[1]);
+
+		// glActiveTexture(GL_TEXTURE0 + 2);
+		// glBindTexture(GL_TEXTURE_2D, texColormaps[2]);
+
 		glActiveTexture(GL_TEXTURE0 + 0);
-		glBindTexture(GL_TEXTURE_2D, texColormaps[0]);
+		glBindTexture(GL_TEXTURE_2D, colormaps[0].tex);
 
 		glActiveTexture(GL_TEXTURE0 + 1);
-		glBindTexture(GL_TEXTURE_2D, texColormaps[1]);
+		glBindTexture(GL_TEXTURE_2D, colormaps[1].tex);
 
 		glActiveTexture(GL_TEXTURE0 + 2);
-		glBindTexture(GL_TEXTURE_2D, texColormaps[2]);
+		glBindTexture(GL_TEXTURE_2D, colormaps[2].tex);
 
 		glActiveTexture(GL_TEXTURE0 + 3);
 		glBindTexture(GL_TEXTURE_BUFFER, tboHighlight);
@@ -172,8 +181,16 @@ struct LayersParams : MaterialParams {
 		}
 	}
 
-	void setColormapTexture(int i, Colormap &colormap) {
-		texColormaps[i] = colormap.tex;
+	// void setColormapTexture(int i, Colormap &colormap) {
+	// 	texColormaps[i] = colormap.tex;
+	// }
+
+	Colormap getColormap(ColormapLayer layer) const {
+		return colormaps[static_cast<int>(layer)];
+	}
+
+	void setColormap(ColormapLayer layer, Colormap colormap) {
+		colormaps[static_cast<int>(layer)] = colormap;
 	}
 
 	void loadState(json &j) {
@@ -210,8 +227,10 @@ struct LayersParams : MaterialParams {
 	glm::vec3 hoverColor{1.f, 1.f, 1.f};
 	glm::vec3 selectColor{0.f, 0.22f, 1.f};
 
+	Colormap colormaps[3] = {};
+
 	private:
-	unsigned int texColormaps[3]; // Colormap textures
+	// unsigned int texColormaps[3]; // Colormap textures
 	unsigned int bufColormap0, bufColormap1, bufColormap2, bufHighlight, bufFilter; // Sample buffers
 	unsigned int tboColormap0, tboColormap1, tboColormap2, tboHighlight, tboFilter; // Textures
 };

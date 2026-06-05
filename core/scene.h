@@ -24,6 +24,8 @@
 #include "renderers/point_style_params.h" // TODO remove test
 #include "model_loader.h"// TODO remove test
 
+#include "model_proxy.h"
+
 #include <map>
 
 class IApp;
@@ -37,33 +39,33 @@ struct Scene {
 	std::shared_ptr<SceneNode> loadModel2(const std::string filename, const std::string name = "");
 
 	void render() {
-		for (auto &[k, r] : renderers) {
-			glm::vec3 o{0.f};
-			r->render(o);
-		}
+		// for (auto &[k, r] : renderers) {
+		// 	glm::vec3 o{0.f};
+		// 	r->render(o);
+		// }
 
-		for (auto &[k, model] : models) {
-			glActiveTexture(GL_TEXTURE0 + 0);
-			glBindTexture(GL_TEXTURE_2D, colormaps[model->getSelectedColormap(ColormapLayer::COLORMAP_LAYER_0)].tex);
+		// for (auto &[k, model] : models) {
+		// 	glActiveTexture(GL_TEXTURE0 + 0);
+		// 	glBindTexture(GL_TEXTURE_2D, colormaps[model->getSelectedColormap(ColormapLayer::COLORMAP_LAYER_0)].tex);
 
-			glActiveTexture(GL_TEXTURE0 + 1);
-			glBindTexture(GL_TEXTURE_2D, colormaps[model->getSelectedColormap(ColormapLayer::COLORMAP_LAYER_1)].tex);
+		// 	glActiveTexture(GL_TEXTURE0 + 1);
+		// 	glBindTexture(GL_TEXTURE_2D, colormaps[model->getSelectedColormap(ColormapLayer::COLORMAP_LAYER_1)].tex);
 
-			glActiveTexture(GL_TEXTURE0 + 2);
-			glBindTexture(GL_TEXTURE_2D, colormaps[model->getSelectedColormap(ColormapLayer::COLORMAP_LAYER_2)].tex);
+		// 	glActiveTexture(GL_TEXTURE0 + 2);
+		// 	glBindTexture(GL_TEXTURE_2D, colormaps[model->getSelectedColormap(ColormapLayer::COLORMAP_LAYER_2)].tex);
 
-			// Trick for test
-			for (auto &[rendererName, renderer] : model->getRenderers()) {
-				auto layerParams = renderer->getParams<LayersParams>("layers");
-				if (layerParams) {
-					layerParams->setColormapTexture(0, colormaps[model->getSelectedColormap(ColormapLayer::COLORMAP_LAYER_0)]);
-					layerParams->setColormapTexture(1, colormaps[model->getSelectedColormap(ColormapLayer::COLORMAP_LAYER_1)]);
-					layerParams->setColormapTexture(2, colormaps[model->getSelectedColormap(ColormapLayer::COLORMAP_LAYER_2)]);
-				}
-			}
+		// 	// Trick for test
+		// 	for (auto &[rendererName, renderer] : model->getRenderers()) {
+		// 		auto layerParams = renderer->getParams<LayersParams>("layers");
+		// 		if (layerParams) {
+		// 			layerParams->setColormapTexture(0, colormaps[model->getSelectedColormap(ColormapLayer::COLORMAP_LAYER_0)]);
+		// 			layerParams->setColormapTexture(1, colormaps[model->getSelectedColormap(ColormapLayer::COLORMAP_LAYER_1)]);
+		// 			layerParams->setColormapTexture(2, colormaps[model->getSelectedColormap(ColormapLayer::COLORMAP_LAYER_2)]);
+		// 		}
+		// 	}
 
-			model->render();
-		}
+		// 	model->render();
+		// }
 
 		// Test
 		for (auto &[shaderName, shader] : _shaders) {
@@ -91,6 +93,15 @@ struct Scene {
 				glBindVertexArray(shaderBuffer.vao());
 				shaderBuffer.setPosition(node->getWorldPosition());
 				shaderBuffer.apply();
+
+				// //
+				// auto layerParams = shaderBuffer.getParams<LayersParams>("layers");
+				// if (layerParams) {
+				// 	auto selectedColormap = _selectedColormap[nodeName][shaderName];
+				// 	layerParams->setColormap(ColormapLayer::COLORMAP_LAYER_0, colormaps[selectedColormap[0]]);
+				// 	layerParams->setColormap(ColormapLayer::COLORMAP_LAYER_1, colormaps[selectedColormap[1]]);
+				// 	layerParams->setColormap(ColormapLayer::COLORMAP_LAYER_2, colormaps[selectedColormap[2]]);
+				// }
 
 				// Set textures
 				for (auto &tbo : shaderBuffer.tbos) {
@@ -204,6 +215,10 @@ struct Scene {
 	float computeSceneDiameter();
 	void computeFarPlane();
 
+	std::tuple<glm::vec3, glm::vec3> computeSceneBBox2();
+	float computeSceneDiameter2();
+	void computeFarPlane2();
+
 
 	void setupCameras();
 
@@ -243,7 +258,7 @@ struct Scene {
 		setupColormaps();
 	}
 
-	std::vector<Colormap> getColormaps() {
+	std::vector<Colormap>& getColormaps() {
 		return colormaps;
 	}
 
@@ -282,6 +297,14 @@ struct Scene {
 		return nullptr;
 	}
 
+	
+	const std::map<std::string, std::unique_ptr<Material>>& getShaders() const {
+		return _shaders;
+	}
+
+	ModelProxy getModel(std::shared_ptr<SceneNode> node) {
+		return ModelProxy(*this, node);
+	}
 
 	private:
 	IApp &app;
@@ -297,7 +320,11 @@ struct Scene {
 	RendererCollection renderers;
 
 	std::map<std::string, std::shared_ptr<SceneNode>> _nodes;
+	std::map<std::string, ModelProxy> _models;
+
 	std::map<std::string, std::unique_ptr<Material>> _shaders;
+
+	// std::map<std::string, std::map<std::string, int[3]>> _selectedColormap;
 
 	// display color map in good format for 2D in the UI
 	std::vector<Colormap> colormaps;

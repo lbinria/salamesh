@@ -39,5 +39,7 @@ namespace bindings {
 				return self.getColormap(name);
 			}
 		));
+
+		type.set_function("get_model", &Scene::getModel);
 	}
 }

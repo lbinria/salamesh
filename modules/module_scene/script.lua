@@ -287,6 +287,55 @@ function draw_model_properties(model, k, view)
 
 		end
 
+		if (imgui.CollapsingHeader("Attributes##" .. k .. "_properties_attributes")) then 
+
+			local model_proxy = app.scene:get_model(model)
+
+			imgui.Text("Colormap 0")
+
+			local colormaps = app.scene.colormaps
+			local items = {}
+			for i = 1, #colormaps do 
+				table.insert(items, colormaps[i].name)
+			end
+
+			local colormap_size = imgui.ImVec2(320, 35)
+
+			if (imgui.BeginCombo("##combo_colormaps0_selection", items[model_proxy.selected_colormap])) then
+				-- Display items in the popup
+				for i = 1, #items do
+					local is_selected = model_proxy.selected_colormap == i
+					-- Create a unique ID for each item to prevent conflicts
+					imgui.PushID(i)
+
+					-- Calculate total width including spacing
+					-- local total_width = imgui.CalcTextSize(items[i]).x + colormap_size.x + 10.0
+
+					-- Display the item with both text and image
+					if (imgui.Selectable(items[i], is_selected)) then
+						model_proxy.selected_colormap = i
+					end
+
+					-- Display the image after the text
+					imgui.Image(app.scene.colormaps[i].tex, colormap_size)
+
+					imgui.PopID()
+				end
+
+				imgui.EndCombo()
+			end
+
+			local selected_cm = app.scene.colormaps[model_proxy.selected_colormap]
+			if selected_cm.height > 1 then 
+				local h = selected_cm.height / selected_cm.width * 320
+				colormap_size = imgui.ImVec2(320, h)
+			end
+
+			imgui.Image(
+				selected_cm.tex, 
+				colormap_size
+			)
+		end
 
 		-- if (imgui.CollapsingHeader("Style##" .. k .. "_properties_style")) then 
 

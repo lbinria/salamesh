@@ -42,41 +42,41 @@ void Scene::init() {
 	auto halfedgesShader = std::make_unique<HalfedgeMaterial>("halfedges");
 	auto lineShader = std::make_unique<LineMaterial>("line_shader");
 
-	auto geo = std::make_unique<TrianglesGeometry>();
-	geo->_m.points.create_points(3);
-	geo->_m.create_facets(1);
-	geo->_m.points[0] = {0.,0.,0.};
-	geo->_m.points[1] = {1.,0.,0.};
-	geo->_m.points[2] = {0.5,0.5,0.};
-	geo->_m.vert(0, 0) = 0;
-	geo->_m.vert(0, 1) = 1;
-	geo->_m.vert(0, 2) = 2;
+	// auto geo = std::make_unique<TrianglesGeometry>();
+	// geo->_m.points.create_points(3);
+	// geo->_m.create_facets(1);
+	// geo->_m.points[0] = {0.,0.,0.};
+	// geo->_m.points[1] = {1.,0.,0.};
+	// geo->_m.points[2] = {0.5,0.5,0.};
+	// geo->_m.vert(0, 0) = 0;
+	// geo->_m.vert(0, 1) = 1;
+	// geo->_m.vert(0, 2) = 2;
 
-	auto node = std::make_shared<SceneNode>();
-	node->addShader(*pointsShader);
-	node->setGeometry(std::move(geo));
-	_nodes.emplace("node_1", std::move(node));
+	// auto node = std::make_shared<SceneNode>();
+	// node->addShader(*pointsShader);
+	// node->setGeometry(std::move(geo));
+	// _nodes.emplace("node_1", std::move(node));
 
-	auto geo2 = std::make_unique<TrianglesGeometry>();
-	geo2->_m.points.create_points(3);
-	geo2->_m.create_facets(1);
-	geo2->_m.points[0] = {0.2,0.,0.};
-	geo2->_m.points[1] = {0.8,0.,0.};
-	geo2->_m.points[2] = {0.3,0.2,0.};
-	geo2->_m.vert(0, 0) = 0;
-	geo2->_m.vert(0, 1) = 1;
-	geo2->_m.vert(0, 2) = 2;
+	// auto geo2 = std::make_unique<TrianglesGeometry>();
+	// geo2->_m.points.create_points(3);
+	// geo2->_m.create_facets(1);
+	// geo2->_m.points[0] = {0.2,0.,0.};
+	// geo2->_m.points[1] = {0.8,0.,0.};
+	// geo2->_m.points[2] = {0.3,0.2,0.};
+	// geo2->_m.vert(0, 0) = 0;
+	// geo2->_m.vert(0, 1) = 1;
+	// geo2->_m.vert(0, 2) = 2;
 
-	auto node2 = std::make_shared<SceneNode>();
-	node2->addShader(*pointsShader);
-	node2->addShader(*trianglesShader);
-	node2->setGeometry(std::move(geo2));
-	auto sb = node2->getShaderBuffer("points");
-	auto ps = sb.value().get().getParams<PointStyleParams>("style");
-	ps->size = 10.f;
-	ps->color = {1.f, 0.4f, 0.2f};
+	// auto node2 = std::make_shared<SceneNode>();
+	// node2->addShader(*pointsShader);
+	// node2->addShader(*trianglesShader);
+	// node2->setGeometry(std::move(geo2));
+	// auto sb = node2->getShaderBuffer("points");
+	// auto ps = sb.value().get().getParams<PointStyleParams>("style");
+	// ps->size = 10.f;
+	// ps->color = {1.f, 0.4f, 0.2f};
 
-	_nodes.emplace("node_2", std::move(node2));
+	// _nodes.emplace("node_2", std::move(node2));
 
 	_shaders.emplace("points_shader", std::move(pointsShader));
 	_shaders.emplace("triangles_shader", std::move(trianglesShader));
@@ -202,6 +202,7 @@ std::shared_ptr<SceneNode> Scene::loadModel2(const std::string filename, const s
 
 	// node->add(bboxNode);
 	// _nodes.emplace(name + "_bbox", std::move(bboxNode));
+	computeFarPlane2();
 
 	// A model was loaded ? focus it !
 	if (!nodeName.empty())
@@ -224,6 +225,18 @@ void Scene::focus2(const std::string nodeName) {
 	getCurrentCamera().lookAtBox(bbox);
 }
 
+std::tuple<glm::vec3, glm::vec3> Scene::computeSceneBBox2() {
+	glm::vec3 min{std::numeric_limits<float>::max()};
+	glm::vec3 max{-std::numeric_limits<float>::max()};
+	for (auto &[_, n] : _nodes) {
+		auto [cmin, cmax] = n->bbox();
+		min = glm::min(min, cmin);
+		max = glm::max(max, cmax);
+	}
+	
+	return std::make_tuple(min, max);
+}
+
 std::tuple<glm::vec3, glm::vec3> Scene::computeSceneBBox() {
 	glm::vec3 min{std::numeric_limits<float>::max()};
 	glm::vec3 max{-std::numeric_limits<float>::max()};
@@ -236,9 +249,24 @@ std::tuple<glm::vec3, glm::vec3> Scene::computeSceneBBox() {
 	return std::make_tuple(min, max);
 }
 
+float Scene::computeSceneDiameter2() {
+	auto [min, max] = computeSceneBBox2();
+	return glm::length(max - min);
+}
+
 float Scene::computeSceneDiameter() {
 	auto [min, max] = computeSceneBBox();
 	return glm::length(max - min);
+}
+
+void Scene::computeFarPlane2() {
+	auto diameter = computeSceneDiameter2();
+
+	for (auto &[k, c] : cameras) {
+		c->setFarPlane(diameter * 5.f /* 5.f is an arbitrary value... */);
+	}
+
+	// TODO should refresh camera here, elsewhere nothing will be visible until we doing somethin that refresh the camera!
 }
 
 void Scene::computeFarPlane() {
@@ -262,8 +290,7 @@ void Scene::setupColormaps() {
 	addColormap("CET-R41", sl::assetsPath("CET-R41px.png"));
 	addColormap("CET-L08", sl::assetsPath("CET-L08px.png"));
 	addColormap("alpha", sl::assetsPath("colormap_alpha.png"));
-	addColormap("cat", "/home/tex/Models/cat/Cat_diffuse.jpg");
-	addColormap("extended", sl::assetsPath("extended.png"));
+	// addColormap("cat", "/home/tex/Models/cat/Cat_diffuse.jpg");
 }
 
 void Scene::addColormap(const std::string name, const std::string filename) {
