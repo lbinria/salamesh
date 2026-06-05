@@ -3,6 +3,8 @@
 #include <ultimaille/all.h>
 using namespace UM;
 
+#include "data/attribute.h"
+#include <optional>
 
 struct Geometry {
 

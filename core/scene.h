@@ -36,7 +36,7 @@ struct Scene {
 
 
 	void init();
-	std::shared_ptr<SceneNode> loadModel2(const std::string filename, const std::string name = "");
+	std::shared_ptr<ModelNode> loadModel2(const std::string filename, const std::string name = "");
 
 	void render() {
 		// for (auto &[k, r] : renderers) {
@@ -271,9 +271,38 @@ struct Scene {
 	RenderSurface& getDefaultRenderSurface() { return *renderSurfaces["default"]; }
 	std::map<std::string, std::shared_ptr<RenderSurface>>& getRenderSurfaces() { return renderSurfaces; }
 
+
+
 	const std::map<std::string, std::shared_ptr<SceneNode>>& getNodes() const {
 		return _nodes;
 	}
+
+	template <typename T>
+	std::map<std::string, std::shared_ptr<T>> getNodes2() const {
+		static_assert(std::is_base_of_v<SceneNode, T>, 
+					"T must be derived from SceneNode");
+		
+		std::map<std::string, std::shared_ptr<T>> result;
+		
+		for (const auto& [name, node] : _nodes) {
+			if (auto casted = std::dynamic_pointer_cast<T>(node)) {
+				result[name] = casted;
+			}
+		}
+		
+		return result;
+	}
+
+	// std::map<std::string, std::shared_ptr<SceneNode>> getNodesByType(const std::string& typeName) const {
+	// 	if (typeName == "ModelNode") {
+	// 		auto result = getNodes2<ModelNode>();
+	// 		return std::map<std::string, std::shared_ptr<SceneNode>>(
+	// 			result.begin(), result.end()
+	// 		);
+	// 	}
+	// 	// Add other types as needed
+	// 	return {};
+	// }
 
 	std::shared_ptr<SceneNode> getNodeByName(const std::string name) {
 		return _nodes.contains(name) ? _nodes.at(name) : nullptr;
@@ -320,7 +349,6 @@ struct Scene {
 	RendererCollection renderers;
 
 	std::map<std::string, std::shared_ptr<SceneNode>> _nodes;
-	std::map<std::string, ModelProxy> _models;
 
 	std::map<std::string, std::unique_ptr<Material>> _shaders;
 

@@ -8,7 +8,9 @@ namespace bindings {
 		// type.set_function("load_model", &Scene::loadModel);
 		type.set_function("load_model", &Scene::loadModel2);
 		// type["models"] = sol::readonly_property(&Scene::getModels);
-		type["models"] = sol::readonly_property(&Scene::getNodes);
+		type["nodes"] = sol::readonly_property(&Scene::getNodes);
+		type["models"] = sol::readonly_property(&Scene::getNodes2<ModelNode>);
+		
 		// type["model"] = sol::readonly_property(&Scene::getCurrentModel);
 		type["model"] = sol::readonly_property(&Scene::getCurrentNode);
 		// type["hovered_model"] = sol::readonly_property(&Scene::getHoveredModel);

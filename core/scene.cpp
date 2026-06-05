@@ -173,14 +173,14 @@ std::shared_ptr<Model> Scene::loadModel(const std::string& filename, std::string
 	return models[modelName];
 }
 
-std::shared_ptr<SceneNode> Scene::loadModel2(const std::string filename, const std::string name) {
+std::shared_ptr<ModelNode> Scene::loadModel2(const std::string filename, const std::string name) {
 
 	std::string nodeName = name.empty() ? 
 		std::filesystem::path(filename).stem().string() + std::to_string(models.count()) : 
 		name;
 		
 	// Mesh node
-	auto node = std::make_shared<SceneNode>(ModelLoader::load(filename));
+	auto node = std::make_shared<ModelNode>(ModelLoader::load(filename, *this));
 
 	// Put all compatible shaders on model
 	for (auto &[shaderName, shader] : _shaders) {
@@ -208,7 +208,7 @@ std::shared_ptr<SceneNode> Scene::loadModel2(const std::string filename, const s
 	if (!nodeName.empty())
 		focus2(nodeName);
 
-	return _nodes.at(nodeName);
+	return node;
 }
 
 void Scene::focus(std::string modelName) {

@@ -289,7 +289,7 @@ function draw_model_properties(model, k, view)
 
 		if (imgui.CollapsingHeader("Attributes##" .. k .. "_properties_attributes")) then 
 
-			local model_proxy = app.scene:get_model(model)
+			-- local model_proxy = app.scene:get_model(model)
 
 			imgui.Text("Colormap 0")
 
@@ -301,10 +301,10 @@ function draw_model_properties(model, k, view)
 
 			local colormap_size = imgui.ImVec2(320, 35)
 
-			if (imgui.BeginCombo("##combo_colormaps0_selection", items[model_proxy.selected_colormap])) then
+			if (imgui.BeginCombo("##combo_colormaps0_selection", items[model.selected_colormap])) then
 				-- Display items in the popup
 				for i = 1, #items do
-					local is_selected = model_proxy.selected_colormap == i
+					local is_selected = model.selected_colormap == i
 					-- Create a unique ID for each item to prevent conflicts
 					imgui.PushID(i)
 
@@ -313,7 +313,7 @@ function draw_model_properties(model, k, view)
 
 					-- Display the item with both text and image
 					if (imgui.Selectable(items[i], is_selected)) then
-						model_proxy.selected_colormap = i
+						model.selected_colormap = i
 					end
 
 					-- Display the image after the text
@@ -325,7 +325,7 @@ function draw_model_properties(model, k, view)
 				imgui.EndCombo()
 			end
 
-			local selected_cm = app.scene.colormaps[model_proxy.selected_colormap]
+			local selected_cm = app.scene.colormaps[model.selected_colormap]
 			if selected_cm.height > 1 then 
 				local h = selected_cm.height / selected_cm.width * 320
 				colormap_size = imgui.ImVec2(320, h)

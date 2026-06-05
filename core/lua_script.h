@@ -24,6 +24,7 @@
 #include "../bindings/model_bindings.h"
 #include "../bindings/renderer_bindings.h"
 #include "../bindings/scene_node_bindings.h"
+#include "../bindings/model_node_bindings.h"
 #include "../bindings/shader_buffer_bindings.h"
 #include "../bindings/material_params_bindings.h"
 #include "../bindings/geometry_bindings.h"
@@ -128,6 +129,7 @@ struct LuaScript final : public Script {
 		bindings.push_back(std::make_unique<bindings::UMBindings>());
 		bindings.push_back(std::make_unique<bindings::RendererBindings>());
 		bindings.push_back(std::make_unique<bindings::SceneNodeBindings>());
+		bindings.push_back(std::make_unique<bindings::ModelNodeBindings>());
 		bindings.push_back(std::make_unique<bindings::ShaderBufferBindings>());
 		bindings.push_back(std::make_unique<bindings::MaterialParamsBindings>());
 		bindings.push_back(std::make_unique<bindings::GeometryBindings>());
