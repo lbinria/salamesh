@@ -6,15 +6,15 @@ namespace bindings {
 		type = lua.new_usertype<ModelNode>(
 			"ModelNode",
 			sol::base_classes, 
-			sol::bases<SceneNode>(),
-			"selected_colormap", sol::property(
-				[](ModelNode &self) {
-					return self.getSelectedColormap() + 1;
-				}, 
-				[](ModelNode &self, int idx) {
-					self.setSelectedColormap(idx - 1);
-				}
-			)
+			sol::bases<SceneNode>()
+			// "selected_colormap", sol::property(
+			// 	[](ModelNode &self) {
+			// 		return self.getSelectedColormap() + 1;
+			// 	}, 
+			// 	[](ModelNode &self, int idx) {
+			// 		self.setSelectedColormap(idx - 1);
+			// 	}
+			// )
 		);
 	}
 

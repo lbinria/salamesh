@@ -11,7 +11,7 @@ namespace bindings {
 
 		void loadBindings(sol::state &lua, IApp &app) override;
 		private:
-		sol::usertype<ModelProxy> type;
+		// sol::usertype<ModelProxy> type;
 	};
 
 }

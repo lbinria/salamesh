@@ -24,7 +24,6 @@
 #include "renderers/point_style_params.h" // TODO remove test
 #include "model_loader.h"// TODO remove test
 
-#include "model_proxy.h"
 
 #include <map>
 
@@ -329,10 +328,6 @@ struct Scene {
 	
 	const std::map<std::string, std::unique_ptr<Material>>& getShaders() const {
 		return _shaders;
-	}
-
-	ModelProxy getModel(std::shared_ptr<SceneNode> node) {
-		return ModelProxy(*this, node);
 	}
 
 	private:

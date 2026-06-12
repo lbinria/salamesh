@@ -121,6 +121,24 @@ struct SceneNode : std::enable_shared_from_this<SceneNode> {
 		return _visible;
 	}
 
+
+
+	// void setSelectedColormap(int idx);
+	// int getSelectedColormap();
+	// std::optional<Colormap> getSelectedColormap();
+	// void setSelectedColormap(Colormap colormap);
+
+
+	// std::string getLayerAttr(Layer layer, ElementKind kind);
+	// void setLayerAttr(std::string name, Layer layer, ElementKind kind);
+
+	void setLayer(Layer layer, ElementKind kind, bool update);
+	void unsetLayer(ElementKind kind, Layer layer, bool reset);
+	// void updateLayer(Layer layer, ElementKind kind);
+	// void resetLayer(ElementKind kind, Layer layer);
+	
+
+
 	glm::vec3 position{0,0,0};
 
 	private:
@@ -136,5 +154,8 @@ struct SceneNode : std::enable_shared_from_this<SceneNode> {
 	int _index;
 
 	bool _visible = true;
+
+	std::string _selectedAttribute;
+	std::map<std::tuple<Layer, ElementKind>, std::string> _attrNameByLayerAndKind;
 
 };

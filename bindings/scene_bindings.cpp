@@ -42,6 +42,13 @@ namespace bindings {
 			}
 		));
 
-		type.set_function("get_model", &Scene::getModel);
+		// type["selected_colormap"], sol::property(
+		// 	[](SceneNode &self) {
+		// 		return self.getSelectedColormap() + 1;
+		// 	}, 
+		// 	[](SceneNode &self, int idx) {
+		// 		self.setSelectedColormap(idx - 1);
+		// 	}
+		// )
 	}
 }
