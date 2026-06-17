@@ -10,15 +10,15 @@
 #include "../../include/glm/gtc/matrix_transform.hpp"
 #include "../../include/glm/gtc/type_ptr.hpp"
 
-#include "surface_renderer.h"
+#include "surface_shader.h"
 #include "../data/element_type.h"
 #include "../shader.h"
 
 using namespace UM;
 
-struct TriMaterial : public SurfaceMaterial {
+struct TriMaterial : public SurfaceShader {
 
-	using SurfaceMaterial::SurfaceMaterial;
+	using SurfaceShader::SurfaceShader;
 	void push() override;
 
 };

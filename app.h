@@ -51,7 +51,7 @@
 
 #include "core/lua_script.h"
 
-#include "core/renderers/line_renderer.h"
+#include "core/renderers/line_shader.h"
 
 #include "core/navigation_path.h"
 

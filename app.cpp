@@ -4,7 +4,7 @@
 
 #include "core/cameras/trackball_camera.h"
 #include "core/cameras/descent_camera.h"
-#include "core/renderers/line_renderer.h"
+#include "core/renderers/line_shader.h"
 
 #include "core/models/polyline_model.h"
 #include "core/models/surface_model.h"

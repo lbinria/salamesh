@@ -1,16 +1,16 @@
-#include "surface_renderer.h"
+#include "surface_shader.h"
 #include "../../core/utils/opengl_helper.h"
 #include "mesh_style_params.h"
 #include "layer_params.h"
 #include "light_params.h"
 #include "clipping_params.h"
 
-bool SurfaceMaterial::isCompatible(Geometry &geometry) {
+bool SurfaceShader::isCompatible(Geometry &geometry) {
 	auto trianglesGeometry = dynamic_cast<TrianglesGeometry*>(&geometry);
 	return trianglesGeometry;
 }
 
-ShaderBuffer SurfaceMaterial::createShaderBuffer() {
+ShaderBuffer SurfaceShader::createShaderBuffer() {
 	unsigned int vao, vbo;
 	glGenVertexArrays(1, &vao);
 	glGenBuffers(1, &vbo);
@@ -33,7 +33,7 @@ ShaderBuffer SurfaceMaterial::createShaderBuffer() {
 	return ShaderBuffer(shader, vao, vbo, params);
 };
 
-void SurfaceMaterial::update(ShaderBuffer &shaderBuffer, Geometry &geometry) {
+void SurfaceShader::update(ShaderBuffer &shaderBuffer, Geometry &geometry) {
 	auto trianglesGeometry = dynamic_cast<TrianglesGeometry*>(&geometry);
 
 	if (trianglesGeometry) {
@@ -73,7 +73,7 @@ void SurfaceMaterial::update(ShaderBuffer &shaderBuffer, Geometry &geometry) {
 
 }
 
-void SurfaceMaterial::init() {
+void SurfaceShader::init() {
 
 	_params["style"] = std::make_shared<MeshStyleParams>();
 	_params["layers"] = std::make_shared<LayersParams>();
@@ -99,7 +99,7 @@ void SurfaceMaterial::init() {
 	
 }
 
-void SurfaceMaterial::render(glm::vec3 &position) {
+void SurfaceShader::render(glm::vec3 &position) {
 
 	if (!visible)
 		return;
@@ -114,13 +114,13 @@ void SurfaceMaterial::render(glm::vec3 &position) {
 	glDrawArrays(GL_TRIANGLES, 0, nelements);
 }
 
-void SurfaceMaterial::clear() {
+void SurfaceShader::clear() {
 	glBindVertexArray(VAO);
 	glBindBuffer(GL_ARRAY_BUFFER, VBO);
 	glBufferData(GL_ARRAY_BUFFER, nelements * sizeof(Vertex), nullptr, GL_STATIC_DRAW);
 }
 
-void SurfaceMaterial::clean() {
+void SurfaceShader::clean() {
 	// Clean up
 	glDeleteVertexArrays(1, &VAO);
 	glDeleteBuffers(1, &VBO);

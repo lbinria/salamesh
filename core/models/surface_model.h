@@ -4,10 +4,10 @@
 #include <ultimaille/all.h>
 #include <string>
 #include "model.h"
-#include "../renderers/point_set_renderer.h"
-#include "../renderers/halfedge_renderer.h"
+#include "../renderers/point_shader.h"
+#include "../renderers/halfedge_shader.h"
 #include "../renderers/tri_renderer.h"
-#include "../renderers/poly_renderer.h"
+#include "../renderers/poly_shader.h"
 #include "../renderers/bbox_material.h"
 #include "../renderers/clipping_renderer.h"
 #include "../data/layer.h"
@@ -18,7 +18,7 @@ template<typename T>
 concept SurfaceDerived2 = std::is_base_of_v<Surface, std::remove_cv_t<T>> && 
 	!std::is_same_v<Surface, std::remove_cv_t<T>>;
 
-// This code allow selection of the Material type according to a given Surface type
+// This code allow selection of the ShaderBase type according to a given Surface type
 // It looks like to module functor in ocaml
 namespace RendererSpecialization {
 	template<typename T>
@@ -32,20 +32,20 @@ namespace RendererSpecialization {
 
 	template<>
 	struct RendererSelector<UM::Quads> {
-		using type = PolyMaterial;
+		using type = PolyShader;
 		// using type = QuadRenderer2;
 	};
 
 	template<>
 	struct RendererSelector<UM::Polygons> {
-		using type = PolyMaterial;
+		using type = PolyShader;
 		// using type = PolyRenderer2;
 	};
 }
 
 struct SurfModel : public Model {
 
-	SurfModel(std::string name, std::map<std::string, std::shared_ptr<Material>> renderers) : Model::Model(name, renderers) {}
+	SurfModel(std::string name, std::map<std::string, std::shared_ptr<ShaderBase>> renderers) : Model::Model(name, renderers) {}
 
 	SurfaceAttributes& getSurfaceAttributes() { return _surfaceAttributes; }
 	const SurfaceAttributes& getSurfaceAttributes() const { return _surfaceAttributes; }
@@ -62,8 +62,8 @@ struct SurfaceModel : public SurfModel {
 		_m(),
 		SurfModel::SurfModel(name, {
 			{"mesh_renderer", std::make_shared<typename RendererSpecialization::RendererSelector<TSurface>::type>("", _m)}, 
-			{"point_renderer", std::make_shared<PointMaterial>("", _m.points) },
-			{"edge_renderer", std::make_shared<SurfaceHalfedgeRenderer>("", _m) },
+			{"point_renderer", std::make_shared<PointShader>("", _m.points) },
+			{"edge_renderer", std::make_shared<SurfaceHalfedgeShader>("", _m) },
 			{"bbox_renderer", std::make_shared<BBoxMaterial>("", _m.points) },
 			{"zclipping_renderer", std::make_shared<ClippingMaterial>("", _m.points) }
 		})

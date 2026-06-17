@@ -3,10 +3,10 @@
 #include "../data/element_type.h"
 #include "../data/layer.h"
 #include "../data/attribute.h"
-#include "../renderers/renderer.h"
+#include "../renderers/shader_base.h"
 #include "../renderers/mesh_renderer.h"
-#include "../renderers/point_set_renderer.h"
-#include "../renderers/halfedge_renderer.h"
+#include "../renderers/point_shader.h"
+#include "../renderers/halfedge_shader.h"
 #include "../renderers/layer_params.h"
 #include "../renderers/light_params.h"
 #include "../renderers/clipping_mode.h"
@@ -29,7 +29,7 @@ struct Model {
 	Model (const Model&) = delete;
 	Model& operator= (const Model&) = delete;
 
-	Model(std::string name, std::map<std::string, std::shared_ptr<Material>> renderers) :  
+	Model(std::string name, std::map<std::string, std::shared_ptr<ShaderBase>> renderers) :  
 	name(name.empty() ? sl::generateGuid() : name),
 	_path(""),
 	_renderers(std::move(renderers)) {
@@ -442,14 +442,14 @@ struct Model {
 		maxIndex = 0;
 	}
 
-	// Material getters
-	PointMaterial& getPointsRenderer() {
-		return *static_cast<PointMaterial*>(_renderers.at("point_renderer").get());
+	// ShaderBase getters
+	PointShader& getPointsRenderer() {
+		return *static_cast<PointShader*>(_renderers.at("point_renderer").get());
 	}
 
-	std::shared_ptr<HalfedgeMaterial> getEdgesRenderer() {
+	std::shared_ptr<HalfedgeShader> getEdgesRenderer() {
 		if (_renderers.contains("edge_renderer"))
-			return  std::static_pointer_cast<HalfedgeMaterial>(_renderers.at("edge_renderer"));
+			return  std::static_pointer_cast<HalfedgeShader>(_renderers.at("edge_renderer"));
 			
 		return nullptr;
 	}
@@ -465,11 +465,11 @@ struct Model {
 		return _renderers.contains(name);
 	}
 
-	std::map<std::string, std::shared_ptr<Material>> getRenderers() const {
+	std::map<std::string, std::shared_ptr<ShaderBase>> getRenderers() const {
 		return _renderers;
 	}
 
-	std::shared_ptr<Material> getRenderer(const std::string name) const {
+	std::shared_ptr<ShaderBase> getRenderer(const std::string name) const {
 		return _renderers.at(name);
 	}
 
@@ -516,7 +516,7 @@ struct Model {
 	int selectedColormap[3] = {0, 0, 0};
 
 	// Renderers
-	std::map<std::string, std::shared_ptr<Material>> _renderers;
+	std::map<std::string, std::shared_ptr<ShaderBase>> _renderers;
 
 	virtual std::vector<std::pair<ElementKind, NamedContainer>> getAttributeContainers() const = 0;
 

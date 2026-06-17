@@ -1,13 +1,13 @@
 #pragma once
-#include "renderer.h"
+#include "shader_base.h"
 #include "../entity_collection.h"
 
 #include <map>
 #include <memory>
 
-struct RendererCollection : public EntityCollection<Material> {
+struct RendererCollection : public EntityCollection<ShaderBase> {
 
-	std::shared_ptr<Material> add(std::string type, std::string name) override {
+	std::shared_ptr<ShaderBase> add(std::string type, std::string name) override {
 
 		// Check whether renderer already exists
 		if (entities.contains(name))

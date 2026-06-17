@@ -1,11 +1,11 @@
-#include "poly_renderer.h"
+#include "poly_shader.h"
 #include "../../core/utils/opengl_helper.h"
 #include "mesh_style_params.h"
 #include "layer_params.h"
 #include "light_params.h"
 #include "clipping_params.h"
 
-ShaderBuffer PolyMaterial::createShaderBuffer() {
+ShaderBuffer PolyShader::createShaderBuffer() {
 	unsigned int vao, vbo;
 	glGenVertexArrays(1, &vao);
 	glGenBuffers(1, &vbo);
@@ -45,14 +45,14 @@ ShaderBuffer PolyMaterial::createShaderBuffer() {
 	return shaderBuffer;
 };
 
-bool PolyMaterial::isCompatible(Geometry &geometry) {
+bool PolyShader::isCompatible(Geometry &geometry) {
 	// Accept QuadsGeometry / PolyGeometry
 	auto quadsGeometry = dynamic_cast<QuadsGeometry*>(&geometry);
 	auto polygonsGeometry = dynamic_cast<PolygonsGeometry*>(&geometry);
 	return quadsGeometry || polygonsGeometry;
 }
 
-void PolyMaterial::update(ShaderBuffer &shaderBuffer, Geometry &geometry) {
+void PolyShader::update(ShaderBuffer &shaderBuffer, Geometry &geometry) {
 	auto quadsGeometry = dynamic_cast<QuadsGeometry*>(&geometry);
 	auto polygonsGeometry = dynamic_cast<PolygonsGeometry*>(&geometry);
 
@@ -148,7 +148,7 @@ void PolyMaterial::update(ShaderBuffer &shaderBuffer, Geometry &geometry) {
 
 }
 
-void PolyMaterial::init() {
+void PolyShader::init() {
 
 	_params["style"] = std::make_shared<MeshStyleParams>();
 	_params["layers"] = std::make_shared<LayersParams>();
@@ -182,7 +182,7 @@ void PolyMaterial::init() {
 
 }
 
-void PolyMaterial::push() {
+void PolyShader::push() {
  
 	std::vector<float> nVertsPerFacet(_m.nfacets());
 
@@ -264,7 +264,7 @@ void PolyMaterial::push() {
 	glBufferData(GL_TEXTURE_BUFFER, nVertsPerFacet.size() * sizeof(float), nVertsPerFacet.data(), GL_STATIC_DRAW);
 }
 
-void PolyMaterial::render(glm::vec3 &position) {
+void PolyShader::render(glm::vec3 &position) {
 
 	if (!visible)
 		return;
@@ -284,14 +284,14 @@ void PolyMaterial::render(glm::vec3 &position) {
 	glDrawArrays(GL_TRIANGLES, 0, nelements);
 }
 
-void PolyMaterial::clear() {
+void PolyShader::clear() {
 	glBindVertexArray(VAO);
 	glBindBuffer(GL_ARRAY_BUFFER, VBO);
 	glBufferData(GL_ARRAY_BUFFER, nelements * sizeof(Vertex), nullptr, GL_STATIC_DRAW);
 	nelements = 0;
 }
 
-void PolyMaterial::clean() {
+void PolyShader::clean() {
 	// Clean up
 	glDeleteVertexArrays(1, &VAO);
 	glDeleteBuffers(1, &VBO);

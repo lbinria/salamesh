@@ -16,8 +16,8 @@
 #include "models/polyline_model.h"
 #include "models/model_collection.h"
 
-#include "renderers/renderer.h"
-#include "renderers/line_renderer.h"
+#include "renderers/shader_base.h"
+#include "renderers/line_shader.h"
 #include "renderers/renderer_collection.h"
 
 #include "scene_node.h"
@@ -326,7 +326,7 @@ struct Scene {
 	}
 
 	
-	const std::map<std::string, std::unique_ptr<Material>>& getShaders() const {
+	const std::map<std::string, std::unique_ptr<ShaderBase>>& getShaders() const {
 		return _shaders;
 	}
 
@@ -345,7 +345,7 @@ struct Scene {
 
 	std::map<std::string, std::shared_ptr<SceneNode>> _nodes;
 
-	std::map<std::string, std::unique_ptr<Material>> _shaders;
+	std::map<std::string, std::unique_ptr<ShaderBase>> _shaders;
 
 	// std::map<std::string, std::map<std::string, int[3]>> _selectedColormap;
 

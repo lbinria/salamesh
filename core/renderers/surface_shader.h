@@ -10,39 +10,35 @@
 #include "../../include/glm/gtc/matrix_transform.hpp"
 #include "../../include/glm/gtc/type_ptr.hpp"
 
-#include "../../include/json.hpp"
+#include "../include/json.hpp"
 using json = nlohmann::json;
 
 #include "mesh_renderer.h"
 #include "../data/element_type.h"
 using namespace UM;
 
-struct PolyMaterial : public MeshMaterial {
+#include "material_params.h"
 
+struct SurfaceShader : public MeshMaterial {
+	
 	struct Vertex {
-		int vertexIndex;
+		// int vertexIndex;
 		int localIndex;
 		int cornerIndex;
-		int cornerOff;
-		int facetIndex;
-		glm::vec3 p;
 		glm::vec3 p0;
 		glm::vec3 p1;
 		glm::vec3 p2;
-		glm::vec3 n;
+		int facetIndex;
 	};
 
-	PolyMaterial(std::string name, Surface &m) : 
-		MeshMaterial(name, Shader(sl::shadersPath("poly.vert"), sl::shadersPath("surface.frag"))),
+	SurfaceShader(std::string name, Surface &m) : 
+		MeshMaterial(name, Shader(sl::shadersPath("surface.vert"), sl::shadersPath("surface.frag"))),
 		_m(m)
-		{
-			shader.use();
-			shader.setFloat3("color", {0.71f, 0.71f, 0.71f});
-		}
+		{}
 
-	PolyMaterial(std::string name) : 
-		MeshMaterial(name, Shader(sl::shadersPath("poly.vert"), sl::shadersPath("surface.frag"))),
-		_m(*new Polygons())
+	SurfaceShader(std::string name) : 
+		MeshMaterial(name, Shader(sl::shadersPath("surface.vert"), sl::shadersPath("surface.frag"))),
+		_m(*new Triangles())
 		{}
 
 	virtual bool isCompatible(Geometry &geometry) override;
@@ -55,7 +51,7 @@ struct PolyMaterial : public MeshMaterial {
 
 	void init() override;
 	void render(glm::vec3 &position) override;
-	void push() override;
+	virtual void push() override = 0;
 	void clear() override;
 	void clean() override;
 
@@ -68,13 +64,9 @@ struct PolyMaterial : public MeshMaterial {
 
 	private:
 
-	unsigned int bufNVertsPerFacet; 
-	unsigned int texNVertsPerFacet;
-
 	void doLoadState(json &j) override {
 		MeshMaterial::doLoadState(j);
 	}
-	
 	void doSaveState(json &j) const override {
 		MeshMaterial::doSaveState(j);
 	}

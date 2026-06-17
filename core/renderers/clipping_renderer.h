@@ -1,6 +1,6 @@
 #pragma once
 
-#include "renderer.h"
+#include "shader_base.h"
 
 #include "../shader.h"
 
@@ -15,14 +15,14 @@ using json = nlohmann::json;
 
 using namespace UM;
 
-struct ClippingMaterial : public Material {
+struct ClippingMaterial : public ShaderBase {
 
 	struct Vertex {
 		glm::vec3 p;
 	};
 
 	ClippingMaterial(std::string name, PointSet &ps) : 
-		Material(name, Shader(sl::shadersPath("clipping.vert"), sl::shadersPath("clipping.frag"))),
+		ShaderBase(name, Shader(sl::shadersPath("clipping.vert"), sl::shadersPath("clipping.frag"))),
 		ps(ps) {
 			visible = false;
 			// setColor(glm::vec3(1.0, 1.0, 1.0));
@@ -37,18 +37,18 @@ struct ClippingMaterial : public Material {
 	int getRenderElementKind() override { return 0; }
 
 	void setClipping(bool enabled) {
-		// Material::setClipping(enabled);
+		// ShaderBase::setClipping(enabled);
 		visible = enabled;
 	}
 
 	void setClippingPlanePoint(glm::vec3 p) {
-		// Material::setClippingPlanePoint(p);
+		// ShaderBase::setClippingPlanePoint(p);
 		clippingPlanePoint = p;
 		push();
 	}
 
 	void setClippingPlaneNormal(glm::vec3 n) {
-		// Material::setClippingPlaneNormal(n);
+		// ShaderBase::setClippingPlaneNormal(n);
 		clippingPlaneNormal = n;
 		push();
 	}

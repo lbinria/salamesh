@@ -19,8 +19,8 @@ void Scene::init() {
 	cameras.getInstanciator().registerType("TrackBallCamera", [](std::string name) { return std::make_unique<TrackBallCamera>(name); });
 
 	// Register renderers types
-	renderers.getInstanciator().registerType("LineMaterial", [](std::string name) { return std::make_unique<LineMaterial>(name); });
-	renderers.getInstanciator().registerType("PointMaterial", [](std::string name) { return std::make_unique<PointMaterial>(name); });
+	renderers.getInstanciator().registerType("LineShader", [](std::string name) { return std::make_unique<LineShader>(name); });
+	renderers.getInstanciator().registerType("PointShader", [](std::string name) { return std::make_unique<PointShader>(name); });
 
 	// Init default render surface
 	auto renderSurface = std::make_shared<RenderSurface>(1024, 768);
@@ -36,11 +36,11 @@ void Scene::init() {
 	// Test
 	cameras["default"]->lookAtBox({{-1,-1,-1}, {1,1,1}});
 
-	auto pointsShader = std::make_unique<PointMaterial>("points");
+	auto pointsShader = std::make_unique<PointShader>("points");
 	auto trianglesShader = std::make_unique<TriMaterial>("mesh");
-	auto polygonsShader = std::make_unique<PolyMaterial>("mesh");
-	auto halfedgesShader = std::make_unique<HalfedgeMaterial>("halfedges");
-	auto lineShader = std::make_unique<LineMaterial>("line_shader");
+	auto polygonsShader = std::make_unique<PolyShader>("mesh");
+	auto halfedgesShader = std::make_unique<HalfedgeShader>("halfedges");
+	auto lineShader = std::make_unique<LineShader>("line_shader");
 
 	// auto geo = std::make_unique<TrianglesGeometry>();
 	// geo->_m.points.create_points(3);

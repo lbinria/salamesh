@@ -91,7 +91,7 @@ function draw_model_properties(model, k, view)
 
 		end
 
-		-- if (imgui.CollapsingHeader("Clipping##" .. k .. "_properties_clipping")) then 
+		if (imgui.CollapsingHeader("Clipping##" .. k .. "_properties_clipping")) then 
 
 
 		-- 	local sel_chk_enable_clipping, new_enable_clipping = imgui.Checkbox("Enable clipping", model.clipping)
@@ -181,7 +181,7 @@ function draw_model_properties(model, k, view)
 		-- 		model.invert_clipping = invert_clipping
 		-- 	end
 
-		-- end
+		end
 
 		if (imgui.CollapsingHeader("Style##" .. k .. "_properties_style")) then 
 			-- for shader_buffer_name, shader_buffer in pairs(model.get_shader_buffers) do
@@ -217,6 +217,12 @@ function draw_model_properties(model, k, view)
 				if (sel_slider_mesh_shrink) then 
 					print("Change mesh shrink: " .. tostring(new_mesh_shrink))
 					mesh_style.shrink = new_mesh_shrink
+				end
+
+				local sel_corner_visible, new_corner_visible = imgui.Checkbox("Show corners", mesh_style.corner_visible)
+				if (sel_corner_visible) then 
+					print("Change corner visibility: " .. tostring(new_corner_visible))
+					mesh_style.corner_visible = new_corner_visible
 				end
 
 			end

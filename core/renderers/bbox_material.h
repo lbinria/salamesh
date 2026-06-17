@@ -1,6 +1,6 @@
 #pragma once
 
-#include "renderer.h"
+#include "shader_base.h"
 #include "../shader.h"
 
 #include <vector>
@@ -13,7 +13,7 @@ using json = nlohmann::json;
 
 using namespace UM;
 
-struct BBoxMaterial : public Material {
+struct BBoxMaterial : public ShaderBase {
 
 	struct Vertex {
 		glm::vec3 p;
@@ -21,7 +21,7 @@ struct BBoxMaterial : public Material {
 
 	// TODO get shader from renderer name
 	BBoxMaterial(std::string name, PointSet &ps) : 
-		Material(name, Shader(sl::shadersPath("bbox.vert"), sl::shadersPath("bbox.frag"))),
+		ShaderBase(name, Shader(sl::shadersPath("bbox.vert"), sl::shadersPath("bbox.frag"))),
 		ps(ps) {
 			setColor(glm::vec3(1.0, 1.0, 1.0));
 		}

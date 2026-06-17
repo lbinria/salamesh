@@ -1,4 +1,4 @@
-#include "point_set_renderer.h"
+#include "point_shader.h"
 #include "../../core/utils/opengl_helper.h"
 #include "material_params.h"
 #include "layer_params.h"
@@ -6,14 +6,14 @@
 #include "light_params.h"
 #include "clipping_params.h"
 
-bool PointMaterial::isCompatible(Geometry &geometry) {
+bool PointShader::isCompatible(Geometry &geometry) {
 	auto trianglesGeometry = dynamic_cast<TrianglesGeometry*>(&geometry);
 	auto quadsGeometry = dynamic_cast<QuadsGeometry*>(&geometry);
 	auto polygonsGeometry = dynamic_cast<PolygonsGeometry*>(&geometry);
 	return trianglesGeometry || quadsGeometry || polygonsGeometry;
 }
 
-ShaderBuffer PointMaterial::createShaderBuffer() {
+ShaderBuffer PointShader::createShaderBuffer() {
 	unsigned int vao, vbo;
 	glGenVertexArrays(1, &vao);
 	glGenBuffers(1, &vbo);
@@ -33,7 +33,7 @@ ShaderBuffer PointMaterial::createShaderBuffer() {
 	return ShaderBuffer(shader, vao, vbo, params);
 };
 
-void PointMaterial::updatePointSet(ShaderBuffer &shaderBuffer, PointSet &ps) {
+void PointShader::updatePointSet(ShaderBuffer &shaderBuffer, PointSet &ps) {
 	std::vector<Vertex> vertices(ps.size());
 	for (int i = 0; i < ps.size(); ++i) {
 		auto &v = ps[i];
@@ -52,7 +52,7 @@ void PointMaterial::updatePointSet(ShaderBuffer &shaderBuffer, PointSet &ps) {
 }
 
 
-void PointMaterial::update(ShaderBuffer &shaderBuffer, Geometry &geometry) {
+void PointShader::update(ShaderBuffer &shaderBuffer, Geometry &geometry) {
 	auto trianglesGeometry = dynamic_cast<TrianglesGeometry*>(&geometry);
 	if (trianglesGeometry)
 		updatePointSet(shaderBuffer, trianglesGeometry->_m.points);
@@ -62,7 +62,7 @@ void PointMaterial::update(ShaderBuffer &shaderBuffer, Geometry &geometry) {
 		updatePointSet(shaderBuffer, polygonsGeometry->_m.points);
 }
 
-void PointMaterial::init() {
+void PointShader::init() {
 
 	_params["style"] = std::make_shared<PointStyleParams>();
 	_params["layers"] = std::make_shared<LayersParams>();
@@ -87,7 +87,7 @@ void PointMaterial::init() {
 
 }
 
-void PointMaterial::push() {	
+void PointShader::push() {	
 
 	std::vector<Vertex> vertices(ps.size());
 	for (int i = 0; i < ps.size(); ++i) {
@@ -105,7 +105,7 @@ void PointMaterial::push() {
 
 
 
-void PointMaterial::render(glm::vec3 &position) {
+void PointShader::render(glm::vec3 &position) {
 
 	if (!visible)
 		return;
@@ -121,7 +121,7 @@ void PointMaterial::render(glm::vec3 &position) {
 	glDrawArrays(GL_POINTS, 0, ps.size());
 }
 
-void PointMaterial::clear() {
+void PointShader::clear() {
 	glBindVertexArray(VAO);
 	glBindBuffer(GL_ARRAY_BUFFER, VBO);
 	glBufferData(GL_ARRAY_BUFFER, nelements * sizeof(Vertex), nullptr, GL_DYNAMIC_DRAW);
@@ -129,7 +129,7 @@ void PointMaterial::clear() {
 	clearPoints();
 }
 
-void PointMaterial::clean() {
+void PointShader::clean() {
 	// Clean up
 	glDeleteVertexArrays(1, &VAO);
 	glDeleteBuffers(1, &VBO);

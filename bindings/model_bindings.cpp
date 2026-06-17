@@ -197,7 +197,7 @@ namespace bindings {
 
 
 		// TODO add: getRenderers
-		// std::shared_ptr<Material> getRenderer(const std::string name)
+		// std::shared_ptr<ShaderBase> getRenderer(const std::string name)
 
 		// TODO add add_attr it must bind UM attr to Model
 		// model_t.set_function("add_attr", &Model::addAttr);

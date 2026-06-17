@@ -1,4 +1,4 @@
-#include "line_renderer.h"
+#include "line_shader.h"
 #include "../helpers.h"
 #include "../../core/utils/opengl_helper.h"
 #include "material_params.h"
@@ -7,12 +7,12 @@
 #include "light_params.h"
 #include "clipping_params.h"
 
-bool LineMaterial::isCompatible(Geometry &geometry) {
+bool LineShader::isCompatible(Geometry &geometry) {
 	auto lineGeometry = dynamic_cast<LinesGeometry*>(&geometry);
 	return lineGeometry;
 }
 
-ShaderBuffer LineMaterial::createShaderBuffer() {
+ShaderBuffer LineShader::createShaderBuffer() {
 	unsigned int vao, vbo;
 	glGenVertexArrays(1, &vao);
 	glGenBuffers(1, &vbo);
@@ -32,7 +32,7 @@ ShaderBuffer LineMaterial::createShaderBuffer() {
 };
 
 
-void LineMaterial::update(ShaderBuffer &shaderBuffer, Geometry &geometry) {
+void LineShader::update(ShaderBuffer &shaderBuffer, Geometry &geometry) {
 
 	auto linesGeometry = dynamic_cast<LinesGeometry*>(&geometry);
 
@@ -52,7 +52,7 @@ void LineMaterial::update(ShaderBuffer &shaderBuffer, Geometry &geometry) {
 	}
 }
 
-void LineMaterial::init() {
+void LineShader::init() {
 
 	glGenVertexArrays(1, &VAO);
 	glGenBuffers(1, &VBO);
@@ -66,10 +66,10 @@ void LineMaterial::init() {
 	sl::createVBOVec3(shader.id, "p", sizeof(LineComponent), (void*)offsetof(LineComponent, p));
 	sl::createVBOVec3(shader.id, "color", sizeof(LineComponent), (void*)offsetof(LineComponent, color));
 
-	std::cout << "LineMaterial init" << std::endl;
+	std::cout << "LineShader init" << std::endl;
 }
 
-void LineMaterial::push() {
+void LineShader::push() {
 
 	std::vector<LineComponent> lineComponents;
 
@@ -82,7 +82,7 @@ void LineMaterial::push() {
 	writeVBOBuffer(lineComponents, true);
 }
 
-void LineMaterial::render(glm::vec3 &position) {
+void LineShader::render(glm::vec3 &position) {
 
 	if (!visible)
 		return;
@@ -94,14 +94,14 @@ void LineMaterial::render(glm::vec3 &position) {
 	glDrawArrays(GL_LINES, 0, nelements);
 }
 
-void LineMaterial::clear() {
+void LineShader::clear() {
 	glBindVertexArray(VAO);
 	glBindBuffer(GL_ARRAY_BUFFER, VBO);
 	glBufferData(GL_ARRAY_BUFFER, nelements * sizeof(LineComponent), nullptr, GL_DYNAMIC_DRAW);
 	clearLines();
 }
 
-void LineMaterial::clean() {
+void LineShader::clean() {
 	// Clean up
 	glDeleteVertexArrays(1, &VAO);
 	glDeleteBuffers(1, &VBO);

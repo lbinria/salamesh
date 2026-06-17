@@ -1,4 +1,4 @@
-#include "halfedge_renderer.h"
+#include "halfedge_shader.h"
 #include "../../core/utils/opengl_helper.h"
 #include "../helpers.h"
 #include "layer_params.h"
@@ -6,14 +6,14 @@
 #include "light_params.h"
 #include "clipping_params.h"
 
-bool HalfedgeMaterial::isCompatible(Geometry &geometry) {
+bool HalfedgeShader::isCompatible(Geometry &geometry) {
 	auto trianglesGeometry = dynamic_cast<TrianglesGeometry*>(&geometry);
 	auto quadsGeometry = dynamic_cast<QuadsGeometry*>(&geometry);
 	auto polygonsGeometry = dynamic_cast<PolygonsGeometry*>(&geometry);
 	return trianglesGeometry || quadsGeometry || polygonsGeometry;
 }
 
-ShaderBuffer HalfedgeMaterial::createShaderBuffer() {
+ShaderBuffer HalfedgeShader::createShaderBuffer() {
 	unsigned int vao, vbo;
 	glGenVertexArrays(1, &vao);
 	glGenBuffers(1, &vbo);
@@ -36,7 +36,7 @@ ShaderBuffer HalfedgeMaterial::createShaderBuffer() {
 	return ShaderBuffer(shader, vao, vbo, params);
 };
 
-void HalfedgeMaterial::updateHalfedges(ShaderBuffer &shaderBuffer, Surface &m) {
+void HalfedgeShader::updateHalfedges(ShaderBuffer &shaderBuffer, Surface &m) {
 	std::vector<LineVert> vertices;
 	// pre-allocate to speed-up
 	vertices.reserve(m.nfacets() * 4 /* reserve for 4 side facets */ * 6 /* 1 quad, 2 tri per quad, 3 points per tri */); 
@@ -87,7 +87,7 @@ void HalfedgeMaterial::updateHalfedges(ShaderBuffer &shaderBuffer, Surface &m) {
 }
 
 
-void HalfedgeMaterial::update(ShaderBuffer &shaderBuffer, Geometry &geometry) {
+void HalfedgeShader::update(ShaderBuffer &shaderBuffer, Geometry &geometry) {
 	auto trianglesGeometry = dynamic_cast<TrianglesGeometry*>(&geometry);
 	if (trianglesGeometry)
 		updateHalfedges(shaderBuffer, trianglesGeometry->_m);
@@ -97,7 +97,7 @@ void HalfedgeMaterial::update(ShaderBuffer &shaderBuffer, Geometry &geometry) {
 		updateHalfedges(shaderBuffer, polygonsGeometry->_m);
 }
 
-void HalfedgeMaterial::init() {
+void HalfedgeShader::init() {
 
 	_params["style"] = std::make_shared<EdgeStyleParams>();
 	_params["layers"] = std::make_shared<LayersParams>();
@@ -124,7 +124,7 @@ void HalfedgeMaterial::init() {
 
 }
 
-void HalfedgeMaterial::render(glm::vec3 &position) {
+void HalfedgeShader::render(glm::vec3 &position) {
 
 	if (!visible)
 		return;
@@ -139,7 +139,7 @@ void HalfedgeMaterial::render(glm::vec3 &position) {
 	glDrawArrays(GL_TRIANGLES, 0, nelements);
 }
 
-void SurfaceHalfedgeRenderer::push() {
+void SurfaceHalfedgeShader::push() {
 
 	// Lazy-loading of halfedges, 
 	// only push on visible if needed
@@ -196,7 +196,7 @@ void SurfaceHalfedgeRenderer::push() {
 	shouldPush = false;
 }
 
-void VolumeHalfedgeRenderer::push() {
+void VolumeHalfedgeShader::push() {
 	// nverts = 24 * _m.ncells() * 6;
 	std::vector<LineVert> vertices;
 
@@ -251,7 +251,7 @@ void VolumeHalfedgeRenderer::push() {
 	glBufferData(GL_ARRAY_BUFFER, nelements * sizeof(LineVert), vertices.data(), GL_STATIC_DRAW);
 }
 
-void PolylineRenderer::push() {
+void PolylineShader::push() {
 	// Create vertices
 	/* 6 vertices per edges : 2 triangles for a rect with each 3 vertices */
 	std::vector<LineVert> vertices(_m.nedges() * 6); 
@@ -283,14 +283,14 @@ void PolylineRenderer::push() {
 	nelements = vertices.size();
 }
 
-void HalfedgeMaterial::clear() {
+void HalfedgeShader::clear() {
 	glBindVertexArray(VAO);
 	glBindBuffer(GL_ARRAY_BUFFER, VBO);
 	glBufferData(GL_ARRAY_BUFFER, nelements * sizeof(LineVert), nullptr, GL_STATIC_DRAW);
 	nelements = 0;
 }
 
-void HalfedgeMaterial::clean() {
+void HalfedgeShader::clean() {
 	// Clean up
 	glDeleteVertexArrays(1, &VAO);
 	glDeleteBuffers(1, &VBO);

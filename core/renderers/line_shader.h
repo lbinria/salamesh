@@ -1,6 +1,6 @@
 #pragma once
 
-#include "renderer.h"
+#include "shader_base.h"
 #include "../shader.h"
 
 #include <vector>
@@ -13,7 +13,7 @@ using json = nlohmann::json;
 
 using namespace UM;
 
-struct LineMaterial : public Material {
+struct LineShader : public ShaderBase {
 
 	struct LineComponent {
 		glm::vec3 p;
@@ -26,8 +26,8 @@ struct LineMaterial : public Material {
 		glm::vec3 color;
 	};
 
-	LineMaterial(std::string name) : 
-		Material(name, Shader(sl::shadersPath("gizmo_line.vert"), sl::shadersPath("gizmo_line.frag"))) {
+	LineShader(std::string name) : 
+		ShaderBase(name, Shader(sl::shadersPath("gizmo_line.vert"), sl::shadersPath("gizmo_line.frag"))) {
 			
 		}
 

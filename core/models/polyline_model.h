@@ -4,8 +4,8 @@
 #include <ultimaille/all.h>
 #include <string>
 #include "model.h"
-#include "../renderers/point_set_renderer.h"
-#include "../renderers/halfedge_renderer.h"
+#include "../renderers/point_shader.h"
+#include "../renderers/halfedge_shader.h"
 #include "../renderers/bbox_material.h"
 #include "../renderers/clipping_renderer.h"
 #include "../data/layer.h"
@@ -16,8 +16,8 @@ struct PolylineModel : public Model {
 	PolylineModel(std::string name) : 
 		_m(),
 		Model::Model(name, {
-			{"point_renderer", std::make_shared<PointMaterial>("", _m.points) },
-			{"edge_renderer", std::make_shared<PolylineRenderer>("", _m)}, 
+			{"point_renderer", std::make_shared<PointShader>("", _m.points) },
+			{"edge_renderer", std::make_shared<PolylineShader>("", _m)}, 
 			{"bbox_renderer", std::make_shared<BBoxMaterial>("", _m.points) },
 			{"zclipping_renderer", std::make_shared<ClippingMaterial>("", _m.points) }
 		})

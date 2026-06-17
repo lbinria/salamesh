@@ -3,7 +3,7 @@
 #include "shader.h"
 #include "geometry.h"
 #include "shader_buffer.h"
-#include "renderers/renderer.h"
+#include "renderers/shader_base.h"
 #include "data/colormap.h"
 
 #include <ultimaille/all.h>
@@ -65,7 +65,7 @@ struct SceneNode : std::enable_shared_from_this<SceneNode> {
 		return *static_cast<TGeometry*>(_geometry.get());
 	}
 
-	bool addShader(Material &material) {
+	bool addShader(ShaderBase &material) {
 		if (_shaders.contains(material.getName()))
 			return false;
 		
@@ -82,7 +82,7 @@ struct SceneNode : std::enable_shared_from_this<SceneNode> {
 		return _shaders;
 	}
 
-	std::optional<std::reference_wrapper<ShaderBuffer>> getShaderBuffer(Material &material) {
+	std::optional<std::reference_wrapper<ShaderBuffer>> getShaderBuffer(ShaderBase &material) {
 		return getShaderBuffer(material.getName());
 	}
 

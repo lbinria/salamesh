@@ -18,21 +18,21 @@ using json = nlohmann::json;
 #include "../shader_buffer.h"
 #include "../geometry.h"
 
-struct Material {
+struct ShaderBase {
 
 
 
-	Material (const Material&) = delete;
-	Material& operator= (const Material&) = delete;
+	ShaderBase (const ShaderBase&) = delete;
+	ShaderBase& operator= (const ShaderBase&) = delete;
 
-	Material(std::string name, Shader shader) : 
+	ShaderBase(std::string name, Shader shader) : 
 		name(name.empty() ? sl::generateGuid() : name),
 		shader(std::move(shader))
 	{}
 
 	template<typename T>
 	T& as() {
-		static_assert(std::is_base_of_v<Material, T>, "Renderer::as() can only be used with derived classes of Renderer");
+		static_assert(std::is_base_of_v<ShaderBase, T>, "Renderer::as() can only be used with derived classes of Renderer");
 		auto &x = static_cast<T&>(*this);
 		return x;
 	}

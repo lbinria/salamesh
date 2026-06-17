@@ -162,18 +162,18 @@ endif()
 #   core/cameras/descent_camera.h
 
 #   core/renderers/renderer_info.h
-#   core/renderers/renderer.h
+#   core/renderers/shader_base.h
 #   core/renderers/mesh_renderer.h
-#   core/renderers/line_renderer.cpp core/renderers/line_renderer.h
-#   core/renderers/point_set_renderer.cpp core/renderers/point_set_renderer.h
-#   core/renderers/halfedge_renderer.cpp core/renderers/halfedge_renderer.h
+#   core/renderers/line_renderer.cpp core/renderers/line_shader.h
+#   core/renderers/point_set_renderer.cpp core/renderers/point_shader.h
+#   core/renderers/halfedge_renderer.cpp core/renderers/halfedge_shader.h
 #   core/renderers/bbox_renderer.cpp core/renderers/bbox_material.h
 #   core/renderers/clipping_renderer.cpp core/renderers/clipping_renderer.h
-#   core/renderers/surface_renderer.cpp core/renderers/surface_renderer.h
+#   core/renderers/surface_renderer.cpp core/renderers/surface_shader.h
 #   core/renderers/surface_renderer2.cpp core/renderers/surface_renderer2.h
 #   core/renderers/volume_renderer.cpp core/renderers/volume_renderer.h
 #   core/renderers/tri_renderer.cpp core/renderers/tri_renderer.h
-#   core/renderers/poly_renderer.cpp core/renderers/poly_renderer.h
+#   core/renderers/poly_renderer.cpp core/renderers/poly_shader.h
 #   core/renderers/tet_renderer.cpp core/renderers/tet_renderer.h
 #   core/renderers/hex_renderer.cpp core/renderers/hex_renderer.h
 

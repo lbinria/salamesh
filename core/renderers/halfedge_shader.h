@@ -1,6 +1,6 @@
 #pragma once
 
-#include "renderer.h"
+#include "shader_base.h"
 
 #include "../shader.h"
 
@@ -14,7 +14,7 @@ using json = nlohmann::json;
 
 using namespace UM;
 
-struct HalfedgeMaterial : public Material {
+struct HalfedgeShader : public ShaderBase {
 
 	struct LineVert {
 		int halfedgeIndex;
@@ -25,12 +25,12 @@ struct HalfedgeMaterial : public Material {
 		glm::vec3 bary;
 	};
 
-	HalfedgeMaterial(std::string name) : 
-		Material(name, Shader(sl::shadersPath("edge.vert"), sl::shadersPath("edge.frag")))
+	HalfedgeShader(std::string name) : 
+		ShaderBase(name, Shader(sl::shadersPath("edge.vert"), sl::shadersPath("edge.frag")))
 		{}
 
-	HalfedgeMaterial(std::string name, Shader shader) : 
-		Material(name, Shader(std::move(shader))) {
+	HalfedgeShader(std::string name, Shader shader) : 
+		ShaderBase(name, Shader(std::move(shader))) {
 		}
 
 
@@ -71,10 +71,10 @@ struct HalfedgeMaterial : public Material {
 	
 };
 
-struct SurfaceHalfedgeRenderer : public HalfedgeMaterial {
+struct SurfaceHalfedgeShader : public HalfedgeShader {
 
-	SurfaceHalfedgeRenderer(std::string name, Surface &m) : 
-		HalfedgeMaterial(name, Shader(sl::shadersPath("edge.vert"), sl::shadersPath("edge.frag"))),
+	SurfaceHalfedgeShader(std::string name, Surface &m) : 
+		HalfedgeShader(name, Shader(sl::shadersPath("edge.vert"), sl::shadersPath("edge.frag"))),
 		_m(m) {
 
 		}
@@ -85,10 +85,10 @@ struct SurfaceHalfedgeRenderer : public HalfedgeMaterial {
 
 };
 
-struct VolumeHalfedgeRenderer : public HalfedgeMaterial {
+struct VolumeHalfedgeShader : public HalfedgeShader {
 
-	VolumeHalfedgeRenderer(std::string name, Volume &m) : 
-		HalfedgeMaterial(name, Shader(sl::shadersPath("edge.vert"), sl::shadersPath("edge.frag"))),
+	VolumeHalfedgeShader(std::string name, Volume &m) : 
+		HalfedgeShader(name, Shader(sl::shadersPath("edge.vert"), sl::shadersPath("edge.frag"))),
 		_m(m) {
 
 		}
@@ -98,10 +98,10 @@ struct VolumeHalfedgeRenderer : public HalfedgeMaterial {
 	Volume &_m;
 };
 
-struct PolylineRenderer : public HalfedgeMaterial {
+struct PolylineShader : public HalfedgeShader {
 
-		PolylineRenderer(std::string name, PolyLine &m) : 
-		HalfedgeMaterial(name, Shader(sl::shadersPath("edge.vert"), sl::shadersPath("edge.frag"))),
+		PolylineShader(std::string name, PolyLine &m) : 
+		HalfedgeShader(name, Shader(sl::shadersPath("edge.vert"), sl::shadersPath("edge.frag"))),
 		_m(m) {
 
 		}

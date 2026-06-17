@@ -1,41 +1,41 @@
 #include "renderer_bindings.h"
 
-#include "../core/renderers/renderer.h"
+#include "../core/renderers/shader_base.h"
 #include "../core/renderers/mesh_renderer.h"
-#include "../core/renderers/point_set_renderer.h"
-#include "../core/renderers/halfedge_renderer.h"
-#include "../core/renderers/line_renderer.h"
+#include "../core/renderers/point_shader.h"
+#include "../core/renderers/halfedge_shader.h"
+#include "../core/renderers/line_shader.h"
 
 namespace bindings {
 
 	void RendererBindings::loadBindings(sol::state &lua, IApp &app) {
 
-		sol::usertype<Material> renderer_t = lua.new_usertype<Material>("Material",
-			"get_params", [](Material &self, const std::string &name) {
+		sol::usertype<ShaderBase> renderer_t = lua.new_usertype<ShaderBase>("ShaderBase",
+			"get_params", [](ShaderBase &self, const std::string &name) {
 				return self.getParams(name);
 			},
-			"__index", [](Material& self, const std::string& name) {
+			"__index", [](ShaderBase& self, const std::string& name) {
 				return self.getParams(name);
 			}
 		);
 
-		renderer_t["name"] = sol::readonly_property(&Material::getName);
+		renderer_t["name"] = sol::readonly_property(&ShaderBase::getName);
 
 		renderer_t["visible"] = sol::property(
-			&Material::getVisible,
-			&Material::setVisible
+			&ShaderBase::getVisible,
+			&ShaderBase::setVisible
 		);
 
 
 
 		// TODO important missing cases
-		renderer_t.set_function("as", [](sol::this_state s, Material& self, const std::string& typeName) -> sol::object {
-			if (typeName == "LineMaterial") {
-				if (auto r = dynamic_cast<LineMaterial*>(&self)) {
+		renderer_t.set_function("as", [](sol::this_state s, ShaderBase& self, const std::string& typeName) -> sol::object {
+			if (typeName == "LineShader") {
+				if (auto r = dynamic_cast<LineShader*>(&self)) {
 					return sol::make_object(s, r);
 				}
-			} else if (typeName == "PointMaterial") {
-				if (auto r = dynamic_cast<PointMaterial*>(&self)) {
+			} else if (typeName == "PointShader") {
+				if (auto r = dynamic_cast<PointShader*>(&self)) {
 					return sol::make_object(s, r);
 				}
 			}
@@ -43,55 +43,55 @@ namespace bindings {
 			return sol::nil;
 		});
 
-		renderer_t.set_function("push", &Material::push);
+		renderer_t.set_function("push", &ShaderBase::push);
 
 
 		sol::usertype<MeshMaterial> meshRenderer_t = lua.new_usertype<MeshMaterial>(
 			"MeshMaterial",
 			sol::base_classes, 
-			sol::bases<Material>()
+			sol::bases<ShaderBase>()
 		);
 
 
-		sol::usertype<PointMaterial> pointSetRenderer_t = lua.new_usertype<PointMaterial>(
-			"PointMaterial",
+		sol::usertype<PointShader> pointSetRenderer_t = lua.new_usertype<PointShader>(
+			"PointShader",
 			sol::base_classes, 
-			sol::bases<Material>(),
-			"auto_update", sol::writeonly_property(&PointMaterial::setAutoUpdate),
+			sol::bases<ShaderBase>(),
+			"auto_update", sol::writeonly_property(&PointShader::setAutoUpdate),
 			"visible", sol::property(
-				&PointMaterial::getVisible,
-				&PointMaterial::setVisible
+				&PointShader::getVisible,
+				&PointShader::setVisible
 			),
-			sol::meta_function::index, [](PointMaterial& self, int i) -> vec3 {
+			sol::meta_function::index, [](PointShader& self, int i) -> vec3 {
 				return self[i - 1];
 			},
-			sol::meta_function::new_index, [](PointMaterial& self, int i, vec3 value) {
+			sol::meta_function::new_index, [](PointShader& self, int i, vec3 value) {
 				self[i - 1] = value;
 			},
-			"add_point", &PointMaterial::addPoint,
-			"add_points", &PointMaterial::addPoints,
-			"remove_points", &PointMaterial::removePoints,
-			"clear_points", &PointMaterial::clearPoints,
-			"push", &PointMaterial::push,
-			"count", sol::readonly_property(&PointMaterial::count)
+			"add_point", &PointShader::addPoint,
+			"add_points", &PointShader::addPoints,
+			"remove_points", &PointShader::removePoints,
+			"clear_points", &PointShader::clearPoints,
+			"push", &PointShader::push,
+			"count", sol::readonly_property(&PointShader::count)
 		);
 
 
-		sol::usertype<HalfedgeMaterial> halfedgeRenderer_t = lua.new_usertype<HalfedgeMaterial>(
-			"HalfedgeMaterial",
+		sol::usertype<HalfedgeShader> halfedgeRenderer_t = lua.new_usertype<HalfedgeShader>(
+			"HalfedgeShader",
 			sol::base_classes, 
-			sol::bases<Material>()
+			sol::bases<ShaderBase>()
 		);
 
 		halfedgeRenderer_t["visible"] = sol::property(
-			&HalfedgeMaterial::getVisible,
-			&HalfedgeMaterial::setVisible
+			&HalfedgeShader::getVisible,
+			&HalfedgeShader::setVisible
 		);
 
-		auto line_t = lua.new_usertype<LineMaterial::Line>(
+		auto line_t = lua.new_usertype<LineShader::Line>(
 			"Line",
 			sol::call_constructor, [](sol::table t) {
-				LineMaterial::Line line;
+				LineShader::Line line;
 				
 				if (t["a"].valid() && t["a"].is<glm::vec3>())
 					line.a = t["a"].get<glm::vec3>();
@@ -102,34 +102,34 @@ namespace bindings {
 				
 				return line;
 			},
-			"a", &LineMaterial::Line::a,
-			"b", &LineMaterial::Line::b,
-			"color", &LineMaterial::Line::color
+			"a", &LineShader::Line::a,
+			"b", &LineShader::Line::b,
+			"color", &LineShader::Line::color
 		);
 
-		auto lineRenderer_t = lua.new_usertype<LineMaterial>(
-			"LineMaterial",
+		auto lineRenderer_t = lua.new_usertype<LineShader>(
+			"LineShader",
 			sol::base_classes, 
-			sol::bases<Material>(),
-			"auto_update", sol::writeonly_property(&LineMaterial::setAutoUpdate)
+			sol::bases<ShaderBase>(),
+			"auto_update", sol::writeonly_property(&LineShader::setAutoUpdate)
 		);
 
-		lineRenderer_t.set_function("add_line", &LineMaterial::addLine);
-		lineRenderer_t.set_function("add_lines", &LineMaterial::addLines);
-		lineRenderer_t.set_function("clear_lines", &LineMaterial::clearLines);
-		lineRenderer_t.set_function("push", &LineMaterial::push);
+		lineRenderer_t.set_function("add_line", &LineShader::addLine);
+		lineRenderer_t.set_function("add_lines", &LineShader::addLines);
+		lineRenderer_t.set_function("clear_lines", &LineShader::clearLines);
+		lineRenderer_t.set_function("push", &LineShader::push);
 
-		// auto pointSetRenderer_t = lua.new_usertype<PointMaterial>(
-		// 	"PointMaterial",
+		// auto pointSetRenderer_t = lua.new_usertype<PointShader>(
+		// 	"PointShader",
 		// 	sol::base_classes, 
-		// 	sol::bases<Material>(),
-		// 	"auto_update", sol::writeonly_property(&PointMaterial::setAutoUpdate)
+		// 	sol::bases<ShaderBase>(),
+		// 	"auto_update", sol::writeonly_property(&PointShader::setAutoUpdate)
 		// );
 
-		// pointSetRenderer_t.set_function("push", &PointMaterial::push);
-		// pointSetRenderer_t.set_function("clear_points", &PointMaterial::clearPoints);
-		// pointSetRenderer_t.set_function("add_point", &PointMaterial::addPoint);
-		// pointSetRenderer_t.set_function("add_points", &PointMaterial::addPoints);
+		// pointSetRenderer_t.set_function("push", &PointShader::push);
+		// pointSetRenderer_t.set_function("clear_points", &PointShader::clearPoints);
+		// pointSetRenderer_t.set_function("add_point", &PointShader::addPoint);
+		// pointSetRenderer_t.set_function("add_points", &PointShader::addPoints);
 
 	}
 }

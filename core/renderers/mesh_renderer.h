@@ -1,10 +1,10 @@
 #pragma once
-#include "renderer.h"
+#include "shader_base.h"
 
-struct MeshMaterial : public Material {
+struct MeshMaterial : public ShaderBase {
 	
 	MeshMaterial(std::string name, Shader shader) : 
-		Material(name, std::move(shader))
+		ShaderBase(name, std::move(shader))
 		{
 			shader.use();
 			shader.setFloat3("color", {0.71f, 0.71f, 0.71f});

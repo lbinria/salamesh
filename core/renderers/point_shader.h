@@ -8,7 +8,7 @@ using json = nlohmann::json;
 
 #include <ultimaille/all.h>
 
-#include "renderer.h"
+#include "shader_base.h"
 
 #include "../shader.h"
 
@@ -16,7 +16,7 @@ using namespace UM;
 
 
 
-struct PointMaterial : public Material {
+struct PointShader : public ShaderBase {
 
 	struct Vertex {
 		int vertexIndex;
@@ -24,12 +24,12 @@ struct PointMaterial : public Material {
 		float size;
 	};
 
-	PointMaterial(std::string name, PointSet &ps) : 
-		Material(name, Shader(sl::shadersPath("point.vert"), sl::shadersPath("point.frag"))),
+	PointShader(std::string name, PointSet &ps) : 
+		ShaderBase(name, Shader(sl::shadersPath("point.vert"), sl::shadersPath("point.frag"))),
 		ps(ps) {}
 
-	PointMaterial(std::string name) : 
-		Material(name, Shader(sl::shadersPath("point.vert"), sl::shadersPath("point.frag"))), ps(*new PointSet()) {
+	PointShader(std::string name) : 
+		ShaderBase(name, Shader(sl::shadersPath("point.vert"), sl::shadersPath("point.frag"))), ps(*new PointSet()) {
 		}
 
 	virtual bool isCompatible(Geometry &geometry) override;
