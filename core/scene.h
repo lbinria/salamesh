@@ -35,7 +35,7 @@ struct Scene {
 
 
 	void init();
-	std::shared_ptr<ModelNode> loadModel2(const std::string filename, const std::string name = "");
+	std::shared_ptr<SceneNode> loadModel2(const std::string filename, const std::string name = "");
 
 	void render() {
 		// for (auto &[k, r] : renderers) {

@@ -3,13 +3,12 @@
 #include <ultimaille/all.h>
 using namespace UM;
 
-#include "model_node.h"
-
 #include <string>
+
 
 struct ModelLoader {
 
-	static bool loadTriangles(const std::string &filename, ModelNode &node) {
+	static bool loadTriangles(const std::string &filename, SceneNode &node) {
 		auto geometry = std::make_unique<TrianglesGeometry>();
 
 		geometry->_attributes = read_by_extension(filename, geometry->_m);
@@ -22,7 +21,7 @@ struct ModelLoader {
 		return true;
 	}
 
-	static bool loadQuads(const std::string &filename, ModelNode &node) {
+	static bool loadQuads(const std::string &filename, SceneNode &node) {
 		auto geometry = std::make_unique<QuadsGeometry>();
 
 		geometry->_attributes = read_by_extension(filename, geometry->_m);
@@ -35,7 +34,7 @@ struct ModelLoader {
 		return true;
 	}
 
-	static bool loadPolygons(const std::string &filename, ModelNode &node) {
+	static bool loadPolygons(const std::string &filename, SceneNode &node) {
 		auto geometry = std::make_unique<PolygonsGeometry>();
 
 		geometry->_attributes = read_by_extension(filename, geometry->_m);
@@ -48,7 +47,7 @@ struct ModelLoader {
 		return true;
 	}
 
-	static bool loadPolyLine(const std::string &filename, ModelNode &node) {
+	static bool loadPolyLine(const std::string &filename, SceneNode &node) {
 		auto geometry = std::make_unique<PolyLineGeometry>();
 
 		geometry->_attributes = read_by_extension(filename, geometry->_m);
@@ -61,8 +60,8 @@ struct ModelLoader {
 		return true;
 	}
 
-	static ModelNode load(const std::string filename, Scene &scene) {
-		ModelNode node(scene);
+	static SceneNode load(const std::string filename) {
+		SceneNode node;
 
 		bool success = loadTriangles(filename, node);
 		

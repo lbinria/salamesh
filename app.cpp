@@ -444,7 +444,7 @@ void App::init() {
 		sl::toLower(ext);
 
 		if (accepted.contains(ext)) {
-			scene.loadModel(p.string());
+			scene.loadModel2(p.string());
 		}
 		else if (p.extension() == ".lua") {
 			std::cout << "load script: " << p.string() << std::endl;
