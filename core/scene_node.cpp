@@ -2,43 +2,49 @@
 
 #include "renderers/layer_params.h"
 
-// std::optional<Colormap> SceneNode::getSelectedColormap() {
+std::optional<Colormap> SceneNode::getColormap() {
 		
-// 	for (auto &[_, shaderBuffer] : getShaderBuffers()) {
-// 		auto layerParams = shaderBuffer.getParams<LayersParams>("layers");
-// 		if (!layerParams)
-// 			continue;
+	for (auto &[_, shaderBuffer] : getShaderBuffers()) {
+		auto layerParams = shaderBuffer.getParams<LayersParams>("layers");
+		if (!layerParams)
+			continue;
 		
-// 		return layerParams->getColormap(ColormapLayer::COLORMAP_LAYER_0);
-// 	}
+		return layerParams->getColormap(ColormapLayer::COLORMAP_LAYER_0);
+	}
 
-// 	return std::nullopt;
-// }
+	return std::nullopt;
+}
 
-// void SceneNode::setSelectedColormap(Colormap colormap) {
 
-// 	for (auto &[_, shaderBuffer] : getShaderBuffers()) {
-// 		auto layerParams = shaderBuffer.getParams<LayersParams>("layers");
-// 		if (!layerParams)
-// 			continue;
+void SceneNode::setColormap(Colormap colormap) {
+
+	for (auto &[_, shaderBuffer] : getShaderBuffers()) {
+		auto layerParams = shaderBuffer.getParams<LayersParams>("layers");
+		if (!layerParams)
+			continue;
 		
-// 		layerParams->setColormap(ColormapLayer::COLORMAP_LAYER_0, colormaps);
-// 	}
-// }
+		layerParams->setColormap(ColormapLayer::COLORMAP_LAYER_0, colormap);
+	}
+}
 
 
-// std::string SceneNode::getLayerAttr(Layer layer, ElementKind kind) {
-// 	std::tuple<Layer, ElementKind> k = {layer, kind};
-// 	if (_attrNameByLayerAndKind.contains(k))
-// 		return _attrNameByLayerAndKind[k];
+std::string SceneNode::getLayerAttr(Layer layer, ElementKind kind) {
+	std::tuple<Layer, ElementKind> k = {layer, kind};
+	if (_attrNameByLayerAndKind.contains(k))
+		return _attrNameByLayerAndKind[k];
 	
-// 	return defaultAttrName(layer);
-// }
+	return defaultAttrName(layer);
+}
 
-// // Choose which attribute to bind to layer / kind
-// void SceneNode::setLayerAttr(std::string name, Layer layer, ElementKind kind) {
-// 	_attrNameByLayerAndKind[{layer, kind}] = name;
-// }
+// Choose which attribute to bind to layer / kind
+void SceneNode::setLayerAttr(Layer layer, ElementKind kind, const std::string name) {
+	_attrNameByLayerAndKind[{layer, kind}] = name;
+}
+
+void SceneNode::setLayer(Layer layer, ElementKind kind, const std::string attributeName, bool update) {
+	setLayerAttr(layer, kind, attributeName);
+	setLayer(layer, kind, update);
+}
 
 void SceneNode::setLayer(Layer layer, ElementKind kind, bool update) {
 
@@ -71,7 +77,16 @@ void SceneNode::setLayer(Layer layer, ElementKind kind, bool update) {
 	}
 }
 
-void SceneNode::unsetLayer(ElementKind kind, Layer layer, bool reset) {
+void SceneNode::unsetLayers(bool reset) {
+	for (int l = 0; l < 5; ++l) {
+		for (int k = 0; k < 7; ++k) {
+			unsetLayer(static_cast<Layer>(l), static_cast<ElementKind>(k), reset);
+		}
+	}
+}
+
+
+void SceneNode::unsetLayer(Layer layer, ElementKind kind, bool reset) {
 	
 	for (auto &[_, shaderBuffer] : getShaderBuffers()) {
 		auto layerParams = shaderBuffer.getParams<LayersParams>("layers");

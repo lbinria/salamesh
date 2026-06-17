@@ -8,6 +8,7 @@ namespace bindings {
 			"bbox", sol::readonly_property(&Geometry::bbox),
 			"center", sol::readonly_property(&Geometry::getCenter),
 			"radius", sol::readonly_property(&Geometry::getRadius),
+			"attributes", sol::readonly_property(&Geometry::getAttributes),
 			"save", &Geometry::save,
 			"saveAs", &Geometry::saveAs,
 			"request_update", &Geometry::requestUpdate,

@@ -25,7 +25,15 @@ namespace bindings {
 			"get_shader_buffer", sol::overload(
 				static_cast<std::optional<std::reference_wrapper<ShaderBuffer>>(SceneNode::*)(Material&)>(&SceneNode::getShaderBuffer),
 				static_cast<std::optional<std::reference_wrapper<ShaderBuffer>>(SceneNode::*)(const std::string)>(&SceneNode::getShaderBuffer)
-			)
+			),
+			"set_layer", sol::resolve<void(Layer, ElementKind, bool)>(&SceneNode::setLayer),
+			"set_layer", sol::resolve<void(Layer, ElementKind, const std::string, bool)>(&SceneNode::setLayer),
+			"unset_layer", &SceneNode::unsetLayer,
+			"unset_layers", &SceneNode::unsetLayers,
+			"set_colormap", &SceneNode::setColormap,
+			"get_colormap", &SceneNode::getColormap,
+			"get_layer_attr", &SceneNode::getLayerAttr,
+			"set_layer_attr", &SceneNode::setLayerAttr
 		);
 	}
 }

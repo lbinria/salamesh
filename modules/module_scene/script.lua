@@ -42,8 +42,12 @@ end
 
 local clipping_planes = {"x", "y", "z"}
 local sel_clipping_plane = {}
-
 local invert_clipping = false
+
+-- Selected colormap index by model (node model)
+local selected_colormaps = {}
+-- Selected attribute index by model (node model)
+local selected_attributes = {}
 
 function draw_model_properties(model, k, view)
 	local model_pos = model.world_position
@@ -289,50 +293,113 @@ function draw_model_properties(model, k, view)
 
 		if (imgui.CollapsingHeader("Attributes##" .. k .. "_properties_attributes")) then 
 
-			-- imgui.Text("Colormap 0")
+			imgui.Text("Attribute")
 
-			-- local colormaps = app.scene.colormaps
-			-- local items = {}
-			-- for i = 1, #colormaps do 
-			-- 	table.insert(items, colormaps[i].name)
-			-- end
+			-- Get current model attributes
+			local attributes = model.geometry.attributes
 
-			-- local colormap_size = imgui.ImVec2(320, 35)
+			-- Get selected colormap for current model
+			local selected_colormap = 1
+			if selected_colormaps[model.name] ~= nil then 
+				selected_colormap = selected_colormaps[model.name]
+			end
 
-			-- if (imgui.BeginCombo("##combo_colormaps0_selection", items[model.selected_colormap])) then
-			-- 	-- Display items in the popup
-			-- 	for i = 1, #items do
-			-- 		local is_selected = model.selected_colormap == i
-			-- 		-- Create a unique ID for each item to prevent conflicts
-			-- 		imgui.PushID(i)
+			if (#attributes > 0) then
 
-			-- 		-- Calculate total width including spacing
-			-- 		-- local total_width = imgui.CalcTextSize(items[i]).x + colormap_size.x + 10.0
+				-- local attr_name = attributes[1].name
+				-- local attr_element = attributes[1].kind
+				-- imgui.Text(attr_name)
+				-- imgui.Text(tostring(attr_element))
+				
+				local selName = "None" 
+				local selected_attribute = 0
+				if selected_attributes[model.name] then 
+					selected_attribute = selected_attributes[model.name]
+				end
 
-			-- 		-- Display the item with both text and image
-			-- 		if (imgui.Selectable(items[i], is_selected)) then
-			-- 			model.selected_colormap = i
-			-- 		end
+				if selected_attribute > 0 then 
+					selName = attributes[selected_attribute].name
+				end
 
-			-- 		-- Display the image after the text
-			-- 		imgui.Image(app.scene.colormaps[i].tex, colormap_size)
+				imgui.Text("selected: " .. selName)
 
-			-- 		imgui.PopID()
-			-- 	end
+				if (imgui.BeginCombo("##combo_attribute0_selection", selName)) then
 
-			-- 	imgui.EndCombo()
-			-- end
+					local is_selected = selected_attribute == 0
+					if (imgui.Selectable("None", is_selected)) then
+						selected_attributes[model.name] = 0
+						-- Unset all colormap attribute 
+						for n = 1, #attributes do
+							model:unset_layers(false)
+						end
+					end
 
-			-- local selected_cm = app.scene.colormaps[model.selected_colormap]
-			-- if selected_cm.height > 1 then 
-			-- 	local h = selected_cm.height / selected_cm.width * 320
-			-- 	colormap_size = imgui.ImVec2(320, h)
-			-- end
+					for n = 1, #attributes do
+						local is_selected = n == selected_attribute
+						local label = attributes[n].name 
+						.. " (" .. element_kind_to_string(attributes[n].kind) .. ")" 
+						.. " (" .. element_type_to_string(attributes[n].type) .. ")"
+						.. " (" .. tostring(attributes[n].dim) .. ")"
 
-			-- imgui.Image(
-			-- 	selected_cm.tex, 
-			-- 	colormap_size
-			-- )
+						if (imgui.Selectable(label, is_selected)) then
+							selected_attributes[model.name] = n
+							-- Set attribute & colormap
+							selected_attribute = selected_attributes[model.name]
+							model:unset_layers(false)
+							model:set_layer(Layer.COLORMAP_0, attributes[n].kind, attributes[selected_attribute].name, true)
+							model:set_colormap(app.scene.colormaps[selected_colormap])
+						end
+					end
+					imgui.EndCombo()
+				end
+			end
+
+			imgui.Text("Colormap")
+
+			local colormaps = app.scene.colormaps
+			local items = {}
+			for i = 1, #colormaps do 
+				table.insert(items, colormaps[i].name)
+			end
+
+			local colormap_size = imgui.ImVec2(320, 20)
+
+
+			if (imgui.BeginCombo("##combo_colormaps0_selection", items[selected_colormap])) then
+				-- Display items in the popup
+				for i = 1, #items do
+					local is_selected = selected_colormap == i
+					-- Create a unique ID for each item to prevent conflicts
+					imgui.PushID(i)
+
+					-- Calculate total width including spacing
+					-- local total_width = imgui.CalcTextSize(items[i]).x + colormap_size.x + 10.0
+
+					-- Display the item with both text and image
+					if (imgui.Selectable(items[i], is_selected)) then
+						selected_colormaps[model.name] = i
+						model:set_colormap(app.scene.colormaps[i])
+					end
+
+					-- Display the image after the text
+					imgui.Image(app.scene.colormaps[i].tex, colormap_size)
+
+					imgui.PopID()
+				end
+
+				imgui.EndCombo()
+			end
+
+			local selected_cm = app.scene.colormaps[selected_colormap]
+			if selected_cm.height > 1 then 
+				local h = selected_cm.height / selected_cm.width * 320 * 0.5
+				colormap_size = imgui.ImVec2(320, h)
+			end
+
+			imgui.Image(
+				selected_cm.tex, 
+				colormap_size
+			)
 		end
 
 		-- if (imgui.CollapsingHeader("Style##" .. k .. "_properties_style")) then 

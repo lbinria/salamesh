@@ -35,6 +35,11 @@ struct Geometry {
 		_dirty = false;
 	}
 
+	virtual  std::vector<Attribute> getAttributes() {
+		return {};
+	}
+	
+
 	virtual std::optional<Attribute> getAttribute(const std::string name) {
 		return std::nullopt;
 	}
@@ -60,7 +65,7 @@ struct MeshGeometry : public Geometry {
 		return saveAs(path);
 	}
 
-	std::vector<Attribute> getAttributes() {
+	std::vector<Attribute> getAttributes() override {
 		
 		std::vector<Attribute> attributes;
 		for (auto &[kind, c] : getAttributeContainers()) {

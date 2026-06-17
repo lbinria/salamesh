@@ -1,0 +1,164 @@
+ - INFO: Load script: /home/tex/Projects/salamesh/build/modules/module_menubar/script.lua
+ - INFO:  - has_init=0
+ - INFO:  - has_draw_gui=1
+ - INFO:  - has_layout_gui=0
+ - INFO:  - has_update=0
+ - INFO:  - has_cleanup=0
+ - INFO:  - has_mouse_button=0
+ - INFO:  - has_mouse_move=0
+ - INFO:  - has_mouse_scroll=0
+ - INFO:  - has_key_event=0
+ - INFO:  - has_navigationPathChanged=0
+ - INFO:  - has_modelLoaded=0
+ - INFO:  - has_selectedModelChanged=0
+ - INFO:  - has_sceneCleared=0
+ - INFO: Load script: /home/tex/Projects/salamesh/build/modules/module_infos/script.lua
+ - INFO:  - has_init=0
+ - INFO:  - has_draw_gui=0
+ - INFO:  - has_layout_gui=0
+ - INFO:  - has_update=1
+ - INFO:  - has_cleanup=0
+ - INFO:  - has_mouse_button=0
+ - INFO:  - has_mouse_move=0
+ - INFO:  - has_mouse_scroll=0
+ - INFO:  - has_key_event=0
+ - INFO:  - has_navigationPathChanged=0
+ - INFO:  - has_modelLoaded=0
+ - INFO:  - has_selectedModelChanged=0
+ - INFO:  - has_sceneCleared=0
+ - INFO: Load script: /home/tex/Projects/salamesh/build/modules/module_scene/script.lua
+ - INFO:  - has_init=1
+ - INFO:  - has_draw_gui=1
+ - INFO:  - has_layout_gui=1
+ - INFO:  - has_update=0
+ - INFO:  - has_cleanup=0
+ - INFO:  - has_mouse_button=0
+ - INFO:  - has_mouse_move=0
+ - INFO:  - has_mouse_scroll=0
+ - INFO:  - has_key_event=0
+ - INFO:  - has_navigationPathChanged=0
+ - INFO:  - has_modelLoaded=0
+ - INFO:  - has_selectedModelChanged=0
+ - INFO:  - has_sceneCleared=0
+ - INFO: Load script: /home/tex/Projects/salamesh/build/modules/module_inspector/script.lua
+ - INFO:  - has_init=1
+ - INFO:  - has_draw_gui=1
+ - INFO:  - has_layout_gui=0
+ - INFO:  - has_update=0
+ - INFO:  - has_cleanup=0
+ - INFO:  - has_mouse_button=0
+ - INFO:  - has_mouse_move=0
+ - INFO:  - has_mouse_scroll=0
+ - INFO:  - has_key_event=0
+ - INFO:  - has_navigationPathChanged=0
+ - INFO:  - has_modelLoaded=0
+ - INFO:  - has_selectedModelChanged=0
+ - INFO:  - has_sceneCleared=0
+ - INFO: Load script: /home/tex/Projects/salamesh/build/modules/module_snapshots/script.lua
+ - INFO:  - has_init=1
+ - INFO:  - has_draw_gui=1
+ - INFO:  - has_layout_gui=1
+ - INFO:  - has_update=0
+ - INFO:  - has_cleanup=0
+ - INFO:  - has_mouse_button=0
+ - INFO:  - has_mouse_move=0
+ - INFO:  - has_mouse_scroll=0
+ - INFO:  - has_key_event=1
+ - INFO:  - has_navigationPathChanged=0
+ - INFO:  - has_modelLoaded=0
+ - INFO:  - has_selectedModelChanged=0
+ - INFO:  - has_sceneCleared=0
+ - INFO: mouse_button_callback
+ - INFO: mouse_button_callback
+ - INFO: mouse_button_callback
+ - INFO: mouse_button_callback
+ - INFO: mouse_button_callback
+ - INFO: mouse_button_callback
+ - INFO: mouse_button_callback
+ - INFO: mouse_button_callback
+ - INFO: mouse_button_callback
+ - INFO: mouse_button_callback
+ - INFO: mouse_button_callback
+ - INFO: mouse_button_callback
+ - INFO: mouse_button_callback
+ - INFO: mouse_button_callback
+ - INFO: mouse_button_callback
+ - INFO: mouse_button_callback
+ - INFO: mouse_button_callback
+ - INFO: mouse_button_callback
+ - INFO: mouse_button_callback
+ - INFO: mouse_button_callback
+ - INFO: mouse_button_callback
+ - INFO: mouse_button_callback
+ - INFO: mouse_button_callback
+ - INFO: mouse_button_callback
+ - INFO: Load script: /home/tex/Projects/salamesh/build/modules/module_menubar/script.lua
+ - INFO:  - has_init=0
+ - INFO:  - has_draw_gui=1
+ - INFO:  - has_layout_gui=0
+ - INFO:  - has_update=0
+ - INFO:  - has_cleanup=0
+ - INFO:  - has_mouse_button=0
+ - INFO:  - has_mouse_move=0
+ - INFO:  - has_mouse_scroll=0
+ - INFO:  - has_key_event=0
+ - INFO:  - has_navigationPathChanged=0
+ - INFO:  - has_modelLoaded=0
+ - INFO:  - has_selectedModelChanged=0
+ - INFO:  - has_sceneCleared=0
+ - INFO: Load script: /home/tex/Projects/salamesh/build/modules/module_infos/script.lua
+ - INFO:  - has_init=0
+ - INFO:  - has_draw_gui=0
+ - INFO:  - has_layout_gui=0
+ - INFO:  - has_update=1
+ - INFO:  - has_cleanup=0
+ - INFO:  - has_mouse_button=0
+ - INFO:  - has_mouse_move=0
+ - INFO:  - has_mouse_scroll=0
+ - INFO:  - has_key_event=0
+ - INFO:  - has_navigationPathChanged=0
+ - INFO:  - has_modelLoaded=0
+ - INFO:  - has_selectedModelChanged=0
+ - INFO:  - has_sceneCleared=0
+ - INFO: Load script: /home/tex/Projects/salamesh/build/modules/module_scene/script.lua
+ - INFO:  - has_init=1
+ - INFO:  - has_draw_gui=1
+ - INFO:  - has_layout_gui=1
+ - INFO:  - has_update=0
+ - INFO:  - has_cleanup=0
+ - INFO:  - has_mouse_button=0
+ - INFO:  - has_mouse_move=0
+ - INFO:  - has_mouse_scroll=0
+ - INFO:  - has_key_event=0
+ - INFO:  - has_navigationPathChanged=0
+ - INFO:  - has_modelLoaded=0
+ - INFO:  - has_selectedModelChanged=0
+ - INFO:  - has_sceneCleared=0
+ - INFO: Load script: /home/tex/Projects/salamesh/build/modules/module_inspector/script.lua
+ - INFO:  - has_init=1
+ - INFO:  - has_draw_gui=1
+ - INFO:  - has_layout_gui=0
+ - INFO:  - has_update=0
+ - INFO:  - has_cleanup=0
+ - INFO:  - has_mouse_button=0
+ - INFO:  - has_mouse_move=0
+ - INFO:  - has_mouse_scroll=0
+ - INFO:  - has_key_event=0
+ - INFO:  - has_navigationPathChanged=0
+ - INFO:  - has_modelLoaded=0
+ - INFO:  - has_selectedModelChanged=0
+ - INFO:  - has_sceneCleared=0
+ - INFO: Load script: /home/tex/Projects/salamesh/build/modules/module_snapshots/script.lua
+ - INFO:  - has_init=1
+ - INFO:  - has_draw_gui=1
+ - INFO:  - has_layout_gui=1
+ - INFO:  - has_update=0
+ - INFO:  - has_cleanup=0
+ - INFO:  - has_mouse_button=0
+ - INFO:  - has_mouse_move=0
+ - INFO:  - has_mouse_scroll=0
+ - INFO:  - has_key_event=1
+ - INFO:  - has_navigationPathChanged=0
+ - INFO:  - has_modelLoaded=0
+ - INFO:  - has_selectedModelChanged=0
+ - INFO:  - has_sceneCleared=0

@@ -4,6 +4,7 @@
 #include "geometry.h"
 #include "shader_buffer.h"
 #include "renderers/renderer.h"
+#include "data/colormap.h"
 
 #include <ultimaille/all.h>
 using namespace UM;
@@ -125,15 +126,18 @@ struct SceneNode : std::enable_shared_from_this<SceneNode> {
 
 	// void setSelectedColormap(int idx);
 	// int getSelectedColormap();
-	// std::optional<Colormap> getSelectedColormap();
-	// void setSelectedColormap(Colormap colormap);
+	std::optional<Colormap> getColormap();
+	void setColormap(Colormap colormap);
 
 
-	// std::string getLayerAttr(Layer layer, ElementKind kind);
-	// void setLayerAttr(std::string name, Layer layer, ElementKind kind);
+	std::string getLayerAttr(Layer layer, ElementKind kind);
+	void setLayerAttr(Layer layer, ElementKind kind, const std::string name);
 
 	void setLayer(Layer layer, ElementKind kind, bool update);
-	void unsetLayer(ElementKind kind, Layer layer, bool reset);
+	void setLayer(Layer layer, ElementKind kind, const std::string attributeName, bool update);
+
+	void unsetLayer(Layer layer, ElementKind kind, bool reset = false);
+	void unsetLayers(bool reset = false);
 	// void updateLayer(Layer layer, ElementKind kind);
 	// void resetLayer(ElementKind kind, Layer layer);
 	
