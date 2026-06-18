@@ -71,8 +71,8 @@ function draw_model_properties(model, k, view)
 		if (imgui.CollapsingHeader("Light##" .. k .. "_properties_light")) then 
 
 			local light = false
-			for shader_buffer_name, shader_buffer in pairs(model.shader_buffers) do
-				if (shader_buffer:get_params("light")["enabled"]) then 
+			for _, material in pairs(model.materials) do
+				if (material:get_params("light")["enabled"]) then 
 					light = true
 				end
 			end
@@ -83,8 +83,8 @@ function draw_model_properties(model, k, view)
 				print("Enable light: " .. tostring(new_enable_light))
 				-- model.light = new_enable_light
 				
-				for shader_buffer_name, shader_buffer in pairs(model.shader_buffers) do
-					shader_buffer:get_params("light")["enabled"] = new_enable_light
+				for _, material in pairs(model.materials) do
+					material:get_params("light")["enabled"] = new_enable_light
 				end
 
 			end
@@ -184,11 +184,7 @@ function draw_model_properties(model, k, view)
 		end
 
 		if (imgui.CollapsingHeader("Style##" .. k .. "_properties_style")) then 
-			-- for shader_buffer_name, shader_buffer in pairs(model.shader_buffers) do
-			-- 	if (shader_buffer:get_params("light")["enabled"]) then 
-			
-			-- 	end
-			-- end
+
 			local mesh_material = model:get_material("mesh")
 
 			if mesh_material then

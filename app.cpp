@@ -814,7 +814,7 @@ long App::pickEdge(double x, double y) {
 	if (!st.cell.anyHovered() && !st.facet.anyHovered())
 		return -1;
 
-	auto model = scene.getHoveredModel();
+	auto model = scene.getHoveredNode();
 	if (!model)
 		return -1;
 
@@ -825,15 +825,23 @@ long App::pickEdge(double x, double y) {
 	// it is called by callback mouse_move that is decorelated from main loop
 	// Line below should be sufficient to get hovered
 
-	int h;
-	if (st.cell.anyHovered() && (model->getModelType() == ModelType::HEX_MODEL || model->getModelType() == ModelType::TET_MODEL))
-		h = st.cell.getHovered();
-	else if (st.facet.anyHovered() && (model->getModelType() == ModelType::TRI_MODEL || model->getModelType() == ModelType::QUAD_MODEL || model->getModelType() == ModelType::POLYGON_MODEL))
-		h = st.facet.getHovered();
-	else 
-		return -1;
+	// int h;
+	// if (st.cell.anyHovered() && (model->getModelType() == ModelType::HEX_MODEL || model->getModelType() == ModelType::TET_MODEL))
+	// 	h = st.cell.getHovered();
+	// else if (st.facet.anyHovered() && (model->getModelType() == ModelType::TRI_MODEL || model->getModelType() == ModelType::QUAD_MODEL || model->getModelType() == ModelType::POLYGON_MODEL))
+	// 	h = st.facet.getHovered();
+	// else 
+	// 	return -1;
 
-	return model->pickEdge(p, h);
+	// return model->getGeometry().pickEdge(p, h);
+
+
+	int c = st.cell.getHovered();
+	if (c < 0)
+		c = st.facet.getHovered();
+
+	return model->getGeometry().pickEdge(p, c);
+
 }
 
 long App::pick_mesh(double x, double y) {
@@ -841,11 +849,11 @@ long App::pick_mesh(double x, double y) {
 	glReadBuffer(GL_COLOR_ATTACHMENT4);
 	long id = pick(x, y);
 	glBindFramebuffer(GL_READ_FRAMEBUFFER, 0);
-	return id >= 0 && id < Model::getMaxIndex() ? id : -1;
+	return id >= 0 && id < SceneNode::getMaxIndex() ? id : -1;
 }
 
 std::vector<long> App::pick_vertices(double x, double y, int radius) {
-	auto model = scene.getHoveredModel();
+	auto model = scene.getHoveredNode();
 
 	if (!model)
 		return {};
@@ -858,14 +866,14 @@ std::vector<long> App::pick_vertices(double x, double y, int radius) {
 	// Clean ids
 	std::vector<long> clean_ids;
 	std::copy_if(ids.begin(), ids.end(), std::back_inserter(clean_ids), [&](long id) {
-		return id >= 0 && id < model->nverts();
+		return id >= 0 && id < model->getGeometry().nverts();
 	});
 
 	return clean_ids;
 }
 
 std::vector<long> App::pick_facets(double x, double y, int radius) {
-	auto model = scene.getHoveredModel();
+	auto model = scene.getHoveredNode();
 
 	if (!model)
 		return {};
@@ -878,14 +886,14 @@ std::vector<long> App::pick_facets(double x, double y, int radius) {
 	// Clean ids
 	std::vector<long> clean_ids;
 	std::copy_if(ids.begin(), ids.end(), std::back_inserter(clean_ids), [&](long id) {
-		return id >= 0 && id < model->nfacets();
+		return id >= 0 && id < model->getGeometry().nfacets();
 	});
 
 	return clean_ids;
 }
 
 std::vector<long> App::pick_cells(double x, double y, int radius) {		
-	auto model = scene.getHoveredModel();
+	auto model = scene.getHoveredNode();
 
 	if (!model)
 		return {};
@@ -898,7 +906,7 @@ std::vector<long> App::pick_cells(double x, double y, int radius) {
 	// Clean ids
 	std::vector<long> clean_ids;
 	std::copy_if(ids.begin(), ids.end(), std::back_inserter(clean_ids), [&](long id) {
-		return id >= 0 && id < model->ncells();
+		return id >= 0 && id < model->getGeometry().ncells();
 	});
 
 	return clean_ids;

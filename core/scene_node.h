@@ -13,7 +13,6 @@ using namespace UM;
 
 struct SceneNode : std::enable_shared_from_this<SceneNode> {
 
-	virtual void bob() {};
 
 	SceneNode() :  
 	_name(sl::generateGuid()) {

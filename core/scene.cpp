@@ -79,7 +79,7 @@ void Scene::init() {
 	// _nodes.emplace("node_2", std::move(node2));
 
 	_shaders.emplace("points_shader", std::move(pointsShader));
-	_shaders.emplace("triangles_shader", std::move(trianglesShader));
+	_shaders.emplace("a_triangles_shader", std::move(trianglesShader));
 	_shaders.emplace("polygons_shader", std::move(polygonsShader));
 	_shaders.emplace("line_shader", std::move(lineShader));
 	_shaders.emplace("halfedges_shader", std::move(halfedgesShader));
@@ -385,6 +385,9 @@ void Scene::render() {
 				glBindTexture(GL_TEXTURE_BUFFER, tbo.tex);
 				shader->getShader().setInt(tbo.name, tbo.texUnit);
 			}
+
+			// Set mesh index
+			shader->getShader().setInt("meshIndex", node->getIndex());
 
 			glDrawArrays(shader->renderElement(), 0, shaderBuffer.nelements);
 

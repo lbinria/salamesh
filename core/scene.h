@@ -235,7 +235,7 @@ struct Scene {
 	// }
 
 	std::shared_ptr<SceneNode> getNodeByIndex(int index) {
-		for (auto &[nodeName, node] : _nodes) {
+		for (auto &[_, node] : _nodes) {
 			if (node->getIndex() == index)
 				return node;
 		}

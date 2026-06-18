@@ -6,6 +6,7 @@ layout(depth_less) out float gl_FragDepth;
 // Color output
 layout(location = 0) out vec4 FragColor;
 layout(location = 3) out vec4 FragVertexIndexOut;
+layout(location = 4) out vec4 fragMeshIndexOut;
 
 flat in int FragVertexIndex;
 
@@ -47,6 +48,9 @@ uniform int filterElement;
 uniform bool activatedLayers[5 /* layer */][7 /* element kind */];
 
 flat in float depthZ;
+
+uniform int meshIndex;
+
 
 vec3 encode_id(int id) {
     int r = id & 0x000000FF;
@@ -239,5 +243,6 @@ void main()
     shading(N, col);
 
     FragVertexIndexOut = vec4(encode_id(FragVertexIndex), 1.);
+    fragMeshIndexOut = vec4(encode_id(meshIndex), 1.);
     FragColor = vec4(col, 1.f);
 }
