@@ -16,6 +16,7 @@ using json = nlohmann::json;
 #include "../helpers.h"
 
 #include "../shader_buffer.h"
+#include "../material.h"
 #include "../geometry.h"
 
 struct ShaderBase {
@@ -47,6 +48,10 @@ struct ShaderBase {
 		std::map<std::string, std::shared_ptr<MaterialParams>> params;
 		return ShaderBuffer(shader, vao, vbo, params);
 	};
+
+	virtual Material createMaterial() {
+		return Material();
+	}
 
 	virtual void update(ShaderBuffer &shaderBuffer, Geometry &geometry) {
 

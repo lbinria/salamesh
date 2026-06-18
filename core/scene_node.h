@@ -65,13 +65,32 @@ struct SceneNode : std::enable_shared_from_this<SceneNode> {
 		return *static_cast<TGeometry*>(_geometry.get());
 	}
 
-	bool addShader(ShaderBase &material) {
-		if (_shaders.contains(material.getName()))
+	bool addShader(ShaderBase &shader) {
+		if (_shaders.contains(shader.getName()))
 			return false;
 		
-		auto shaderBuffer = material.createShaderBuffer();
-		_shaders.emplace(material.getName(), std::move(shaderBuffer));
+		auto shaderBuffer = shader.createShaderBuffer();
+		_shaders.emplace(shader.getName(), std::move(shaderBuffer));
+		
+		auto material = shader.createMaterial();
+		_materials.emplace(shader.getName(), std::move(material));
+
 		return true;
+	}
+
+	bool hasMaterial(const std::string name) {
+		return _materials.contains(name);
+	}
+
+	std::map<std::string, Material>& getMaterials() {
+		return _materials;
+	}
+
+	std::optional<std::reference_wrapper<Material>> getMaterial(const std::string name) {
+		if (!_materials.contains(name))
+			return std::nullopt;
+		
+		return _materials.at(name);
 	}
 
 	bool hasShader(const std::string name) {
@@ -82,8 +101,8 @@ struct SceneNode : std::enable_shared_from_this<SceneNode> {
 		return _shaders;
 	}
 
-	std::optional<std::reference_wrapper<ShaderBuffer>> getShaderBuffer(ShaderBase &material) {
-		return getShaderBuffer(material.getName());
+	std::optional<std::reference_wrapper<ShaderBuffer>> getShaderBuffer(ShaderBase &shader) {
+		return getShaderBuffer(shader.getName());
 	}
 
 	std::optional<std::reference_wrapper<ShaderBuffer>> getShaderBuffer(const std::string name) {
@@ -150,6 +169,7 @@ struct SceneNode : std::enable_shared_from_this<SceneNode> {
 
 	std::unique_ptr<Geometry> _geometry;
 	std::map<std::string, ShaderBuffer> _shaders;
+	std::map<std::string, Material> _materials;
 
 	std::weak_ptr<SceneNode> _parent;
 	std::vector<std::shared_ptr<SceneNode>> _children;

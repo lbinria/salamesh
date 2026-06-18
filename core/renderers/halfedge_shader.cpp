@@ -36,6 +36,15 @@ ShaderBuffer HalfedgeShader::createShaderBuffer() {
 	return ShaderBuffer(shader, vao, vbo, params);
 };
 
+Material HalfedgeShader::createMaterial() {
+	std::map<std::string, std::shared_ptr<MaterialParams>> params;
+	params["style"] = std::make_shared<EdgeStyleParams>();
+	params["layers"] = std::make_shared<LayersParams>();
+	params["clipping"] = std::make_shared<ClippingParams>();
+	params["light"] = std::make_shared<LightParams>();
+	return Material(params);
+}
+
 void HalfedgeShader::updateHalfedges(ShaderBuffer &shaderBuffer, Surface &m) {
 	std::vector<LineVert> vertices;
 	// pre-allocate to speed-up

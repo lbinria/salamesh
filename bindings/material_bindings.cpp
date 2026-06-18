@@ -1,0 +1,23 @@
+#include "material_bindings.h"
+
+namespace bindings {
+
+	void MaterialBindings::loadBindings(sol::state &lua, IApp &app) {
+		type = lua.new_usertype<Material>("Material",
+			"params", sol::readonly_property(
+				[](Material& self, const std::string& name) {
+					return self.getParams(name);
+				}
+			),
+			"get_params", sol::overload(
+				[](Material &self, const std::string name) {
+					return self.getParams(name);
+				}, 
+				[](Material &self) {
+					return self.getParams();
+				}
+			),
+			"visible", sol::property(&Material::isVisible, &Material::setVisible)
+		);
+	}
+}

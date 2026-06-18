@@ -45,6 +45,15 @@ ShaderBuffer PolyShader::createShaderBuffer() {
 	return shaderBuffer;
 };
 
+Material PolyShader::createMaterial() {
+	std::map<std::string, std::shared_ptr<MaterialParams>> params;
+	params["style"] = std::make_shared<MeshStyleParams>();
+	params["layers"] = std::make_shared<LayersParams>();
+	params["clipping"] = std::make_shared<ClippingParams>();
+	params["light"] = std::make_shared<LightParams>();
+	return Material(params);
+}
+
 bool PolyShader::isCompatible(Geometry &geometry) {
 	// Accept QuadsGeometry / PolyGeometry
 	auto quadsGeometry = dynamic_cast<QuadsGeometry*>(&geometry);

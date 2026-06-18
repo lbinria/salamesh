@@ -33,6 +33,15 @@ ShaderBuffer PointShader::createShaderBuffer() {
 	return ShaderBuffer(shader, vao, vbo, params);
 };
 
+Material PointShader::createMaterial() {
+	std::map<std::string, std::shared_ptr<MaterialParams>> params;
+	params["style"] = std::make_shared<PointStyleParams>();
+	params["layers"] = std::make_shared<LayersParams>();
+	params["clipping"] = std::make_shared<ClippingParams>();
+	params["light"] = std::make_shared<LightParams>();
+	return Material(params);
+}
+
 void PointShader::updatePointSet(ShaderBuffer &shaderBuffer, PointSet &ps) {
 	std::vector<Vertex> vertices(ps.size());
 	for (int i = 0; i < ps.size(); ++i) {

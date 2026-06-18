@@ -344,6 +344,61 @@ Colormap Scene::getColormap(int idx) {
 	return colormaps[idx];
 }
 
+void Scene::render() {
+
+	// Keep updated nodes in memory
+	std::map<std::string, bool> wasUpdated;
+
+	// Loop through available shaders
+	for (auto &[shaderName, shader] : _shaders) {
+		// Loop through nodes in scene
+		for (auto &[nodeName, node] : _nodes) {
+
+			if (!node->isVisible())
+				continue;
+
+			auto shaderBufferOpt = node->getShaderBuffer(*shader);
+			auto materialOpt = node->getMaterial(shader->getName());
+
+			if (!shaderBufferOpt.has_value() || !materialOpt.has_value())
+				continue;
+
+			auto &shaderBuffer = shaderBufferOpt.value().get();
+			auto &material = materialOpt.value().get();
+
+			if (!material.isVisible())
+				continue;
+
+			if (node->getGeometry().shouldUpdate()) {
+				// Update current shader buffers for given geometry
+				shader->update(shaderBuffer, node->getGeometry());
+				wasUpdated[node->getName()] = true;
+			}
+
+			glBindVertexArray(shaderBuffer.vao());
+			shaderBuffer.setPosition(node->getWorldPosition());
+			material.apply(shader->getShader());
+
+			// Set textures
+			for (auto &tbo : shaderBuffer.tbos) {
+				glActiveTexture(GL_TEXTURE0 + tbo.texUnit);
+				glBindTexture(GL_TEXTURE_BUFFER, tbo.tex);
+				shader->getShader().setInt(tbo.name, tbo.texUnit);
+			}
+
+			glDrawArrays(shader->renderElement(), 0, shaderBuffer.nelements);
+
+		}
+
+	}
+
+	for (auto &[nodeName, node] : _nodes) {
+		if (wasUpdated.contains(nodeName))
+			node->getGeometry().updateDone();
+	}
+
+}
+
 void Scene::loadState(json &j, const std::string filename) {
 	// Load models states
 	for (auto &[modelName, jModel] : j["models"].items()) {

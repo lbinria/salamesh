@@ -4,8 +4,8 @@
 
 std::optional<Colormap> SceneNode::getColormap() {
 		
-	for (auto &[_, shaderBuffer] : getShaderBuffers()) {
-		auto layerParams = shaderBuffer.getParams<LayersParams>("layers");
+	for (auto &[_, material] : getMaterials()) {
+		auto layerParams = material.getParams<LayersParams>("layers");
 		if (!layerParams)
 			continue;
 		
@@ -18,8 +18,8 @@ std::optional<Colormap> SceneNode::getColormap() {
 
 void SceneNode::setColormap(Colormap colormap) {
 
-	for (auto &[_, shaderBuffer] : getShaderBuffers()) {
-		auto layerParams = shaderBuffer.getParams<LayersParams>("layers");
+	for (auto &[_, material] : getMaterials()) {
+		auto layerParams = material.getParams<LayersParams>("layers");
 		if (!layerParams)
 			continue;
 		
@@ -58,9 +58,9 @@ void SceneNode::setLayer(Layer layer, ElementKind kind, bool update) {
 	auto data = sl::getContainerData(attr.ptr.get(), attr.dim);
 	auto [min, max] = sl::getRange(data);
 
-	for (auto &[_, shaderBuffer] : getShaderBuffers()) {
+	for (auto &[_, material] : getMaterials()) {
 		
-		auto layerParams = shaderBuffer.getParams<LayersParams>("layers");
+		auto layerParams = material.getParams<LayersParams>("layers");
 
 		if (!layerParams)
 			continue;
@@ -88,8 +88,8 @@ void SceneNode::unsetLayers(bool reset) {
 
 void SceneNode::unsetLayer(Layer layer, ElementKind kind, bool reset) {
 	
-	for (auto &[_, shaderBuffer] : getShaderBuffers()) {
-		auto layerParams = shaderBuffer.getParams<LayersParams>("layers");
+	for (auto &[_, material] : getMaterials()) {
+		auto layerParams = material.getParams<LayersParams>("layers");
 
 		if (!layerParams)
 			continue;

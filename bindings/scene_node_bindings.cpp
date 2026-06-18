@@ -21,11 +21,13 @@ namespace bindings {
 			"add_shader", &SceneNode::addShader,
 			"has_shader", sol::readonly_property(&SceneNode::hasShader),
 			"add_child", &SceneNode::add,
-			"get_shader_buffers", sol::readonly_property(&SceneNode::getShaderBuffers),
+			"shader_buffers", sol::readonly_property(&SceneNode::getShaderBuffers),
 			"get_shader_buffer", sol::overload(
 				static_cast<std::optional<std::reference_wrapper<ShaderBuffer>>(SceneNode::*)(ShaderBase&)>(&SceneNode::getShaderBuffer),
 				static_cast<std::optional<std::reference_wrapper<ShaderBuffer>>(SceneNode::*)(const std::string)>(&SceneNode::getShaderBuffer)
 			),
+			"materials", sol::readonly_property(&SceneNode::getMaterials),
+			"get_material", &SceneNode::getMaterial,
 			"set_layer", sol::resolve<void(Layer, ElementKind, bool)>(&SceneNode::setLayer),
 			"set_layer", sol::resolve<void(Layer, ElementKind, const std::string, bool)>(&SceneNode::setLayer),
 			"unset_layer", &SceneNode::unsetLayer,

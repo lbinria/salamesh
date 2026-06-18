@@ -33,6 +33,15 @@ ShaderBuffer SurfaceShader::createShaderBuffer() {
 	return ShaderBuffer(shader, vao, vbo, params);
 };
 
+Material SurfaceShader::createMaterial() {
+	std::map<std::string, std::shared_ptr<MaterialParams>> params;
+	params["style"] = std::make_shared<MeshStyleParams>();
+	params["layers"] = std::make_shared<LayersParams>();
+	params["clipping"] = std::make_shared<ClippingParams>();
+	params["light"] = std::make_shared<LightParams>();
+	return Material(params);
+}
+
 void SurfaceShader::update(ShaderBuffer &shaderBuffer, Geometry &geometry) {
 	auto trianglesGeometry = dynamic_cast<TrianglesGeometry*>(&geometry);
 

@@ -71,7 +71,7 @@ function draw_model_properties(model, k, view)
 		if (imgui.CollapsingHeader("Light##" .. k .. "_properties_light")) then 
 
 			local light = false
-			for shader_buffer_name, shader_buffer in pairs(model.get_shader_buffers) do
+			for shader_buffer_name, shader_buffer in pairs(model.shader_buffers) do
 				if (shader_buffer:get_params("light")["enabled"]) then 
 					light = true
 				end
@@ -83,7 +83,7 @@ function draw_model_properties(model, k, view)
 				print("Enable light: " .. tostring(new_enable_light))
 				-- model.light = new_enable_light
 				
-				for shader_buffer_name, shader_buffer in pairs(model.get_shader_buffers) do
+				for shader_buffer_name, shader_buffer in pairs(model.shader_buffers) do
 					shader_buffer:get_params("light")["enabled"] = new_enable_light
 				end
 
@@ -184,12 +184,12 @@ function draw_model_properties(model, k, view)
 		end
 
 		if (imgui.CollapsingHeader("Style##" .. k .. "_properties_style")) then 
-			-- for shader_buffer_name, shader_buffer in pairs(model.get_shader_buffers) do
+			-- for shader_buffer_name, shader_buffer in pairs(model.shader_buffers) do
 			-- 	if (shader_buffer:get_params("light")["enabled"]) then 
 			
 			-- 	end
 			-- end
-			local mesh_shader_buffer = model:get_shader_buffer("mesh")
+			local mesh_shader_buffer = model:get_material("mesh")
 
 			if mesh_shader_buffer then
 
@@ -227,7 +227,7 @@ function draw_model_properties(model, k, view)
 
 			end
 
-			local points_shader_buffer = model:get_shader_buffer("points")
+			local points_shader_buffer = model:get_material("points")
 
 			if points_shader_buffer then
 				local points_style = points_shader_buffer:get_params("style")
@@ -251,7 +251,7 @@ function draw_model_properties(model, k, view)
 				end
 			end
 
-			local halfedges_shader_buffer = model:get_shader_buffer("halfedges")
+			local halfedges_shader_buffer = model:get_material("halfedges")
 			if halfedges_shader_buffer then 
 
 				local haldedges_style = halfedges_shader_buffer:get_params("style")
