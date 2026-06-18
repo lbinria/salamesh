@@ -189,16 +189,16 @@ function draw_model_properties(model, k, view)
 			
 			-- 	end
 			-- end
-			local mesh_shader_buffer = model:get_material("mesh")
+			local mesh_material = model:get_material("mesh")
 
-			if mesh_shader_buffer then
+			if mesh_material then
 
-				local mesh_style = mesh_shader_buffer:get_params("style")
+				local mesh_style = mesh_material:get_params("style")
 
-				local sel_mesh_visible, new_mesh_visible = imgui.Checkbox("Show mesh", mesh_shader_buffer.visible)
+				local sel_mesh_visible, new_mesh_visible = imgui.Checkbox("Show mesh", mesh_material.visible)
 				if (sel_mesh_visible) then 
 					print("Change mesh visibility: " .. tostring(new_mesh_visible))
-					mesh_shader_buffer.visible = new_mesh_visible
+					mesh_material.visible = new_mesh_visible
 				end
 
 				local sel_color, new_color = imgui.ColorEdit3("Color", mesh_style.color)
@@ -227,15 +227,15 @@ function draw_model_properties(model, k, view)
 
 			end
 
-			local points_shader_buffer = model:get_material("points")
+			local points_material = model:get_material("points")
 
-			if points_shader_buffer then
-				local points_style = points_shader_buffer:get_params("style")
+			if points_material then
+				local points_style = points_material:get_params("style")
 
-				local sel_point_visible, new_point_visible = imgui.Checkbox("Show points", points_shader_buffer.visible)
+				local sel_point_visible, new_point_visible = imgui.Checkbox("Show points", points_material.visible)
 				if (sel_point_visible) then 
 					print("Change point visibility: " .. tostring(new_point_visible))
-					points_shader_buffer.visible = new_point_visible
+					points_material.visible = new_point_visible
 				end
 
 				local sel_point_color, new_point_color = imgui.ColorEdit3("Point color", points_style.color)
@@ -251,15 +251,15 @@ function draw_model_properties(model, k, view)
 				end
 			end
 
-			local halfedges_shader_buffer = model:get_material("halfedges")
-			if halfedges_shader_buffer then 
+			local halfedges_material = model:get_material("halfedges")
+			if halfedges_material then 
 
-				local haldedges_style = halfedges_shader_buffer:get_params("style")
+				local haldedges_style = halfedges_material:get_params("style")
 
-				local sel_edge_visible, new_edge_visible = imgui.Checkbox("Show edges", halfedges_shader_buffer.visible)
+				local sel_edge_visible, new_edge_visible = imgui.Checkbox("Show edges", halfedges_material.visible)
 				if (sel_edge_visible) then 
 					print("Change edge visibility: " .. tostring(new_edge_visible))
-					halfedges_shader_buffer.visible = new_edge_visible
+					halfedges_material.visible = new_edge_visible
 				end
 
 				local sel_edge_thickness, new_edge_thickness = imgui.SliderFloat("Edge thickness", haldedges_style.thickness, 0, 50)
