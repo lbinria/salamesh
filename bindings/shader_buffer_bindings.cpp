@@ -3,21 +3,8 @@
 namespace bindings {
 
 	void ShaderBufferBindings::loadBindings(sol::state &lua, IApp &app) {
-		type = lua.new_usertype<ShaderBuffer>("ShaderBuffer",
-			"params", sol::readonly_property(
-				[](ShaderBuffer& self, const std::string& name) {
-					return self.getParams(name);
-				}
-			),
-			"get_params", sol::overload(
-				[](ShaderBuffer &self, const std::string name) {
-					return self.getParams(name);
-				}, 
-				[](ShaderBuffer &self) {
-					return self.getParams();
-				}
-			),
-			"visible", sol::property(&ShaderBuffer::isVisible, &ShaderBuffer::setVisible)
+		type = lua.new_usertype<ShaderBuffer>("ShaderBuffer"
+
 		);
 	}
 }

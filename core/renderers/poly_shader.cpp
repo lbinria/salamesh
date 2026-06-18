@@ -29,13 +29,7 @@ ShaderBuffer PolyShader::createShaderBuffer() {
 
 	sl::createTBO(bufNVertsPerFacet, texNVertsPerFacet);
 
-	std::map<std::string, std::shared_ptr<MaterialParams>> params;
-	params["style"] = std::make_shared<MeshStyleParams>();
-	params["layers"] = std::make_shared<LayersParams>();
-	params["clipping"] = std::make_shared<ClippingParams>();
-	params["light"] = std::make_shared<LightParams>();
-	// return ShaderBuffer(shader, vao, vbo, params);
-	auto shaderBuffer = ShaderBuffer(shader, vao, vbo, params);
+	auto shaderBuffer = ShaderBuffer(shader, vao, vbo);
 	shaderBuffer.tbos.push_back({ 
 		.name = "nvertsPerFacetBuf", 
 		.texUnit = 8, 

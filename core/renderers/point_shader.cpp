@@ -25,12 +25,7 @@ ShaderBuffer PointShader::createShaderBuffer() {
 	sl::createVBOVec3(shader.id, "aPos", sizeof(Vertex), (void*)offsetof(Vertex, position));
 	sl::createVBOFloat(shader.id, "sizeScale", sizeof(Vertex), (void*)offsetof(Vertex, size));
 
-	std::map<std::string, std::shared_ptr<MaterialParams>> params;
-	params["style"] = std::make_shared<PointStyleParams>();
-	params["layers"] = std::make_shared<LayersParams>();
-	params["clipping"] = std::make_shared<ClippingParams>();
-	params["light"] = std::make_shared<LightParams>();
-	return ShaderBuffer(shader, vao, vbo, params);
+	return ShaderBuffer(shader, vao, vbo);
 };
 
 Material PointShader::createMaterial() {

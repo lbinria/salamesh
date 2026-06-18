@@ -10,36 +10,16 @@ using namespace UM;
 struct ShaderBuffer {
 
 
-	ShaderBuffer(Shader &shader, unsigned int vao, unsigned int vbo, std::map<std::string, std::shared_ptr<MaterialParams>> &params) : 
+	ShaderBuffer(Shader &shader, unsigned int vao, unsigned int vbo) : 
 		_shader(shader),
-		_params(std::move(params)),
 		_vao(vao),
 		_vbo(vbo)
 	{
 
 	}
 
-	// TODO move that, just for test
-	void apply() {
-		for (auto &[paramsName, params] : _params)
-			params->apply(_shader);
-	}
-
 	unsigned int vao() const { return _vao; }
 	unsigned int vbo() const { return _vbo; }
-
-	const std::map<std::string, std::shared_ptr<MaterialParams>> getParams() const {
-		return _params;
-	}
-
-	std::shared_ptr<MaterialParams> getParams(const std::string name) {
-		return _params.contains(name) ? _params.at(name) : nullptr;
-	}
-
-	template<typename TParams>
-	std::shared_ptr<TParams> getParams(const std::string name) {
-		return _params.contains(name) ? std::static_pointer_cast<TParams>(_params.at(name)) : nullptr;
-	}
 
 	// TODO move that, just for test
 	void setPosition(glm::vec3 position) {
@@ -48,14 +28,6 @@ struct ShaderBuffer {
 		// Set model to shader
 		_shader.use();
 		_shader.setMat4("model", model);
-	}
-
-	bool isVisible() const {
-		return _visible;
-	}
-
-	void setVisible(bool visible) {
-		_visible = visible;
 	}
 
 	std::vector<unsigned char> rawData; // TODO to remove
@@ -76,10 +48,8 @@ struct ShaderBuffer {
 
 
 	private:
-	bool _visible = true;
 	unsigned int _vao;
 	unsigned int _vbo;
 	Shader &_shader;
-	std::map<std::string, std::shared_ptr<MaterialParams>> _params;
 
 };

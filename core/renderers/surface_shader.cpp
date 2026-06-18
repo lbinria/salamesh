@@ -30,7 +30,7 @@ ShaderBuffer SurfaceShader::createShaderBuffer() {
 	params["layers"] = std::make_shared<LayersParams>();
 	params["clipping"] = std::make_shared<ClippingParams>();
 	params["light"] = std::make_shared<LightParams>();
-	return ShaderBuffer(shader, vao, vbo, params);
+	return ShaderBuffer(shader, vao, vbo);
 };
 
 Material SurfaceShader::createMaterial() {

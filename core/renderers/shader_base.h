@@ -45,8 +45,7 @@ struct ShaderBase {
 		glGenVertexArrays(1, &vao);
 		glGenBuffers(1, &vbo);
 
-		std::map<std::string, std::shared_ptr<MaterialParams>> params;
-		return ShaderBuffer(shader, vao, vbo, params);
+		return ShaderBuffer(shader, vao, vbo);
 	};
 
 	virtual Material createMaterial() {

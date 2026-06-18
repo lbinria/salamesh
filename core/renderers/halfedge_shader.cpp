@@ -28,12 +28,7 @@ ShaderBuffer HalfedgeShader::createShaderBuffer() {
 	sl::createVBOFloat(shader.id, "aEnd", sizeof(LineVert), (void*)offsetof(LineVert, end));
 	sl::createVBOVec3(shader.id, "bary", sizeof(LineVert), (void*)offsetof(LineVert, bary));
 
-	std::map<std::string, std::shared_ptr<MaterialParams>> params;
-	params["style"] = std::make_shared<EdgeStyleParams>();
-	params["layers"] = std::make_shared<LayersParams>();
-	params["clipping"] = std::make_shared<ClippingParams>();
-	params["light"] = std::make_shared<LightParams>();
-	return ShaderBuffer(shader, vao, vbo, params);
+	return ShaderBuffer(shader, vao, vbo);
 };
 
 Material HalfedgeShader::createMaterial() {
