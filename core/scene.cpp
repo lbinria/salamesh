@@ -178,7 +178,7 @@ std::shared_ptr<SceneNode> Scene::loadModel2(const std::string filename, const s
 	std::string nodeName = name.empty() ? 
 		std::filesystem::path(filename).stem().string() + std::to_string(models.count()) : 
 		name;
-		
+	
 	// Mesh node
 	auto node = std::make_shared<SceneNode>(ModelLoader::load(filename));
 

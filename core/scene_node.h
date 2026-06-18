@@ -65,11 +65,11 @@ struct SceneNode : std::enable_shared_from_this<SceneNode> {
 	}
 
 	bool addShader(ShaderBase &shader) {
-		if (_shaders.contains(shader.getName()))
+		if (_geometryBuffer.contains(shader.getName()))
 			return false;
 		
 		auto shaderBuffer = shader.createShaderBuffer();
-		_shaders.emplace(shader.getName(), std::move(shaderBuffer));
+		_geometryBuffer.emplace(shader.getName(), std::move(shaderBuffer));
 		
 		auto material = shader.createMaterial();
 		_materials.emplace(shader.getName(), std::move(material));
@@ -92,12 +92,8 @@ struct SceneNode : std::enable_shared_from_this<SceneNode> {
 		return _materials.at(name);
 	}
 
-	bool hasShader(const std::string name) {
-		return _shaders.contains(name);
-	}
-
 	std::map<std::string, ShaderBuffer>& getShaderBuffers() {
-		return _shaders;
+		return _geometryBuffer;
 	}
 
 	std::optional<std::reference_wrapper<ShaderBuffer>> getShaderBuffer(ShaderBase &shader) {
@@ -105,10 +101,10 @@ struct SceneNode : std::enable_shared_from_this<SceneNode> {
 	}
 
 	std::optional<std::reference_wrapper<ShaderBuffer>> getShaderBuffer(const std::string name) {
-		if (!_shaders.contains(name))
+		if (!_geometryBuffer.contains(name))
 			return std::nullopt;
 		
-		return _shaders.at(name);
+		return _geometryBuffer.at(name);
 	}
 
 	std::shared_ptr<SceneNode> getParent() const {
@@ -140,10 +136,6 @@ struct SceneNode : std::enable_shared_from_this<SceneNode> {
 		return _visible;
 	}
 
-
-
-	// void setSelectedColormap(int idx);
-	// int getSelectedColormap();
 	std::optional<Colormap> getColormap();
 	void setColormap(Colormap colormap);
 
@@ -167,7 +159,7 @@ struct SceneNode : std::enable_shared_from_this<SceneNode> {
 	std::string _name;
 
 	std::unique_ptr<Geometry> _geometry;
-	std::map<std::string, ShaderBuffer> _shaders;
+	std::map<std::string, ShaderBuffer> _geometryBuffer;
 	std::map<std::string, Material> _materials;
 
 	std::weak_ptr<SceneNode> _parent;

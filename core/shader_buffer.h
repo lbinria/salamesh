@@ -30,7 +30,6 @@ struct ShaderBuffer {
 		_shader.setMat4("model", model);
 	}
 
-	std::vector<unsigned char> rawData; // TODO to remove
 	unsigned int nelements = 0;
 
 	Shader &getShader() {

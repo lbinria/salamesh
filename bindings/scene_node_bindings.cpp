@@ -15,17 +15,9 @@ namespace bindings {
 				return t;
 			}),
 			"visible", sol::property(&SceneNode::isVisible, &SceneNode::setVisible),
-			// "geometry", sol::property(&SceneNode::getGeometry, &SceneNode::setGeometry),
 			"geometry", sol::readonly_property(&SceneNode::getGeometry),
-			// "create_geometry", &SceneNode::createGeometry,
 			"add_shader", &SceneNode::addShader,
-			"has_shader", sol::readonly_property(&SceneNode::hasShader),
 			"add_child", &SceneNode::add,
-			"shader_buffers", sol::readonly_property(&SceneNode::getShaderBuffers),
-			"get_shader_buffer", sol::overload(
-				static_cast<std::optional<std::reference_wrapper<ShaderBuffer>>(SceneNode::*)(ShaderBase&)>(&SceneNode::getShaderBuffer),
-				static_cast<std::optional<std::reference_wrapper<ShaderBuffer>>(SceneNode::*)(const std::string)>(&SceneNode::getShaderBuffer)
-			),
 			"materials", sol::readonly_property(&SceneNode::getMaterials),
 			"get_material", &SceneNode::getMaterial,
 			"set_layer", sol::resolve<void(Layer, ElementKind, bool)>(&SceneNode::setLayer),
