@@ -1,6 +1,6 @@
-#include "tri_renderer.h"
+#include "tri_shader.h"
 
-void TriMaterial::push() {
+void TriShader::push() {
 
 	nelements = _m.nfacets() * 3 /* 3 points per tri */;
 
