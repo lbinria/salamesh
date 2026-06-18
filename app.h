@@ -37,16 +37,11 @@
 #include "scene.h"
 #include "core/shader.h"
 
-#include "core/models/model.h"
-
-
 
 #include "core/render_surface.h"
 
 #include "core/cameras/camera.h"
 #include "core/cameras/camera_collection.h"
-#include "core/renderers/renderer_collection.h"
-#include "core/models/model_collection.h"
 
 
 #include "core/lua_script.h"

@@ -2,7 +2,6 @@
 
 #include "scene.h"
 #include "render_surface.h"
-#include "models/model.h"
 #include "data/image.h"
 #include "data/snapshot.h"
 #include "navigation_path.h"
@@ -11,8 +10,6 @@
 #include "data/element_type.h"
 #include "cameras/camera.h"
 #include "cameras/camera_collection.h"
-#include "renderers/renderer_collection.h"
-#include "models/model_collection.h"
 #include <string>
 
 

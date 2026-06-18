@@ -9,17 +9,9 @@ namespace bindings {
 
 
 		// Instanciator type binding
-		lua.new_usertype<Instanciator<Model>>("ModelInstanciator", 
-			// "register_type", &Instanciator<Model>::registerType,
-			"list_available_types", &Instanciator<Model>::listAvailableTypes
-		);
 		lua.new_usertype<Instanciator<Camera>>("CameraInstanciator", 
 			// "register_type", &Instanciator<Camera>::registerType,
 			"list_available_types", &Instanciator<Camera>::listAvailableTypes
-		);
-		lua.new_usertype<Instanciator<ShaderBase>>("RendererInstanciator", 
-			// "register_type", &Instanciator<ShaderBase>::registerType,
-			"list_available_types", &Instanciator<ShaderBase>::listAvailableTypes
 		);
 
 		// Input state binding
@@ -113,53 +105,6 @@ namespace bindings {
 		app_type["scene"] = sol::readonly_property(&IApp::getScene);
 
 
-
-
-		sol::usertype<ModelCollection> modelCollection_t = lua.new_usertype<ModelCollection>("ModelCollection",
-			"add", &ModelCollection::add,
-			"remove", &ModelCollection::remove,
-			"get", sol::resolve<Model&(std::string)>(&ModelCollection::get),
-			"all", sol::resolve<std::map<std::string, std::shared_ptr<Model>>&()>(&ModelCollection::get),
-			"count", sol::readonly_property(&ModelCollection::count),
-			"has", &ModelCollection::has,
-			"any", sol::readonly_property(&ModelCollection::any),
-			"clear", &ModelCollection::clear,
-			"get_children_of", &ModelCollection::getChildrenOf,
-			"get_by_index", &ModelCollection::getByIndex
-		);
-
-		modelCollection_t.set_function(sol::meta_function::pairs, [](sol::this_state L, ModelCollection& self) {
-			auto it = self.begin();
-			auto end = self.end();
-			
-			return sol::as_function([it, end](sol::this_state L) mutable {
-				if (it == end) {
-					// Signal end of iteration
-					return std::make_tuple(
-						sol::object(sol::lua_nil),
-						sol::object(sol::lua_nil)
-					);
-				}
-				auto key = it->first;
-				auto value = it->second;
-				std::advance(it, 1);
-
-				return std::make_tuple(
-					sol::object(L, sol::in_place, key),
-					sol::object(L, sol::in_place, value)
-				);
-			});
-		});
-		
-		modelCollection_t[sol::meta_function::index] = [](ModelCollection& self, const std::string name) -> const std::shared_ptr<Model> {
-			// Check existence before return, elsewhere self[name] is added to map with nullptr
-			// for example doing app.scene.models:missing_function() (equivalent to: app.scene.models["missing_function"]) will add a key "missing_function" to map with nullptr !!!
-			return self.has(name) ? self[name] : nullptr;
-		};
-
-
-
-
 		sol::usertype<CameraCollection> cameraCollection_t = lua.new_usertype<CameraCollection>("CameraCollection",
 			"add", &CameraCollection::add,
 			"remove", &CameraCollection::remove,
@@ -191,41 +136,6 @@ namespace bindings {
 			// for example doing app.scene.cameras:missing_function() (equivalent to: app.scene.models["missing_function"]) will add a key "missing_function" to map with nullptr !!!
 			return self.has(name) ? self[name] : nullptr;
 		};
-
-
-		sol::usertype<RendererCollection> rendererCollection_t = lua.new_usertype<RendererCollection>("RendererCollection",
-			"add", &RendererCollection::add,
-			"remove", &RendererCollection::remove,
-			"get", sol::resolve<ShaderBase&(std::string)>(&RendererCollection::get),
-			"all", sol::resolve<std::map<std::string, std::shared_ptr<ShaderBase>>&()>(&RendererCollection::get),
-			"count", sol::readonly_property(&RendererCollection::count),
-			"has", &RendererCollection::has,
-			"any", sol::readonly_property(&RendererCollection::any),
-			"clear", &RendererCollection::clear
-		);
-
-		rendererCollection_t.set_function(sol::meta_function::pairs, [](sol::this_state L, RendererCollection& self) {
-			auto it = self.begin();
-			auto end = self.end();
-			
-			return sol::as_function([it, end](sol::this_state L) mutable {
-				if (it == end) {
-					return sol::object(L, sol::nil);
-				}
-				auto key = it->first;
-				auto value = it->second;
-				++it;
-				return sol::object(L, sol::in_place, std::make_tuple(key, value));
-			});
-		});
-		
-		rendererCollection_t[sol::meta_function::index] = [](RendererCollection& self, const std::string name) -> const std::shared_ptr<ShaderBase> {
-			// Check existence before return, elsewhere self[name] is added to map with nullptr
-			// for example doing app.scene.renderers:missing_function() (equivalent to: app.scene.models["missing_function"]) will add a key "missing_function" to map with nullptr !!!
-			return self.has(name) ? self[name] : nullptr;
-		};
-
-
 
 
 		app_type["input_state"] = sol::readonly_property(&IApp::getInputState);

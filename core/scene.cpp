@@ -1,26 +1,28 @@
 #include "scene.h"
 #include "app_interface.h"
 
+#include "renderers/point_shader.h"
+#include "renderers/tri_renderer.h"
+#include "renderers/poly_shader.h"
+#include "renderers/halfedge_shader.h"
+#include "renderers/line_shader.h"
+
 #include "utils/opengl_helper.h"
 
 void Scene::init() {
 	// Register model types
-	models.getInstanciator().registerType("TriModel", [](std::string name) { return std::make_unique<TriModel>(name); });
-	models.getInstanciator().registerType("QuadModel", [](std::string name) { return std::make_unique<QuadModel>(name); });
-	models.getInstanciator().registerType("PolyModel", [](std::string name) { return std::make_unique<PolyModel>(name); });
-	models.getInstanciator().registerType("TetModel", [](std::string name) { return std::make_unique<TetModel>(name); });
-	models.getInstanciator().registerType("HexModel", [](std::string name) { return std::make_unique<HexModel>(name); });
-	models.getInstanciator().registerType("PolylineModel", [](std::string name) { return std::make_unique<PolylineModel>(name); });
+	// models.getInstanciator().registerType("TriModel", [](std::string name) { return std::make_unique<TriModel>(name); });
+	// models.getInstanciator().registerType("QuadModel", [](std::string name) { return std::make_unique<QuadModel>(name); });
+	// models.getInstanciator().registerType("PolyModel", [](std::string name) { return std::make_unique<PolyModel>(name); });
+	// models.getInstanciator().registerType("TetModel", [](std::string name) { return std::make_unique<TetModel>(name); });
+	// models.getInstanciator().registerType("HexModel", [](std::string name) { return std::make_unique<HexModel>(name); });
+	// models.getInstanciator().registerType("PolylineModel", [](std::string name) { return std::make_unique<PolylineModel>(name); });
 	// models.getInstanciator().registerType("PyramidModel", [](std::string name) { return std::make_unique<PyramidModel>(name); });
 	// models.getInstanciator().registerType("PrismModel", [](std::string name) { return std::make_unique<PrismModel>(name); });
 
 	// Register cameras types
 	cameras.getInstanciator().registerType("DescentCamera", [](std::string name) { return std::make_unique<DescentCamera>(name); });
 	cameras.getInstanciator().registerType("TrackBallCamera", [](std::string name) { return std::make_unique<TrackBallCamera>(name); });
-
-	// Register renderers types
-	renderers.getInstanciator().registerType("LineShader", [](std::string name) { return std::make_unique<LineShader>(name); });
-	renderers.getInstanciator().registerType("PointShader", [](std::string name) { return std::make_unique<PointShader>(name); });
 
 	// Init default render surface
 	auto renderSurface = std::make_shared<RenderSurface>(1024, 768);
@@ -32,51 +34,11 @@ void Scene::init() {
 
 	getDefaultRenderSurface().setCamera(cameras["default"]);
 
-
-	// Test
-	cameras["default"]->lookAtBox({{-1,-1,-1}, {1,1,1}});
-
 	auto pointsShader = std::make_unique<PointShader>("points");
 	auto trianglesShader = std::make_unique<TriMaterial>("mesh");
 	auto polygonsShader = std::make_unique<PolyShader>("mesh");
 	auto halfedgesShader = std::make_unique<HalfedgeShader>("halfedges");
 	auto lineShader = std::make_unique<LineShader>("line_shader");
-
-	// auto geo = std::make_unique<TrianglesGeometry>();
-	// geo->_m.points.create_points(3);
-	// geo->_m.create_facets(1);
-	// geo->_m.points[0] = {0.,0.,0.};
-	// geo->_m.points[1] = {1.,0.,0.};
-	// geo->_m.points[2] = {0.5,0.5,0.};
-	// geo->_m.vert(0, 0) = 0;
-	// geo->_m.vert(0, 1) = 1;
-	// geo->_m.vert(0, 2) = 2;
-
-	// auto node = std::make_shared<SceneNode>();
-	// node->addShader(*pointsShader);
-	// node->setGeometry(std::move(geo));
-	// _nodes.emplace("node_1", std::move(node));
-
-	// auto geo2 = std::make_unique<TrianglesGeometry>();
-	// geo2->_m.points.create_points(3);
-	// geo2->_m.create_facets(1);
-	// geo2->_m.points[0] = {0.2,0.,0.};
-	// geo2->_m.points[1] = {0.8,0.,0.};
-	// geo2->_m.points[2] = {0.3,0.2,0.};
-	// geo2->_m.vert(0, 0) = 0;
-	// geo2->_m.vert(0, 1) = 1;
-	// geo2->_m.vert(0, 2) = 2;
-
-	// auto node2 = std::make_shared<SceneNode>();
-	// node2->addShader(*pointsShader);
-	// node2->addShader(*trianglesShader);
-	// node2->setGeometry(std::move(geo2));
-	// auto sb = node2->getShaderBuffer("points");
-	// auto ps = sb.value().get().getParams<PointStyleParams>("style");
-	// ps->size = 10.f;
-	// ps->color = {1.f, 0.4f, 0.2f};
-
-	// _nodes.emplace("node_2", std::move(node2));
 
 	_shaders.emplace("points_shader", std::move(pointsShader));
 	_shaders.emplace("a_triangles_shader", std::move(trianglesShader));
@@ -84,99 +46,12 @@ void Scene::init() {
 	_shaders.emplace("line_shader", std::move(lineShader));
 	_shaders.emplace("halfedges_shader", std::move(halfedgesShader));
 
-	// loadModel2("assets/catorus_tri.geogram", "catorus");
-	// loadModel2("assets/catorus_quad.geogram", "catorus");
-	// loadModel2("assets/simple_poly.geogram", "catorus");
-}
-
-std::shared_ptr<Model> Scene::loadModel(const std::string& filename, std::string name) {
-
-	auto begin = std::chrono::steady_clock::now();
-
-	std::string modelName = name.empty() ? 
-		std::filesystem::path(filename).stem().string() + std::to_string(models.count()) : 
-		name;
-
-	bool success = false;
-
-	std::unique_ptr<Model> model;
-	model = std::make_unique<PolyModel>(modelName);
-
-	success = model->load(filename);
-
-	if (!success) {
-		model = std::make_unique<TriModel>(modelName);
-		success = model->load(filename);
-	}
-
-	if (!success) {
-		model = std::make_unique<QuadModel>(modelName);
-		success = model->load(filename);
-	}
-
-	if (!success) {
-		model = std::make_unique<TetModel>(modelName);
-		success = model->load(filename);
-	}
-
-	if (!success) {
-		model = std::make_unique<HexModel>(modelName);
-		success = model->load(filename);
-	}
-
-	if (!success) {
-		model = std::make_unique<PolylineModel>(modelName);
-		success = model->load(filename);
-	}
-
-	if (!success)
-		return nullptr;
-
-
-	// Setup default gfx
-	model->setLight(true);
-	// auto meshRenderer = model->getMeshRenderer();
-	// if (meshRenderer) {
-	// 	meshRenderer->setMeshShrink(0.f);
-	// 	meshRenderer->setMeshSize(0.0f);
-	// }
-	
-	// auto edges = model->getEdgesRenderer();
-	// if (edges && model->getModelType() == ModelType::POLYLINE_MODEL) {
-	// 	edges->setVisible(true);
-	// }
-
-	// // By default points not visible
-	// model->getPointsRenderer().setVisible(false);
-
-	// Setup default clipping plane
-	model->setupClipping();
-	models[modelName] = std::move(model);
-
-	// Update cameras far planes
-	// computeFarPlane();
-	computeFarPlane();
-
-
-	// // Notify scripts
-	// for (auto &s : scripts) {
-	// 	s->modelLoaded(modelName);
-	// }
-
-	// A model was loaded ? focus it !
-	if (!modelName.empty())
-		focus(modelName);
-
-	auto end = std::chrono::steady_clock::now();
-	std::cout << "load model total duration: " << std::chrono::duration_cast<std::chrono::milliseconds>(end - begin).count() << std::endl;
-
-	return models[modelName];
 }
 
 std::shared_ptr<SceneNode> Scene::loadModel2(const std::string filename, const std::string name) {
 
 	std::string nodeName = name.empty() ? 
-		std::filesystem::path(filename).stem().string() + std::to_string(models.count()) : 
+		std::filesystem::path(filename).stem().string() + std::to_string(_nodes.size()) : 
 		name;
 	
 	// Mesh node
@@ -211,12 +86,6 @@ std::shared_ptr<SceneNode> Scene::loadModel2(const std::string filename, const s
 	return node;
 }
 
-void Scene::focus(std::string modelName) {
-	setSelectedModel(modelName);
-	auto &model = models[modelName];
-	getCurrentCamera().lookAtBox(model->bbox());
-}
-
 void Scene::focus2(const std::string nodeName) {
 	if (!selectNode(nodeName))
 		return;
@@ -237,40 +106,13 @@ std::tuple<glm::vec3, glm::vec3> Scene::computeSceneBBox2() {
 	return std::make_tuple(min, max);
 }
 
-std::tuple<glm::vec3, glm::vec3> Scene::computeSceneBBox() {
-	glm::vec3 min{std::numeric_limits<float>::max()};
-	glm::vec3 max{-std::numeric_limits<float>::max()};
-	for (auto &[k, m] : models) {
-		auto [cmin, cmax] = m->bbox();
-		min = glm::min(min, cmin);
-		max = glm::max(max, cmax);
-	}
-	
-	return std::make_tuple(min, max);
-}
-
 float Scene::computeSceneDiameter2() {
 	auto [min, max] = computeSceneBBox2();
 	return glm::length(max - min);
 }
 
-float Scene::computeSceneDiameter() {
-	auto [min, max] = computeSceneBBox();
-	return glm::length(max - min);
-}
-
 void Scene::computeFarPlane2() {
 	auto diameter = computeSceneDiameter2();
-
-	for (auto &[k, c] : cameras) {
-		c->setFarPlane(diameter * 5.f /* 5.f is an arbitrary value... */);
-	}
-
-	// TODO should refresh camera here, elsewhere nothing will be visible until we doing somethin that refresh the camera!
-}
-
-void Scene::computeFarPlane() {
-	auto diameter = computeSceneDiameter();
 
 	for (auto &[k, c] : cameras) {
 		c->setFarPlane(diameter * 5.f /* 5.f is an arbitrary value... */);
@@ -404,25 +246,25 @@ void Scene::render() {
 
 void Scene::loadState(json &j, const std::string filename) {
 	// Load models states
-	for (auto &[modelName, jModel] : j["models"].items()) {
-		// Concatenate state.json file path with model path
-		// in order to search the mesh file relatively to the state.json file
-		std::string modelRelPath = jModel["path"];
-		auto modelPath = 
-			std::filesystem::path(filename).remove_filename() / 
-			std::filesystem::path(modelRelPath);
+	// for (auto &[modelName, jModel] : j["models"].items()) {
+	// 	// Concatenate state.json file path with model path
+	// 	// in order to search the mesh file relatively to the state.json file
+	// 	std::string modelRelPath = jModel["path"];
+	// 	auto modelPath = 
+	// 		std::filesystem::path(filename).remove_filename() / 
+	// 		std::filesystem::path(modelRelPath);
 		
-		// Try to load the model mesh
-		if (!loadModel(modelPath.string(), modelName))
-			continue;
+	// 	// Try to load the model mesh
+	// 	if (!loadModel2(modelPath.string(), modelName))
+	// 		continue;
 		
-		// Get last added model
-		auto &model = models[modelName];
-		// Load state into last loaded model
-		model->loadState(jModel);
+	// 	// Get last added model
+	// 	auto &model = models[modelName];
+	// 	// Load state into last loaded model
+	// 	model->loadState(jModel);
 
-		// TODO! recompute cameras far / near
-	}
+	// 	// TODO! recompute cameras far / near
+	// }
 
 	// Load cameras states after model (because loading model will focus on)
 	for (auto &[cameraName, jCamera] : j["cameras"].items()) {
@@ -434,22 +276,22 @@ void Scene::loadState(json &j, const std::string filename) {
 		}
 	}
 
-	setSelectedModel(j["selected_model"].get<std::string>());
+	selectNode(j["selected_model"].get<std::string>());
 	setSelectedCamera(j["selected_camera"].get<std::string>());
 }
 
 void Scene::saveState(json &j, const std::string filename) {
 	std::filesystem::path p = filename;
 
-	j["selected_model"] = selectedModel;
+	// j["selected_model"] = selectedModel;
 	j["selected_camera"] = selectedCamera;
 	j["models"] = json::object();
 	j["cameras"] = json::object();
 
-	// Save models states
-	for (auto &[k, m] : models) {
-		m->saveState(p.parent_path().string(), j["models"][k]);
-	}
+	// // Save models states
+	// for (auto &[k, m] : models) {
+	// 	m->saveState(p.parent_path().string(), j["models"][k]);
+	// }
 
 	// Save cameras states
 	for (auto &[k, c] : cameras) {
@@ -458,11 +300,6 @@ void Scene::saveState(json &j, const std::string filename) {
 
 	// TODO important save renderer states
 	// TODO important save colormaps states
-}
-
-std::shared_ptr<Model> Scene::getHoveredModel() {
-	auto hoveredIndex = app.getInputState().mesh.getHovered();
-	return models.getByIndex(hoveredIndex);
 }
 
 std::shared_ptr<SceneNode> Scene::getHoveredNode() {

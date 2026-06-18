@@ -10,15 +10,8 @@
 #include "cameras/descent_camera.h"
 #include "cameras/camera_collection.h"
 
-#include "models/model.h"
-#include "models/surface_model.h"
-#include "models/volume_model.h"
-#include "models/polyline_model.h"
-#include "models/model_collection.h"
 
 #include "renderers/shader_base.h"
-#include "renderers/line_shader.h"
-#include "renderers/renderer_collection.h"
 
 #include "scene_node.h"
 #include "renderers/point_style_params.h" // TODO remove test
@@ -40,13 +33,7 @@ struct Scene {
 	void render();
 
 	void clean() {
-		for (auto &[k, model] : models) {
-			model->clean();
-		}
-
-		for (auto &[k, renderer] : renderers) {
-			renderer->clean();
-		}
+		// TODO clean nodes
 
 		// Clear textures
 		for (int i = 0; i < colormaps.size(); ++i)
@@ -54,40 +41,18 @@ struct Scene {
 	}
 
 	void clear() {
-		renderers.clear();
-		models.clear();
-		setSelectedModel("");
+		// TODO clear nodes
+		selectNode("");
 		cameras.clear();
 		setupCameras();
 		clearColormaps();
 	}
 
-	std::shared_ptr<Model> loadModel(const std::string& filename, std::string name = "");
 
 
 
-	ModelCollection& getModels() { return models; }
 
 
-	inline std::string getSelectedModel() {
-		return selectedModel;
-	}
-
-	bool setSelectedModel(std::string name) {
-		if (name.empty())
-			return false;
-
-		if (!models.has(name)) {
-			std::cerr << "Invalid model selection: " << name << std::endl;
-			return false;
-		}
-
-		auto oldSelection = selectedModel;
-		selectedModel = name;
-		// TODO important reactivate this !
-		// notifySelectedModelChanged(oldSelection, name);
-		return true;
-	}
 
 	bool selectNode(std::string name) {
 		if (name.empty())
@@ -109,13 +74,7 @@ struct Scene {
 		return selectedNode;
 	}
 
-	void focus(std::string modelName);
 	void focus2(std::string nodeName);
-
-
-	inline Model& getCurrentModel() {
-		return *models[selectedModel];
-	}
 
 	inline std::shared_ptr<SceneNode> getCurrentNode() {
 		if (!selectedNode.empty())
@@ -124,13 +83,8 @@ struct Scene {
 		return nullptr;
 	}
 
-	std::shared_ptr<Model> getHoveredModel();
 	std::shared_ptr<SceneNode> getHoveredNode();
 
-
-	std::tuple<glm::vec3, glm::vec3> computeSceneBBox();
-	float computeSceneDiameter();
-	void computeFarPlane();
 
 	std::tuple<glm::vec3, glm::vec3> computeSceneBBox2();
 	float computeSceneDiameter2();
@@ -162,8 +116,6 @@ struct Scene {
 	Camera& getCurrentCamera() { return *cameras[selectedCamera]; }
 	CameraCollection& getCameras() { return cameras; }
 
-	RendererCollection& getRenderers() { return renderers; }
-
 
 	void setupColormaps();
 
@@ -189,36 +141,28 @@ struct Scene {
 	std::map<std::string, std::shared_ptr<RenderSurface>>& getRenderSurfaces() { return renderSurfaces; }
 
 
+	bool hasNodes() const {
+		return _nodes.size() > 0;
+	}
 
 	const std::map<std::string, std::shared_ptr<SceneNode>>& getNodes() const {
 		return _nodes;
 	}
 
-	template <typename T>
-	std::map<std::string, std::shared_ptr<T>> getNodes2() const {
-		static_assert(std::is_base_of_v<SceneNode, T>, 
-					"T must be derived from SceneNode");
+	// template <typename T>
+	// std::map<std::string, std::shared_ptr<T>> getNodes2() const {
+	// 	static_assert(std::is_base_of_v<SceneNode, T>, 
+	// 				"T must be derived from SceneNode");
 		
-		std::map<std::string, std::shared_ptr<T>> result;
+	// 	std::map<std::string, std::shared_ptr<T>> result;
 		
-		for (const auto& [name, node] : _nodes) {
-			if (auto casted = std::dynamic_pointer_cast<T>(node)) {
-				result[name] = casted;
-			}
-		}
-		
-		return result;
-	}
-
-	// std::map<std::string, std::shared_ptr<SceneNode>> getNodesByType(const std::string& typeName) const {
-	// 	if (typeName == "ModelNode") {
-	// 		auto result = getNodes2<ModelNode>();
-	// 		return std::map<std::string, std::shared_ptr<SceneNode>>(
-	// 			result.begin(), result.end()
-	// 		);
+	// 	for (const auto& [name, node] : _nodes) {
+	// 		if (auto casted = std::dynamic_pointer_cast<T>(node)) {
+	// 			result[name] = casted;
+	// 		}
 	// 	}
-	// 	// Add other types as needed
-	// 	return {};
+		
+	// 	return result;
 	// }
 
 	std::shared_ptr<SceneNode> getNodeByName(const std::string name) {
@@ -253,19 +197,13 @@ struct Scene {
 
 	std::string selectedNode = "";
 
-	std::string selectedModel = "";
-	ModelCollection models;
-
 	std::string selectedCamera = "default";
 	CameraCollection cameras;
-
-	RendererCollection renderers;
 
 	std::map<std::string, std::shared_ptr<SceneNode>> _nodes;
 
 	std::map<std::string, std::unique_ptr<ShaderBase>> _shaders;
 
-	// std::map<std::string, std::map<std::string, int[3]>> _selectedColormap;
 
 	// display color map in good format for 2D in the UI
 	std::vector<Colormap> colormaps;

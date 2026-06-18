@@ -6,10 +6,6 @@
 #include "core/cameras/descent_camera.h"
 #include "core/renderers/line_shader.h"
 
-#include "core/models/polyline_model.h"
-#include "core/models/surface_model.h"
-#include "core/models/volume_model.h"
-
 #include "core/utils/logger.h"
 #include "helpers/imgui_theme_manager.h"
 #include "helpers/imgui_stack_state.h"
@@ -598,8 +594,8 @@ void App::update(float dt) {
 void App::updateCamera(float dt) {
 
 	float speed = 0.01f;
-	if (scene.getModels().any()) {
-		speed = scene.getCurrentModel().getRadius() * 0.5f * dt;
+	if (scene.hasNodes()) {
+		speed = scene.getCurrentNode()->getGeometry().getRadius() * 0.5f * dt;
 	}
 
 	if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS) {
@@ -756,8 +752,13 @@ void App::drawGui() {
 			// action
 			std::cout << "file path:" << directoryPath << ", file path name: " << filename << std::endl;
 			std::cout << "save model..." << std::endl;
-			if (!scene.getCurrentModel().saveAs(filename)) {
-				std::cerr << "Unable to save current model at: " << filename << std::endl;
+
+			if (scene.getCurrentNode()) {
+				if (!scene.getCurrentNode()->getGeometry().saveAs(filename)) {
+					std::cerr << "Unable to save current model at: " << filename << std::endl;
+				}
+			} else {
+				std::cerr << "Select node to save." << std::endl;
 			}
 		}
 		
@@ -1248,9 +1249,9 @@ void App::loadCppScript(fs::path scriptPath, sol::state& state) {
 		std::cout << "Failed to load C++ script at: " << scriptPath.string() << std::endl;
 	}
 
-	for (auto &rInfo : mod->rInfos) {
-		scene.getRenderers().getInstanciator().registerType(rInfo->type, rInfo->instanciatorFunc);
-	}
+	// for (auto &rInfo : mod->rInfos) {
+	// 	scene.getRenderers().getInstanciator().registerType(rInfo->type, rInfo->instanciatorFunc);
+	// }
 }
 
 void App::loadCppScript(fs::path scriptPath) {
@@ -1266,9 +1267,9 @@ void App::loadCppScript(fs::path scriptPath) {
 		std::cout << "Failed to load C++ script at: " << scriptPath.string() << std::endl;
 	}
 
-	for (auto &rInfo : mod->rInfos) {
-		scene.getRenderers().getInstanciator().registerType(rInfo->type, rInfo->instanciatorFunc);
-	}
+	// for (auto &rInfo : mod->rInfos) {
+	// 	scene.getRenderers().getInstanciator().registerType(rInfo->type, rInfo->instanciatorFunc);
+	// }
 }
 
 void App::loadModule(fs::path m) {
