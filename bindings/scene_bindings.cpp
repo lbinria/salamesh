@@ -13,7 +13,7 @@ namespace bindings {
 		// type["model"] = sol::readonly_property(&Scene::getCurrentModel);
 		type["model"] = sol::readonly_property(&Scene::getCurrentNode);
 		type["hovered_model"] = sol::readonly_property(&Scene::getHoveredNode);
-		type["selected_model"] = sol::property(&Scene::getSelectedNodeName, &Scene::selectNode);
+		type["selected_model"] = sol::property(&Scene::getSelectedNodeName, &Scene::setSelectedNode);
 		// type.set_function("focus", &Scene::focus);
 		type.set_function("focus", &Scene::focus2);
 

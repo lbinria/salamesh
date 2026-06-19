@@ -22,10 +22,10 @@ struct Script {
 	virtual std::vector<std::pair<std::string, std::string>> layoutGui() { return {}; }
 
 	// Input events
-	virtual void mouse_move(double x, double y) {};
-	virtual void mouse_button(int button, int action, int mods) {};
-	virtual void mouse_scroll(double xoffset, double yoffset) {};
-	virtual void key_event(int key, int scancode, int action, int mods) {};
+	virtual void mouseMove(double x, double y) {};
+	virtual void mouseButton(int button, int action, int mods) {};
+	virtual void mouseScroll(double xoffset, double yoffset) {};
+	virtual void keyEvent(int key, int scancode, int action, int mods) {};
 
 	// App events
 	virtual void navigationPathChanged(NavigationPath &oldNavPath, NavigationPath &newNavPath) {};

@@ -28,8 +28,6 @@ struct IApp {
 	virtual void setCull(bool enabled) = 0;
 
 	virtual void clearScene() = 0;
-
-
 	virtual Scene& getScene() = 0;
 
 
@@ -48,10 +46,10 @@ struct IApp {
 
 	virtual glm::vec3 pickPoint(double x, double y) = 0;
 	virtual long pickEdge(double x, double y) = 0;
-	virtual long pick_mesh(double x, double y) = 0;
-	virtual std::vector<long> pick_vertices(double x, double y, int radius) = 0;
-	virtual std::vector<long> pick_facets(double x, double y, int radius) = 0;
-	virtual std::vector<long> pick_cells(double x, double y, int radius) = 0;
+	virtual long pickMesh(double x, double y) = 0;
+	virtual std::vector<long> pickVertices(double x, double y, int radius) = 0;
+	virtual std::vector<long> pickFacets(double x, double y, int radius) = 0;
+	virtual std::vector<long> pickCells(double x, double y, int radius) = 0;
 
 
 	// Navigation

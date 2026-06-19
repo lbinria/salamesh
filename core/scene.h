@@ -42,19 +42,13 @@ struct Scene {
 
 	void clear() {
 		// TODO clear nodes
-		selectNode("");
+		setSelectedNode("");
 		cameras.clear();
 		setupCameras();
 		clearColormaps();
 	}
 
-
-
-
-
-
-
-	bool selectNode(std::string name) {
+	bool setSelectedNode(std::string name) {
 		if (name.empty())
 			return false;
 
@@ -201,9 +195,7 @@ struct Scene {
 	CameraCollection cameras;
 
 	std::map<std::string, std::shared_ptr<SceneNode>> _nodes;
-
 	std::map<std::string, std::unique_ptr<ShaderBase>> _shaders;
-
 
 	// display color map in good format for 2D in the UI
 	std::vector<Colormap> colormaps;

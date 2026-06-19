@@ -174,10 +174,10 @@ namespace bindings {
 
 		app_type.set_function("pick_point", &IApp::pickPoint);
 		app_type.set_function("pick_edge", &IApp::pickEdge);
-		app_type.set_function("pick_mesh", &IApp::pick_mesh);
-		app_type.set_function("pick_cells", &IApp::pick_cells);
-		app_type.set_function("pick_facets", &IApp::pick_facets);
-		app_type.set_function("pick_vertices", &IApp::pick_vertices);
+		app_type.set_function("pick_mesh", &IApp::pickMesh);
+		app_type.set_function("pick_cells", &IApp::pickCells);
+		app_type.set_function("pick_facets", &IApp::pickFacets);
+		app_type.set_function("pick_vertices", &IApp::pickVertices);
 
 		app_type["is_ui_hovered"] = sol::readonly_property(&IApp::isUIHovered);
 

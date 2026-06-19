@@ -202,22 +202,22 @@ struct LuaScript final : public Script {
 
 	// Input events
 
-	void mouse_move(double x, double y) override {
+	void mouseMove(double x, double y) override {
 		if (has_mouse_move)
 			mouse_move_func(x, y);
 	}
 
-	void mouse_button(int button, int action, int mods) override {
+	void mouseButton(int button, int action, int mods) override {
 		if (has_mouse_button)
 			mouse_button_func(button, action, mods);
 	}
 
-	void mouse_scroll(double xoffset, double yoffset) override {
+	void mouseScroll(double xoffset, double yoffset) override {
 		if (has_mouse_scroll)
 			mouse_scroll_func(xoffset, yoffset);
 	}
 
-	void key_event(int key, int scancode, int action, int mods) override {
+	void keyEvent(int key, int scancode, int action, int mods) override {
 		if (has_key_event)
 			key_event_func(key, scancode, action, mods);
 	}

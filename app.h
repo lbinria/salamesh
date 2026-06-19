@@ -113,10 +113,10 @@ struct App final : public IApp {
 	std::set<long> pick(double xPos, double yPos, int radius);
 
 	long pickEdge(double x, double y) override;
-	long pick_mesh(double x, double y) override;
-	std::vector<long> pick_vertices(double x, double y, int radius) override;
-	std::vector<long> pick_facets(double x, double y, int radius) override;
-	std::vector<long> pick_cells(double x, double y, int radius) override;
+	long pickMesh(double x, double y) override;
+	std::vector<long> pickVertices(double x, double y, int radius) override;
+	std::vector<long> pickFacets(double x, double y, int radius) override;
+	std::vector<long> pickCells(double x, double y, int radius) override;
 
 	// Rendering functions
 	void setCullMode(int mode) override { cull_mode = mode; }
@@ -144,10 +144,10 @@ struct App final : public IApp {
 	void update(float dt);
 	void drawGui();
 
-	void mouse_move(double x, double y);
-	void mouse_scroll(double xoffset, double yoffset);
-	void mouse_button(int button, int action, int mods);
-	void key_event(int key, int scancode, int action, int mods);
+	void mouseMove(double x, double y);
+	void mouseScroll(double xoffset, double yoffset);
+	void mouseButton(int button, int action, int mods);
+	void keyEvent(int key, int scancode, int action, int mods);
 
 	void notifyNavigationPathChanged(NavigationPath &oldNavPath, NavigationPath& newNavPath) {
 		for (auto &c : scripts) {

@@ -20,6 +20,9 @@ void Scene::init() {
 	// models.getInstanciator().registerType("PyramidModel", [](std::string name) { return std::make_unique<PyramidModel>(name); });
 	// models.getInstanciator().registerType("PrismModel", [](std::string name) { return std::make_unique<PrismModel>(name); });
 
+	// Register node type
+	
+
 	// Register cameras types
 	cameras.getInstanciator().registerType("DescentCamera", [](std::string name) { return std::make_unique<DescentCamera>(name); });
 	cameras.getInstanciator().registerType("TrackBallCamera", [](std::string name) { return std::make_unique<TrackBallCamera>(name); });
@@ -87,7 +90,7 @@ std::shared_ptr<SceneNode> Scene::loadModel2(const std::string filename, const s
 }
 
 void Scene::focus2(const std::string nodeName) {
-	if (!selectNode(nodeName))
+	if (!setSelectedNode(nodeName))
 		return;
 	
 	auto bbox = _nodes.at(nodeName)->bbox();
@@ -276,7 +279,7 @@ void Scene::loadState(json &j, const std::string filename) {
 		}
 	}
 
-	selectNode(j["selected_model"].get<std::string>());
+	setSelectedNode(j["selected_model"].get<std::string>());
 	setSelectedCamera(j["selected_camera"].get<std::string>());
 }
 

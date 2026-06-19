@@ -109,7 +109,7 @@ static void key_callback(GLFWwindow* window, int key, int scancode, int action, 
 		return;
 	
 	// Redirect to virtual
-	app->key_event(key, scancode, action, mods);
+	app->keyEvent(key, scancode, action, mods);
 }
 
 static void scroll_callback(GLFWwindow* window, double xoffset, double yoffset) {
@@ -118,7 +118,7 @@ static void scroll_callback(GLFWwindow* window, double xoffset, double yoffset) 
 		return;
 
 	// Redirect to virtual
-	app->mouse_scroll(xoffset, yoffset);
+	app->mouseScroll(xoffset, yoffset);
 }
 
 static void mouse_button_callback(GLFWwindow* window, int button, int action, int mods) {
@@ -146,7 +146,7 @@ static void mouse_button_callback(GLFWwindow* window, int button, int action, in
 	}
 
 	// Redirect to virtual
-	app->mouse_button(button, action, mods);
+	app->mouseButton(button, action, mods);
 }
 
 static void set_cursor_pos_callback(GLFWwindow* window, double xpos, double ypos) {
@@ -155,7 +155,7 @@ static void set_cursor_pos_callback(GLFWwindow* window, double xpos, double ypos
 		return;
 	
 	// Redirect to virtual
-	app->mouse_move(xpos, ypos);
+	app->mouseMove(xpos, ypos);
 }
 
 static void framebuffer_size_callback(GLFWwindow* window, int width, int height) {
@@ -823,7 +823,7 @@ long App::pickEdge(double x, double y) {
 
 	// TODO here look at all condition that are useless, but if I use line below, there is a bug
 	// It seems that some hovered element are update during call to this function, is it possible as
-	// it is called by callback mouse_move that is decorelated from main loop
+	// it is called by callback mouseMove that is decorelated from main loop
 	// Line below should be sufficient to get hovered
 
 	// int h;
@@ -845,7 +845,7 @@ long App::pickEdge(double x, double y) {
 
 }
 
-long App::pick_mesh(double x, double y) {
+long App::pickMesh(double x, double y) {
 	glBindFramebuffer(GL_READ_FRAMEBUFFER, scene.getDefaultRenderSurface().fbo);
 	glReadBuffer(GL_COLOR_ATTACHMENT4);
 	long id = pick(x, y);
@@ -853,7 +853,7 @@ long App::pick_mesh(double x, double y) {
 	return id >= 0 && id < SceneNode::getMaxIndex() ? id : -1;
 }
 
-std::vector<long> App::pick_vertices(double x, double y, int radius) {
+std::vector<long> App::pickVertices(double x, double y, int radius) {
 	auto model = scene.getHoveredNode();
 
 	if (!model)
@@ -873,7 +873,7 @@ std::vector<long> App::pick_vertices(double x, double y, int radius) {
 	return clean_ids;
 }
 
-std::vector<long> App::pick_facets(double x, double y, int radius) {
+std::vector<long> App::pickFacets(double x, double y, int radius) {
 	auto model = scene.getHoveredNode();
 
 	if (!model)
@@ -893,7 +893,7 @@ std::vector<long> App::pick_facets(double x, double y, int radius) {
 	return clean_ids;
 }
 
-std::vector<long> App::pick_cells(double x, double y, int radius) {		
+std::vector<long> App::pickCells(double x, double y, int radius) {		
 	auto model = scene.getHoveredNode();
 
 	if (!model)
@@ -1312,7 +1312,7 @@ void App::loadModules(Settings &settings) {
 	}
 }
 
-void App::key_event(int key, int scancode, int action, int mods) {
+void App::keyEvent(int key, int scancode, int action, int mods) {
 	
 	bool ctrlPressed = (mods & GLFW_MOD_CONTROL) != 0;
 	if (ctrlPressed && key == GLFW_KEY_A && action == GLFW_PRESS) {
@@ -1330,12 +1330,12 @@ void App::key_event(int key, int scancode, int action, int mods) {
 	}
 
 	for (auto &script : scripts) {
-		script->key_event(key, scancode, action, mods);
+		script->keyEvent(key, scancode, action, mods);
 	}
 
 }
 
-void App::mouse_scroll(double xoffset, double yoffset) {
+void App::mouseScroll(double xoffset, double yoffset) {
 	if (_isUIHovered)
 		return;
 
@@ -1348,27 +1348,27 @@ void App::mouse_scroll(double xoffset, double yoffset) {
 		st.mouse.setCursorRadius(st.mouse.getCursorRadius() + static_cast<int>(yoffset));
 
 	for (auto &script : scripts) {
-		script->mouse_scroll(xoffset, yoffset);
+		script->mouseScroll(xoffset, yoffset);
 	}
 }
 
-void App::mouse_button(int button, int action, int mods) {
+void App::mouseButton(int button, int action, int mods) {
 
 	for (auto &script : scripts)
-		script->mouse_button(button, action, mods);
+		script->mouseButton(button, action, mods);
 }
 
-void App::mouse_move(double x, double y) {
+void App::mouseMove(double x, double y) {
 
-	long pick_mesh_id = pick_mesh(x, y);
+	long pick_mesh_id = pickMesh(x, y);
 	if (pick_mesh_id >= 0)
 		st.mesh.setHovered({pick_mesh_id});
 	else 
 		st.mesh.setHovered({});
 
-	st.vertex.setHovered(pick_vertices(x, y, st.mouse.getCursorRadius()));
-	st.facet.setHovered(pick_facets(x, y, st.mouse.getCursorRadius()));
-	st.cell.setHovered(pick_cells(x, y, st.mouse.getCursorRadius()));
+	st.vertex.setHovered(pickVertices(x, y, st.mouse.getCursorRadius()));
+	st.facet.setHovered(pickFacets(x, y, st.mouse.getCursorRadius()));
+	st.cell.setHovered(pickCells(x, y, st.mouse.getCursorRadius()));
 
 
 	if (glm::dot(st.mouse.pos, st.mouse.lastPos) > 4) {
@@ -1380,7 +1380,7 @@ void App::mouse_move(double x, double y) {
 	}
 
 	for (auto &script : scripts) {
-		script->mouse_move(x, y);
+		script->mouseMove(x, y);
 	}
 
 }

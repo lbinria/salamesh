@@ -141,7 +141,7 @@ vec4 trace(inout vec3 col) {
     float t = smoothstep(e, -e, d);
 
     // optional hard discard of outside
-    if(t<0.01) discard;
+    // if(t<0.01) discard;
 
     // Point coord from [0, 1] to [-1, 1]
     vec2 V = 2.0 * (gl_PointCoord - vec2(0.5, 0.5));
