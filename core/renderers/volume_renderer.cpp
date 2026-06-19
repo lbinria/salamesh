@@ -1,6 +1,6 @@
 #include "volume_renderer.h"
 
-void VolumeMaterial::init() {
+// void VolumeMaterial::init() {
 
 	// // TODO maybe update buffer size of ptr on push ? move ncells somewher eelse
 
@@ -135,58 +135,15 @@ void VolumeMaterial::init() {
 	// std::cout << "mesh setup in: " << std::chrono::duration_cast<std::chrono::milliseconds>(end - begin).count() << "ms" << std::endl;
 	// #endif
 
+// }
 
 
-}
-
-void VolumeMaterial::render(glm::vec3 &position) {
-
-	if (!visible)
-		return;
-
-	glBindVertexArray(VAO);
-
-	// glActiveTexture(GL_TEXTURE0);
-	// glBindTexture(GL_TEXTURE_2D, texColorMap);
-
-	// glActiveTexture(GL_TEXTURE0 + 1);
-	// glBindTexture(GL_TEXTURE_BUFFER, texBary);
-
-	// glActiveTexture(GL_TEXTURE0 + 2);
-	// glBindTexture(GL_TEXTURE_BUFFER, texAttr);
-
-	// glActiveTexture(GL_TEXTURE0 + 3);
-	// glBindTexture(GL_TEXTURE_BUFFER, tboHighlight);
-
-	// glActiveTexture(GL_TEXTURE0 + 4);
-	// glBindTexture(GL_TEXTURE_BUFFER, tboFilter);
-
-	setPosition(position);
-
-	glDrawArrays(GL_TRIANGLES, 0, nelements);
-}
 
 void VolumeMaterial::clear() {
-	glBindVertexArray(VAO);
-	glBindBuffer(GL_ARRAY_BUFFER, VBO);
-	glBufferData(GL_ARRAY_BUFFER, nelements * sizeof(Vertex), nullptr, GL_STATIC_DRAW);
+
 }
 
 void VolumeMaterial::clean() {
-	// Clean up
-	glDeleteVertexArrays(1, &VAO);
-	glDeleteBuffers(1, &VBO);
-
-	glDeleteBuffers(1, &bufBary);
-	glDeleteTextures(1, &texBary);
-	glDeleteBuffers(1, &bufAttr);
-	glDeleteTextures(1, &texAttr);
-	// glDeleteBuffers(1, &bufHighlight);
-	// glDeleteTextures(1, &tboHighlight);
-	// glDeleteBuffers(1, &bufFilter);
-	// glDeleteTextures(1, &tboFilter);
-	glBindBuffer(GL_TEXTURE_BUFFER, 0);
-
-	// Clean shader
+	// Clean
 	shader.clean();
 }

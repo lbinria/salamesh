@@ -54,13 +54,8 @@ struct PolyShader : public MeshMaterial {
 		return GL_TRIANGLES;
 	}
 
-	void init() override;
-	void render(glm::vec3 &position) override;
-	void push() override;
 	void clear() override;
 	void clean() override;
-
-	int getRenderElementKind() override { return ElementKind::FACETS_ELT | ElementKind::CORNERS_ELT; }
 
 
 	protected:

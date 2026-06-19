@@ -42,34 +42,9 @@ struct LineShader : public ShaderBase {
 	}
 
 
-	void init() override;
-	void push() override;
-	void render(glm::vec3 &position) override;
 	void clean() override;
 	void clear() override;
 
-	int getRenderElementKind() override { return 0; }
-
-	void clearLines() {
-		lines.clear();
-		nelements = 0;
-	}
-
-	// TODO generate guid for line
-	// TODO maybe push partially data to GPU instead of all data
-	void addLine(Line line) {
-		lines.push_back(line);
-
-		if (autoUpdate)
-			push();
-	}
-
-	void addLines(std::vector<Line> allLines) {
-		lines.insert(lines.end(), allLines.begin(), allLines.end());
-
-		if (autoUpdate)
-			push();
-	}
 
 	// TODO removeLine by guid / idx / range
 

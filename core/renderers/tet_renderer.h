@@ -18,5 +18,4 @@ using namespace UM;
 
 struct TetMaterial : public VolumeMaterial {
 	using VolumeMaterial::VolumeMaterial;
-	void push() override;
 };

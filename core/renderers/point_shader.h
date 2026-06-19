@@ -37,50 +37,8 @@ struct PointShader : public ShaderBase {
 	virtual Material createMaterial() override;
 	virtual void update(ShaderBuffer &shaderBuffer, Geometry &geometry) override;
 
-	void init() override;
-	void push() override;
-	void render(glm::vec3 &position) override;
 	void clean() override;
 	void clear() override;
-
-	int getRenderElementKind() override { return ElementKind::POINTS_ELT; }
-
-	int addPoint(glm::vec3 p) {
-		int off = ps.create_points(1);
-		ps[off] = sl::glm2um(p);
-
-		if (autoUpdate)
-			push();
-
-		return off;
-	}
-
-	int addPoints(std::vector<glm::vec3> points) {
-		int off = ps.create_points(points.size());
-		for (int i = off; i < points.size() - 1; ++i)
-			ps[i] = sl::glm2um(points[i]);
-
-		if (autoUpdate)
-			push();
-
-		return off;
-	}
-
-	// TODO add removePoint, and removePoitns by index not bool vector
-	void removePoints(std::vector<bool> toKill) {
-		ps.delete_points(toKill);
-
-		if (autoUpdate)
-			push();
-	}
-
-	void clearPoints() {
-		std::vector<bool> toKill(ps.size(), true);
-		ps.delete_points(toKill);
-
-		if (autoUpdate)
-			push();
-	}
 
 	inline int count() {
 		return ps.size();
@@ -104,19 +62,11 @@ struct PointShader : public ShaderBase {
 	void updatePointSet(ShaderBuffer &shaderBuffer, PointSet &ps);
 
 	void doLoadState(json &j) override {
-		for (auto &[paramsName, params] : _params) {
-			if (j.contains(paramsName))
-				params->loadState(j[paramsName]);
-		}
+
 	}
 
-
-
 	void doSaveState(json &j) const override {
-		for (auto &[paramsName, params] : _params) {
-			j[paramsName] = json::object();
-			params->saveState(j[paramsName]);
-		}
+
 	}
 
 };

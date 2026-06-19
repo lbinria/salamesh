@@ -19,6 +19,5 @@ using namespace UM;
 struct TriShader : public SurfaceShader {
 
 	using SurfaceShader::SurfaceShader;
-	void push() override;
 
 };

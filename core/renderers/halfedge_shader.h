@@ -43,13 +43,9 @@ struct HalfedgeShader : public ShaderBase {
 		return GL_TRIANGLES;
 	}
 
-	void init() override;
-	virtual void push() {};
-	void render(glm::vec3 &position) override;
 	void clear() override;
 	void clean() override;
 
-	int getRenderElementKind() override { return ElementKind::EDGES_ELT | ElementKind::CORNERS_ELT; }
 
 	private:
 
@@ -57,17 +53,11 @@ struct HalfedgeShader : public ShaderBase {
 
 
 	void doLoadState(json &j) override {
-		for (auto &[paramsName, params] : _params) {
-			if (j.contains(paramsName))
-				params->loadState(j[paramsName]);
-		}
+
 	}
 
 	void doSaveState(json &j) const override {
-		for (auto &[paramsName, params] : _params) {
-			j[paramsName] = json::object();
-			params->saveState(j[paramsName]);
-		}
+
 	}
 	
 };
@@ -80,7 +70,6 @@ struct SurfaceHalfedgeShader : public HalfedgeShader {
 
 		}
 
-	void push() override;
 
 	Surface &_m;
 
@@ -94,7 +83,6 @@ struct VolumeHalfedgeShader : public HalfedgeShader {
 
 		}
 
-	void push() override;
 
 	Volume &_m;
 };
@@ -107,7 +95,6 @@ struct PolylineShader : public HalfedgeShader {
 
 		}
 
-	void push() override;
 
 	PolyLine &_m;
 };

@@ -10,21 +10,16 @@ namespace bindings {
 
 	void RendererBindings::loadBindings(sol::state &lua, IApp &app) {
 
-		sol::usertype<ShaderBase> renderer_t = lua.new_usertype<ShaderBase>("ShaderBase",
-			"get_params", [](ShaderBase &self, const std::string &name) {
-				return self.getParams(name);
-			},
-			"__index", [](ShaderBase& self, const std::string& name) {
-				return self.getParams(name);
-			}
+		sol::usertype<ShaderBase> renderer_t = lua.new_usertype<ShaderBase>("ShaderBase"
+			// "get_params", [](ShaderBase &self, const std::string &name) {
+			// 	return self.getParams(name);
+			// },
+			// "__index", [](ShaderBase& self, const std::string& name) {
+			// 	return self.getParams(name);
+			// }
 		);
 
 		renderer_t["name"] = sol::readonly_property(&ShaderBase::getName);
-
-		renderer_t["visible"] = sol::property(
-			&ShaderBase::getVisible,
-			&ShaderBase::setVisible
-		);
 
 
 
@@ -43,8 +38,6 @@ namespace bindings {
 			return sol::nil;
 		});
 
-		renderer_t.set_function("push", &ShaderBase::push);
-
 
 		sol::usertype<MeshMaterial> meshRenderer_t = lua.new_usertype<MeshMaterial>(
 			"MeshMaterial",
@@ -58,21 +51,12 @@ namespace bindings {
 			sol::base_classes, 
 			sol::bases<ShaderBase>(),
 			"auto_update", sol::writeonly_property(&PointShader::setAutoUpdate),
-			"visible", sol::property(
-				&PointShader::getVisible,
-				&PointShader::setVisible
-			),
 			sol::meta_function::index, [](PointShader& self, int i) -> vec3 {
 				return self[i - 1];
 			},
 			sol::meta_function::new_index, [](PointShader& self, int i, vec3 value) {
 				self[i - 1] = value;
 			},
-			"add_point", &PointShader::addPoint,
-			"add_points", &PointShader::addPoints,
-			"remove_points", &PointShader::removePoints,
-			"clear_points", &PointShader::clearPoints,
-			"push", &PointShader::push,
 			"count", sol::readonly_property(&PointShader::count)
 		);
 
@@ -83,10 +67,6 @@ namespace bindings {
 			sol::bases<ShaderBase>()
 		);
 
-		halfedgeRenderer_t["visible"] = sol::property(
-			&HalfedgeShader::getVisible,
-			&HalfedgeShader::setVisible
-		);
 
 		auto line_t = lua.new_usertype<LineShader::Line>(
 			"Line",
@@ -113,23 +93,5 @@ namespace bindings {
 			sol::bases<ShaderBase>(),
 			"auto_update", sol::writeonly_property(&LineShader::setAutoUpdate)
 		);
-
-		lineRenderer_t.set_function("add_line", &LineShader::addLine);
-		lineRenderer_t.set_function("add_lines", &LineShader::addLines);
-		lineRenderer_t.set_function("clear_lines", &LineShader::clearLines);
-		lineRenderer_t.set_function("push", &LineShader::push);
-
-		// auto pointSetRenderer_t = lua.new_usertype<PointShader>(
-		// 	"PointShader",
-		// 	sol::base_classes, 
-		// 	sol::bases<ShaderBase>(),
-		// 	"auto_update", sol::writeonly_property(&PointShader::setAutoUpdate)
-		// );
-
-		// pointSetRenderer_t.set_function("push", &PointShader::push);
-		// pointSetRenderer_t.set_function("clear_points", &PointShader::clearPoints);
-		// pointSetRenderer_t.set_function("add_point", &PointShader::addPoint);
-		// pointSetRenderer_t.set_function("add_points", &PointShader::addPoints);
-
 	}
 }
