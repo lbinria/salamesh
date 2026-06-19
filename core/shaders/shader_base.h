@@ -17,7 +17,7 @@ using json = nlohmann::json;
 
 #include "../shader_buffer.h"
 #include "../material.h"
-#include "../geometry.h"
+#include "../geometry/geometry.h"
 
 struct ShaderBase {
 

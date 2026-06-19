@@ -11,10 +11,10 @@
 #include "cameras/camera_collection.h"
 
 
-#include "renderers/shader_base.h"
+#include "shaders/shader_base.h"
 
 #include "scene_node.h"
-#include "renderers/point_style_params.h" // TODO remove test
+#include "shaders/point_style_params.h" // TODO remove test
 #include "model_loader.h"// TODO remove test
 
 

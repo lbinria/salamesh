@@ -4,7 +4,7 @@
 
 #include "core/cameras/trackball_camera.h"
 #include "core/cameras/descent_camera.h"
-#include "core/renderers/line_shader.h"
+#include "core/shaders/line_shader.h"
 
 #include "core/utils/logger.h"
 #include "helpers/imgui_theme_manager.h"

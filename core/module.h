@@ -1,7 +1,7 @@
 #pragma once
 
 #include "script.h"
-#include "renderers/renderer_info.h"
+#include "shaders/renderer_info.h"
 
 
 struct Module {

@@ -1,11 +1,11 @@
 #include "scene.h"
 #include "app_interface.h"
 
-#include "renderers/point_shader.h"
-#include "renderers/tri_shader.h"
-#include "renderers/poly_shader.h"
-#include "renderers/halfedge_shader.h"
-#include "renderers/line_shader.h"
+#include "shaders/point_shader.h"
+#include "shaders/tri_shader.h"
+#include "shaders/poly_shader.h"
+#include "shaders/halfedge_shader.h"
+#include "shaders/line_shader.h"
 
 #include "utils/opengl_helper.h"
 
@@ -21,7 +21,7 @@ void Scene::init() {
 	// models.getInstanciator().registerType("PrismModel", [](std::string name) { return std::make_unique<PrismModel>(name); });
 
 	// Register node type
-	
+
 
 	// Register cameras types
 	cameras.getInstanciator().registerType("DescentCamera", [](std::string name) { return std::make_unique<DescentCamera>(name); });
@@ -70,16 +70,7 @@ std::shared_ptr<SceneNode> Scene::loadModel2(const std::string filename, const s
 
 	_nodes.emplace(nodeName, std::move(node));
 
-	// // BBox
-	// auto bboxNode = std::make_shared<SceneNode>();
-	// bboxNode->addShader(*_shaders.at("line_shader"));
-	
-	// auto bbox = node->bbox();
-	// auto &lineGeo = bboxNode->createGeometry<LinesGeometry>();
-	// lineGeo.addLine({ .a = {0.,0.,0.}, .b = {1.,0.,0.}, .color = {1., 1., 1.}});
 
-	// node->add(bboxNode);
-	// _nodes.emplace(name + "_bbox", std::move(bboxNode));
 	computeFarPlane2();
 
 	// A model was loaded ? focus it !

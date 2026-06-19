@@ -14,7 +14,7 @@
 #include "../core/app_interface.h"
 #include "../core/script.h"
 #include "../core/module.h"
-#include "../core/renderers/renderer_info.h"
+#include "../core/shaders/renderer_info.h"
 
 #define SOL_ALL_SAFETIES_ON 1
 #include <sol/sol.hpp>

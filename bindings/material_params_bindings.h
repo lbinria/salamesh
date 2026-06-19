@@ -3,7 +3,7 @@
 #include "lua_binding.h"
 
 #include "../core/app_interface.h"
-#include "../core/renderers/material_params.h"
+#include "../core/shaders/material_params.h"
 
 namespace bindings {
 

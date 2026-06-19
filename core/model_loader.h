@@ -74,6 +74,8 @@ struct ModelLoader {
 		if (!success)
 			success = loadPolyLine(filename, node);
 
+
+
 		return node;
 	}
 

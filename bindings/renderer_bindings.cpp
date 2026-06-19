@@ -1,10 +1,10 @@
 #include "renderer_bindings.h"
 
-#include "../core/renderers/shader_base.h"
-#include "../core/renderers/mesh_renderer.h"
-#include "../core/renderers/point_shader.h"
-#include "../core/renderers/halfedge_shader.h"
-#include "../core/renderers/line_shader.h"
+#include "../core/shaders/shader_base.h"
+#include "../core/shaders/mesh_renderer.h"
+#include "../core/shaders/point_shader.h"
+#include "../core/shaders/halfedge_shader.h"
+#include "../core/shaders/line_shader.h"
 
 namespace bindings {
 

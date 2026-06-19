@@ -3,7 +3,7 @@
 #include <ultimaille/all.h>
 using namespace UM;
 
-#include "data/attribute.h"
+#include "../data/attribute.h"
 #include <optional>
 
 struct Geometry {
@@ -76,7 +76,7 @@ struct MeshGeometry : public Geometry {
 		
 		std::vector<Attribute> attributes;
 		for (auto &[kind, c] : getAttributeContainers()) {
-			auto attrs = getAttibutesFromContainer(kind, c);
+			auto attrs = getAttributesFromContainer(kind, c);
 			for (auto a : attrs) {
 				attributes.push_back(a);
 			}
@@ -112,7 +112,7 @@ struct MeshGeometry : public Geometry {
 
 	virtual std::vector<std::pair<ElementKind, NamedContainer>> getAttributeContainers() const = 0;
 
-	std::vector<Attribute> getAttibutesFromContainer(ElementKind kind, NamedContainer &container) {
+	std::vector<Attribute> getAttributesFromContainer(ElementKind kind, NamedContainer &container) {
 		std::vector<Attribute> attributes;
 		
 		// Get the type of the container

@@ -1,6 +1,6 @@
 #include "scene_node.h"
 
-#include "renderers/layer_params.h"
+#include "shaders/layer_params.h"
 
 std::optional<Colormap> SceneNode::getColormap() {
 		

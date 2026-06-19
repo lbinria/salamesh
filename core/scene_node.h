@@ -1,9 +1,9 @@
 #pragma once
 #include "helpers.h"
 #include "shader.h"
-#include "geometry.h"
+#include "geometry/geometry.h"
 #include "shader_buffer.h"
-#include "renderers/shader_base.h"
+#include "shaders/shader_base.h"
 #include "data/colormap.h"
 
 #include <ultimaille/all.h>
