@@ -17,7 +17,7 @@ namespace bindings {
 			"visible", sol::property(&SceneNode::isVisible, &SceneNode::setVisible),
 			"geometry", sol::readonly_property(&SceneNode::getGeometry),
 			"add_shader", &SceneNode::addShader,
-			"add_child", &SceneNode::add,
+			"add_child", &SceneNode::addChild,
 			"materials", sol::readonly_property(&SceneNode::getMaterials),
 			"get_material", &SceneNode::getMaterial,
 			"set_layer", sol::resolve<void(Layer, ElementKind, bool)>(&SceneNode::setLayer),

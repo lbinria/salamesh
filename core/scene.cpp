@@ -58,7 +58,8 @@ std::shared_ptr<SceneNode> Scene::loadModel2(const std::string filename, const s
 		name;
 	
 	// Mesh node
-	auto node = std::make_shared<SceneNode>(ModelLoader::load(filename));
+	auto modelLoader = ModelLoader(*this);
+	auto node = modelLoader.load(filename);
 
 	// Put all compatible shaders on model
 	for (auto &[shaderName, shader] : _shaders) {
@@ -180,6 +181,49 @@ Colormap Scene::getColormap(int idx) {
 	return colormaps[idx];
 }
 
+void Scene::render(std::shared_ptr<SceneNode> node, std::unique_ptr<ShaderBase>& shader, std::map<std::string, bool> &wasUpdated) {
+	if (!node->isVisible())
+		return;
+
+	for (auto &child : node->getChildren()) {
+		render(child, shader, wasUpdated);
+	}
+
+	auto shaderBufferOpt = node->getShaderBuffer(*shader);
+	auto materialOpt = node->getMaterial(shader->getName());
+
+	if (!shaderBufferOpt.has_value() || !materialOpt.has_value())
+		return;
+
+	auto &shaderBuffer = shaderBufferOpt.value().get();
+	auto &material = materialOpt.value().get();
+
+	if (!material.isVisible())
+		return;
+
+	if (node->getGeometry().shouldUpdate()) {
+		// Update current shader buffers for given geometry
+		shader->update(shaderBuffer, node->getGeometry());
+		wasUpdated[node->getName()] = true;
+	}
+
+	glBindVertexArray(shaderBuffer.vao());
+	shaderBuffer.setPosition(node->getWorldPosition());
+	material.apply(shader->getShader());
+
+	// Set textures
+	for (auto &tbo : shaderBuffer.tbos) {
+		glActiveTexture(GL_TEXTURE0 + tbo.texUnit);
+		glBindTexture(GL_TEXTURE_BUFFER, tbo.tex);
+		shader->getShader().setInt(tbo.name, tbo.texUnit);
+	}
+
+	// Set mesh index
+	shader->getShader().setInt("meshIndex", node->getIndex());
+
+	glDrawArrays(shader->renderElement(), 0, shaderBuffer.nelements);
+}
+
 void Scene::render() {
 
 	// Keep updated nodes in memory
@@ -189,44 +233,7 @@ void Scene::render() {
 	for (auto &[shaderName, shader] : _shaders) {
 		// Loop through nodes in scene
 		for (auto &[nodeName, node] : _nodes) {
-
-			if (!node->isVisible())
-				continue;
-
-			auto shaderBufferOpt = node->getShaderBuffer(*shader);
-			auto materialOpt = node->getMaterial(shader->getName());
-
-			if (!shaderBufferOpt.has_value() || !materialOpt.has_value())
-				continue;
-
-			auto &shaderBuffer = shaderBufferOpt.value().get();
-			auto &material = materialOpt.value().get();
-
-			if (!material.isVisible())
-				continue;
-
-			if (node->getGeometry().shouldUpdate()) {
-				// Update current shader buffers for given geometry
-				shader->update(shaderBuffer, node->getGeometry());
-				wasUpdated[node->getName()] = true;
-			}
-
-			glBindVertexArray(shaderBuffer.vao());
-			shaderBuffer.setPosition(node->getWorldPosition());
-			material.apply(shader->getShader());
-
-			// Set textures
-			for (auto &tbo : shaderBuffer.tbos) {
-				glActiveTexture(GL_TEXTURE0 + tbo.texUnit);
-				glBindTexture(GL_TEXTURE_BUFFER, tbo.tex);
-				shader->getShader().setInt(tbo.name, tbo.texUnit);
-			}
-
-			// Set mesh index
-			shader->getShader().setInt("meshIndex", node->getIndex());
-
-			glDrawArrays(shader->renderElement(), 0, shaderBuffer.nelements);
-
+			render(node, shader, wasUpdated);
 		}
 
 	}

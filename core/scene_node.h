@@ -111,7 +111,11 @@ struct SceneNode : std::enable_shared_from_this<SceneNode> {
 		return _parent.lock();
 	}
 
-	void add(std::shared_ptr<SceneNode> child) {
+	const std::vector<std::shared_ptr<SceneNode>>& getChildren() const {
+		return _children;
+	}
+
+	void addChild(std::shared_ptr<SceneNode> child) {
 		child->_parent = shared_from_this();
 		_children.push_back(child);
 	}

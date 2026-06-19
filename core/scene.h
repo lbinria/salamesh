@@ -32,6 +32,7 @@ struct Scene {
 
 	void render();
 
+
 	void clean() {
 		// TODO clean nodes
 
@@ -186,6 +187,10 @@ struct Scene {
 		return _shaders;
 	}
 
+	ShaderBase& getShader(const std::string name) const {
+		return *_shaders.at(name);
+	}
+
 	private:
 	IApp &app;
 
@@ -202,4 +207,8 @@ struct Scene {
 
 	std::map<std::string, std::shared_ptr<RenderSurface>> renderSurfaces;
 	
+	void render(std::shared_ptr<SceneNode> node, std::unique_ptr<ShaderBase> &shader, std::map<std::string, bool> &wasUpdated);
+
+
+
 };

@@ -393,7 +393,7 @@ struct PolyLineGeometry : public MeshGeometry {
 	}
 
 	long pickEdge(glm::vec3 p0, int f) override {
-		return 0;
+		return -1;
 	}
 
 	PolyLineAttributes _attributes;
@@ -428,6 +428,30 @@ struct LinesGeometry : public Geometry {
 
 	bool saveAs(const std::string filename) override {
 		throw std::runtime_error("`saveAs` is not implemented on `LineGeometry`");
+	}
+
+	int nverts() const override {
+		return _lines.size() * 2;
+	} 
+	
+	int nfacets() const override {
+		return 0;
+	}
+
+	int ncells() const override {
+		return 0;
+	}
+
+	int ncorners() const override {
+		return 0;
+	}
+
+	int nhalfedges() const override {
+		return _lines.size();
+	}
+
+	long pickEdge(glm::vec3 p0, int f) override {
+		return -1;
 	}
 
 	// Remove copy constructors, allow moves
