@@ -22,7 +22,8 @@ enum ElementKind {
 	FACETS_ELT = 3,
 	CELLS_ELT = 4,
 	CELL_FACETS_ELT = 5,
-	CELL_CORNERS_ELT = 6
+	CELL_CORNERS_ELT = 6,
+	ELEMENT_KIND_COUNT
 };
 
 enum ElementType {
@@ -30,7 +31,8 @@ enum ElementType {
 	INT_ELT,
 	BOOL_ELT,
 	VEC2_ELT,
-	VEC3_ELT
+	VEC3_ELT,
+	ELEMENT_TYPE_COUNT
 };
 
 static std::string modelTypeToString(ModelType t) {

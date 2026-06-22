@@ -204,6 +204,9 @@ void Scene::render(std::shared_ptr<SceneNode> node, std::unique_ptr<ShaderBase>&
 	if (node->getGeometry().shouldUpdate()) {
 		// Update current shader buffers for given geometry
 		shader->update(shaderBuffer, node->getGeometry());
+		// Update layers (only activated layers) according to new geometry
+		node->updateLayers();
+		// Set node as updated
 		wasUpdated[node->getName()] = true;
 	}
 

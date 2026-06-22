@@ -49,7 +49,10 @@ void SceneNode::setLayer(Layer layer, ElementKind kind, const std::string attrib
 void SceneNode::setLayer(Layer layer, ElementKind kind, bool update) {
 
 	auto &geo = getGeometry();
-	auto attrOpt = geo.getAttribute(_attrNameByLayerAndKind[{layer, kind}]);
+
+	_selectedAttribute = _attrNameByLayerAndKind[{layer, kind}];
+
+	auto attrOpt = geo.getAttribute(_selectedAttribute);
 
 	if (!attrOpt.has_value())
 		return;
@@ -75,6 +78,44 @@ void SceneNode::setLayer(Layer layer, ElementKind kind, bool update) {
 		layerParams->setLayer(data, layer);
 
 	}
+}
+
+void SceneNode::updateLayers() {
+	auto &geo = getGeometry();
+
+	for (int k = 0; k < static_cast<int>(ElementKind::ELEMENT_KIND_COUNT); ++k) {
+		for (int l = 0; l < static_cast<int>(Layer::LAYER_COUNT); ++l) {
+
+			auto layer = static_cast<Layer>(l);
+			auto kind = static_cast<ElementKind>(k);
+
+			auto attrOpt = geo.getAttribute(_attrNameByLayerAndKind[{layer, kind}]);
+
+			if (!attrOpt.has_value())
+				return;
+
+			auto attr = attrOpt.value();
+			auto data = sl::getContainerData(attr.ptr.get(), attr.dim);
+			auto [min, max] = sl::getRange(data);
+
+			for (auto &[_, material] : getMaterials()) {
+				auto layerParams = material.getParams<LayersParams>("layers");
+
+				if (!layerParams)
+					continue;
+
+				auto activatedLayers = layerParams->getActivatedLayers();
+				if (!activatedLayers[l][k])
+					continue;
+
+				layerParams->range[l] = glm::vec2(min, max);
+				layerParams->nDims[l] = attr.getNDims();
+				layerParams->setLayer(data, layer);
+			}
+
+		}
+	}
+
 }
 
 void SceneNode::unsetLayers(bool reset) {

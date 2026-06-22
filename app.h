@@ -224,7 +224,7 @@ struct App final : public IApp {
 
 	unsigned int quadVAO, quadVBO;
 
-
+	bool _isPickingActive = true;
 
 
 

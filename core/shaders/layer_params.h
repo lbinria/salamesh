@@ -113,6 +113,10 @@ struct LayersParams : MaterialParams {
 		return activatedLayers[static_cast<int>(layer)][static_cast<int>(kind)];
 	}
 
+	std::array<std::array<bool, 7>, 5> getActivatedLayers() {
+		return activatedLayers;
+	}
+
 	// Obtain buffer that matches with requested layer
 	unsigned int getLayerBuffer(Layer layer) {
 		switch (layer)
@@ -227,7 +231,7 @@ struct LayersParams : MaterialParams {
 	int nDims[5];
 	glm::vec2 range[5];
 	int layerElement[5] = {-1, -1, -1, -1, -1}; // TODO to remove replaced by activatedLayers
-	bool activatedLayers[5][7] = {false};
+	std::array<std::array<bool, 7>, 5> activatedLayers{};
 	glm::vec3 hoverColor{1.f, 1.f, 1.f};
 	glm::vec3 selectColor{0.f, 0.22f, 1.f};
 

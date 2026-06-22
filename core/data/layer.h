@@ -13,7 +13,8 @@ enum Layer {
 		COLORMAP_1 = 1,
 		COLORMAP_2 = 2,
 		HIGHLIGHT = 3,
-		FILTER = 4
+		FILTER = 4,
+		LAYER_COUNT
 };
 
 static std::string layerToString(Layer l) {

@@ -19,7 +19,7 @@
 
 // void BBoxMaterial::push() {
 
-	
+
 // 	std::vector<Vertex> vertices;
 
 // 	// Search bbox

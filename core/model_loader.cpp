@@ -18,7 +18,7 @@ std::shared_ptr<SceneNode> ModelLoader::load(const std::string filename) {
 	if (!success)
 		success = loadPolyLine(filename, *node);
 
-	// BBox
+	// Create BBox
 	auto bboxGeometry = std::make_unique<LinesGeometry>();
 
 	auto [min, max] = node->getGeometry().bbox();

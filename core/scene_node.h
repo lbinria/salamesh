@@ -152,6 +152,8 @@ struct SceneNode : std::enable_shared_from_this<SceneNode> {
 
 	void unsetLayer(Layer layer, ElementKind kind, bool reset = false);
 	void unsetLayers(bool reset = false);
+	void updateLayers();
+	
 	// void updateLayer(Layer layer, ElementKind kind);
 	// void resetLayer(ElementKind kind, Layer layer);
 	

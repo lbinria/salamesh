@@ -1360,23 +1360,27 @@ void App::mouseButton(int button, int action, int mods) {
 
 void App::mouseMove(double x, double y) {
 
-	long pick_mesh_id = pickMesh(x, y);
-	if (pick_mesh_id >= 0)
-		st.mesh.setHovered({pick_mesh_id});
-	else 
-		st.mesh.setHovered({});
+	if (_isPickingActive) {
 
-	st.vertex.setHovered(pickVertices(x, y, st.mouse.getCursorRadius()));
-	st.facet.setHovered(pickFacets(x, y, st.mouse.getCursorRadius()));
-	st.cell.setHovered(pickCells(x, y, st.mouse.getCursorRadius()));
+		long pick_mesh_id = pickMesh(x, y);
+		if (pick_mesh_id >= 0)
+			st.mesh.setHovered({pick_mesh_id});
+		else 
+			st.mesh.setHovered({});
+
+		st.vertex.setHovered(pickVertices(x, y, st.mouse.getCursorRadius()));
+		st.facet.setHovered(pickFacets(x, y, st.mouse.getCursorRadius()));
+		st.cell.setHovered(pickCells(x, y, st.mouse.getCursorRadius()));
 
 
-	if (glm::dot(st.mouse.pos, st.mouse.lastPos) > 4) {
-		auto edge = pickEdge(x, y);
-		if (edge >= 0) 
-			st.edge.setHovered({edge});
-		else
-			st.edge.setHovered({});
+		if (glm::dot(st.mouse.pos, st.mouse.lastPos) > 4) {
+			auto edge = pickEdge(x, y);
+			if (edge >= 0) 
+				st.edge.setHovered({edge});
+			else
+				st.edge.setHovered({});
+		}
+
 	}
 
 	for (auto &script : scripts) {
