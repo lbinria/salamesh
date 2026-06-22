@@ -58,13 +58,18 @@ std::shared_ptr<SceneNode> Scene::loadModel(const std::string filename, const st
 
 	// Load node from file
 	auto modelLoader = ModelLoader(*this);
-	auto node = modelLoader.load(filename, name);
+	auto node = modelLoader.load(filename, nodeName);
 
 	// Setup default gfx
-	node->getMaterial("points").value().get().setVisible(false);
-	node->getMaterial("halfedges").value().get().setVisible(false);
+	if (auto mat = node->getMaterial("points")) {
+		mat->get().setVisible(false);
+	}
 
-	_nodes.emplace(nodeName, std::move(node));
+	if (auto mat = node->getMaterial("halfedges")) {
+		mat->get().setVisible(false);
+	}
+
+	_nodes.emplace(nodeName, node);
 
 	// Update scene far plane
 	updateFarPlane();

@@ -6,7 +6,7 @@
 
 std::shared_ptr<SceneNode> ModelLoader::load(const std::string filename, const std::string name) {
 
-	auto node = std::make_shared<SceneNode>();
+	auto node = std::make_shared<SceneNode>(name);
 
 	bool success = loadTriangles(filename, *node);
 	
@@ -22,15 +22,18 @@ std::shared_ptr<SceneNode> ModelLoader::load(const std::string filename, const s
 	// Put all compatible shaders on model
 	for (auto &[_, shader] : _scene.getShaders()) {
 		if (shader->isCompatible(node->getGeometry()))
-			node->addShader(*shader);
+			node->addShaderPass(*shader);
 	}
 
 	// Create BBox
-	auto bboxGeometry = std::make_unique<LinesGeometry>();
+	auto bbox = std::make_shared<SceneNode>();
+	bbox->addShaderPass(_scene.getShader("line_shader"));
+
+	auto &bboxGeometry = bbox->createGeometry<LinesGeometry>();
 
 	auto [min, max] = node->getGeometry().bbox();
 
-	bboxGeometry->addLines({
+	bboxGeometry.addLines({
 		// Bottom face (z = min.z)
 		{ glm::vec3(min.x, min.y, min.z), glm::vec3(max.x, min.y, min.z), glm::vec3(1.0f, 1.0f, 1.0f) },
 		{ glm::vec3(max.x, min.y, min.z), glm::vec3(max.x, max.y, min.z), glm::vec3(1.0f, 1.0f, 1.0f) },
@@ -50,9 +53,6 @@ std::shared_ptr<SceneNode> ModelLoader::load(const std::string filename, const s
 		{ glm::vec3(min.x, max.y, min.z), glm::vec3(min.x, max.y, max.z), glm::vec3(1.0f, 1.0f, 1.0f) }
 	});
 
-	auto bbox = std::make_shared<SceneNode>();
-	bbox->addShader(_scene.getShader("line_shader"));
-	bbox->setGeometry(std::move(bboxGeometry));
 
 	node->addChild(bbox);
 

@@ -19,53 +19,49 @@ struct ModelLoader {
 	// ModelLoader& operator=(ModelLoader&&) = default;
 
 	bool loadTriangles(const std::string &filename, SceneNode &node) {
-		auto geometry = std::make_unique<TrianglesGeometry>();
+		auto &geometry = node.createGeometry<TrianglesGeometry>();
 
-		geometry->_attributes = read_by_extension(filename, geometry->_m);
-		if (geometry->_m.nfacets() <= 0)
+		geometry._attributes = read_by_extension(filename, geometry._m);
+		if (geometry._m.nfacets() <= 0)
 			return false;
 
-		geometry->path = filename;
-		node.setGeometry(std::move(geometry));
+		geometry.path = filename;
 
 		return true;
 	}
 
 	bool loadQuads(const std::string &filename, SceneNode &node) {
-		auto geometry = std::make_unique<QuadsGeometry>();
+		auto &geometry = node.createGeometry<QuadsGeometry>();
 
-		geometry->_attributes = read_by_extension(filename, geometry->_m);
-		if (geometry->_m.nfacets() <= 0)
+		geometry._attributes = read_by_extension(filename, geometry._m);
+		if (geometry._m.nfacets() <= 0)
 			return false;
 
-		geometry->path = filename;
-		node.setGeometry(std::move(geometry));
+		geometry.path = filename;
 
 		return true;
 	}
 
 	bool loadPolygons(const std::string &filename, SceneNode &node) {
-		auto geometry = std::make_unique<PolygonsGeometry>();
+		auto &geometry = node.createGeometry<PolygonsGeometry>();
 
-		geometry->_attributes = read_by_extension(filename, geometry->_m);
-		if (geometry->_m.nfacets() <= 0)
+		geometry._attributes = read_by_extension(filename, geometry._m);
+		if (geometry._m.nfacets() <= 0)
 			return false;
 
-		geometry->path = filename;
-		node.setGeometry(std::move(geometry));
+		geometry.path = filename;
 
 		return true;
 	}
 
 	bool loadPolyLine(const std::string &filename, SceneNode &node) {
-		auto geometry = std::make_unique<PolyLineGeometry>();
+		auto &geometry = node.createGeometry<PolyLineGeometry>();
 
-		geometry->_attributes = read_by_extension(filename, geometry->_m);
-		if (geometry->_m.nedges() <= 0)
+		geometry._attributes = read_by_extension(filename, geometry._m);
+		if (geometry._m.nedges() <= 0)
 			return false;
 
-		geometry->path = filename;
-		node.setGeometry(std::move(geometry));
+		geometry.path = filename;
 
 		return true;
 	}

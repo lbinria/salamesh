@@ -54,9 +54,9 @@ struct SceneNode : std::enable_shared_from_this<SceneNode> {
 		return *_geometry;
 	}
 
-	void setGeometry(std::unique_ptr<Geometry> geometry) {
-		_geometry = std::move(geometry);
-	}
+	// void setGeometry(std::unique_ptr<Geometry> geometry) {
+	// 	_geometry = std::move(geometry);
+	// }
 
 	template<typename TGeometry>
 	TGeometry& createGeometry() {
@@ -64,7 +64,7 @@ struct SceneNode : std::enable_shared_from_this<SceneNode> {
 		return *static_cast<TGeometry*>(_geometry.get());
 	}
 
-	bool addShader(ShaderBase &shader) {
+	bool addShaderPass(ShaderBase &shader) {
 		if (_geometryBuffer.contains(shader.getName()))
 			return false;
 		
