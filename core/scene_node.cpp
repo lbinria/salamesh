@@ -92,7 +92,7 @@ void SceneNode::updateLayers() {
 			auto attrOpt = geo.getAttribute(_attrNameByLayerAndKind[{layer, kind}]);
 
 			if (!attrOpt.has_value())
-				return;
+				continue;
 
 			auto attr = attrOpt.value();
 			auto data = sl::getContainerData(attr.ptr.get(), attr.dim);

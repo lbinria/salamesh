@@ -32,6 +32,7 @@ struct Geometry {
 	}
 
 	void updateDone() {
+		std::cout << "UPDATE DONE" << std::endl;
 		_dirty = false;
 	}
 

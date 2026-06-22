@@ -140,6 +140,22 @@ struct Scene {
 		return _nodes.size() > 0;
 	}
 
+	const std::map<std::string, std::shared_ptr<SceneNode>> getAllNodes() const {
+		std::map<std::string, std::shared_ptr<SceneNode>> nodes;
+
+		auto addChildren = [](std::shared_ptr<SceneNode> node, std::map<std::string, std::shared_ptr<SceneNode>> &nodes){
+			for (auto node : node->getChildren())
+				nodes[node->getName()] = node;
+		};
+
+		for (auto &[nodeName, node] : _nodes) {
+			nodes[nodeName] = node;
+			addChildren(node, nodes);
+		}
+
+		return nodes;
+	}
+
 	const std::map<std::string, std::shared_ptr<SceneNode>>& getNodes() const {
 		return _nodes;
 	}

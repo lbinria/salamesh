@@ -241,9 +241,11 @@ void Scene::render() {
 
 	}
 
-	for (auto &[nodeName, node] : _nodes) {
-		if (wasUpdated.contains(nodeName))
+	for (auto &[nodeName, node] : getAllNodes()) {
+		if (wasUpdated.contains(node->getName())) {
+			std::cout << "UPPDATE DONUS: " << node->getName() << std::endl;
 			node->getGeometry().updateDone();
+		}
 	}
 
 }
