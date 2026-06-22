@@ -1,6 +1,6 @@
 function init()
 	print("Load scene module")
-	print("Number of models: " .. tostring(app.scene.models.count))
+	print("Number of models: " .. tostring(#app.scene.models))
 end
 
 function draw_tree(model, k)
@@ -29,10 +29,11 @@ function draw_tree(model, k)
 
 		imgui.Separator()
 
-		for k, child in pairs(app.scene.models) do
+		
+		for _, child in ipairs(app.scene.models) do
 			-- TODO ImGuiTreeNodeFlags_Selected if model selected
 			if (child.parent == model) then 
-				draw_tree(child, k)
+				draw_tree(child, child.name)
 			end
 		end
 
@@ -683,16 +684,16 @@ function draw_gui()
 
 		if (imgui.BeginTabItem("Flat view")) then
 
-			for k, model in pairs(app.scene.models) do
+			for _, model in ipairs(app.scene.models) do
 				
-				local sel_visible, new_visible = imgui.Checkbox(k .. "##" .. k, model.visible)
+				local sel_visible, new_visible = imgui.Checkbox(model.name .. "##" .. model.name, model.visible)
 				if (sel_visible) then 
 					model.visible = new_visible
 				end
 
 				imgui.SameLine()
-				if (imgui.Button("View##" .. "btn_view_" .. k)) then
-					app.scene.selected_model = k
+				if (imgui.Button("View##" .. "btn_view_" .. model.name)) then
+					app.scene.selected_model = model.name
 					-- Set camera position !
 					-- local model_pos = model.center
 					-- app.scene.camera.position = vec3.new(model_pos.x, model_pos.y, model_pos.z - model.radius * 2.);
@@ -720,7 +721,7 @@ function draw_gui()
 			if (imgui.TreeNode("Scene##tree_node_scene")) then 
 
 				-- for k, model in app.scene.models do 
-				for k, model in pairs(app.scene.models) do
+				for _, model in ipairs(app.scene.models) do
 					-- TODO ImGuiTreeNodeFlags_Selected if model selected
 					if (model.parent == nil) then 
 						-- draw_tree(model, k)

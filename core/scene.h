@@ -28,7 +28,7 @@ struct Scene {
 
 
 	void init();
-	std::shared_ptr<SceneNode> loadModel2(const std::string filename, const std::string name = "");
+	std::shared_ptr<SceneNode> loadModel(const std::string filename, const std::string name = "");
 
 	void render();
 
@@ -69,7 +69,7 @@ struct Scene {
 		return selectedNode;
 	}
 
-	void focus2(std::string nodeName);
+	void focus(std::string nodeName);
 
 	inline std::shared_ptr<SceneNode> getCurrentNode() {
 		if (!selectedNode.empty())
@@ -81,9 +81,9 @@ struct Scene {
 	std::shared_ptr<SceneNode> getHoveredNode();
 
 
-	std::tuple<glm::vec3, glm::vec3> computeSceneBBox2();
-	float computeSceneDiameter2();
-	void computeFarPlane2();
+	std::tuple<glm::vec3, glm::vec3> computeSceneBBox();
+	float computeSceneDiameter();
+	void updateFarPlane();
 
 
 	void setupCameras();
@@ -140,56 +140,35 @@ struct Scene {
 		return _nodes.size() > 0;
 	}
 
-	const std::map<std::string, std::shared_ptr<SceneNode>> getAllNodes() const {
-		std::map<std::string, std::shared_ptr<SceneNode>> nodes;
+	int countNodes() const {
+		return static_cast<int>(_nodes.size());
+	}
 
-		auto addChildren = [](std::shared_ptr<SceneNode> node, std::map<std::string, std::shared_ptr<SceneNode>> &nodes){
-			for (auto node : node->getChildren())
-				nodes[node->getName()] = node;
-		};
+	const std::vector<std::shared_ptr<SceneNode>> getNodesAndDescendants() const {
+		std::vector<std::shared_ptr<SceneNode>> result;
 
-		for (auto &[nodeName, node] : _nodes) {
-			nodes[nodeName] = node;
-			addChildren(node, nodes);
+		for (auto &[_, node] : _nodes) {
+			result.push_back(node);
+			auto descendants = node->findChildrenRecursive();
+			result.insert(result.end(), descendants.begin(), descendants.end());
 		}
 
-		return nodes;
+		return result;
 	}
 
-	const std::map<std::string, std::shared_ptr<SceneNode>>& getNodes() const {
-		return _nodes;
+	const std::vector<std::shared_ptr<SceneNode>> getNodes() const {
+		std::vector<std::shared_ptr<SceneNode>> result;
+		for (auto &[_, node] : _nodes)
+			result.push_back(node);
+		
+		return result;
 	}
 
-	// template <typename T>
-	// std::map<std::string, std::shared_ptr<T>> getNodes2() const {
-	// 	static_assert(std::is_base_of_v<SceneNode, T>, 
-	// 				"T must be derived from SceneNode");
-		
-	// 	std::map<std::string, std::shared_ptr<T>> result;
-		
-	// 	for (const auto& [name, node] : _nodes) {
-	// 		if (auto casted = std::dynamic_pointer_cast<T>(node)) {
-	// 			result[name] = casted;
-	// 		}
-	// 	}
-		
-	// 	return result;
-	// }
-
-	std::shared_ptr<SceneNode> getNodeByName(const std::string name) {
+	std::shared_ptr<SceneNode> findNodeByName(const std::string name) {
 		return _nodes.contains(name) ? _nodes.at(name) : nullptr;
 	}
 
-	// const std::vector<std::shared_ptr<SceneNode>> getNodesByName(const std::string name) {
-	// 	std::vector<std::shared_ptr<SceneNode>> results;
-	// 	for (auto &[_, node] : _nodes) {
-	// 		if (node->getName() == name)
-	// 			results.push_back(node);
-	// 	}
-	// 	return results;
-	// }
-
-	std::shared_ptr<SceneNode> getNodeByIndex(int index) {
+	std::shared_ptr<SceneNode> findNodeByIndex(int index) {
 		for (auto &[_, node] : _nodes) {
 			if (node->getIndex() == index)
 				return node;
@@ -198,7 +177,6 @@ struct Scene {
 		return nullptr;
 	}
 
-	
 	const std::map<std::string, std::unique_ptr<ShaderBase>>& getShaders() const {
 		return _shaders;
 	}

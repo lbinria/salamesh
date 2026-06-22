@@ -5,17 +5,20 @@ namespace bindings {
 	void SceneBindings::loadBindings(sol::state &lua, IApp &app) {
 		type = lua.new_usertype<Scene>("Scene");
 
-		// type.set_function("load_model", &Scene::loadModel);
-		type.set_function("load_model", &Scene::loadModel2);
+		type.set_function("load_model", &Scene::loadModel);
 		type["nodes"] = sol::readonly_property(&Scene::getNodes);
 		type["models"] = sol::readonly_property(&Scene::getNodes);
 		
+		type["has_nodes"] = sol::readonly_property(&Scene::hasNodes);
+		type["count_nodes"] = sol::readonly_property(&Scene::countNodes);
+
+
 		// type["model"] = sol::readonly_property(&Scene::getCurrentModel);
 		type["model"] = sol::readonly_property(&Scene::getCurrentNode);
 		type["hovered_model"] = sol::readonly_property(&Scene::getHoveredNode);
 		type["selected_model"] = sol::property(&Scene::getSelectedNodeName, &Scene::setSelectedNode);
 		// type.set_function("focus", &Scene::focus);
-		type.set_function("focus", &Scene::focus2);
+		type.set_function("focus", &Scene::focus);
 
 		type["camera"] = sol::readonly_property(&Scene::getCurrentCamera);
 		type["cameras"] = sol::readonly_property(&Scene::getCameras);

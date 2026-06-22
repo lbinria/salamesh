@@ -70,7 +70,7 @@ struct ModelLoader {
 		return true;
 	}
 
-	std::shared_ptr<SceneNode> load(const std::string filename);
+	std::shared_ptr<SceneNode> load(const std::string filename, const std::string name);
 
 	private:
 	Scene &_scene;

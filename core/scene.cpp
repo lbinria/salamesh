@@ -51,37 +51,32 @@ void Scene::init() {
 
 }
 
-std::shared_ptr<SceneNode> Scene::loadModel2(const std::string filename, const std::string name) {
-
+std::shared_ptr<SceneNode> Scene::loadModel(const std::string filename, const std::string name) {
 	std::string nodeName = name.empty() ? 
-		std::filesystem::path(filename).stem().string() + std::to_string(_nodes.size()) : 
+		std::filesystem::path(filename).stem().string() + std::to_string(countNodes()) : 
 		name;
-	
-	// Mesh node
+
+	// Load node from file
 	auto modelLoader = ModelLoader(*this);
-	auto node = modelLoader.load(filename);
+	auto node = modelLoader.load(filename, name);
 
-	// Put all compatible shaders on model
-	for (auto &[shaderName, shader] : _shaders) {
-		if (shader->isCompatible(node->getGeometry()))
-			node->addShader(*shader);
-	}
-
-	// node->getShaderBuffer("points").value().get().getParams("light")->set("enabled", false);
+	// Setup default gfx
+	node->getMaterial("points").value().get().setVisible(false);
+	node->getMaterial("halfedges").value().get().setVisible(false);
 
 	_nodes.emplace(nodeName, std::move(node));
 
-
-	computeFarPlane2();
+	// Update scene far plane
+	updateFarPlane();
 
 	// A model was loaded ? focus it !
 	if (!nodeName.empty())
-		focus2(nodeName);
+		focus(nodeName);
 
 	return node;
 }
 
-void Scene::focus2(const std::string nodeName) {
+void Scene::focus(const std::string nodeName) {
 	if (!setSelectedNode(nodeName))
 		return;
 	
@@ -89,7 +84,7 @@ void Scene::focus2(const std::string nodeName) {
 	getCurrentCamera().lookAtBox(bbox);
 }
 
-std::tuple<glm::vec3, glm::vec3> Scene::computeSceneBBox2() {
+std::tuple<glm::vec3, glm::vec3> Scene::computeSceneBBox() {
 	glm::vec3 min{std::numeric_limits<float>::max()};
 	glm::vec3 max{-std::numeric_limits<float>::max()};
 	for (auto &[_, n] : _nodes) {
@@ -101,13 +96,13 @@ std::tuple<glm::vec3, glm::vec3> Scene::computeSceneBBox2() {
 	return std::make_tuple(min, max);
 }
 
-float Scene::computeSceneDiameter2() {
-	auto [min, max] = computeSceneBBox2();
+float Scene::computeSceneDiameter() {
+	auto [min, max] = computeSceneBBox();
 	return glm::length(max - min);
 }
 
-void Scene::computeFarPlane2() {
-	auto diameter = computeSceneDiameter2();
+void Scene::updateFarPlane() {
+	auto diameter = computeSceneDiameter();
 
 	for (auto &[k, c] : cameras) {
 		c->setFarPlane(diameter * 5.f /* 5.f is an arbitrary value... */);
@@ -198,9 +193,7 @@ void Scene::render(std::shared_ptr<SceneNode> node, std::unique_ptr<ShaderBase>&
 	auto &shaderBuffer = shaderBufferOpt.value().get();
 	auto &material = materialOpt.value().get();
 
-	if (!material.isVisible())
-		return;
-
+	// TODO: maybe we can delay update shader buffer when material is not visible
 	if (node->getGeometry().shouldUpdate()) {
 		// Update current shader buffers for given geometry
 		shader->update(shaderBuffer, node->getGeometry());
@@ -209,6 +202,9 @@ void Scene::render(std::shared_ptr<SceneNode> node, std::unique_ptr<ShaderBase>&
 		// Set node as updated
 		wasUpdated[node->getName()] = true;
 	}
+
+	if (!material.isVisible())
+		return;
 
 	glBindVertexArray(shaderBuffer.vao());
 	shaderBuffer.setPosition(node->getWorldPosition());
@@ -241,9 +237,8 @@ void Scene::render() {
 
 	}
 
-	for (auto &[nodeName, node] : getAllNodes()) {
+	for (auto &node : getNodesAndDescendants()) {
 		if (wasUpdated.contains(node->getName())) {
-			std::cout << "UPPDATE DONUS: " << node->getName() << std::endl;
 			node->getGeometry().updateDone();
 		}
 	}
@@ -261,7 +256,7 @@ void Scene::loadState(json &j, const std::string filename) {
 	// 		std::filesystem::path(modelRelPath);
 		
 	// 	// Try to load the model mesh
-	// 	if (!loadModel2(modelPath.string(), modelName))
+	// 	if (!loadModel(modelPath.string(), modelName))
 	// 		continue;
 		
 	// 	// Get last added model
@@ -310,5 +305,5 @@ void Scene::saveState(json &j, const std::string filename) {
 
 std::shared_ptr<SceneNode> Scene::getHoveredNode() {
 	auto hoveredIndex = app.getInputState().mesh.getHovered();
-	return getNodeByIndex(hoveredIndex);;
+	return findNodeByIndex(hoveredIndex);;
 }

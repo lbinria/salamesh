@@ -440,7 +440,7 @@ void App::init() {
 		sl::toLower(ext);
 
 		if (accepted.contains(ext)) {
-			scene.loadModel2(p.string());
+			scene.loadModel(p.string());
 		}
 		else if (p.extension() == ".lua") {
 			std::cout << "load script: " << p.string() << std::endl;
@@ -736,7 +736,7 @@ void App::drawGui() {
 				std::cout << "filename: " << filename << ", fullpath: " << fullpath << std::endl;
 				std::cout << "read model..." << std::endl;
 				// scene.loadModel(fullpath);
-				scene.loadModel2(fullpath);
+				scene.loadModel(fullpath);
 			}
 		}
 		

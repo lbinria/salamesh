@@ -4,7 +4,8 @@
 #include "../include/glm/gtc/matrix_transform.hpp"
 #include "../include/glm/gtc/type_ptr.hpp"
 
-std::shared_ptr<SceneNode> ModelLoader::load(const std::string filename) {
+std::shared_ptr<SceneNode> ModelLoader::load(const std::string filename, const std::string name) {
+
 	auto node = std::make_shared<SceneNode>();
 
 	bool success = loadTriangles(filename, *node);
@@ -17,6 +18,12 @@ std::shared_ptr<SceneNode> ModelLoader::load(const std::string filename) {
 	
 	if (!success)
 		success = loadPolyLine(filename, *node);
+
+	// Put all compatible shaders on model
+	for (auto &[_, shader] : _scene.getShaders()) {
+		if (shader->isCompatible(node->getGeometry()))
+			node->addShader(*shader);
+	}
 
 	// Create BBox
 	auto bboxGeometry = std::make_unique<LinesGeometry>();

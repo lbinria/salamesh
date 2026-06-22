@@ -26,7 +26,7 @@ struct SceneNode : std::enable_shared_from_this<SceneNode> {
 		++maxIndex;
 	}
 
-	int getIndex() {
+	int getIndex() const {
 		return _index;
 	}
 
@@ -38,7 +38,7 @@ struct SceneNode : std::enable_shared_from_this<SceneNode> {
 		maxIndex = 0;
 	}
 
-	std::tuple<glm::vec3, glm::vec3> bbox() {
+	std::tuple<glm::vec3, glm::vec3> bbox() const {
 		auto [min, max] = _geometry->bbox();
 
 		for (auto child : _children) {
@@ -77,7 +77,7 @@ struct SceneNode : std::enable_shared_from_this<SceneNode> {
 		return true;
 	}
 
-	bool hasMaterial(const std::string name) {
+	bool hasMaterial(const std::string name) const {
 		return _materials.contains(name);
 	}
 
@@ -118,6 +118,21 @@ struct SceneNode : std::enable_shared_from_this<SceneNode> {
 	void addChild(std::shared_ptr<SceneNode> child) {
 		child->_parent = shared_from_this();
 		_children.push_back(child);
+	}
+
+	std::vector<std::shared_ptr<SceneNode>> findChildrenRecursive() {
+		std::vector<std::shared_ptr<SceneNode>> result;
+		
+		// Add all direct children
+		for (auto& child : _children) {
+			result.push_back(child);
+			
+			// Recursively add all descendants
+			auto descendants = child->findChildrenRecursive();
+			result.insert(result.end(), descendants.begin(), descendants.end());
+		}
+		
+		return result;
 	}
 
 	glm::vec3 getWorldPosition() const {
