@@ -13,18 +13,18 @@ using namespace UM;
 
 struct SceneNode : std::enable_shared_from_this<SceneNode> {
 
-
-	SceneNode() :  
-	_name(sl::generateGuid()) {
-		_index = maxIndex;
-		++maxIndex;
-	}
-
 	SceneNode(std::string name) :  
 	_name(name) {
 		_index = maxIndex;
 		++maxIndex;
 	}
+
+	// Remove copy
+	SceneNode(const SceneNode&) = delete;
+	SceneNode& operator=(const SceneNode&) = delete;
+	// Allow move
+	SceneNode(SceneNode&&) = default;
+	SceneNode& operator=(SceneNode&&) = default;
 
 	int getIndex() const {
 		return _index;
@@ -50,13 +50,10 @@ struct SceneNode : std::enable_shared_from_this<SceneNode> {
 		return {min, max};
 	}
 
+	// TODO warning geometry can be null
 	Geometry& getGeometry() {
 		return *_geometry;
 	}
-
-	// void setGeometry(std::unique_ptr<Geometry> geometry) {
-	// 	_geometry = std::move(geometry);
-	// }
 
 	template<typename TGeometry>
 	TGeometry& createGeometry() {
@@ -68,8 +65,8 @@ struct SceneNode : std::enable_shared_from_this<SceneNode> {
 		if (_geometryBuffer.contains(shader.getName()))
 			return false;
 		
-		auto shaderBuffer = shader.createShaderBuffer();
-		_geometryBuffer.emplace(shader.getName(), std::move(shaderBuffer));
+		auto geometryBuffer = shader.createShaderBuffer();
+		_geometryBuffer.emplace(shader.getName(), std::move(geometryBuffer));
 		
 		auto material = shader.createMaterial();
 		_materials.emplace(shader.getName(), std::move(material));
@@ -92,15 +89,15 @@ struct SceneNode : std::enable_shared_from_this<SceneNode> {
 		return _materials.at(name);
 	}
 
-	std::map<std::string, ShaderBuffer>& getShaderBuffers() {
+	std::map<std::string, GeometryBuffer>& getGeometryBuffer() {
 		return _geometryBuffer;
 	}
 
-	std::optional<std::reference_wrapper<ShaderBuffer>> getShaderBuffer(ShaderBase &shader) {
-		return getShaderBuffer(shader.getName());
+	std::optional<std::reference_wrapper<GeometryBuffer>> getGeometryBuffer(ShaderBase &shader) {
+		return getGeometryBuffer(shader.getName());
 	}
 
-	std::optional<std::reference_wrapper<ShaderBuffer>> getShaderBuffer(const std::string name) {
+	std::optional<std::reference_wrapper<GeometryBuffer>> getGeometryBuffer(const std::string name) {
 		if (!_geometryBuffer.contains(name))
 			return std::nullopt;
 		
@@ -180,7 +177,7 @@ struct SceneNode : std::enable_shared_from_this<SceneNode> {
 	std::string _name;
 
 	std::unique_ptr<Geometry> _geometry;
-	std::map<std::string, ShaderBuffer> _geometryBuffer;
+	std::map<std::string, GeometryBuffer> _geometryBuffer;
 	std::map<std::string, Material> _materials;
 
 	std::weak_ptr<SceneNode> _parent;

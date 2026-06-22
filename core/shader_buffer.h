@@ -7,10 +7,10 @@ using namespace UM;
 
 #include <map>
 
-struct ShaderBuffer {
+struct GeometryBuffer {
 
 
-	ShaderBuffer(Shader &shader, unsigned int vao, unsigned int vbo) : 
+	GeometryBuffer(Shader &shader, unsigned int vao, unsigned int vbo) : 
 		_shader(shader),
 		_vao(vao),
 		_vbo(vbo)

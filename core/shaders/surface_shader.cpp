@@ -10,7 +10,7 @@ bool SurfaceShader::isCompatible(Geometry &geometry) {
 	return trianglesGeometry;
 }
 
-ShaderBuffer SurfaceShader::createShaderBuffer() {
+GeometryBuffer SurfaceShader::createShaderBuffer() {
 	unsigned int vao, vbo;
 	glGenVertexArrays(1, &vao);
 	glGenBuffers(1, &vbo);
@@ -30,7 +30,7 @@ ShaderBuffer SurfaceShader::createShaderBuffer() {
 	params["layers"] = std::make_shared<LayersParams>();
 	params["clipping"] = std::make_shared<ClippingParams>();
 	params["light"] = std::make_shared<LightParams>();
-	return ShaderBuffer(shader, vao, vbo);
+	return GeometryBuffer(shader, vao, vbo);
 };
 
 Material SurfaceShader::createMaterial() {
@@ -42,15 +42,15 @@ Material SurfaceShader::createMaterial() {
 	return Material(params);
 }
 
-void SurfaceShader::update(ShaderBuffer &shaderBuffer, Geometry &geometry) {
+void SurfaceShader::update(GeometryBuffer &geometryBuffer, Geometry &geometry) {
 	auto trianglesGeometry = dynamic_cast<TrianglesGeometry*>(&geometry);
 
 	if (trianglesGeometry) {
 
 		auto &m = trianglesGeometry->_m;
-		shaderBuffer.nelements = m.nfacets() * 3 /* 3 points per tri */;
+		geometryBuffer.nelements = m.nfacets() * 3 /* 3 points per tri */;
 
-		std::vector<Vertex> vertices(shaderBuffer.nelements);
+		std::vector<Vertex> vertices(geometryBuffer.nelements);
 		for (auto &f : m.iter_facets()) {
 
 			auto p0 = f.vertex(0).pos();
@@ -74,8 +74,8 @@ void SurfaceShader::update(ShaderBuffer &shaderBuffer, Geometry &geometry) {
 			}
 		}
 
-		glBindVertexArray(shaderBuffer.vao());
-		glBindBuffer(GL_ARRAY_BUFFER, shaderBuffer.vbo());
+		glBindVertexArray(geometryBuffer.vao());
+		glBindBuffer(GL_ARRAY_BUFFER, geometryBuffer.vbo());
 		glBufferData(GL_ARRAY_BUFFER, vertices.size() * sizeof(Vertex), vertices.data(), GL_STATIC_DRAW);
 
 	}

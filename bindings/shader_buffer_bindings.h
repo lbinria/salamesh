@@ -11,7 +11,7 @@ namespace bindings {
 
 		void loadBindings(sol::state &lua, IApp &app) override;
 		private:
-		sol::usertype<ShaderBuffer> type;
+		sol::usertype<GeometryBuffer> type;
 	};
 
 }

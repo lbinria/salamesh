@@ -26,7 +26,7 @@ std::shared_ptr<SceneNode> ModelLoader::load(const std::string filename, const s
 	}
 
 	// Create BBox
-	auto bbox = std::make_shared<SceneNode>();
+	auto bbox = std::make_shared<SceneNode>(name + "_bbox");
 	bbox->addShaderPass(_scene.getShader("line_shader"));
 
 	auto &bboxGeometry = bbox->createGeometry<LinesGeometry>();

@@ -40,19 +40,19 @@ struct ShaderBase {
 
 	virtual bool isCompatible(Geometry &geometry) { return false; }
 
-	virtual ShaderBuffer createShaderBuffer() {
+	virtual GeometryBuffer createShaderBuffer() {
 		unsigned int vao, vbo;
 		glGenVertexArrays(1, &vao);
 		glGenBuffers(1, &vbo);
 
-		return ShaderBuffer(shader, vao, vbo);
+		return GeometryBuffer(shader, vao, vbo);
 	};
 
 	virtual Material createMaterial() {
 		return Material();
 	}
 
-	virtual void update(ShaderBuffer &shaderBuffer, Geometry &geometry) {
+	virtual void update(GeometryBuffer &geometryBuffer, Geometry &geometry) {
 
 	}
 

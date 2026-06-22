@@ -33,9 +33,9 @@ struct PointShader : public ShaderBase {
 		}
 
 	virtual bool isCompatible(Geometry &geometry) override;
-	virtual ShaderBuffer createShaderBuffer() override;
+	virtual GeometryBuffer createShaderBuffer() override;
 	virtual Material createMaterial() override;
-	virtual void update(ShaderBuffer &shaderBuffer, Geometry &geometry) override;
+	virtual void update(GeometryBuffer &geometryBuffer, Geometry &geometry) override;
 
 	void clean() override;
 	void clear() override;
@@ -59,7 +59,7 @@ struct PointShader : public ShaderBase {
 	PointSet &ps;
 	bool autoUpdate = false;
 
-	void updatePointSet(ShaderBuffer &shaderBuffer, PointSet &ps);
+	void updatePointSet(GeometryBuffer &geometryBuffer, PointSet &ps);
 
 	void doLoadState(json &j) override {
 

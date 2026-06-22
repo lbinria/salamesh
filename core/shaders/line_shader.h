@@ -33,10 +33,10 @@ struct LineShader : public ShaderBase {
 
 
 	virtual bool isCompatible(Geometry &geometry) override;
-	virtual ShaderBuffer createShaderBuffer() override;
+	virtual GeometryBuffer createShaderBuffer() override;
 	virtual Material createMaterial() override;
 	
-	virtual void update(ShaderBuffer &shaderBuffer, Geometry &geometry) override;
+	virtual void update(GeometryBuffer &geometryBuffer, Geometry &geometry) override;
 	virtual unsigned int renderElement() override {
 		return GL_LINES;
 	}

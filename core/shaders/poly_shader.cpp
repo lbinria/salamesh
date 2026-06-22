@@ -5,7 +5,7 @@
 #include "light_params.h"
 #include "clipping_params.h"
 
-ShaderBuffer PolyShader::createShaderBuffer() {
+GeometryBuffer PolyShader::createShaderBuffer() {
 	unsigned int vao, vbo;
 	glGenVertexArrays(1, &vao);
 	glGenBuffers(1, &vbo);
@@ -29,14 +29,14 @@ ShaderBuffer PolyShader::createShaderBuffer() {
 
 	sl::createTBO(bufNVertsPerFacet, texNVertsPerFacet);
 
-	auto shaderBuffer = ShaderBuffer(shader, vao, vbo);
-	shaderBuffer.tbos.push_back({ 
+	auto geometryBuffer = GeometryBuffer(shader, vao, vbo);
+	geometryBuffer.tbos.push_back({ 
 		.name = "nvertsPerFacetBuf", 
 		.texUnit = 8, 
 		.tex = texNVertsPerFacet
 	}); // Add TBO texNVertsPerFacet at the texture 8
 
-	return shaderBuffer;
+	return geometryBuffer;
 };
 
 Material PolyShader::createMaterial() {
@@ -55,7 +55,7 @@ bool PolyShader::isCompatible(Geometry &geometry) {
 	return quadsGeometry || polygonsGeometry;
 }
 
-void PolyShader::update(ShaderBuffer &shaderBuffer, Geometry &geometry) {
+void PolyShader::update(GeometryBuffer &geometryBuffer, Geometry &geometry) {
 	auto quadsGeometry = dynamic_cast<QuadsGeometry*>(&geometry);
 	auto polygonsGeometry = dynamic_cast<PolygonsGeometry*>(&geometry);
 
@@ -73,7 +73,7 @@ void PolyShader::update(ShaderBuffer &shaderBuffer, Geometry &geometry) {
 			ntri += nvertsFacet;
 			nVertsPerFacet[f] = static_cast<float>(nvertsFacet);
 		}
-		shaderBuffer.nelements = 3 * ntri /* 3 points per tri, n tri per facet */;
+		geometryBuffer.nelements = 3 * ntri /* 3 points per tri, n tri per facet */;
 
 		int cornerOff = 0;
 		std::vector<Vertex> vertices;
@@ -137,8 +137,8 @@ void PolyShader::update(ShaderBuffer &shaderBuffer, Geometry &geometry) {
 			cornerOff += f.size();
 		}
 
-		glBindVertexArray(shaderBuffer.vao());
-		glBindBuffer(GL_ARRAY_BUFFER, shaderBuffer.vbo());
+		glBindVertexArray(geometryBuffer.vao());
+		glBindBuffer(GL_ARRAY_BUFFER, geometryBuffer.vbo());
 
 		// Write VBO
 		glBufferData(GL_ARRAY_BUFFER, vertices.size() * sizeof(Vertex), vertices.data(), GL_STATIC_DRAW);

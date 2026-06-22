@@ -12,7 +12,7 @@ bool LineShader::isCompatible(Geometry &geometry) {
 	return lineGeometry;
 }
 
-ShaderBuffer LineShader::createShaderBuffer() {
+GeometryBuffer LineShader::createShaderBuffer() {
 	unsigned int vao, vbo;
 	glGenVertexArrays(1, &vao);
 	glGenBuffers(1, &vbo);
@@ -23,7 +23,7 @@ ShaderBuffer LineShader::createShaderBuffer() {
 	sl::createVBOVec3(shader.id, "p", sizeof(LineComponent), (void*)offsetof(LineComponent, p));
 	sl::createVBOVec3(shader.id, "color", sizeof(LineComponent), (void*)offsetof(LineComponent, color));
 
-	return ShaderBuffer(shader, vao, vbo);
+	return GeometryBuffer(shader, vao, vbo);
 };
 
 Material LineShader::createMaterial() {
@@ -35,7 +35,7 @@ Material LineShader::createMaterial() {
 	return Material(params);
 }
 
-void LineShader::update(ShaderBuffer &shaderBuffer, Geometry &geometry) {
+void LineShader::update(GeometryBuffer &geometryBuffer, Geometry &geometry) {
 
 	auto linesGeometry = dynamic_cast<LinesGeometry*>(&geometry);
 
@@ -48,9 +48,9 @@ void LineShader::update(ShaderBuffer &shaderBuffer, Geometry &geometry) {
 			lineComponents.push_back({ .p = l.b, .color = l.color });
 		}
 
-		shaderBuffer.nelements = lineComponents.size();
-		glBindVertexArray(shaderBuffer.vao());
-		glBindBuffer(GL_ARRAY_BUFFER, shaderBuffer.vbo());
+		geometryBuffer.nelements = lineComponents.size();
+		glBindVertexArray(geometryBuffer.vao());
+		glBindBuffer(GL_ARRAY_BUFFER, geometryBuffer.vbo());
 		glBufferData(GL_ARRAY_BUFFER, lineComponents.size() * sizeof(LineComponent), lineComponents.data(), GL_STATIC_DRAW);
 	}
 }

@@ -13,7 +13,7 @@ bool PointShader::isCompatible(Geometry &geometry) {
 	return trianglesGeometry || quadsGeometry || polygonsGeometry;
 }
 
-ShaderBuffer PointShader::createShaderBuffer() {
+GeometryBuffer PointShader::createShaderBuffer() {
 	unsigned int vao, vbo;
 	glGenVertexArrays(1, &vao);
 	glGenBuffers(1, &vbo);
@@ -25,7 +25,7 @@ ShaderBuffer PointShader::createShaderBuffer() {
 	sl::createVBOVec3(shader.id, "aPos", sizeof(Vertex), (void*)offsetof(Vertex, position));
 	sl::createVBOFloat(shader.id, "sizeScale", sizeof(Vertex), (void*)offsetof(Vertex, size));
 
-	return ShaderBuffer(shader, vao, vbo);
+	return GeometryBuffer(shader, vao, vbo);
 };
 
 Material PointShader::createMaterial() {
@@ -37,7 +37,7 @@ Material PointShader::createMaterial() {
 	return Material(params);
 }
 
-void PointShader::updatePointSet(ShaderBuffer &shaderBuffer, PointSet &ps) {
+void PointShader::updatePointSet(GeometryBuffer &geometryBuffer, PointSet &ps) {
 	std::vector<Vertex> vertices(ps.size());
 	for (int i = 0; i < ps.size(); ++i) {
 		auto &v = ps[i];
@@ -49,21 +49,21 @@ void PointShader::updatePointSet(ShaderBuffer &shaderBuffer, PointSet &ps) {
 		};
 	}
 
-	shaderBuffer.nelements = vertices.size();
-	glBindVertexArray(shaderBuffer.vao());
-	glBindBuffer(GL_ARRAY_BUFFER, shaderBuffer.vbo());
+	geometryBuffer.nelements = vertices.size();
+	glBindVertexArray(geometryBuffer.vao());
+	glBindBuffer(GL_ARRAY_BUFFER, geometryBuffer.vbo());
 	glBufferData(GL_ARRAY_BUFFER, vertices.size() * sizeof(Vertex), vertices.data(), GL_STATIC_DRAW);
 }
 
 
-void PointShader::update(ShaderBuffer &shaderBuffer, Geometry &geometry) {
+void PointShader::update(GeometryBuffer &geometryBuffer, Geometry &geometry) {
 	auto trianglesGeometry = dynamic_cast<TrianglesGeometry*>(&geometry);
 	if (trianglesGeometry)
-		updatePointSet(shaderBuffer, trianglesGeometry->_m.points);
+		updatePointSet(geometryBuffer, trianglesGeometry->_m.points);
 	else if (auto quadsGeometry = dynamic_cast<QuadsGeometry*>(&geometry))
-		updatePointSet(shaderBuffer, quadsGeometry->_m.points);
+		updatePointSet(geometryBuffer, quadsGeometry->_m.points);
 	else if (auto polygonsGeometry = dynamic_cast<PolygonsGeometry*>(&geometry))
-		updatePointSet(shaderBuffer, polygonsGeometry->_m.points);
+		updatePointSet(geometryBuffer, polygonsGeometry->_m.points);
 }
 
 

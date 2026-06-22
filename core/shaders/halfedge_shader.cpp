@@ -13,7 +13,7 @@ bool HalfedgeShader::isCompatible(Geometry &geometry) {
 	return trianglesGeometry || quadsGeometry || polygonsGeometry;
 }
 
-ShaderBuffer HalfedgeShader::createShaderBuffer() {
+GeometryBuffer HalfedgeShader::createShaderBuffer() {
 	unsigned int vao, vbo;
 	glGenVertexArrays(1, &vao);
 	glGenBuffers(1, &vbo);
@@ -28,7 +28,7 @@ ShaderBuffer HalfedgeShader::createShaderBuffer() {
 	sl::createVBOFloat(shader.id, "aEnd", sizeof(LineVert), (void*)offsetof(LineVert, end));
 	sl::createVBOVec3(shader.id, "bary", sizeof(LineVert), (void*)offsetof(LineVert, bary));
 
-	return ShaderBuffer(shader, vao, vbo);
+	return GeometryBuffer(shader, vao, vbo);
 };
 
 Material HalfedgeShader::createMaterial() {
@@ -40,7 +40,7 @@ Material HalfedgeShader::createMaterial() {
 	return Material(params);
 }
 
-void HalfedgeShader::updateHalfedges(ShaderBuffer &shaderBuffer, Surface &m) {
+void HalfedgeShader::updateHalfedges(GeometryBuffer &geometryBuffer, Surface &m) {
 	std::vector<LineVert> vertices;
 	// pre-allocate to speed-up
 	vertices.reserve(m.nfacets() * 4 /* reserve for 4 side facets */ * 6 /* 1 quad, 2 tri per quad, 3 points per tri */); 
@@ -84,21 +84,21 @@ void HalfedgeShader::updateHalfedges(ShaderBuffer &shaderBuffer, Surface &m) {
 		}
 	}
 
-	shaderBuffer.nelements = vertices.size();
-	glBindVertexArray(shaderBuffer.vao());
-	glBindBuffer(GL_ARRAY_BUFFER, shaderBuffer.vbo());
+	geometryBuffer.nelements = vertices.size();
+	glBindVertexArray(geometryBuffer.vao());
+	glBindBuffer(GL_ARRAY_BUFFER, geometryBuffer.vbo());
 	glBufferData(GL_ARRAY_BUFFER, vertices.size() * sizeof(LineVert), vertices.data(), GL_STATIC_DRAW);
 }
 
 
-void HalfedgeShader::update(ShaderBuffer &shaderBuffer, Geometry &geometry) {
+void HalfedgeShader::update(GeometryBuffer &geometryBuffer, Geometry &geometry) {
 	auto trianglesGeometry = dynamic_cast<TrianglesGeometry*>(&geometry);
 	if (trianglesGeometry)
-		updateHalfedges(shaderBuffer, trianglesGeometry->_m);
+		updateHalfedges(geometryBuffer, trianglesGeometry->_m);
 	else if (auto quadsGeometry = dynamic_cast<QuadsGeometry*>(&geometry))
-		updateHalfedges(shaderBuffer, quadsGeometry->_m);
+		updateHalfedges(geometryBuffer, quadsGeometry->_m);
 	else if (auto polygonsGeometry = dynamic_cast<PolygonsGeometry*>(&geometry))
-		updateHalfedges(shaderBuffer, polygonsGeometry->_m);
+		updateHalfedges(geometryBuffer, polygonsGeometry->_m);
 }
 
 
