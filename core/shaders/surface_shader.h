@@ -42,7 +42,7 @@ struct SurfaceShader : public MeshMaterial {
 		{}
 
 	virtual bool isCompatible(Geometry &geometry) override;
-	virtual GeometryBuffer createShaderBuffer() override;
+	virtual GeometryBuffer createGeometryBuffer() override;
 	virtual Material createMaterial() override;
 	virtual void update(GeometryBuffer &geometryBuffer, Geometry &geometry) override;
 

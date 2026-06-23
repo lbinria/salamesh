@@ -13,7 +13,7 @@ bool PointShader::isCompatible(Geometry &geometry) {
 	return trianglesGeometry || quadsGeometry || polygonsGeometry;
 }
 
-GeometryBuffer PointShader::createShaderBuffer() {
+GeometryBuffer PointShader::createGeometryBuffer() {
 	unsigned int vao, vbo;
 	glGenVertexArrays(1, &vao);
 	glGenBuffers(1, &vbo);

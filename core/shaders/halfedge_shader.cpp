@@ -13,7 +13,7 @@ bool HalfedgeShader::isCompatible(Geometry &geometry) {
 	return trianglesGeometry || quadsGeometry || polygonsGeometry;
 }
 
-GeometryBuffer HalfedgeShader::createShaderBuffer() {
+GeometryBuffer HalfedgeShader::createGeometryBuffer() {
 	unsigned int vao, vbo;
 	glGenVertexArrays(1, &vao);
 	glGenBuffers(1, &vbo);

@@ -5,7 +5,7 @@
 #include "light_params.h"
 #include "clipping_params.h"
 
-GeometryBuffer PolyShader::createShaderBuffer() {
+GeometryBuffer PolyShader::createGeometryBuffer() {
 	unsigned int vao, vbo;
 	glGenVertexArrays(1, &vao);
 	glGenBuffers(1, &vbo);

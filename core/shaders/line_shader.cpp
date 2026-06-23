@@ -13,7 +13,7 @@ bool LineShader::isCompatible(Geometry &geometry) {
 	return lineGeometry;
 }
 
-GeometryBuffer LineShader::createShaderBuffer() {
+GeometryBuffer LineShader::createGeometryBuffer() {
 	unsigned int vao, vbo;
 	glGenVertexArrays(1, &vao);
 	glGenBuffers(1, &vbo);

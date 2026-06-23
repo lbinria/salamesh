@@ -18,7 +18,7 @@ bool SceneNode::addShaderPass(ShaderBase &shader) {
 	if (_geometryBuffer.contains(shader.getName()))
 		return false;
 	
-	auto geometryBuffer = shader.createShaderBuffer();
+	auto geometryBuffer = shader.createGeometryBuffer();
 	_geometryBuffer.emplace(shader.getName(), std::move(geometryBuffer));
 	
 	auto material = shader.createMaterial();

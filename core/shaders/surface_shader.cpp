@@ -10,7 +10,7 @@ bool SurfaceShader::isCompatible(Geometry &geometry) {
 	return trianglesGeometry;
 }
 
-GeometryBuffer SurfaceShader::createShaderBuffer() {
+GeometryBuffer SurfaceShader::createGeometryBuffer() {
 	unsigned int vao, vbo;
 	glGenVertexArrays(1, &vao);
 	glGenBuffers(1, &vbo);

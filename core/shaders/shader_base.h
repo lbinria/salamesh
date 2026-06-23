@@ -40,7 +40,7 @@ struct ShaderBase {
 
 	virtual bool isCompatible(Geometry &geometry) { return false; }
 
-	virtual GeometryBuffer createShaderBuffer() {
+	virtual GeometryBuffer createGeometryBuffer() {
 		unsigned int vao, vbo;
 		glGenVertexArrays(1, &vao);
 		glGenBuffers(1, &vbo);
