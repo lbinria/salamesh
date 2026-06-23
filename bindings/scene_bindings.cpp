@@ -32,14 +32,7 @@ namespace bindings {
 		type["colormaps"] = sol::readonly_property(&Scene::getColormaps);
 		type.set_function("add_colormap", &Scene::addColormap);
 		type.set_function("remove_colormap", &Scene::removeColormap);
-		type.set_function("get_colormap", sol::overload(
-			[](Scene &self, int idx) {
-				return self.getColormap(idx);
-			},
-			[](Scene &self, const std::string name) {
-				return self.getColormap(name);
-			}
-		));
+		type.set_function("get_colormap", &Scene::getColormap);
 
 		// type["selected_colormap"], sol::property(
 		// 	[](SceneNode &self) {

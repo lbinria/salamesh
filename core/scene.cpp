@@ -132,11 +132,9 @@ void Scene::setupColormaps() {
 
 void Scene::addColormap(const std::string name, const std::string filename) {
 
-	for (const auto& cm : colormaps) {
-		if (cm.name == name) {
-			std::cerr << "App::addColormap: colormap '" << name << "' already exists." << std::endl;
-			return;
-		}
+	if (colormaps.contains(name)) {
+		std::cerr << "Scene::addColormap: colormap '" << name << "' already exists." << std::endl;
+		return;
 	}
 
 	int width, height, nrChannels;
@@ -149,36 +147,26 @@ void Scene::addColormap(const std::string name, const std::string filename) {
 	};
 
 	if(!sl::load_texture_2d(filename, cm.tex, width, height, nrChannels)) {
-		std::cerr << "App::addColormap: unable to load colormap " << name << " at " << filename << "." << std::endl;
+		std::cerr << "Scene::addColormap: unable to load colormap " << name << " at " << filename << "." << std::endl;
 		return;
 	}
 
 	cm.width = width;
 	cm.height = height;
 
-	colormaps.push_back(cm);
+	colormaps.emplace(name, cm);
 }
 
 void Scene::removeColormap(const std::string name) {
-	for (int i = 0; i < colormaps.size(); ++i) {
-		if (colormaps[i].name == name) {
-			colormaps.erase(colormaps.begin() + i);
-			return;
-		}
-	}
+	// TODO free memory
+	colormaps.erase(name);
 }
 
 Colormap Scene::getColormap(const std::string name) {
-	for (int i = 0; i < colormaps.size(); ++i) {
-		if (colormaps[i].name == name) {
-			return colormaps[i];
-		}
-	}
-	throw std::runtime_error("Colormap " + name + " not found.");
-}
+	if (!colormaps.contains(name))
+		throw std::runtime_error("Colormap " + name + " not found.");
 
-Colormap Scene::getColormap(int idx) {
-	return colormaps[idx];
+	return colormaps.at(name);
 }
 
 void Scene::render(std::shared_ptr<SceneNode> node, std::unique_ptr<ShaderBase>& shader, std::map<std::string, bool> &wasUpdated) {

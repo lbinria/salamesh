@@ -37,8 +37,8 @@ struct Scene {
 		// TODO clean nodes
 
 		// Clear textures
-		for (int i = 0; i < colormaps.size(); ++i)
-			glDeleteTextures(1, &colormaps[i].tex);
+		for (auto &[_, colormap] : colormaps)
+			glDeleteTextures(1, &colormap.tex);
 	}
 
 	void clear() {
@@ -122,12 +122,11 @@ struct Scene {
 		setupColormaps();
 	}
 
-	std::vector<Colormap>& getColormaps() {
+	const std::map<std::string, Colormap>& getColormaps() {
 		return colormaps;
 	}
 
 	Colormap getColormap(const std::string name);
-	Colormap getColormap(int idx);
 
 	void loadState(json &j, const std::string filename);
 	void saveState(json &j, const std::string filename);
@@ -197,7 +196,7 @@ struct Scene {
 	std::map<std::string, std::unique_ptr<ShaderBase>> _shaders;
 
 	// display color map in good format for 2D in the UI
-	std::vector<Colormap> colormaps;
+	std::map<std::string, Colormap> colormaps;
 
 	std::map<std::string, std::shared_ptr<RenderSurface>> renderSurfaces;
 	

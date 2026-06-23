@@ -302,7 +302,7 @@ function draw_model_properties(model, k, view)
 			local attributes = model.geometry.attributes
 
 			-- Get selected colormap for current model
-			local selected_colormap = 1
+			local selected_colormap = "CET-R41"
 			if selected_colormaps[model.name] ~= nil then 
 				selected_colormap = selected_colormaps[model.name]
 			end
@@ -359,35 +359,35 @@ function draw_model_properties(model, k, view)
 
 			imgui.Text("Colormap")
 
-			local colormaps = app.scene.colormaps
-			local items = {}
-			for i = 1, #colormaps do 
-				table.insert(items, colormaps[i].name)
-			end
+			-- local colormaps = app.scene.colormaps
+			-- local items = {}
+			-- for i = 1, #colormaps do 
+			-- 	table.insert(items, colormaps[i].name)
+			-- end
 
 			local colormap_size = imgui.ImVec2(320, 20)
 
 
-			if (imgui.BeginCombo("##combo_colormaps0_selection", items[selected_colormap])) then
+			if (imgui.BeginCombo("##combo_colormaps0_selection", selected_colormap)) then
 				-- Display items in the popup
-				for i = 1, #items do
-					local is_selected = selected_colormap == i
+				for colormap_name, colormap in pairs(app.scene.colormaps) do
+					local is_selected = selected_colormap == colormap_name
 					-- Create a unique ID for each item to prevent conflicts
-					imgui.PushID(i)
+					-- imgui.PushID(i)
 
 					-- Calculate total width including spacing
 					-- local total_width = imgui.CalcTextSize(items[i]).x + colormap_size.x + 10.0
 
 					-- Display the item with both text and image
-					if (imgui.Selectable(items[i], is_selected)) then
-						selected_colormaps[model.name] = i
-						model:set_colormap(app.scene.colormaps[i])
+					if (imgui.Selectable(colormap_name .. "##selectable_colormap_" .. colormap_name, is_selected)) then
+						selected_colormaps[model.name] = colormap_name
+						model:set_colormap(colormap)
 					end
 
 					-- Display the image after the text
-					imgui.Image(app.scene.colormaps[i].tex, colormap_size)
+					imgui.Image(colormap.tex, colormap_size)
 
-					imgui.PopID()
+					-- imgui.PopID()
 				end
 
 				imgui.EndCombo()
