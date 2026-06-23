@@ -13,7 +13,7 @@
 
 #include "shaders/shader_base.h"
 
-#include "scene_node.h"
+#include "scene/scene_node.h"
 #include "point_style_params.h" // TODO remove test
 #include "model_loader.h"// TODO remove test
 
