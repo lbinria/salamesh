@@ -120,11 +120,11 @@ target_link_libraries(imgui PRIVATE glfw ${OPENGL_LIBS})
 #     ${JSON_INCLUDE_DIR}/json.hpp
 # )
 
-set(STB_INCLUDE_DIR "include/stb_image")
+# set(STB_INCLUDE_DIR "include/stb_image")
 
-set(STB_SOURCES
-  ${STB_INCLUDE_DIR}/stb_include.cpp
-)
+# set(STB_SOURCES
+#   ${STB_INCLUDE_DIR}/stb_include.cpp
+# )
 
 add_subdirectory(include/ImGuiFileDialog-0.6.7)
 get_target_property(_IFD_INCS ImGuiFileDialog INTERFACE_INCLUDE_DIRECTORIES)
@@ -152,7 +152,7 @@ add_library(salamesh_core SHARED
   ${SOL_SOURCES}
   # ${IMGUI_SOURCES}
   # ${JSON_SOURCES}
-  ${STB_SOURCES}
+  # ${STB_SOURCES}
 )
 
 # Move include directories to the library target
@@ -163,7 +163,7 @@ target_include_directories(salamesh_core PUBLIC
     ${LUA_INCLUDE_DIR}
     ${ultimaille_SOURCE_DIR}
     # ${JSON_INCLUDE_DIR}
-    ${STB_INCLUDE_DIR}
+    # ${STB_INCLUDE_DIR}
 )
 
 
@@ -185,6 +185,7 @@ target_link_libraries(salamesh_core PUBLIC
 # Local libs
 add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/core/cameras)
 add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/core/geometry)
+# add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/core/shaders)
 add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/core/materials)
 add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/core/scripting)
 add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/core/data)
@@ -192,6 +193,7 @@ add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/core/utils)
 # add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/core/io)
 
 add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/include/json)
+add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/include/stb_image)
 
 
 # Link libraries to main executable
@@ -204,8 +206,10 @@ target_link_libraries(salamesh_core
       data
       utils
       # io
+      # shaders
 
       nlohmann_json
+      stb_image
 )
 
 if (NOT WIN32)
