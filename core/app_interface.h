@@ -6,7 +6,7 @@
 #include "snapshot.h"
 #include "navigation_path.h"
 
-#include "input_states.h"
+#include "io/input_states.h"
 #include "element_type.h"
 #include "camera.h"
 #include "camera_collection.h"

@@ -1,5 +1,7 @@
-#include "../scene.h"
 #include "model_loader.h"
+
+#include "../scene.h"
+#include "../scene_node.h"
 #include "lines_geometry.h"
 
 std::shared_ptr<SceneNode> ModelLoader::load(const std::string filename, const std::string name) {

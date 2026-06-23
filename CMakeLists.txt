@@ -190,7 +190,7 @@ add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/core/materials)
 add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/core/scripting)
 add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/core/data)
 add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/core/utils)
-# add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/core/io)
+add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/core/io)
 
 add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/include/json)
 add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/include/stb_image)
@@ -205,7 +205,7 @@ target_link_libraries(salamesh_core
       scripting
       data
       utils
-      # io
+      io
       # shaders
 
       nlohmann_json

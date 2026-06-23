@@ -1,7 +1,7 @@
 #pragma once
 
 #include "colormap.h"
-#include "input_states.h"
+#include "io/input_states.h"
 
 #include "render_surface.h"
 

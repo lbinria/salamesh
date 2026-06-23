@@ -6,7 +6,7 @@
 
 #include "app_interface.h"
 #include "script.h"
-#include "input_states.h"
+#include "io/input_states.h"
 
 #include "logger.h"
 

@@ -1,11 +1,11 @@
 #pragma once 
-#include "../scene_node.h"
 
 #include <ultimaille/all.h>
 using namespace UM;
 
 #include <string>
 
+struct SceneNode;
 struct Scene;
 
 struct ModelLoader {
