@@ -114,11 +114,11 @@ target_include_directories(imgui PUBLIC
 # Link any backend deps if needed (glfw, OpenGL libs) as PRIVATE or PUBLIC appropriately:
 target_link_libraries(imgui PRIVATE glfw ${OPENGL_LIBS})
 
-set(JSON_INCLUDE_DIR "include/json")
+# set(JSON_INCLUDE_DIR "include/json")
 
-set(JSON_SOURCES
-    ${JSON_INCLUDE_DIR}/json.hpp
-)
+# set(JSON_SOURCES
+#     ${JSON_INCLUDE_DIR}/json.hpp
+# )
 
 set(STB_INCLUDE_DIR "include/stb_image")
 
@@ -151,7 +151,7 @@ add_library(salamesh_core SHARED
   ${OPENGL_FILES}
   ${SOL_SOURCES}
   # ${IMGUI_SOURCES}
-  ${JSON_SOURCES}
+  # ${JSON_SOURCES}
   ${STB_SOURCES}
 )
 
@@ -162,7 +162,7 @@ target_include_directories(salamesh_core PUBLIC
     include/imgui
     ${LUA_INCLUDE_DIR}
     ${ultimaille_SOURCE_DIR}
-    ${JSON_INCLUDE_DIR}
+    # ${JSON_INCLUDE_DIR}
     ${STB_INCLUDE_DIR}
 )
 
@@ -189,8 +189,11 @@ add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/core/materials)
 add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/core/scripting)
 add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/core/data)
 add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/core/utils)
-
 # add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/core/io)
+
+add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/include/json)
+
+
 # Link libraries to main executable
 target_link_libraries(salamesh_core
   PUBLIC
@@ -201,6 +204,8 @@ target_link_libraries(salamesh_core
       data
       utils
       # io
+
+      nlohmann_json
 )
 
 if (NOT WIN32)
