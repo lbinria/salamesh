@@ -114,11 +114,11 @@ target_include_directories(imgui PUBLIC
 # Link any backend deps if needed (glfw, OpenGL libs) as PRIVATE or PUBLIC appropriately:
 target_link_libraries(imgui PRIVATE glfw ${OPENGL_LIBS})
 
+set(JSON_INCLUDE_DIR "include/json")
 
 set(JSON_SOURCES
-    include/json/json.hpp
+    ${JSON_INCLUDE_DIR}/json.hpp
 )
-include_directories("include/json")
 
 add_subdirectory(include/ImGuiFileDialog-0.6.7)
 get_target_property(_IFD_INCS ImGuiFileDialog INTERFACE_INCLUDE_DIRECTORIES)
@@ -156,7 +156,10 @@ target_include_directories(salamesh_core PUBLIC
     include/imgui
     ${LUA_INCLUDE_DIR}
     ${ultimaille_SOURCE_DIR}
+    ${JSON_INCLUDE_DIR}
 )
+
+
 target_include_directories(salamesh_core PRIVATE 
     ${stlbfgs_SOURCE_DIR}
     ${OpenNL_psm_SOURCE_DIR}
@@ -172,6 +175,7 @@ target_link_libraries(salamesh_core PUBLIC
     imgui
 )
 
+# Local libs
 add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/core/cameras)
 add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/core/geometry)
 add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/core/materials)
@@ -213,13 +217,6 @@ target_link_libraries(salamesh PRIVATE salamesh_core ImGuiFileDialog)
 
 
 
-
-
-# Link the libraries
-# target_link_libraries(salamesh PRIVATE glfw)
-# target_link_libraries(salamesh PRIVATE ImGuiFileDialog ${CMAKE_DL_LIBS} ultimaille $<$<BOOL:${OpenMP_CXX_FOUND}>:OpenMP::OpenMP_CXX>)
-# target_link_libraries(salamesh PRIVATE ${OPENGL_LIBS})
-# target_link_libraries(salamesh PUBLIC ${LUA_LIBRARIES})
 
 if (NOT WIN32)
 target_link_libraries(salamesh PRIVATE m)
