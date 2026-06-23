@@ -1,8 +1,8 @@
 #include "um_bindings.h"
 
 #include <filesystem>
-#include "../core/utils/opengl_helper.h"
-#include "../core/helpers.h"
+#include "opengl_helper.h"
+#include "helpers.h"
 #include <ultimaille/all.h>
 
 using namespace UM;

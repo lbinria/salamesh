@@ -1,6 +1,6 @@
 #include "scene_node.h"
 
-#include "shaders/layer_params.h"
+#include "layer_params.h"
 
 std::tuple<glm::vec3, glm::vec3> SceneNode::bbox() const {
 	auto [min, max] = _geometry->bbox();

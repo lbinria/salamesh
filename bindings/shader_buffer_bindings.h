@@ -3,7 +3,7 @@
 #include "lua_binding.h"
 
 #include "../core/app_interface.h"
-#include "../core/shader_buffer.h"
+#include "geometry_buffer.h"
 
 namespace bindings {
 

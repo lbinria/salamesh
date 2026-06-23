@@ -14,7 +14,7 @@
 using json = nlohmann::json;
 
 #include "mesh_renderer.h"
-#include "../data/element_type.h"
+#include "element_type.h"
 using namespace UM;
 
 #include "material_params.h"

@@ -7,7 +7,7 @@
 #include "shaders/halfedge_shader.h"
 #include "shaders/line_shader.h"
 
-#include "utils/opengl_helper.h"
+#include "opengl_helper.h"
 
 void Scene::init() {
 	// Register model types

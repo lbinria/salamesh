@@ -3,10 +3,18 @@
 #include <ultimaille/all.h>
 using namespace UM;
 
-#include "../data/attribute.h"
+#include "attribute.h"
 #include <optional>
 
 struct Geometry {
+
+	Geometry() = default;
+	// Remove copy constructors
+	Geometry(const Geometry&) = delete;
+	Geometry& operator=(const Geometry&) = delete;
+	// Allow moves
+	Geometry(Geometry&&) = default;
+	Geometry& operator=(Geometry&&) = default;
 
 	virtual bool save() = 0;
 	virtual bool saveAs(const std::string filename) = 0;
@@ -32,7 +40,6 @@ struct Geometry {
 	}
 
 	void updateDone() {
-		std::cout << "UPDATE DONE" << std::endl;
 		_dirty = false;
 	}
 
@@ -415,87 +422,7 @@ struct PolyLineGeometry : public MeshGeometry {
 
 };
 
-struct LinesGeometry : public Geometry {
 
-	struct Line {
-		glm::vec3 a;
-		glm::vec3 b;
-		glm::vec3 color;
-	};
-
-	bool save() override {
-		throw std::runtime_error("`save` is not implemented on `LineGeometry`");
-	}
-
-	bool saveAs(const std::string filename) override {
-		throw std::runtime_error("`saveAs` is not implemented on `LineGeometry`");
-	}
-
-	int nverts() const override {
-		return _lines.size() * 2;
-	} 
-	
-	int nfacets() const override {
-		return 0;
-	}
-
-	int ncells() const override {
-		return 0;
-	}
-
-	int ncorners() const override {
-		return 0;
-	}
-
-	int nhalfedges() const override {
-		return _lines.size();
-	}
-
-	long pickEdge(glm::vec3 p0, int f) override {
-		return -1;
-	}
-
-	// Remove copy constructors, allow moves
-	LinesGeometry() = default;
-	LinesGeometry(const LinesGeometry&) = delete;
-	LinesGeometry(LinesGeometry&&) = default;
-	LinesGeometry& operator=(const LinesGeometry&) = delete;
-	LinesGeometry& operator=(LinesGeometry&&) = default;
-
-	std::tuple<glm::vec3, glm::vec3> bbox() override {
-		glm::vec3 min(FLT_MAX);
-		glm::vec3 max(-FLT_MAX);
-
-		for (auto &l : _lines) {
-			min = glm::min(glm::min(min, l.a), l.b);
-			max = glm::max(glm::max(max, l.a), l.b);
-		}
-
-		return {min, max};
-	}
-
-	void clearLines() {
-		_lines.clear();
-	}
-
-	// TODO generate guid for line
-	void addLine(Line line) {
-		_lines.push_back(line);
-	}
-
-	void addLines(std::vector<Line> allLines) {
-		_lines.insert(_lines.end(), allLines.begin(), allLines.end());
-	}
-
-	const std::vector<Line> getLines() const {
-		return _lines;
-	}
-
-	private:
-
-	std::vector<Line> _lines;
-
-};
 
 // For volume
 // long pickEdge(glm::vec3 p0, int c) override {

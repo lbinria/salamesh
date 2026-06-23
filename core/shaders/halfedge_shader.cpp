@@ -1,6 +1,6 @@
 #include "halfedge_shader.h"
-#include "../../core/utils/opengl_helper.h"
-#include "../helpers.h"
+#include "opengl_helper.h"
+#include "helpers.h"
 #include "layer_params.h"
 #include "edge_style_params.h"
 #include "light_params.h"

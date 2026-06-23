@@ -1,10 +1,10 @@
 #pragma once
 
-#include "../data/element_type.h"
-#include "../data/layer.h"
+#include "element_type.h"
+#include "layer.h"
 
-#include "../shader.h"
-#include "../data/attribute.h"
+#include "shader.h"
+#include "attribute.h"
 
 #include "material_params.h"
 
@@ -13,11 +13,11 @@
 #include "../../include/json.hpp"
 using json = nlohmann::json;
 
-#include "../helpers.h"
+#include "helpers.h"
 
-#include "../shader_buffer.h"
-#include "../material.h"
-#include "../geometry/geometry.h"
+#include "geometry_buffer.h"
+#include "material.h"
+#include "geometry.h"
 
 struct ShaderBase {
 

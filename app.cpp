@@ -1,12 +1,12 @@
 #include "app.h"
 
-#include "core/utils/opengl_helper.h"
+#include "opengl_helper.h"
 
-#include "core/cameras/trackball_camera.h"
-#include "core/cameras/descent_camera.h"
-#include "core/shaders/line_shader.h"
+#include "trackball_camera.h"
+#include "descent_camera.h"
+#include "shaders/line_shader.h"
 
-#include "core/utils/logger.h"
+#include "logger.h"
 #include "helpers/imgui_theme_manager.h"
 #include "helpers/imgui_stack_state.h"
 

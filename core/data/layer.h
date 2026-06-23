@@ -1,6 +1,6 @@
 #pragma once 
 #include <string>
-#include "data/element_type.h"
+#include "element_type.h"
 
 enum ColormapLayer {
 	COLORMAP_LAYER_0 = 0,

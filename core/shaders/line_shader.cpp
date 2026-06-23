@@ -1,11 +1,12 @@
 #include "line_shader.h"
-#include "../helpers.h"
-#include "../../core/utils/opengl_helper.h"
+#include "helpers.h"
+#include "opengl_helper.h"
 #include "material_params.h"
 #include "layer_params.h"
 #include "point_style_params.h"
 #include "light_params.h"
 #include "clipping_params.h"
+#include "lines_geometry.h"
 
 bool LineShader::isCompatible(Geometry &geometry) {
 	auto lineGeometry = dynamic_cast<LinesGeometry*>(&geometry);

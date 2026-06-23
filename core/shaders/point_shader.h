@@ -10,7 +10,7 @@ using json = nlohmann::json;
 
 #include "shader_base.h"
 
-#include "../shader.h"
+#include "../shaders/shader.h"
 
 using namespace UM;
 

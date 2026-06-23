@@ -11,8 +11,8 @@
 #include "../../include/glm/gtc/type_ptr.hpp"
 
 #include "surface_shader.h"
-#include "../data/element_type.h"
-#include "../shader.h"
+#include "element_type.h"
+#include "../shaders/shader.h"
 
 using namespace UM;
 

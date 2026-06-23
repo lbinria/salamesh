@@ -2,10 +2,10 @@
 #include "../include/glm/glm.hpp"
 #include "../include/glm/gtc/matrix_transform.hpp"
 
-#include "../include/json.hpp"
+#include "../../include/json.hpp"
 using json = nlohmann::json;
 
-#include "../helpers.h"
+#include "helpers.h"
 
 #include <string>
 #include <algorithm>

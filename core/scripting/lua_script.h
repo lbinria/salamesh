@@ -8,7 +8,7 @@
 #include "script.h"
 #include "input_states.h"
 
-#include "utils/logger.h"
+#include "logger.h"
 
 #include "../bindings/lua_binding.h"
 #include "../bindings/um_bindings.h"

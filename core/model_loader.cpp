@@ -1,8 +1,6 @@
-#include "scene.h"
+#include "../scene.h"
 #include "model_loader.h"
-#include "../include/glm/glm.hpp"
-#include "../include/glm/gtc/matrix_transform.hpp"
-#include "../include/glm/gtc/type_ptr.hpp"
+#include "lines_geometry.h"
 
 std::shared_ptr<SceneNode> ModelLoader::load(const std::string filename, const std::string name) {
 

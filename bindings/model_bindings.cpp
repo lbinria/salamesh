@@ -1,7 +1,7 @@
 #include "model_bindings.h"
 
 #include "../core/app_interface.h"
-#include "../core/data/attribute.h"
+#include "attribute.h"
 
 namespace bindings {
 

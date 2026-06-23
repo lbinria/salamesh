@@ -1,6 +1,6 @@
 #pragma once
-#include "shader.h"
-#include "shaders/material_params.h"
+#include "../shaders/shader.h"
+#include "material_params.h"
 
 #include <ultimaille/all.h>
 using namespace UM;
@@ -36,6 +36,7 @@ struct GeometryBuffer {
 		return _shader;
 	}
 
+	// Texture Buffer Object (like a SSBO array of data)
 	struct TBO {
 		std::string name;
 		unsigned int texUnit;

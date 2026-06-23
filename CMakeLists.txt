@@ -134,6 +134,8 @@ file(GLOB SOURCES
   include/stb_include.cpp 
 )
 
+
+
 # Add the library
 add_library(salamesh_core SHARED
   # some include files to build with the executable
@@ -165,6 +167,25 @@ target_link_libraries(salamesh_core PUBLIC
     ${OPENGL_LIBS}
     $<$<BOOL:${OpenMP_CXX_FOUND}>:OpenMP::OpenMP_CXX>
     imgui
+)
+
+add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/core/cameras)
+add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/core/geometry)
+add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/core/materials)
+add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/core/scripting)
+add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/core/data)
+add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/core/utils)
+# add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/core/io)
+# Link libraries to main executable
+target_link_libraries(salamesh_core
+  PUBLIC
+      cameras
+      geometry
+      materials
+      scripting
+      data
+      utils
+      # io
 )
 
 if (NOT WIN32)

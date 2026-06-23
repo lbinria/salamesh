@@ -3,7 +3,7 @@
 #include "lua_binding.h"
 
 #include "../core/app_interface.h"
-#include "../core/data/colormap.h"
+#include "colormap.h"
 
 namespace bindings {
 

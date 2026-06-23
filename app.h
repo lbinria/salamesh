@@ -35,18 +35,18 @@
 #include <cmath>
 
 #include "scene.h"
-#include "core/shader.h"
+#include "shaders/shader.h"
 
 
 #include "core/render_surface.h"
 
-#include "core/cameras/camera.h"
-#include "core/cameras/camera_collection.h"
+#include "camera.h"
+#include "camera_collection.h"
 
 
-#include "core/lua_script.h"
+#include "lua_script.h"
 
-#include "core/shaders/line_shader.h"
+#include "shaders/line_shader.h"
 
 #include "core/navigation_path.h"
 

@@ -1,20 +1,20 @@
 #pragma once
 
-#include "data/colormap.h"
+#include "colormap.h"
 #include "input_states.h"
 
 #include "render_surface.h"
 
-#include "cameras/camera.h"
-#include "cameras/trackball_camera.h"
-#include "cameras/descent_camera.h"
-#include "cameras/camera_collection.h"
+#include "camera.h"
+#include "trackball_camera.h"
+#include "descent_camera.h"
+#include "camera_collection.h"
 
 
 #include "shaders/shader_base.h"
 
 #include "scene_node.h"
-#include "shaders/point_style_params.h" // TODO remove test
+#include "point_style_params.h" // TODO remove test
 #include "model_loader.h"// TODO remove test
 
 

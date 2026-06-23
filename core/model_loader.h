@@ -1,5 +1,5 @@
 #pragma once 
-#include "scene_node.h"
+#include "../scene_node.h"
 
 #include <ultimaille/all.h>
 using namespace UM;
@@ -12,11 +12,11 @@ struct ModelLoader {
 
 	ModelLoader(Scene &scene) : _scene(scene) {}
 
-	// // Remove copy constructors, allow moves
-	// ModelLoader(const ModelLoader&) = delete;
-	// ModelLoader& operator=(const ModelLoader&) = delete;
-	// ModelLoader(ModelLoader&&) = default;
-	// ModelLoader& operator=(ModelLoader&&) = default;
+	// Remove copy constructors, allow moves
+	ModelLoader(const ModelLoader&) = delete;
+	ModelLoader& operator=(const ModelLoader&) = delete;
+	ModelLoader(ModelLoader&&) = default;
+	ModelLoader& operator=(ModelLoader&&) = default;
 
 
 	std::shared_ptr<SceneNode> load(const std::string filename, const std::string name);

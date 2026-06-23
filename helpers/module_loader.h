@@ -12,8 +12,8 @@
 #endif
 
 #include "../core/app_interface.h"
-#include "../core/script.h"
-#include "../core/module.h"
+#include "script.h"
+#include "module.h"
 #include "../core/shaders/renderer_info.h"
 
 #define SOL_ALL_SAFETIES_ON 1

@@ -1,5 +1,5 @@
 #pragma once
-#include "shaders/material_params.h"
+#include "material_params.h"
 
 #include <map>
 #include <memory>

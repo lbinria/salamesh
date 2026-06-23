@@ -2,14 +2,14 @@
 
 #include "scene.h"
 #include "render_surface.h"
-#include "data/image.h"
-#include "data/snapshot.h"
+#include "image.h"
+#include "snapshot.h"
 #include "navigation_path.h"
 
 #include "input_states.h"
-#include "data/element_type.h"
-#include "cameras/camera.h"
-#include "cameras/camera_collection.h"
+#include "element_type.h"
+#include "camera.h"
+#include "camera_collection.h"
 #include <string>
 
 

@@ -1,8 +1,8 @@
 #pragma once
 #include "material_params.h"
-#include "../data/colormap.h"
-#include "../data/layer.h"
-#include "../utils/opengl_helper.h"
+#include "colormap.h"
+#include "layer.h"
+#include "opengl_helper.h"
 
 struct LayersParams : MaterialParams {
 
