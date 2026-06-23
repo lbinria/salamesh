@@ -51,6 +51,14 @@ struct SceneNode : std::enable_shared_from_this<SceneNode> {
 		return *static_cast<TGeometry*>(_geometry.get());
 	}
 
+	void requestUpdate() {
+		if (_geometry)
+			_geometry->requestUpdate();
+
+		for (auto &c : _children)
+			c->requestUpdate();
+	}
+
 	bool addShaderPass(ShaderBase &shader);
 
 	bool hasMaterial(const std::string name) const {
@@ -129,8 +137,6 @@ struct SceneNode : std::enable_shared_from_this<SceneNode> {
 	// void updateLayer(Layer layer, ElementKind kind);
 	// void resetLayer(ElementKind kind, Layer layer);
 	
-
-
 	glm::vec3 position{0,0,0};
 
 	private:

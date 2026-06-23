@@ -7,6 +7,7 @@
 struct Material {
 
 	Material() = default;
+	
 	Material(std::map<std::string, std::shared_ptr<MaterialParams>> &params) : 
 		_params(std::move(params)) {}
 
