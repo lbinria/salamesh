@@ -4,7 +4,7 @@
 
 #include <chrono>
 #include <vector>
-#include "../include/glm/glm.hpp"
+#include "glm/glm.hpp"
 
 struct InputState {
 

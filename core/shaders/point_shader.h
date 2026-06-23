@@ -3,7 +3,7 @@
 #include <vector>
 #include <optional>
 
-#include "../include/json.hpp"
+#include "json.hpp"
 using json = nlohmann::json;
 
 #include <ultimaille/all.h>

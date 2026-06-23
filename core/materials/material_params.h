@@ -1,9 +1,9 @@
 #pragma once
 #include "../shaders/shader.h"
 
-#include "../../include/glm/glm.hpp"
+#include "glm/glm.hpp"
 
-#include "../../include/json.hpp"
+#include "json.hpp"
 using json = nlohmann::json;
 
 #include <variant>

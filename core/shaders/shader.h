@@ -13,7 +13,7 @@
 #include <sstream>
 #include <iostream>
 
-#include "../include/glm/glm.hpp"
+#include "glm/glm.hpp"
 #include "../include/glm/gtc/type_ptr.hpp"
 
 struct Shader {

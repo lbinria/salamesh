@@ -6,10 +6,10 @@
 #include <vector>
 #include <ultimaille/all.h>
 
-#include "../../include/json.hpp"
+#include "json.hpp"
 using json = nlohmann::json;
 
-#include "../../include/glm/glm.hpp"
+#include "glm/glm.hpp"
 
 using namespace UM;
 

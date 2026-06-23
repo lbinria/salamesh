@@ -6,11 +6,11 @@
 
 #include <ultimaille/all.h>
 
-#include "../../include/glm/glm.hpp"
-#include "../../include/glm/gtc/matrix_transform.hpp"
-#include "../../include/glm/gtc/type_ptr.hpp"
+#include "glm/glm.hpp"
+#include "glm/gtc/matrix_transform.hpp"
+#include "glm/gtc/type_ptr.hpp"
 
-#include "../include/json.hpp"
+#include "json.hpp"
 using json = nlohmann::json;
 
 #include "mesh_renderer.h"

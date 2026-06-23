@@ -45,6 +45,8 @@ ELSE()
 	)
 ENDIF(WIN32)
 
+set(GLM_INCLUDE_DIR "include")
+include_directories(${GLM_INCLUDE_DIR})
 
 # ULTIMAILLE
 
@@ -114,8 +116,9 @@ target_link_libraries(imgui PRIVATE glfw ${OPENGL_LIBS})
 
 
 set(JSON_SOURCES
-    include/json.hpp
+    include/json/json.hpp
 )
+include_directories("include/json")
 
 add_subdirectory(include/ImGuiFileDialog-0.6.7)
 get_target_property(_IFD_INCS ImGuiFileDialog INTERFACE_INCLUDE_DIRECTORIES)

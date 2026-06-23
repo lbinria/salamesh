@@ -8,9 +8,9 @@
 
 #include "material_params.h"
 
-#include "../../include/glm/glm.hpp"
+#include "glm/glm.hpp"
 
-#include "../../include/json.hpp"
+#include "json.hpp"
 using json = nlohmann::json;
 
 #include "helpers.h"

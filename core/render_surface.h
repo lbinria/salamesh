@@ -2,7 +2,7 @@
 #include "camera.h"
 #include "shaders/shader.h"
 
-#include "../include/glm/glm.hpp"
+#include "glm/glm.hpp"
 #include <memory>
 
 struct RenderSurface {

@@ -1,8 +1,8 @@
 #pragma once
-#include "../include/glm/glm.hpp"
-#include "../include/glm/gtc/matrix_transform.hpp"
+#include "glm/glm.hpp"
+#include "glm/gtc/matrix_transform.hpp"
 
-#include "../../include/json.hpp"
+#include "json.hpp"
 using json = nlohmann::json;
 
 #include "helpers.h"

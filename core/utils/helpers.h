@@ -1,7 +1,7 @@
 #pragma once
 
 #include <ultimaille/all.h>
-#include "../include/glm/glm.hpp"
+#include "glm/glm.hpp"
 #include <string>
 #include <cctype>
 
