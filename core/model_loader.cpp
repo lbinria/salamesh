@@ -58,3 +58,51 @@ std::shared_ptr<SceneNode> ModelLoader::load(const std::string filename, const s
 
 	return node;
 }
+
+bool ModelLoader::loadTriangles(const std::string &filename, SceneNode &node) {
+	auto &geometry = node.createGeometry<TrianglesGeometry>();
+
+	geometry._attributes = read_by_extension(filename, geometry._m);
+	if (geometry._m.nfacets() <= 0)
+		return false;
+
+	geometry.path = filename;
+
+	return true;
+}
+
+bool ModelLoader::loadQuads(const std::string &filename, SceneNode &node) {
+	auto &geometry = node.createGeometry<QuadsGeometry>();
+
+	geometry._attributes = read_by_extension(filename, geometry._m);
+	if (geometry._m.nfacets() <= 0)
+		return false;
+
+	geometry.path = filename;
+
+	return true;
+}
+
+bool ModelLoader::loadPolygons(const std::string &filename, SceneNode &node) {
+	auto &geometry = node.createGeometry<PolygonsGeometry>();
+
+	geometry._attributes = read_by_extension(filename, geometry._m);
+	if (geometry._m.nfacets() <= 0)
+		return false;
+
+	geometry.path = filename;
+
+	return true;
+}
+
+bool ModelLoader::loadPolyLine(const std::string &filename, SceneNode &node) {
+	auto &geometry = node.createGeometry<PolyLineGeometry>();
+
+	geometry._attributes = read_by_extension(filename, geometry._m);
+	if (geometry._m.nedges() <= 0)
+		return false;
+
+	geometry.path = filename;
+
+	return true;
+}

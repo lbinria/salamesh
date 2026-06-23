@@ -2,6 +2,54 @@
 
 #include "shaders/layer_params.h"
 
+std::tuple<glm::vec3, glm::vec3> SceneNode::bbox() const {
+	auto [min, max] = _geometry->bbox();
+
+	for (auto child : _children) {
+		auto [childMin, childMax] = child->bbox();
+		min = glm::min(min, childMin);
+		max = glm::max(max, childMax);
+	}
+
+	return {min, max};
+}
+
+bool SceneNode::addShaderPass(ShaderBase &shader) {
+	if (_geometryBuffer.contains(shader.getName()))
+		return false;
+	
+	auto geometryBuffer = shader.createShaderBuffer();
+	_geometryBuffer.emplace(shader.getName(), std::move(geometryBuffer));
+	
+	auto material = shader.createMaterial();
+	_materials.emplace(shader.getName(), std::move(material));
+
+	return true;
+}
+
+std::vector<std::shared_ptr<SceneNode>> SceneNode::findChildrenRecursive() {
+	std::vector<std::shared_ptr<SceneNode>> result;
+	
+	// Add all direct children
+	for (auto& child : _children) {
+		result.push_back(child);
+		
+		// Recursively add all descendants
+		auto descendants = child->findChildrenRecursive();
+		result.insert(result.end(), descendants.begin(), descendants.end());
+	}
+	
+	return result;
+}
+
+glm::vec3 SceneNode::getWorldPosition() const {
+	if (auto p = _parent.lock()) {
+		return p->getWorldPosition() + position;
+	} else {
+		return position;
+	}
+}
+
 std::optional<Colormap> SceneNode::getColormap() {
 		
 	for (auto &[_, material] : getMaterials()) {
