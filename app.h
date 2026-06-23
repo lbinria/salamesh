@@ -27,9 +27,9 @@
 #include "glm/gtc/type_ptr.hpp"
 
 
-#include "include/stb_image.h"
-#include "include/stb_image_resize2.h"
-#include "include/stb_image_write.h"
+#include "stb_image.h"
+#include "stb_image_resize2.h"
+#include "stb_image_write.h"
 
 #include <iostream>
 #include <cmath>

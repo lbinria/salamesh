@@ -1,7 +1,7 @@
 #pragma once
 
-#include "../include/stb_image.h"
-#include "../include/stb_image_write.h"
+#include "stb_image.h"
+#include "stb_image_write.h"
 
 #ifdef _WIN32
 #include "../include/glew/include/GL/glew.h"
