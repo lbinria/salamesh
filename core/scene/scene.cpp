@@ -2,7 +2,7 @@
 #include "../app_interface.h"
 
 #include "point_shader.h"
-#include "tri_shader.h"
+#include "surface_shader.h"
 #include "poly_shader.h"
 #include "halfedge_shader.h"
 #include "line_shader.h"
@@ -38,7 +38,7 @@ void Scene::init() {
 	getDefaultRenderSurface().setCamera(cameras["default"]);
 
 	auto pointsShader = std::make_unique<PointShader>("points");
-	auto trianglesShader = std::make_unique<TriShader>("mesh");
+	auto trianglesShader = std::make_unique<SurfaceShader>("mesh");
 	auto polygonsShader = std::make_unique<PolyShader>("mesh");
 	auto halfedgesShader = std::make_unique<HalfedgeShader>("halfedges");
 	auto lineShader = std::make_unique<LineShader>("line_shader");
