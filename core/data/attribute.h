@@ -2,6 +2,7 @@
 #include "element_type.h"
 
 #include <ultimaille/all.h>
+using namespace UM;
 
 #include <vector>
 #include <string>

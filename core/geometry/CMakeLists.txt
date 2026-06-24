@@ -7,5 +7,4 @@ target_include_directories(geometry
         ${CMAKE_CURRENT_SOURCE_DIR}
 )
 
-# Optional: Link external libraries if needed
-# target_link_libraries(materials PUBLIC some_library)
+target_link_libraries(geometry PUBLIC data nlohmann_json utils)

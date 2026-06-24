@@ -203,11 +203,38 @@ void SceneNode::loadState(json &j, const std::string filename) {
 }
 
 void SceneNode::saveState(json &j, const std::string filename) {
-	// j["name"] = _name;
-	// j["visible"] = _visible;
-	// j["selectedAttribute"] = _selectedAttribute;
+	j["name"] = _name;
+	j["visible"] = _visible;
 
-	// j["geometry"] = json::object();
-	// _geometry->saveState(j["geometry"], filename);
+	j["position"] = json::array({position.x, position.y, position.z});
+
+	j["selected_attribute"] = _selectedAttribute;
+
+	auto jAttrNameByLayer = json::object();
+	for (auto &[k, attrName] : _attrNameByLayerAndKind) {
+		auto [layer, kind] = k;
+		std::string compositeKey = 
+			std::to_string(static_cast<int>(layer)) + "_" + 
+			std::to_string(static_cast<int>(kind));
+
+		jAttrNameByLayer[compositeKey] = attrName;
+	}
+
+	j["attr_name_by_layer"] = jAttrNameByLayer;
+
+	j["geometry"] = json::object();
+	_geometry->saveState(j["geometry"], filename);
+
+	auto jShaderPasses = json::array();
+	for (auto &[materialName, _] : _materials) {
+		jShaderPasses.push_back(materialName);
+	}
+	j["shader_passes"] = jShaderPasses;
+
+	auto jMaterials = json::object();
+	for (auto &[materialName, material] : _materials) {
+		material.saveState(jMaterials[materialName]);
+	}
+	j["materials"] = jMaterials;
 
 }

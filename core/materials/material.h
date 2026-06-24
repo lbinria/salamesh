@@ -37,6 +37,8 @@ struct Material {
 		_visible = visible;
 	}
 
+	void saveState(json &j);
+
 	private:
 	std::map<std::string, std::shared_ptr<MaterialParams>> _params;
 	bool _visible = true;

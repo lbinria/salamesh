@@ -180,7 +180,7 @@ void Scene::render(std::shared_ptr<SceneNode> node, std::unique_ptr<ShaderBase>&
 
 	// TODO: maybe we can delay update shader buffer when material is not visible
 	if (node->getGeometry().shouldUpdate()) {
-		// Update current shader buffers for given geometry
+		// Update current geometry buffer for given geometry
 		shader->update(geometryBuffer, node->getGeometry());
 		// Update layers (only activated layers) according to new geometry
 		node->updateLayers();

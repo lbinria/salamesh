@@ -6,6 +6,12 @@ using namespace UM;
 #include "attribute.h"
 #include <optional>
 
+#include "json.hpp"
+using json = nlohmann::json;
+
+#include "glm/glm.hpp"
+#include "helpers.h"
+
 struct Geometry {
 
 	Geometry() = default;
@@ -18,6 +24,8 @@ struct Geometry {
 
 	virtual bool save() = 0;
 	virtual bool saveAs(const std::string filename) = 0;
+
+	void saveState(json &j, const std::string filename);
 
 	virtual std::tuple<glm::vec3, glm::vec3> bbox() = 0;
 
@@ -59,6 +67,9 @@ struct Geometry {
 	virtual int nhalfedges() const = 0;
 
 	virtual long pickEdge(glm::vec3 p0, int c) = 0;
+
+	// TODO set private (pass in constructor)
+	std::string path = "";
 
 	private:
 	bool _dirty = true;
@@ -114,7 +125,6 @@ struct MeshGeometry : public Geometry {
 		return std::nullopt;
 	}
 
-	std::string path = "";
 
 	protected:
 
