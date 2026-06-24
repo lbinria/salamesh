@@ -1,9 +1,9 @@
 #pragma once
 
 #include "colormap.h"
-#include "io/input_states.h"
+#include "input_states.h"
 
-#include "render_surface.h"
+#include "../render_surface.h"
 
 #include "camera.h"
 #include "trackball_camera.h"
@@ -11,11 +11,11 @@
 #include "camera_collection.h"
 
 
-#include "shaders/shader_base.h"
+#include "shader_base.h"
 
-#include "scene/scene_node.h"
+#include "scene_node.h"
 #include "point_style_params.h" // TODO remove test
-#include "model_loader.h"// TODO remove test
+#include "../model_loader.h"// TODO remove test
 
 
 #include <map>

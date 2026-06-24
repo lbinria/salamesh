@@ -3,7 +3,7 @@
 #include "lua_binding.h"
 
 #include "../core/app_interface.h"
-#include "../core/scene.h"
+#include "scene.h"
 
 namespace bindings {
 

@@ -185,13 +185,13 @@ target_link_libraries(salamesh_core PUBLIC
 # Local libs
 add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/core/cameras)
 add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/core/geometry)
-# add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/core/shaders)
+add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/core/shaders)
 add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/core/materials)
 add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/core/scripting)
 add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/core/data)
 add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/core/utils)
 add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/core/io)
-# add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/core/scene)
+add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/core/scene)
 
 add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/include/json)
 add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/include/stb_image)
@@ -207,8 +207,8 @@ target_link_libraries(salamesh_core
       data
       utils
       io
-      # scene
-      # shaders
+      scene
+      shaders
 
       nlohmann_json
       stb_image

@@ -1,11 +1,11 @@
 #include "scene.h"
-#include "app_interface.h"
+#include "../app_interface.h"
 
-#include "shaders/point_shader.h"
-#include "shaders/tri_shader.h"
-#include "shaders/poly_shader.h"
-#include "shaders/halfedge_shader.h"
-#include "shaders/line_shader.h"
+#include "point_shader.h"
+#include "tri_shader.h"
+#include "poly_shader.h"
+#include "halfedge_shader.h"
+#include "line_shader.h"
 
 #include "opengl_helper.h"
 
