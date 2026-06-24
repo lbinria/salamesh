@@ -38,6 +38,10 @@ struct SceneNode : std::enable_shared_from_this<SceneNode> {
 		maxIndex = 0;
 	}
 
+	void loadState(json &j, const std::string filename);
+	void saveState(json &j, const std::string filename);
+
+
 	std::tuple<glm::vec3, glm::vec3> bbox() const;
 
 	// TODO warning geometry can be null

@@ -269,22 +269,21 @@ void Scene::loadState(json &j, const std::string filename) {
 void Scene::saveState(json &j, const std::string filename) {
 	std::filesystem::path p = filename;
 
-	// j["selected_model"] = selectedModel;
+	j["selected_node"] = selectedNode;
 	j["selected_camera"] = selectedCamera;
-	j["models"] = json::object();
+	j["nodes"] = json::object();
 	j["cameras"] = json::object();
 
-	// // Save models states
-	// for (auto &[k, m] : models) {
-	// 	m->saveState(p.parent_path().string(), j["models"][k]);
-	// }
+	// Save nodes states
+	for (auto &[k, n] : _nodes) {
+		n->saveState(j["nodes"][k], p.parent_path().string());
+	}
 
 	// Save cameras states
 	for (auto &[k, c] : cameras) {
 		c->saveState(j["cameras"][k]);
 	}
 
-	// TODO important save renderer states
 	// TODO important save colormaps states
 }
 

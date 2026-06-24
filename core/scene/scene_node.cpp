@@ -197,3 +197,17 @@ void SceneNode::unsetLayer(Layer layer, ElementKind kind, bool reset) {
 	}
 
 }
+
+void SceneNode::loadState(json &j, const std::string filename) {
+
+}
+
+void SceneNode::saveState(json &j, const std::string filename) {
+	// j["name"] = _name;
+	// j["visible"] = _visible;
+	// j["selectedAttribute"] = _selectedAttribute;
+
+	// j["geometry"] = json::object();
+	// _geometry->saveState(j["geometry"], filename);
+
+}
