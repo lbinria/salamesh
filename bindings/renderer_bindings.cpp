@@ -1,7 +1,6 @@
 #include "renderer_bindings.h"
 
 #include "../core/shaders/shader_base.h"
-#include "../core/shaders/mesh_renderer.h"
 #include "../core/shaders/point_shader.h"
 #include "../core/shaders/halfedge_shader.h"
 #include "../core/shaders/line_shader.h"
@@ -38,12 +37,6 @@ namespace bindings {
 			return sol::nil;
 		});
 
-
-		sol::usertype<MeshMaterial> meshRenderer_t = lua.new_usertype<MeshMaterial>(
-			"MeshMaterial",
-			sol::base_classes, 
-			sol::bases<ShaderBase>()
-		);
 
 
 		sol::usertype<PointShader> pointSetRenderer_t = lua.new_usertype<PointShader>(

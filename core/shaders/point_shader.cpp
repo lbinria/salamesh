@@ -22,7 +22,7 @@ GeometryBuffer PointShader::createGeometryBuffer() {
 	glBindBuffer(GL_ARRAY_BUFFER, vbo);
 	// setup VBO
 	sl::createVBOInteger(shader.id, "vertexIndex", sizeof(Vertex), (void*)offsetof(Vertex, vertexIndex));
-	sl::createVBOVec3(shader.id, "aPos", sizeof(Vertex), (void*)offsetof(Vertex, position));
+	sl::createVBOVec3(shader.id, "p", sizeof(Vertex), (void*)offsetof(Vertex, position));
 	sl::createVBOFloat(shader.id, "sizeScale", sizeof(Vertex), (void*)offsetof(Vertex, size));
 
 	return GeometryBuffer(shader, vao, vbo);

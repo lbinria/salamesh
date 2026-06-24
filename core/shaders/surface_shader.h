@@ -13,13 +13,13 @@
 #include "json.hpp"
 using json = nlohmann::json;
 
-#include "mesh_renderer.h"
+#include "shader_base.h"
 #include "element_type.h"
 using namespace UM;
 
 #include "material_params.h"
 
-struct SurfaceShader : public MeshMaterial {
+struct SurfaceShader : public ShaderBase {
 	
 	struct Vertex {
 		// int vertexIndex;
@@ -32,12 +32,12 @@ struct SurfaceShader : public MeshMaterial {
 	};
 
 	SurfaceShader(std::string name, Surface &m) : 
-		MeshMaterial(name, Shader(sl::shadersPath("surface.vert"), sl::shadersPath("surface.frag"))),
+		ShaderBase(name, Shader(sl::shadersPath("surface.vert"), sl::shadersPath("surface.frag"))),
 		_m(m)
 		{}
 
 	SurfaceShader(std::string name) : 
-		MeshMaterial(name, Shader(sl::shadersPath("surface.vert"), sl::shadersPath("surface.frag"))),
+		ShaderBase(name, Shader(sl::shadersPath("surface.vert"), sl::shadersPath("surface.frag"))),
 		_m(*new Triangles())
 		{}
 
@@ -61,9 +61,9 @@ struct SurfaceShader : public MeshMaterial {
 	private:
 
 	void doLoadState(json &j) override {
-		MeshMaterial::doLoadState(j);
+		
 	}
 	void doSaveState(json &j) const override {
-		MeshMaterial::doSaveState(j);
+		
 	}
 };

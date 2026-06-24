@@ -14,8 +14,6 @@ in vec3 fragBary;
 in vec3 fragNormal;
 in vec3 fragHeights;
 
-flat in vec3 fragViewDir;
-
 in vec3 fragWorldPos;
 
 uniform bool is_light_enabled;
