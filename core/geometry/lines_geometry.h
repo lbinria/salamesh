@@ -17,6 +17,10 @@ struct LinesGeometry : public Geometry {
 		throw std::runtime_error("`saveAs` is not implemented on `LineGeometry`");
 	}
 
+	bool load(const std::string filename) override {
+		throw std::runtime_error("`load` is not implemented on `LineGeometry`");
+	}
+
 	int nverts() const override {
 		return _lines.size() * 2;
 	} 

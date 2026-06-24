@@ -24,8 +24,10 @@ struct Geometry {
 
 	virtual bool save() = 0;
 	virtual bool saveAs(const std::string filename) = 0;
+	virtual bool load(const std::string filename) = 0;
 
 	void saveState(json &j, const std::string filename);
+	void loadState(json &j, const std::string filename);
 
 	virtual std::tuple<glm::vec3, glm::vec3> bbox() = 0;
 
@@ -236,6 +238,11 @@ struct SurfaceGeometry : public MeshGeometry {
 		return true;
 	}
 
+	bool load(const std::string filename) {
+		_attributes = read_by_extension(filename, _m);
+		return true;
+	}
+
 	int nverts() const override {
 		return _m.nverts();
 	} 
@@ -374,6 +381,11 @@ struct PolyLineGeometry : public MeshGeometry {
 
 		write_by_extension(path, _m, attributes);
 
+		return true;
+	}
+
+	bool load(const std::string filename) {
+		_attributes = read_by_extension(filename, _m);
 		return true;
 	}
 

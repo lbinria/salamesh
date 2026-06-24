@@ -232,25 +232,12 @@ void Scene::render() {
 
 void Scene::loadState(json &j, const std::string filename) {
 	// Load models states
-	// for (auto &[modelName, jModel] : j["models"].items()) {
-	// 	// Concatenate state.json file path with model path
-	// 	// in order to search the mesh file relatively to the state.json file
-	// 	std::string modelRelPath = jModel["path"];
-	// 	auto modelPath = 
-	// 		std::filesystem::path(filename).remove_filename() / 
-	// 		std::filesystem::path(modelRelPath);
-		
-	// 	// Try to load the model mesh
-	// 	if (!loadModel(modelPath.string(), modelName))
-	// 		continue;
-		
-	// 	// Get last added model
-	// 	auto &model = models[modelName];
-	// 	// Load state into last loaded model
-	// 	model->loadState(jModel);
+	for (auto &[nodeName, jNode] : j["nodes"].items()) {
 
-	// 	// TODO! recompute cameras far / near
-	// }
+		auto node = addNode(nodeName);
+		node->loadState(jNode, filename);
+		// TODO! recompute cameras far / near
+	}
 
 	// Load cameras states after model (because loading model will focus on)
 	for (auto &[cameraName, jCamera] : j["cameras"].items()) {
@@ -267,7 +254,6 @@ void Scene::loadState(json &j, const std::string filename) {
 }
 
 void Scene::saveState(json &j, const std::string filename) {
-	std::filesystem::path p = filename;
 
 	j["selected_node"] = selectedNode;
 	j["selected_camera"] = selectedCamera;
@@ -276,7 +262,7 @@ void Scene::saveState(json &j, const std::string filename) {
 
 	// Save nodes states
 	for (auto &[k, n] : _nodes) {
-		n->saveState(j["nodes"][k], p.parent_path().string());
+		n->saveState(j["nodes"][k], filename);
 	}
 
 	// Save cameras states

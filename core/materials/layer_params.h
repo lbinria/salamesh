@@ -50,15 +50,6 @@ struct LayersParams : MaterialParams {
 		shader.setInt("colormap1Buf", 6);
 		shader.setInt("colormap2Buf", 7);
 
-		// glActiveTexture(GL_TEXTURE0 + 0);
-		// glBindTexture(GL_TEXTURE_2D, texColormaps[0]);
-
-		// glActiveTexture(GL_TEXTURE0 + 1);
-		// glBindTexture(GL_TEXTURE_2D, texColormaps[1]);
-
-		// glActiveTexture(GL_TEXTURE0 + 2);
-		// glBindTexture(GL_TEXTURE_2D, texColormaps[2]);
-
 		glActiveTexture(GL_TEXTURE0 + 0);
 		glBindTexture(GL_TEXTURE_2D, colormaps[0].tex);
 
@@ -226,6 +217,7 @@ struct LayersParams : MaterialParams {
 
 		j["hover_color"] = json::array({hoverColor.x, hoverColor.y, hoverColor.z});
 		j["select_color"] = json::array({selectColor.x, selectColor.y, selectColor.z});
+		// j["colormaps"]
 	}
 
 	int nDims[5];

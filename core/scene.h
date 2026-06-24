@@ -143,6 +143,12 @@ struct Scene {
 		return static_cast<int>(_nodes.size());
 	}
 
+	std::shared_ptr<SceneNode> addNode(const std::string name) {
+		auto node = std::make_shared<SceneNode>(name);
+		_nodes.emplace(node->getName(), node);
+		return node;
+	}
+
 	const std::vector<std::shared_ptr<SceneNode>> getNodesAndDescendants() const {
 		std::vector<std::shared_ptr<SceneNode>> result;
 
