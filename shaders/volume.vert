@@ -25,7 +25,6 @@ out float fragVertexIndex;
 flat out int fragFacetIndex;
 flat out int fragCellIndex;
 
-flat out vec3 fragViewDir;
 
 
 out vec3 fragWorldPos;
@@ -56,5 +55,4 @@ void main()
    fragVertexIndex = vertexIndex;
    fragWorldPos = pos;
 
-   fragViewDir = -vec3(view[0][2], view[1][2], view[2][2]);
 }

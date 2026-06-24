@@ -26,8 +26,6 @@ flat out vec3 flatFragHeights;
 
 flat out int fragFacetIndex;
 
-flat out vec3 fragViewDir;
-
 out vec3 fragBarycentric;
 flat out int fragCornerIndex;
 flat out int fragCornerOff;
@@ -110,7 +108,6 @@ void main()
    fragCornerIndex = cornerIndex;
    fragCornerOff = facetIndex * 3;
 
-   fragViewDir = -vec3(view[0][2], view[1][2], view[2][2]);
 
    surfaceType = 0;
 }

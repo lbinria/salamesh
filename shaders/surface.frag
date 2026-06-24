@@ -14,14 +14,11 @@ in vec3 fragNormal;
 in vec3 fragHeights;
 flat in vec3 flatFragHeights;
 
-flat in vec3 fragViewDir;
-
 in vec3 fragWorldPos;
 
 in vec3 fragBarycentric;
 
 uniform bool is_light_enabled;
-uniform bool is_light_follow_view;
 
 uniform float meshSize;
 
@@ -334,10 +331,7 @@ void shading(inout vec3 col) {
     if (is_light_enabled) {
         vec3 dirLight;
 
-        if (is_light_follow_view)
-            dirLight = fragViewDir;
-        else
-            dirLight = vec3(-0.5f, -0.8f, 0.2f);
+        dirLight = vec3(-0.5f, -0.8f, 0.2f);
         
         float diffuse = max((1.f - dot(dirLight, fragNormal)) * .5f + .45f /* ambiant */, 0.f);
         col = col * diffuse;
