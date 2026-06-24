@@ -139,20 +139,12 @@ void Scene::addColormap(const std::string name, const std::string filename) {
 
 	int width, height, nrChannels;
 	
-	Colormap cm{
-		name,
-		0,
-		0,
-		0
-	};
+	Colormap cm{name, 0, 0, 0};
 
-	if(!sl::load_texture_2d(filename, cm.tex, width, height, nrChannels)) {
+	if(!sl::load_texture_2d(filename, cm.tex, cm.width, cm.height, nrChannels)) {
 		std::cerr << "Scene::addColormap: unable to load colormap " << name << " at " << filename << "." << std::endl;
 		return;
 	}
-
-	cm.width = width;
-	cm.height = height;
 
 	colormaps.emplace(name, cm);
 }

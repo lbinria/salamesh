@@ -10,7 +10,7 @@ struct Script {
 		static thread_local unsigned long long counter = 0;
 		static auto now = std::chrono::high_resolution_clock::now().time_since_epoch().count();
 		std::stringstream ss;
-		ss << "component-" << now << "-" << counter++;
+		ss << "script-" << now << "-" << counter++;
 		return ss.str();
 	}
 
