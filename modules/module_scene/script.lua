@@ -1,38 +1,38 @@
 function init()
 	print("Load scene module")
-	print("Number of models: " .. tostring(#app.scene.models))
+	print("Number of nodes: " .. tostring(#app.scene.nodes))
 end
 
-function draw_tree(model, k)
+function draw_tree(node, k)
 	if (imgui.TreeNode(k)) then 
 
-		if (app.scene.selected_model == k) then
+		if (app.scene.selected_node == k) then
 			imgui.TextColored(1, 1, 0, 1, "Selected")
 		end
 
-		local model_pos = model.world_position
+		local node_pos = node.world_position
 
-		local sel_visible, new_visible = imgui.Checkbox("Visible##" .. k .. "_visible", model.visible)
+		local sel_visible, new_visible = imgui.Checkbox("Visible##" .. k .. "_visible", node.visible)
 		if (sel_visible) then 
-			model.visible = new_visible
+			node.visible = new_visible
 		end
 
 
 		imgui.SameLine()
 		if (imgui.SmallButton("View")) then 
-			app.scene.selected_model = k
+			app.scene.selected_node = k
 			-- Set camera position !
-			app.scene.camera:look_at_box(model.bbox)
+			app.scene.current_camera:look_at_box(node.bbox)
 		end
 
-		draw_model_properties(model, k, 0)
+		draw_node_properties(node, k, 0)
 
 		imgui.Separator()
 
 		
-		for _, child in ipairs(app.scene.models) do
-			-- TODO ImGuiTreeNodeFlags_Selected if model selected
-			if (child.parent == model) then 
+		for _, child in ipairs(app.scene.nodes) do
+			-- TODO ImGuiTreeNodeFlags_Selected if node selected
+			if (child.parent == node) then 
 				draw_tree(child, child.name)
 			end
 		end
@@ -45,25 +45,25 @@ local clipping_planes = {"x", "y", "z"}
 local sel_clipping_plane = {}
 local invert_clipping = false
 
--- Selected colormap index by model (node model)
+-- Selected colormap index by node (node node)
 local selected_colormaps = {}
--- Selected attribute index by model (node model)
+-- Selected attribute index by node (node node)
 local selected_attributes = {}
 
-function draw_model_properties(model, k, view)
-	local model_pos = model.world_position
-	local p = model.position
-	-- imgui.Text("world position: (%.4f, %.4f, %.4f)", model_pos.x, model_pos.y, model_pos.z);
+function draw_node_properties(node, k, view)
+	local node_pos = node.world_position
+	local p = node.position
+	-- imgui.Text("world position: (%.4f, %.4f, %.4f)", node_pos.x, node_pos.y, node_pos.z);
 	-- imgui.Text("local position: (%.4f, %.4f, %.4f)", p.x, p.y, p.z);
 	-- TODO using ':' instead of '.' for to_string call... for sending self...
-	imgui.Text("World position: " .. model_pos:to_string());
+	imgui.Text("World position: " .. node_pos:to_string());
 	imgui.Text("Local position: " .. p:to_string());
-	imgui.Text("Center: " .. model.geometry.center:to_string());
-	imgui.Text("Radius: " .. string.format("%.4f", model.geometry.radius));
+	imgui.Text("Center: " .. node.geometry.center:to_string());
+	imgui.Text("Radius: " .. string.format("%.4f", node.geometry.radius));
 
-	-- imgui.Text("Bounding box: " .. model.bbox[1]:to_string());
-	imgui.Text("Number of vertices: " .. tostring(model.geometry.nverts));
-	imgui.Text("Number of facets: " .. tostring(model.geometry.nfacets));
+	-- imgui.Text("Bounding box: " .. node.bbox[1]:to_string());
+	imgui.Text("Number of vertices: " .. tostring(node.geometry.nverts));
+	imgui.Text("Number of facets: " .. tostring(node.geometry.nfacets));
 
 
 	-- if (imgui.CollapsingHeader("Properties##" .. k .. "_properties")) then 
@@ -72,7 +72,7 @@ function draw_model_properties(model, k, view)
 		if (imgui.CollapsingHeader("Light##" .. k .. "_properties_light")) then 
 
 			local light = false
-			for _, material in pairs(model.materials) do
+			for _, material in pairs(node.materials) do
 				if (material:get_params("light")["enabled"]) then 
 					light = true
 				end
@@ -82,9 +82,9 @@ function draw_model_properties(model, k, view)
 
 			if (sel_chk_enable_light) then 
 				print("Enable light: " .. tostring(new_enable_light))
-				-- model.light = new_enable_light
+				-- node.light = new_enable_light
 				
-				for _, material in pairs(model.materials) do
+				for _, material in pairs(node.materials) do
 					material:get_params("light")["enabled"] = new_enable_light
 				end
 
@@ -95,22 +95,22 @@ function draw_model_properties(model, k, view)
 		if (imgui.CollapsingHeader("Clipping##" .. k .. "_properties_clipping")) then 
 
 
-		-- 	local sel_chk_enable_clipping, new_enable_clipping = imgui.Checkbox("Enable clipping", model.clipping)
+		-- 	local sel_chk_enable_clipping, new_enable_clipping = imgui.Checkbox("Enable clipping", node.clipping)
 
 		-- 	if (sel_chk_enable_clipping) then 
 		-- 		print("Enable clipping: " .. tostring(new_enable_clipping))
-		-- 		model.clipping = new_enable_clipping
+		-- 		node.clipping = new_enable_clipping
 		-- 		app.cull = false
 		-- 	end
 
-		-- 	if (imgui.BeginCombo("##Clipping plane mode", model.clipping_mode_strings[model.clipping_mode])) then
-		-- 		for i = 1, #model.clipping_mode_strings do
-		-- 			local is_selected = i == model.clipping_mode
-		-- 			if (imgui.Selectable(model.clipping_mode_strings[i], is_selected)) then
+		-- 	if (imgui.BeginCombo("##Clipping plane mode", node.clipping_mode_strings[node.clipping_mode])) then
+		-- 		for i = 1, #node.clipping_mode_strings do
+		-- 			local is_selected = i == node.clipping_mode
+		-- 			if (imgui.Selectable(node.clipping_mode_strings[i], is_selected)) then
 						
-		-- 				model.clipping_mode = i
+		-- 				node.clipping_mode = i
 
-		-- 				print("Set clipping mode to: " .. tostring(model.clipping_mode))
+		-- 				print("Set clipping mode to: " .. tostring(node.clipping_mode))
 		-- 			end
 		-- 		end
 		-- 		imgui.EndCombo()
@@ -128,65 +128,65 @@ function draw_model_properties(model, k, view)
 		-- 				sel_clipping_plane[k] = i
 
 		-- 				if (i == 1) then
-		-- 					model.clipping_plane_normal = vec3.new(1,0,0)
+		-- 					node.clipping_plane_normal = vec3.new(1,0,0)
 		-- 				elseif (i == 2) then
-		-- 					model.clipping_plane_normal = vec3.new(0,1,0)
+		-- 					node.clipping_plane_normal = vec3.new(0,1,0)
 		-- 				elseif (i == 3) then
-		-- 					model.clipping_plane_normal = vec3.new(0,0,1)
+		-- 					node.clipping_plane_normal = vec3.new(0,0,1)
 		-- 				end
 
-		-- 				print("Set clipping plane normal to: " .. model.clipping_plane_normal:to_string())
+		-- 				print("Set clipping plane normal to: " .. node.clipping_plane_normal:to_string())
 		-- 			end
 		-- 		end
 		-- 		imgui.EndCombo()
 		-- 	end
 
 		-- 	local plane_pos = 0
-		-- 	-- Maybe it exists a better way to get model center from x,y,z than that ugly switch
+		-- 	-- Maybe it exists a better way to get node center from x,y,z than that ugly switch
 		-- 	local center_at = 0;
 		-- 	if (sel_clipping_plane[k] == 1) then
-		-- 		plane_pos = model.clipping_plane_point.x
-		-- 		center_at = model.center.x
+		-- 		plane_pos = node.clipping_plane_point.x
+		-- 		center_at = node.center.x
 		-- 	elseif (sel_clipping_plane[k] == 2) then
-		-- 		plane_pos = model.clipping_plane_point.y
-		-- 		center_at = model.center.y
+		-- 		plane_pos = node.clipping_plane_point.y
+		-- 		center_at = node.center.y
 		-- 	elseif (sel_clipping_plane[k] == 3) then
-		-- 		plane_pos = model.clipping_plane_point.z
-		-- 		center_at = model.center.z
+		-- 		plane_pos = node.clipping_plane_point.z
+		-- 		center_at = node.center.z
 		-- 	end
 
-		-- 	-- 0 -> model.center - model.radius
-		-- 	-- 1 -> model.center + model.radius
-		-- 	local plane_pos_factor = (plane_pos - center_at) / model.radius
+		-- 	-- 0 -> node.center - node.radius
+		-- 	-- 1 -> node.center + node.radius
+		-- 	local plane_pos_factor = (plane_pos - center_at) / node.radius
 
 		-- 	local sel_slider_clipping_plane_point, new_clipping_plane_pos_factor = imgui.SliderFloat("Clipping plane point", plane_pos_factor, -1., 1.)
 		-- 	if (sel_slider_clipping_plane_point) then 
 
-		-- 		-- local new_clipping_plane_pos = model.radius * new_clipping_plane_pos_factor + center_at
-		-- 		local new_clipping_plane_pos = center_at + new_clipping_plane_pos_factor * model.radius
+		-- 		-- local new_clipping_plane_pos = node.radius * new_clipping_plane_pos_factor + center_at
+		-- 		local new_clipping_plane_pos = center_at + new_clipping_plane_pos_factor * node.radius
 
 		-- 		local v 
 		-- 		if (sel_clipping_plane[k] == 1) then
-		-- 			v = vec3.new(new_clipping_plane_pos, model.clipping_plane_point.y, model.clipping_plane_point.z)
+		-- 			v = vec3.new(new_clipping_plane_pos, node.clipping_plane_point.y, node.clipping_plane_point.z)
 		-- 		elseif (sel_clipping_plane[k] == 2) then
-		-- 			v = vec3.new(model.clipping_plane_point.x, new_clipping_plane_pos, model.clipping_plane_point.z)
+		-- 			v = vec3.new(node.clipping_plane_point.x, new_clipping_plane_pos, node.clipping_plane_point.z)
 		-- 		elseif (sel_clipping_plane[k] == 3) then
-		-- 			v = vec3.new(model.clipping_plane_point.x, model.clipping_plane_point.y, new_clipping_plane_pos)
+		-- 			v = vec3.new(node.clipping_plane_point.x, node.clipping_plane_point.y, new_clipping_plane_pos)
 		-- 		end
-		-- 		model.clipping_plane_point = v
+		-- 		node.clipping_plane_point = v
 		-- 	end
 
 		-- 	local sel_invert_clipping, new_invert_clipping = imgui.Checkbox("Invert clipping", invert_clipping)
 		-- 	if (sel_invert_clipping) then 
 		-- 		invert_clipping = new_invert_clipping
-		-- 		model.invert_clipping = invert_clipping
+		-- 		node.invert_clipping = invert_clipping
 		-- 	end
 
 		end
 
 		if (imgui.CollapsingHeader("Style##" .. k .. "_properties_style")) then 
 
-			local mesh_material = model:get_material("mesh")
+			local mesh_material = node:get_material("mesh")
 
 			if mesh_material then
 
@@ -224,7 +224,7 @@ function draw_model_properties(model, k, view)
 
 			end
 
-			local points_material = model:get_material("points")
+			local points_material = node:get_material("points")
 
 			if points_material then
 				local points_style = points_material:get_params("style")
@@ -248,7 +248,7 @@ function draw_model_properties(model, k, view)
 				end
 			end
 
-			local halfedges_material = model:get_material("halfedges")
+			local halfedges_material = node:get_material("halfedges")
 			if halfedges_material then 
 
 				local haldedges_style = halfedges_material:get_params("style")
@@ -298,13 +298,13 @@ function draw_model_properties(model, k, view)
 
 			imgui.Text("Attribute")
 
-			-- Get current model attributes
-			local attributes = model.geometry.attributes
+			-- Get current node attributes
+			local attributes = node.geometry.attributes
 
-			-- Get selected colormap for current model
+			-- Get selected colormap for current node
 			local selected_colormap = "CET-R41"
-			if selected_colormaps[model.name] ~= nil then 
-				selected_colormap = selected_colormaps[model.name]
+			if selected_colormaps[node.name] ~= nil then 
+				selected_colormap = selected_colormaps[node.name]
 			end
 
 			if (#attributes > 0) then
@@ -316,8 +316,8 @@ function draw_model_properties(model, k, view)
 				
 				local selName = "None" 
 				local selected_attribute = 0
-				if selected_attributes[model.name] then 
-					selected_attribute = selected_attributes[model.name]
+				if selected_attributes[node.name] then 
+					selected_attribute = selected_attributes[node.name]
 				end
 
 				if selected_attribute > 0 then 
@@ -330,10 +330,10 @@ function draw_model_properties(model, k, view)
 
 					local is_selected = selected_attribute == 0
 					if (imgui.Selectable("None", is_selected)) then
-						selected_attributes[model.name] = 0
+						selected_attributes[node.name] = 0
 						-- Unset all colormap attribute 
 						for n = 1, #attributes do
-							model:unset_layers(false)
+							node:unset_layers(false)
 						end
 					end
 
@@ -345,12 +345,12 @@ function draw_model_properties(model, k, view)
 						.. " (" .. tostring(attributes[n].dim) .. ")"
 
 						if (imgui.Selectable(label, is_selected)) then
-							selected_attributes[model.name] = n
+							selected_attributes[node.name] = n
 							-- Set attribute & colormap
-							selected_attribute = selected_attributes[model.name]
-							model:unset_layers(false)
-							model:set_layer(Layer.COLORMAP_0, attributes[n].kind, attributes[selected_attribute].name, true)
-							model:set_colormap(app.scene.colormaps[selected_colormap])
+							selected_attribute = selected_attributes[node.name]
+							node:unset_layers(false)
+							node:set_layer(Layer.COLORMAP_0, attributes[n].kind, attributes[selected_attribute].name, true)
+							node:set_colormap(app.scene.colormaps[selected_colormap])
 						end
 					end
 					imgui.EndCombo()
@@ -380,8 +380,8 @@ function draw_model_properties(model, k, view)
 
 					-- Display the item with both text and image
 					if (imgui.Selectable(colormap_name .. "##selectable_colormap_" .. colormap_name, is_selected)) then
-						selected_colormaps[model.name] = colormap_name
-						model:set_colormap(colormap)
+						selected_colormaps[node.name] = colormap_name
+						node:set_colormap(colormap)
 					end
 
 					-- Display the image after the text
@@ -407,94 +407,94 @@ function draw_model_properties(model, k, view)
 
 		-- if (imgui.CollapsingHeader("Style##" .. k .. "_properties_style")) then 
 
-		-- 	if model.mesh then
+		-- 	if node.mesh then
 
-		-- 		local sel_mesh_visible, new_mesh_visible = imgui.Checkbox("Show mesh", model.mesh.visible)
+		-- 		local sel_mesh_visible, new_mesh_visible = imgui.Checkbox("Show mesh", node.mesh.visible)
 		-- 		if (sel_mesh_visible) then 
 		-- 			print("Change mesh visibility: " .. tostring(new_mesh_visible))
-		-- 			model.mesh.visible = new_mesh_visible
+		-- 			node.mesh.visible = new_mesh_visible
 		-- 		end
 
-		-- 		local sel_color, new_color = imgui.ColorEdit3("Color", model.mesh:get_params("style").color)
+		-- 		local sel_color, new_color = imgui.ColorEdit3("Color", node.mesh:get_params("style").color)
 		-- 		if (sel_color) then 
 		-- 			print("Change color: " .. tostring(new_color))
-		-- 			model.mesh:get_params("style").color = new_color
+		-- 			node.mesh:get_params("style").color = new_color
 		-- 		end
 
-		-- 		local sel_slider_mesh_size, new_mesh_size = imgui.SliderFloat("Mesh size", model.mesh:get_params("style").size, 0, 20)
+		-- 		local sel_slider_mesh_size, new_mesh_size = imgui.SliderFloat("Mesh size", node.mesh:get_params("style").size, 0, 20)
 		-- 		if (sel_slider_mesh_size) then 
 		-- 			print("Change mesh size: " .. tostring(new_mesh_size))
-		-- 			model.mesh:get_params("style").size = new_mesh_size
+		-- 			node.mesh:get_params("style").size = new_mesh_size
 		-- 		end
 
-		-- 		local sel_slider_mesh_shrink, new_mesh_shrink = imgui.SliderFloat("Mesh shrink", model.mesh:get_params("style").shrink, 0, 1)
+		-- 		local sel_slider_mesh_shrink, new_mesh_shrink = imgui.SliderFloat("Mesh shrink", node.mesh:get_params("style").shrink, 0, 1)
 		-- 		if (sel_slider_mesh_shrink) then 
 		-- 			print("Change mesh shrink: " .. tostring(new_mesh_shrink))
-		-- 			model.mesh:get_params("style").shrink = new_mesh_shrink
+		-- 			node.mesh:get_params("style").shrink = new_mesh_shrink
 		-- 		end
 
-		-- 		local sel_corner_visible, new_corner_visible = imgui.Checkbox("Show corners", model.mesh:get_params("style").corner_visible)
+		-- 		local sel_corner_visible, new_corner_visible = imgui.Checkbox("Show corners", node.mesh:get_params("style").corner_visible)
 		-- 		if (sel_corner_visible) then 
 		-- 			print("Change corner visibility: " .. tostring(new_corner_visible))
-		-- 			model.mesh:get_params("style").corner_visible = new_corner_visible
+		-- 			node.mesh:get_params("style").corner_visible = new_corner_visible
 		-- 		end
 
 		-- 	end
 
-		-- 	local sel_point_visible, new_point_visible = imgui.Checkbox("Show points", model.points.visible)
+		-- 	local sel_point_visible, new_point_visible = imgui.Checkbox("Show points", node.points.visible)
 		-- 	if (sel_point_visible) then 
 		-- 		print("Change point visibility: " .. tostring(new_point_visible))
-		-- 		model.points.visible = new_point_visible
+		-- 		node.points.visible = new_point_visible
 		-- 	end
 
-		-- 	local sel_point_size, new_point_size = imgui.SliderFloat("Point size", model.points:get_params("style")["size"], 0, 50)
+		-- 	local sel_point_size, new_point_size = imgui.SliderFloat("Point size", node.points:get_params("style")["size"], 0, 50)
 		-- 	if (sel_point_size) then 
 		-- 		print("Change point size: " .. tostring(new_point_size))
-		-- 		model.points:get_params("style")["size"] = new_point_size
+		-- 		node.points:get_params("style")["size"] = new_point_size
 		-- 	end
 
-		-- 	local sel_point_color, new_point_color = imgui.ColorEdit3("Point color", model.points:get_params("style")["color"])
+		-- 	local sel_point_color, new_point_color = imgui.ColorEdit3("Point color", node.points:get_params("style")["color"])
 		-- 	if (sel_point_color) then 
 		-- 		-- print("Change point color: " .. tostring(new_point_color))
-		-- 		model.points:get_params("style")["color"] = new_point_color
+		-- 		node.points:get_params("style")["color"] = new_point_color
 		-- 	end
 
-		-- 	if model.edges then 
+		-- 	if node.edges then 
 
-		-- 		local sel_edge_visible, new_edge_visible = imgui.Checkbox("Show edges", model.edges.visible)
+		-- 		local sel_edge_visible, new_edge_visible = imgui.Checkbox("Show edges", node.edges.visible)
 		-- 		if (sel_edge_visible) then 
 		-- 			print("Change edge visibility: " .. tostring(new_edge_visible))
-		-- 			model.edges.visible = new_edge_visible
+		-- 			node.edges.visible = new_edge_visible
 		-- 		end
 
-		-- 		local sel_edge_thickness, new_edge_thickness = imgui.SliderFloat("Edge thickness", model.edges:get_params("style").thickness, 0, 50)
+		-- 		local sel_edge_thickness, new_edge_thickness = imgui.SliderFloat("Edge thickness", node.edges:get_params("style").thickness, 0, 50)
 		-- 		if (sel_edge_thickness) then 
 		-- 			print("Change edge thickness: " .. tostring(new_edge_thickness))
-		-- 			model.edges:get_params("style").thickness = new_edge_thickness
+		-- 			node.edges:get_params("style").thickness = new_edge_thickness
 		-- 		end
 
-		-- 		local sel_edge_spacing, new_edge_spacing = imgui.SliderFloat("Edge spacing", model.edges:get_params("style").spacing, 0, 1)
+		-- 		local sel_edge_spacing, new_edge_spacing = imgui.SliderFloat("Edge spacing", node.edges:get_params("style").spacing, 0, 1)
 		-- 		if (sel_edge_spacing) then 
 		-- 			print("Change edge spacing: " .. tostring(new_edge_spacing))
-		-- 			model.edges:get_params("style").spacing = new_edge_spacing
+		-- 			node.edges:get_params("style").spacing = new_edge_spacing
 		-- 		end
 
-		-- 		local sel_edge_padding, new_edge_padding = imgui.SliderFloat("Edge padding", model.edges:get_params("style").padding, 0, 1)
+		-- 		local sel_edge_padding, new_edge_padding = imgui.SliderFloat("Edge padding", node.edges:get_params("style").padding, 0, 1)
 		-- 		if (sel_edge_padding) then 
 		-- 			print("Change edge padding: " .. tostring(new_edge_padding))
-		-- 			model.edges:get_params("style").padding = new_edge_padding
+		-- 			node.edges:get_params("style").padding = new_edge_padding
 		-- 		end
 
-		-- 		local sel_edge_inside_color, new_edge_inside_color = imgui.ColorEdit3("Edge inside color", model.edges:get_params("style").inside_color)
+		-- 		local sel_edge_inside_color, new_edge_inside_color = imgui.ColorEdit3("Edge inside color", node.edges:get_params("style").inside_color)
 		-- 		if (sel_edge_inside_color) then 
 		-- 			print("Change edge inside color: " .. tostring(new_edge_inside_color))
-		-- 			model.edges:get_params("style").inside_color = new_edge_inside_color
+		-- 			node.edges:get_params("style").inside_color = new_edge_inside_color
 		-- 		end
 
-		-- 		local sel_edge_outside_color, new_edge_outside_color = imgui.ColorEdit3("Edge outside color", model.edges:get_params("style").outside_color)
+		-- 		local sel_edge_outside_color, new_edge_outside_color = imgui.ColorEdit3("Edge outside color", node.edges:get_params("style").outside_color)
 		-- 		if (sel_edge_outside_color) then 
 		-- 			print("Change edge outside color: " .. tostring(new_edge_outside_color))
-		-- 			model.edges:get_params("style").outside_color = new_edge_outside_color
+		-- 			node.edges:get_params("style").outside_color = new_edge_outside_color
 		-- 		end
 		-- 	end
 
@@ -512,10 +512,10 @@ function draw_model_properties(model, k, view)
 
 		-- 	local colormap_size = imgui.ImVec2(320, 35)
 
-		-- 	if (imgui.BeginCombo("##combo_colormaps0_selection", items[model.selected_colormap0])) then
+		-- 	if (imgui.BeginCombo("##combo_colormaps0_selection", items[node.selected_colormap0])) then
 		-- 		-- Display items in the popup
 		-- 		for i = 1, #items do
-		-- 			local is_selected = model.selected_colormap0 == i
+		-- 			local is_selected = node.selected_colormap0 == i
 		-- 			-- Create a unique ID for each item to prevent conflicts
 		-- 			imgui.PushID(i)
 
@@ -524,7 +524,7 @@ function draw_model_properties(model, k, view)
 
 		-- 			-- Display the item with both text and image
 		-- 			if (imgui.Selectable(items[i], is_selected)) then
-		-- 				model.selected_colormap0 = i
+		-- 				node.selected_colormap0 = i
 		-- 			end
 
 		-- 			-- Display the image after the text
@@ -536,7 +536,7 @@ function draw_model_properties(model, k, view)
 		-- 		imgui.EndCombo()
 		-- 	end
 
-		-- 	local selected_cm = app.scene.colormaps[model.selected_colormap0]
+		-- 	local selected_cm = app.scene.colormaps[node.selected_colormap0]
 		-- 	if selected_cm.height > 1 then 
 		-- 		local h = selected_cm.height / selected_cm.width * 320
 		-- 		colormap_size = imgui.ImVec2(320, h)
@@ -556,10 +556,10 @@ function draw_model_properties(model, k, view)
 		-- 	end
 		-- 	local colormap_size = imgui.ImVec2(320, 35)
 
-		-- 	if (imgui.BeginCombo("##combo_colormaps1_selection", items[model.selected_colormap1])) then
+		-- 	if (imgui.BeginCombo("##combo_colormaps1_selection", items[node.selected_colormap1])) then
 		-- 		-- Display items in the popup
 		-- 		for i = 1, #items do
-		-- 			local is_selected = model.selected_colormap1 == i
+		-- 			local is_selected = node.selected_colormap1 == i
 		-- 			-- Create a unique ID for each item to prevent conflicts
 		-- 			imgui.PushID(i)
 
@@ -568,7 +568,7 @@ function draw_model_properties(model, k, view)
 
 		-- 			-- Display the item with both text and image
 		-- 			if (imgui.Selectable(items[i], is_selected)) then
-		-- 				model.selected_colormap1 = i
+		-- 				node.selected_colormap1 = i
 		-- 			end
 
 		-- 			-- Display the image after the text
@@ -580,7 +580,7 @@ function draw_model_properties(model, k, view)
 		-- 		imgui.EndCombo()
 		-- 	end
 
-		-- 	local selected_cm = app.scene.colormaps[model.selected_colormap1]
+		-- 	local selected_cm = app.scene.colormaps[node.selected_colormap1]
 		-- 	if selected_cm.height > 1 then 
 		-- 		local h = selected_cm.height / selected_cm.width * 320
 		-- 		colormap_size = imgui.ImVec2(320, h)
@@ -593,37 +593,37 @@ function draw_model_properties(model, k, view)
 
 		-- 	imgui.Text("Attribute 0")
 
-		-- 	if (#model.attrs > 0) then
-		-- 		-- local attr_name, attr_element = model.attrs[1]
-		-- 		local attr_name = model.attrs[1].name
-		-- 		local attr_element = model.attrs[1].kind
-		-- 		-- local attr_name, attr_element = model.get_attr(1);
+		-- 	if (#node.attrs > 0) then
+		-- 		-- local attr_name, attr_element = node.attrs[1]
+		-- 		local attr_name = node.attrs[1].name
+		-- 		local attr_element = node.attrs[1].kind
+		-- 		-- local attr_name, attr_element = node.get_attr(1);
 		-- 		-- print("first attr:" .. attr_name)
 		-- 		-- print("second attr:" .. attr_element)
 				
 		-- 		local selName = "None" 
-		-- 		if model.selected_attr0 > 0 then 
-		-- 			selName = model.attrs[model.selected_attr0].name
+		-- 		if node.selected_attr0 > 0 then 
+		-- 			selName = node.attrs[node.selected_attr0].name
 		-- 		end
 
 		-- 		if (imgui.BeginCombo("##combo_attribute0_selection", selName)) then
 
-		-- 			local is_selected = model.selected_attr0 == 0
+		-- 			local is_selected = node.selected_attr0 == 0
 		-- 			if (imgui.Selectable("None", is_selected)) then
-		-- 				model.selected_attr0 = 0
+		-- 				node.selected_attr0 = 0
 		-- 			end
 
-		-- 			for n = 1, #model.attrs do
-		-- 				local is_selected = n == model.selected_attr0
-		-- 				local label = model.attrs[n].name 
-		-- 				.. " (" .. element_kind_to_string(model.attrs[n].kind) .. ")" 
-		-- 				.. " (" .. element_type_to_string(model.attrs[n].type) .. ")"
-		-- 				.. " (" .. tostring(model.attrs[n].dim) .. ")"
+		-- 			for n = 1, #node.attrs do
+		-- 				local is_selected = n == node.selected_attr0
+		-- 				local label = node.attrs[n].name 
+		-- 				.. " (" .. element_kind_to_string(node.attrs[n].kind) .. ")" 
+		-- 				.. " (" .. element_type_to_string(node.attrs[n].type) .. ")"
+		-- 				.. " (" .. tostring(node.attrs[n].dim) .. ")"
 
 		-- 				if (imgui.Selectable(label, is_selected)) then
-		-- 					model.selected_attr0 = n
+		-- 					node.selected_attr0 = n
 
-		-- 					-- print("set attr: " .. model.attrs[n][1] .. ":" .. model.attrs[n][2] .. ":" .. model.attrs[n][3])
+		-- 					-- print("set attr: " .. node.attrs[n][1] .. ":" .. node.attrs[n][2] .. ":" .. node.attrs[n][3])
 		-- 				end
 		-- 			end
 		-- 			imgui.EndCombo()
@@ -632,37 +632,37 @@ function draw_model_properties(model, k, view)
 
 		-- 	imgui.Text("Attribute 1")
 
-		-- 	if (#model.attrs > 0) then
-		-- 		-- local attr_name, attr_element = model.attrs[1]
-		-- 		local attr_name = model.attrs[1].name
-		-- 		local attr_element = model.attrs[1].kind
-		-- 		-- local attr_name, attr_element = model.get_attr(1);
+		-- 	if (#node.attrs > 0) then
+		-- 		-- local attr_name, attr_element = node.attrs[1]
+		-- 		local attr_name = node.attrs[1].name
+		-- 		local attr_element = node.attrs[1].kind
+		-- 		-- local attr_name, attr_element = node.get_attr(1);
 		-- 		-- print("first attr:" .. attr_name)
 		-- 		-- print("second attr:" .. attr_element)
 
 		-- 		local selName = "None" 
-		-- 		if model.selected_attr1 > 0 then 
-		-- 			selName = model.attrs[model.selected_attr1].name
+		-- 		if node.selected_attr1 > 0 then 
+		-- 			selName = node.attrs[node.selected_attr1].name
 		-- 		end
 
 		-- 		if (imgui.BeginCombo("##combo_attribute1_selection", selName)) then
 
-		-- 			local is_selected = model.selected_attr1 == 0
+		-- 			local is_selected = node.selected_attr1 == 0
 		-- 			if (imgui.Selectable("None", is_selected)) then
-		-- 				model.selected_attr1 = 0
+		-- 				node.selected_attr1 = 0
 		-- 			end
 
-		-- 			for n = 1, #model.attrs do
-		-- 				local is_selected = n == model.selected_attr1
-		-- 				local label = model.attrs[n].name 
-		-- 				.. " (" .. element_kind_to_string(model.attrs[n].kind) .. ")" 
-		-- 				.. " (" .. element_type_to_string(model.attrs[n].type) .. ")"
-		-- 				.. " (" .. tostring(model.attrs[n].dim) .. ")"
+		-- 			for n = 1, #node.attrs do
+		-- 				local is_selected = n == node.selected_attr1
+		-- 				local label = node.attrs[n].name 
+		-- 				.. " (" .. element_kind_to_string(node.attrs[n].kind) .. ")" 
+		-- 				.. " (" .. element_type_to_string(node.attrs[n].type) .. ")"
+		-- 				.. " (" .. tostring(node.attrs[n].dim) .. ")"
 
 		-- 				if (imgui.Selectable(label, is_selected)) then
-		-- 					model.selected_attr1 = n
+		-- 					node.selected_attr1 = n
 
-		-- 					-- print("set attr: " .. model.attrs[n][1] .. ":" .. model.attrs[n][2] .. ":" .. model.attrs[n][3])
+		-- 					-- print("set attr: " .. node.attrs[n][1] .. ":" .. node.attrs[n][2] .. ":" .. node.attrs[n][3])
 		-- 				end
 		-- 			end
 		-- 			imgui.EndCombo()
@@ -684,30 +684,30 @@ function draw_gui()
 
 		if (imgui.BeginTabItem("Flat view")) then
 
-			for _, model in ipairs(app.scene.models) do
+			for _, node in ipairs(app.scene.nodes) do
 				
-				local sel_visible, new_visible = imgui.Checkbox(model.name .. "##" .. model.name, model.visible)
+				local sel_visible, new_visible = imgui.Checkbox(node.name .. "##" .. node.name, node.visible)
 				if (sel_visible) then 
-					model.visible = new_visible
+					node.visible = new_visible
 				end
 
 				imgui.SameLine()
-				if (imgui.Button("View##" .. "btn_view_" .. model.name)) then
-					app.scene.selected_model = model.name
+				if (imgui.Button("View##" .. "btn_view_" .. node.name)) then
+					app.scene.selected_node = node.name
 					-- Set camera position !
-					-- local model_pos = model.center
-					-- app.scene.camera.position = vec3.new(model_pos.x, model_pos.y, model_pos.z - model.radius * 2.);
-					-- app.scene.camera.look_at = vec3.new(model_pos.x, model_pos.y, model_pos.z);
-					app.scene.camera:look_at_box(model.bbox)
+					-- local node_pos = node.center
+					-- app.scene.current_camera.position = vec3.new(node_pos.x, node_pos.y, node_pos.z - node.radius * 2.);
+					-- app.scene.current_camera.look_at = vec3.new(node_pos.x, node_pos.y, node_pos.z);
+					app.scene.current_camera:look_at_box(node.bbox)
 				end
 				
 			end
 
 			imgui.Separator()
 
-			-- Check if app has at least one model, to draw properties of current one (if exists)
-			if (app.scene.model) then
-				draw_model_properties(app.scene.model, app.scene.selected_model, 0)
+			-- Check if app has at least one node, to draw properties of current one (if exists)
+			if (app.scene.current_node) then
+				draw_node_properties(app.scene.current_node, app.scene.selected_node, 0)
 			end
 
 			imgui.EndTabItem()
@@ -720,11 +720,11 @@ function draw_gui()
 			imgui.Separator()
 			if (imgui.TreeNode("Scene##tree_node_scene")) then 
 
-				-- for k, model in app.scene.models do 
-				for _, model in ipairs(app.scene.models) do
-					-- TODO ImGuiTreeNodeFlags_Selected if model selected
-					if (model.parent == nil) then 
-						-- draw_tree(model, k)
+				-- for k, node in app.scene.nodes do 
+				for _, node in ipairs(app.scene.nodes) do
+					-- TODO ImGuiTreeNodeFlags_Selected if node selected
+					if (node.parent == nil) then 
+						-- draw_tree(node, k)
 					end
 				end
 
@@ -756,13 +756,13 @@ function draw_gui()
 			
 			imgui.Text("Properties")
 			imgui.Separator()
-			local camera = app.scene.camera
+			local camera = app.scene.current_camera
 			local p = camera.position
 
 			-- Compute zoom factor (varies between 0.001 for 0% - 1 for 100%)
 			-- local fov = app.scene.camera.fov
 			-- local zoom_factor = -(fov - 45.) / (45. - 0.25) * 100.
-			local zoom_factor = app.scene.camera.zoom * 100.
+			local zoom_factor = app.scene.current_camera.zoom * 100.
 			
 			
 			-- Convert -0 value to 0
@@ -773,7 +773,7 @@ function draw_gui()
 			imgui.Text("Zoom: " .. str_zoom_factor .. "%")
 			imgui.SameLine()
 			if (imgui.SmallButton("Reset zoom")) then
-				app.scene.camera:reset_zoom()
+				app.scene.current_camera:reset_zoom()
 			end
 
 			imgui.Text("Position: " .. p:to_string());

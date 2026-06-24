@@ -65,7 +65,7 @@ struct Scene {
 		return true;
 	}
 
-	const std::string getSelectedNodeName() {
+	const std::string getSelectedNode() {
 		return selectedNode;
 	}
 

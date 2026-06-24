@@ -45,6 +45,12 @@ struct SceneNode : std::enable_shared_from_this<SceneNode> {
 		return *_geometry;
 	}
 
+	// // TODO warning geometry can be null
+	// template<typename TGeometry>
+	// TGeometry& getGeometry() {
+	// 	return static_cast<TGeometry&>(*_geometry);
+	// }
+
 	template<typename TGeometry>
 	TGeometry& createGeometry() {
 		_geometry = std::make_unique<TGeometry>();
