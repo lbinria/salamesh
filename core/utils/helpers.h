@@ -2,6 +2,7 @@
 
 #include <ultimaille/all.h>
 #include "glm/glm.hpp"
+#include "glm/gtc/quaternion.hpp"
 #include <string>
 #include <cctype>
 
@@ -19,6 +20,103 @@ using namespace UM;
 
 namespace sl {
 
+	inline vec3 min(vec3 a, vec3 b) {
+		return {
+			std::min(a.x, b.x), 
+			std::min(a.y, b.y), 
+			std::min(a.z, b.z)
+		};
+	}
+
+	inline vec3 max(vec3 a, vec3 b) {
+		return {
+			std::max(a.x, b.x), 
+			std::max(a.y, b.y), 
+			std::max(a.z, b.z)
+		};
+	}
+
+	inline Quaternion angleAxis(double angle, vec3 ax) {
+		double half_angle = angle * 0.5;
+		Quaternion q;
+		q.v = ax * sin(half_angle);
+		q.w = cos(half_angle);
+		return q;
+	}
+
+
+
+	inline vec3 rotatev3(vec3 v, Quaternion q) {
+		// Convert vec3 to quaternion (pure quaternion with w=0)
+		Quaternion p;
+		p.v = v;
+		p.w = 0.0;
+		
+		// Rotate: q * p * q_conjugate
+		Quaternion q_conj;
+		q_conj.v = -q.v;
+		q_conj.w = q.w;
+		
+		Quaternion result = q * p * q_conj;
+		return result.v;
+	}
+
+	inline vec4 rotate(vec4 v, Quaternion q) {
+		vec3 v3{v.data[0], v.data[1], v.data[2]};
+		vec3 res = rotatev3(v3, q);
+		return vec4{res.x, res.y, res.z, 0};
+	}
+
+
+	inline mat4x4 ortho(double left, double right, double bottom, double top, double zNear, double zFar) {
+		mat4x4 res{
+			1, 0, 0, 0,
+			0, 1, 0, 0,
+			0, 0, 1, 0,
+			0, 0, 0, 1,
+		};
+		res[0][0] = 2. / (right - left);
+		res[1][1] = 2. / (top - bottom);
+		res[2][2] = - 2. / (zFar - zNear);
+		res[3][0] = - (right + left) / (right - left);
+		res[3][1] = - (top + bottom) / (top - bottom);
+		res[3][2] = - (zFar + zNear) / (zFar - zNear);
+		return res;
+	}
+
+	inline mat4x4 translate(mat4x4 m, vec3 v) {
+		mat4x4 res(m);
+		res[3] = m[0] * v[0] + m[1] * v[1] + m[2] * v[2] + m[3];
+		return res;
+	}
+
+	inline mat4x4 lookAt(vec3 eye, vec3 center, vec3 up) {
+		vec3 f = (center - eye).normalized();
+		vec3 s = cross(f, up).normalized();
+		vec3 u = cross(s, f);
+
+		mat4x4 res;
+		res[0][0] = s.x;
+		res[1][0] = s.y;
+		res[2][0] = s.z;
+		res[3][0] = 0;
+		res[0][1] = u.x;
+		res[1][1] = u.y;
+		res[2][1] = u.z;
+		res[3][1] = 0;
+		res[0][2] = -f.x;
+		res[1][2] = -f.y;
+		res[2][2] = -f.z;
+		res[3][2] = 0;
+		res[3][0] = -(s * eye);
+		res[3][1] = -(u * eye);
+		res[3][2] = (f * eye);
+		res[3][3] = 1;
+
+
+		return res;
+	}
+
 	inline glm::vec2 um2glm(UM::vec2 v) {
 		return glm::vec2(v.x, v.y);
 	}
@@ -31,6 +129,19 @@ namespace sl {
 		return glm::vec4(v[0], v[1], v[2], v[3]);
 	}
 
+	inline glm::quat um2glm(Quaternion q) {
+		return glm::quat(q.w, q.v.x, q.v.y, q.v.z);
+	}
+
+	inline glm::mat4 um2glm(mat4x4 m) {
+		return glm::mat4{
+			m[0][0], m[0][1], m[0][2], m[0][3],
+			m[1][0], m[1][1], m[1][2], m[1][3],
+			m[2][0], m[2][1], m[2][2], m[2][3],
+			m[3][0], m[3][1], m[3][2], m[3][3]
+		};
+	}
+
 	inline UM::vec2 glm2um(glm::vec2 v) {
 		return {v.x, v.y};
 	}
@@ -41,6 +152,15 @@ namespace sl {
 
 	inline UM::vec4 glm2um(glm::vec4 v) {
 		return {v.x, v.y, v.z, v.w};
+	}
+
+	inline mat4x4 glm2um(glm::mat4 m) {
+		return mat4x4{
+			m[0][0], m[0][1], m[0][2], m[0][3],
+			m[1][0], m[1][1], m[1][2], m[1][3],
+			m[2][0], m[2][1], m[2][2], m[2][3],
+			m[3][0], m[3][1], m[3][2], m[3][3]
+		};
 	}
 
 	inline void toLower(std::string &s) {

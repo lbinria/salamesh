@@ -28,7 +28,10 @@ struct TrackBallCamera : public Camera {
 
     void updateProjectionMatrix() override {
         auto b = getBounds();
-        m_projectionMatrix = glm::ortho(b.x, b.y, b.z, b.w, nearPlane, farPlane);
+        // m_projectionMatrix = glm::ortho(b.x, b.y, b.z, b.w, nearPlane, farPlane);
+        auto um_projectionMatrix = sl::ortho(b.x, b.y, b.z, b.w, nearPlane, farPlane);
+        m_projectionMatrix = sl::um2glm(um_projectionMatrix);
+        // m_projectionMatrix = glm::ortho(b.x, b.y, b.z, b.w, nearPlane, farPlane);
     }
 
     void lookAtBox(std::tuple<glm::vec3, glm::vec3> box) override {
@@ -40,10 +43,16 @@ struct TrackBallCamera : public Camera {
         // Setup view matrix
         m_eye = {c.x, c.y, c.z + glm::length(max - min)};
         m_lookAt = c;
-        m_viewMatrix = glm::lookAt(m_eye, m_lookAt, m_upVector);
 
-        // m_eye = {0,0,glm::length(max - min)};
-        // m_lookAt = {0,0,-1};
+        // auto glm_viewMatrix = glm::lookAt(m_eye, m_lookAt, m_upVector);
+
+
+        vec3 e = sl::glm2um(m_eye);
+        vec3 ce = sl::glm2um(m_lookAt);
+        vec3 u = sl::glm2um(m_upVector);
+        mat4x4 res = sl::lookAt(e, ce, u);
+        m_viewMatrix = sl::um2glm(res);
+
 
         _box = box;
 
@@ -89,21 +98,38 @@ struct TrackBallCamera : public Camera {
         float angle = acos(glm::clamp(glm::dot(v0, v1), -1.f, 1.f)) * 1.5f /* speed */;
 
         // Create quaternion from axis, angle for rotation
-        auto q = glm::angleAxis(angle, glm::normalize(ax));
+        // auto q = glm::angleAxis(angle, glm::normalize(ax));
+        auto uax = sl::glm2um(ax);
+        auto uq = sl::angleAxis(angle, uax.normalized());
+        // auto q = sl::um2glm(uq);
         
         // Translate view to origin for pivot
         auto [min, max] = _box;
         auto c = (min + max) * .5f;
 
-        m_viewMatrix = glm::translate(m_viewMatrix, c);
+
+
+        auto uc = sl::glm2um(c);
+        auto um_viewMatrix = sl::glm2um(m_viewMatrix);
+        um_viewMatrix = sl::translate(um_viewMatrix, uc);
+        m_viewMatrix = sl::um2glm(um_viewMatrix);
+
+        // m_viewMatrix = glm::translate(m_viewMatrix, c);
+        
 
         // Rotate view
-        m_viewMatrix[0] = q * m_viewMatrix[0];
-        m_viewMatrix[1] = q * m_viewMatrix[1];
-        m_viewMatrix[2] = q * m_viewMatrix[2];
+        // m_viewMatrix[0] = q * m_viewMatrix[0];
+        // m_viewMatrix[1] = q * m_viewMatrix[1];
+        // m_viewMatrix[2] = q * m_viewMatrix[2];
+        um_viewMatrix[0] = sl::rotate(um_viewMatrix[0], uq);
+        um_viewMatrix[1] = sl::rotate(um_viewMatrix[1], uq);
+        um_viewMatrix[2] = sl::rotate(um_viewMatrix[2], uq);
 
         // Translate view back
-        m_viewMatrix = glm::translate(m_viewMatrix, -c);
+        // m_viewMatrix = glm::translate(m_viewMatrix, -c);
+        um_viewMatrix = sl::translate(um_viewMatrix, -uc);
+        m_viewMatrix = sl::um2glm(um_viewMatrix);
+
 
 
         // Just update to know where is the camera
