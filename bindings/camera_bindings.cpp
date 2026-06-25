@@ -23,8 +23,8 @@ namespace bindings {
 		});
 
 		camera_t.set_function("move", [](Camera &self, sol::table oldPos, sol::table newPos) {
-			glm::vec2 old{oldPos.get<float>(1), oldPos.get<float>(2)};
-			glm::vec2 newp{newPos.get<float>(1), newPos.get<float>(2)};
+			vec2 old{oldPos.get<float>(1), oldPos.get<float>(2)};
+			vec2 newp{newPos.get<float>(1), newPos.get<float>(2)};
 			self.move(old, newp);
 		});
 

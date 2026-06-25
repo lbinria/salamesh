@@ -60,19 +60,19 @@ struct TrackBallCamera : public Camera {
         updateProjectionMatrix();
     }
 
-    glm::vec3 mouseToSphere(glm::vec2 p) {
+    vec3 mouseToSphere(vec2 p) {
         // Screen coords to NDC
-        glm::vec2 v{p.x / _screen.x * 2.f - 1.f, -(p.y / _screen.y * 2.f - 1.f)};
+        vec2 v{p.x / _screen.x * 2. - 1., -(p.y / _screen.y * 2. - 1.)};
         // v = -v / 1.96f; // Division make the sphere radius greater than 1
         // Division make the sphere radius greater than 1 therefore the border of the sphere is out of screen and this enable to not drag out of the sphere
         v = -v / 2.f;
 
         // Compute magnitude of v (dist² to the center)
-        float mag = glm::dot(v, v);
-        glm::vec3 p3{v.x, v.y, 0.};
+        float mag = v * v;
+        vec3 p3{v.x, v.y, 0.};
 
         if (mag > 1.0) {
-            p3 = glm::normalize(p3);
+            p3 = p3.normalized();
         } else {
             p3 = {p3.x, p3.y, -sqrt(1.0 - mag)};
         }
@@ -80,13 +80,13 @@ struct TrackBallCamera : public Camera {
         return p3;
     }
 
-    void move(glm::vec2 oldPos, glm::vec2 newPos) override {
+    void move(vec2 oldPos, vec2 newPos) override {
         if (m_lock)
             return;
 
         // Compute 3D pos of 2D point on sphere
-        glm::vec3 v0 = mouseToSphere(oldPos);
-        glm::vec3 v1 = mouseToSphere(newPos);
+        glm::vec3 v0 = sl::um2glm(mouseToSphere(oldPos));
+        glm::vec3 v1 = sl::um2glm(mouseToSphere(newPos));
         // Compute axis of rotation from 3D points
         glm::vec3 ax = glm::cross(v0, v1);
 

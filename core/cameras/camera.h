@@ -45,7 +45,7 @@ struct Camera {
 	}
 
 	virtual void lookAtBox(std::tuple<glm::vec3, glm::vec3> box) = 0;
-	virtual void move(glm::vec2 oldPos, glm::vec2 newPos) = 0;
+	virtual void move(vec2 oldPos, vec2 newPos) = 0;
 	virtual void moveRight(float speed) = 0;
 	virtual void moveForward(float speed) = 0;
 	virtual void moveUp(float speed) = 0;

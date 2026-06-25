@@ -617,7 +617,7 @@ void App::updateCamera(float dt) {
 
 	if (st.mouse.isLeftButton()) {
 		// scene.getCurrentCamera().move(st.mouse.delta);
-		scene.getCurrentCamera().move(st.mouse.lastPos, st.mouse.pos);
+		scene.getCurrentCamera().move(sl::glm2um(st.mouse.lastPos), sl::glm2um(st.mouse.pos));
 	}
 
 	if (st.mouse.isRightButton()) {
