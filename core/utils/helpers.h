@@ -20,6 +20,10 @@ using namespace UM;
 
 namespace sl {
 
+	inline vec3 mul(vec3 a, vec3 b) {
+		return {a.x * b.x, a.y * b.y, a.z * b.z};
+	}
+
 	inline vec3 min(vec3 a, vec3 b) {
 		return {
 			std::min(a.x, b.x), 

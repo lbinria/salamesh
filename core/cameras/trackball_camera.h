@@ -65,10 +65,10 @@ struct TrackBallCamera : public Camera {
         vec2 v{p.x / _screen.x * 2. - 1., -(p.y / _screen.y * 2. - 1.)};
         // v = -v / 1.96f; // Division make the sphere radius greater than 1
         // Division make the sphere radius greater than 1 therefore the border of the sphere is out of screen and this enable to not drag out of the sphere
-        v = -v / 2.f;
+        v = -v / 2.;
 
         // Compute magnitude of v (dist² to the center)
-        float mag = v * v;
+        double mag = v * v;
         vec3 p3{v.x, v.y, 0.};
 
         if (mag > 1.0) {
@@ -85,23 +85,20 @@ struct TrackBallCamera : public Camera {
             return;
 
         // Compute 3D pos of 2D point on sphere
-        glm::vec3 v0 = sl::um2glm(mouseToSphere(oldPos));
-        glm::vec3 v1 = sl::um2glm(mouseToSphere(newPos));
+        vec3 v0 = mouseToSphere(oldPos);
+        vec3 v1 = mouseToSphere(newPos);
         // Compute axis of rotation from 3D points
-        glm::vec3 ax = glm::cross(v0, v1);
+        vec3 ax = cross(v0, v1);
 
         // Check length to avoid normalize issues (division by 0 can occurs)
-        if (glm::length(ax) <= 0.00001f)
+        if (ax.norm2() <= 0.00000001)
             return;
 
         // Compute angle between the two points on sphere
-        float angle = acos(glm::clamp(glm::dot(v0, v1), -1.f, 1.f)) * 1.5f /* speed */;
+        double angle = acos(std::clamp(v0 * v1, -1., 1.)) * 1.5 /* speed */;
 
         // Create quaternion from axis, angle for rotation
-        // auto q = glm::angleAxis(angle, glm::normalize(ax));
-        auto uax = sl::glm2um(ax);
-        auto uq = sl::angleAxis(angle, uax.normalized());
-        // auto q = sl::um2glm(uq);
+        auto q = sl::angleAxis(angle, ax.normalized());
         
         // Translate view to origin for pivot
         auto [min, max] = _box;
@@ -121,9 +118,9 @@ struct TrackBallCamera : public Camera {
         // m_viewMatrix[0] = q * m_viewMatrix[0];
         // m_viewMatrix[1] = q * m_viewMatrix[1];
         // m_viewMatrix[2] = q * m_viewMatrix[2];
-        um_viewMatrix[0] = sl::rotate(um_viewMatrix[0], uq);
-        um_viewMatrix[1] = sl::rotate(um_viewMatrix[1], uq);
-        um_viewMatrix[2] = sl::rotate(um_viewMatrix[2], uq);
+        um_viewMatrix[0] = sl::rotate(um_viewMatrix[0], q);
+        um_viewMatrix[1] = sl::rotate(um_viewMatrix[1], q);
+        um_viewMatrix[2] = sl::rotate(um_viewMatrix[2], q);
 
         // Translate view back
         // m_viewMatrix = glm::translate(m_viewMatrix, -c);
