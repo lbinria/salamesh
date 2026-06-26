@@ -28,10 +28,7 @@ struct TrackBallCamera : public Camera {
 
     void updateProjectionMatrix() override {
         auto b = getBounds();
-        // m_projectionMatrix = glm::ortho(b.x, b.y, b.z, b.w, nearPlane, farPlane);
-        auto um_projectionMatrix = sl::ortho(b.x, b.y, b.z, b.w, nearPlane, farPlane);
-        m_projectionMatrix = sl::um2glm(um_projectionMatrix);
-        // m_projectionMatrix = glm::ortho(b.x, b.y, b.z, b.w, nearPlane, farPlane);
+        m_projectionMatrix = sl::ortho(b.x, b.y, b.z, b.w, nearPlane, farPlane);
     }
 
     void lookAtBox(std::tuple<vec3, vec3> box) override {
@@ -42,17 +39,9 @@ struct TrackBallCamera : public Camera {
 
         // Setup view matrix
         m_eye = {c.x, c.y, c.z + (max - min).norm2()};
-        m_lookAt = sl::um2glm(c);
+        m_lookAt = c;
 
-        // auto glm_viewMatrix = glm::lookAt(m_eye, m_lookAt, m_upVector);
-
-
-        vec3 e = sl::glm2um(m_eye);
-        vec3 ce = sl::glm2um(m_lookAt);
-        vec3 u = sl::glm2um(m_upVector);
-        mat4x4 res = sl::lookAt(e, ce, u);
-        m_viewMatrix = sl::um2glm(res);
-
+        m_viewMatrix = sl::lookAt(m_eye, m_lookAt, m_upVector);
 
         _box = box;
 
@@ -104,27 +93,18 @@ struct TrackBallCamera : public Camera {
         auto [min, max] = _box;
         auto c = (min + max) * .5f;
 
-
-
-        auto um_viewMatrix = sl::glm2um(m_viewMatrix);
-        um_viewMatrix = sl::translate(um_viewMatrix, c);
-        m_viewMatrix = sl::um2glm(um_viewMatrix);
-
-        // m_viewMatrix = glm::translate(m_viewMatrix, c);
-        
+        m_viewMatrix = sl::translate(m_viewMatrix, c);
 
         // Rotate view
         // m_viewMatrix[0] = q * m_viewMatrix[0];
         // m_viewMatrix[1] = q * m_viewMatrix[1];
         // m_viewMatrix[2] = q * m_viewMatrix[2];
-        um_viewMatrix[0] = sl::rotate(um_viewMatrix[0], q);
-        um_viewMatrix[1] = sl::rotate(um_viewMatrix[1], q);
-        um_viewMatrix[2] = sl::rotate(um_viewMatrix[2], q);
+        m_viewMatrix[0] = sl::rotate(m_viewMatrix[0], q);
+        m_viewMatrix[1] = sl::rotate(m_viewMatrix[1], q);
+        m_viewMatrix[2] = sl::rotate(m_viewMatrix[2], q);
 
         // Translate view back
-        um_viewMatrix = sl::translate(um_viewMatrix, -c);
-        m_viewMatrix = sl::um2glm(um_viewMatrix);
-
+        m_viewMatrix = sl::translate(m_viewMatrix, -c);
 
 
         // Just update to know where is the camera
@@ -133,13 +113,13 @@ struct TrackBallCamera : public Camera {
         // position = (q * (position - pivot)) + pivot;
         // m_eye = position;
 
-        auto cameraMatrix = glm::inverse(m_viewMatrix);
+        auto cameraMatrix = m_viewMatrix.invert();
         auto camPos = cameraMatrix[3];
         
         // std::cout << "eye: " << m_eye.x << ", " << m_eye.y << ", " << m_eye.z <<  std::endl;
         // std::cout << "cam pos: " << camPos.x << ", " << camPos.y << ", " << camPos.z << ", " << camPos.w << std::endl;
 
-        m_eye = camPos;
+        m_eye = sl::vec4to3(camPos);
 
     }
 
@@ -160,12 +140,9 @@ struct TrackBallCamera : public Camera {
         vec3 up = getUpVector();
 
 
-        auto um_viewMatrix = sl::glm2um(m_viewMatrix);
-        um_viewMatrix = sl::translate(um_viewMatrix, right * offset.x + up * -offset.y);
-        m_viewMatrix = sl::um2glm(um_viewMatrix);
+        m_viewMatrix = sl::translate(m_viewMatrix, right * offset.x + up * -offset.y);
 
-        auto um_eye = um_viewMatrix.invert()[3];
-        m_eye = sl::um2glm(um_eye);
+        m_eye = sl::vec4to3(m_viewMatrix.invert()[3]);
     }
 
     void moveRight(double speed) override {

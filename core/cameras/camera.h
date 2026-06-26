@@ -25,14 +25,14 @@ struct Camera {
 		return x;
 	}
 
-	void setCameraView(glm::vec3 eye, glm::vec3 lookAt)
+	void setCameraView(vec3 eye, vec3 lookAt)
 	{
 		m_eye = std::move(eye);
 		m_lookAt = std::move(lookAt);
 		updateViewMatrix();
 	}
 
-	void setCameraProjection(glm::mat4 proj) {
+	void setCameraProjection(mat4x4 proj) {
 		m_projectionMatrix = std::move(proj);
 	}
 
@@ -41,7 +41,7 @@ struct Camera {
 	// TODO remove from camera move into specific camera if needed
 	void updateViewMatrix()
 	{
-		m_viewMatrix = glm::lookAt(m_eye, m_lookAt, m_upVector);
+		m_viewMatrix = sl::lookAt(m_eye, m_lookAt, m_upVector);
 	}
 
 	virtual void lookAtBox(std::tuple<vec3, vec3> box) = 0;
@@ -64,21 +64,21 @@ struct Camera {
 	void setFarPlane(float val) { farPlane = val; }
 
 
-	glm::vec3 getEye() const { return m_eye; }
+	vec3 getEye() const { return m_eye; }
 	// TODO maybe make private
-	void setEye(glm::vec3 eye) { m_eye = std::move(eye); updateViewMatrix(); }
+	void setEye(vec3 eye) { m_eye = std::move(eye); updateViewMatrix(); }
 
-	glm::vec3 getLookAt() const { return m_lookAt; }
+	vec3 getLookAt() const { return m_lookAt; }
 
 	// TODO maybe make private
-	void lookAt(glm::vec3 lookAt) {
+	void lookAt(vec3 lookAt) {
 		m_lookAt = lookAt;
 		updateViewMatrix();
 	}
 
-	glm::mat4x4 getViewMatrix() const { return m_viewMatrix; }
-	glm::mat4x4 getProjectionMatrix() const { return m_projectionMatrix; }
-	glm::vec3 getWorldUpVector() const { return m_upVector; }
+	mat4x4 getViewMatrix() const { return m_viewMatrix; }
+	mat4x4 getProjectionMatrix() const { return m_projectionMatrix; }
+	vec3 getWorldUpVector() const { return m_upVector; }
 
 	float getZoom() const { return 1.f - _zoomFactor; }
 	
@@ -93,18 +93,15 @@ struct Camera {
 	}
 
 	vec3 getRightVector() const { 
-		auto um_viewMatrix = sl::glm2um(m_viewMatrix);
-		return sl::vec4to3(um_viewMatrix.transpose()[0]);
+		return sl::vec4to3(m_viewMatrix.transpose()[0]);
 	}
 	
 	vec3 getUpVector() const { 
-		auto um_viewMatrix = sl::glm2um(m_viewMatrix);
-		return sl::vec4to3(um_viewMatrix.transpose()[1]);
+		return sl::vec4to3(m_viewMatrix.transpose()[1]);
 	}
 
 	vec3 getViewDir() const { 
-		auto um_viewMatrix = sl::glm2um(m_viewMatrix);
-		return -sl::vec4to3(um_viewMatrix.transpose()[2]);
+		return -sl::vec4to3(m_viewMatrix.transpose()[2]);
 	}
 
 	void saveState(json &j) {
@@ -133,24 +130,24 @@ struct Camera {
 		m_name = j["name"].get<std::string>();
 		_zoomFactor = j["zoom_factor"];
 		auto &jView = j["view"];
-		m_viewMatrix = glm::mat4(
-			jView[0].get<float>(), jView[1].get<float>(), jView[2].get<float>(), jView[3].get<float>(),
-			jView[4].get<float>(), jView[5].get<float>(), jView[6].get<float>(), jView[7].get<float>(),
-			jView[8].get<float>(), jView[9].get<float>(), jView[10].get<float>(), jView[11].get<float>(),
-			jView[12].get<float>(), jView[13].get<float>(), jView[14].get<float>(), jView[15].get<float>()
-		);
+		m_viewMatrix = mat4x4{
+			jView[0].get<double>(), jView[1].get<double>(), jView[2].get<double>(), jView[3].get<double>(),
+			jView[4].get<double>(), jView[5].get<double>(), jView[6].get<double>(), jView[7].get<double>(),
+			jView[8].get<double>(), jView[9].get<double>(), jView[10].get<double>(), jView[11].get<double>(),
+			jView[12].get<double>(), jView[13].get<double>(), jView[14].get<double>(), jView[15].get<double>()
+		};
 
 		auto &jProj = j["proj"];
-		m_projectionMatrix = glm::mat4(
-			jProj[0].get<float>(), jProj[1].get<float>(), jProj[2].get<float>(), jProj[3].get<float>(),
-			jProj[4].get<float>(), jProj[5].get<float>(), jProj[6].get<float>(), jProj[7].get<float>(),
-			jProj[8].get<float>(), jProj[9].get<float>(), jProj[10].get<float>(), jProj[11].get<float>(),
-			jProj[12].get<float>(), jProj[13].get<float>(), jProj[14].get<float>(), jProj[15].get<float>()
-		);
+		m_projectionMatrix = mat4x4{
+			jProj[0].get<double>(), jProj[1].get<double>(), jProj[2].get<double>(), jProj[3].get<double>(),
+			jProj[4].get<double>(), jProj[5].get<double>(), jProj[6].get<double>(), jProj[7].get<double>(),
+			jProj[8].get<double>(), jProj[9].get<double>(), jProj[10].get<double>(), jProj[11].get<double>(),
+			jProj[12].get<double>(), jProj[13].get<double>(), jProj[14].get<double>(), jProj[15].get<double>()
+		};
 
 		// Extract position from view matrix
-		glm::mat4 c = glm::inverse(m_viewMatrix);
-		m_eye = glm::vec3(c[3]);
+		mat4x4 c = m_viewMatrix.invert();
+		m_eye = sl::vec4to3(c[3]);
 		// Extract look at from view matrix
 		// auto &jLookAt = j["look_at"];
 		// m_lookAt = glm::vec3(jLookAt[0], jLookAt[1], jLookAt[2]);
@@ -177,11 +174,11 @@ struct Camera {
 	std::string m_name;
 	float _zoomFactor = 1.f;
 	vec2 _screen;
-	glm::mat4x4 m_viewMatrix;
-	glm::mat4x4 m_projectionMatrix;
-	glm::vec3 m_eye; // Camera position in 3D
-	glm::vec3 m_lookAt; // Point that the camera is looking at
-	const glm::vec3 m_upVector{0.f, 1.f, 0.f}; // Orientation of the camera
+	mat4x4 m_viewMatrix;
+	mat4x4 m_projectionMatrix;
+	vec3 m_eye; // Camera position in 3D
+	vec3 m_lookAt; // Point that the camera is looking at
+	const vec3 m_upVector{0.f, 1.f, 0.f}; // Orientation of the camera
 	bool m_lock = false;
 
 	float farPlane = 100.f;

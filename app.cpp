@@ -505,8 +505,8 @@ void App::start() {
 		processInput(window);
 
 		// Set view / projection from current camera
-		glm::mat4 view = scene.getCurrentCamera().getViewMatrix();
-		glm::mat4 projection = scene.getCurrentCamera().getProjectionMatrix();
+		glm::mat4 view = sl::um2glm(scene.getCurrentCamera().getViewMatrix());
+		glm::mat4 projection = sl::um2glm(scene.getCurrentCamera().getProjectionMatrix());
 
 		// Update UBO
 		UBOMatrices mats{
@@ -934,11 +934,11 @@ void App::unproject(Camera& camera, int x, int y, float depth, glm::vec3 &p) {
 	glm::vec4 clipSpace(ndcX, ndcY, depth, 1.0f);
 
 	// Unproject clip space to view space
-	glm::mat4 invProj = glm::inverse(camera.getProjectionMatrix());
+	glm::mat4 invProj = glm::inverse(sl::um2glm(camera.getProjectionMatrix()));
 	glm::vec4 viewSpace = invProj * clipSpace;
 
 	// Unproject view space to world space
-	glm::mat4 invView = glm::inverse(camera.getViewMatrix());
+	glm::mat4 invView = glm::inverse(sl::um2glm(camera.getViewMatrix()));
 	glm::vec4 worldSpace = invView * (viewSpace / viewSpace.w);
 	p = glm::vec3(worldSpace);
 }
