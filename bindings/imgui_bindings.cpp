@@ -146,8 +146,8 @@ namespace bindings {
 
 			std::array<float, 2> vals;
 
-			if (v.is<glm::vec2>()) {
-				auto vec = v.as<glm::vec2>();
+			if (v.is<sl::algebra::vec2>()) {
+				auto vec = v.as<sl::algebra::vec2>();
 				vals = {vec.x, vec.y};
 			} else if (v.is<sol::table>()) {
 				sol::table table = v.as<sol::table>();
@@ -162,13 +162,13 @@ namespace bindings {
 			bool sel = ImGui::InputFloat2(label, vals.data());
 			
 			// If input was a table, update the original table
-			// If input was a glm::vec2, update the original vector
+			// If input was a sl::algebra::vec2, update the original vector
 			if (sel && v.is<sol::table>()) {
 				sol::table table = v.as<sol::table>();
 				table[1] = vals[0];
 				table[2] = vals[1];
-			} else if (sel && v.is<glm::vec2>()) {
-				auto& vec = v.as<glm::vec2>();
+			} else if (sel && v.is<sl::algebra::vec2>()) {
+				auto& vec = v.as<sl::algebra::vec2>();
 				vec.x = vals[0];
 				vec.y = vals[1];
 			}
@@ -181,8 +181,8 @@ namespace bindings {
 
 			std::array<float, 3> vals;
 
-			if (v.is<glm::vec3>()) {
-				auto vec = v.as<glm::vec3>();
+			if (v.is<sl::algebra::vec3>()) {
+				auto vec = v.as<sl::algebra::vec3>();
 				vals = {vec.x, vec.y, vec.z};
 			} else if (v.is<sol::table>()) {
 				sol::table table = v.as<sol::table>();
@@ -198,14 +198,14 @@ namespace bindings {
 			bool sel = ImGui::InputFloat3(label, vals.data());
 			
 			// If input was a table, update the original table
-			// If input was a glm::vec3, update the original vector
+			// If input was a sl::algebra::vec3, update the original vector
 			if (sel && v.is<sol::table>()) {
 				sol::table table = v.as<sol::table>();
 				table[1] = vals[0];
 				table[2] = vals[1];
 				table[3] = vals[2];
-			} else if (sel && v.is<glm::vec3>()) {
-				auto& vec = v.as<glm::vec3>();
+			} else if (sel && v.is<sl::algebra::vec3>()) {
+				auto& vec = v.as<sl::algebra::vec3>();
 				vec.x = vals[0];
 				vec.y = vals[1];
 				vec.z = vals[2];
@@ -257,11 +257,11 @@ namespace bindings {
 			ImGui::Image(user_texture_id, size);
 		});
 
-		imgui.set_function("ColorEdit3", [](const char* label, sol::object color, sol::this_state s) -> std::optional<std::tuple<bool, glm::vec3>> {
+		imgui.set_function("ColorEdit3", [](const char* label, sol::object color, sol::this_state s) -> std::optional<std::tuple<bool, sl::algebra::vec3>> {
 			sol::state_view lua(s);
 
-			if (color.is<glm::vec3>()) {
-				auto col = color.as<glm::vec3>();
+			if (color.is<sl::algebra::vec3>()) {
+				auto col = color.as<sl::algebra::vec3>();
 				bool changed = ImGui::ColorEdit3(label, &col.x);
 				return std::make_optional(std::make_tuple(changed, col));
 			} else {
