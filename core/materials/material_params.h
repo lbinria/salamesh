@@ -1,7 +1,6 @@
 #pragma once
 #include "../shaders/shader.h"
 
-#include "glm/glm.hpp"
 
 #include "json.hpp"
 using json = nlohmann::json;
@@ -9,7 +8,7 @@ using json = nlohmann::json;
 #include <variant>
 
 
-using ParamValue = std::variant<bool, float, int, glm::vec2, glm::vec3>;
+using ParamValue = std::variant<bool, float, int, sl::algebra::vec2, sl::algebra::vec3>;
 
 struct MaterialParams {
 	virtual void init() = 0;

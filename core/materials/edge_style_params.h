@@ -42,10 +42,10 @@ struct EdgeStyleParams : MaterialParams {
 			if (auto* pVal = std::get_if<float>(&value))
 				padding = *pVal;
 		} else if (name == "inside_color") {
-			if (auto* pVal = std::get_if<glm::vec3>(&value))
+			if (auto* pVal = std::get_if<sl::algebra::vec3>(&value))
 				insideColor = *pVal;
 		} else if (name == "outside_color") {
-			if (auto* pVal = std::get_if<glm::vec3>(&value))
+			if (auto* pVal = std::get_if<sl::algebra::vec3>(&value))
 				outsideColor = *pVal;
 		}
 	}
@@ -72,6 +72,6 @@ struct EdgeStyleParams : MaterialParams {
 	float size = 2.f;
 	float spacing = 0.f;
 	float padding = 0.f;
-	glm::vec3 insideColor{0.0, 0.97, 0.73};
-	glm::vec3 outsideColor{0.0, 0.6, 0.45};
+	sl::algebra::vec3 insideColor{0.0, 0.97, 0.73};
+	sl::algebra::vec3 outsideColor{0.0, 0.6, 0.45};
 };

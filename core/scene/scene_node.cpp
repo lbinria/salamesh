@@ -121,7 +121,7 @@ void SceneNode::setLayer(Layer layer, ElementKind kind, bool update) {
 
 		layerParams->activateLayer(layer, kind);
 
-		layerParams->range[layer] = glm::vec2(min, max);
+		layerParams->range[layer] = {min, max};
 		layerParams->nDims[layer] = attr.getNDims();
 		layerParams->setLayer(data, layer);
 
@@ -156,7 +156,7 @@ void SceneNode::updateLayers() {
 				if (!activatedLayers[l][k])
 					continue;
 
-				layerParams->range[l] = glm::vec2(min, max);
+				layerParams->range[l] = {min, max};
 				layerParams->nDims[l] = attr.getNDims();
 				layerParams->setLayer(data, layer);
 			}

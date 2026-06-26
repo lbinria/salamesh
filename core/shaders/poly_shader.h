@@ -37,7 +37,7 @@ struct PolyShader : public ShaderBase {
 		_m(m)
 		{
 			shader.use();
-			shader.setFloat3("color", {0.71f, 0.71f, 0.71f});
+			shader.setFloat3("color", sl::algebra::vec3(0.71f, 0.71f, 0.71f));
 		}
 
 	PolyShader(std::string name) : 

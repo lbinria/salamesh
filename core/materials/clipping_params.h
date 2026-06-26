@@ -42,10 +42,10 @@ struct ClippingParams : MaterialParams {
 			if (auto* pVal = std::get_if<bool>(&value))
 				enabled = *pVal;
 		} else if (name == "point") {
-			if (auto* pVal = std::get_if<glm::vec3>(&value))
+			if (auto* pVal = std::get_if<sl::algebra::vec3>(&value))
 				point = *pVal;
 		} else if (name == "normal") {
-			if (auto* pVal = std::get_if<glm::vec3>(&value))
+			if (auto* pVal = std::get_if<sl::algebra::vec3>(&value))
 				normal = *pVal;
 		} else if (name == "invert") {
 			if (auto* pVal = std::get_if<bool>(&value))
@@ -59,8 +59,8 @@ struct ClippingParams : MaterialParams {
 	void loadState(json &j) {
 		mode = static_cast<ClippingMode>(j["mode"].get<int>());
 		enabled = j["enabled"].get<bool>();
-		point = glm::vec3(j["point"][0].get<float>(), j["point"][1].get<float>(), j["point"][2].get<float>());
-		normal = glm::vec3(j["normal"][0].get<float>(), j["normal"][1].get<float>(), j["normal"][2].get<float>());
+		point = {j["point"][0].get<float>(), j["point"][1].get<float>(), j["point"][2].get<float>()};
+		normal = {j["normal"][0].get<float>(), j["normal"][1].get<float>(), j["normal"][2].get<float>()};
 		invert = j["invert"].get<bool>();
 	}
 
@@ -74,8 +74,8 @@ struct ClippingParams : MaterialParams {
 
 	ClippingMode mode = ClippingMode::STD;
 	bool enabled = false;
-	glm::vec3 point{0.,0.,0.};
-	glm::vec3 normal{0.,1.,0.};
+	sl::algebra::vec3 point{0.,0.,0.};
+	sl::algebra::vec3 normal{0.,1.,0.};
 	bool invert = false;
 
 };

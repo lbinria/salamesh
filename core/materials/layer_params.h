@@ -166,16 +166,16 @@ struct LayersParams : MaterialParams {
 			if (auto* pVal = std::get_if<int>(&value))
 				nDims[index] = *pVal;
 		} else if (name == "range") {
-			if (auto* pVal = std::get_if<glm::vec2>(&value))
+			if (auto* pVal = std::get_if<sl::algebra::vec2>(&value))
 				range[index] = *pVal;
 		} else if (name == "layer_element") {
 			if (auto* pVal = std::get_if<int>(&value))
 				layerElement[index] = *pVal;
 		} else if (name == "hover_color") {
-			if (auto* pVal = std::get_if<glm::vec3>(&value))
+			if (auto* pVal = std::get_if<sl::algebra::vec3>(&value))
 				hoverColor = *pVal;
 		} else if (name == "select_color") {
-			if (auto* pVal = std::get_if<glm::vec3>(&value))
+			if (auto* pVal = std::get_if<sl::algebra::vec3>(&value))
 				selectColor = *pVal;
 		}
 	}
@@ -208,7 +208,7 @@ struct LayersParams : MaterialParams {
 
 		for (int i = 0; i < 5; ++i) {
 			j["n_dims"][i] = nDims[i];
-			j["range"][i] = {range[i][0], range[i][1]};
+			j["range"][i] = {range[i].x, range[i].y};
 			j["layer_element"][i] = layerElement[i];
 
 			for (int k = 0; k < 7; ++k)
@@ -221,11 +221,11 @@ struct LayersParams : MaterialParams {
 	}
 
 	int nDims[5];
-	glm::vec2 range[5];
+	sl::algebra::vec2 range[5];
 	int layerElement[5] = {-1, -1, -1, -1, -1}; // TODO to remove replaced by activatedLayers
 	std::array<std::array<bool, 7>, 5> activatedLayers{};
-	glm::vec3 hoverColor{1.f, 1.f, 1.f};
-	glm::vec3 selectColor{0.f, 0.22f, 1.f};
+	sl::algebra::vec3 hoverColor{1.f, 1.f, 1.f};
+	sl::algebra::vec3 selectColor{0.f, 0.22f, 1.f};
 
 	Colormap colormaps[3] = {};
 

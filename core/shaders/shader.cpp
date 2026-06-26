@@ -98,7 +98,7 @@ void Shader::setFloat2(const std::string &name, sl::algebra::vec2 value) const {
     glUniform2f(glGetUniformLocation(id, name.c_str()), value.x, value.y);
 }
 
-void Shader::setFloat3(const std::string &name, glm::vec3 value) const {
+void Shader::setFloat3(const std::string &name, sl::algebra::vec3 value) const {
     glUniform3f(glGetUniformLocation(id, name.c_str()), value.x, value.y, value.z);
 }
 
@@ -106,8 +106,8 @@ void Shader::setMat4(const std::string &name, sl::algebra::mat4x4 value) const {
     glUniformMatrix4fv(glGetUniformLocation(id, name.c_str()), 1, GL_FALSE, value.value_ptr());
 }
 
-void Shader::setFloat2AtIndex(const std::string &name, int i, glm::vec2 value) const {
-    glUniform2fv(glGetUniformLocation(id, name.c_str()) + i, 1, glm::value_ptr(value));
+void Shader::setFloat2AtIndex(const std::string &name, int i, sl::algebra::vec2 value) const {
+    glUniform2fv(glGetUniformLocation(id, name.c_str()) + i, 1, value.value_ptr());
 }
 
 void Shader::clean() {

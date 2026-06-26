@@ -27,7 +27,7 @@ struct PointStyleParams : MaterialParams {
 			if (auto* pSize = std::get_if<float>(&value))
 				size = *pSize;
 		} else if (name == "color") {
-			if (auto* pColor = std::get_if<glm::vec3>(&value))
+			if (auto* pColor = std::get_if<sl::algebra::vec3>(&value))
 				color = *pColor;
 		}
 	}
@@ -46,5 +46,5 @@ struct PointStyleParams : MaterialParams {
 	}
 
 	float size = 4.f;
-	glm::vec3 color{0.23, 0.85, 0.66};
+	sl::algebra::vec3 color{0.23, 0.85, 0.66};
 };

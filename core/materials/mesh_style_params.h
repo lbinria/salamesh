@@ -30,7 +30,7 @@ struct MeshStyleParams : MaterialParams {
 
 	void set(const std::string name, ParamValue value) override {
 		if (name == "color") {
-			if (auto* pVal = std::get_if<glm::vec3>(&value))
+			if (auto* pVal = std::get_if<sl::algebra::vec3>(&value))
 				color = *pVal;
 		} else if (name == "size") {
 			if (auto* pVal = std::get_if<float>(&value))
@@ -48,7 +48,7 @@ struct MeshStyleParams : MaterialParams {
 	void setIndex(const std::string name, int index, ParamValue value) override {}
 
 	void loadState(json &j) {
-		color = glm::vec3(j["color"][0].get<float>(), j["color"][1].get<float>(), j["color"][2].get<float>());
+		color = {j["color"][0].get<float>(), j["color"][1].get<float>(), j["color"][2].get<float>()};
 		meshSize = j["size"].get<float>();
 		meshShrink = j["shrink"].get<float>();
 		isCornerVisible = j["corner_visible"].get<bool>();
@@ -62,7 +62,7 @@ struct MeshStyleParams : MaterialParams {
 	}
 
 
-	glm::vec3 color{0.71f, 0.71f, 0.71f};
+	sl::algebra::vec3 color{0.71f, 0.71f, 0.71f};
 	float meshSize = 0.f;
 	float meshShrink = 0.f;
 	bool isCornerVisible = false;
