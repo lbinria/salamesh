@@ -46,5 +46,5 @@ struct PointStyleParams : MaterialParams {
 	}
 
 	float size = 4.f;
-	sl::algebra::vec3 color{0.23, 0.85, 0.66};
+	sl::algebra::vec3 color{0.23f, 0.85f, 0.66f};
 };
