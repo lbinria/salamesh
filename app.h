@@ -35,7 +35,7 @@
 #include <cmath>
 
 #include "scene.h"
-#include "shaders/shader.h"
+#include "shader.h"
 
 
 #include "core/render_surface.h"

@@ -1,6 +1,6 @@
 #pragma once
 #include "camera.h"
-#include "shaders/shader.h"
+#include "shader.h"
 
 #include "glm/glm.hpp"
 #include <memory>

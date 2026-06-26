@@ -9,7 +9,6 @@ using namespace UM;
 #include "json.hpp"
 using json = nlohmann::json;
 
-#include "glm/glm.hpp"
 #include "helpers.h"
 
 struct Geometry {

@@ -1,5 +1,5 @@
 #pragma once
-#include "../shaders/shader.h"
+#include "shader.h"
 
 
 #include "json.hpp"

@@ -1,5 +1,5 @@
 #pragma once
-#include "../shaders/shader.h"
+#include "shader.h"
 #include "material_params.h"
 
 #include <ultimaille/all.h>

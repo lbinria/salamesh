@@ -6,7 +6,7 @@
 #include "../include/glad/glad.h"
 #endif
 
-#include "../data/vec.h"
+#include "vec.h"
 
 #include <string>
 #include <fstream>

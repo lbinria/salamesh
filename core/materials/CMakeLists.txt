@@ -7,4 +7,4 @@ target_include_directories(materials
         ${CMAKE_CURRENT_SOURCE_DIR}
 )
 
-target_link_libraries(materials PUBLIC nlohmann_json)
+target_link_libraries(materials PUBLIC rendering nlohmann_json)
