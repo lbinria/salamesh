@@ -42,7 +42,7 @@ struct SceneNode : std::enable_shared_from_this<SceneNode> {
 	void saveState(json &j, const std::string filename);
 
 
-	std::tuple<glm::vec3, glm::vec3> bbox() const;
+	std::tuple<vec3, vec3> bbox() const;
 
 	// TODO warning geometry can be null
 	Geometry& getGeometry() {

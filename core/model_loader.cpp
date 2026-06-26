@@ -38,22 +38,22 @@ std::shared_ptr<SceneNode> ModelLoader::load(const std::string filename, const s
 
 	bboxGeometry.addLines({
 		// Bottom face (z = min.z)
-		{ glm::vec3(min.x, min.y, min.z), glm::vec3(max.x, min.y, min.z), glm::vec3(1.0f, 1.0f, 1.0f) },
-		{ glm::vec3(max.x, min.y, min.z), glm::vec3(max.x, max.y, min.z), glm::vec3(1.0f, 1.0f, 1.0f) },
-		{ glm::vec3(max.x, max.y, min.z), glm::vec3(min.x, max.y, min.z), glm::vec3(1.0f, 1.0f, 1.0f) },
-		{ glm::vec3(min.x, max.y, min.z), glm::vec3(min.x, min.y, min.z), glm::vec3(1.0f, 1.0f, 1.0f) },
+		{ vec3(min.x, min.y, min.z), vec3(max.x, min.y, min.z), vec3(1.0f, 1.0f, 1.0f) },
+		{ vec3(max.x, min.y, min.z), vec3(max.x, max.y, min.z), vec3(1.0f, 1.0f, 1.0f) },
+		{ vec3(max.x, max.y, min.z), vec3(min.x, max.y, min.z), vec3(1.0f, 1.0f, 1.0f) },
+		{ vec3(min.x, max.y, min.z), vec3(min.x, min.y, min.z), vec3(1.0f, 1.0f, 1.0f) },
 
 		// Top face (z = max.z)
-		{ glm::vec3(min.x, min.y, max.z), glm::vec3(max.x, min.y, max.z), glm::vec3(1.0f, 1.0f, 1.0f) },
-		{ glm::vec3(max.x, min.y, max.z), glm::vec3(max.x, max.y, max.z), glm::vec3(1.0f, 1.0f, 1.0f) },
-		{ glm::vec3(max.x, max.y, max.z), glm::vec3(min.x, max.y, max.z), glm::vec3(1.0f, 1.0f, 1.0f) },
-		{ glm::vec3(min.x, max.y, max.z), glm::vec3(min.x, min.y, max.z), glm::vec3(1.0f, 1.0f, 1.0f) },
+		{ vec3(min.x, min.y, max.z), vec3(max.x, min.y, max.z), vec3(1.0f, 1.0f, 1.0f) },
+		{ vec3(max.x, min.y, max.z), vec3(max.x, max.y, max.z), vec3(1.0f, 1.0f, 1.0f) },
+		{ vec3(max.x, max.y, max.z), vec3(min.x, max.y, max.z), vec3(1.0f, 1.0f, 1.0f) },
+		{ vec3(min.x, max.y, max.z), vec3(min.x, min.y, max.z), vec3(1.0f, 1.0f, 1.0f) },
 
 		// Vertical edges
-		{ glm::vec3(min.x, min.y, min.z), glm::vec3(min.x, min.y, max.z), glm::vec3(1.0f, 1.0f, 1.0f) },
-		{ glm::vec3(max.x, min.y, min.z), glm::vec3(max.x, min.y, max.z), glm::vec3(1.0f, 1.0f, 1.0f) },
-		{ glm::vec3(max.x, max.y, min.z), glm::vec3(max.x, max.y, max.z), glm::vec3(1.0f, 1.0f, 1.0f) },
-		{ glm::vec3(min.x, max.y, min.z), glm::vec3(min.x, max.y, max.z), glm::vec3(1.0f, 1.0f, 1.0f) }
+		{ vec3(min.x, min.y, min.z), vec3(min.x, min.y, max.z), vec3(1.0f, 1.0f, 1.0f) },
+		{ vec3(max.x, min.y, min.z), vec3(max.x, min.y, max.z), vec3(1.0f, 1.0f, 1.0f) },
+		{ vec3(max.x, max.y, min.z), vec3(max.x, max.y, max.z), vec3(1.0f, 1.0f, 1.0f) },
+		{ vec3(min.x, max.y, min.z), vec3(min.x, max.y, max.z), vec3(1.0f, 1.0f, 1.0f) }
 	});
 
 

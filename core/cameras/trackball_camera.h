@@ -34,15 +34,15 @@ struct TrackBallCamera : public Camera {
         // m_projectionMatrix = glm::ortho(b.x, b.y, b.z, b.w, nearPlane, farPlane);
     }
 
-    void lookAtBox(std::tuple<glm::vec3, glm::vec3> box) override {
+    void lookAtBox(std::tuple<vec3, vec3> box) override {
         _zoomFactor = 1.f;
 
         auto [min, max] = box;
         auto c = (min + max) * .5f;
 
         // Setup view matrix
-        m_eye = {c.x, c.y, c.z + glm::length(max - min)};
-        m_lookAt = c;
+        m_eye = {c.x, c.y, c.z + (max - min).norm2()};
+        m_lookAt = sl::um2glm(c);
 
         // auto glm_viewMatrix = glm::lookAt(m_eye, m_lookAt, m_upVector);
 
@@ -106,9 +106,8 @@ struct TrackBallCamera : public Camera {
 
 
 
-        auto uc = sl::glm2um(c);
         auto um_viewMatrix = sl::glm2um(m_viewMatrix);
-        um_viewMatrix = sl::translate(um_viewMatrix, uc);
+        um_viewMatrix = sl::translate(um_viewMatrix, c);
         m_viewMatrix = sl::um2glm(um_viewMatrix);
 
         // m_viewMatrix = glm::translate(m_viewMatrix, c);
@@ -123,8 +122,7 @@ struct TrackBallCamera : public Camera {
         um_viewMatrix[2] = sl::rotate(um_viewMatrix[2], q);
 
         // Translate view back
-        // m_viewMatrix = glm::translate(m_viewMatrix, -c);
-        um_viewMatrix = sl::translate(um_viewMatrix, -uc);
+        um_viewMatrix = sl::translate(um_viewMatrix, -c);
         m_viewMatrix = sl::um2glm(um_viewMatrix);
 
 
@@ -204,8 +202,8 @@ struct TrackBallCamera : public Camera {
         auto &jBox = j["box"];
 
         _box = std::make_tuple(
-            glm::vec3{jBox[0], jBox[1], jBox[2]},
-            glm::vec3{jBox[3], jBox[4], jBox[5]}
+            vec3{jBox[0], jBox[1], jBox[2]},
+            vec3{jBox[3], jBox[4], jBox[5]}
         );
     }
 
@@ -213,5 +211,5 @@ struct TrackBallCamera : public Camera {
 
     private:
 
-    std::tuple<glm::vec3, glm::vec3> _box; // Targeted bounding box
+    std::tuple<vec3, vec3> _box; // Targeted bounding box
 };

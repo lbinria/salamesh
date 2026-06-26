@@ -29,16 +29,16 @@ struct Geometry {
 	void saveState(json &j, const std::string filename);
 	void loadState(json &j, const std::string filename);
 
-	virtual std::tuple<glm::vec3, glm::vec3> bbox() = 0;
+	virtual std::tuple<vec3, vec3> bbox() = 0;
 
-	glm::vec3 getCenter() {
+	vec3 getCenter() {
 		auto [bmin, bmax] = bbox();
 		return (bmin + bmax) / 2.f;
 	}
 
 	double getRadius() {
-		auto [bmin, bmax] = bbox();
-		return glm::length(bmax - bmin) / 2.f;
+		auto [bmin, bmax] = bbox();		
+		return (bmax - bmin).norm2() / 2.f;
 	}
 
 	void requestUpdate() {
@@ -296,14 +296,14 @@ struct SurfaceGeometry : public MeshGeometry {
 		return found_e;
 	}
 
-	std::tuple<glm::vec3, glm::vec3> bbox() override {
-		glm::vec3 min = glm::vec3(FLT_MAX);
-		glm::vec3 max = glm::vec3(-FLT_MAX);
+	std::tuple<vec3, vec3> bbox() override {
+		vec3 min = vec3(FLT_MAX);
+		vec3 max = vec3(-FLT_MAX);
 
 		for (auto &v : _m.iter_vertices()) {
-			glm::vec3 p = sl::um2glm(v);
-			min = glm::min(min, p);
-			max = glm::max(max, p);
+			vec3 p = v;
+			min = sl::min(min, p);
+			max = sl::max(max, p);
 		}
 
 		return {min, max};
@@ -389,14 +389,14 @@ struct PolyLineGeometry : public MeshGeometry {
 		return true;
 	}
 
-	std::tuple<glm::vec3, glm::vec3> bbox() override {
-		glm::vec3 min = glm::vec3(FLT_MAX);
-		glm::vec3 max = glm::vec3(-FLT_MAX);
+	std::tuple<vec3, vec3> bbox() override {
+		vec3 min = vec3(FLT_MAX);
+		vec3 max = vec3(-FLT_MAX);
 
 		for (auto &v : _m.iter_vertices()) {
-			glm::vec3 p = sl::um2glm(v);
-			min = glm::min(min, p);
-			max = glm::max(max, p);
+			vec3 p = v;
+			min = sl::min(min, p);
+			max = sl::max(max, p);
 		}
 
 		return {min, max};

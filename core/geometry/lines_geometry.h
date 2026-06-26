@@ -4,9 +4,9 @@
 struct LinesGeometry : public Geometry {
 
 	struct Line {
-		glm::vec3 a;
-		glm::vec3 b;
-		glm::vec3 color;
+		vec3 a;
+		vec3 b;
+		vec3 color;
 	};
 
 	bool save() override {
@@ -45,13 +45,13 @@ struct LinesGeometry : public Geometry {
 		return -1;
 	}
 
-	std::tuple<glm::vec3, glm::vec3> bbox() override {
-		glm::vec3 min(FLT_MAX);
-		glm::vec3 max(-FLT_MAX);
+	std::tuple<vec3, vec3> bbox() override {
+		vec3 min(FLT_MAX);
+		vec3 max(-FLT_MAX);
 
 		for (auto &l : _lines) {
-			min = glm::min(glm::min(min, l.a), l.b);
-			max = glm::max(glm::max(max, l.a), l.b);
+			min = sl::min(sl::min(min, l.a), l.b);
+			max = sl::max(sl::max(max, l.a), l.b);
 		}
 
 		return {min, max};

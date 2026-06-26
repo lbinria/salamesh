@@ -44,7 +44,7 @@ struct Camera {
 		m_viewMatrix = glm::lookAt(m_eye, m_lookAt, m_upVector);
 	}
 
-	virtual void lookAtBox(std::tuple<glm::vec3, glm::vec3> box) = 0;
+	virtual void lookAtBox(std::tuple<vec3, vec3> box) = 0;
 	virtual void move(vec2 oldPos, vec2 newPos) = 0;
 	virtual void moveRight(float speed) = 0;
 	virtual void moveForward(float speed) = 0;
@@ -149,7 +149,7 @@ struct Camera {
 	}
 
 	// TODO here use box of copied camera 
-	void copy(Camera &c, std::tuple<glm::vec3, glm::vec3> box) {
+	void copy(Camera &c, std::tuple<vec3, vec3> box) {
 		lookAtBox(box);
 		setEye(c.getEye());
 		setZoom(c.getZoom());

@@ -17,8 +17,8 @@ namespace bindings {
 		camera_t.set_function("reset_zoom", &Camera::resetZoom);
 		
 		camera_t.set_function("look_at_box", [](Camera &self, sol::table box) { 
-			auto min = box.get<glm::vec3>(1);
-			auto max = box.get<glm::vec3>(2);
+			auto min = box.get<vec3>(1);
+			auto max = box.get<vec3>(2);
 			self.lookAtBox(std::make_tuple(min, max)); 
 		});
 
@@ -122,8 +122,8 @@ namespace bindings {
 		});
 
 		camera_t.set_function("copy", [](Camera &self, Camera &other, sol::table box) {
-			auto min = box.get<glm::vec3>(1);
-			auto max = box.get<glm::vec3>(2);
+			auto min = box.get<vec3>(1);
+			auto max = box.get<vec3>(2);
 			self.copy(other, std::make_tuple(min, max));
 		});
 

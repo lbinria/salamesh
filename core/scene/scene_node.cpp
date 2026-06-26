@@ -2,13 +2,13 @@
 
 #include "layer_params.h"
 
-std::tuple<glm::vec3, glm::vec3> SceneNode::bbox() const {
+std::tuple<vec3, vec3> SceneNode::bbox() const {
 	auto [min, max] = _geometry->bbox();
 
 	for (auto child : _children) {
 		auto [childMin, childMax] = child->bbox();
-		min = glm::min(min, childMin);
-		max = glm::max(max, childMax);
+		min = sl::min(min, childMin);
+		max = sl::max(max, childMax);
 	}
 
 	return {min, max};

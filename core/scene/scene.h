@@ -81,7 +81,7 @@ struct Scene {
 	std::shared_ptr<SceneNode> getHoveredNode();
 
 
-	std::tuple<glm::vec3, glm::vec3> computeSceneBBox();
+	std::tuple<vec3, vec3> computeSceneBBox();
 	float computeSceneDiameter();
 	void updateFarPlane();
 

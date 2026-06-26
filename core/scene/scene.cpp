@@ -89,13 +89,13 @@ void Scene::focus(const std::string nodeName) {
 	getCurrentCamera().lookAtBox(bbox);
 }
 
-std::tuple<glm::vec3, glm::vec3> Scene::computeSceneBBox() {
-	glm::vec3 min{std::numeric_limits<float>::max()};
-	glm::vec3 max{-std::numeric_limits<float>::max()};
+std::tuple<vec3, vec3> Scene::computeSceneBBox() {
+	vec3 min{std::numeric_limits<float>::max()};
+	vec3 max{-std::numeric_limits<float>::max()};
 	for (auto &[_, n] : _nodes) {
 		auto [cmin, cmax] = n->bbox();
-		min = glm::min(min, cmin);
-		max = glm::max(max, cmax);
+		min = sl::min(min, cmin);
+		max = sl::max(max, cmax);
 	}
 	
 	return std::make_tuple(min, max);
@@ -103,7 +103,7 @@ std::tuple<glm::vec3, glm::vec3> Scene::computeSceneBBox() {
 
 float Scene::computeSceneDiameter() {
 	auto [min, max] = computeSceneBBox();
-	return glm::length(max - min);
+	return (max - min).norm2();
 }
 
 void Scene::updateFarPlane() {
