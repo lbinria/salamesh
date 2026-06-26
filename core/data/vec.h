@@ -5,9 +5,6 @@ namespace sl::algebra {
 
 	struct vec2 {
 		float x, y;
-		
-		// vec2(float x, float y) : x(x), y(y) {};
-		// vec2(const UM::vec2& v) : x(static_cast<float>(v.x)), y(static_cast<float>(v.y)) {}
 
 		float* value_ptr() {
 			return &x;
@@ -20,9 +17,6 @@ namespace sl::algebra {
 
 	struct vec3 {
 		float x, y, z;
-
-		// vec3(float x, float y, float z) : x(x), y(y), z(z) {};
-		// vec3(const UM::vec3& v) : x(static_cast<float>(v.x)), y(static_cast<float>(v.y)), z(static_cast<float>(v.z)) {}
 
 		float* value_ptr() {
 			return &x;

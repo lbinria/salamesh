@@ -28,7 +28,7 @@ struct TrackBallCamera : public Camera {
 
     void updateProjectionMatrix() override {
         auto b = getBounds();
-        m_projectionMatrix = sl::ortho(b.data[0], b.data[1], b.data[2], b.data[3], nearPlane, farPlane);
+        _proj = sl::ortho(b.data[0], b.data[1], b.data[2], b.data[3], _nearPlane, _farPlane);
     }
 
     void lookAtBox(std::tuple<vec3, vec3> box) override {
@@ -38,10 +38,10 @@ struct TrackBallCamera : public Camera {
         auto c = (min + max) * .5f;
 
         // Setup view matrix
-        m_eye = {c.x, c.y, c.z + (max - min).norm2()};
-        m_lookAt = c;
+        _pos = {c.x, c.y, c.z + (max - min).norm2()};
+        _lookAt = c;
 
-        m_viewMatrix = sl::lookAt(m_eye, m_lookAt, m_upVector);
+        _view = sl::lookAt(_pos, _lookAt, _up);
 
         _box = box;
 
@@ -70,7 +70,7 @@ struct TrackBallCamera : public Camera {
     }
 
     void move(vec2 oldPos, vec2 newPos) override {
-        if (m_lock)
+        if (_isLocked)
             return;
 
         // Compute 3D pos of 2D point on sphere
@@ -93,38 +93,35 @@ struct TrackBallCamera : public Camera {
         auto [min, max] = _box;
         auto c = (min + max) * .5f;
 
-        m_viewMatrix = sl::translate(m_viewMatrix, c);
+        _view = sl::translate(_view, c);
 
         // Rotate view
-        // m_viewMatrix[0] = q * m_viewMatrix[0];
-        // m_viewMatrix[1] = q * m_viewMatrix[1];
-        // m_viewMatrix[2] = q * m_viewMatrix[2];
-        m_viewMatrix[0] = sl::rotate(m_viewMatrix[0], q);
-        m_viewMatrix[1] = sl::rotate(m_viewMatrix[1], q);
-        m_viewMatrix[2] = sl::rotate(m_viewMatrix[2], q);
+        _view[0] = sl::rotate(_view[0], q);
+        _view[1] = sl::rotate(_view[1], q);
+        _view[2] = sl::rotate(_view[2], q);
 
         // Translate view back
-        m_viewMatrix = sl::translate(m_viewMatrix, -c);
+        _view = sl::translate(_view, -c);
 
 
         // Just update to know where is the camera
-        // vec4 position(m_eye.x, m_eye.y, m_eye.z, 1);
-        // vec4 pivot(m_lookAt.x, m_lookAt.y, m_lookAt.z, 1);
+        // vec4 position(_pos.x, _pos.y, _pos.z, 1);
+        // vec4 pivot(_lookAt.x, _lookAt.y, _lookAt.z, 1);
         // position = (q * (position - pivot)) + pivot;
-        // m_eye = position;
+        // _pos = position;
 
-        auto cameraMatrix = m_viewMatrix.invert();
+        auto cameraMatrix = _view.invert();
         auto camPos = cameraMatrix[3];
         
-        // std::cout << "eye: " << m_eye.x << ", " << m_eye.y << ", " << m_eye.z <<  std::endl;
+        // std::cout << "eye: " << _pos.x << ", " << _pos.y << ", " << _pos.z <<  std::endl;
         // std::cout << "cam pos: " << camPos.x << ", " << camPos.y << ", " << camPos.z << ", " << camPos.w << std::endl;
 
-        m_eye = sl::vec4to3(camPos);
+        _pos = sl::vec4to3(camPos);
 
     }
 
     void movePan(vec2 delta) {
-        if (m_lock)
+        if (_isLocked)
             return;
 
         // Compute view rect size and divide by screen rect size 
@@ -140,9 +137,9 @@ struct TrackBallCamera : public Camera {
         vec3 up = getUpVector();
 
 
-        m_viewMatrix = sl::translate(m_viewMatrix, right * offset.x + up * -offset.y);
+        _view = sl::translate(_view, right * offset.x + up * -offset.y);
 
-        m_eye = sl::vec4to3(m_viewMatrix.invert()[3]);
+        _pos = sl::vec4to3(_view.invert()[3]);
     }
 
     void moveRight(double speed) override {
