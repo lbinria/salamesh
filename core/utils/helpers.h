@@ -1,8 +1,6 @@
 #pragma once
 
 #include <ultimaille/all.h>
-#include "glm/glm.hpp"
-#include "glm/gtc/quaternion.hpp"
 #include <string>
 #include <cctype>
 
@@ -131,52 +129,6 @@ namespace sl {
 
 
 		return res;
-	}
-
-	inline glm::vec2 um2glm(UM::vec2 v) {
-		return glm::vec2(v.x, v.y);
-	}
-
-	inline glm::vec3 um2glm(UM::vec3 v) {
-		return glm::vec3(v.x, v.y, v.z);
-	}
-
-	inline glm::vec4 um2glm(UM::vec4 v) {
-		return glm::vec4(v[0], v[1], v[2], v[3]);
-	}
-
-	inline glm::quat um2glm(Quaternion q) {
-		return glm::quat(q.w, q.v.x, q.v.y, q.v.z);
-	}
-
-	inline glm::mat4 um2glm(mat4x4 m) {
-		return glm::mat4{
-			m[0][0], m[0][1], m[0][2], m[0][3],
-			m[1][0], m[1][1], m[1][2], m[1][3],
-			m[2][0], m[2][1], m[2][2], m[2][3],
-			m[3][0], m[3][1], m[3][2], m[3][3]
-		};
-	}
-
-	inline UM::vec2 glm2um(glm::vec2 v) {
-		return {v.x, v.y};
-	}
-
-	inline UM::vec3 glm2um(glm::vec3 v) {
-		return {v.x, v.y, v.z};
-	}
-
-	inline UM::vec4 glm2um(glm::vec4 v) {
-		return {v.x, v.y, v.z, v.w};
-	}
-
-	inline mat4x4 glm2um(glm::mat4 m) {
-		return mat4x4{
-			m[0][0], m[0][1], m[0][2], m[0][3],
-			m[1][0], m[1][1], m[1][2], m[1][3],
-			m[2][0], m[2][1], m[2][2], m[2][3],
-			m[3][0], m[3][1], m[3][2], m[3][3]
-		};
 	}
 
 	inline void toLower(std::string &s) {

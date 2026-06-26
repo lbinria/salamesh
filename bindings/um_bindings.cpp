@@ -102,10 +102,7 @@ namespace bindings {
 			sol::meta_function::addition, sol::overload(
 				[](const vec3 &a, const vec3 &b) {
 					return a + b;
-				}/*, 
-				[](const float a, const glm::vec3 &b) {
-					return a + b;
-				}*/
+				}
 			),
 
 			sol::meta_function::subtraction, [](const vec3 &a, const vec3 &b) {

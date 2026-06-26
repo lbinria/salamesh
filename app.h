@@ -22,10 +22,6 @@
 
 #include "ImGuiFileDialog-0.6.7/ImGuiFileDialog.h"
 
-#include "glm/glm.hpp"
-#include "glm/gtc/matrix_transform.hpp"
-#include "glm/gtc/type_ptr.hpp"
-
 
 #include "stb_image.h"
 #include "stb_image_resize2.h"
@@ -211,7 +207,6 @@ struct App final : public IApp {
 	Args args;
 
 	GLFWwindow* window;
-	glm::vec3 backgroundColor{0.05, 0.1, 0.15};
 
 	float fps = 0.f;
 	int frameCount = 0;

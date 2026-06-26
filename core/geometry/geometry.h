@@ -5,6 +5,7 @@ using namespace UM;
 
 #include "attribute.h"
 #include <optional>
+#include <float.h>
 
 #include "json.hpp"
 using json = nlohmann::json;

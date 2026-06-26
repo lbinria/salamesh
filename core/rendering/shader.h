@@ -1,9 +1,9 @@
 #pragma once
 
 #ifdef _WIN32
-#include "../include/glew/include/GL/glew.h"
+#include "include/GL/glew.h"
 #else
-#include "../include/glad/glad.h"
+#include "glad.h"
 #endif
 
 #include "vec.h"

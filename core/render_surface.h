@@ -2,7 +2,6 @@
 #include "camera.h"
 #include "shader.h"
 
-#include "glm/glm.hpp"
 #include <memory>
 
 struct RenderSurface {
@@ -23,7 +22,7 @@ struct RenderSurface {
 	unsigned int texMeshID;
 
 	int width, height;
-	glm::vec3 backgroundColor;
+	sl::algebra::vec3 backgroundColor;
 
 
 	void setup();
@@ -40,7 +39,7 @@ struct RenderSurface {
 		_camera->updateScreenSize(width, height);
 	}
 
-	void setBackgroundColor(glm::vec3 color) {
+	void setBackgroundColor(sl::algebra::vec3 color) {
 		backgroundColor = color;
 	}
 

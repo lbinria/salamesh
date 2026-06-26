@@ -4,7 +4,6 @@
 
 #include <chrono>
 #include <vector>
-#include "glm/glm.hpp"
 
 #include <ultimaille/all.h>
 using namespace UM;

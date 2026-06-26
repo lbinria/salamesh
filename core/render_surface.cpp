@@ -135,7 +135,7 @@ void RenderSurface::clear() {
 	// Clear attachments
 	GLfloat zero[5] = { 0.f, 0.f, 0.f, 0.f };
 
-	glClearColor(backgroundColor.r, backgroundColor.g, backgroundColor.b, 1.);
+	glClearColor(backgroundColor.x, backgroundColor.y, backgroundColor.z, 1.);
 	glClearBufferfv(GL_COLOR, 0, zero); // clear each float RT to 0
 	glClearBufferfv(GL_COLOR, 1, zero); // clear each float RT to 0
 	glClearBufferfv(GL_COLOR, 2, zero); // clear each float RT to 0
