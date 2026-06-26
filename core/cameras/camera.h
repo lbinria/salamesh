@@ -150,7 +150,6 @@ struct Camera {
 		m_eye = sl::vec4to3(c[3]);
 		// Extract look at from view matrix
 		// auto &jLookAt = j["look_at"];
-		// m_lookAt = glm::vec3(jLookAt[0], jLookAt[1], jLookAt[2]);
 		m_lookAt = {m_viewMatrix[0][2], m_viewMatrix[1][2], m_viewMatrix[2][2]};
 
 		doLoadState(j);

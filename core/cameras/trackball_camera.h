@@ -5,7 +5,7 @@ struct TrackBallCamera : public Camera {
 
     TrackBallCamera(std::string name) : Camera(name) {}
 
-    glm::vec4 getBounds() {
+    vec4 getBounds() {
         float zoomFactor = _zoomFactor + 0.00001f; // Add eps to avoid screen size = 0 at 100%
 
         auto [min, max] = _box;
@@ -28,7 +28,7 @@ struct TrackBallCamera : public Camera {
 
     void updateProjectionMatrix() override {
         auto b = getBounds();
-        m_projectionMatrix = sl::ortho(b.x, b.y, b.z, b.w, nearPlane, farPlane);
+        m_projectionMatrix = sl::ortho(b.data[0], b.data[1], b.data[2], b.data[3], nearPlane, farPlane);
     }
 
     void lookAtBox(std::tuple<vec3, vec3> box) override {
@@ -108,8 +108,8 @@ struct TrackBallCamera : public Camera {
 
 
         // Just update to know where is the camera
-        // glm::vec4 position(m_eye.x, m_eye.y, m_eye.z, 1);
-        // glm::vec4 pivot(m_lookAt.x, m_lookAt.y, m_lookAt.z, 1);
+        // vec4 position(m_eye.x, m_eye.y, m_eye.z, 1);
+        // vec4 pivot(m_lookAt.x, m_lookAt.y, m_lookAt.z, 1);
         // position = (q * (position - pivot)) + pivot;
         // m_eye = position;
 
@@ -130,7 +130,7 @@ struct TrackBallCamera : public Camera {
         // Compute view rect size and divide by screen rect size 
         // to get how many world unit per pixel
         auto b = getBounds();
-        vec2 viewDims{b.y - b.x, b.w - b.z};
+        vec2 viewDims{b.data[1] - b.data[0], b.data[3] - b.data[2]};
         vec2 worldUnitPerPixel = sl::div(viewDims, _screen);
 
         // Get offset in world coordinates
