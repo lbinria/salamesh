@@ -44,7 +44,7 @@ void PointShader::updatePointSet(GeometryBuffer &geometryBuffer, PointSet &ps) {
 
 		vertices[i] = { 
 			.vertexIndex = i,
-			.position = glm::vec3(v.x, v.y, v.z),
+			.position = sl::algebra::vecf(v),
 			.size = 1.f
 		};
 	}

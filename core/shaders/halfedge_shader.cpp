@@ -53,7 +53,7 @@ void HalfedgeShader::updateHalfedges(GeometryBuffer &geometryBuffer, Surface &m)
 			b += f.vertex(lv).pos();
 		}
 		b /= f.size();
-		glm::vec3 bary = sl::um2glm(b);
+		sl::algebra::vec3 bary = sl::algebra::vecf(b);
 
 		for (int i = 0; i < facetSize; ++i) {
 			
@@ -64,8 +64,8 @@ void HalfedgeShader::updateHalfedges(GeometryBuffer &geometryBuffer, Surface &m)
 			
 			int halfedgeIdx = f * facetSize + i;
 
-			const glm::vec3 gp0(p0.x, p0.y, p0.z);
-			const glm::vec3 gp1(p1.x, p1.y, p1.z);
+			sl::algebra::vec3 gp0 = sl::algebra::vecf(p0);
+			sl::algebra::vec3 gp1 = sl::algebra::vecf(p1);
 
 			// build the 4 “corner” vertices
 			LineVert lv0{halfedgeIdx, gp0, gp1, -1.0f, 0.0f, bary};  // corner: start, left side

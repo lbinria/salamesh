@@ -10,19 +10,17 @@
 #include "json.hpp"
 using json = nlohmann::json;
 
-#include "glm/glm.hpp"
-
 using namespace UM;
 
 struct HalfedgeShader : public ShaderBase {
 
 	struct LineVert {
 		int halfedgeIndex;
-		glm::vec3 P0;
-		glm::vec3 P1;
+		sl::algebra::vec3 P0;
+		sl::algebra::vec3 P1;
 		float side;
 		float end;
-		glm::vec3 bary;
+		sl::algebra::vec3 bary;
 	};
 
 	HalfedgeShader(std::string name) : 
@@ -50,15 +48,6 @@ struct HalfedgeShader : public ShaderBase {
 	private:
 
 	void updateHalfedges(GeometryBuffer &geometryBuffer, Surface &m);
-
-
-	void doLoadState(json &j) override {
-
-	}
-
-	void doSaveState(json &j) const override {
-
-	}
 	
 };
 

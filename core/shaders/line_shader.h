@@ -9,21 +9,13 @@
 #include "json.hpp"
 using json = nlohmann::json;
 
-#include "glm/glm.hpp"
-
 using namespace UM;
 
 struct LineShader : public ShaderBase {
 
 	struct LineComponent {
-		glm::vec3 p;
-		glm::vec3 color;
-	};
-
-	struct Line {
-		glm::vec3 a;
-		glm::vec3 b;
-		glm::vec3 color;
+		sl::algebra::vec3 p;
+		sl::algebra::vec3 color;
 	};
 
 	LineShader(std::string name) : 
@@ -46,22 +38,6 @@ struct LineShader : public ShaderBase {
 	void clear() override;
 
 
-	// TODO removeLine by guid / idx / range
-
-	bool getAutoUpdate() { return autoUpdate; }
-	void setAutoUpdate(bool val) { autoUpdate = val; }
-
 	private:
-	
-	std::vector<Line> lines;
-	bool autoUpdate = false;
-
-	void doLoadState(json &j) override {
-		
-	}
-
-	void doSaveState(json &j) const override {
-		
-	}
 	
 };

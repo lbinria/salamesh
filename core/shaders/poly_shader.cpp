@@ -84,10 +84,10 @@ void PolyShader::update(GeometryBuffer &geometryBuffer, Geometry &geometry) {
 			const int ntri = nv;
 
 			// Compute bary
-			glm::vec3 bary{0.};
+			vec3 bary{0.};
 			for (int v = 0; v < nv; ++v) {
 				auto pos = f.vertex(v).pos();
-				bary += glm::vec3{pos.x, pos.y, pos.z};
+				bary += pos;
 			}
 			bary /= nv;
 
@@ -104,7 +104,7 @@ void PolyShader::update(GeometryBuffer &geometryBuffer, Geometry &geometry) {
 
 				const int lv = t;
 				// Three points of current triangle
-				vec3 verts[3] = {vec3(bary.x, bary.y, bary.z) , f.vertex(lv).pos(), f.vertex((lv + 1) % nv).pos()};
+				vec3 verts[3] = {bary , f.vertex(lv).pos(), f.vertex((lv + 1) % nv).pos()};
 
 				// Compute first corner index of the triangle
 				int firstCornerIdx = cornerOff + lv;
@@ -125,11 +125,11 @@ void PolyShader::update(GeometryBuffer &geometryBuffer, Geometry &geometry) {
 						.cornerIndex = lv,
 						.cornerOff = cornerOff,
 						.facetIndex = f,
-						.p = glm::vec3(p.x, p.y, p.z),
-						.p0 = bary,
-						.p1 = glm::vec3(p1.x, p1.y, p1.z),
-						.p2 = glm::vec3(p2.x, p2.y, p2.z),
-						.n = glm::vec3(n.x, n.y, n.z)
+						.p = sl::algebra::vecf(p),
+						.p0 = sl::algebra::vecf(bary),
+						.p1 = sl::algebra::vecf(p1),
+						.p2 = sl::algebra::vecf(p2),
+						.n = sl::algebra::vecf(n)
 					});
 				}
 			}

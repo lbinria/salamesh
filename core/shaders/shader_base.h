@@ -8,8 +8,6 @@
 
 #include "material_params.h"
 
-#include "glm/glm.hpp"
-
 #include "json.hpp"
 using json = nlohmann::json;
 
@@ -63,13 +61,7 @@ struct ShaderBase {
 	virtual void clean() = 0;
 	virtual void clear() = 0;
 
-	void loadState(json &j) {
-		doLoadState(j);
-	}
 
-	void saveState(json &j) const {
-		doSaveState(j);
-	}
 
 	std::string getName() { return name; }
 
@@ -82,9 +74,5 @@ struct ShaderBase {
 	private:
 
 	std::string name;
-
-	virtual void doLoadState(json &j) = 0;
-	virtual void doSaveState(json &j) const = 0;
-
 
 };

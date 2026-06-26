@@ -6,10 +6,6 @@
 
 #include <ultimaille/all.h>
 
-#include "glm/glm.hpp"
-#include "glm/gtc/matrix_transform.hpp"
-#include "glm/gtc/type_ptr.hpp"
-
 #include "json.hpp"
 using json = nlohmann::json;
 
@@ -25,9 +21,9 @@ struct SurfaceShader : public ShaderBase {
 		// int vertexIndex;
 		int localIndex;
 		int cornerIndex;
-		glm::vec3 p0;
-		glm::vec3 p1;
-		glm::vec3 p2;
+		sl::algebra::vec3 p0;
+		sl::algebra::vec3 p1;
+		sl::algebra::vec3 p2;
 		int facetIndex;
 	};
 
@@ -59,11 +55,4 @@ struct SurfaceShader : public ShaderBase {
 	Surface &_m;
 
 	private:
-
-	void doLoadState(json &j) override {
-		
-	}
-	void doSaveState(json &j) const override {
-		
-	}
 };

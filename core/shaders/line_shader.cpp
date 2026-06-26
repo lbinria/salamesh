@@ -45,9 +45,9 @@ void LineShader::update(GeometryBuffer &geometryBuffer, Geometry &geometry) {
 
 		// Map Line -> LineComponent for VBO
 		for (auto &l : linesGeometry->getLines()) {
-			glm::vec3 la = {l.a.x, l.a.y, l.a.z};
-			glm::vec3 lb = {l.b.x, l.b.y, l.b.z};
-			glm::vec3 c = {l.color.x, l.color.y, l.color.z};
+			sl::algebra::vec3 la = sl::algebra::vecf(l.a);
+			sl::algebra::vec3 lb = sl::algebra::vecf(l.b);
+			sl::algebra::vec3 c = sl::algebra::vecf(l.color);
 			lineComponents.push_back({.p = la, .color = c});
 			lineComponents.push_back({ .p = lb, .color = c });
 		}

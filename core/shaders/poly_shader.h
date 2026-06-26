@@ -25,11 +25,11 @@ struct PolyShader : public ShaderBase {
 		int cornerIndex;
 		int cornerOff;
 		int facetIndex;
-		glm::vec3 p;
-		glm::vec3 p0;
-		glm::vec3 p1;
-		glm::vec3 p2;
-		glm::vec3 n;
+		sl::algebra::vec3 p;
+		sl::algebra::vec3 p0;
+		sl::algebra::vec3 p1;
+		sl::algebra::vec3 p2;
+		sl::algebra::vec3 n;
 	};
 
 	PolyShader(std::string name, Surface &m) : 
@@ -66,12 +66,4 @@ struct PolyShader : public ShaderBase {
 
 	unsigned int bufNVertsPerFacet; 
 	unsigned int texNVertsPerFacet;
-
-	void doLoadState(json &j) override {
-		
-	}
-	
-	void doSaveState(json &j) const override {
-		
-	}
 };

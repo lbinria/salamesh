@@ -8,8 +8,6 @@ using namespace UM;
 #include <string>
 #include <memory>
 
-using namespace UM;
-
 struct Attribute {
 	std::string name;
 	ElementKind kind;

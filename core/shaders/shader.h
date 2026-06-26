@@ -6,16 +6,12 @@
 #include "../include/glad/glad.h"
 #endif
 
+#include "../data/vec.h"
 
-  
 #include <string>
 #include <fstream>
 #include <sstream>
 #include <iostream>
-
-#include "glm/glm.hpp"
-#include "../include/glm/gtc/type_ptr.hpp"
-#include "../data/vec.h"
 
 struct Shader {
     // Program id

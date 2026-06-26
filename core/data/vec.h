@@ -2,6 +2,7 @@
 #include <ultimaille/all.h>
 
 namespace sl::algebra {
+
 	struct vec2 {
 		float x, y;
 		
@@ -51,4 +52,12 @@ namespace sl::algebra {
 			return &m[0];
 		}
 	};
+
+	inline vec2 vecf(UM::vec2 v) {
+		return { static_cast<float>(v.x), static_cast<float>(v.y) };
+	}
+
+	inline vec3 vecf(UM::vec3 v) {
+		return { static_cast<float>(v.x), static_cast<float>(v.y), static_cast<float>(v.z) };
+	}
 }

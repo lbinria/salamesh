@@ -20,7 +20,7 @@ struct PointShader : public ShaderBase {
 
 	struct Vertex {
 		int vertexIndex;
-		glm::vec3 position;
+		sl::algebra::vec3 position;
 		float size;
 	};
 
@@ -44,10 +44,6 @@ struct PointShader : public ShaderBase {
 		return ps.size();
 	}
 
-	bool getAutoUpdate() { return autoUpdate; }
-	void setAutoUpdate(bool val) { autoUpdate = val; }
-
-
 	PointSet& getPointSet() { return ps; }
 
 	vec3& operator[](int index)
@@ -57,16 +53,7 @@ struct PointShader : public ShaderBase {
 
 	private:
 	PointSet &ps;
-	bool autoUpdate = false;
 
 	void updatePointSet(GeometryBuffer &geometryBuffer, PointSet &ps);
-
-	void doLoadState(json &j) override {
-
-	}
-
-	void doSaveState(json &j) const override {
-
-	}
 
 };
