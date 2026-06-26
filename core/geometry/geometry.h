@@ -68,7 +68,7 @@ struct Geometry {
 	virtual int ncorners() const = 0; 
 	virtual int nhalfedges() const = 0;
 
-	virtual long pickEdge(glm::vec3 p0, int c) = 0;
+	virtual long pickEdge(vec3 p0, int c) = 0;
 
 	// TODO set private (pass in constructor)
 	std::string path = "";
@@ -263,7 +263,7 @@ struct SurfaceGeometry : public MeshGeometry {
 		return _m.ncorners();
 	}
 
-	long pickEdge(glm::vec3 p0, int f) override {
+	long pickEdge(vec3 p0, int f) override {
 		auto &m = getSurface();
 
 		// Search nearest edge
@@ -284,7 +284,7 @@ struct SurfaceGeometry : public MeshGeometry {
 			vec3 p2 = m.points[v1];
 			vec3 b = (p1 + p2) * .5;
 			// Compute dist from picked point to bary of edge points
-			double d = (vec3(p0.x, p0.y, p0.z) - b).norm(); // TODO maybe use norm2 will give the same result
+			double d = (p0 - b).norm(); // TODO maybe use norm2 will give the same result
 
 			// Keep min dist
 			if (d < min_d) {
@@ -422,7 +422,7 @@ struct PolyLineGeometry : public MeshGeometry {
 		return _m.nedges();
 	}
 
-	long pickEdge(glm::vec3 p0, int f) override {
+	long pickEdge(vec3 p0, int f) override {
 		return -1;
 	}
 
@@ -447,7 +447,7 @@ struct PolyLineGeometry : public MeshGeometry {
 
 
 // For volume
-// long pickEdge(glm::vec3 p0, int c) override {
+// long pickEdge(vec3 p0, int c) override {
 // 	// Search nearest edge
 // 	double min_d = std::numeric_limits<double>().max();
 // 	long found_e = -1;

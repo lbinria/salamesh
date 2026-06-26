@@ -41,7 +41,7 @@ struct LinesGeometry : public Geometry {
 		return _lines.size();
 	}
 
-	long pickEdge(glm::vec3 p0, int f) override {
+	long pickEdge(vec3 p0, int f) override {
 		return -1;
 	}
 

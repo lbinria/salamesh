@@ -83,8 +83,8 @@ struct App final : public IApp {
 	void quit() override;
 	float getDepth(double x, double y);
 
-	void unproject(Camera &camera, int x, int y, float depth, glm::vec3 &p);
-	glm::vec3 pickPoint(double x, double y) override;
+	void unproject(Camera &camera, int x, int y, float depth, vec3 &p);
+	vec3 pickPoint(double x, double y) override;
 
 	
 

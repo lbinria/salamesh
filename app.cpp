@@ -925,30 +925,30 @@ void getNDC(int x, int y, int w, int h, float &ndcX, float &ndcY) {
 	ndcY = 1.0f - (2.f*y) / h;
 }
 
-void App::unproject(Camera& camera, int x, int y, float depth, glm::vec3 &p) {
+void App::unproject(Camera& camera, int x, int y, float depth, vec3 &p) {
 	// Screen coordinates to NDC
 	float ndcX, ndcY;
 	getNDC(x, y, windowWidth, windowHeight, ndcX, ndcY);
 
 	// Clip space coordinates
-	glm::vec4 clipSpace(ndcX, ndcY, depth, 1.0f);
+	vec4 clipSpace{ndcX, ndcY, depth, 1.0f};
 
 	// Unproject clip space to view space
-	glm::mat4 invProj = glm::inverse(sl::um2glm(camera.getProjectionMatrix()));
-	glm::vec4 viewSpace = invProj * clipSpace;
+	mat4x4 invProj = camera.getProjectionMatrix().invert();
+	vec4 viewSpace = invProj * clipSpace;
 
 	// Unproject view space to world space
-	glm::mat4 invView = glm::inverse(sl::um2glm(camera.getViewMatrix()));
-	glm::vec4 worldSpace = invView * (viewSpace / viewSpace.w);
-	p = glm::vec3(worldSpace);
+	mat4x4 invView = camera.getViewMatrix().invert();
+	vec4 worldSpace = invView * (viewSpace / viewSpace.data[3]);
+	p = sl::vec4to3(worldSpace);
 }
 
-glm::vec3 App::pickPoint(double x, double y) {
+vec3 App::pickPoint(double x, double y) {
 	// Read depth value
     float depth = getDepth(x, y);
 	depth = depth * 2.f - 1.f; // Convert to NDC range [-1, 1]
 
-	glm::vec3 p;
+	vec3 p;
 	unproject(scene.getCurrentCamera(), x, y, depth, p);
 	return p;
 }
