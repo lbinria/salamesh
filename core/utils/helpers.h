@@ -20,6 +20,18 @@ using namespace UM;
 
 namespace sl {
 
+	inline vec3 vec4to3(vec4 v) {
+		return {v.data[0], v.data[1], v.data[2]};
+	}
+
+	inline vec2 div(vec2 a, vec2 b) {
+		return {a.x / b.x, a.y / b.y};
+	}
+
+	inline vec2 mul(vec2 a, vec2 b) {
+		return {a.x * b.x, a.y * b.y};
+	}
+
 	inline vec3 mul(vec3 a, vec3 b) {
 		return {a.x * b.x, a.y * b.y, a.z * b.z};
 	}

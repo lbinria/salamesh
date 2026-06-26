@@ -16,7 +16,7 @@ struct TrackBallCamera : public Camera {
 
         float bound = wh.x > wh.y ? half.x : half.y;
 
-        float aspect = _screen.x / _screen.y;
+        double aspect = _screen.x / _screen.y;
 
         return {
             -bound * aspect * zoomFactor,
@@ -143,37 +143,41 @@ struct TrackBallCamera : public Camera {
 
     }
 
-    void movePan(glm::vec2 delta) {
+    void movePan(vec2 delta) {
         if (m_lock)
             return;
 
         // Compute view rect size and divide by screen rect size 
         // to get how many world unit per pixel
         auto b = getBounds();
-        glm::vec2 viewDims{b.y - b.x, b.w - b.z};
-        glm::vec2 worldUnitPerPixel = viewDims / _screen;
+        vec2 viewDims{b.y - b.x, b.w - b.z};
+        vec2 worldUnitPerPixel = sl::div(viewDims, _screen);
 
         // Get offset in world coordinates
-        glm::vec2 offset = worldUnitPerPixel * delta;
+        vec2 offset = sl::mul(worldUnitPerPixel, delta);
 
-        glm::vec3 right = getRightVector();
-        glm::vec3 up = getUpVector();
+        vec3 right = getRightVector();
+        vec3 up = getUpVector();
 
-        m_viewMatrix = glm::translate(m_viewMatrix, right * offset.x + up * -offset.y);
 
-        m_eye = glm::inverse(m_viewMatrix)[3];
+        auto um_viewMatrix = sl::glm2um(m_viewMatrix);
+        um_viewMatrix = sl::translate(um_viewMatrix, right * offset.x + up * -offset.y);
+        m_viewMatrix = sl::um2glm(um_viewMatrix);
+
+        auto um_eye = um_viewMatrix.invert()[3];
+        m_eye = sl::um2glm(um_eye);
     }
 
-    void moveRight(float speed) override {
-        movePan({speed * 500.f, 0});
+    void moveRight(double speed) override {
+        movePan({speed * 500., 0});
     }
 
-    void moveForward(float speed) override {
-        zoom(speed * 10.f);
+    void moveForward(double speed) override {
+        zoom(speed * 10.);
     }
 
-    void moveUp(float speed) override {
-        movePan({0, speed * 500.f});
+    void moveUp(double speed) override {
+        movePan({0, speed * 500.});
     }
 
     void zoom(float delta) {

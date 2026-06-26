@@ -46,9 +46,9 @@ struct Camera {
 
 	virtual void lookAtBox(std::tuple<vec3, vec3> box) = 0;
 	virtual void move(vec2 oldPos, vec2 newPos) = 0;
-	virtual void moveRight(float speed) = 0;
-	virtual void moveForward(float speed) = 0;
-	virtual void moveUp(float speed) = 0;
+	virtual void moveRight(double speed) = 0;
+	virtual void moveForward(double speed) = 0;
+	virtual void moveUp(double speed) = 0;
 
 	virtual void zoom(float delta) = 0;
 	virtual void resetZoom() = 0;
@@ -87,14 +87,25 @@ struct Camera {
 		updateProjectionMatrix();
 	}
 	
-	void updateScreenSize(float width, float height) {
+	void updateScreenSize(double width, double height) {
 		_screen = {width, height}; 
 		updateProjectionMatrix();
 	}
 
-	glm::vec3 getRightVector() const { return glm::transpose(m_viewMatrix)[0]; }
-	glm::vec3 getUpVector() const { return glm::transpose(m_viewMatrix)[1]; }
-	glm::vec3 getViewDir() const { return -glm::transpose(m_viewMatrix)[2]; }
+	vec3 getRightVector() const { 
+		auto um_viewMatrix = sl::glm2um(m_viewMatrix);
+		return sl::vec4to3(um_viewMatrix.transpose()[0]);
+	}
+	
+	vec3 getUpVector() const { 
+		auto um_viewMatrix = sl::glm2um(m_viewMatrix);
+		return sl::vec4to3(um_viewMatrix.transpose()[1]);
+	}
+
+	vec3 getViewDir() const { 
+		auto um_viewMatrix = sl::glm2um(m_viewMatrix);
+		return -sl::vec4to3(um_viewMatrix.transpose()[2]);
+	}
 
 	void saveState(json &j) {
 		j["name"] = m_name;
@@ -165,7 +176,7 @@ struct Camera {
 	protected:
 	std::string m_name;
 	float _zoomFactor = 1.f;
-	glm::vec2 _screen;
+	vec2 _screen;
 	glm::mat4x4 m_viewMatrix;
 	glm::mat4x4 m_projectionMatrix;
 	glm::vec3 m_eye; // Camera position in 3D

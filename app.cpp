@@ -623,7 +623,7 @@ void App::updateCamera(float dt) {
 	if (st.mouse.isRightButton()) {
 		auto trackball = dynamic_cast<TrackBallCamera*>(&scene.getCurrentCamera());
 		if (trackball) {
-			trackball->movePan(st.mouse.delta);
+			trackball->movePan(sl::glm2um(st.mouse.delta));
 		}
 	}
 
