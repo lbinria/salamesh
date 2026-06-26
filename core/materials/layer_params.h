@@ -23,7 +23,7 @@ struct LayersParams : MaterialParams {
 
 		for (int layer = 0; layer < 5; ++layer) {
 			shader.setInt("attrNDims[" + std::to_string(int(layer)) + "]", nDims[layer]);
-			shader.setFloat2("attrRange[" + std::to_string(int(layer)) + "]", glm::vec2(range[layer].x, range[layer].y));
+			shader.setFloat2("attrRange[" + std::to_string(int(layer)) + "]", sl::algebra::vec2(range[layer].x, range[layer].y));
 
 			// TODO important refactor this, just to do transition during refactorign
 			if (layer < 3)

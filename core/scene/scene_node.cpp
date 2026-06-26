@@ -42,7 +42,7 @@ std::vector<std::shared_ptr<SceneNode>> SceneNode::findChildrenRecursive() {
 	return result;
 }
 
-glm::vec3 SceneNode::getWorldPosition() const {
+vec3 SceneNode::getWorldPosition() const {
 	if (auto p = _parent.lock()) {
 		return p->getWorldPosition() + position;
 	} else {

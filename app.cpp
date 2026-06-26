@@ -14,9 +14,9 @@
 
 
 struct UBOMatrices {
-	alignas(16) glm::mat4 view;
-	alignas(16) glm::mat4 proj;
-	alignas(16) glm::vec2 viewport;
+	alignas(16) sl::algebra::mat4x4 view;
+	alignas(16) sl::algebra::mat4x4 proj;
+	alignas(16) sl::algebra::vec2 viewport;
 };
 
 Image App::screenshot(const std::string& filename, int targetWidth, int targetHeight) {
@@ -505,14 +505,14 @@ void App::start() {
 		processInput(window);
 
 		// Set view / projection from current camera
-		glm::mat4 view = sl::um2glm(scene.getCurrentCamera().getViewMatrix());
-		glm::mat4 projection = sl::um2glm(scene.getCurrentCamera().getProjectionMatrix());
+		mat4x4 view = scene.getCurrentCamera().getViewMatrix();
+		mat4x4 projection = scene.getCurrentCamera().getProjectionMatrix();
 
 		// Update UBO
 		UBOMatrices mats{
-			view,
-			projection,
-			{getWindowWidth(), getWindowHeight()} // TODO here maybe replace by renderSurface width / height
+			static_cast<sl::algebra::mat4x4>(view),
+			static_cast<sl::algebra::mat4x4>(projection),
+			sl::algebra::vec2(static_cast<float>(getWindowWidth()), static_cast<float>(getWindowHeight())) // TODO here maybe replace by renderSurface width / height
 		};
 		
 		sl::updateUBOData(uboMatrices, sizeof(UBOMatrices), &mats);

@@ -116,7 +116,7 @@ struct SceneNode : std::enable_shared_from_this<SceneNode> {
 
 	std::vector<std::shared_ptr<SceneNode>> findChildrenRecursive();
 
-	glm::vec3 getWorldPosition() const;
+	vec3 getWorldPosition() const;
 
 	const std::string getName() const {
 		return _name;
@@ -147,7 +147,7 @@ struct SceneNode : std::enable_shared_from_this<SceneNode> {
 	// void updateLayer(Layer layer, ElementKind kind);
 	// void resetLayer(ElementKind kind, Layer layer);
 	
-	glm::vec3 position{0,0,0};
+	vec3 position{0,0,0};
 
 	private:
 	std::string _name;

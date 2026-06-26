@@ -22,12 +22,12 @@ struct GeometryBuffer {
 	unsigned int vbo() const { return _vbo; }
 
 	// TODO move that, just for test
-	void setPosition(glm::vec3 position) {
-		glm::mat4 model = glm::mat4(1.0f);
-		model = glm::translate(model, position);
+	void setPosition(vec3 position) {
+		mat4x4 model = mat<4,4>::identity();
+		model = sl::translate(model, position);
 		// Set model to shader
 		_shader.use();
-		_shader.setMat4("model", model);
+		_shader.setMat4("model", static_cast<sl::algebra::mat4x4>(model));
 	}
 
 	unsigned int nelements = 0;
