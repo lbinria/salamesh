@@ -617,13 +617,13 @@ void App::updateCamera(float dt) {
 
 	if (st.mouse.isLeftButton()) {
 		// scene.getCurrentCamera().move(st.mouse.delta);
-		scene.getCurrentCamera().move(sl::glm2um(st.mouse.lastPos), sl::glm2um(st.mouse.pos));
+		scene.getCurrentCamera().move(st.mouse.lastPos, st.mouse.pos);
 	}
 
 	if (st.mouse.isRightButton()) {
 		auto trackball = dynamic_cast<TrackBallCamera*>(&scene.getCurrentCamera());
 		if (trackball) {
-			trackball->movePan(sl::glm2um(st.mouse.delta));
+			trackball->movePan(st.mouse.delta);
 		}
 	}
 
@@ -1210,7 +1210,7 @@ void App::processInput(GLFWwindow *window) {
 	double x, y;
 	glfwGetCursorPos(window, &x, &y);
 	st.mouse.lastPos = st.mouse.pos;
-	st.mouse.pos = glm::vec2(x, y);
+	st.mouse.pos = {x, y};
 	st.mouse.delta = st.mouse.pos - st.mouse.lastPos;
 
 	// Check mouse buttons pressed
@@ -1341,7 +1341,7 @@ void App::mouseScroll(double xoffset, double yoffset) {
 
 	// Maybe move to a cameracontroller class
 	if (!scene.getCurrentCamera().isLocked()) {
-		st.mouse.scrollDelta = glm::vec2(xoffset, yoffset);
+		st.mouse.scrollDelta = {xoffset, yoffset};
 		scene.getCurrentCamera().zoom(st.mouse.scrollDelta.y);
 	}
 	else 
@@ -1373,7 +1373,7 @@ void App::mouseMove(double x, double y) {
 		st.cell.setHovered(pickCells(x, y, st.mouse.getCursorRadius()));
 
 
-		if (glm::dot(st.mouse.pos, st.mouse.lastPos) > 4) {
+		if ((st.mouse.pos * st.mouse.lastPos) > 4) {
 			auto edge = pickEdge(x, y);
 			if (edge >= 0) 
 				st.edge.setHovered({edge});

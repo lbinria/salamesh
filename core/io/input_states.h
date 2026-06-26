@@ -6,6 +6,10 @@
 #include <vector>
 #include "glm/glm.hpp"
 
+#include <ultimaille/all.h>
+using namespace UM;
+
+
 struct InputState {
 
 	struct HoverState {
@@ -45,9 +49,9 @@ struct InputState {
 	};
 
 	struct MouseState {
-		glm::vec2 pos;
-		glm::vec2 lastPos;
-		glm::vec2 delta;
+		vec2 pos;
+		vec2 lastPos;
+		vec2 delta;
 		bool buttons[8] = {false, false, false, false, false, false, false, false};
 		bool dblButtons[8] = {false, false, false, false, false, false, false, false};
 		std::chrono::steady_clock::time_point lastClicks[8];
@@ -88,7 +92,7 @@ struct InputState {
 			return dblClickInterval;
 		}
 
-		glm::vec2 scrollDelta = {0, 0};
+		vec2 scrollDelta = {0, 0};
 		
 		private:
 		int cursorRadius = 0;
