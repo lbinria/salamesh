@@ -5,7 +5,9 @@
 
 struct ViewComponent {
 	
-	ViewComponent(std::string name) :  
+	ViewComponent(std::string name, GeometryBuffer &geometryBuffer, Material &material) :
+	_geometryBuffer(geometryBuffer),
+	_material(material),
 	_name(name) {
 		_index = maxIndex;
 		++maxIndex;
@@ -33,7 +35,7 @@ struct ViewComponent {
 
 	private:
 	std::string _name;
-	// GeometryBuffer _geometryBuffer;
+	GeometryBuffer _geometryBuffer;
 	Material _material;
 	bool _visible = true;
 

@@ -16,6 +16,7 @@ using json = nlohmann::json;
 #include "geometry_buffer.h"
 #include "material.h"
 #include "geometry.h"
+#include "view_component.h"
 
 struct ShaderBase {
 
@@ -38,17 +39,13 @@ struct ShaderBase {
 
 	virtual bool isCompatible(Geometry &geometry) { return false; }
 
-	virtual GeometryBuffer createGeometryBuffer() {
-		unsigned int vao, vbo;
-		glGenVertexArrays(1, &vao);
-		glGenBuffers(1, &vbo);
-
-		return GeometryBuffer(vao, vbo);
-	};
-
-	virtual Material createMaterial() {
-		return Material();
+	ViewComponent createViewComponent(const std::string name) {
+		auto geometryBuffer = createGeometryBuffer();
+		auto material = createMaterial();
+		return ViewComponent(name, geometryBuffer, material);
 	}
+
+
 
 	virtual void update(GeometryBuffer &geometryBuffer, Geometry &geometry) {
 
@@ -68,8 +65,14 @@ struct ShaderBase {
 
 	Shader &getShader() { return shader; }
 
+	// TODO move to protected
+	virtual GeometryBuffer createGeometryBuffer() = 0;
+	virtual Material createMaterial() = 0;
+
 	protected:
 	Shader shader;
+
+
 
 	private:
 
