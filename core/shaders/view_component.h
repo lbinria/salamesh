@@ -3,11 +3,14 @@
 #include "geometry_buffer.h"
 #include "material.h"
 
+struct ShaderBase;
+
 struct ViewComponent {
 	
-	ViewComponent(std::string name, GeometryBuffer &geometryBuffer, Material &material) :
+	ViewComponent(std::string name, GeometryBuffer &geometryBuffer, Material &material, ShaderBase &shader) :
 	_geometryBuffer(geometryBuffer),
 	_material(material),
+	_shader(shader),
 	_name(name) {
 		_index = maxIndex;
 		++maxIndex;
@@ -33,10 +36,13 @@ struct ViewComponent {
 		return _visible;
 	}
 
+	void update(Geometry &geometry);
+
 	private:
 	std::string _name;
 	GeometryBuffer _geometryBuffer;
 	Material _material;
+	ShaderBase &_shader;
 	bool _visible = true;
 
 	static inline int maxIndex = 0;

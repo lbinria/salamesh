@@ -27,6 +27,15 @@ bool SceneNode::addShaderPass(ShaderBase &shader) {
 	return true;
 }
 
+bool SceneNode::addViewComponent(const std::string name, ShaderBase &shader) {
+	if (_viewComponents.contains(name))
+		return false;
+
+	auto viewComponent = shader.createViewComponent(name);
+	_viewComponents.emplace(name, std::move(viewComponent));
+	return true;
+}
+
 std::vector<std::shared_ptr<SceneNode>> SceneNode::findChildrenRecursive() {
 	std::vector<std::shared_ptr<SceneNode>> result;
 	

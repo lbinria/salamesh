@@ -71,6 +71,8 @@ struct SceneNode : std::enable_shared_from_this<SceneNode> {
 
 	bool addShaderPass(ShaderBase &shader);
 
+	bool addViewComponent(const std::string name, ShaderBase &shader);
+
 	bool hasMaterial(const std::string name) const {
 		return _materials.contains(name);
 	}
@@ -153,6 +155,11 @@ struct SceneNode : std::enable_shared_from_this<SceneNode> {
 	std::string _name;
 
 	std::unique_ptr<Geometry> _geometry;
+
+	
+	std::map<std::string, ViewComponent> _viewComponents;
+
+
 	std::map<std::string, GeometryBuffer> _geometryBuffer;
 	std::map<std::string, Material> _materials;
 

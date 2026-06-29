@@ -42,11 +42,11 @@ struct ShaderBase {
 	ViewComponent createViewComponent(const std::string name) {
 		auto geometryBuffer = createGeometryBuffer();
 		auto material = createMaterial();
-		return ViewComponent(name, geometryBuffer, material);
+		return ViewComponent(name, geometryBuffer, material, *this);
 	}
 
 
-
+	// TODO maybe to abstract
 	virtual void update(GeometryBuffer &geometryBuffer, Geometry &geometry) {
 
 	}
