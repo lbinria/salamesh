@@ -20,14 +20,14 @@ std::shared_ptr<SceneNode> ModelLoader::load(const std::string filename, const s
 		success = loadPolyLine(filename, *node);
 
 	// Put all compatible shaders on model
-	for (auto &[_, shader] : _scene.getShaders()) {
+	for (auto &shader : _scene.getShaders()) {
 		if (shader->isCompatible(node->getGeometry()))
 			node->addShaderPass(*shader);
 	}
 
 	// Create BBox
 	auto bbox = std::make_shared<SceneNode>(name + "_bbox");
-	bbox->addShaderPass(_scene.getShader("line_shader"));
+	bbox->addShaderPass(_scene.getShader("line_shader").value());
 
 	// auto bbox = std::make_shared<Lines>(name + "_bbox");
 	// bbox->addMaterial()
@@ -58,6 +58,11 @@ std::shared_ptr<SceneNode> ModelLoader::load(const std::string filename, const s
 
 
 	node->addChild(bbox);
+
+
+	node->addViewComponent("points", _scene.getShader("points_shader2").value());
+	node->addViewComponent("mesh", _scene.getShader("triangles_shader2").value());
+
 
 	return node;
 }

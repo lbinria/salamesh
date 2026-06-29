@@ -43,11 +43,28 @@ void Scene::init() {
 	auto halfedgesShader = std::make_unique<HalfedgeShader>("halfedges");
 	auto lineShader = std::make_unique<LineShader>("line_shader");
 
-	_shaders.emplace("points_shader", std::move(pointsShader));
-	_shaders.emplace("a_triangles_shader", std::move(trianglesShader));
-	_shaders.emplace("polygons_shader", std::move(polygonsShader));
-	_shaders.emplace("line_shader", std::move(lineShader));
-	_shaders.emplace("halfedges_shader", std::move(halfedgesShader));
+	// _shaders.emplace("points_shader", std::move(pointsShader));
+	// _shaders.emplace("a_triangles_shader", std::move(trianglesShader));
+	// _shaders.emplace("polygons_shader", std::move(polygonsShader));
+	// _shaders.emplace("line_shader", std::move(lineShader));
+	// _shaders.emplace("halfedges_shader", std::move(halfedgesShader));
+
+	// auto pointsShader2 = std::make_unique<PointShader>("points_shader2");
+	// auto triangleShader2 = std::make_unique<SurfaceShader>("triangles_shader2");
+	// _shaders.emplace(pointsShader2->getName(), std::move(pointsShader2));
+
+	// Order matters as it was render following this
+	_shaders.push_back(std::move(trianglesShader));
+	_shaders.push_back(std::move(polygonsShader));
+	_shaders.push_back(std::move(pointsShader));
+	_shaders.push_back(std::move(lineShader));
+	_shaders.push_back(std::move(halfedgesShader));
+
+	auto pointsShader2 = std::make_unique<PointShader>("points_shader2");
+	auto trianglesShader2 = std::make_unique<SurfaceShader>("triangles_shader2");
+	_shaders.push_back(std::move(trianglesShader2));
+	_shaders.push_back(std::move(pointsShader2));
+
 
 }
 
@@ -165,48 +182,93 @@ void Scene::render(std::shared_ptr<SceneNode> node, std::unique_ptr<ShaderBase>&
 	if (!node->isVisible())
 		return;
 
-	for (auto &child : node->getChildren()) {
-		render(child, shader, wasUpdated);
+	
+	// Get view components that uses shader
+	auto viewComponents = node->getViewComponents(*shader);
+
+	for (auto &viewComponent : viewComponents) {
+		auto &geometryBuffer = viewComponent.get().getGeometryBuffer();
+		auto &material = viewComponent.get().getMaterial();
+
+		// TODO: maybe we can delay update shader buffer when material is not visible
+		if (node->getGeometry().shouldUpdate()) {
+			// Update current geometry buffer for given geometry
+			shader->update(geometryBuffer, node->getGeometry());
+			// Update layers (only activated layers) according to new geometry
+			node->updateLayers();
+			// Set node as updated
+			wasUpdated[node->getName()] = true;
+		}
+
+		if (!material.isVisible())
+			return;
+
+		// Setup
+		glBindVertexArray(geometryBuffer.vao());
+		geometryBuffer.setPosition(shader->getShader(), node->getWorldPosition());
+		material.apply(shader->getShader());
+
+		// Set textures
+		for (auto &tbo : geometryBuffer.tbos) {
+			glActiveTexture(GL_TEXTURE0 + tbo.texUnit);
+			glBindTexture(GL_TEXTURE_BUFFER, tbo.tex);
+			shader->getShader().setInt(tbo.name, tbo.texUnit);
+		}
+		// Set mesh index
+		shader->getShader().setInt("meshIndex", node->getIndex());
+
+		// Draw
+		glDrawArrays(shader->renderElement(), 0, geometryBuffer.nelements);
 	}
 
-	auto geometryBufferOpt = node->getGeometryBuffer(*shader);
-	auto materialOpt = node->getMaterial(shader->getName());
-
-	if (!geometryBufferOpt.has_value() || !materialOpt.has_value())
-		return;
-
-	auto &geometryBuffer = geometryBufferOpt.value().get();
-	auto &material = materialOpt.value().get();
-
-	// TODO: maybe we can delay update shader buffer when material is not visible
-	if (node->getGeometry().shouldUpdate()) {
-		// Update current geometry buffer for given geometry
-		shader->update(geometryBuffer, node->getGeometry());
-		// Update layers (only activated layers) according to new geometry
-		node->updateLayers();
-		// Set node as updated
-		wasUpdated[node->getName()] = true;
-	}
-
-	if (!material.isVisible())
-		return;
-
-	glBindVertexArray(geometryBuffer.vao());
-	geometryBuffer.setPosition(shader->getShader(), node->getWorldPosition());
-	material.apply(shader->getShader());
-
-	// Set textures
-	for (auto &tbo : geometryBuffer.tbos) {
-		glActiveTexture(GL_TEXTURE0 + tbo.texUnit);
-		glBindTexture(GL_TEXTURE_BUFFER, tbo.tex);
-		shader->getShader().setInt(tbo.name, tbo.texUnit);
-	}
-
-	// Set mesh index
-	shader->getShader().setInt("meshIndex", node->getIndex());
-
-	glDrawArrays(shader->renderElement(), 0, geometryBuffer.nelements);
 }
+
+// void Scene::render(std::shared_ptr<SceneNode> node, std::unique_ptr<ShaderBase>& shader, std::map<std::string, bool> &wasUpdated) {
+// 	if (!node->isVisible())
+// 		return;
+
+// 	for (auto &child : node->getChildren()) {
+// 		render(child, shader, wasUpdated);
+// 	}
+
+// 	auto geometryBufferOpt = node->getGeometryBuffer(*shader);
+// 	auto materialOpt = node->getMaterial(shader->getName());
+
+// 	if (!geometryBufferOpt.has_value() || !materialOpt.has_value())
+// 		return;
+
+// 	auto &geometryBuffer = geometryBufferOpt.value().get();
+// 	auto &material = materialOpt.value().get();
+
+// 	// TODO: maybe we can delay update shader buffer when material is not visible
+// 	if (node->getGeometry().shouldUpdate()) {
+// 		// Update current geometry buffer for given geometry
+// 		shader->update(geometryBuffer, node->getGeometry());
+// 		// Update layers (only activated layers) according to new geometry
+// 		node->updateLayers();
+// 		// Set node as updated
+// 		wasUpdated[node->getName()] = true;
+// 	}
+
+// 	if (!material.isVisible())
+// 		return;
+
+// 	glBindVertexArray(geometryBuffer.vao());
+// 	geometryBuffer.setPosition(shader->getShader(), node->getWorldPosition());
+// 	material.apply(shader->getShader());
+
+// 	// Set textures
+// 	for (auto &tbo : geometryBuffer.tbos) {
+// 		glActiveTexture(GL_TEXTURE0 + tbo.texUnit);
+// 		glBindTexture(GL_TEXTURE_BUFFER, tbo.tex);
+// 		shader->getShader().setInt(tbo.name, tbo.texUnit);
+// 	}
+
+// 	// Set mesh index
+// 	shader->getShader().setInt("meshIndex", node->getIndex());
+
+// 	glDrawArrays(shader->renderElement(), 0, geometryBuffer.nelements);
+// }
 
 void Scene::render() {
 
@@ -214,7 +276,7 @@ void Scene::render() {
 	std::map<std::string, bool> wasUpdated;
 
 	// Loop through available shaders
-	for (auto &[shaderName, shader] : _shaders) {
+	for (auto &shader : _shaders) {
 		// Loop through nodes in scene
 		for (auto &[nodeName, node] : _nodes) {
 			render(node, shader, wasUpdated);

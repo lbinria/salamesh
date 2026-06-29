@@ -28,6 +28,14 @@ struct ViewComponent {
 		maxIndex = 0;
 	}
 
+	Material& getMaterial() {
+		return _material;
+	}
+
+	GeometryBuffer &getGeometryBuffer() {
+		return _geometryBuffer;
+	}
+
 	void setVisible(bool visible) {
 		_visible = visible;
 	}
@@ -37,6 +45,11 @@ struct ViewComponent {
 	}
 
 	void update(Geometry &geometry);
+
+
+	ShaderBase &getShader() {
+		return _shader;
+	}
 
 	private:
 	std::string _name;

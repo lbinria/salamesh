@@ -118,6 +118,19 @@ struct SceneNode : std::enable_shared_from_this<SceneNode> {
 
 	std::vector<std::shared_ptr<SceneNode>> findChildrenRecursive();
 
+
+	const std::map<std::string, ViewComponent> getViewComponents() { return _viewComponents; }
+
+	std::vector<std::reference_wrapper<ViewComponent>> getViewComponents(ShaderBase &shader) {
+		std::vector<std::reference_wrapper<ViewComponent>> results;
+		for (auto &[_, viewComponent] : _viewComponents) {
+			if (viewComponent.getShader().getName() == shader.getName()) {
+				results.push_back(std::ref(viewComponent));
+			}
+		}
+		return results;
+	}
+
 	vec3 getWorldPosition() const;
 
 	const std::string getName() const {

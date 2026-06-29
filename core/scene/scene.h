@@ -182,12 +182,17 @@ struct Scene {
 		return nullptr;
 	}
 
-	const std::map<std::string, std::unique_ptr<ShaderBase>>& getShaders() const {
+	const std::vector<std::unique_ptr<ShaderBase>>& getShaders() const {
 		return _shaders;
 	}
 
-	ShaderBase& getShader(const std::string name) const {
-		return *_shaders.at(name);
+	std::optional<std::reference_wrapper<ShaderBase>> getShader(const std::string name) const {
+		for (auto &shader : _shaders) {
+			if (shader->getName() == name) {
+				return *shader;
+			}
+		}
+		return std::nullopt;
 	}
 
 	private:
@@ -199,7 +204,8 @@ struct Scene {
 	CameraCollection cameras;
 
 	std::map<std::string, std::shared_ptr<SceneNode>> _nodes;
-	std::map<std::string, std::unique_ptr<ShaderBase>> _shaders;
+	// std::map<std::string, std::unique_ptr<ShaderBase>> _shaders;
+	std::vector<std::unique_ptr<ShaderBase>> _shaders;
 
 	// display color map in good format for 2D in the UI
 	std::map<std::string, Colormap> colormaps;

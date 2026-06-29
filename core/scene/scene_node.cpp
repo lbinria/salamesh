@@ -69,6 +69,14 @@ std::optional<Colormap> SceneNode::getColormap() {
 		return layerParams->getColormap(ColormapLayer::COLORMAP_LAYER_0);
 	}
 
+	for (auto &[_, viewComponent] : _viewComponents) {
+		auto layerParams = viewComponent.getMaterial().getParams<LayersParams>("layers");
+		if (!layerParams)
+			continue;
+		
+		return layerParams->getColormap(ColormapLayer::COLORMAP_LAYER_0);
+	}
+
 	return std::nullopt;
 }
 
@@ -77,6 +85,14 @@ void SceneNode::setColormap(Colormap colormap) {
 
 	for (auto &[_, material] : getMaterials()) {
 		auto layerParams = material.getParams<LayersParams>("layers");
+		if (!layerParams)
+			continue;
+		
+		layerParams->setColormap(ColormapLayer::COLORMAP_LAYER_0, colormap);
+	}
+
+	for (auto &[_, viewComponent] : _viewComponents) {
+		auto layerParams = viewComponent.getMaterial().getParams<LayersParams>("layers");
 		if (!layerParams)
 			continue;
 		
@@ -135,6 +151,24 @@ void SceneNode::setLayer(Layer layer, ElementKind kind, bool update) {
 		layerParams->setLayer(data, layer);
 
 	}
+
+	for (auto &[_, viewComponent] : _viewComponents) {
+		
+		auto layerParams = viewComponent.getMaterial().getParams<LayersParams>("layers");
+
+		if (!layerParams)
+			continue;
+
+		if (layerParams->isActivatedLayer(layer, kind) && !update)
+			continue;
+
+		layerParams->activateLayer(layer, kind);
+
+		layerParams->range[layer] = {min, max};
+		layerParams->nDims[layer] = attr.getNDims();
+		layerParams->setLayer(data, layer);
+
+	}
 }
 
 void SceneNode::updateLayers() {
@@ -170,6 +204,21 @@ void SceneNode::updateLayers() {
 				layerParams->setLayer(data, layer);
 			}
 
+			for (auto &[_, viewComponent] : _viewComponents) {
+				auto layerParams = viewComponent.getMaterial().getParams<LayersParams>("layers");
+
+				if (!layerParams)
+					continue;
+
+				auto activatedLayers = layerParams->getActivatedLayers();
+				if (!activatedLayers[l][k])
+					continue;
+
+				layerParams->range[l] = {min, max};
+				layerParams->nDims[l] = attr.getNDims();
+				layerParams->setLayer(data, layer);
+			}
+
 		}
 	}
 
@@ -188,6 +237,25 @@ void SceneNode::unsetLayer(Layer layer, ElementKind kind, bool reset) {
 	
 	for (auto &[_, material] : getMaterials()) {
 		auto layerParams = material.getParams<LayersParams>("layers");
+
+		if (!layerParams)
+			continue;
+
+		// Little optimisation, doesn't update data
+		// if layer isn't activated, no need to unset
+		if (!layerParams->isActivatedLayer(layer, kind))
+			continue;
+		
+		// Set requested layer data to zeros
+		// if (reset)
+		// 	resetLayer(kind, layer);
+
+		layerParams->setLayerElement(-1, layer);
+		layerParams->deactivateLayer(layer, kind);
+	}
+
+	for (auto &[_, viewComponent] : _viewComponents) {
+		auto layerParams = viewComponent.getMaterial().getParams<LayersParams>("layers");
 
 		if (!layerParams)
 			continue;
