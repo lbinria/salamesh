@@ -192,7 +192,7 @@ void Scene::render(std::shared_ptr<SceneNode> node, std::unique_ptr<ShaderBase>&
 		return;
 
 	glBindVertexArray(geometryBuffer.vao());
-	geometryBuffer.setPosition(node->getWorldPosition());
+	geometryBuffer.setPosition(shader->getShader(), node->getWorldPosition());
 	material.apply(shader->getShader());
 
 	// Set textures

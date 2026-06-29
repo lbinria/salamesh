@@ -28,7 +28,7 @@ GeometryBuffer HalfedgeShader::createGeometryBuffer() {
 	sl::createVBOFloat(shader.id, "aEnd", sizeof(LineVert), (void*)offsetof(LineVert, end));
 	sl::createVBOVec3(shader.id, "bary", sizeof(LineVert), (void*)offsetof(LineVert, bary));
 
-	return GeometryBuffer(shader, vao, vbo);
+	return GeometryBuffer(vao, vbo);
 };
 
 Material HalfedgeShader::createMaterial() {

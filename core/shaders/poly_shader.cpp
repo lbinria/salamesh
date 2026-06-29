@@ -29,7 +29,7 @@ GeometryBuffer PolyShader::createGeometryBuffer() {
 
 	sl::createTBO(bufNVertsPerFacet, texNVertsPerFacet);
 
-	auto geometryBuffer = GeometryBuffer(shader, vao, vbo);
+	auto geometryBuffer = GeometryBuffer(vao, vbo);
 	geometryBuffer.tbos.push_back({ 
 		.name = "nvertsPerFacetBuf", 
 		.texUnit = 8, 

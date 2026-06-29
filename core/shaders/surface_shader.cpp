@@ -25,12 +25,7 @@ GeometryBuffer SurfaceShader::createGeometryBuffer() {
 	sl::createVBOInteger(shader.id, "localIndex", sizeof(Vertex), (void*)offsetof(Vertex, localIndex));
 	sl::createVBOInteger(shader.id, "cornerIndex", sizeof(Vertex), (void*)offsetof(Vertex, cornerIndex));
 
-	std::map<std::string, std::shared_ptr<MaterialParams>> params;
-	params["style"] = std::make_shared<MeshStyleParams>();
-	params["layers"] = std::make_shared<LayersParams>();
-	params["clipping"] = std::make_shared<ClippingParams>();
-	params["light"] = std::make_shared<LightParams>();
-	return GeometryBuffer(shader, vao, vbo);
+	return GeometryBuffer(vao, vbo);
 };
 
 Material SurfaceShader::createMaterial() {

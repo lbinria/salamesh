@@ -25,7 +25,7 @@ GeometryBuffer PointShader::createGeometryBuffer() {
 	sl::createVBOVec3(shader.id, "p", sizeof(Vertex), (void*)offsetof(Vertex, position));
 	sl::createVBOFloat(shader.id, "sizeScale", sizeof(Vertex), (void*)offsetof(Vertex, size));
 
-	return GeometryBuffer(shader, vao, vbo);
+	return GeometryBuffer(vao, vbo);
 };
 
 Material PointShader::createMaterial() {

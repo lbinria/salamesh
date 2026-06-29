@@ -24,7 +24,7 @@ GeometryBuffer LineShader::createGeometryBuffer() {
 	sl::createVBOVec3(shader.id, "p", sizeof(LineComponent), (void*)offsetof(LineComponent, p));
 	sl::createVBOVec3(shader.id, "color", sizeof(LineComponent), (void*)offsetof(LineComponent, color));
 
-	return GeometryBuffer(shader, vao, vbo);
+	return GeometryBuffer(vao, vbo);
 };
 
 Material LineShader::createMaterial() {

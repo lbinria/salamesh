@@ -43,7 +43,7 @@ struct ShaderBase {
 		glGenVertexArrays(1, &vao);
 		glGenBuffers(1, &vbo);
 
-		return GeometryBuffer(shader, vao, vbo);
+		return GeometryBuffer(vao, vbo);
 	};
 
 	virtual Material createMaterial() {
