@@ -149,18 +149,6 @@ struct Scene {
 		return node;
 	}
 
-	const std::vector<std::shared_ptr<SceneNode>> getNodesAndDescendants() const {
-		std::vector<std::shared_ptr<SceneNode>> result;
-
-		for (auto &[_, node] : _nodes) {
-			result.push_back(node);
-			auto descendants = node->findChildrenRecursive();
-			result.insert(result.end(), descendants.begin(), descendants.end());
-		}
-
-		return result;
-	}
-
 	const std::vector<std::shared_ptr<SceneNode>> getNodes() const {
 		std::vector<std::shared_ptr<SceneNode>> result;
 		for (auto &[_, node] : _nodes)

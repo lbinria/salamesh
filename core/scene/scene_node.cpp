@@ -16,27 +16,8 @@ bool SceneNode::addShaderPass(const std::string name, ShaderBase &shader) {
 	return true;
 }
 
-std::vector<std::shared_ptr<SceneNode>> SceneNode::findChildrenRecursive() {
-	std::vector<std::shared_ptr<SceneNode>> result;
-	
-	// Add all direct children
-	for (auto& child : _children) {
-		result.push_back(child);
-		
-		// Recursively add all descendants
-		auto descendants = child->findChildrenRecursive();
-		result.insert(result.end(), descendants.begin(), descendants.end());
-	}
-	
-	return result;
-}
-
 vec3 SceneNode::getWorldPosition() const {
-	if (auto p = _parent.lock()) {
-		return p->getWorldPosition() + position;
-	} else {
-		return position;
-	}
+	return position;
 }
 
 std::optional<Colormap> SceneNode::getColormap() {

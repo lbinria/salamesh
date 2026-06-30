@@ -236,10 +236,6 @@ void Scene::render(std::shared_ptr<SceneNode> node, std::unique_ptr<ShaderBase>&
 	if (!node->isVisible())
 		return;
 
-	for (auto &child : node->getChildren()) {
-		render(child, shader, wasUpdated);
-	}
-
 	auto geometryBufferOpt = node->getGeometryBuffer(*shader);
 	auto materialOpt = node->getMaterial(shader->getName());
 
@@ -293,7 +289,7 @@ void Scene::render() {
 
 	}
 
-	for (auto &node : getNodesAndDescendants()) {
+	for (auto &[_, node] : _nodes) {
 		if (wasUpdated.contains(node->getName())) {
 				node->getGeometry().updateDone();
 		}

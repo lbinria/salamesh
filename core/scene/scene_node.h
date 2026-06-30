@@ -50,11 +50,7 @@ struct SceneNode : std::enable_shared_from_this<SceneNode> {
 
 	// TODO remove! 
 	void requestUpdate() {
-
 		_geometry->requestUpdate();
-
-		for (auto &c : _children)
-			c->requestUpdate();
 	}
 
 	bool addShaderPass(const std::string name, ShaderBase &shader);
@@ -88,22 +84,6 @@ struct SceneNode : std::enable_shared_from_this<SceneNode> {
 		
 		return _geometryBuffer.at(name);
 	}
-
-	std::shared_ptr<SceneNode> getParent() const {
-		return _parent.lock();
-	}
-
-	const std::vector<std::shared_ptr<SceneNode>>& getChildren() const {
-		return _children;
-	}
-
-	void addChild(std::shared_ptr<SceneNode> child) {
-		child->_parent = shared_from_this();
-		_children.push_back(child);
-	}
-
-	std::vector<std::shared_ptr<SceneNode>> findChildrenRecursive();
-
 
 	vec3 getWorldPosition() const;
 
@@ -143,12 +123,9 @@ struct SceneNode : std::enable_shared_from_this<SceneNode> {
 
 	std::shared_ptr<Geometry> _geometry;
 
-	
 	std::map<std::string, GeometryBuffer> _geometryBuffer;
 	std::map<std::string, Material> _materials;
 
-	std::weak_ptr<SceneNode> _parent;
-	std::vector<std::shared_ptr<SceneNode>> _children;
 
 	static inline int maxIndex = 0;
 	int _index;
