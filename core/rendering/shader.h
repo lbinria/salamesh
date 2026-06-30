@@ -1,7 +1,7 @@
 #pragma once
 
 #ifdef _WIN32
-#include "include/GL/glew.h"
+#include "glew.h"
 #else
 #include "glad.h"
 #endif

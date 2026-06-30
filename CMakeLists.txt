@@ -45,12 +45,6 @@ ELSE()
 	)
 ENDIF(WIN32)
 
-# set(GLAD_INCLUDE_DIR "include/glad")
-# include_directories(${GLAD_INCLUDE_DIR})
-
-set(GLEW_INCLUDE_DIR "include/glew")
-include_directories(${GLEW_INCLUDE_DIR})
-
 # ULTIMAILLE
 
 # Get development version of ultimaille directly from git repository 

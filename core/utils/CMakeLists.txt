@@ -7,4 +7,4 @@ target_include_directories(utils
         ${CMAKE_CURRENT_SOURCE_DIR}
 )
 
-target_link_libraries(utils PUBLIC stb_image)
+target_link_libraries(utils PUBLIC stb_image glad glew)
