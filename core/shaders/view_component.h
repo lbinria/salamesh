@@ -1,6 +1,7 @@
 #pragma once
 
 #include "geometry_buffer.h"
+#include "geometry.h"
 #include "material.h"
 
 struct ShaderBase;

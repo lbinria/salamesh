@@ -1,6 +1,7 @@
 #pragma once
 #include "shader.h"
 #include "material_params.h"
+#include "helpers.h"
 
 #include <ultimaille/all.h>
 using namespace UM;
