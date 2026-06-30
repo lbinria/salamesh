@@ -7,4 +7,8 @@ target_include_directories(utils
         ${CMAKE_CURRENT_SOURCE_DIR}
 )
 
-target_link_libraries(utils PUBLIC stb_image glad glew)
+target_link_libraries(utils PUBLIC stb_image glad)
+
+if(WIN32)
+    target_link_libraries(utils PUBLIC glew)
+endif(WIN32)

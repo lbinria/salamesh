@@ -7,4 +7,8 @@ target_include_directories(rendering
         ${CMAKE_CURRENT_SOURCE_DIR}
 )
 
-target_link_libraries(rendering PUBLIC data glad glew)
+target_link_libraries(rendering PUBLIC data glad)
+
+if(WIN32)
+    target_link_libraries(utils PUBLIC glew)
+endif(WIN32)
