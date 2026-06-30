@@ -7,4 +7,4 @@ target_include_directories(rendering
         ${CMAKE_CURRENT_SOURCE_DIR}
 )
 
-target_link_libraries(rendering PUBLIC data)
+target_link_libraries(rendering PUBLIC data glad)

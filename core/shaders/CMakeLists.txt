@@ -8,4 +8,4 @@ target_include_directories(shaders
 )
 
 # Optional: Link external libraries if needed
-target_link_libraries(shaders PUBLIC rendering data geometry materials nlohmann_json utils)
+target_link_libraries(shaders PUBLIC rendering data geometry materials nlohmann_json glad utils)

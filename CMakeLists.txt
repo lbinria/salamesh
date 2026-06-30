@@ -45,8 +45,8 @@ ELSE()
 	)
 ENDIF(WIN32)
 
-set(GLAD_INCLUDE_DIR "include/glad")
-include_directories(${GLAD_INCLUDE_DIR})
+# set(GLAD_INCLUDE_DIR "include/glad")
+# include_directories(${GLAD_INCLUDE_DIR})
 
 set(GLEW_INCLUDE_DIR "include/glew")
 include_directories(${GLEW_INCLUDE_DIR})
@@ -198,6 +198,7 @@ add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/core/scene)
 add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/core/rendering)
 
 add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/include/json)
+add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/include/glad)
 add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/include/stb_image)
 
 
@@ -215,6 +216,7 @@ target_link_libraries(salamesh_core
       shaders
       rendering
       nlohmann_json
+      glad
       stb_image
 )
 
