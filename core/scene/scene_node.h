@@ -71,7 +71,7 @@ struct SceneNode : std::enable_shared_from_this<SceneNode> {
 
 	bool addShaderPass(ShaderBase &shader);
 
-	bool addViewComponent(const std::string name, ShaderBase &shader);
+	bool addViewComponent(const std::string name, Geometry &geometry, ShaderBase &shader);
 
 	bool hasMaterial(const std::string name) const {
 		return _materials.contains(name);

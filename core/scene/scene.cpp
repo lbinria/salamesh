@@ -189,11 +189,12 @@ void Scene::render(std::shared_ptr<SceneNode> node, std::unique_ptr<ShaderBase>&
 	for (auto &viewComponent : viewComponents) {
 		auto &geometryBuffer = viewComponent.get().getGeometryBuffer();
 		auto &material = viewComponent.get().getMaterial();
+		auto &geometry = viewComponent.get().getGeometry();
 
 		// TODO: maybe we can delay update shader buffer when material is not visible
-		if (node->getGeometry().shouldUpdate()) {
+		if (geometry.shouldUpdate()) {
 			// Update current geometry buffer for given geometry
-			shader->update(geometryBuffer, node->getGeometry());
+			shader->update(geometryBuffer, geometry);
 			// Update layers (only activated layers) according to new geometry
 			node->updateLayers();
 			// Set node as updated

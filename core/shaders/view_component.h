@@ -8,7 +8,8 @@ struct ShaderBase;
 
 struct ViewComponent {
 	
-	ViewComponent(std::string name, GeometryBuffer &geometryBuffer, Material &material, ShaderBase &shader) :
+	ViewComponent(std::string name, Geometry &geometry, GeometryBuffer &geometryBuffer, Material &material, ShaderBase &shader) :
+	_geometry(geometry),
 	_geometryBuffer(geometryBuffer),
 	_material(material),
 	_shader(shader),
@@ -52,8 +53,13 @@ struct ViewComponent {
 		return _shader;
 	}
 
+	Geometry& getGeometry() {
+		return _geometry;
+	}
+
 	private:
 	std::string _name;
+	Geometry& _geometry;
 	GeometryBuffer _geometryBuffer;
 	Material _material;
 	ShaderBase &_shader;

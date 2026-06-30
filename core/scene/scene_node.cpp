@@ -27,11 +27,11 @@ bool SceneNode::addShaderPass(ShaderBase &shader) {
 	return true;
 }
 
-bool SceneNode::addViewComponent(const std::string name, ShaderBase &shader) {
+bool SceneNode::addViewComponent(const std::string name, Geometry &geometry, ShaderBase &shader) {
 	if (_viewComponents.contains(name))
 		return false;
 
-	auto viewComponent = shader.createViewComponent(name);
+	auto viewComponent = shader.createViewComponent(name, geometry);
 	_viewComponents.emplace(name, std::move(viewComponent));
 	return true;
 }

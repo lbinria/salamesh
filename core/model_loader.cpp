@@ -60,8 +60,39 @@ std::shared_ptr<SceneNode> ModelLoader::load(const std::string filename, const s
 	node->addChild(bbox);
 
 
-	node->addViewComponent("points", _scene.getShader("points_shader2").value());
-	node->addViewComponent("mesh", _scene.getShader("triangles_shader2").value());
+	node->addViewComponent("points", node->getGeometry(), _scene.getShader("points_shader2").value());
+	node->addViewComponent("mesh", node->getGeometry(), _scene.getShader("triangles_shader2").value());
+
+
+	// Scene own mesh
+	// auto &m = scene.getMesh("catorus");
+	// m.get().vert(0) = {1,2,3};
+	// m.requestUpdate();
+
+	// auto &n = scene.getNode("catorus_0");
+	// n.setPosition({1,0,0});
+	// n.addViewComponent("point", m, scene.getShader("point_shader"));
+	// n.addViewComponent("bbox", scene.getMesh("catorus_bbox"), scene.getShader("point_shader"));
+	// n.components["point"]["light"]["enabled"] = false;
+	// n.getMesh();
+
+	// auto &n = scene.getNode("catorus_1");
+	// n.setPosition({0,1,0});
+	// n.addViewComponent("point", m, scene.getShader("point_shader"));
+	// n.components["point"]["style"]["color"] = {1, 0, 0};
+
+	// Node own mesh
+	// auto &n = scene.getNode("catorus_0");
+	// n.setPosition({1,0,0});
+	// n.addViewComponent("point", n.getMesh("main"), scene.getShader("point_shader"));
+	// n.addViewComponent("mesh", n.getMesh("main"), scene.getShader("tri_shader"));
+	// n.addViewComponent("bbox", n.getMesh("bbox"), scene.getShader("line_shader"));
+	// n.components["point"]["light"]["enabled"] = false;
+	// n.getMesh();
+
+	// n.add<PointComponent>("point")
+	// n.add<TrianglesComponent>("mesh")
+	// n.add<BBoxComponent>("bbox")
 
 
 	return node;
