@@ -13,8 +13,9 @@ using namespace UM;
 
 struct SceneNode : std::enable_shared_from_this<SceneNode> {
 
-	SceneNode(std::string name) :  
-	_name(name) {
+	SceneNode(std::string name, std::shared_ptr<Geometry> geometry) :  
+	_name(name),
+	_geometry(geometry) {
 		_index = maxIndex;
 		++maxIndex;
 	}
@@ -42,36 +43,21 @@ struct SceneNode : std::enable_shared_from_this<SceneNode> {
 	void saveState(json &j, const std::string filename);
 
 
-	std::tuple<vec3, vec3> bbox() const;
 
-	// TODO warning geometry can be null
 	Geometry& getGeometry() {
 		return *_geometry;
 	}
 
-	// // TODO warning geometry can be null
-	// template<typename TGeometry>
-	// TGeometry& getGeometry() {
-	// 	return static_cast<TGeometry&>(*_geometry);
-	// }
-
-	template<typename TGeometry>
-	TGeometry& createGeometry() {
-		_geometry = std::make_unique<TGeometry>();
-		return *static_cast<TGeometry*>(_geometry.get());
-	}
-
+	// TODO remove! 
 	void requestUpdate() {
-		if (_geometry)
-			_geometry->requestUpdate();
+
+		_geometry->requestUpdate();
 
 		for (auto &c : _children)
 			c->requestUpdate();
 	}
 
-	bool addShaderPass(ShaderBase &shader);
-
-	bool addViewComponent(const std::string name, Geometry &geometry, ShaderBase &shader);
+	bool addShaderPass(const std::string name, ShaderBase &shader);
 
 	bool hasMaterial(const std::string name) const {
 		return _materials.contains(name);
@@ -119,18 +105,6 @@ struct SceneNode : std::enable_shared_from_this<SceneNode> {
 	std::vector<std::shared_ptr<SceneNode>> findChildrenRecursive();
 
 
-	const std::map<std::string, ViewComponent> getViewComponents() { return _viewComponents; }
-
-	std::vector<std::reference_wrapper<ViewComponent>> getViewComponents(ShaderBase &shader) {
-		std::vector<std::reference_wrapper<ViewComponent>> results;
-		for (auto &[_, viewComponent] : _viewComponents) {
-			if (viewComponent.getShader().getName() == shader.getName()) {
-				results.push_back(std::ref(viewComponent));
-			}
-		}
-		return results;
-	}
-
 	vec3 getWorldPosition() const;
 
 	const std::string getName() const {
@@ -167,12 +141,9 @@ struct SceneNode : std::enable_shared_from_this<SceneNode> {
 	private:
 	std::string _name;
 
-	std::unique_ptr<Geometry> _geometry;
+	std::shared_ptr<Geometry> _geometry;
 
 	
-	std::map<std::string, ViewComponent> _viewComponents;
-
-
 	std::map<std::string, GeometryBuffer> _geometryBuffer;
 	std::map<std::string, Material> _materials;
 

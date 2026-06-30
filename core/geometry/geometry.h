@@ -49,7 +49,7 @@ struct Geometry {
 		return _dirty;
 	}
 
-	void updateDone() {
+	void updateDone() const {
 		_dirty = false;
 	}
 
@@ -74,7 +74,7 @@ struct Geometry {
 	std::string path = "";
 
 	private:
-	bool _dirty = true;
+	mutable bool _dirty = true;
 };
 
 struct MeshGeometry : public Geometry {

@@ -5,7 +5,12 @@ namespace bindings {
 	void GeometryBindings::loadBindings(sol::state &lua, IApp &app) {
 		
 		type = lua.new_usertype<Geometry>("Geometry",
-			"bbox", sol::readonly_property(&Geometry::bbox),
+			"bbox", sol::readonly_property([](Geometry& self, sol::this_state s) {
+				sol::state_view lua(s);
+				auto [minv, maxv] = self.bbox();
+				sol::table t = lua.create_table_with(1, minv, 2, maxv);
+				return t;
+			}),
 			"center", sol::readonly_property(&Geometry::getCenter),
 			"radius", sol::readonly_property(&Geometry::getRadius),
 			"attributes", sol::readonly_property(&Geometry::getAttributes),

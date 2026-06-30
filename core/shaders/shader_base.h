@@ -39,10 +39,10 @@ struct ShaderBase {
 
 	virtual bool isCompatible(Geometry &geometry) { return false; }
 
-	ViewComponent createViewComponent(const std::string name, Geometry &geometry) {
+	ViewComponent createViewComponent(const std::string name) {
 		auto geometryBuffer = createGeometryBuffer();
 		auto material = createMaterial();
-		return ViewComponent(name, geometry, geometryBuffer, material, *this);
+		return ViewComponent(name, geometryBuffer, material, *this);
 	}
 
 

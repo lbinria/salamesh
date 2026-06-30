@@ -22,7 +22,7 @@ function draw_tree(node, k)
 		if (imgui.SmallButton("View")) then 
 			app.scene.selected_node = k
 			-- Set camera position !
-			app.scene.current_camera:look_at_box(node.bbox)
+			app.scene.current_camera:look_at_box(node.geometry.bbox)
 		end
 
 		draw_node_properties(node, k, 0)
@@ -698,7 +698,7 @@ function draw_gui()
 					-- local node_pos = node.center
 					-- app.scene.current_camera.position = vec3.new(node_pos.x, node_pos.y, node_pos.z - node.radius * 2.);
 					-- app.scene.current_camera.look_at = vec3.new(node_pos.x, node_pos.y, node_pos.z);
-					app.scene.current_camera:look_at_box(node.bbox)
+					app.scene.current_camera:look_at_box(node.geometry.bbox)
 				end
 				
 			end

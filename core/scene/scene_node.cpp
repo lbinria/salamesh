@@ -1,38 +1,18 @@
 #include "scene_node.h"
 
 #include "layer_params.h"
+#include "view_component.h"
 
-std::tuple<vec3, vec3> SceneNode::bbox() const {
-	auto [min, max] = _geometry->bbox();
-
-	for (auto child : _children) {
-		auto [childMin, childMax] = child->bbox();
-		min = sl::min(min, childMin);
-		max = sl::max(max, childMax);
-	}
-
-	return {min, max};
-}
-
-bool SceneNode::addShaderPass(ShaderBase &shader) {
-	if (_geometryBuffer.contains(shader.getName()))
+bool SceneNode::addShaderPass(const std::string name, ShaderBase &shader) {
+	if (_geometryBuffer.contains(name))
 		return false;
 	
 	auto geometryBuffer = shader.createGeometryBuffer();
-	_geometryBuffer.emplace(shader.getName(), std::move(geometryBuffer));
+	_geometryBuffer.emplace(name, std::move(geometryBuffer));
 	
 	auto material = shader.createMaterial();
-	_materials.emplace(shader.getName(), std::move(material));
+	_materials.emplace(name, std::move(material));
 
-	return true;
-}
-
-bool SceneNode::addViewComponent(const std::string name, Geometry &geometry, ShaderBase &shader) {
-	if (_viewComponents.contains(name))
-		return false;
-
-	auto viewComponent = shader.createViewComponent(name, geometry);
-	_viewComponents.emplace(name, std::move(viewComponent));
 	return true;
 }
 
@@ -69,14 +49,6 @@ std::optional<Colormap> SceneNode::getColormap() {
 		return layerParams->getColormap(ColormapLayer::COLORMAP_LAYER_0);
 	}
 
-	for (auto &[_, viewComponent] : _viewComponents) {
-		auto layerParams = viewComponent.getMaterial().getParams<LayersParams>("layers");
-		if (!layerParams)
-			continue;
-		
-		return layerParams->getColormap(ColormapLayer::COLORMAP_LAYER_0);
-	}
-
 	return std::nullopt;
 }
 
@@ -91,13 +63,6 @@ void SceneNode::setColormap(Colormap colormap) {
 		layerParams->setColormap(ColormapLayer::COLORMAP_LAYER_0, colormap);
 	}
 
-	for (auto &[_, viewComponent] : _viewComponents) {
-		auto layerParams = viewComponent.getMaterial().getParams<LayersParams>("layers");
-		if (!layerParams)
-			continue;
-		
-		layerParams->setColormap(ColormapLayer::COLORMAP_LAYER_0, colormap);
-	}
 }
 
 
@@ -152,24 +117,9 @@ void SceneNode::setLayer(Layer layer, ElementKind kind, bool update) {
 
 	}
 
-	for (auto &[_, viewComponent] : _viewComponents) {
-		
-		auto layerParams = viewComponent.getMaterial().getParams<LayersParams>("layers");
-
-		if (!layerParams)
-			continue;
-
-		if (layerParams->isActivatedLayer(layer, kind) && !update)
-			continue;
-
-		layerParams->activateLayer(layer, kind);
-
-		layerParams->range[layer] = {min, max};
-		layerParams->nDims[layer] = attr.getNDims();
-		layerParams->setLayer(data, layer);
-
-	}
 }
+
+
 
 void SceneNode::updateLayers() {
 	auto &geo = getGeometry();
@@ -204,21 +154,6 @@ void SceneNode::updateLayers() {
 				layerParams->setLayer(data, layer);
 			}
 
-			for (auto &[_, viewComponent] : _viewComponents) {
-				auto layerParams = viewComponent.getMaterial().getParams<LayersParams>("layers");
-
-				if (!layerParams)
-					continue;
-
-				auto activatedLayers = layerParams->getActivatedLayers();
-				if (!activatedLayers[l][k])
-					continue;
-
-				layerParams->range[l] = {min, max};
-				layerParams->nDims[l] = attr.getNDims();
-				layerParams->setLayer(data, layer);
-			}
-
 		}
 	}
 
@@ -237,25 +172,6 @@ void SceneNode::unsetLayer(Layer layer, ElementKind kind, bool reset) {
 	
 	for (auto &[_, material] : getMaterials()) {
 		auto layerParams = material.getParams<LayersParams>("layers");
-
-		if (!layerParams)
-			continue;
-
-		// Little optimisation, doesn't update data
-		// if layer isn't activated, no need to unset
-		if (!layerParams->isActivatedLayer(layer, kind))
-			continue;
-		
-		// Set requested layer data to zeros
-		// if (reset)
-		// 	resetLayer(kind, layer);
-
-		layerParams->setLayerElement(-1, layer);
-		layerParams->deactivateLayer(layer, kind);
-	}
-
-	for (auto &[_, viewComponent] : _viewComponents) {
-		auto layerParams = viewComponent.getMaterial().getParams<LayersParams>("layers");
 
 		if (!layerParams)
 			continue;

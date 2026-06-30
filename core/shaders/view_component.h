@@ -8,26 +8,12 @@ struct ShaderBase;
 
 struct ViewComponent {
 	
-	ViewComponent(std::string name, Geometry &geometry, GeometryBuffer &geometryBuffer, Material &material, ShaderBase &shader) :
-	_geometry(geometry),
+	ViewComponent(std::string name, GeometryBuffer &geometryBuffer, Material &material, ShaderBase &shader) :
 	_geometryBuffer(geometryBuffer),
 	_material(material),
 	_shader(shader),
 	_name(name) {
-		_index = maxIndex;
-		++maxIndex;
-	}
 
-	int getIndex() const {
-		return _index;
-	}
-
-	static inline int getMaxIndex() {
-		return maxIndex;
-	}
-
-	static void clearIndex() {
-		maxIndex = 0;
 	}
 
 	Material& getMaterial() {
@@ -53,19 +39,11 @@ struct ViewComponent {
 		return _shader;
 	}
 
-	Geometry& getGeometry() {
-		return _geometry;
-	}
-
 	private:
 	std::string _name;
-	Geometry& _geometry;
 	GeometryBuffer _geometryBuffer;
 	Material _material;
 	ShaderBase &_shader;
 	bool _visible = true;
-
-	static inline int maxIndex = 0;
-	int _index;
 
 };

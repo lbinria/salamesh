@@ -62,8 +62,15 @@ void Scene::init() {
 
 	auto pointsShader2 = std::make_unique<PointShader>("points_shader2");
 	auto trianglesShader2 = std::make_unique<SurfaceShader>("triangles_shader2");
+	auto polygonsShader2 = std::make_unique<PolyShader>("polygons_shader2");
+	auto halfedgesShader2 = std::make_unique<HalfedgeShader>("halfedges_shader2");
+	auto linesShader2 = std::make_unique<LineShader>("lines_shader2");
+
 	_shaders.push_back(std::move(trianglesShader2));
 	_shaders.push_back(std::move(pointsShader2));
+	_shaders.push_back(std::move(polygonsShader2));
+	_shaders.push_back(std::move(halfedgesShader2));
+	_shaders.push_back(std::move(linesShader2));
 
 
 }
@@ -102,7 +109,7 @@ void Scene::focus(const std::string nodeName) {
 	if (!setSelectedNode(nodeName))
 		return;
 	
-	auto bbox = _nodes.at(nodeName)->bbox();
+	auto bbox = _nodes.at(nodeName)->getGeometry().bbox();
 	getCurrentCamera().lookAtBox(bbox);
 }
 
@@ -110,7 +117,7 @@ std::tuple<vec3, vec3> Scene::computeSceneBBox() {
 	vec3 min{std::numeric_limits<float>::max()};
 	vec3 max{-std::numeric_limits<float>::max()};
 	for (auto &[_, n] : _nodes) {
-		auto [cmin, cmax] = n->bbox();
+		auto [cmin, cmax] = n->getGeometry().bbox();
 		min = sl::min(min, cmin);
 		max = sl::max(max, cmax);
 	}
@@ -178,98 +185,99 @@ Colormap Scene::getColormap(const std::string name) {
 	return colormaps.at(name);
 }
 
-void Scene::render(std::shared_ptr<SceneNode> node, std::unique_ptr<ShaderBase>& shader, std::map<std::string, bool> &wasUpdated) {
-	if (!node->isVisible())
-		return;
-
-	
-	// Get view components that uses shader
-	auto viewComponents = node->getViewComponents(*shader);
-
-	for (auto &viewComponent : viewComponents) {
-		auto &geometryBuffer = viewComponent.get().getGeometryBuffer();
-		auto &material = viewComponent.get().getMaterial();
-		auto &geometry = viewComponent.get().getGeometry();
-
-		// TODO: maybe we can delay update shader buffer when material is not visible
-		if (geometry.shouldUpdate()) {
-			// Update current geometry buffer for given geometry
-			shader->update(geometryBuffer, geometry);
-			// Update layers (only activated layers) according to new geometry
-			node->updateLayers();
-			// Set node as updated
-			wasUpdated[node->getName()] = true;
-		}
-
-		if (!material.isVisible())
-			return;
-
-		// Setup
-		glBindVertexArray(geometryBuffer.vao());
-		geometryBuffer.setPosition(shader->getShader(), node->getWorldPosition());
-		material.apply(shader->getShader());
-
-		// Set textures
-		for (auto &tbo : geometryBuffer.tbos) {
-			glActiveTexture(GL_TEXTURE0 + tbo.texUnit);
-			glBindTexture(GL_TEXTURE_BUFFER, tbo.tex);
-			shader->getShader().setInt(tbo.name, tbo.texUnit);
-		}
-		// Set mesh index
-		shader->getShader().setInt("meshIndex", node->getIndex());
-
-		// Draw
-		glDrawArrays(shader->renderElement(), 0, geometryBuffer.nelements);
-	}
-
-}
-
 // void Scene::render(std::shared_ptr<SceneNode> node, std::unique_ptr<ShaderBase>& shader, std::map<std::string, bool> &wasUpdated) {
 // 	if (!node->isVisible())
 // 		return;
 
-// 	for (auto &child : node->getChildren()) {
-// 		render(child, shader, wasUpdated);
+	
+// 	auto &geometry = node->getGeometry();
+	
+// 	// Get view components that uses shader
+// 	auto viewComponents = node->getViewComponents(*shader);
+
+// 	for (auto &viewComponent : viewComponents) {
+// 		auto &geometryBuffer = viewComponent.get().getGeometryBuffer();
+// 		auto &material = viewComponent.get().getMaterial();
+
+// 		// TODO: maybe we can delay update shader buffer when material is not visible
+// 		if (geometry.shouldUpdate()) {
+// 			// Update current geometry buffer for given geometry
+// 			shader->update(geometryBuffer, geometry);
+// 			// Update layers (only activated layers) according to new geometry
+// 			node->updateLayers();
+// 			// Set node as updated
+// 			wasUpdated[node->getName()] = true;
+// 		}
+
+// 		if (!material.isVisible())
+// 			return;
+
+// 		// Setup
+// 		glBindVertexArray(geometryBuffer.vao());
+// 		geometryBuffer.setPosition(shader->getShader(), node->getWorldPosition());
+// 		material.apply(shader->getShader());
+
+// 		// Set textures
+// 		for (auto &tbo : geometryBuffer.tbos) {
+// 			glActiveTexture(GL_TEXTURE0 + tbo.texUnit);
+// 			glBindTexture(GL_TEXTURE_BUFFER, tbo.tex);
+// 			shader->getShader().setInt(tbo.name, tbo.texUnit);
+// 		}
+// 		// Set mesh index
+// 		shader->getShader().setInt("meshIndex", node->getIndex());
+
+// 		// Draw
+// 		glDrawArrays(shader->renderElement(), 0, geometryBuffer.nelements);
 // 	}
 
-// 	auto geometryBufferOpt = node->getGeometryBuffer(*shader);
-// 	auto materialOpt = node->getMaterial(shader->getName());
-
-// 	if (!geometryBufferOpt.has_value() || !materialOpt.has_value())
-// 		return;
-
-// 	auto &geometryBuffer = geometryBufferOpt.value().get();
-// 	auto &material = materialOpt.value().get();
-
-// 	// TODO: maybe we can delay update shader buffer when material is not visible
-// 	if (node->getGeometry().shouldUpdate()) {
-// 		// Update current geometry buffer for given geometry
-// 		shader->update(geometryBuffer, node->getGeometry());
-// 		// Update layers (only activated layers) according to new geometry
-// 		node->updateLayers();
-// 		// Set node as updated
-// 		wasUpdated[node->getName()] = true;
-// 	}
-
-// 	if (!material.isVisible())
-// 		return;
-
-// 	glBindVertexArray(geometryBuffer.vao());
-// 	geometryBuffer.setPosition(shader->getShader(), node->getWorldPosition());
-// 	material.apply(shader->getShader());
-
-// 	// Set textures
-// 	for (auto &tbo : geometryBuffer.tbos) {
-// 		glActiveTexture(GL_TEXTURE0 + tbo.texUnit);
-// 		glBindTexture(GL_TEXTURE_BUFFER, tbo.tex);
-// 		shader->getShader().setInt(tbo.name, tbo.texUnit);
-// 	}
-
-// 	// Set mesh index
-// 	shader->getShader().setInt("meshIndex", node->getIndex());
-
-// 	glDrawArrays(shader->renderElement(), 0, geometryBuffer.nelements);
 // }
+
+void Scene::render(std::shared_ptr<SceneNode> node, std::unique_ptr<ShaderBase>& shader, std::map<std::string, bool> &wasUpdated) {
+	if (!node->isVisible())
+		return;
+
+	for (auto &child : node->getChildren()) {
+		render(child, shader, wasUpdated);
+	}
+
+	auto geometryBufferOpt = node->getGeometryBuffer(*shader);
+	auto materialOpt = node->getMaterial(shader->getName());
+
+	if (!geometryBufferOpt.has_value() || !materialOpt.has_value())
+		return;
+
+	auto &geometryBuffer = geometryBufferOpt.value().get();
+	auto &material = materialOpt.value().get();
+
+	// TODO: maybe we can delay update shader buffer when material is not visible
+	if (node->getGeometry().shouldUpdate()) {
+		// Update current geometry buffer for given geometry
+		shader->update(geometryBuffer, node->getGeometry());
+		// Update layers (only activated layers) according to new geometry
+		node->updateLayers();
+		// Set node as updated
+		wasUpdated[node->getName()] = true;
+	}
+
+	if (!material.isVisible())
+		return;
+
+	glBindVertexArray(geometryBuffer.vao());
+	geometryBuffer.setPosition(shader->getShader(), node->getWorldPosition());
+	material.apply(shader->getShader());
+
+	// Set textures
+	for (auto &tbo : geometryBuffer.tbos) {
+		glActiveTexture(GL_TEXTURE0 + tbo.texUnit);
+		glBindTexture(GL_TEXTURE_BUFFER, tbo.tex);
+		shader->getShader().setInt(tbo.name, tbo.texUnit);
+	}
+
+	// Set mesh index
+	shader->getShader().setInt("meshIndex", node->getIndex());
+
+	glDrawArrays(shader->renderElement(), 0, geometryBuffer.nelements);
+}
 
 void Scene::render() {
 
@@ -287,7 +295,7 @@ void Scene::render() {
 
 	for (auto &node : getNodesAndDescendants()) {
 		if (wasUpdated.contains(node->getName())) {
-			node->getGeometry().updateDone();
+				node->getGeometry().updateDone();
 		}
 	}
 
@@ -295,12 +303,12 @@ void Scene::render() {
 
 void Scene::loadState(json &j, const std::string filename) {
 	// Load models states
-	for (auto &[nodeName, jNode] : j["nodes"].items()) {
+	// for (auto &[nodeName, jNode] : j["nodes"].items()) {
 
-		auto node = addNode(nodeName);
-		node->loadState(jNode, filename);
-		// TODO! recompute cameras far / near
-	}
+	// 	auto node = createNode(nodeName);
+	// 	node->loadState(jNode, filename);
+	// 	// TODO! recompute cameras far / near
+	// }
 
 	// Load cameras states after model (because loading model will focus on)
 	for (auto &[cameraName, jCamera] : j["cameras"].items()) {
