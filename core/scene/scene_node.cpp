@@ -16,10 +16,6 @@ bool SceneNode::addShaderPass(const std::string name, ShaderBase &shader) {
 	return true;
 }
 
-vec3 SceneNode::getWorldPosition() const {
-	return position;
-}
-
 std::optional<Colormap> SceneNode::getColormap() {
 		
 	for (auto &[_, material] : getMaterials()) {

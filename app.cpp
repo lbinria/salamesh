@@ -815,7 +815,7 @@ long App::pickEdge(double x, double y) {
 	if (!st.cell.anyHovered() && !st.facet.anyHovered())
 		return -1;
 
-	auto model = scene.getHoveredNode();
+	auto model = scene.getHoveredMesh();
 	if (!model)
 		return -1;
 
@@ -854,7 +854,7 @@ long App::pickMesh(double x, double y) {
 }
 
 std::vector<long> App::pickVertices(double x, double y, int radius) {
-	auto model = scene.getHoveredNode();
+	auto model = scene.getHoveredMesh();
 
 	if (!model)
 		return {};
@@ -874,7 +874,7 @@ std::vector<long> App::pickVertices(double x, double y, int radius) {
 }
 
 std::vector<long> App::pickFacets(double x, double y, int radius) {
-	auto model = scene.getHoveredNode();
+	auto model = scene.getHoveredMesh();
 
 	if (!model)
 		return {};
@@ -894,7 +894,7 @@ std::vector<long> App::pickFacets(double x, double y, int radius) {
 }
 
 std::vector<long> App::pickCells(double x, double y, int radius) {		
-	auto model = scene.getHoveredNode();
+	auto model = scene.getHoveredMesh();
 
 	if (!model)
 		return {};

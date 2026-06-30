@@ -85,8 +85,6 @@ struct SceneNode : std::enable_shared_from_this<SceneNode> {
 		return _geometryBuffer.at(name);
 	}
 
-	vec3 getWorldPosition() const;
-
 	const std::string getName() const {
 		return _name;
 	}

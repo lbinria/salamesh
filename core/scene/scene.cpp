@@ -259,7 +259,7 @@ void Scene::render(std::shared_ptr<SceneNode> node, std::unique_ptr<ShaderBase>&
 		return;
 
 	glBindVertexArray(geometryBuffer.vao());
-	geometryBuffer.setPosition(shader->getShader(), node->getWorldPosition());
+	geometryBuffer.setPosition(shader->getShader(), node->position);
 	material.apply(shader->getShader());
 
 	// Set textures
@@ -340,7 +340,7 @@ void Scene::saveState(json &j, const std::string filename) {
 	// TODO important save colormaps states
 }
 
-std::shared_ptr<SceneNode> Scene::getHoveredNode() {
+std::shared_ptr<SceneNode> Scene::getHoveredMesh() {
 	auto hoveredIndex = app.getInputState().mesh.getHovered();
 	return findNodeByIndex(hoveredIndex);;
 }

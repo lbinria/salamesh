@@ -78,7 +78,7 @@ struct Scene {
 		return nullptr;
 	}
 
-	std::shared_ptr<SceneNode> getHoveredNode();
+	std::shared_ptr<SceneNode> getHoveredMesh();
 
 
 	std::tuple<vec3, vec3> computeSceneBBox();

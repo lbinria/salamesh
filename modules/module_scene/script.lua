@@ -10,8 +10,6 @@ function draw_tree(node, k)
 			imgui.TextColored(1, 1, 0, 1, "Selected")
 		end
 
-		local node_pos = node.world_position
-
 		local sel_visible, new_visible = imgui.Checkbox("Visible##" .. k .. "_visible", node.visible)
 		if (sel_visible) then 
 			node.visible = new_visible
@@ -51,13 +49,11 @@ local selected_colormaps = {}
 local selected_attributes = {}
 
 function draw_node_properties(node, k, view)
-	local node_pos = node.world_position
 	local p = node.position
 	-- imgui.Text("world position: (%.4f, %.4f, %.4f)", node_pos.x, node_pos.y, node_pos.z);
 	-- imgui.Text("local position: (%.4f, %.4f, %.4f)", p.x, p.y, p.z);
 	-- TODO using ':' instead of '.' for to_string call... for sending self...
-	imgui.Text("World position: " .. node_pos:to_string());
-	imgui.Text("Local position: " .. p:to_string());
+	imgui.Text("Position: " .. p:to_string());
 	imgui.Text("Center: " .. node.geometry.center:to_string());
 	imgui.Text("Radius: " .. string.format("%.4f", node.geometry.radius));
 

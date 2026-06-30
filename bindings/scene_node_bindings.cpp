@@ -5,7 +5,6 @@ namespace bindings {
 	void SceneNodeBindings::loadBindings(sol::state &lua, IApp &app) {
 		type = lua.new_usertype<SceneNode>("SceneNode",
 			"name", sol::readonly_property(&SceneNode::getName),
-			"world_position", sol::readonly_property(&SceneNode::getWorldPosition),
 			"position", sol::property(&SceneNode::position, &SceneNode::position),
 			"visible", sol::property(&SceneNode::isVisible, &SceneNode::setVisible),
 			"geometry", sol::readonly_property(&SceneNode::getGeometry),
