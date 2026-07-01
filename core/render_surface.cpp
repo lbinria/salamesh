@@ -1,6 +1,7 @@
 #include "render_surface.h"
 
 #include <iostream>
+#include "geometry.h"
 
 void RenderSurface::setup() {
 	// Framebuffer !
@@ -167,3 +168,268 @@ void RenderSurface::clean() {
 	glDeleteTextures(1, &texVertexID);
 	glDeleteTextures(1, &texMeshID);
 }
+
+
+float RenderSurface::getDepth(double x, double y) {
+	glBindFramebuffer(GL_READ_FRAMEBUFFER, fbo);
+    float depth;
+    glReadPixels(x, height - y, 1, 1, GL_DEPTH_COMPONENT, GL_FLOAT, &depth);
+    return depth;
+}
+
+void getNDC(int x, int y, int w, int h, float &ndcX, float &ndcY) {
+	ndcX = (2.f*x) / w - 1.0f;
+	ndcY = 1.0f - (2.f*y) / h;
+}
+
+void RenderSurface::unproject(int x, int y, float depth, vec3 &p) {
+	// Screen coordinates to NDC
+	float ndcX, ndcY;
+	getNDC(x, y, width, height, ndcX, ndcY);
+
+	// Clip space coordinates
+	vec4 clipSpace{ndcX, ndcY, depth, 1.0f};
+
+	// Unproject clip space to view space
+	mat4x4 invProj = _camera->getProjectionMatrix().invert();
+	vec4 viewSpace = invProj * clipSpace;
+
+	// Unproject view space to world space
+	mat4x4 invView = _camera->getViewMatrix().invert();
+	vec4 worldSpace = invView * (viewSpace / viewSpace.data[3]);
+	p = sl::vec4to3(worldSpace);
+}
+
+vec3 RenderSurface::pickPoint(double x, double y) {
+	// Read depth value
+    float depth = getDepth(x, y);
+	depth = depth * 2.f - 1.f; // Convert to NDC range [-1, 1]
+
+	vec3 p;
+	unproject(x, y, depth, p);
+	return p;
+}
+
+// long RenderSurface::pick(double x, double y) {	
+// 	unsigned char pixel[4];
+// 	glReadPixels(x, height- y, 1, 1, GL_RGBA, GL_UNSIGNED_BYTE, pixel);
+// 	// Decode id from pixel
+// 	return pixel[3] == 0 ? -1 :
+// 		pixel[0] +
+// 		pixel[1] * 256 +
+// 		pixel[2] * 256 * 256;
+// }
+
+PickResult RenderSurface::pick2(double xPos, double yPos, int radius) {
+
+	const int diameter = radius * 2 + 1;
+	PickResult pickResult;
+
+	// Allocate buffer for square that bounds our circle
+	unsigned char* pixelData = new unsigned char[diameter * diameter * 4];
+
+	// Read pixels in square that bounds our circle
+	glReadPixels(
+		xPos - radius,
+		height - yPos - radius,
+		diameter,
+		diameter,
+		GL_RGBA,
+		GL_UNSIGNED_BYTE,
+		pixelData
+	);
+
+	// Process each pixel in the bounding square
+	for(int y = 0; y < diameter; ++y) {
+		for(int x = 0; x < diameter; ++x) {
+			// Calculate distance from center
+			int dx = x - radius;
+			int dy = y - radius;
+			float distSq = dx * dx + dy * dy;
+
+			// Only process pixels within circle
+			if(distSq <= radius * radius) {
+				int offset = (y * diameter + x) * 4;
+				unsigned char r = pixelData[offset];
+				unsigned char g = pixelData[offset + 1];
+				unsigned char b = pixelData[offset + 2];
+				unsigned char a = pixelData[offset + 3];
+				
+				long pickID = a == 0 ? -1 :
+							r +
+							g * 256 +
+							b * 256 * 256;
+
+				if (pickID != -1) {
+					pickResult.set(x, y, pickID);
+				}
+			}
+		}
+	}
+
+	delete[] pixelData;
+	return pickResult;
+}
+
+// std::set<long> RenderSurface::pick(double xPos, double yPos, int radius) {
+
+// 	const int diameter = radius * 2 + 1;
+// 	std::set<long> pickIDs;
+
+// 	// Allocate buffer for square that bounds our circle
+// 	unsigned char* pixelData = new unsigned char[diameter * diameter * 4];
+
+// 	// Read pixels in square that bounds our circle
+// 	glReadPixels(
+// 		xPos - radius,
+// 		height - yPos - radius,
+// 		diameter,
+// 		diameter,
+// 		GL_RGBA,
+// 		GL_UNSIGNED_BYTE,
+// 		pixelData
+// 	);
+
+// 	// Process each pixel in the bounding square
+// 	for(int y = 0; y < diameter; ++y) {
+// 		for(int x = 0; x < diameter; ++x) {
+// 			// Calculate distance from center
+// 			int dx = x - radius;
+// 			int dy = y - radius;
+// 			float distSq = dx * dx + dy * dy;
+
+// 			// Only process pixels within circle
+// 			if(distSq <= radius * radius) {
+// 				int offset = (y * diameter + x) * 4;
+// 				unsigned char r = pixelData[offset];
+// 				unsigned char g = pixelData[offset + 1];
+// 				unsigned char b = pixelData[offset + 2];
+// 				unsigned char a = pixelData[offset + 3];
+				
+// 				long pickID = a == 0 ? -1 :
+// 							r +
+// 							g * 256 +
+// 							b * 256 * 256;
+
+// 				if (pickID != -1) {
+// 					pickIDs.insert(pickID);
+// 				}
+// 			}
+// 		}
+// 	}
+
+// 	delete[] pixelData;
+// 	return pickIDs;
+// }
+
+
+
+
+PickResult RenderSurface::pickMeshes(double x, double y, int radius) {
+	glBindFramebuffer(GL_READ_FRAMEBUFFER, fbo);
+	glReadBuffer(GL_COLOR_ATTACHMENT4);
+	auto result = pick2(x, y, radius);
+	glBindFramebuffer(GL_READ_FRAMEBUFFER, 0);
+	// Clean up results
+	return result;
+	// return id >= 0 && id < Geometry::getMaxIndex() ? id : -1;
+}
+
+PickResult RenderSurface::pickVertices(double x, double y, int radius) {
+
+	glBindFramebuffer(GL_READ_FRAMEBUFFER, fbo);
+	glReadBuffer(GL_COLOR_ATTACHMENT3);
+	auto result = pick2(x, y, radius);
+	glBindFramebuffer(GL_READ_FRAMEBUFFER, 0);
+
+	return result;
+	// Clean ids
+	// std::vector<long> clean_ids;
+	// std::copy_if(ids.begin(), ids.end(), std::back_inserter(clean_ids), [&](long id) {
+	// 	return id >= 0 && id < geometry.nverts();
+	// });
+	// return clean_ids;
+
+	// // Cross results
+	// for (auto &[xy, id] : result) {
+	// 	auto [x, y] = xy;
+	// 	long meshId = pickMeshesResult.get(x, y);
+
+	// }
+}
+
+PickState RenderSurface::getPickState(double x, double y, int radius) {
+	auto pickMeshesResult = pickMeshes(x, y, radius);
+	auto pickVerticesResult = pickVertices(x, y, radius);
+
+	std::array<PickResult, PickElement::PICK_ELEMENT_COUNT> results;
+	results[PickElement::PICK_MESH] = pickMeshesResult;
+	results[PickElement::PICK_VERTEX] = pickVerticesResult;
+
+	return PickState(results);
+}
+
+// long RenderSurface::pickEdge(double x, double y) {
+// 	// if (!st.cell.anyHovered() && !st.facet.anyHovered())
+// 	// 	return -1;
+
+// 	auto geometryOpt = scene.getHoveredMesh();
+
+// 	if (!geometryOpt.has_value())
+// 		return -1;
+
+// 	auto &geometry = geometryOpt.value().get();
+
+// 	auto p = pickPoint(x, y);
+
+// 	int c = st.cell.getHovered();
+// 	if (c < 0)
+// 		c = st.facet.getHovered();
+
+// 	return geometry.pickEdge(p, c);
+
+// }
+
+// std::vector<long> RenderSurface::pickFacets(double x, double y, int radius) {
+// 	auto geometryOpt = scene.getHoveredMesh();
+
+// 	if (!geometryOpt.has_value())
+// 		return {};
+
+// 	auto &geometry = geometryOpt.value().get();
+
+// 	glBindFramebuffer(GL_READ_FRAMEBUFFER, scene.getDefaultRenderSurface().fbo);
+// 	glReadBuffer(GL_COLOR_ATTACHMENT1);
+// 	auto ids = pick(x, y, radius);
+// 	glBindFramebuffer(GL_READ_FRAMEBUFFER, 0);
+
+// 	// Clean ids
+// 	std::vector<long> clean_ids;
+// 	std::copy_if(ids.begin(), ids.end(), std::back_inserter(clean_ids), [&](long id) {
+// 		return id >= 0 && id < geometry.nfacets();
+// 	});
+
+// 	return clean_ids;
+// }
+
+// std::vector<long> RenderSurface::pickCells(double x, double y, int radius) {		
+// 	auto geometryOpt = scene.getHoveredMesh();
+
+// 	if (!geometryOpt.has_value())
+// 		return {};
+
+// 	auto &geometry = geometryOpt.value().get();
+
+// 	glBindFramebuffer(GL_READ_FRAMEBUFFER, scene.getDefaultRenderSurface().fbo);
+// 	glReadBuffer(GL_COLOR_ATTACHMENT2);
+// 	auto ids = pick(x, y, radius);
+// 	glBindFramebuffer(GL_READ_FRAMEBUFFER, 0);
+
+// 	// Clean ids
+// 	std::vector<long> clean_ids;
+// 	std::copy_if(ids.begin(), ids.end(), std::back_inserter(clean_ids), [&](long id) {
+// 		return id >= 0 && id < geometry.ncells();
+// 	});
+
+// 	return clean_ids;
+// }

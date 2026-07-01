@@ -3,9 +3,13 @@
 #include "shader.h"
 
 #include <memory>
+#include <set>
+#include "data/picking.h"
 
 struct RenderSurface {
 	
+
+
 	RenderSurface(int w, int h) : width(w), height(h) {
 
 		
@@ -33,6 +37,20 @@ struct RenderSurface {
 	void clean();
 
 	// Add picking functions
+	vec3 pickPoint(double x, double y);
+	// long pick(double xPos, double yPos);
+	// std::set<long> pick(double xPos, double yPos, int radius = 0);
+	PickResult pick2(double xPos, double yPos, int radius);
+
+	PickResult pickMeshes(double x, double y, int radius);
+	PickResult pickVertices(double x, double y, int radius);
+	PickState getPickState(double x, double y, int radius);
+
+	// long pickEdge(double x, double y);
+	// std::vector<long> pickFacets(double x, double y, int radius) override;
+	// std::vector<long> pickCells(double x, double y, int radius) override;
+	float getDepth(double x, double y);
+	void unproject(int x, int y, float depth, vec3 &p);
 
 	void setCamera(std::shared_ptr<Camera> camera) {
 		_camera = camera;
