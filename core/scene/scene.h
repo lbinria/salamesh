@@ -78,7 +78,7 @@ struct Scene {
 		return nullptr;
 	}
 
-	std::shared_ptr<SceneNode> getHoveredMesh();
+	std::optional<std::reference_wrapper<Geometry>>  getHoveredMesh();
 
 
 	std::tuple<vec3, vec3> computeSceneBBox();
@@ -161,13 +161,14 @@ struct Scene {
 		return _nodes.contains(name) ? _nodes.at(name) : nullptr;
 	}
 
-	std::shared_ptr<SceneNode> findNodeByIndex(int index) {
+	std::optional<std::reference_wrapper<Geometry>> findGeometryByIndex(int index) {
 		for (auto &[_, node] : _nodes) {
-			if (node->getIndex() == index)
-				return node;
+			auto &geometry = node->getGeometry();
+			if (geometry.getIndex() == index)
+				return geometry;
 		}
 
-		return nullptr;
+		return std::nullopt;
 	}
 
 	const std::vector<std::unique_ptr<ShaderBase>>& getShaders() const {

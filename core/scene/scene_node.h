@@ -16,8 +16,7 @@ struct SceneNode : std::enable_shared_from_this<SceneNode> {
 	SceneNode(std::string name, std::shared_ptr<Geometry> geometry) :  
 	_name(name),
 	_geometry(geometry) {
-		_index = maxIndex;
-		++maxIndex;
+
 	}
 
 	// Remove copy
@@ -26,18 +25,6 @@ struct SceneNode : std::enable_shared_from_this<SceneNode> {
 	// Allow move
 	SceneNode(SceneNode&&) = default;
 	SceneNode& operator=(SceneNode&&) = default;
-
-	int getIndex() const {
-		return _index;
-	}
-
-	static inline int getMaxIndex() {
-		return maxIndex;
-	}
-
-	static void clearIndex() {
-		maxIndex = 0;
-	}
 
 	void loadState(json &j, const std::string filename);
 	void saveState(json &j, const std::string filename);
@@ -124,9 +111,6 @@ struct SceneNode : std::enable_shared_from_this<SceneNode> {
 	std::map<std::string, GeometryBuffer> _geometryBuffer;
 	std::map<std::string, Material> _materials;
 
-
-	static inline int maxIndex = 0;
-	int _index;
 
 	bool _visible = true;
 

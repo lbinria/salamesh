@@ -242,13 +242,14 @@ void Scene::render(std::shared_ptr<SceneNode> node, std::unique_ptr<ShaderBase>&
 	if (!geometryBufferOpt.has_value() || !materialOpt.has_value())
 		return;
 
+	auto &geometry = node->getGeometry();
 	auto &geometryBuffer = geometryBufferOpt.value().get();
 	auto &material = materialOpt.value().get();
 
 	// TODO: maybe we can delay update shader buffer when material is not visible
-	if (node->getGeometry().shouldUpdate()) {
+	if (geometry.shouldUpdate()) {
 		// Update current geometry buffer for given geometry
-		shader->update(geometryBuffer, node->getGeometry());
+		shader->update(geometryBuffer, geometry);
 		// Update layers (only activated layers) according to new geometry
 		node->updateLayers();
 		// Set node as updated
@@ -270,7 +271,7 @@ void Scene::render(std::shared_ptr<SceneNode> node, std::unique_ptr<ShaderBase>&
 	}
 
 	// Set mesh index
-	shader->getShader().setInt("meshIndex", node->getIndex());
+	shader->getShader().setInt("meshIndex", geometry.getIndex());
 
 	glDrawArrays(shader->renderElement(), 0, geometryBuffer.nelements);
 }
@@ -340,7 +341,7 @@ void Scene::saveState(json &j, const std::string filename) {
 	// TODO important save colormaps states
 }
 
-std::shared_ptr<SceneNode> Scene::getHoveredMesh() {
+std::optional<std::reference_wrapper<Geometry>> Scene::getHoveredMesh() {
 	auto hoveredIndex = app.getInputState().mesh.getHovered();
-	return findNodeByIndex(hoveredIndex);;
+	return findGeometryByIndex(hoveredIndex);;
 }

@@ -815,33 +815,20 @@ long App::pickEdge(double x, double y) {
 	if (!st.cell.anyHovered() && !st.facet.anyHovered())
 		return -1;
 
-	auto model = scene.getHoveredMesh();
-	if (!model)
+	auto geometryOpt = scene.getHoveredMesh();
+
+	if (!geometryOpt.has_value())
 		return -1;
 
+	auto &geometry = geometryOpt.value().get();
+
 	auto p = pickPoint(x, y);
-
-	// TODO here look at all condition that are useless, but if I use line below, there is a bug
-	// It seems that some hovered element are update during call to this function, is it possible as
-	// it is called by callback mouseMove that is decorelated from main loop
-	// Line below should be sufficient to get hovered
-
-	// int h;
-	// if (st.cell.anyHovered() && (model->getModelType() == ModelType::HEX_MODEL || model->getModelType() == ModelType::TET_MODEL))
-	// 	h = st.cell.getHovered();
-	// else if (st.facet.anyHovered() && (model->getModelType() == ModelType::TRI_MODEL || model->getModelType() == ModelType::QUAD_MODEL || model->getModelType() == ModelType::POLYGON_MODEL))
-	// 	h = st.facet.getHovered();
-	// else 
-	// 	return -1;
-
-	// return model->getGeometry().pickEdge(p, h);
-
 
 	int c = st.cell.getHovered();
 	if (c < 0)
 		c = st.facet.getHovered();
 
-	return model->getGeometry().pickEdge(p, c);
+	return geometry.pickEdge(p, c);
 
 }
 
@@ -850,14 +837,16 @@ long App::pickMesh(double x, double y) {
 	glReadBuffer(GL_COLOR_ATTACHMENT4);
 	long id = pick(x, y);
 	glBindFramebuffer(GL_READ_FRAMEBUFFER, 0);
-	return id >= 0 && id < SceneNode::getMaxIndex() ? id : -1;
+	return id >= 0 && id < Geometry::getMaxIndex() ? id : -1;
 }
 
 std::vector<long> App::pickVertices(double x, double y, int radius) {
-	auto model = scene.getHoveredMesh();
+	auto geometryOpt = scene.getHoveredMesh();
 
-	if (!model)
+	if (!geometryOpt.has_value())
 		return {};
+
+	auto &geometry = geometryOpt.value().get();
 
 	glBindFramebuffer(GL_READ_FRAMEBUFFER, scene.getDefaultRenderSurface().fbo);
 	glReadBuffer(GL_COLOR_ATTACHMENT3);
@@ -867,17 +856,19 @@ std::vector<long> App::pickVertices(double x, double y, int radius) {
 	// Clean ids
 	std::vector<long> clean_ids;
 	std::copy_if(ids.begin(), ids.end(), std::back_inserter(clean_ids), [&](long id) {
-		return id >= 0 && id < model->getGeometry().nverts();
+		return id >= 0 && id < geometry.nverts();
 	});
 
 	return clean_ids;
 }
 
 std::vector<long> App::pickFacets(double x, double y, int radius) {
-	auto model = scene.getHoveredMesh();
+	auto geometryOpt = scene.getHoveredMesh();
 
-	if (!model)
+	if (!geometryOpt.has_value())
 		return {};
+
+	auto &geometry = geometryOpt.value().get();
 
 	glBindFramebuffer(GL_READ_FRAMEBUFFER, scene.getDefaultRenderSurface().fbo);
 	glReadBuffer(GL_COLOR_ATTACHMENT1);
@@ -887,17 +878,19 @@ std::vector<long> App::pickFacets(double x, double y, int radius) {
 	// Clean ids
 	std::vector<long> clean_ids;
 	std::copy_if(ids.begin(), ids.end(), std::back_inserter(clean_ids), [&](long id) {
-		return id >= 0 && id < model->getGeometry().nfacets();
+		return id >= 0 && id < geometry.nfacets();
 	});
 
 	return clean_ids;
 }
 
 std::vector<long> App::pickCells(double x, double y, int radius) {		
-	auto model = scene.getHoveredMesh();
+	auto geometryOpt = scene.getHoveredMesh();
 
-	if (!model)
+	if (!geometryOpt.has_value())
 		return {};
+
+	auto &geometry = geometryOpt.value().get();
 
 	glBindFramebuffer(GL_READ_FRAMEBUFFER, scene.getDefaultRenderSurface().fbo);
 	glReadBuffer(GL_COLOR_ATTACHMENT2);
@@ -907,7 +900,7 @@ std::vector<long> App::pickCells(double x, double y, int radius) {
 	// Clean ids
 	std::vector<long> clean_ids;
 	std::copy_if(ids.begin(), ids.end(), std::back_inserter(clean_ids), [&](long id) {
-		return id >= 0 && id < model->getGeometry().ncells();
+		return id >= 0 && id < geometry.ncells();
 	});
 
 	return clean_ids;

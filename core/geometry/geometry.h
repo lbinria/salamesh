@@ -14,13 +14,29 @@ using json = nlohmann::json;
 
 struct Geometry {
 
-	Geometry() = default;
+	Geometry() {
+		_index = maxIndex;
+		++maxIndex;
+	}
+
 	// Remove copy constructors
 	Geometry(const Geometry&) = delete;
 	Geometry& operator=(const Geometry&) = delete;
 	// Allow moves
 	Geometry(Geometry&&) = default;
 	Geometry& operator=(Geometry&&) = default;
+
+	int getIndex() const {
+		return _index;
+	}
+
+	static inline int getMaxIndex() {
+		return maxIndex;
+	}
+
+	static void clearIndex() {
+		maxIndex = 0;
+	}
 
 	virtual bool save() = 0;
 	virtual bool saveAs(const std::string filename) = 0;
@@ -75,6 +91,9 @@ struct Geometry {
 
 	private:
 	mutable bool _dirty = true;
+
+	static inline int maxIndex = 0;
+	int _index;
 };
 
 struct MeshGeometry : public Geometry {
