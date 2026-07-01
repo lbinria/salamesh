@@ -91,23 +91,25 @@ struct PickState {
 	}
 
 	std::vector<long> getIds(PickElement e) {
-		std::vector<long> ids;
+		std::set<long> uniqueIds;
 		auto result = getResult(e);
-		ids.reserve(result.count());
+		
 		for (const auto& [coord, id] : result) {
-			ids.push_back(id);
+			uniqueIds.insert(id);
 		}
-		return ids;
+		
+		return std::vector<long>(uniqueIds.begin(), uniqueIds.end());
 	}
 
 	std::vector<long> getIds(long meshId, PickElement e) {
-		std::vector<long> ids;
+		std::set<long> uniqueIds;
 		auto result = getResult(meshId, e);
-		ids.reserve(result.count());
+
 		for (const auto& [coord, id] : result) {
-			ids.push_back(id);
+			uniqueIds.insert(id);
 		}
-		return ids;
+		
+		return std::vector<long>(uniqueIds.begin(), uniqueIds.end());
 	}
 
 	bool any(PickElement e) {

@@ -349,22 +349,33 @@ PickResult RenderSurface::pickVertices(double x, double y, int radius) {
 	// 	return id >= 0 && id < geometry.nverts();
 	// });
 	// return clean_ids;
+}
 
-	// // Cross results
-	// for (auto &[xy, id] : result) {
-	// 	auto [x, y] = xy;
-	// 	long meshId = pickMeshesResult.get(x, y);
+PickResult RenderSurface::pickFacets(double x, double y, int radius) {
 
-	// }
+	glBindFramebuffer(GL_READ_FRAMEBUFFER, fbo);
+	glReadBuffer(GL_COLOR_ATTACHMENT1);
+	auto result = pick2(x, y, radius);
+	glBindFramebuffer(GL_READ_FRAMEBUFFER, 0);
+
+	return result;
+	// Clean ids
+	// std::vector<long> clean_ids;
+	// std::copy_if(ids.begin(), ids.end(), std::back_inserter(clean_ids), [&](long id) {
+	// 	return id >= 0 && id < geometry.nverts();
+	// });
+	// return clean_ids;
 }
 
 PickState RenderSurface::getPickState(double x, double y, int radius) {
 	auto pickMeshesResult = pickMeshes(x, y, radius);
 	auto pickVerticesResult = pickVertices(x, y, radius);
+	auto pickFacetsResult = pickFacets(x, y, radius);
 
 	std::array<PickResult, PickElement::PICK_ELEMENT_COUNT> results;
 	results[PickElement::PICK_MESH] = pickMeshesResult;
 	results[PickElement::PICK_VERTEX] = pickVerticesResult;
+	results[PickElement::PICK_FACET] = pickFacetsResult;
 
 	return PickState(results);
 }

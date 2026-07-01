@@ -44,6 +44,8 @@ struct RenderSurface {
 
 	PickResult pickMeshes(double x, double y, int radius);
 	PickResult pickVertices(double x, double y, int radius);
+	PickResult pickFacets(double x, double y, int radius);
+
 	PickState getPickState(double x, double y, int radius);
 
 	// long pickEdge(double x, double y);

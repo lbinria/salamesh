@@ -1376,6 +1376,15 @@ void App::mouseMove(double x, double y) {
 
 	}
 
+	// TODO important remove just for test
+	auto pickState = scene.getDefaultRenderSurface().getPickState(x, y, st.mouse.getCursorRadius());
+	auto vids = pickState.getIds(PickElement::PICK_FACET);
+	std::cout << "--- PICKING ---" << std::endl;
+	for (auto &vid : vids) {
+		std::cout << vid << ", ";
+	}
+	std::cout << "---" << std::endl;
+
 	for (auto &script : scripts) {
 		script->mouseMove(x, y);
 	}
