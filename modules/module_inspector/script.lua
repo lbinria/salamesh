@@ -72,6 +72,11 @@ function draw_gui()
 
 
 		for i, mesh_id in ipairs(mesh_ids) do
+
+			-- local mesh = app.scene:find_geometry_by_index(mesh_id)
+			-- local model = app.scene:find_node_by_mesh_index(mesh_id)
+			-- model.name
+
 			imgui.Text("Mesh " .. tostring(mesh_id))
 
 			local vertices_ids = pick_state:get_ids(mesh_id, PickElement.PICK_VERTEX)

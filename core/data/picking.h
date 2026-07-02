@@ -60,15 +60,14 @@ struct PickState {
 
 	}
 
-	void set(std::array<PickResult, PickElement::PICK_ELEMENT_COUNT> results) {
-		_results = results;
-	}
-
 	PickResult getResult(PickElement e) {
 		return _results[e];
 	}
 
 	PickResult getResult(long meshId, PickElement e) {
+		if (_cache.contains({meshId, e}))
+			return _cache.at({meshId, e});
+
 		PickResult res;
 		for (auto &[xy, id] : _results[PickElement::PICK_MESH]) {
 			auto [x, y] = xy;
@@ -83,6 +82,8 @@ struct PickState {
 
 			res.set(x, y, result.get(x, y));
 		}
+
+		_cache[{meshId, e}] = res;
 
 		return res;
 	}
@@ -128,4 +129,6 @@ struct PickState {
 
 	private:
 		std::array<PickResult, PickElement::PICK_ELEMENT_COUNT> _results;
+		// Cache picking by mesh results
+		std::map<std::pair<long, PickElement>, PickResult> _cache;
 };
