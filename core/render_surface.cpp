@@ -304,58 +304,6 @@ PickResult RenderSurface::readBufferPixels(double xPos, double yPos, int radius)
 	return pickResult;
 }
 
-// std::set<long> RenderSurface::pick(double xPos, double yPos, int radius) {
-
-// 	const int diameter = radius * 2 + 1;
-// 	std::set<long> pickIDs;
-
-// 	// Allocate buffer for square that bounds our circle
-// 	unsigned char* pixelData = new unsigned char[diameter * diameter * 4];
-
-// 	// Read pixels in square that bounds our circle
-// 	glReadPixels(
-// 		xPos - radius,
-// 		height - yPos - radius,
-// 		diameter,
-// 		diameter,
-// 		GL_RGBA,
-// 		GL_UNSIGNED_BYTE,
-// 		pixelData
-// 	);
-
-// 	// Process each pixel in the bounding square
-// 	for(int y = 0; y < diameter; ++y) {
-// 		for(int x = 0; x < diameter; ++x) {
-// 			// Calculate distance from center
-// 			int dx = x - radius;
-// 			int dy = y - radius;
-// 			float distSq = dx * dx + dy * dy;
-
-// 			// Only process pixels within circle
-// 			if(distSq <= radius * radius) {
-// 				int offset = (y * diameter + x) * 4;
-// 				unsigned char r = pixelData[offset];
-// 				unsigned char g = pixelData[offset + 1];
-// 				unsigned char b = pixelData[offset + 2];
-// 				unsigned char a = pixelData[offset + 3];
-				
-// 				long pickID = a == 0 ? -1 :
-// 							r +
-// 							g * 256 +
-// 							b * 256 * 256;
-
-// 				if (pickID != -1) {
-// 					pickIDs.insert(pickID);
-// 				}
-// 			}
-// 		}
-// 	}
-
-// 	delete[] pixelData;
-// 	return pickIDs;
-// }
-
-
 PickResult RenderSurface::pick(PickElement element, double x, double y, int radius) {
 	glBindFramebuffer(GL_READ_FRAMEBUFFER, fbo);
 
@@ -370,81 +318,12 @@ PickResult RenderSurface::pick(PickElement element, double x, double y, int radi
 
 PickState RenderSurface::getPickState(double x, double y, int radius) {
 
-	auto pickVerticesResult = pick(PickElement::PICK_VERTEX, x, y, radius);
-	auto pickHalfedgesResult = pick(PickElement::PICK_HALFEDGE, x, y, radius);
-	auto pickFacetsResult = pick(PickElement::PICK_FACET, x, y, radius);
-	auto pickMeshesResult = pick(PickElement::PICK_MESH, x, y, radius);
-
 	std::array<PickResult, PickElement::PICK_ELEMENT_COUNT> results;
-	results[PickElement::PICK_MESH] = pickMeshesResult;
-	results[PickElement::PICK_VERTEX] = pickVerticesResult;
-	results[PickElement::PICK_HALFEDGE] = pickHalfedgesResult;
-	results[PickElement::PICK_FACET] = pickFacetsResult;
+
+	for (int e = 0; e < PickElement::PICK_ELEMENT_COUNT; ++e) {
+		auto pickResult = pick(static_cast<PickElement>(e), x, y, radius);
+		results[e] = pickResult;
+	}
 
 	return PickState(results);
 }
-
-// long RenderSurface::pickEdge(double x, double y) {
-// 	// if (!st.cell.anyHovered() && !st.facet.anyHovered())
-// 	// 	return -1;
-
-// 	auto geometryOpt = scene.getHoveredMesh();
-
-// 	if (!geometryOpt.has_value())
-// 		return -1;
-
-// 	auto &geometry = geometryOpt.value().get();
-
-// 	auto p = pickPoint(x, y);
-
-// 	int c = st.cell.getHovered();
-// 	if (c < 0)
-// 		c = st.facet.getHovered();
-
-// 	return geometry.pickEdge(p, c);
-
-// }
-
-// std::vector<long> RenderSurface::pickFacets(double x, double y, int radius) {
-// 	auto geometryOpt = scene.getHoveredMesh();
-
-// 	if (!geometryOpt.has_value())
-// 		return {};
-
-// 	auto &geometry = geometryOpt.value().get();
-
-// 	glBindFramebuffer(GL_READ_FRAMEBUFFER, scene.getDefaultRenderSurface().fbo);
-// 	glReadBuffer(GL_COLOR_ATTACHMENT1);
-// 	auto ids = pick(x, y, radius);
-// 	glBindFramebuffer(GL_READ_FRAMEBUFFER, 0);
-
-// 	// Clean ids
-// 	std::vector<long> clean_ids;
-// 	std::copy_if(ids.begin(), ids.end(), std::back_inserter(clean_ids), [&](long id) {
-// 		return id >= 0 && id < geometry.nfacets();
-// 	});
-
-// 	return clean_ids;
-// }
-
-// std::vector<long> RenderSurface::pickCells(double x, double y, int radius) {		
-// 	auto geometryOpt = scene.getHoveredMesh();
-
-// 	if (!geometryOpt.has_value())
-// 		return {};
-
-// 	auto &geometry = geometryOpt.value().get();
-
-// 	glBindFramebuffer(GL_READ_FRAMEBUFFER, scene.getDefaultRenderSurface().fbo);
-// 	glReadBuffer(GL_COLOR_ATTACHMENT2);
-// 	auto ids = pick(x, y, radius);
-// 	glBindFramebuffer(GL_READ_FRAMEBUFFER, 0);
-
-// 	// Clean ids
-// 	std::vector<long> clean_ids;
-// 	std::copy_if(ids.begin(), ids.end(), std::back_inserter(clean_ids), [&](long id) {
-// 		return id >= 0 && id < geometry.ncells();
-// 	});
-
-// 	return clean_ids;
-// }

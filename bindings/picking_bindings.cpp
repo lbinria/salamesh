@@ -13,6 +13,9 @@ namespace bindings {
 			"PICK_ELEMENT_COUNT", PickElement::PICK_ELEMENT_COUNT
 		);
 
+		lua.set_function("pick_element_to_string", &pickElementToString);
+
+
 		type = lua.new_usertype<PickResult>("PickResult",
 			"get", &PickResult::get,
 			"exists", &PickResult::exists,

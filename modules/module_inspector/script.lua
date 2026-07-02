@@ -70,7 +70,6 @@ function draw_gui()
 		local mesh_ids = pick_state:get_ids(PickElement.PICK_MESH)
 
 
-
 		for i, mesh_id in ipairs(mesh_ids) do
 
 			-- local mesh = app.scene:find_geometry_by_index(mesh_id)
@@ -79,13 +78,11 @@ function draw_gui()
 
 			imgui.Text("Mesh " .. tostring(mesh_id))
 
-			local vertices_ids = pick_state:get_ids(mesh_id, PickElement.PICK_VERTEX)
-			local halfedge_ids = pick_state:get_ids(mesh_id, PickElement.PICK_HALFEDGE)
-			local facet_ids = pick_state:get_ids(mesh_id, PickElement.PICK_FACET)
-
-			imgui.Text(tostring(#vertices_ids) .. " hovered vertices: {" .. format_str_ids(vertices_ids) .. "}")
-			imgui.Text(tostring(#halfedge_ids) .. " hovered halfedge: {" .. format_str_ids(halfedge_ids) .. "}")
-			imgui.Text(tostring(#facet_ids) .. " hovered facets: {" .. format_str_ids(facet_ids) .. "}")
+			for element = 0, PickElement.PICK_ELEMENT_COUNT - 2 do 
+				local ids = pick_state:get_ids(mesh_id, element)
+				imgui.Text(tostring(#ids) .. " hovered " .. pick_element_to_string(element) .. ": {" .. format_str_ids(ids) .. "}")
+				
+			end
 
 			imgui.Separator()
 		end

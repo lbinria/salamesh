@@ -14,6 +14,18 @@ enum PickElement {
 	PICK_ELEMENT_COUNT
 };
 
+static std::string pickElementToString(PickElement e) {
+	switch (e) {
+		case PickElement::PICK_VERTEX: return "vertices";
+		case PickElement::PICK_HALFEDGE: return "edges";
+		case PickElement::PICK_FACET: return "facets";
+		case PickElement::PICK_CELL: return "cells";
+		case PickElement::PICK_MESH: return "meshes";
+		case PickElement::PICK_ELEMENT_COUNT: return "count";
+		default: return "unknown";
+	}
+}
+
 struct PickResult {
 
 	void set(int x, int y, long id) {
