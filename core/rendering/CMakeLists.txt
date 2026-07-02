@@ -10,5 +10,5 @@ target_include_directories(rendering
 target_link_libraries(rendering PUBLIC data glad)
 
 if(WIN32)
-    target_link_libraries(utils PUBLIC glew)
+    target_link_libraries(rendering PUBLIC glew)
 endif(WIN32)
