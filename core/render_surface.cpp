@@ -132,21 +132,43 @@ void RenderSurface::resize(int w, int h) {
 	_camera->updateScreenSize(width, height);
 }
 
-void RenderSurface::clear() {
-	// Clear attachments
-	GLfloat zero[5] = { 0.f, 0.f, 0.f, 0.f };
+// void RenderSurface::clear() {
+// 	// Clear attachments
+// 	glClearColor(backgroundColor.x, backgroundColor.y, backgroundColor.z, 1.);
 
-	glClearColor(backgroundColor.x, backgroundColor.y, backgroundColor.z, 1.);
-	glClearBufferfv(GL_COLOR, 0, zero); // clear each float RT to 0
-	glClearBufferfv(GL_COLOR, 1, zero); // clear each float RT to 0
-	glClearBufferfv(GL_COLOR, 2, zero); // clear each float RT to 0
-	glClearBufferfv(GL_COLOR, 3, zero); // clear each float RT to 0
-	glClearBufferfv(GL_COLOR, 4, zero); // clear each float RT to 0
+
+// 	GLfloat zero[5] = { 0.f, 0.f, 0.f, 0.f };
+// 	// GLfloat bgColor[5] = { backgroundColor.x, backgroundColor.y, backgroundColor.z, 1.f };
+// 	// GLfloat white[5] = { 1.f, 1.f, 1.f, 0.f };
+
+// 	glClearBufferfv(GL_COLOR, 0, zero); // clear each float RT to 0
+// 	glClearColor(1., 1., 1., 1.);
+
+// 	glClearBufferfv(GL_COLOR, 1, zero); // clear each float RT to 0
+// 	glClearBufferfv(GL_COLOR, 2, zero); // clear each float RT to 0
+// 	glClearBufferfv(GL_COLOR, 3, zero); // clear each float RT to 0
+// 	glClearBufferfv(GL_COLOR, 4, zero); // clear each float RT to 0
+// }
+
+void RenderSurface::clear() {
+	glBindFramebuffer(GL_FRAMEBUFFER, fbo);
+	// Clear attachments
+	GLfloat black[4] = { 0.f, 0.f, 0.f, 0.f };
+	GLfloat bgColor[4] = { backgroundColor.x, backgroundColor.y, backgroundColor.z, 1.f };
+	GLfloat depthClear = 1.0f;
+
+	glClearBufferfv(GL_COLOR, 0, bgColor); // clear each float RT to 0
+	glClearBufferfv(GL_COLOR, 1, black); // clear each float RT to 0
+	glClearBufferfv(GL_COLOR, 2, black); // clear each float RT to 0
+	glClearBufferfv(GL_COLOR, 3, black); // clear each float RT to 0
+	glClearBufferfv(GL_COLOR, 4, black); // clear each float RT to 0
+
+	glClearBufferfv(GL_DEPTH, 0, &depthClear);  // Clear depth to 1.0 (far plane)
 }
 
 void RenderSurface::render(Shader &screenShader, unsigned int quadVAO) {
 	// // Go back to default framebuffer to draw the screen quad
-	// glBindFramebuffer(GL_FRAMEBUFFER, 0);
+	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 	glDisable(GL_DEPTH_TEST);
 	glClearColor(1.0f, 1.0f, 1.0f, 1.0f);
 	glClear(GL_COLOR_BUFFER_BIT);

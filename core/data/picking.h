@@ -113,11 +113,20 @@ struct PickState {
 	}
 
 	bool any(PickElement e) {
-		return _results[e].count() > 0;
+		return count(e) > 0;
+	}
+
+	bool any(long meshId, PickElement e) {
+		return count(meshId, e) > 0;
 	}
 
 	long count(PickElement e) {
 		return _results[e].count();
+	}
+
+	long count(long meshId, PickElement e) {
+		auto result = getResult(meshId, e);
+		return result.count();
 	}
 
 	private:
