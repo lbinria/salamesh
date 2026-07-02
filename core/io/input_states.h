@@ -8,6 +8,7 @@
 #include <ultimaille/all.h>
 using namespace UM;
 
+#include "picking.h"
 
 struct InputState {
 
@@ -108,6 +109,7 @@ struct InputState {
 	HoverState mesh;
 
 	MouseState mouse;
+	PickState pick;
 
 	// Get hover state of a given primitive (VERTEX, EDGE, FACET, CELL...)
 	HoverState& getHoverState(ElementKind kind) {

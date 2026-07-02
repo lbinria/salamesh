@@ -14,6 +14,7 @@
 #include "../bindings/um_bindings.h"
 #include "../bindings/imgui_bindings.h"
 #include "../bindings/app_bindings.h"
+#include "../bindings/render_surface_bindings.h"
 #include "../bindings/scene_bindings.h"
 #include "../bindings/navigation_path_bindings.h"
 #include "../bindings/image_bindings.h"
@@ -28,6 +29,7 @@
 #include "../bindings/material_bindings.h"
 #include "../bindings/material_params_bindings.h"
 #include "../bindings/geometry_bindings.h"
+#include "../bindings/picking_bindings.h"
 
 
 struct LuaScript final : public Script {
@@ -117,6 +119,7 @@ struct LuaScript final : public Script {
 		std::vector<std::unique_ptr<bindings::LuaBinding>> bindings;
 		bindings.push_back(std::make_unique<bindings::ImGuiBindings>());
 		bindings.push_back(std::make_unique<bindings::AppBindings>());
+		bindings.push_back(std::make_unique<bindings::RenderSurfaceBindings>());
 		bindings.push_back(std::make_unique<bindings::SceneBindings>());
 		bindings.push_back(std::make_unique<bindings::NavigationPathBindings>());
 		bindings.push_back(std::make_unique<bindings::ImageBindings>());
@@ -132,6 +135,7 @@ struct LuaScript final : public Script {
 		bindings.push_back(std::make_unique<bindings::MaterialBindings>());
 		bindings.push_back(std::make_unique<bindings::MaterialParamsBindings>());
 		bindings.push_back(std::make_unique<bindings::GeometryBindings>());
+		bindings.push_back(std::make_unique<bindings::PickingBindings>());
 
 		for (auto &b : bindings) {
 			b->loadBindings(lua, app);

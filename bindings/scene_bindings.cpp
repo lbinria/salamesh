@@ -18,6 +18,8 @@ namespace bindings {
 			// Focus function
 			"focus", &Scene::focus,
 			
+			"default_render_surface", sol::readonly_property(&Scene::getDefaultRenderSurface),
+
 			// Camera properties
 			"current_camera", sol::readonly_property(&Scene::getCurrentCamera),
 			"cameras", sol::readonly_property(&Scene::getCameras),

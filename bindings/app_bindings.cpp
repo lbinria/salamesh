@@ -66,7 +66,8 @@ namespace bindings {
 			"facet", sol::readonly_property(&InputState::facet),
 			"cell", sol::readonly_property(&InputState::cell),
 			"mesh", sol::readonly_property(&InputState::mesh),
-			"mouse", sol::readonly_property(&InputState::mouse)
+			"mouse", sol::readonly_property(&InputState::mouse),
+			"pick", sol::readonly_property(&InputState::pick)
 		);
 
 		input_state_t.set_function("get_primitive_state", &InputState::getHoverState);

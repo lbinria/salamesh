@@ -1,6 +1,7 @@
 #pragma once
 #include <map>
 #include <vector>
+#include <set>
 #include <optional>
 #include "element_type.h"
 
@@ -51,20 +52,16 @@ struct PickResult {
 		std::map<std::pair<int, int>, long> ids;
 };
 
-struct PickResultId {
-
-	long id[PickElement::PICK_ELEMENT_COUNT];
-
-	long get(PickElement kind) const {
-		return id[kind];
-	}
-
-};
-
 struct PickState {
+
+	PickState() = default;
 
 	PickState(std::array<PickResult, PickElement::PICK_ELEMENT_COUNT> results) : _results(results) {
 
+	}
+
+	void set(std::array<PickResult, PickElement::PICK_ELEMENT_COUNT> results) {
+		_results = results;
 	}
 
 	PickResult getResult(PickElement e) {

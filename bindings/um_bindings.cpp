@@ -83,6 +83,52 @@ namespace bindings {
 
 	void UMBindings::loadBindings(sol::state &lua, IApp &app) {
 
+		// vec2 type
+		sol::usertype<vec2> vec2_t = lua.new_usertype<vec2>("umvec2",
+
+			// Constructor overloads
+			sol::constructors<vec2(), 
+							vec2(float, float),
+							vec2(const vec2&)>{},
+
+			sol::call_constructor, [](sol::table t) {
+				return vec2{
+					t.get_or(1, 0.f),
+					t.get_or(2, 0.f)
+				};
+			},
+
+			sol::meta_function::addition, sol::overload(
+				[](const vec2 &a, const vec2 &b) {
+					return a + b;
+				}
+			),
+
+			sol::meta_function::subtraction, [](const vec2 &a, const vec2 &b) {
+				return a - b;
+			},
+
+			sol::meta_function::multiplication, sol::overload(
+				[](const vec2 &a, const vec2 &b) {
+					return a * b;
+				}, 
+				[](const float a, const vec2 &b) {
+					return a * b;
+				}
+			),
+
+			sol::meta_function::division, [](const vec2 &a, float x) {
+				return a / x;
+			},
+			
+			// Property accessors
+			"x", sol::readonly_property(&vec2::x),
+			"y", sol::readonly_property(&vec2::y),
+			"to_string", [](vec2 &v) {
+				return std::string("(") + std::to_string(v.x) + ", " + std::to_string(v.y) + ")";
+			}
+		);
+
 		// vec3 type
 		sol::usertype<vec3> vec3_t = lua.new_usertype<vec3>("umvec3",
 
