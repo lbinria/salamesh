@@ -25,8 +25,15 @@ void RenderSurface::setup() {
 	glBindTexture(GL_TEXTURE_2D, 0);
 
 	// Create picking textures
-	glGenTextures(1, &texCellID);
-	glBindTexture(GL_TEXTURE_2D, texCellID);
+	glGenTextures(1, &texVertexID);
+	glBindTexture(GL_TEXTURE_2D, texVertexID);
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA8, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, NULL);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR); 
+	glBindTexture(GL_TEXTURE_2D, 0);
+
+	glGenTextures(1, &texHalfedgeID);
+	glBindTexture(GL_TEXTURE_2D, texHalfedgeID);
 	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA8, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, NULL);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR); 
@@ -39,8 +46,8 @@ void RenderSurface::setup() {
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR); 
 	glBindTexture(GL_TEXTURE_2D, 0);
 
-	glGenTextures(1, &texVertexID);
-	glBindTexture(GL_TEXTURE_2D, texVertexID);
+	glGenTextures(1, &texCellID);
+	glBindTexture(GL_TEXTURE_2D, texCellID);
 	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA8, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, NULL);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR); 
@@ -56,14 +63,22 @@ void RenderSurface::setup() {
 	// Attach color attachments to FBO buffer
 	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, texColor, 0);
 	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT1, GL_TEXTURE_2D, texVertexID, 0);
-	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT2, GL_TEXTURE_2D, texFacetID, 0);
-	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT3, GL_TEXTURE_2D, texCellID, 0);
-	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT4, GL_TEXTURE_2D, texMeshID, 0);
+	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT2, GL_TEXTURE_2D, texHalfedgeID, 0);
+	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT3, GL_TEXTURE_2D, texFacetID, 0);
+	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT4, GL_TEXTURE_2D, texCellID, 0);
+	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT5, GL_TEXTURE_2D, texMeshID, 0);
 	// Attach depth attachments to FBO buffer
 	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_TEXTURE_2D, depthAttachmentTexture, 0);
 
-	GLenum drawBuffers[5] = {GL_COLOR_ATTACHMENT0, GL_COLOR_ATTACHMENT1, GL_COLOR_ATTACHMENT2, GL_COLOR_ATTACHMENT3, GL_COLOR_ATTACHMENT4};
-	glDrawBuffers(5, drawBuffers);
+	GLenum drawBuffers[6] = {
+		GL_COLOR_ATTACHMENT0, 
+		GL_COLOR_ATTACHMENT1, 
+		GL_COLOR_ATTACHMENT2, 
+		GL_COLOR_ATTACHMENT3, 
+		GL_COLOR_ATTACHMENT4, 
+		GL_COLOR_ATTACHMENT5
+	};
+	glDrawBuffers(6, drawBuffers);
 
 	glGenRenderbuffers(1, &rbo);
 	glBindRenderbuffer(GL_RENDERBUFFER, rbo);
@@ -83,14 +98,15 @@ void RenderSurface::bind() {
 	glBindFramebuffer(GL_FRAMEBUFFER, fbo);
 
 	// Enable all three color attachments at once
-	GLenum drawBufs[5] = {
+	GLenum drawBufs[6] = {
 		GL_COLOR_ATTACHMENT0,
 		GL_COLOR_ATTACHMENT1,
 		GL_COLOR_ATTACHMENT2,
 		GL_COLOR_ATTACHMENT3,
-		GL_COLOR_ATTACHMENT4
+		GL_COLOR_ATTACHMENT4,
+		GL_COLOR_ATTACHMENT5
 	};
-	glDrawBuffers(5, drawBufs);
+	glDrawBuffers(6, drawBufs);
 }
 
 void RenderSurface::resize(int w, int h) {
@@ -106,6 +122,9 @@ void RenderSurface::resize(int w, int h) {
 	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, NULL);
 
 	glBindTexture(GL_TEXTURE_2D, texVertexID);
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, NULL);
+
+	glBindTexture(GL_TEXTURE_2D, texHalfedgeID);
 	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, NULL);
 
 	glBindTexture(GL_TEXTURE_2D, texFacetID);
@@ -162,6 +181,7 @@ void RenderSurface::clear() {
 	glClearBufferfv(GL_COLOR, 2, black); // clear each float RT to 0
 	glClearBufferfv(GL_COLOR, 3, black); // clear each float RT to 0
 	glClearBufferfv(GL_COLOR, 4, black); // clear each float RT to 0
+	glClearBufferfv(GL_COLOR, 5, black); // clear each float RT to 0
 
 	glClearBufferfv(GL_DEPTH, 0, &depthClear);  // Clear depth to 1.0 (far plane)
 }
@@ -185,9 +205,10 @@ void RenderSurface::clean() {
 	glDeleteRenderbuffers(1, &rbo);
 	glDeleteFramebuffers(1, &fbo);
 	glDeleteTextures(1, &texColor);
-	glDeleteTextures(1, &texCellID);
-	glDeleteTextures(1, &texFacetID);
 	glDeleteTextures(1, &texVertexID);
+	glDeleteTextures(1, &texHalfedgeID);
+	glDeleteTextures(1, &texFacetID);
+	glDeleteTextures(1, &texCellID);
 	glDeleteTextures(1, &texMeshID);
 }
 
@@ -338,6 +359,7 @@ PickResult RenderSurface::readBufferPixels(double xPos, double yPos, int radius)
 PickResult RenderSurface::pick(PickElement element, double x, double y, int radius) {
 	glBindFramebuffer(GL_READ_FRAMEBUFFER, fbo);
 
+	// Get convenient color attachment according to pick element
 	glReadBuffer(GL_COLOR_ATTACHMENT0 + (static_cast<int>(element) + 1));
 	auto result = readBufferPixels(x, y, radius);
 	
@@ -349,12 +371,14 @@ PickResult RenderSurface::pick(PickElement element, double x, double y, int radi
 PickState RenderSurface::getPickState(double x, double y, int radius) {
 
 	auto pickVerticesResult = pick(PickElement::PICK_VERTEX, x, y, radius);
+	auto pickHalfedgesResult = pick(PickElement::PICK_HALFEDGE, x, y, radius);
 	auto pickFacetsResult = pick(PickElement::PICK_FACET, x, y, radius);
 	auto pickMeshesResult = pick(PickElement::PICK_MESH, x, y, radius);
 
 	std::array<PickResult, PickElement::PICK_ELEMENT_COUNT> results;
 	results[PickElement::PICK_MESH] = pickMeshesResult;
 	results[PickElement::PICK_VERTEX] = pickVerticesResult;
+	results[PickElement::PICK_HALFEDGE] = pickHalfedgesResult;
 	results[PickElement::PICK_FACET] = pickFacetsResult;
 
 	return PickState(results);

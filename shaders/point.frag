@@ -6,7 +6,7 @@ layout(depth_less) out float gl_FragDepth;
 // Color output
 layout(location = 0) out vec4 FragColor;
 layout(location = 1) out vec4 FragVertexIndexOut;
-layout(location = 4) out vec4 fragMeshIndexOut;
+layout(location = 5) out vec4 fragMeshIndexOut;
 
 flat in int FragVertexIndex;
 

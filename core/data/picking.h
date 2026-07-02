@@ -7,6 +7,7 @@
 
 enum PickElement {
 	PICK_VERTEX,
+	PICK_HALFEDGE,
 	PICK_FACET,
 	PICK_CELL,
 	PICK_MESH,

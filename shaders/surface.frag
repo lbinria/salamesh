@@ -6,8 +6,8 @@ flat in int fragCornerOff;
 flat in int fragFacetIndex;
 
 layout(location = 0) out vec4 FragColor;
-layout(location = 2) out vec4 fragFacetIndexOut;
-layout(location = 4) out vec4 fragMeshIndexOut;
+layout(location = 3) out vec4 fragFacetIndexOut;
+layout(location = 5) out vec4 fragMeshIndexOut;
 
 in vec3 fragBary;
 in vec3 fragNormal;

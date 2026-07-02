@@ -837,7 +837,7 @@ long App::pickEdge(double x, double y) {
 
 long App::pickMesh(double x, double y) {
 	glBindFramebuffer(GL_READ_FRAMEBUFFER, scene.getDefaultRenderSurface().fbo);
-	glReadBuffer(GL_COLOR_ATTACHMENT4);
+	glReadBuffer(GL_COLOR_ATTACHMENT5);
 	long id = pick(x, y);
 	glBindFramebuffer(GL_READ_FRAMEBUFFER, 0);
 	return id >= 0 && id < Geometry::getMaxIndex() ? id : -1;
@@ -874,7 +874,7 @@ std::vector<long> App::pickFacets(double x, double y, int radius) {
 	auto &geometry = geometryOpt.value().get();
 
 	glBindFramebuffer(GL_READ_FRAMEBUFFER, scene.getDefaultRenderSurface().fbo);
-	glReadBuffer(GL_COLOR_ATTACHMENT2);
+	glReadBuffer(GL_COLOR_ATTACHMENT3);
 	auto ids = pick(x, y, radius);
 	glBindFramebuffer(GL_READ_FRAMEBUFFER, 0);
 
@@ -896,7 +896,7 @@ std::vector<long> App::pickCells(double x, double y, int radius) {
 	auto &geometry = geometryOpt.value().get();
 
 	glBindFramebuffer(GL_READ_FRAMEBUFFER, scene.getDefaultRenderSurface().fbo);
-	glReadBuffer(GL_COLOR_ATTACHMENT3);
+	glReadBuffer(GL_COLOR_ATTACHMENT4);
 	auto ids = pick(x, y, radius);
 	glBindFramebuffer(GL_READ_FRAMEBUFFER, 0);
 

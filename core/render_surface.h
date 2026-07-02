@@ -20,9 +20,10 @@ struct RenderSurface {
 	
 	unsigned int depthAttachmentTexture;
 	unsigned int texColor;
-	unsigned int texCellID;
-	unsigned int texFacetID;
 	unsigned int texVertexID;
+	unsigned int texHalfedgeID;
+	unsigned int texFacetID;
+	unsigned int texCellID;
 	unsigned int texMeshID;
 
 	int width, height;

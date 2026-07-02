@@ -6,6 +6,7 @@ namespace bindings {
 
 		lua.new_enum("PickElement", 
 			"PICK_VERTEX", PickElement::PICK_VERTEX,
+			"PICK_HALFEDGE", PickElement::PICK_HALFEDGE,
 			"PICK_FACET", PickElement::PICK_FACET,
 			"PICK_CELL", PickElement::PICK_CELL,
 			"PICK_MESH", PickElement::PICK_MESH,
