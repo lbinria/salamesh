@@ -6,22 +6,30 @@
 
 std::shared_ptr<SceneNode> ModelLoader::load(const std::string filename, const std::string name) {
 
+	// TODO important refactor this :vomit: 
+	std::string meshShaderName = "triangles_shader2";
+
 	std::shared_ptr<Geometry> geometry;
 	geometry = loadGeometry<TrianglesGeometry>(filename);
 	
-	if (!geometry)
+	if (!geometry) {
 		geometry = loadGeometry<QuadsGeometry>(filename);
+		meshShaderName = "polygons_shader2";
+	}
 
-	if (!geometry)
+	if (!geometry) {
 		geometry = loadGeometry<PolygonsGeometry>(filename);
+		meshShaderName = "polygons_shader2";
+	}
 	
 	if (!geometry)
 		geometry = loadGeometry<PolyLineGeometry>(filename);
 
 	// Create node & add to scene
 	auto node = _scene.createNode(name, geometry);
+
 	node->addShaderPass("points", _scene.getShader("points_shader2").value());
-	node->addShaderPass("mesh", _scene.getShader("triangles_shader2").value());
+	node->addShaderPass("mesh", _scene.getShader(meshShaderName).value());
 	node->addShaderPass("halfedges", _scene.getShader("halfedges_shader2").value());
 
 	return node;

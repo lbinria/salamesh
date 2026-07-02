@@ -171,6 +171,8 @@ struct Scene {
 		return std::nullopt;
 	}
 
+	// TODO add findNodeByGeometry
+
 	const std::vector<std::unique_ptr<ShaderBase>>& getShaders() const {
 		return _shaders;
 	}
