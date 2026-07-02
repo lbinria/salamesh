@@ -232,17 +232,7 @@ vec3 RenderSurface::pickPoint(double x, double y) {
 	return p;
 }
 
-// long RenderSurface::pick(double x, double y) {	
-// 	unsigned char pixel[4];
-// 	glReadPixels(x, height- y, 1, 1, GL_RGBA, GL_UNSIGNED_BYTE, pixel);
-// 	// Decode id from pixel
-// 	return pixel[3] == 0 ? -1 :
-// 		pixel[0] +
-// 		pixel[1] * 256 +
-// 		pixel[2] * 256 * 256;
-// }
-
-PickResult RenderSurface::pick2(double xPos, double yPos, int radius) {
+PickResult RenderSurface::readBufferPixels(double xPos, double yPos, int radius) {
 
 	const int diameter = radius * 2 + 1;
 	PickResult pickResult;
@@ -347,53 +337,13 @@ PickResult RenderSurface::pick2(double xPos, double yPos, int radius) {
 
 PickResult RenderSurface::pick(PickElement element, double x, double y, int radius) {
 	glBindFramebuffer(GL_READ_FRAMEBUFFER, fbo);
+
 	glReadBuffer(GL_COLOR_ATTACHMENT0 + (static_cast<int>(element) + 1));
-	auto result = pick2(x, y, radius);
+	auto result = readBufferPixels(x, y, radius);
+	
 	glBindFramebuffer(GL_READ_FRAMEBUFFER, 0);
-
+	
 	return result;
-}
-
-PickResult RenderSurface::pickMeshes(double x, double y, int radius) {
-	glBindFramebuffer(GL_READ_FRAMEBUFFER, fbo);
-	glReadBuffer(GL_COLOR_ATTACHMENT4);
-	auto result = pick2(x, y, radius);
-	glBindFramebuffer(GL_READ_FRAMEBUFFER, 0);
-	// Clean up results
-	return result;
-	// return id >= 0 && id < Geometry::getMaxIndex() ? id : -1;
-}
-
-PickResult RenderSurface::pickVertices(double x, double y, int radius) {
-
-	glBindFramebuffer(GL_READ_FRAMEBUFFER, fbo);
-	glReadBuffer(GL_COLOR_ATTACHMENT1);
-	auto result = pick2(x, y, radius);
-	glBindFramebuffer(GL_READ_FRAMEBUFFER, 0);
-
-	return result;
-	// Clean ids
-	// std::vector<long> clean_ids;
-	// std::copy_if(ids.begin(), ids.end(), std::back_inserter(clean_ids), [&](long id) {
-	// 	return id >= 0 && id < geometry.nverts();
-	// });
-	// return clean_ids;
-}
-
-PickResult RenderSurface::pickFacets(double x, double y, int radius) {
-
-	glBindFramebuffer(GL_READ_FRAMEBUFFER, fbo);
-	glReadBuffer(GL_COLOR_ATTACHMENT2);
-	auto result = pick2(x, y, radius);
-	glBindFramebuffer(GL_READ_FRAMEBUFFER, 0);
-
-	return result;
-	// Clean ids
-	// std::vector<long> clean_ids;
-	// std::copy_if(ids.begin(), ids.end(), std::back_inserter(clean_ids), [&](long id) {
-	// 	return id >= 0 && id < geometry.nverts();
-	// });
-	// return clean_ids;
 }
 
 PickState RenderSurface::getPickState(double x, double y, int radius) {

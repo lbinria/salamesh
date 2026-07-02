@@ -38,14 +38,9 @@ struct RenderSurface {
 
 	// Add picking functions
 	vec3 pickPoint(double x, double y);
-	// long pick(double xPos, double yPos);
-	// std::set<long> pick(double xPos, double yPos, int radius = 0);
-	PickResult pick2(double xPos, double yPos, int radius);
+	PickResult readBufferPixels(double xPos, double yPos, int radius);
 
 	PickResult pick(PickElement element, double x, double y, int radius);
-	PickResult pickMeshes(double x, double y, int radius);
-	PickResult pickVertices(double x, double y, int radius);
-	PickResult pickFacets(double x, double y, int radius);
 
 	PickState getPickState(double x, double y, int radius);
 
