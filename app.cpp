@@ -440,7 +440,9 @@ void App::init() {
 		sl::toLower(ext);
 
 		if (accepted.contains(ext)) {
-			scene.loadModel(p.string());
+			if (!scene.loadModel(p.string())) {
+				std::cerr << "Unable to load model at " << p.string() << std::endl;
+			}
 		}
 		else if (p.extension() == ".lua") {
 			std::cout << "load script: " << p.string() << std::endl;
@@ -735,8 +737,9 @@ void App::drawGui() {
 				std::string fullpath = kv.second;
 				std::cout << "filename: " << filename << ", fullpath: " << fullpath << std::endl;
 				std::cout << "read model..." << std::endl;
-				// scene.loadModel(fullpath);
-				scene.loadModel(fullpath);
+				if (!scene.loadModel(fullpath)) {
+					std::cerr << "Unable to load model at " << fullpath << std::endl;
+				}
 			}
 		}
 		

@@ -48,6 +48,7 @@ struct HalfedgeShader : public ShaderBase {
 	private:
 
 	void updateHalfedges(GeometryBuffer &geometryBuffer, Surface &m);
+	void updateHalfedges(GeometryBuffer &geometryBuffer, PolyLine &m);
 	
 };
 

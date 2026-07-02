@@ -43,35 +43,11 @@ void Scene::init() {
 	auto halfedgesShader = std::make_unique<HalfedgeShader>("halfedges");
 	auto lineShader = std::make_unique<LineShader>("line_shader");
 
-	// _shaders.emplace("points_shader", std::move(pointsShader));
-	// _shaders.emplace("a_triangles_shader", std::move(trianglesShader));
-	// _shaders.emplace("polygons_shader", std::move(polygonsShader));
-	// _shaders.emplace("line_shader", std::move(lineShader));
-	// _shaders.emplace("halfedges_shader", std::move(halfedgesShader));
-
-	// auto pointsShader2 = std::make_unique<PointShader>("points_shader2");
-	// auto triangleShader2 = std::make_unique<SurfaceShader>("triangles_shader2");
-	// _shaders.emplace(pointsShader2->getName(), std::move(pointsShader2));
-
-	// Order matters as it was render following this
-	_shaders.push_back(std::move(trianglesShader));
-	_shaders.push_back(std::move(polygonsShader));
-	_shaders.push_back(std::move(pointsShader));
-	_shaders.push_back(std::move(lineShader));
-	_shaders.push_back(std::move(halfedgesShader));
-
-	auto pointsShader2 = std::make_unique<PointShader>("points_shader2");
-	auto trianglesShader2 = std::make_unique<SurfaceShader>("triangles_shader2");
-	auto polygonsShader2 = std::make_unique<PolyShader>("polygons_shader2");
-	auto halfedgesShader2 = std::make_unique<HalfedgeShader>("halfedges_shader2");
-	auto linesShader2 = std::make_unique<LineShader>("lines_shader2");
-
-	_shaders.push_back(std::move(trianglesShader2));
-	_shaders.push_back(std::move(pointsShader2));
-	_shaders.push_back(std::move(polygonsShader2));
-	_shaders.push_back(std::move(halfedgesShader2));
-	_shaders.push_back(std::move(linesShader2));
-
+	_shaders.emplace("point_shader", std::move(pointsShader));
+	_shaders.emplace("a_triangle_shader", std::move(trianglesShader));
+	_shaders.emplace("a_polygon_shader", std::move(polygonsShader));
+	_shaders.emplace("line_shader", std::move(lineShader));
+	_shaders.emplace("halfedge_shader", std::move(halfedgesShader));
 
 }
 
@@ -83,6 +59,9 @@ std::shared_ptr<SceneNode> Scene::loadModel(const std::string filename, const st
 	// Load node from file
 	auto modelLoader = ModelLoader(*this);
 	auto node = modelLoader.load(filename, nodeName);
+
+	if (!node)
+		return nullptr;
 
 	// Setup default gfx
 	if (auto mat = node->getMaterial("points")) {
@@ -236,7 +215,7 @@ void Scene::render(std::shared_ptr<SceneNode> node, std::unique_ptr<ShaderBase>&
 	if (!node->isVisible())
 		return;
 
-	auto geometryBufferOpt = node->getGeometryBuffer(*shader);
+	auto geometryBufferOpt = node->getGeometryBuffer(shader->getName());
 	auto materialOpt = node->getMaterial(shader->getName());
 
 	if (!geometryBufferOpt.has_value() || !materialOpt.has_value())
@@ -282,7 +261,7 @@ void Scene::render() {
 	std::map<std::string, bool> wasUpdated;
 
 	// Loop through available shaders
-	for (auto &shader : _shaders) {
+	for (auto &[_, shader] : _shaders) {
 		// Loop through nodes in scene
 		for (auto &[nodeName, node] : _nodes) {
 			render(node, shader, wasUpdated);

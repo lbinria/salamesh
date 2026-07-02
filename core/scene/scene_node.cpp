@@ -3,7 +3,9 @@
 #include "layer_params.h"
 #include "view_component.h"
 
-bool SceneNode::addShaderPass(const std::string name, ShaderBase &shader) {
+bool SceneNode::addShaderPass(ShaderBase &shader) {
+	auto name = shader.getName();
+	
 	if (_geometryBuffer.contains(name))
 		return false;
 	

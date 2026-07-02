@@ -64,6 +64,8 @@ void PointShader::update(GeometryBuffer &geometryBuffer, Geometry &geometry) {
 		updatePointSet(geometryBuffer, quadsGeometry->_m.points);
 	else if (auto polygonsGeometry = dynamic_cast<PolygonsGeometry*>(&geometry))
 		updatePointSet(geometryBuffer, polygonsGeometry->_m.points);
+	else if (auto polyLineGeometry = dynamic_cast<PolyLineGeometry*>(&geometry))
+		updatePointSet(geometryBuffer, polyLineGeometry->_m.points);
 }
 
 

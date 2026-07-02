@@ -40,7 +40,7 @@ struct SceneNode : std::enable_shared_from_this<SceneNode> {
 		_geometry->requestUpdate();
 	}
 
-	bool addShaderPass(const std::string name, ShaderBase &shader);
+	bool addShaderPass(ShaderBase &shader);
 
 	bool hasMaterial(const std::string name) const {
 		return _materials.contains(name);
@@ -59,10 +59,6 @@ struct SceneNode : std::enable_shared_from_this<SceneNode> {
 
 	std::map<std::string, GeometryBuffer>& getGeometryBuffer() {
 		return _geometryBuffer;
-	}
-
-	std::optional<std::reference_wrapper<GeometryBuffer>> getGeometryBuffer(ShaderBase &shader) {
-		return getGeometryBuffer(shader.getName());
 	}
 
 	std::optional<std::reference_wrapper<GeometryBuffer>> getGeometryBuffer(const std::string name) {

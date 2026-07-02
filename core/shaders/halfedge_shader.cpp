@@ -40,6 +40,41 @@ Material HalfedgeShader::createMaterial() {
 	return Material(params);
 }
 
+void HalfedgeShader::updateHalfedges(GeometryBuffer &geometryBuffer, PolyLine &m) {
+	std::vector<LineVert> vertices;
+	// pre-allocate to speed-up
+	vertices.reserve(m.nedges() * 6 /* 1 quad, 2 tri per quad, 3 points per tri */); 
+
+	for (auto &e : m.iter_edges()) {
+
+		vec3 b = vec3(e.from() + e.to()) * .5;
+		sl::algebra::vec3 bary = sl::algebra::vecf(b);
+
+		sl::algebra::vec3 gp0 = sl::algebra::vecf(e.from());
+		sl::algebra::vec3 gp1 = sl::algebra::vecf(e.to());
+
+		// build the 4 “corner” vertices
+		LineVert lv0{e, gp0, gp1, -1.0f, 0.0f, bary};  // corner: start, left side
+		LineVert lv1{e, gp0, gp1, +1.0f, 0.0f, bary};  // corner: start, right side
+		LineVert lv2{e, gp0, gp1, -1.0f, 1.0f, bary};  // corner: end,   left side
+		LineVert lv3{e, gp0, gp1, +1.0f, 1.0f, bary};  // corner: end,   right side
+
+		vertices.push_back(lv0);
+		vertices.push_back(lv1);
+		vertices.push_back(lv2);
+		
+		vertices.push_back(lv2);
+		vertices.push_back(lv3);
+		vertices.push_back(lv1);
+
+	}
+
+	geometryBuffer.nelements = vertices.size();
+	glBindVertexArray(geometryBuffer.vao());
+	glBindBuffer(GL_ARRAY_BUFFER, geometryBuffer.vbo());
+	glBufferData(GL_ARRAY_BUFFER, vertices.size() * sizeof(LineVert), vertices.data(), GL_STATIC_DRAW);
+}
+
 void HalfedgeShader::updateHalfedges(GeometryBuffer &geometryBuffer, Surface &m) {
 	std::vector<LineVert> vertices;
 	// pre-allocate to speed-up
@@ -99,6 +134,8 @@ void HalfedgeShader::update(GeometryBuffer &geometryBuffer, Geometry &geometry) 
 		updateHalfedges(geometryBuffer, quadsGeometry->_m);
 	else if (auto polygonsGeometry = dynamic_cast<PolygonsGeometry*>(&geometry))
 		updateHalfedges(geometryBuffer, polygonsGeometry->_m);
+	else if (auto polyLineGeometry = dynamic_cast<PolyLineGeometry*>(&geometry))
+		updateHalfedges(geometryBuffer, polyLineGeometry->_m);
 }
 
 
