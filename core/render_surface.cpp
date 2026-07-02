@@ -55,9 +55,9 @@ void RenderSurface::setup() {
 
 	// Attach color attachments to FBO buffer
 	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, texColor, 0);
-	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT1, GL_TEXTURE_2D, texFacetID, 0);
-	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT2, GL_TEXTURE_2D, texCellID, 0);
-	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT3, GL_TEXTURE_2D, texVertexID, 0);
+	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT1, GL_TEXTURE_2D, texVertexID, 0);
+	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT2, GL_TEXTURE_2D, texFacetID, 0);
+	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT3, GL_TEXTURE_2D, texCellID, 0);
 	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT4, GL_TEXTURE_2D, texMeshID, 0);
 	// Attach depth attachments to FBO buffer
 	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_TEXTURE_2D, depthAttachmentTexture, 0);
@@ -345,7 +345,14 @@ PickResult RenderSurface::pick2(double xPos, double yPos, int radius) {
 // }
 
 
+PickResult RenderSurface::pick(PickElement element, double x, double y, int radius) {
+	glBindFramebuffer(GL_READ_FRAMEBUFFER, fbo);
+	glReadBuffer(GL_COLOR_ATTACHMENT0 + (static_cast<int>(element) + 1));
+	auto result = pick2(x, y, radius);
+	glBindFramebuffer(GL_READ_FRAMEBUFFER, 0);
 
+	return result;
+}
 
 PickResult RenderSurface::pickMeshes(double x, double y, int radius) {
 	glBindFramebuffer(GL_READ_FRAMEBUFFER, fbo);
@@ -358,22 +365,6 @@ PickResult RenderSurface::pickMeshes(double x, double y, int radius) {
 }
 
 PickResult RenderSurface::pickVertices(double x, double y, int radius) {
-
-	glBindFramebuffer(GL_READ_FRAMEBUFFER, fbo);
-	glReadBuffer(GL_COLOR_ATTACHMENT3);
-	auto result = pick2(x, y, radius);
-	glBindFramebuffer(GL_READ_FRAMEBUFFER, 0);
-
-	return result;
-	// Clean ids
-	// std::vector<long> clean_ids;
-	// std::copy_if(ids.begin(), ids.end(), std::back_inserter(clean_ids), [&](long id) {
-	// 	return id >= 0 && id < geometry.nverts();
-	// });
-	// return clean_ids;
-}
-
-PickResult RenderSurface::pickFacets(double x, double y, int radius) {
 
 	glBindFramebuffer(GL_READ_FRAMEBUFFER, fbo);
 	glReadBuffer(GL_COLOR_ATTACHMENT1);
@@ -389,10 +380,27 @@ PickResult RenderSurface::pickFacets(double x, double y, int radius) {
 	// return clean_ids;
 }
 
+PickResult RenderSurface::pickFacets(double x, double y, int radius) {
+
+	glBindFramebuffer(GL_READ_FRAMEBUFFER, fbo);
+	glReadBuffer(GL_COLOR_ATTACHMENT2);
+	auto result = pick2(x, y, radius);
+	glBindFramebuffer(GL_READ_FRAMEBUFFER, 0);
+
+	return result;
+	// Clean ids
+	// std::vector<long> clean_ids;
+	// std::copy_if(ids.begin(), ids.end(), std::back_inserter(clean_ids), [&](long id) {
+	// 	return id >= 0 && id < geometry.nverts();
+	// });
+	// return clean_ids;
+}
+
 PickState RenderSurface::getPickState(double x, double y, int radius) {
-	auto pickMeshesResult = pickMeshes(x, y, radius);
-	auto pickVerticesResult = pickVertices(x, y, radius);
-	auto pickFacetsResult = pickFacets(x, y, radius);
+
+	auto pickVerticesResult = pick(PickElement::PICK_VERTEX, x, y, radius);
+	auto pickFacetsResult = pick(PickElement::PICK_FACET, x, y, radius);
+	auto pickMeshesResult = pick(PickElement::PICK_MESH, x, y, radius);
 
 	std::array<PickResult, PickElement::PICK_ELEMENT_COUNT> results;
 	results[PickElement::PICK_MESH] = pickMeshesResult;

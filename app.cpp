@@ -852,7 +852,7 @@ std::vector<long> App::pickVertices(double x, double y, int radius) {
 	auto &geometry = geometryOpt.value().get();
 
 	glBindFramebuffer(GL_READ_FRAMEBUFFER, scene.getDefaultRenderSurface().fbo);
-	glReadBuffer(GL_COLOR_ATTACHMENT3);
+	glReadBuffer(GL_COLOR_ATTACHMENT1);
 	auto ids = pick(x, y, radius);
 	glBindFramebuffer(GL_READ_FRAMEBUFFER, 0);
 
@@ -874,7 +874,7 @@ std::vector<long> App::pickFacets(double x, double y, int radius) {
 	auto &geometry = geometryOpt.value().get();
 
 	glBindFramebuffer(GL_READ_FRAMEBUFFER, scene.getDefaultRenderSurface().fbo);
-	glReadBuffer(GL_COLOR_ATTACHMENT1);
+	glReadBuffer(GL_COLOR_ATTACHMENT2);
 	auto ids = pick(x, y, radius);
 	glBindFramebuffer(GL_READ_FRAMEBUFFER, 0);
 
@@ -896,7 +896,7 @@ std::vector<long> App::pickCells(double x, double y, int radius) {
 	auto &geometry = geometryOpt.value().get();
 
 	glBindFramebuffer(GL_READ_FRAMEBUFFER, scene.getDefaultRenderSurface().fbo);
-	glReadBuffer(GL_COLOR_ATTACHMENT2);
+	glReadBuffer(GL_COLOR_ATTACHMENT3);
 	auto ids = pick(x, y, radius);
 	glBindFramebuffer(GL_READ_FRAMEBUFFER, 0);
 

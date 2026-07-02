@@ -42,6 +42,7 @@ struct RenderSurface {
 	// std::set<long> pick(double xPos, double yPos, int radius = 0);
 	PickResult pick2(double xPos, double yPos, int radius);
 
+	PickResult pick(PickElement element, double x, double y, int radius);
 	PickResult pickMeshes(double x, double y, int radius);
 	PickResult pickVertices(double x, double y, int radius);
 	PickResult pickFacets(double x, double y, int radius);
