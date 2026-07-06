@@ -195,6 +195,7 @@ void RenderSurface::render(Shader &screenShader, unsigned int quadVAO) {
 	glBindVertexArray(quadVAO);
 	glActiveTexture(GL_TEXTURE0);
 	glBindTexture(GL_TEXTURE_2D, texColor);
+	// glBindTexture(GL_TEXTURE_2D, texVertexID);
 
 	glCullFace(GL_BACK);
 	screenShader.use();

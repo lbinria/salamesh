@@ -88,95 +88,128 @@ function draw_node_properties(node, k, view)
 
 		end
 
-		if (imgui.CollapsingHeader("Clipping##" .. k .. "_properties_clipping")) then 
+		if (imgui.CollapsingHeader("Clipping##" .. k .. "_properties_clipping")) then
+
+			local clip = false
+			local clipping_mode = ClippingMode.CELL
+			for _, material in pairs(node.materials) do
+				if (material:get_params("clipping")["enabled"]) then 
+					clip = true
+				end
+				if (material:get_params("clipping")) then 
+					clipping_mode = material:get_params("clipping")["mode"]
+				end
+			end
 
 
-		-- 	local sel_chk_enable_clipping, new_enable_clipping = imgui.Checkbox("Enable clipping", node.clipping)
+			local sel_chk_enable_clipping, new_enable_clipping = imgui.Checkbox("Enable clipping", clip)
 
-		-- 	if (sel_chk_enable_clipping) then 
-		-- 		print("Enable clipping: " .. tostring(new_enable_clipping))
-		-- 		node.clipping = new_enable_clipping
-		-- 		app.cull = false
-		-- 	end
+			if (sel_chk_enable_clipping) then 
+				print("Enable clipping: " .. tostring(new_enable_clipping))
 
-		-- 	if (imgui.BeginCombo("##Clipping plane mode", node.clipping_mode_strings[node.clipping_mode])) then
-		-- 		for i = 1, #node.clipping_mode_strings do
-		-- 			local is_selected = i == node.clipping_mode
-		-- 			if (imgui.Selectable(node.clipping_mode_strings[i], is_selected)) then
+				for _, material in pairs(node.materials) do
+					material:get_params("clipping")["enabled"] = new_enable_clipping
+				end
+		
+			end
+
+			if (imgui.BeginCombo("##Clipping plane mode", ClippingParams.clipping_mode_strings[clipping_mode + 1])) then
+				for i = 1, #ClippingParams.clipping_mode_strings do
+					local is_selected = i - 1 == clipping_mode
+					if (imgui.Selectable(ClippingParams.clipping_mode_strings[i], is_selected)) then
+
+						for _, material in pairs(node.materials) do
+							material:get_params("clipping")["mode"] = i - 1
+						end
+
+					end
+				end
+				imgui.EndCombo()
+			end
+
+			if not sel_clipping_plane[k] then 
+				sel_clipping_plane[k] = 1
+			end
+
+			if (imgui.BeginCombo("##Clipping plane normal", clipping_planes[sel_clipping_plane[k]])) then
+				for i = 1, #clipping_planes do
+					local is_selected = i == sel_clipping_plane[k]
+					if (imgui.Selectable(clipping_planes[i], is_selected)) then
 						
-		-- 				node.clipping_mode = i
+						sel_clipping_plane[k] = i
 
-		-- 				print("Set clipping mode to: " .. tostring(node.clipping_mode))
-		-- 			end
-		-- 		end
-		-- 		imgui.EndCombo()
-		-- 	end
+						local v = vec3{1,0,0}
+						if (i == 2) then
+							v = vec3{0,1,0}
+						elseif (i == 3) then
+							v = vec3{0,0,1}
+						end
 
-		-- 	if not sel_clipping_plane[k] then 
-		-- 		sel_clipping_plane[k] = 1
-		-- 	end
+						for _, material in pairs(node.materials) do 
+							material:get_params("clipping")["normal"] = v
+						end
 
-		-- 	if (imgui.BeginCombo("##Clipping plane normal", clipping_planes[sel_clipping_plane[k]])) then
-		-- 		for i = 1, #clipping_planes do
-		-- 			local is_selected = i == sel_clipping_plane[k]
-		-- 			if (imgui.Selectable(clipping_planes[i], is_selected)) then
-						
-		-- 				sel_clipping_plane[k] = i
+						print("Set clipping plane normal to: " .. v:to_string())
+					end
+				end
+				imgui.EndCombo()
+			end
 
-		-- 				if (i == 1) then
-		-- 					node.clipping_plane_normal = vec3.new(1,0,0)
-		-- 				elseif (i == 2) then
-		-- 					node.clipping_plane_normal = vec3.new(0,1,0)
-		-- 				elseif (i == 3) then
-		-- 					node.clipping_plane_normal = vec3.new(0,0,1)
-		-- 				end
+			-- Get clipping point (arbitrary the first found)
+			local clipping_plane_point = vec3{0,0,0}
+			for _, material in pairs(node.materials) do 
+				clipping_plane_point = material:get_params("clipping")["point"]
+				break 
+			end
 
-		-- 				print("Set clipping plane normal to: " .. node.clipping_plane_normal:to_string())
-		-- 			end
-		-- 		end
-		-- 		imgui.EndCombo()
-		-- 	end
+			local plane_pos = 0
+			-- Maybe it exists a better way to get node center from x,y,z than that ugly switch
+			local center_at = 0;
+			if (sel_clipping_plane[k] == 1) then
+				plane_pos = clipping_plane_point.x
+				center_at = node.geometry.center.x
+			elseif (sel_clipping_plane[k] == 2) then
+				plane_pos = clipping_plane_point.y
+				center_at = node.geometry.center.y
+			elseif (sel_clipping_plane[k] == 3) then
+				plane_pos = clipping_plane_point.z
+				center_at = node.geometry.center.z
+			end
 
-		-- 	local plane_pos = 0
-		-- 	-- Maybe it exists a better way to get node center from x,y,z than that ugly switch
-		-- 	local center_at = 0;
-		-- 	if (sel_clipping_plane[k] == 1) then
-		-- 		plane_pos = node.clipping_plane_point.x
-		-- 		center_at = node.center.x
-		-- 	elseif (sel_clipping_plane[k] == 2) then
-		-- 		plane_pos = node.clipping_plane_point.y
-		-- 		center_at = node.center.y
-		-- 	elseif (sel_clipping_plane[k] == 3) then
-		-- 		plane_pos = node.clipping_plane_point.z
-		-- 		center_at = node.center.z
-		-- 	end
+			-- 0 -> node.center - node.radius
+			-- 1 -> node.center + node.radius
+			local plane_pos_factor = (plane_pos - center_at) / node.geometry.radius
 
-		-- 	-- 0 -> node.center - node.radius
-		-- 	-- 1 -> node.center + node.radius
-		-- 	local plane_pos_factor = (plane_pos - center_at) / node.radius
+			local sel_slider_clipping_plane_point, new_clipping_plane_pos_factor = imgui.SliderFloat("Clipping plane point", plane_pos_factor, -1., 1.)
+			if (sel_slider_clipping_plane_point) then 
 
-		-- 	local sel_slider_clipping_plane_point, new_clipping_plane_pos_factor = imgui.SliderFloat("Clipping plane point", plane_pos_factor, -1., 1.)
-		-- 	if (sel_slider_clipping_plane_point) then 
+				local new_clipping_plane_pos = center_at + new_clipping_plane_pos_factor * node.geometry.radius
 
-		-- 		-- local new_clipping_plane_pos = node.radius * new_clipping_plane_pos_factor + center_at
-		-- 		local new_clipping_plane_pos = center_at + new_clipping_plane_pos_factor * node.radius
 
-		-- 		local v 
-		-- 		if (sel_clipping_plane[k] == 1) then
-		-- 			v = vec3.new(new_clipping_plane_pos, node.clipping_plane_point.y, node.clipping_plane_point.z)
-		-- 		elseif (sel_clipping_plane[k] == 2) then
-		-- 			v = vec3.new(node.clipping_plane_point.x, new_clipping_plane_pos, node.clipping_plane_point.z)
-		-- 		elseif (sel_clipping_plane[k] == 3) then
-		-- 			v = vec3.new(node.clipping_plane_point.x, node.clipping_plane_point.y, new_clipping_plane_pos)
-		-- 		end
-		-- 		node.clipping_plane_point = v
-		-- 	end
 
-		-- 	local sel_invert_clipping, new_invert_clipping = imgui.Checkbox("Invert clipping", invert_clipping)
-		-- 	if (sel_invert_clipping) then 
-		-- 		invert_clipping = new_invert_clipping
-		-- 		node.invert_clipping = invert_clipping
-		-- 	end
+				local v
+				if (sel_clipping_plane[k] == 1) then
+					v = vec3{new_clipping_plane_pos, clipping_plane_point.y, clipping_plane_point.z}
+				elseif (sel_clipping_plane[k] == 2) then
+					v = vec3{clipping_plane_point.x, new_clipping_plane_pos, clipping_plane_point.z}
+				elseif (sel_clipping_plane[k] == 3) then
+					v = vec3{clipping_plane_point.x, clipping_plane_point.y, new_clipping_plane_pos}
+				end
+
+
+				for _, material in pairs(node.materials) do 
+					material:get_params("clipping")["point"] = v
+				end
+			end
+
+			local sel_invert_clipping, new_invert_clipping = imgui.Checkbox("Invert clipping", invert_clipping)
+			if (sel_invert_clipping) then 
+				invert_clipping = new_invert_clipping
+
+				for _, material in pairs(node.materials) do 
+					material:get_params("clipping")["invert"] = invert_clipping
+				end
+			end
 
 		end
 

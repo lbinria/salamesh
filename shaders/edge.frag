@@ -6,6 +6,7 @@ layout(depth_less) out float gl_FragDepth;
 // Color output
 layout(location = 0) out vec4 FragColor;
 layout(location = 2) out vec4 fragHalfedgeIndexOut;
+layout(location = 3) out vec4 fragFacetIndexOut;
 layout(location = 5) out vec4 fragMeshIndexOut;
 
 flat in int FragHalfedgeIndex;
@@ -253,6 +254,7 @@ void main()
     shading(col, N, t);
 
     fragHalfedgeIndexOut = vec4(encode_id(FragHalfedgeIndex), 1.);
+    fragFacetIndexOut = vec4(0., 0., 0., 0.);
     fragMeshIndexOut = vec4(encode_id(meshIndex), 1.);
     FragColor = vec4(col, 1.);
 }

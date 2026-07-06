@@ -8,7 +8,7 @@ using json = nlohmann::json;
 #include <variant>
 
 
-using ParamValue = std::variant<bool, float, int, sl::algebra::vec2, sl::algebra::vec3>;
+using ParamValue = std::variant<bool, int, float, sl::algebra::vec2, sl::algebra::vec3>;
 
 struct MaterialParams {
 	virtual void init() = 0;
