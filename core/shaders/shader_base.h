@@ -13,9 +13,9 @@ using json = nlohmann::json;
 
 #include "helpers.h"
 
-#include "geometry_buffer.h"
+#include "mesh_buffer.h"
 #include "material.h"
-#include "geometry.h"
+#include "mesh.h"
 #include "view_component.h"
 
 struct ShaderBase {
@@ -37,17 +37,17 @@ struct ShaderBase {
 		return x;
 	}
 
-	virtual bool isCompatible(Geometry &geometry) { return false; }
+	virtual bool isCompatible(Mesh &mesh) { return false; }
 
 	ViewComponent createViewComponent(const std::string name) {
-		auto geometryBuffer = createGeometryBuffer();
+		auto meshBuffer = createMeshBuffer();
 		auto material = createMaterial();
-		return ViewComponent(name, geometryBuffer, material, *this);
+		return ViewComponent(name, meshBuffer, material, *this);
 	}
 
 
 	// TODO maybe to abstract
-	virtual void update(GeometryBuffer &geometryBuffer, Geometry &geometry) {
+	virtual void update(MeshBuffer &meshBuffer, Mesh &mesh) {
 
 	}
 
@@ -66,7 +66,7 @@ struct ShaderBase {
 	Shader &getShader() { return shader; }
 
 	// TODO move to protected
-	virtual GeometryBuffer createGeometryBuffer() = 0;
+	virtual MeshBuffer createMeshBuffer() = 0;
 	virtual Material createMaterial() = 0;
 
 	protected:

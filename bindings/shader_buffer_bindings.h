@@ -3,7 +3,7 @@
 #include "lua_binding.h"
 
 #include "../core/app_interface.h"
-#include "geometry_buffer.h"
+#include "mesh_buffer.h"
 
 namespace bindings {
 
@@ -11,7 +11,7 @@ namespace bindings {
 
 		void loadBindings(sol::state &lua, IApp &app) override;
 		private:
-		sol::usertype<GeometryBuffer> type;
+		sol::usertype<MeshBuffer> type;
 	};
 
 }

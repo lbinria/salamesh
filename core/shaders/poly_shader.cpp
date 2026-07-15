@@ -5,7 +5,7 @@
 #include "light_params.h"
 #include "clipping_params.h"
 
-GeometryBuffer PolyShader::createGeometryBuffer() {
+MeshBuffer PolyShader::createMeshBuffer() {
 	unsigned int vao, vbo;
 	glGenVertexArrays(1, &vao);
 	glGenBuffers(1, &vbo);
@@ -29,14 +29,14 @@ GeometryBuffer PolyShader::createGeometryBuffer() {
 
 	sl::createTBO(bufNVertsPerFacet, texNVertsPerFacet);
 
-	auto geometryBuffer = GeometryBuffer(vao, vbo);
-	geometryBuffer.tbos.push_back({ 
+	auto meshBuffer = MeshBuffer(vao, vbo);
+	meshBuffer.tbos.push_back({ 
 		.name = "nvertsPerFacetBuf", 
 		.texUnit = 8, 
 		.tex = texNVertsPerFacet
 	}); // Add TBO texNVertsPerFacet at the texture 8
 
-	return geometryBuffer;
+	return meshBuffer;
 };
 
 Material PolyShader::createMaterial() {
@@ -48,22 +48,22 @@ Material PolyShader::createMaterial() {
 	return Material(params);
 }
 
-bool PolyShader::isCompatible(Geometry &geometry) {
-	// Accept QuadsGeometry / PolyGeometry
-	auto quadsGeometry = dynamic_cast<QuadsGeometry*>(&geometry);
-	auto polygonsGeometry = dynamic_cast<PolygonsGeometry*>(&geometry);
-	return quadsGeometry || polygonsGeometry;
+bool PolyShader::isCompatible(Mesh &mesh) {
+	// Accept QuadsMesh / PolyMesh
+	auto quadsMesh = dynamic_cast<QuadsMesh*>(&mesh);
+	auto polygonsMesh = dynamic_cast<PolygonsMesh*>(&mesh);
+	return quadsMesh || polygonsMesh;
 }
 
-void PolyShader::update(GeometryBuffer &geometryBuffer, Geometry &geometry) {
-	auto quadsGeometry = dynamic_cast<QuadsGeometry*>(&geometry);
-	auto polygonsGeometry = dynamic_cast<PolygonsGeometry*>(&geometry);
+void PolyShader::update(MeshBuffer &meshBuffer, Mesh &mesh) {
+	auto quadsMesh = dynamic_cast<QuadsMesh*>(&mesh);
+	auto polygonsMesh = dynamic_cast<PolygonsMesh*>(&mesh);
 
-	if (quadsGeometry || polygonsGeometry) {
+	if (quadsMesh || polygonsMesh) {
 
-		Surface& m = quadsGeometry ? static_cast<Surface&>(quadsGeometry->_m) : polygonsGeometry->_m;
+		Surface& m = quadsMesh ? static_cast<Surface&>(quadsMesh->_m) : polygonsMesh->_m;
 
-		// auto &m = quadsGeometry->_m;
+		// auto &m = quadsMesh->_m;
 		std::vector<float> nVertsPerFacet(m.nfacets());
 
 		// Compute number of triangles needed to represent a facet
@@ -73,7 +73,7 @@ void PolyShader::update(GeometryBuffer &geometryBuffer, Geometry &geometry) {
 			ntri += nvertsFacet;
 			nVertsPerFacet[f] = static_cast<float>(nvertsFacet);
 		}
-		geometryBuffer.nelements = 3 * ntri /* 3 points per tri, n tri per facet */;
+		meshBuffer.nelements = 3 * ntri /* 3 points per tri, n tri per facet */;
 
 		int cornerOff = 0;
 		std::vector<Vertex> vertices;
@@ -137,8 +137,8 @@ void PolyShader::update(GeometryBuffer &geometryBuffer, Geometry &geometry) {
 			cornerOff += f.size();
 		}
 
-		glBindVertexArray(geometryBuffer.vao());
-		glBindBuffer(GL_ARRAY_BUFFER, geometryBuffer.vbo());
+		glBindVertexArray(meshBuffer.vao());
+		glBindBuffer(GL_ARRAY_BUFFER, meshBuffer.vbo());
 
 		// Write VBO
 		glBufferData(GL_ARRAY_BUFFER, vertices.size() * sizeof(Vertex), vertices.data(), GL_STATIC_DRAW);

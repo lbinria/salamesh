@@ -37,10 +37,10 @@ struct SurfaceShader : public ShaderBase {
 		_m(*new Triangles())
 		{}
 
-	virtual bool isCompatible(Geometry &geometry) override;
-	virtual GeometryBuffer createGeometryBuffer() override;
+	virtual bool isCompatible(Mesh &mesh) override;
+	virtual MeshBuffer createMeshBuffer() override;
 	virtual Material createMaterial() override;
-	virtual void update(GeometryBuffer &geometryBuffer, Geometry &geometry) override;
+	virtual void update(MeshBuffer &meshBuffer, Mesh &mesh) override;
 
 	virtual unsigned int renderElement() override {
 		return GL_TRIANGLES;

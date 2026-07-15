@@ -20,7 +20,7 @@ function draw_tree(node, k)
 		if (imgui.SmallButton("View")) then 
 			app.scene.selected_node = k
 			-- Set camera position !
-			app.scene.current_camera:look_at_box(node.geometry.bbox)
+			app.scene.current_camera:look_at_box(node.mesh.bbox)
 		end
 
 		draw_node_properties(node, k, 0)
@@ -54,12 +54,12 @@ function draw_node_properties(node, k, view)
 	-- imgui.Text("local position: (%.4f, %.4f, %.4f)", p.x, p.y, p.z);
 	-- TODO using ':' instead of '.' for to_string call... for sending self...
 	imgui.Text("Position: " .. p:to_string());
-	imgui.Text("Center: " .. node.geometry.center:to_string());
-	imgui.Text("Radius: " .. string.format("%.4f", node.geometry.radius));
+	imgui.Text("Center: " .. node.mesh.center:to_string());
+	imgui.Text("Radius: " .. string.format("%.4f", node.mesh.radius));
 
 	-- imgui.Text("Bounding box: " .. node.bbox[1]:to_string());
-	imgui.Text("Number of vertices: " .. tostring(node.geometry.nverts));
-	imgui.Text("Number of facets: " .. tostring(node.geometry.nfacets));
+	imgui.Text("Number of vertices: " .. tostring(node.mesh.nverts));
+	imgui.Text("Number of facets: " .. tostring(node.mesh.nfacets));
 
 
 	-- if (imgui.CollapsingHeader("Properties##" .. k .. "_properties")) then 
@@ -187,23 +187,23 @@ function draw_node_properties(node, k, view)
 			local center_at = 0;
 			if (sel_clipping_plane[k] == 1) then
 				plane_pos = clipping_plane_point.x
-				center_at = node.geometry.center.x
+				center_at = node.mesh.center.x
 			elseif (sel_clipping_plane[k] == 2) then
 				plane_pos = clipping_plane_point.y
-				center_at = node.geometry.center.y
+				center_at = node.mesh.center.y
 			elseif (sel_clipping_plane[k] == 3) then
 				plane_pos = clipping_plane_point.z
-				center_at = node.geometry.center.z
+				center_at = node.mesh.center.z
 			end
 
 			-- 0 -> node.center - node.radius
 			-- 1 -> node.center + node.radius
-			local plane_pos_factor = (plane_pos - center_at) / node.geometry.radius
+			local plane_pos_factor = (plane_pos - center_at) / node.mesh.radius
 
 			local sel_slider_clipping_plane_point, new_clipping_plane_pos_factor = imgui.SliderFloat("Clipping plane point", plane_pos_factor, -1., 1.)
 			if (sel_slider_clipping_plane_point) then 
 
-				local new_clipping_plane_pos = center_at + new_clipping_plane_pos_factor * node.geometry.radius
+				local new_clipping_plane_pos = center_at + new_clipping_plane_pos_factor * node.mesh.radius
 
 
 
@@ -356,7 +356,7 @@ function draw_node_properties(node, k, view)
 			imgui.Text("Attribute")
 
 			-- Get current node attributes
-			local attributes = node.geometry.attributes
+			local attributes = node.mesh.attributes
 
 			-- Get selected colormap for current node
 			local selected_colormap = "CET-R41"
@@ -755,7 +755,7 @@ function draw_gui()
 					-- local node_pos = node.center
 					-- app.scene.current_camera.position = vec3.new(node_pos.x, node_pos.y, node_pos.z - node.radius * 2.);
 					-- app.scene.current_camera.look_at = vec3.new(node_pos.x, node_pos.y, node_pos.z);
-					app.scene.current_camera:look_at_box(node.geometry.bbox)
+					app.scene.current_camera:look_at_box(node.mesh.bbox)
 				end
 				
 			end

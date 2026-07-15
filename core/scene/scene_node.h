@@ -1,8 +1,8 @@
 #pragma once
 #include "helpers.h"
 #include "shader.h"
-#include "geometry.h"
-#include "geometry_buffer.h"
+#include "mesh.h"
+#include "mesh_buffer.h"
 #include "material.h"
 #include "material_group.h"
 #include "shader_base.h"
@@ -15,9 +15,9 @@ using namespace UM;
 
 struct SceneNode : std::enable_shared_from_this<SceneNode> {
 
-	SceneNode(std::string name, std::shared_ptr<Geometry> geometry) :  
+	SceneNode(std::string name, std::shared_ptr<Mesh> mesh) :  
 	_name(name),
-	_geometry(geometry) {
+	_mesh(mesh) {
 
 	}
 
@@ -33,13 +33,13 @@ struct SceneNode : std::enable_shared_from_this<SceneNode> {
 
 
 
-	Geometry& getGeometry() {
-		return *_geometry;
+	Mesh& getMesh() {
+		return *_mesh;
 	}
 
 	// TODO remove! 
 	void requestUpdate() {
-		_geometry->requestUpdate();
+		_mesh->requestUpdate();
 	}
 
 	bool addShaderPass(ShaderBase &shader);
@@ -63,15 +63,15 @@ struct SceneNode : std::enable_shared_from_this<SceneNode> {
 		return _materials.at(name);
 	}
 
-	std::map<std::string, GeometryBuffer>& getGeometryBuffer() {
-		return _geometryBuffer;
+	std::map<std::string, MeshBuffer>& getMeshBuffer() {
+		return _meshBuffer;
 	}
 
-	std::optional<std::reference_wrapper<GeometryBuffer>> getGeometryBuffer(const std::string name) {
-		if (!_geometryBuffer.contains(name))
+	std::optional<std::reference_wrapper<MeshBuffer>> getMeshBuffer(const std::string name) {
+		if (!_meshBuffer.contains(name))
 			return std::nullopt;
 		
-		return _geometryBuffer.at(name);
+		return _meshBuffer.at(name);
 	}
 
 	const std::string getName() const {
@@ -121,9 +121,9 @@ struct SceneNode : std::enable_shared_from_this<SceneNode> {
 	private:
 	std::string _name;
 
-	std::shared_ptr<Geometry> _geometry;
+	std::shared_ptr<Mesh> _mesh;
 
-	std::map<std::string, GeometryBuffer> _geometryBuffer;
+	std::map<std::string, MeshBuffer> _meshBuffer;
 	std::map<std::string, Material> _materials;
 
 

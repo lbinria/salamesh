@@ -12,19 +12,19 @@ using json = nlohmann::json;
 
 #include "helpers.h"
 
-struct Geometry {
+struct Mesh {
 
-	Geometry() {
+	Mesh() {
 		_index = maxIndex;
 		++maxIndex;
 	}
 
 	// Remove copy constructors
-	Geometry(const Geometry&) = delete;
-	Geometry& operator=(const Geometry&) = delete;
+	Mesh(const Mesh&) = delete;
+	Mesh& operator=(const Mesh&) = delete;
 	// Allow moves
-	Geometry(Geometry&&) = default;
-	Geometry& operator=(Geometry&&) = default;
+	Mesh(Mesh&&) = default;
+	Mesh& operator=(Mesh&&) = default;
 
 	int getIndex() const {
 		return _index;
@@ -97,7 +97,7 @@ struct Geometry {
 	int _index;
 };
 
-struct MeshGeometry : public Geometry {
+struct MeshMesh : public Mesh {
 
 	// virtual int nverts() const = 0; 
 	// virtual int nfacets() const = 0; 
@@ -215,7 +215,7 @@ concept SurfaceDerived = std::is_base_of_v<Surface, std::remove_cv_t<T>> &&
 	!std::is_same_v<Surface, std::remove_cv_t<T>>;
 
 template<SurfaceDerived TSurface>
-struct SurfaceGeometry : public MeshGeometry {
+struct SurfaceMesh : public MeshMesh {
 
 	bool saveAs(const std::string filename) override {
 		// Check path validity
@@ -365,19 +365,19 @@ struct SurfaceGeometry : public MeshGeometry {
 
 };
 
-typedef SurfaceGeometry<Triangles> TrianglesGeometry;
-typedef SurfaceGeometry<Quads> QuadsGeometry;
-typedef SurfaceGeometry<Polygons> PolygonsGeometry;
+typedef SurfaceMesh<Triangles> TrianglesMesh;
+typedef SurfaceMesh<Quads> QuadsMesh;
+typedef SurfaceMesh<Polygons> PolygonsMesh;
 
 
-struct PolyLineGeometry : public MeshGeometry {
+struct PolyLineMesh : public MeshMesh {
 
 	// Remove copy constructors, allow moves
-	PolyLineGeometry() = default;
-	PolyLineGeometry(const PolyLineGeometry&) = delete;
-	PolyLineGeometry(PolyLineGeometry&&) = default;
-	PolyLineGeometry& operator=(const PolyLineGeometry&) = delete;
-	PolyLineGeometry& operator=(PolyLineGeometry&&) = default;
+	PolyLineMesh() = default;
+	PolyLineMesh(const PolyLineMesh&) = delete;
+	PolyLineMesh(PolyLineMesh&&) = default;
+	PolyLineMesh& operator=(const PolyLineMesh&) = delete;
+	PolyLineMesh& operator=(PolyLineMesh&&) = default;
 
 	bool saveAs(const std::string path) override {
 		// Check path validity

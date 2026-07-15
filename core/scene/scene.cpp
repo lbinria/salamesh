@@ -88,7 +88,7 @@ void Scene::focus(const std::string nodeName) {
 	if (!setSelectedNode(nodeName))
 		return;
 	
-	auto bbox = _nodes.at(nodeName)->getGeometry().bbox();
+	auto bbox = _nodes.at(nodeName)->getMesh().bbox();
 	getCurrentCamera().lookAtBox(bbox);
 }
 
@@ -96,7 +96,7 @@ std::tuple<vec3, vec3> Scene::computeSceneBBox() {
 	vec3 min{std::numeric_limits<float>::max()};
 	vec3 max{-std::numeric_limits<float>::max()};
 	for (auto &[_, n] : _nodes) {
-		auto [cmin, cmax] = n->getGeometry().bbox();
+		auto [cmin, cmax] = n->getMesh().bbox();
 		min = sl::min(min, cmin);
 		max = sl::max(max, cmax);
 	}
@@ -169,20 +169,20 @@ Colormap Scene::getColormap(const std::string name) {
 // 		return;
 
 	
-// 	auto &geometry = node->getGeometry();
+// 	auto &mesh = node->getMesh();
 	
 // 	// Get view components that uses shader
 // 	auto viewComponents = node->getViewComponents(*shader);
 
 // 	for (auto &viewComponent : viewComponents) {
-// 		auto &geometryBuffer = viewComponent.get().getGeometryBuffer();
+// 		auto &meshBuffer = viewComponent.get().getMeshBuffer();
 // 		auto &material = viewComponent.get().getMaterial();
 
 // 		// TODO: maybe we can delay update shader buffer when material is not visible
-// 		if (geometry.shouldUpdate()) {
-// 			// Update current geometry buffer for given geometry
-// 			shader->update(geometryBuffer, geometry);
-// 			// Update layers (only activated layers) according to new geometry
+// 		if (mesh.shouldUpdate()) {
+// 			// Update current mesh buffer for given mesh
+// 			shader->update(meshBuffer, mesh);
+// 			// Update layers (only activated layers) according to new mesh
 // 			node->updateLayers();
 // 			// Set node as updated
 // 			wasUpdated[node->getName()] = true;
@@ -192,12 +192,12 @@ Colormap Scene::getColormap(const std::string name) {
 // 			return;
 
 // 		// Setup
-// 		glBindVertexArray(geometryBuffer.vao());
-// 		geometryBuffer.setPosition(shader->getShader(), node->getWorldPosition());
+// 		glBindVertexArray(meshBuffer.vao());
+// 		meshBuffer.setPosition(shader->getShader(), node->getWorldPosition());
 // 		material.apply(shader->getShader());
 
 // 		// Set textures
-// 		for (auto &tbo : geometryBuffer.tbos) {
+// 		for (auto &tbo : meshBuffer.tbos) {
 // 			glActiveTexture(GL_TEXTURE0 + tbo.texUnit);
 // 			glBindTexture(GL_TEXTURE_BUFFER, tbo.tex);
 // 			shader->getShader().setInt(tbo.name, tbo.texUnit);
@@ -206,7 +206,7 @@ Colormap Scene::getColormap(const std::string name) {
 // 		shader->getShader().setInt("meshIndex", node->getIndex());
 
 // 		// Draw
-// 		glDrawArrays(shader->renderElement(), 0, geometryBuffer.nelements);
+// 		glDrawArrays(shader->renderElement(), 0, meshBuffer.nelements);
 // 	}
 
 // }
@@ -215,21 +215,21 @@ void Scene::render(std::shared_ptr<SceneNode> node, std::unique_ptr<ShaderBase>&
 	if (!node->isVisible())
 		return;
 
-	auto geometryBufferOpt = node->getGeometryBuffer(shader->getName());
+	auto meshBufferOpt = node->getMeshBuffer(shader->getName());
 	auto materialOpt = node->getMaterial(shader->getName());
 
-	if (!geometryBufferOpt.has_value() || !materialOpt.has_value())
+	if (!meshBufferOpt.has_value() || !materialOpt.has_value())
 		return;
 
-	auto &geometry = node->getGeometry();
-	auto &geometryBuffer = geometryBufferOpt.value().get();
+	auto &mesh = node->getMesh();
+	auto &meshBuffer = meshBufferOpt.value().get();
 	auto &material = materialOpt.value().get();
 
 	// TODO: maybe we can delay update shader buffer when material is not visible
-	if (geometry.shouldUpdate()) {
-		// Update current geometry buffer for given geometry
-		shader->update(geometryBuffer, geometry);
-		// Update layers (only activated layers) according to new geometry
+	if (mesh.shouldUpdate()) {
+		// Update current mesh buffer for given mesh
+		shader->update(meshBuffer, mesh);
+		// Update layers (only activated layers) according to new mesh
 		node->updateLayers();
 		// Set node as updated
 		wasUpdated[node->getName()] = true;
@@ -238,21 +238,21 @@ void Scene::render(std::shared_ptr<SceneNode> node, std::unique_ptr<ShaderBase>&
 	if (!material.isVisible())
 		return;
 
-	glBindVertexArray(geometryBuffer.vao());
-	geometryBuffer.setPosition(shader->getShader(), node->position);
+	glBindVertexArray(meshBuffer.vao());
+	meshBuffer.setPosition(shader->getShader(), node->position);
 	material.apply(shader->getShader());
 
 	// Set textures
-	for (auto &tbo : geometryBuffer.tbos) {
+	for (auto &tbo : meshBuffer.tbos) {
 		glActiveTexture(GL_TEXTURE0 + tbo.texUnit);
 		glBindTexture(GL_TEXTURE_BUFFER, tbo.tex);
 		shader->getShader().setInt(tbo.name, tbo.texUnit);
 	}
 
 	// Set mesh index
-	shader->getShader().setInt("meshIndex", geometry.getIndex());
+	shader->getShader().setInt("meshIndex", mesh.getIndex());
 
-	glDrawArrays(shader->renderElement(), 0, geometryBuffer.nelements);
+	glDrawArrays(shader->renderElement(), 0, meshBuffer.nelements);
 }
 
 void Scene::render() {
@@ -271,7 +271,7 @@ void Scene::render() {
 
 	for (auto &[_, node] : _nodes) {
 		if (wasUpdated.contains(node->getName())) {
-				node->getGeometry().updateDone();
+				node->getMesh().updateDone();
 		}
 	}
 
@@ -320,7 +320,7 @@ void Scene::saveState(json &j, const std::string filename) {
 	// TODO important save colormaps states
 }
 
-std::optional<std::reference_wrapper<Geometry>> Scene::getHoveredMesh() {
+std::optional<std::reference_wrapper<Mesh>> Scene::getHoveredMesh() {
 	auto hoveredIndex = app.getInputState().mesh.getHovered();
-	return findGeometryByIndex(hoveredIndex);;
+	return findMeshByIndex(hoveredIndex);;
 }

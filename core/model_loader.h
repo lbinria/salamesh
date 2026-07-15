@@ -7,7 +7,7 @@ using namespace UM;
 
 struct SceneNode;
 struct Scene;
-struct PolyLineGeometry;
+struct PolyLineMesh;
 
 struct ModelLoader {
 
@@ -22,25 +22,25 @@ struct ModelLoader {
 
 	std::shared_ptr<SceneNode> load(const std::string filename, const std::string name);
 
-	template<typename TGeometry>
-	std::shared_ptr<TGeometry> loadGeometry(const std::string &filename) {
+	template<typename TMesh>
+	std::shared_ptr<TMesh> loadMesh(const std::string &filename) {
 
-		auto geometry = std::make_shared<TGeometry>();
+		auto mesh = std::make_shared<TMesh>();
 
-		geometry->_attributes = read_by_extension(filename, geometry->_m);
-		if constexpr (std::is_same_v<TGeometry, PolyLineGeometry>) {
-			if (geometry->_m.nedges() <= 0) {
+		mesh->_attributes = read_by_extension(filename, mesh->_m);
+		if constexpr (std::is_same_v<TMesh, PolyLineMesh>) {
+			if (mesh->_m.nedges() <= 0) {
 				return nullptr;
 			}
 		} else {
-			if (geometry->_m.nfacets() <= 0) {
+			if (mesh->_m.nfacets() <= 0) {
 				return nullptr;
 			}
 		}
 
-		geometry->path = filename;
+		mesh->path = filename;
 
-		return geometry;
+		return mesh;
 	}
 
 

@@ -78,7 +78,7 @@ struct Scene {
 		return nullptr;
 	}
 
-	std::optional<std::reference_wrapper<Geometry>>  getHoveredMesh();
+	std::optional<std::reference_wrapper<Mesh>>  getHoveredMesh();
 
 
 	std::tuple<vec3, vec3> computeSceneBBox();
@@ -143,8 +143,8 @@ struct Scene {
 		return static_cast<int>(_nodes.size());
 	}
 
-	std::shared_ptr<SceneNode> createNode(const std::string name, std::shared_ptr<Geometry> geometry) {
-		auto node = std::make_shared<SceneNode>(name, geometry);
+	std::shared_ptr<SceneNode> createNode(const std::string name, std::shared_ptr<Mesh> mesh) {
+		auto node = std::make_shared<SceneNode>(name, mesh);
 		_nodes.emplace(node->getName(), node);
 		return node;
 	}
@@ -161,17 +161,17 @@ struct Scene {
 		return _nodes.contains(name) ? _nodes.at(name) : nullptr;
 	}
 
-	std::optional<std::reference_wrapper<Geometry>> findGeometryByIndex(int index) {
+	std::optional<std::reference_wrapper<Mesh>> findMeshByIndex(int index) {
 		for (auto &[_, node] : _nodes) {
-			auto &geometry = node->getGeometry();
-			if (geometry.getIndex() == index)
-				return geometry;
+			auto &mesh = node->getMesh();
+			if (mesh.getIndex() == index)
+				return mesh;
 		}
 
 		return std::nullopt;
 	}
 
-	// TODO add findNodeByGeometry
+	// TODO add findNodeByMesh
 
 	const std::map<std::string, std::unique_ptr<ShaderBase>>& getShaders() const {
 		return _shaders;

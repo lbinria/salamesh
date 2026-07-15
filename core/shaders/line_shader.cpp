@@ -6,14 +6,14 @@
 #include "point_style_params.h"
 #include "light_params.h"
 #include "clipping_params.h"
-#include "lines_geometry.h"
+#include "lines_mesh.h"
 
-bool LineShader::isCompatible(Geometry &geometry) {
-	auto lineGeometry = dynamic_cast<LinesGeometry*>(&geometry);
-	return lineGeometry;
+bool LineShader::isCompatible(Mesh &mesh) {
+	auto lineMesh = dynamic_cast<LinesMesh*>(&mesh);
+	return lineMesh;
 }
 
-GeometryBuffer LineShader::createGeometryBuffer() {
+MeshBuffer LineShader::createMeshBuffer() {
 	unsigned int vao, vbo;
 	glGenVertexArrays(1, &vao);
 	glGenBuffers(1, &vbo);
@@ -24,7 +24,7 @@ GeometryBuffer LineShader::createGeometryBuffer() {
 	sl::createVBOVec3(shader.id, "p", sizeof(LineComponent), (void*)offsetof(LineComponent, p));
 	sl::createVBOVec3(shader.id, "color", sizeof(LineComponent), (void*)offsetof(LineComponent, color));
 
-	return GeometryBuffer(vao, vbo);
+	return MeshBuffer(vao, vbo);
 };
 
 Material LineShader::createMaterial() {
@@ -36,15 +36,15 @@ Material LineShader::createMaterial() {
 	return Material(params);
 }
 
-void LineShader::update(GeometryBuffer &geometryBuffer, Geometry &geometry) {
+void LineShader::update(MeshBuffer &meshBuffer, Mesh &mesh) {
 
-	auto linesGeometry = dynamic_cast<LinesGeometry*>(&geometry);
+	auto linesMesh = dynamic_cast<LinesMesh*>(&mesh);
 
-	if (linesGeometry) {
+	if (linesMesh) {
 		std::vector<LineComponent> lineComponents;
 
 		// Map Line -> LineComponent for VBO
-		for (auto &l : linesGeometry->getLines()) {
+		for (auto &l : linesMesh->getLines()) {
 			sl::algebra::vec3 la = sl::algebra::vecf(l.a);
 			sl::algebra::vec3 lb = sl::algebra::vecf(l.b);
 			sl::algebra::vec3 c = sl::algebra::vecf(l.color);
@@ -52,9 +52,9 @@ void LineShader::update(GeometryBuffer &geometryBuffer, Geometry &geometry) {
 			lineComponents.push_back({ .p = lb, .color = c });
 		}
 
-		geometryBuffer.nelements = lineComponents.size();
-		glBindVertexArray(geometryBuffer.vao());
-		glBindBuffer(GL_ARRAY_BUFFER, geometryBuffer.vbo());
+		meshBuffer.nelements = lineComponents.size();
+		glBindVertexArray(meshBuffer.vao());
+		glBindBuffer(GL_ARRAY_BUFFER, meshBuffer.vbo());
 		glBufferData(GL_ARRAY_BUFFER, lineComponents.size() * sizeof(LineComponent), lineComponents.data(), GL_STATIC_DRAW);
 	}
 }

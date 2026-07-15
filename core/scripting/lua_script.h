@@ -30,7 +30,7 @@
 #include "../bindings/material_bindings.h"
 #include "../bindings/material_params_bindings.h"
 #include "../bindings/material_params_group_bindings.h"
-#include "../bindings/geometry_bindings.h"
+#include "../bindings/mesh_bindings.h"
 #include "../bindings/picking_bindings.h"
 
 
@@ -138,7 +138,7 @@ struct LuaScript final : public Script {
 		bindings.push_back(std::make_unique<bindings::MaterialBindings>());
 		bindings.push_back(std::make_unique<bindings::MaterialParamsBindings>());
 		bindings.push_back(std::make_unique<bindings::MaterialParamsGroupBindings>());
-		bindings.push_back(std::make_unique<bindings::GeometryBindings>());
+		bindings.push_back(std::make_unique<bindings::MeshBindings>());
 		bindings.push_back(std::make_unique<bindings::PickingBindings>());
 
 		for (auto &b : bindings) {

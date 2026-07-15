@@ -6,14 +6,14 @@
 #include "light_params.h"
 #include "clipping_params.h"
 
-bool PointShader::isCompatible(Geometry &geometry) {
-	auto trianglesGeometry = dynamic_cast<TrianglesGeometry*>(&geometry);
-	auto quadsGeometry = dynamic_cast<QuadsGeometry*>(&geometry);
-	auto polygonsGeometry = dynamic_cast<PolygonsGeometry*>(&geometry);
-	return trianglesGeometry || quadsGeometry || polygonsGeometry;
+bool PointShader::isCompatible(Mesh &mesh) {
+	auto trianglesMesh = dynamic_cast<TrianglesMesh*>(&mesh);
+	auto quadsMesh = dynamic_cast<QuadsMesh*>(&mesh);
+	auto polygonsMesh = dynamic_cast<PolygonsMesh*>(&mesh);
+	return trianglesMesh || quadsMesh || polygonsMesh;
 }
 
-GeometryBuffer PointShader::createGeometryBuffer() {
+MeshBuffer PointShader::createMeshBuffer() {
 	unsigned int vao, vbo;
 	glGenVertexArrays(1, &vao);
 	glGenBuffers(1, &vbo);
@@ -25,7 +25,7 @@ GeometryBuffer PointShader::createGeometryBuffer() {
 	sl::createVBOVec3(shader.id, "p", sizeof(Vertex), (void*)offsetof(Vertex, position));
 	sl::createVBOFloat(shader.id, "sizeScale", sizeof(Vertex), (void*)offsetof(Vertex, size));
 
-	return GeometryBuffer(vao, vbo);
+	return MeshBuffer(vao, vbo);
 };
 
 Material PointShader::createMaterial() {
@@ -37,7 +37,7 @@ Material PointShader::createMaterial() {
 	return Material(params);
 }
 
-void PointShader::updatePointSet(GeometryBuffer &geometryBuffer, PointSet &ps) {
+void PointShader::updatePointSet(MeshBuffer &meshBuffer, PointSet &ps) {
 	std::vector<Vertex> vertices(ps.size());
 	for (int i = 0; i < ps.size(); ++i) {
 		auto &v = ps[i];
@@ -49,23 +49,23 @@ void PointShader::updatePointSet(GeometryBuffer &geometryBuffer, PointSet &ps) {
 		};
 	}
 
-	geometryBuffer.nelements = vertices.size();
-	glBindVertexArray(geometryBuffer.vao());
-	glBindBuffer(GL_ARRAY_BUFFER, geometryBuffer.vbo());
+	meshBuffer.nelements = vertices.size();
+	glBindVertexArray(meshBuffer.vao());
+	glBindBuffer(GL_ARRAY_BUFFER, meshBuffer.vbo());
 	glBufferData(GL_ARRAY_BUFFER, vertices.size() * sizeof(Vertex), vertices.data(), GL_STATIC_DRAW);
 }
 
 
-void PointShader::update(GeometryBuffer &geometryBuffer, Geometry &geometry) {
-	auto trianglesGeometry = dynamic_cast<TrianglesGeometry*>(&geometry);
-	if (trianglesGeometry)
-		updatePointSet(geometryBuffer, trianglesGeometry->_m.points);
-	else if (auto quadsGeometry = dynamic_cast<QuadsGeometry*>(&geometry))
-		updatePointSet(geometryBuffer, quadsGeometry->_m.points);
-	else if (auto polygonsGeometry = dynamic_cast<PolygonsGeometry*>(&geometry))
-		updatePointSet(geometryBuffer, polygonsGeometry->_m.points);
-	else if (auto polyLineGeometry = dynamic_cast<PolyLineGeometry*>(&geometry))
-		updatePointSet(geometryBuffer, polyLineGeometry->_m.points);
+void PointShader::update(MeshBuffer &meshBuffer, Mesh &mesh) {
+	auto trianglesMesh = dynamic_cast<TrianglesMesh*>(&mesh);
+	if (trianglesMesh)
+		updatePointSet(meshBuffer, trianglesMesh->_m.points);
+	else if (auto quadsMesh = dynamic_cast<QuadsMesh*>(&mesh))
+		updatePointSet(meshBuffer, quadsMesh->_m.points);
+	else if (auto polygonsMesh = dynamic_cast<PolygonsMesh*>(&mesh))
+		updatePointSet(meshBuffer, polygonsMesh->_m.points);
+	else if (auto polyLineMesh = dynamic_cast<PolyLineMesh*>(&mesh))
+		updatePointSet(meshBuffer, polyLineMesh->_m.points);
 }
 
 

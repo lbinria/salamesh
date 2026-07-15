@@ -597,7 +597,7 @@ void App::updateCamera(float dt) {
 
 	float speed = 0.01f;
 	if (scene.hasNodes()) {
-		speed = scene.getCurrentNode()->getGeometry().getRadius() * 0.5f * dt;
+		speed = scene.getCurrentNode()->getMesh().getRadius() * 0.5f * dt;
 	}
 
 	if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS) {
@@ -757,7 +757,7 @@ void App::drawGui() {
 			std::cout << "save model..." << std::endl;
 
 			if (scene.getCurrentNode()) {
-				if (!scene.getCurrentNode()->getGeometry().saveAs(filename)) {
+				if (!scene.getCurrentNode()->getMesh().saveAs(filename)) {
 					std::cerr << "Unable to save current model at: " << filename << std::endl;
 				}
 			} else {
@@ -818,12 +818,12 @@ long App::pickEdge(double x, double y) {
 	if (!st.cell.anyHovered() && !st.facet.anyHovered())
 		return -1;
 
-	auto geometryOpt = scene.getHoveredMesh();
+	auto meshOpt = scene.getHoveredMesh();
 
-	if (!geometryOpt.has_value())
+	if (!meshOpt.has_value())
 		return -1;
 
-	auto &geometry = geometryOpt.value().get();
+	auto &mesh = meshOpt.value().get();
 
 	auto p = pickPoint(x, y);
 
@@ -831,7 +831,7 @@ long App::pickEdge(double x, double y) {
 	if (c < 0)
 		c = st.facet.getHovered();
 
-	return geometry.pickEdge(p, c);
+	return mesh.pickEdge(p, c);
 
 }
 
@@ -840,16 +840,16 @@ long App::pickMesh(double x, double y) {
 	glReadBuffer(GL_COLOR_ATTACHMENT5);
 	long id = pick(x, y);
 	glBindFramebuffer(GL_READ_FRAMEBUFFER, 0);
-	return id >= 0 && id < Geometry::getMaxIndex() ? id : -1;
+	return id >= 0 && id < Mesh::getMaxIndex() ? id : -1;
 }
 
 std::vector<long> App::pickVertices(double x, double y, int radius) {
-	auto geometryOpt = scene.getHoveredMesh();
+	auto meshOpt = scene.getHoveredMesh();
 
-	if (!geometryOpt.has_value())
+	if (!meshOpt.has_value())
 		return {};
 
-	auto &geometry = geometryOpt.value().get();
+	auto &mesh = meshOpt.value().get();
 
 	glBindFramebuffer(GL_READ_FRAMEBUFFER, scene.getDefaultRenderSurface().fbo);
 	glReadBuffer(GL_COLOR_ATTACHMENT1);
@@ -859,19 +859,19 @@ std::vector<long> App::pickVertices(double x, double y, int radius) {
 	// Clean ids
 	std::vector<long> clean_ids;
 	std::copy_if(ids.begin(), ids.end(), std::back_inserter(clean_ids), [&](long id) {
-		return id >= 0 && id < geometry.nverts();
+		return id >= 0 && id < mesh.nverts();
 	});
 
 	return clean_ids;
 }
 
 std::vector<long> App::pickFacets(double x, double y, int radius) {
-	auto geometryOpt = scene.getHoveredMesh();
+	auto meshOpt = scene.getHoveredMesh();
 
-	if (!geometryOpt.has_value())
+	if (!meshOpt.has_value())
 		return {};
 
-	auto &geometry = geometryOpt.value().get();
+	auto &mesh = meshOpt.value().get();
 
 	glBindFramebuffer(GL_READ_FRAMEBUFFER, scene.getDefaultRenderSurface().fbo);
 	glReadBuffer(GL_COLOR_ATTACHMENT3);
@@ -881,19 +881,19 @@ std::vector<long> App::pickFacets(double x, double y, int radius) {
 	// Clean ids
 	std::vector<long> clean_ids;
 	std::copy_if(ids.begin(), ids.end(), std::back_inserter(clean_ids), [&](long id) {
-		return id >= 0 && id < geometry.nfacets();
+		return id >= 0 && id < mesh.nfacets();
 	});
 
 	return clean_ids;
 }
 
 std::vector<long> App::pickCells(double x, double y, int radius) {		
-	auto geometryOpt = scene.getHoveredMesh();
+	auto meshOpt = scene.getHoveredMesh();
 
-	if (!geometryOpt.has_value())
+	if (!meshOpt.has_value())
 		return {};
 
-	auto &geometry = geometryOpt.value().get();
+	auto &mesh = meshOpt.value().get();
 
 	glBindFramebuffer(GL_READ_FRAMEBUFFER, scene.getDefaultRenderSurface().fbo);
 	glReadBuffer(GL_COLOR_ATTACHMENT4);
@@ -903,7 +903,7 @@ std::vector<long> App::pickCells(double x, double y, int radius) {
 	// Clean ids
 	std::vector<long> clean_ids;
 	std::copy_if(ids.begin(), ids.end(), std::back_inserter(clean_ids), [&](long id) {
-		return id >= 0 && id < geometry.ncells();
+		return id >= 0 && id < mesh.ncells();
 	});
 
 	return clean_ids;

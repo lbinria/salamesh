@@ -7,7 +7,7 @@ namespace bindings {
 			"name", sol::readonly_property(&SceneNode::getName),
 			"position", sol::property(&SceneNode::position, &SceneNode::position),
 			"visible", sol::property(&SceneNode::isVisible, &SceneNode::setVisible),
-			"geometry", sol::readonly_property(&SceneNode::getGeometry),
+			"mesh", sol::readonly_property(&SceneNode::getMesh),
 			"add_shader", &SceneNode::addShaderPass,
 			"materials", sol::readonly_property(&SceneNode::getMaterials),
 			"get_material", &SceneNode::getMaterial,

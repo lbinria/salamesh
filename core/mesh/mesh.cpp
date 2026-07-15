@@ -1,14 +1,14 @@
-#include "geometry.h"
+#include "mesh.h"
 
-void Geometry::saveState(json &j, const std::string filename) {
+void Mesh::saveState(json &j, const std::string filename) {
 
 	std::filesystem::path p(filename);
 	auto dirPath = p.parent_path().string();
 
 	// Save current mesh state into a file
 	auto guid = sl::generateGuid();
-	auto geometryFilename = guid + ".geogram";
-	auto filepath = std::filesystem::path(dirPath) / geometryFilename;
+	auto meshFilename = guid + ".geogram";
+	auto filepath = std::filesystem::path(dirPath) / meshFilename;
 	
 	if (!saveAs(filepath.string())) {
 		std::cerr << "Unable to save state at " << filename << std::endl;
@@ -18,14 +18,14 @@ void Geometry::saveState(json &j, const std::string filename) {
 	j["filename"] = filename;	
 }
 
-void Geometry::loadState(json &j, const std::string filename) {
+void Mesh::loadState(json &j, const std::string filename) {
 
-	std::string geometryFilename = j["filename"];
-		auto geometryPath = 
+	std::string meshFilename = j["filename"];
+		auto meshPath = 
 			std::filesystem::path(filename).remove_filename() / 
-			std::filesystem::path(geometryFilename);
+			std::filesystem::path(meshFilename);
 
-	if (!load(geometryPath.string())) {
+	if (!load(meshPath.string())) {
 		std::cerr << "Unable to load state at " << filename << std::endl;
 		return;
 	}

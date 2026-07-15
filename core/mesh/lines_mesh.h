@@ -1,7 +1,7 @@
 #pragma once
-#include "geometry.h"
+#include "mesh.h"
 
-struct LinesGeometry : public Geometry {
+struct LinesMesh : public Mesh {
 
 	struct Line {
 		vec3 a;
@@ -10,15 +10,15 @@ struct LinesGeometry : public Geometry {
 	};
 
 	bool save() override {
-		throw std::runtime_error("`save` is not implemented on `LineGeometry`");
+		throw std::runtime_error("`save` is not implemented on `LineMesh`");
 	}
 
 	bool saveAs(const std::string filename) override {
-		throw std::runtime_error("`saveAs` is not implemented on `LineGeometry`");
+		throw std::runtime_error("`saveAs` is not implemented on `LineMesh`");
 	}
 
 	bool load(const std::string filename) override {
-		throw std::runtime_error("`load` is not implemented on `LineGeometry`");
+		throw std::runtime_error("`load` is not implemented on `LineMesh`");
 	}
 
 	int nverts() const override {

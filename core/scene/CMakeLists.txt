@@ -7,4 +7,4 @@ target_include_directories(scene
         ${CMAKE_CURRENT_SOURCE_DIR}
 )
 
-target_link_libraries(scene PUBLIC rendering geometry materials utils io cameras shaders)
+target_link_libraries(scene PUBLIC rendering mesh materials utils io cameras shaders)

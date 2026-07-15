@@ -1,15 +1,15 @@
 #pragma once
 
-#include "geometry_buffer.h"
-#include "geometry.h"
+#include "mesh_buffer.h"
+#include "mesh.h"
 #include "material.h"
 
 struct ShaderBase;
 
 struct ViewComponent {
 	
-	ViewComponent(std::string name, GeometryBuffer &geometryBuffer, Material &material, ShaderBase &shader) :
-	_geometryBuffer(geometryBuffer),
+	ViewComponent(std::string name, MeshBuffer &meshBuffer, Material &material, ShaderBase &shader) :
+	_meshBuffer(meshBuffer),
 	_material(material),
 	_shader(shader),
 	_name(name) {
@@ -20,8 +20,8 @@ struct ViewComponent {
 		return _material;
 	}
 
-	GeometryBuffer &getGeometryBuffer() {
-		return _geometryBuffer;
+	MeshBuffer &getMeshBuffer() {
+		return _meshBuffer;
 	}
 
 	void setVisible(bool visible) {
@@ -32,7 +32,7 @@ struct ViewComponent {
 		return _visible;
 	}
 
-	void update(Geometry &geometry);
+	void update(Mesh &mesh);
 
 
 	ShaderBase &getShader() {
@@ -41,7 +41,7 @@ struct ViewComponent {
 
 	private:
 	std::string _name;
-	GeometryBuffer _geometryBuffer;
+	MeshBuffer _meshBuffer;
 	Material _material;
 	ShaderBase &_shader;
 	bool _visible = true;

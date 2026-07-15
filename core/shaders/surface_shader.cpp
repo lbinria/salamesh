@@ -5,12 +5,12 @@
 #include "light_params.h"
 #include "clipping_params.h"
 
-bool SurfaceShader::isCompatible(Geometry &geometry) {
-	auto trianglesGeometry = dynamic_cast<TrianglesGeometry*>(&geometry);
-	return trianglesGeometry;
+bool SurfaceShader::isCompatible(Mesh &mesh) {
+	auto trianglesMesh = dynamic_cast<TrianglesMesh*>(&mesh);
+	return trianglesMesh;
 }
 
-GeometryBuffer SurfaceShader::createGeometryBuffer() {
+MeshBuffer SurfaceShader::createMeshBuffer() {
 	unsigned int vao, vbo;
 	glGenVertexArrays(1, &vao);
 	glGenBuffers(1, &vbo);
@@ -25,7 +25,7 @@ GeometryBuffer SurfaceShader::createGeometryBuffer() {
 	sl::createVBOInteger(shader.id, "localIndex", sizeof(Vertex), (void*)offsetof(Vertex, localIndex));
 	sl::createVBOInteger(shader.id, "cornerIndex", sizeof(Vertex), (void*)offsetof(Vertex, cornerIndex));
 
-	return GeometryBuffer(vao, vbo);
+	return MeshBuffer(vao, vbo);
 };
 
 Material SurfaceShader::createMaterial() {
@@ -37,15 +37,15 @@ Material SurfaceShader::createMaterial() {
 	return Material(params);
 }
 
-void SurfaceShader::update(GeometryBuffer &geometryBuffer, Geometry &geometry) {
-	auto trianglesGeometry = dynamic_cast<TrianglesGeometry*>(&geometry);
+void SurfaceShader::update(MeshBuffer &meshBuffer, Mesh &mesh) {
+	auto trianglesMesh = dynamic_cast<TrianglesMesh*>(&mesh);
 
-	if (trianglesGeometry) {
+	if (trianglesMesh) {
 
-		auto &m = trianglesGeometry->_m;
-		geometryBuffer.nelements = m.nfacets() * 3 /* 3 points per tri */;
+		auto &m = trianglesMesh->_m;
+		meshBuffer.nelements = m.nfacets() * 3 /* 3 points per tri */;
 
-		std::vector<Vertex> vertices(geometryBuffer.nelements);
+		std::vector<Vertex> vertices(meshBuffer.nelements);
 		for (auto &f : m.iter_facets()) {
 
 			auto p0 = f.vertex(0).pos();
@@ -69,8 +69,8 @@ void SurfaceShader::update(GeometryBuffer &geometryBuffer, Geometry &geometry) {
 			}
 		}
 
-		glBindVertexArray(geometryBuffer.vao());
-		glBindBuffer(GL_ARRAY_BUFFER, geometryBuffer.vbo());
+		glBindVertexArray(meshBuffer.vao());
+		glBindBuffer(GL_ARRAY_BUFFER, meshBuffer.vbo());
 		glBufferData(GL_ARRAY_BUFFER, vertices.size() * sizeof(Vertex), vertices.data(), GL_STATIC_DRAW);
 
 	}

@@ -3,15 +3,15 @@
 #include "lua_binding.h"
 
 #include "../core/app_interface.h"
-#include "geometry.h"
+#include "mesh.h"
 
 namespace bindings {
 
-	struct GeometryBindings : LuaBinding {
+	struct MeshBindings : LuaBinding {
 
 		void loadBindings(sol::state &lua, IApp &app) override;
 		private:
-		sol::usertype<Geometry> type;
+		sol::usertype<Mesh> type;
 	};
 
 }

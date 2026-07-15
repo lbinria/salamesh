@@ -2206,7 +2206,7 @@ Other changes:
     to false when popup is closed in ways other than clicking the close button. (#6900)
   - Double-clicking lower-left resize grip auto-resize (like lower-right one).
   - Double-clicking bottom or right window border auto-resize on a singles axis.
-  - Use relative mouse movement for border resize when the border geometry has moved
+  - Use relative mouse movement for border resize when the border mesh has moved
     (e.g. resizing a child window triggering parent scroll) in order to avoid resizing
     feedback loops. Unless manually mouse-wheeling while border resizing. (#1710)
 - Separators:

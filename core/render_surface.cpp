@@ -1,7 +1,7 @@
 #include "render_surface.h"
 
 #include <iostream>
-#include "geometry.h"
+#include "mesh.h"
 
 void RenderSurface::setup() {
 	// Framebuffer !

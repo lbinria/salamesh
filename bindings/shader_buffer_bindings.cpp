@@ -3,7 +3,7 @@
 namespace bindings {
 
 	void ShaderBufferBindings::loadBindings(sol::state &lua, IApp &app) {
-		type = lua.new_usertype<GeometryBuffer>("GeometryBuffer"
+		type = lua.new_usertype<MeshBuffer>("MeshBuffer"
 
 		);
 	}

@@ -1,6 +1,6 @@
 #include "view_component.h"
 #include "shader_base.h"
 
-void ViewComponent::update(Geometry &geometry) {
-	_shader.update(_geometryBuffer, geometry);
+void ViewComponent::update(Mesh &mesh) {
+	_shader.update(_meshBuffer, mesh);
 }

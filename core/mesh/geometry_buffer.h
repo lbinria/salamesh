@@ -8,9 +8,9 @@ using namespace UM;
 
 #include <map>
 
-struct GeometryBuffer {
+struct MeshBuffer {
 
-	GeometryBuffer(unsigned int vao, unsigned int vbo) : 
+	MeshBuffer(unsigned int vao, unsigned int vbo) : 
 		_vao(vao),
 		_vbo(vbo)
 	{

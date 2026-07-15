@@ -32,10 +32,10 @@ struct PointShader : public ShaderBase {
 		ShaderBase(name, Shader(sl::shadersPath("point.vert"), sl::shadersPath("point.frag"))), ps(*new PointSet()) {
 		}
 
-	virtual bool isCompatible(Geometry &geometry) override;
-	virtual GeometryBuffer createGeometryBuffer() override;
+	virtual bool isCompatible(Mesh &mesh) override;
+	virtual MeshBuffer createMeshBuffer() override;
 	virtual Material createMaterial() override;
-	virtual void update(GeometryBuffer &geometryBuffer, Geometry &geometry) override;
+	virtual void update(MeshBuffer &meshBuffer, Mesh &mesh) override;
 
 	void clean() override;
 	void clear() override;
@@ -54,6 +54,6 @@ struct PointShader : public ShaderBase {
 	private:
 	PointSet &ps;
 
-	void updatePointSet(GeometryBuffer &geometryBuffer, PointSet &ps);
+	void updatePointSet(MeshBuffer &meshBuffer, PointSet &ps);
 
 };

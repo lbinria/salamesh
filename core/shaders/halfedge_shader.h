@@ -32,10 +32,10 @@ struct HalfedgeShader : public ShaderBase {
 		}
 
 
-	virtual bool isCompatible(Geometry &geometry) override;
-	virtual GeometryBuffer createGeometryBuffer() override;
+	virtual bool isCompatible(Mesh &mesh) override;
+	virtual MeshBuffer createMeshBuffer() override;
 	virtual Material createMaterial() override;
-	virtual void update(GeometryBuffer &geometryBuffer, Geometry &geometry) override;
+	virtual void update(MeshBuffer &meshBuffer, Mesh &mesh) override;
 
 	virtual unsigned int renderElement() {
 		return GL_TRIANGLES;
@@ -47,8 +47,8 @@ struct HalfedgeShader : public ShaderBase {
 
 	private:
 
-	void updateHalfedges(GeometryBuffer &geometryBuffer, Surface &m);
-	void updateHalfedges(GeometryBuffer &geometryBuffer, PolyLine &m);
+	void updateHalfedges(MeshBuffer &meshBuffer, Surface &m);
+	void updateHalfedges(MeshBuffer &meshBuffer, PolyLine &m);
 	
 };
 

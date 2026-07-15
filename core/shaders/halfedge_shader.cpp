@@ -6,14 +6,14 @@
 #include "light_params.h"
 #include "clipping_params.h"
 
-bool HalfedgeShader::isCompatible(Geometry &geometry) {
-	auto trianglesGeometry = dynamic_cast<TrianglesGeometry*>(&geometry);
-	auto quadsGeometry = dynamic_cast<QuadsGeometry*>(&geometry);
-	auto polygonsGeometry = dynamic_cast<PolygonsGeometry*>(&geometry);
-	return trianglesGeometry || quadsGeometry || polygonsGeometry;
+bool HalfedgeShader::isCompatible(Mesh &mesh) {
+	auto trianglesMesh = dynamic_cast<TrianglesMesh*>(&mesh);
+	auto quadsMesh = dynamic_cast<QuadsMesh*>(&mesh);
+	auto polygonsMesh = dynamic_cast<PolygonsMesh*>(&mesh);
+	return trianglesMesh || quadsMesh || polygonsMesh;
 }
 
-GeometryBuffer HalfedgeShader::createGeometryBuffer() {
+MeshBuffer HalfedgeShader::createMeshBuffer() {
 	unsigned int vao, vbo;
 	glGenVertexArrays(1, &vao);
 	glGenBuffers(1, &vbo);
@@ -28,7 +28,7 @@ GeometryBuffer HalfedgeShader::createGeometryBuffer() {
 	sl::createVBOFloat(shader.id, "aEnd", sizeof(LineVert), (void*)offsetof(LineVert, end));
 	sl::createVBOVec3(shader.id, "bary", sizeof(LineVert), (void*)offsetof(LineVert, bary));
 
-	return GeometryBuffer(vao, vbo);
+	return MeshBuffer(vao, vbo);
 };
 
 Material HalfedgeShader::createMaterial() {
@@ -40,7 +40,7 @@ Material HalfedgeShader::createMaterial() {
 	return Material(params);
 }
 
-void HalfedgeShader::updateHalfedges(GeometryBuffer &geometryBuffer, PolyLine &m) {
+void HalfedgeShader::updateHalfedges(MeshBuffer &meshBuffer, PolyLine &m) {
 	std::vector<LineVert> vertices;
 	// pre-allocate to speed-up
 	vertices.reserve(m.nedges() * 6 /* 1 quad, 2 tri per quad, 3 points per tri */); 
@@ -69,13 +69,13 @@ void HalfedgeShader::updateHalfedges(GeometryBuffer &geometryBuffer, PolyLine &m
 
 	}
 
-	geometryBuffer.nelements = vertices.size();
-	glBindVertexArray(geometryBuffer.vao());
-	glBindBuffer(GL_ARRAY_BUFFER, geometryBuffer.vbo());
+	meshBuffer.nelements = vertices.size();
+	glBindVertexArray(meshBuffer.vao());
+	glBindBuffer(GL_ARRAY_BUFFER, meshBuffer.vbo());
 	glBufferData(GL_ARRAY_BUFFER, vertices.size() * sizeof(LineVert), vertices.data(), GL_STATIC_DRAW);
 }
 
-void HalfedgeShader::updateHalfedges(GeometryBuffer &geometryBuffer, Surface &m) {
+void HalfedgeShader::updateHalfedges(MeshBuffer &meshBuffer, Surface &m) {
 	std::vector<LineVert> vertices;
 	// pre-allocate to speed-up
 	vertices.reserve(m.nfacets() * 4 /* reserve for 4 side facets */ * 6 /* 1 quad, 2 tri per quad, 3 points per tri */); 
@@ -119,23 +119,23 @@ void HalfedgeShader::updateHalfedges(GeometryBuffer &geometryBuffer, Surface &m)
 		}
 	}
 
-	geometryBuffer.nelements = vertices.size();
-	glBindVertexArray(geometryBuffer.vao());
-	glBindBuffer(GL_ARRAY_BUFFER, geometryBuffer.vbo());
+	meshBuffer.nelements = vertices.size();
+	glBindVertexArray(meshBuffer.vao());
+	glBindBuffer(GL_ARRAY_BUFFER, meshBuffer.vbo());
 	glBufferData(GL_ARRAY_BUFFER, vertices.size() * sizeof(LineVert), vertices.data(), GL_STATIC_DRAW);
 }
 
 
-void HalfedgeShader::update(GeometryBuffer &geometryBuffer, Geometry &geometry) {
-	auto trianglesGeometry = dynamic_cast<TrianglesGeometry*>(&geometry);
-	if (trianglesGeometry)
-		updateHalfedges(geometryBuffer, trianglesGeometry->_m);
-	else if (auto quadsGeometry = dynamic_cast<QuadsGeometry*>(&geometry))
-		updateHalfedges(geometryBuffer, quadsGeometry->_m);
-	else if (auto polygonsGeometry = dynamic_cast<PolygonsGeometry*>(&geometry))
-		updateHalfedges(geometryBuffer, polygonsGeometry->_m);
-	else if (auto polyLineGeometry = dynamic_cast<PolyLineGeometry*>(&geometry))
-		updateHalfedges(geometryBuffer, polyLineGeometry->_m);
+void HalfedgeShader::update(MeshBuffer &meshBuffer, Mesh &mesh) {
+	auto trianglesMesh = dynamic_cast<TrianglesMesh*>(&mesh);
+	if (trianglesMesh)
+		updateHalfedges(meshBuffer, trianglesMesh->_m);
+	else if (auto quadsMesh = dynamic_cast<QuadsMesh*>(&mesh))
+		updateHalfedges(meshBuffer, quadsMesh->_m);
+	else if (auto polygonsMesh = dynamic_cast<PolygonsMesh*>(&mesh))
+		updateHalfedges(meshBuffer, polygonsMesh->_m);
+	else if (auto polyLineMesh = dynamic_cast<PolyLineMesh*>(&mesh))
+		updateHalfedges(meshBuffer, polyLineMesh->_m);
 }
 
 

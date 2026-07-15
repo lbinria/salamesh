@@ -181,7 +181,7 @@ target_link_libraries(salamesh_core PUBLIC
 
 # Local libs
 add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/core/cameras)
-add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/core/geometry)
+add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/core/mesh)
 add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/core/shaders)
 add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/core/materials)
 add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/core/scripting)
@@ -200,7 +200,7 @@ add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/include/stb_image)
 target_link_libraries(salamesh_core
   PUBLIC
       cameras
-      geometry
+      mesh
       materials
       scripting
       data

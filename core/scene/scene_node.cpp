@@ -6,11 +6,11 @@
 bool SceneNode::addShaderPass(ShaderBase &shader) {
 	auto name = shader.getName();
 	
-	if (_geometryBuffer.contains(name))
+	if (_meshBuffer.contains(name))
 		return false;
 	
-	auto geometryBuffer = shader.createGeometryBuffer();
-	_geometryBuffer.emplace(name, std::move(geometryBuffer));
+	auto meshBuffer = shader.createMeshBuffer();
+	_meshBuffer.emplace(name, std::move(meshBuffer));
 	
 	auto material = shader.createMaterial();
 	_materials.emplace(name, std::move(material));
@@ -65,7 +65,7 @@ void SceneNode::setLayer(Layer layer, ElementKind kind, const std::string attrib
 
 void SceneNode::setLayer(Layer layer, ElementKind kind, bool update) {
 
-	auto &geo = getGeometry();
+	auto &geo = getMesh();
 
 	_selectedAttribute = _attrNameByLayerAndKind[{layer, kind}];
 
@@ -101,7 +101,7 @@ void SceneNode::setLayer(Layer layer, ElementKind kind, bool update) {
 
 
 void SceneNode::updateLayers() {
-	auto &geo = getGeometry();
+	auto &geo = getMesh();
 
 	for (int k = 0; k < static_cast<int>(ElementKind::ELEMENT_KIND_COUNT); ++k) {
 		for (int l = 0; l < static_cast<int>(Layer::LAYER_COUNT); ++l) {
@@ -194,8 +194,8 @@ void SceneNode::saveState(json &j, const std::string filename) {
 
 	j["attr_name_by_layer"] = jAttrNameByLayer;
 
-	j["geometry"] = json::object();
-	_geometry->saveState(j["geometry"], filename);
+	j["mesh"] = json::object();
+	_mesh->saveState(j["mesh"], filename);
 
 	auto jShaderPasses = json::array();
 	for (auto &[materialName, _] : _materials) {
