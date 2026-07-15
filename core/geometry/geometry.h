@@ -83,6 +83,7 @@ struct Geometry {
 	virtual int ncells() const = 0; 
 	virtual int ncorners() const = 0; 
 	virtual int nhalfedges() const = 0;
+	virtual bool isRegular() = 0;
 
 	virtual long pickEdge(vec3 p0, int c) = 0;
 
@@ -282,6 +283,18 @@ struct SurfaceGeometry : public MeshGeometry {
 		return _m.ncorners();
 	}
 
+	// Check whehter all facets have the same size
+	bool isRegular() override {
+		int s = -1;
+		for (auto &f : _m.iter_facets()) {
+			if (s > 0 && f.size() != s)
+				return false;
+
+			s = f.size();
+		}
+		return true;
+	}
+
 	long pickEdge(vec3 p0, int f) override {
 		auto &m = getSurface();
 
@@ -440,6 +453,11 @@ struct PolyLineGeometry : public MeshGeometry {
 	int nhalfedges() const override {
 		return _m.nedges();
 	}
+
+	bool isRegular() override {
+		return true;
+	}
+
 
 	long pickEdge(vec3 p0, int f) override {
 		return -1;

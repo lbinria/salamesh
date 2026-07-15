@@ -10,17 +10,26 @@ std::shared_ptr<SceneNode> ModelLoader::load(const std::string filename, const s
 	std::string meshShaderName = "a_triangle_shader";
 
 	std::shared_ptr<Geometry> geometry;
-	geometry = loadGeometry<TrianglesGeometry>(filename);
-	
+
+	if (!geometry) {
+		geometry = loadGeometry<PolygonsGeometry>(filename);
+		if (geometry->isRegular()) {
+			geometry = nullptr;
+		}
+
+		meshShaderName = "a_polygon_shader";
+	}
+
+	if (!geometry) {
+		geometry = loadGeometry<TrianglesGeometry>(filename);
+		meshShaderName = "a_triangle_shader";
+	}
+
 	if (!geometry) {
 		geometry = loadGeometry<QuadsGeometry>(filename);
 		meshShaderName = "a_polygon_shader";
 	}
 
-	if (!geometry) {
-		geometry = loadGeometry<PolygonsGeometry>(filename);
-		meshShaderName = "a_polygon_shader";
-	}
 	
 	if (!geometry)
 		geometry = loadGeometry<PolyLineGeometry>(filename);
