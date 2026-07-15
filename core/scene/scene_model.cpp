@@ -65,11 +65,11 @@ void SceneModel::setLayer(Layer layer, ElementKind kind, const std::string attri
 
 void SceneModel::setLayer(Layer layer, ElementKind kind, bool update) {
 
-	auto &geo = getMesh();
+	auto &mesh = getMesh();
 
 	_selectedAttribute = _attrNameByLayerAndKind[{layer, kind}];
 
-	auto attrOpt = geo.getAttribute(_selectedAttribute);
+	auto attrOpt = mesh.getAttribute(_selectedAttribute);
 
 	if (!attrOpt.has_value())
 		return;
@@ -101,7 +101,7 @@ void SceneModel::setLayer(Layer layer, ElementKind kind, bool update) {
 
 
 void SceneModel::updateLayers() {
-	auto &geo = getMesh();
+	auto &mesh = getMesh();
 
 	for (int k = 0; k < static_cast<int>(ElementKind::ELEMENT_KIND_COUNT); ++k) {
 		for (int l = 0; l < static_cast<int>(Layer::LAYER_COUNT); ++l) {
@@ -109,7 +109,7 @@ void SceneModel::updateLayers() {
 			auto layer = static_cast<Layer>(l);
 			auto kind = static_cast<ElementKind>(k);
 
-			auto attrOpt = geo.getAttribute(_attrNameByLayerAndKind[{layer, kind}]);
+			auto attrOpt = mesh.getAttribute(_attrNameByLayerAndKind[{layer, kind}]);
 
 			if (!attrOpt.has_value())
 				continue;
