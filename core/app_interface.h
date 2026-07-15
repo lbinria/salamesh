@@ -44,12 +44,7 @@ struct IApp {
 	virtual int getWindowHeight() const = 0;
 	virtual double getAspectRatio() const = 0;
 
-	virtual vec3 pickPoint(double x, double y) = 0;
-	virtual long pickEdge(double x, double y) = 0;
-	virtual long pickMesh(double x, double y) = 0;
-	virtual std::vector<long> pickVertices(double x, double y, int radius) = 0;
-	virtual std::vector<long> pickFacets(double x, double y, int radius) = 0;
-	virtual std::vector<long> pickCells(double x, double y, int radius) = 0;
+
 
 
 	// Navigation

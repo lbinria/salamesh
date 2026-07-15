@@ -77,13 +77,6 @@ struct App final : public IApp {
 	// Utils functions
 	Image screenshot(const std::string& filename, int targetWidth = -1, int targetHeight = -1) override;
 	void quit() override;
-	float getDepth(double x, double y);
-
-	void unproject(Camera &camera, int x, int y, float depth, vec3 &p);
-	vec3 pickPoint(double x, double y) override;
-
-	
-
 
 
 
@@ -104,15 +97,6 @@ struct App final : public IApp {
 	void loadState(const std::string filename) override;
 
 	void loadState(json &j, const std::string path);
-
-	long pick(double xPos, double yPos);
-	std::set<long> pick(double xPos, double yPos, int radius);
-
-	long pickEdge(double x, double y) override;
-	long pickMesh(double x, double y) override;
-	std::vector<long> pickVertices(double x, double y, int radius) override;
-	std::vector<long> pickFacets(double x, double y, int radius) override;
-	std::vector<long> pickCells(double x, double y, int radius) override;
 
 	// Rendering functions
 	void setCullMode(int mode) override { cull_mode = mode; }
@@ -218,10 +202,6 @@ struct App final : public IApp {
 	unsigned int uboMatrices, uboViewport;
 
 	unsigned int quadVAO, quadVBO;
-
-	bool _isPickingActive = true;
-
-
 
 	Scene scene;
 

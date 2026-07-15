@@ -78,7 +78,7 @@ struct Scene {
 		return nullptr;
 	}
 
-	std::optional<std::reference_wrapper<Mesh>>  getHoveredMesh();
+	// std::optional<std::reference_wrapper<Mesh>>  getHoveredMesh();
 
 
 	std::tuple<vec3, vec3> computeSceneBBox();

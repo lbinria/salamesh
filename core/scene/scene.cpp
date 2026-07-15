@@ -320,7 +320,7 @@ void Scene::saveState(json &j, const std::string filename) {
 	// TODO important save colormaps states
 }
 
-std::optional<std::reference_wrapper<Mesh>> Scene::getHoveredMesh() {
-	auto hoveredIndex = app.getInputState().mesh.getHovered();
-	return findMeshByIndex(hoveredIndex);;
-}
+// std::optional<std::reference_wrapper<Mesh>> Scene::getHoveredMesh() {
+// 	auto hoveredIndex = app.getInputState().mesh.getHovered();
+// 	return findMeshByIndex(hoveredIndex);;
+// }

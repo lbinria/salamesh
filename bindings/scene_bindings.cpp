@@ -12,7 +12,7 @@ namespace bindings {
 			"has_models", sol::readonly_property(&Scene::hasModels),
 			"count_models", sol::readonly_property(&Scene::countModels),
 			"current_model", sol::readonly_property(&Scene::getCurrentModel),
-			"hovered_mesh", sol::readonly_property(&Scene::getHoveredMesh),
+			// "hovered_mesh", sol::readonly_property(&Scene::getHoveredMesh),
 			"selected_model", sol::property(&Scene::getSelectedModel, &Scene::setSelectedModel),
 			
 			// Focus function
