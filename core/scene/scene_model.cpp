@@ -1,9 +1,9 @@
-#include "scene_node.h"
+#include "scene_model.h"
 
 #include "layer_params.h"
 #include "view_component.h"
 
-bool SceneNode::addShaderPass(ShaderBase &shader) {
+bool SceneModel::addShaderPass(ShaderBase &shader) {
 	auto name = shader.getName();
 	
 	if (_meshBuffer.contains(name))
@@ -18,7 +18,7 @@ bool SceneNode::addShaderPass(ShaderBase &shader) {
 	return true;
 }
 
-std::optional<Colormap> SceneNode::getColormap() {
+std::optional<Colormap> SceneModel::getColormap() {
 		
 	for (auto &[_, material] : getMaterials()) {
 		auto layerParams = material.getParams<LayersParams>("layers");
@@ -32,7 +32,7 @@ std::optional<Colormap> SceneNode::getColormap() {
 }
 
 
-void SceneNode::setColormap(Colormap colormap) {
+void SceneModel::setColormap(Colormap colormap) {
 
 	for (auto &[_, material] : getMaterials()) {
 		auto layerParams = material.getParams<LayersParams>("layers");
@@ -45,7 +45,7 @@ void SceneNode::setColormap(Colormap colormap) {
 }
 
 
-std::string SceneNode::getLayerAttr(Layer layer, ElementKind kind) {
+std::string SceneModel::getLayerAttr(Layer layer, ElementKind kind) {
 	std::tuple<Layer, ElementKind> k = {layer, kind};
 	if (_attrNameByLayerAndKind.contains(k))
 		return _attrNameByLayerAndKind[k];
@@ -54,16 +54,16 @@ std::string SceneNode::getLayerAttr(Layer layer, ElementKind kind) {
 }
 
 // Choose which attribute to bind to layer / kind
-void SceneNode::setLayerAttr(Layer layer, ElementKind kind, const std::string name) {
+void SceneModel::setLayerAttr(Layer layer, ElementKind kind, const std::string name) {
 	_attrNameByLayerAndKind[{layer, kind}] = name;
 }
 
-void SceneNode::setLayer(Layer layer, ElementKind kind, const std::string attributeName, bool update) {
+void SceneModel::setLayer(Layer layer, ElementKind kind, const std::string attributeName, bool update) {
 	setLayerAttr(layer, kind, attributeName);
 	setLayer(layer, kind, update);
 }
 
-void SceneNode::setLayer(Layer layer, ElementKind kind, bool update) {
+void SceneModel::setLayer(Layer layer, ElementKind kind, bool update) {
 
 	auto &geo = getMesh();
 
@@ -100,7 +100,7 @@ void SceneNode::setLayer(Layer layer, ElementKind kind, bool update) {
 
 
 
-void SceneNode::updateLayers() {
+void SceneModel::updateLayers() {
 	auto &geo = getMesh();
 
 	for (int k = 0; k < static_cast<int>(ElementKind::ELEMENT_KIND_COUNT); ++k) {
@@ -138,7 +138,7 @@ void SceneNode::updateLayers() {
 
 }
 
-void SceneNode::unsetLayers(bool reset) {
+void SceneModel::unsetLayers(bool reset) {
 	for (int l = 0; l < 5; ++l) {
 		for (int k = 0; k < 7; ++k) {
 			unsetLayer(static_cast<Layer>(l), static_cast<ElementKind>(k), reset);
@@ -147,7 +147,7 @@ void SceneNode::unsetLayers(bool reset) {
 }
 
 
-void SceneNode::unsetLayer(Layer layer, ElementKind kind, bool reset) {
+void SceneModel::unsetLayer(Layer layer, ElementKind kind, bool reset) {
 	
 	for (auto &[_, material] : getMaterials()) {
 		auto layerParams = material.getParams<LayersParams>("layers");
@@ -170,11 +170,11 @@ void SceneNode::unsetLayer(Layer layer, ElementKind kind, bool reset) {
 
 }
 
-void SceneNode::loadState(json &j, const std::string filename) {
+void SceneModel::loadState(json &j, const std::string filename) {
 
 }
 
-void SceneNode::saveState(json &j, const std::string filename) {
+void SceneModel::saveState(json &j, const std::string filename) {
 	j["name"] = _name;
 	j["visible"] = _visible;
 

@@ -33,7 +33,7 @@ function draw_gui()
 		for i, mesh_id in ipairs(mesh_ids) do
 
 			-- local mesh = app.scene:find_mesh_by_index(mesh_id)
-			-- local model = app.scene:find_node_by_mesh_index(mesh_id)
+			-- local model = app.scene:find_model_by_mesh_index(mesh_id)
 			-- model.name
 
 			imgui.Text("Mesh " .. tostring(mesh_id))

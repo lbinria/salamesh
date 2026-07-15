@@ -1,10 +1,10 @@
 #include "model_loader.h"
 
 #include "scene.h"
-#include "scene/scene_node.h"
+#include "scene/scene_model.h"
 #include "lines_mesh.h"
 
-std::shared_ptr<SceneNode> ModelLoader::load(const std::string filename, const std::string name) {
+std::shared_ptr<SceneModel> ModelLoader::load(const std::string filename, const std::string name) {
 
 	// TODO important refactor this :vomit: 
 	std::string meshShaderName = "a_triangle_shader";
@@ -36,12 +36,12 @@ std::shared_ptr<SceneNode> ModelLoader::load(const std::string filename, const s
 	if (!mesh)
 		return nullptr;
 
-	// Create node & add to scene
-	auto node = _scene.createNode(name, mesh);
+	// Create model & add to scene
+	auto model = _scene.createModel(name, mesh);
 
-	node->addShaderPass(_scene.getShader("point_shader").value());
-	node->addShaderPass(_scene.getShader(meshShaderName).value());
-	node->addShaderPass(_scene.getShader("halfedge_shader").value());
+	model->addShaderPass(_scene.getShader("point_shader").value());
+	model->addShaderPass(_scene.getShader(meshShaderName).value());
+	model->addShaderPass(_scene.getShader("halfedge_shader").value());
 
-	return node;
+	return model;
 }

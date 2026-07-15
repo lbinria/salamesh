@@ -20,7 +20,7 @@ void Scene::init() {
 	// models.getInstanciator().registerType("PyramidModel", [](std::string name) { return std::make_unique<PyramidModel>(name); });
 	// models.getInstanciator().registerType("PrismModel", [](std::string name) { return std::make_unique<PrismModel>(name); });
 
-	// Register node type
+	// Register model type
 
 
 	// Register cameras types
@@ -51,52 +51,52 @@ void Scene::init() {
 
 }
 
-std::shared_ptr<SceneNode> Scene::loadModel(const std::string filename, const std::string name) {
-	std::string nodeName = name.empty() ? 
-		std::filesystem::path(filename).stem().string() + std::to_string(countNodes()) : 
+std::shared_ptr<SceneModel> Scene::loadModel(const std::string filename, const std::string name) {
+	std::string modelName = name.empty() ? 
+		std::filesystem::path(filename).stem().string() + std::to_string(countModels()) : 
 		name;
 
-	// Load node from file
+	// Load model from file
 	auto modelLoader = ModelLoader(*this);
-	auto node = modelLoader.load(filename, nodeName);
+	auto model = modelLoader.load(filename, modelName);
 
-	if (!node)
+	if (!model)
 		return nullptr;
 
 	// Setup default gfx
-	if (auto mat = node->getMaterial("points")) {
+	if (auto mat = model->getMaterial("points")) {
 		mat->get().setVisible(false);
 	}
 
-	if (auto mat = node->getMaterial("halfedges")) {
+	if (auto mat = model->getMaterial("halfedges")) {
 		mat->get().setVisible(false);
 	}
 
-	_nodes.emplace(nodeName, node);
+	_models.emplace(modelName, model);
 
 	// Update scene far plane
 	updateFarPlane();
 
 	// A model was loaded ? focus it !
-	if (!nodeName.empty())
-		focus(nodeName);
+	if (!modelName.empty())
+		focus(modelName);
 
-	return node;
+	return model;
 }
 
-void Scene::focus(const std::string nodeName) {
-	if (!setSelectedNode(nodeName))
+void Scene::focus(const std::string modelName) {
+	if (!setSelectedModel(modelName))
 		return;
 	
-	auto bbox = _nodes.at(nodeName)->getMesh().bbox();
+	auto bbox = _models.at(modelName)->getMesh().bbox();
 	getCurrentCamera().lookAtBox(bbox);
 }
 
 std::tuple<vec3, vec3> Scene::computeSceneBBox() {
 	vec3 min{std::numeric_limits<float>::max()};
 	vec3 max{-std::numeric_limits<float>::max()};
-	for (auto &[_, n] : _nodes) {
-		auto [cmin, cmax] = n->getMesh().bbox();
+	for (auto &[_, model] : _models) {
+		auto [cmin, cmax] = model->getMesh().bbox();
 		min = sl::min(min, cmin);
 		max = sl::max(max, cmax);
 	}
@@ -164,15 +164,15 @@ Colormap Scene::getColormap(const std::string name) {
 	return colormaps.at(name);
 }
 
-// void Scene::render(std::shared_ptr<SceneNode> node, std::unique_ptr<ShaderBase>& shader, std::map<std::string, bool> &wasUpdated) {
-// 	if (!node->isVisible())
+// void Scene::render(std::shared_ptr<SceneModel> model, std::unique_ptr<ShaderBase>& shader, std::map<std::string, bool> &wasUpdated) {
+// 	if (!model->isVisible())
 // 		return;
 
 	
-// 	auto &mesh = node->getMesh();
+// 	auto &mesh = model->getMesh();
 	
 // 	// Get view components that uses shader
-// 	auto viewComponents = node->getViewComponents(*shader);
+// 	auto viewComponents = model->getViewComponents(*shader);
 
 // 	for (auto &viewComponent : viewComponents) {
 // 		auto &meshBuffer = viewComponent.get().getMeshBuffer();
@@ -183,9 +183,9 @@ Colormap Scene::getColormap(const std::string name) {
 // 			// Update current mesh buffer for given mesh
 // 			shader->update(meshBuffer, mesh);
 // 			// Update layers (only activated layers) according to new mesh
-// 			node->updateLayers();
-// 			// Set node as updated
-// 			wasUpdated[node->getName()] = true;
+// 			model->updateLayers();
+// 			// Set model as updated
+// 			wasUpdated[model->getName()] = true;
 // 		}
 
 // 		if (!material.isVisible())
@@ -193,7 +193,7 @@ Colormap Scene::getColormap(const std::string name) {
 
 // 		// Setup
 // 		glBindVertexArray(meshBuffer.vao());
-// 		meshBuffer.setPosition(shader->getShader(), node->getWorldPosition());
+// 		meshBuffer.setPosition(shader->getShader(), model->getWorldPosition());
 // 		material.apply(shader->getShader());
 
 // 		// Set textures
@@ -203,7 +203,7 @@ Colormap Scene::getColormap(const std::string name) {
 // 			shader->getShader().setInt(tbo.name, tbo.texUnit);
 // 		}
 // 		// Set mesh index
-// 		shader->getShader().setInt("meshIndex", node->getIndex());
+// 		shader->getShader().setInt("meshIndex", model->getIndex());
 
 // 		// Draw
 // 		glDrawArrays(shader->renderElement(), 0, meshBuffer.nelements);
@@ -211,17 +211,17 @@ Colormap Scene::getColormap(const std::string name) {
 
 // }
 
-void Scene::render(std::shared_ptr<SceneNode> node, std::unique_ptr<ShaderBase>& shader, std::map<std::string, bool> &wasUpdated) {
-	if (!node->isVisible())
+void Scene::render(std::shared_ptr<SceneModel> model, std::unique_ptr<ShaderBase>& shader, std::map<std::string, bool> &wasUpdated) {
+	if (!model->isVisible())
 		return;
 
-	auto meshBufferOpt = node->getMeshBuffer(shader->getName());
-	auto materialOpt = node->getMaterial(shader->getName());
+	auto meshBufferOpt = model->getMeshBuffer(shader->getName());
+	auto materialOpt = model->getMaterial(shader->getName());
 
 	if (!meshBufferOpt.has_value() || !materialOpt.has_value())
 		return;
 
-	auto &mesh = node->getMesh();
+	auto &mesh = model->getMesh();
 	auto &meshBuffer = meshBufferOpt.value().get();
 	auto &material = materialOpt.value().get();
 
@@ -230,16 +230,16 @@ void Scene::render(std::shared_ptr<SceneNode> node, std::unique_ptr<ShaderBase>&
 		// Update current mesh buffer for given mesh
 		shader->update(meshBuffer, mesh);
 		// Update layers (only activated layers) according to new mesh
-		node->updateLayers();
-		// Set node as updated
-		wasUpdated[node->getName()] = true;
+		model->updateLayers();
+		// Set model as updated
+		wasUpdated[model->getName()] = true;
 	}
 
 	if (!material.isVisible())
 		return;
 
 	glBindVertexArray(meshBuffer.vao());
-	meshBuffer.setPosition(shader->getShader(), node->position);
+	meshBuffer.setPosition(shader->getShader(), model->position);
 	material.apply(shader->getShader());
 
 	// Set textures
@@ -257,21 +257,21 @@ void Scene::render(std::shared_ptr<SceneNode> node, std::unique_ptr<ShaderBase>&
 
 void Scene::render() {
 
-	// Keep updated nodes in memory
+	// Keep updated models in memory
 	std::map<std::string, bool> wasUpdated;
 
 	// Loop through available shaders
 	for (auto &[_, shader] : _shaders) {
-		// Loop through nodes in scene
-		for (auto &[nodeName, node] : _nodes) {
-			render(node, shader, wasUpdated);
+		// Loop through models in scene
+		for (auto &[modelName, model] : _models) {
+			render(model, shader, wasUpdated);
 		}
 
 	}
 
-	for (auto &[_, node] : _nodes) {
-		if (wasUpdated.contains(node->getName())) {
-				node->getMesh().updateDone();
+	for (auto &[_, model] : _models) {
+		if (wasUpdated.contains(model->getName())) {
+				model->getMesh().updateDone();
 		}
 	}
 
@@ -279,10 +279,10 @@ void Scene::render() {
 
 void Scene::loadState(json &j, const std::string filename) {
 	// Load models states
-	// for (auto &[nodeName, jNode] : j["nodes"].items()) {
+	// for (auto &[modelName, jModel] : j["models"].items()) {
 
-	// 	auto node = createNode(nodeName);
-	// 	node->loadState(jNode, filename);
+	// 	auto model = createModel(modelName);
+	// 	model->loadState(jModel, filename);
 	// 	// TODO! recompute cameras far / near
 	// }
 
@@ -296,20 +296,20 @@ void Scene::loadState(json &j, const std::string filename) {
 		}
 	}
 
-	setSelectedNode(j["selected_model"].get<std::string>());
+	setSelectedModel(j["selected_model"].get<std::string>());
 	setSelectedCamera(j["selected_camera"].get<std::string>());
 }
 
 void Scene::saveState(json &j, const std::string filename) {
 
-	j["selected_node"] = selectedNode;
+	j["selected_model"] = selectedModel;
 	j["selected_camera"] = selectedCamera;
-	j["nodes"] = json::object();
+	j["models"] = json::object();
 	j["cameras"] = json::object();
 
-	// Save nodes states
-	for (auto &[k, n] : _nodes) {
-		n->saveState(j["nodes"][k], filename);
+	// Save models states
+	for (auto &[k, model] : _models) {
+		model->saveState(j["models"][k], filename);
 	}
 
 	// Save cameras states

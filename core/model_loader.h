@@ -5,7 +5,7 @@ using namespace UM;
 
 #include <string>
 
-struct SceneNode;
+struct SceneModel;
 struct Scene;
 struct PolyLineMesh;
 
@@ -20,7 +20,7 @@ struct ModelLoader {
 	ModelLoader& operator=(ModelLoader&&) = default;
 
 
-	std::shared_ptr<SceneNode> load(const std::string filename, const std::string name);
+	std::shared_ptr<SceneModel> load(const std::string filename, const std::string name);
 
 	template<typename TMesh>
 	std::shared_ptr<TMesh> loadMesh(const std::string &filename) {

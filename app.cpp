@@ -596,8 +596,8 @@ void App::update(float dt) {
 void App::updateCamera(float dt) {
 
 	float speed = 0.01f;
-	if (scene.hasNodes()) {
-		speed = scene.getCurrentNode()->getMesh().getRadius() * 0.5f * dt;
+	if (scene.hasModels()) {
+		speed = scene.getCurrentModel()->getMesh().getRadius() * 0.5f * dt;
 	}
 
 	if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS) {
@@ -756,12 +756,12 @@ void App::drawGui() {
 			std::cout << "file path:" << directoryPath << ", file path name: " << filename << std::endl;
 			std::cout << "save model..." << std::endl;
 
-			if (scene.getCurrentNode()) {
-				if (!scene.getCurrentNode()->getMesh().saveAs(filename)) {
+			if (scene.getCurrentModel()) {
+				if (!scene.getCurrentModel()->getMesh().saveAs(filename)) {
 					std::cerr << "Unable to save current model at: " << filename << std::endl;
 				}
 			} else {
-				std::cerr << "Select node to save." << std::endl;
+				std::cerr << "Select model to save." << std::endl;
 			}
 		}
 		

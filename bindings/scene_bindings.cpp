@@ -7,13 +7,13 @@ namespace bindings {
 			// Model loading
 			"load_model", &Scene::loadModel,
 			
-			// Node properties
-			"nodes", sol::readonly_property(&Scene::getNodes),
-			"has_nodes", sol::readonly_property(&Scene::hasNodes),
-			"count_nodes", sol::readonly_property(&Scene::countNodes),
-			"current_node", sol::readonly_property(&Scene::getCurrentNode),
+			// Model properties
+			"models", sol::readonly_property(&Scene::getModels),
+			"has_models", sol::readonly_property(&Scene::hasModels),
+			"count_models", sol::readonly_property(&Scene::countModels),
+			"current_model", sol::readonly_property(&Scene::getCurrentModel),
 			"hovered_mesh", sol::readonly_property(&Scene::getHoveredMesh),
-			"selected_node", sol::property(&Scene::getSelectedNode, &Scene::setSelectedNode),
+			"selected_model", sol::property(&Scene::getSelectedModel, &Scene::setSelectedModel),
 			
 			// Focus function
 			"focus", &Scene::focus,

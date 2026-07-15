@@ -13,20 +13,20 @@ using namespace UM;
 
 #include <map>
 
-struct SceneNode : std::enable_shared_from_this<SceneNode> {
+struct SceneModel : std::enable_shared_from_this<SceneModel> {
 
-	SceneNode(std::string name, std::shared_ptr<Mesh> mesh) :  
+	SceneModel(std::string name, std::shared_ptr<Mesh> mesh) :  
 	_name(name),
 	_mesh(mesh) {
 
 	}
 
 	// Remove copy
-	SceneNode(const SceneNode&) = delete;
-	SceneNode& operator=(const SceneNode&) = delete;
+	SceneModel(const SceneModel&) = delete;
+	SceneModel& operator=(const SceneModel&) = delete;
 	// Allow move
-	SceneNode(SceneNode&&) = default;
-	SceneNode& operator=(SceneNode&&) = default;
+	SceneModel(SceneModel&&) = default;
+	SceneModel& operator=(SceneModel&&) = default;
 
 	void loadState(json &j, const std::string filename);
 	void saveState(json &j, const std::string filename);

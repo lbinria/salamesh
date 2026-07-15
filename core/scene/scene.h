@@ -13,7 +13,7 @@
 
 #include "shader_base.h"
 
-#include "scene_node.h"
+#include "scene_model.h"
 #include "point_style_params.h" // TODO remove test
 #include "../model_loader.h"// TODO remove test
 
@@ -28,13 +28,13 @@ struct Scene {
 
 
 	void init();
-	std::shared_ptr<SceneNode> loadModel(const std::string filename, const std::string name = "");
+	std::shared_ptr<SceneModel> loadModel(const std::string filename, const std::string name = "");
 
 	void render();
 
 
 	void clean() {
-		// TODO clean nodes
+		// TODO clean models
 
 		// Clear textures
 		for (auto &[_, colormap] : colormaps)
@@ -42,38 +42,38 @@ struct Scene {
 	}
 
 	void clear() {
-		// TODO clear nodes
-		setSelectedNode("");
+		// TODO clear models
+		setSelectedModel("");
 		cameras.clear();
 		setupCameras();
 		clearColormaps();
 	}
 
-	bool setSelectedNode(std::string name) {
+	bool setSelectedModel(std::string name) {
 		if (name.empty())
 			return false;
 
-		if (!_nodes.contains(name)) {
+		if (!_models.contains(name)) {
 			std::cerr << "Invalid model selection: " << name << std::endl;
 			return false;
 		}
 
-		auto oldSelection = selectedNode;
-		selectedNode = name;
+		auto oldSelection = selectedModel;
+		selectedModel = name;
 		// TODO important reactivate this !
 		// notifySelectedModelChanged(oldSelection, name);
 		return true;
 	}
 
-	const std::string getSelectedNode() {
-		return selectedNode;
+	const std::string getSelectedModel() {
+		return selectedModel;
 	}
 
-	void focus(std::string nodeName);
+	void focus(std::string modelName);
 
-	inline std::shared_ptr<SceneNode> getCurrentNode() {
-		if (!selectedNode.empty())
-			return _nodes.at(selectedNode);
+	inline std::shared_ptr<SceneModel> getCurrentModel() {
+		if (!selectedModel.empty())
+			return _models.at(selectedModel);
 
 		return nullptr;
 	}
@@ -135,35 +135,35 @@ struct Scene {
 	std::map<std::string, std::shared_ptr<RenderSurface>>& getRenderSurfaces() { return renderSurfaces; }
 
 
-	bool hasNodes() const {
-		return _nodes.size() > 0;
+	bool hasModels() const {
+		return _models.size() > 0;
 	}
 
-	int countNodes() const {
-		return static_cast<int>(_nodes.size());
+	int countModels() const {
+		return static_cast<int>(_models.size());
 	}
 
-	std::shared_ptr<SceneNode> createNode(const std::string name, std::shared_ptr<Mesh> mesh) {
-		auto node = std::make_shared<SceneNode>(name, mesh);
-		_nodes.emplace(node->getName(), node);
-		return node;
+	std::shared_ptr<SceneModel> createModel(const std::string name, std::shared_ptr<Mesh> mesh) {
+		auto model = std::make_shared<SceneModel>(name, mesh);
+		_models.emplace(model->getName(), model);
+		return model;
 	}
 
-	const std::vector<std::shared_ptr<SceneNode>> getNodes() const {
-		std::vector<std::shared_ptr<SceneNode>> result;
-		for (auto &[_, node] : _nodes)
-			result.push_back(node);
+	const std::vector<std::shared_ptr<SceneModel>> getModels() const {
+		std::vector<std::shared_ptr<SceneModel>> result;
+		for (auto &[_, model] : _models)
+			result.push_back(model);
 		
 		return result;
 	}
 
-	std::shared_ptr<SceneNode> findNodeByName(const std::string name) {
-		return _nodes.contains(name) ? _nodes.at(name) : nullptr;
+	std::shared_ptr<SceneModel> findModelByName(const std::string name) {
+		return _models.contains(name) ? _models.at(name) : nullptr;
 	}
 
 	std::optional<std::reference_wrapper<Mesh>> findMeshByIndex(int index) {
-		for (auto &[_, node] : _nodes) {
-			auto &mesh = node->getMesh();
+		for (auto &[_, model] : _models) {
+			auto &mesh = model->getMesh();
 			if (mesh.getIndex() == index)
 				return mesh;
 		}
@@ -171,7 +171,7 @@ struct Scene {
 		return std::nullopt;
 	}
 
-	// TODO add findNodeByMesh
+	// TODO add findModelByMesh
 
 	const std::map<std::string, std::unique_ptr<ShaderBase>>& getShaders() const {
 		return _shaders;
@@ -187,12 +187,12 @@ struct Scene {
 	private:
 	IApp &app;
 
-	std::string selectedNode = "";
+	std::string selectedModel = "";
 
 	std::string selectedCamera = "default";
 	CameraCollection cameras;
 
-	std::map<std::string, std::shared_ptr<SceneNode>> _nodes;
+	std::map<std::string, std::shared_ptr<SceneModel>> _models;
 	std::map<std::string, std::unique_ptr<ShaderBase>> _shaders;
 
 	// display color map in good format for 2D in the UI
@@ -200,7 +200,7 @@ struct Scene {
 
 	std::map<std::string, std::shared_ptr<RenderSurface>> renderSurfaces;
 	
-	void render(std::shared_ptr<SceneNode> node, std::unique_ptr<ShaderBase> &shader, std::map<std::string, bool> &wasUpdated);
+	void render(std::shared_ptr<SceneModel> model, std::unique_ptr<ShaderBase> &shader, std::map<std::string, bool> &wasUpdated);
 
 
 
