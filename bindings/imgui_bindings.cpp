@@ -370,6 +370,10 @@ namespace bindings {
 			ImGui::Separator();
 		});
 
+		imgui.set_function("SeparatorText", [](const char* label) {
+			ImGui::SeparatorText(label);
+		});
+
 		imgui.set_function("BeginDisabled", []() {
 			ImGui::BeginDisabled();
 		});

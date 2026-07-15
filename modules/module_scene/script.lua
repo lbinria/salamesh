@@ -86,6 +86,26 @@ function draw_node_properties(node, k, view)
 
 			end
 
+
+			-- local lightParamsGroup = node:get_material_params_group("light")
+			-- local enableds = lightParamsGroup:get_bools("enabled")
+			
+			-- local light = true
+			-- for _, e in ipairs(enableds) do 
+			-- 	if not e then 
+			-- 		light = false 
+			-- 		break 
+			-- 	end
+			-- end
+
+			-- local sel_chk_enable_light, new_enable_light = imgui.Checkbox("Enable light", light)
+
+			-- if (sel_chk_enable_light) then 
+			-- 	print("Enable light: " .. tostring(new_enable_light))
+			-- 	lightParamsGroup:set("enabled", new_enable_light)
+			-- end
+
+
 		end
 
 		if (imgui.CollapsingHeader("Clipping##" .. k .. "_properties_clipping")) then
@@ -213,7 +233,15 @@ function draw_node_properties(node, k, view)
 
 		end
 
+
 		if (imgui.CollapsingHeader("Style##" .. k .. "_properties_style")) then 
+
+			-- for material_name, material in pairs(node.materials) do
+			-- 	imgui.SeparatorText("Material: " .. material_name)
+			-- 	for params_name, params in pairs(material.params) do
+			-- 		imgui.Text("params: " .. params_name)
+			-- 	end
+			-- end
 
 			local mesh_material = node:get_material("mesh")
 

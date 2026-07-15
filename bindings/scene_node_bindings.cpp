@@ -11,6 +11,7 @@ namespace bindings {
 			"add_shader", &SceneNode::addShaderPass,
 			"materials", sol::readonly_property(&SceneNode::getMaterials),
 			"get_material", &SceneNode::getMaterial,
+			"get_material_params_group", &SceneNode::getMaterialParamsGroup,
 			"set_layer", sol::resolve<void(Layer, ElementKind, bool)>(&SceneNode::setLayer),
 			"set_layer", sol::resolve<void(Layer, ElementKind, const std::string, bool)>(&SceneNode::setLayer),
 			"unset_layer", &SceneNode::unsetLayer,

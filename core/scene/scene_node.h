@@ -3,6 +3,8 @@
 #include "shader.h"
 #include "geometry.h"
 #include "geometry_buffer.h"
+#include "material.h"
+#include "material_group.h"
 #include "shader_base.h"
 #include "colormap.h"
 
@@ -48,6 +50,10 @@ struct SceneNode : std::enable_shared_from_this<SceneNode> {
 
 	std::map<std::string, Material>& getMaterials() {
 		return _materials;
+	}
+
+	MaterialParamsGroup getMaterialParamsGroup(const std::string paramName) {
+		return MaterialParamsGroup(paramName, _materials);
 	}
 
 	std::optional<std::reference_wrapper<Material>> getMaterial(const std::string name) {
