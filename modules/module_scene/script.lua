@@ -69,7 +69,7 @@ function draw_node_properties(node, k, view)
 
 			local light = false
 			for _, material in pairs(node.materials) do
-				if (material:get_params("light")["enabled"]) then 
+				if (material["light"]["enabled"]) then 
 					light = true
 				end
 			end
@@ -81,7 +81,7 @@ function draw_node_properties(node, k, view)
 				-- node.light = new_enable_light
 				
 				for _, material in pairs(node.materials) do
-					material:get_params("light")["enabled"] = new_enable_light
+					material["light"]["enabled"] = new_enable_light
 				end
 
 			end
@@ -93,11 +93,11 @@ function draw_node_properties(node, k, view)
 			local clip = false
 			local clipping_mode = ClippingMode.CELL
 			for _, material in pairs(node.materials) do
-				if (material:get_params("clipping")["enabled"]) then 
+				if (material["clipping"]["enabled"]) then 
 					clip = true
 				end
-				if (material:get_params("clipping")) then 
-					clipping_mode = material:get_params("clipping")["mode"]
+				if (material["clipping"]) then 
+					clipping_mode = material["clipping"]["mode"]
 				end
 			end
 
@@ -108,7 +108,7 @@ function draw_node_properties(node, k, view)
 				print("Enable clipping: " .. tostring(new_enable_clipping))
 
 				for _, material in pairs(node.materials) do
-					material:get_params("clipping")["enabled"] = new_enable_clipping
+					material["clipping"]["enabled"] = new_enable_clipping
 				end
 		
 			end
@@ -119,7 +119,7 @@ function draw_node_properties(node, k, view)
 					if (imgui.Selectable(ClippingParams.clipping_mode_strings[i], is_selected)) then
 
 						for _, material in pairs(node.materials) do
-							material:get_params("clipping")["mode"] = i - 1
+							material["clipping"]["mode"] = i - 1
 						end
 
 					end
@@ -146,7 +146,7 @@ function draw_node_properties(node, k, view)
 						end
 
 						for _, material in pairs(node.materials) do 
-							material:get_params("clipping")["normal"] = v
+							material["clipping"]["normal"] = v
 						end
 
 						print("Set clipping plane normal to: " .. v:to_string())
@@ -158,7 +158,7 @@ function draw_node_properties(node, k, view)
 			-- Get clipping point (arbitrary the first found)
 			local clipping_plane_point = vec3{0,0,0}
 			for _, material in pairs(node.materials) do 
-				clipping_plane_point = material:get_params("clipping")["point"]
+				clipping_plane_point = material["clipping"]["point"]
 				break 
 			end
 
@@ -198,7 +198,7 @@ function draw_node_properties(node, k, view)
 
 
 				for _, material in pairs(node.materials) do 
-					material:get_params("clipping")["point"] = v
+					material["clipping"]["point"] = v
 				end
 			end
 
@@ -207,7 +207,7 @@ function draw_node_properties(node, k, view)
 				invert_clipping = new_invert_clipping
 
 				for _, material in pairs(node.materials) do 
-					material:get_params("clipping")["invert"] = invert_clipping
+					material["clipping"]["invert"] = invert_clipping
 				end
 			end
 
@@ -219,7 +219,7 @@ function draw_node_properties(node, k, view)
 
 			if mesh_material then
 
-				local mesh_style = mesh_material:get_params("style")
+				local mesh_style = mesh_material["style"]
 
 				local sel_mesh_visible, new_mesh_visible = imgui.Checkbox("Show mesh", mesh_material.visible)
 				if (sel_mesh_visible) then 
@@ -256,7 +256,7 @@ function draw_node_properties(node, k, view)
 			local points_material = node:get_material("points")
 
 			if points_material then
-				local points_style = points_material:get_params("style")
+				local points_style = points_material["style"]
 
 				local sel_point_visible, new_point_visible = imgui.Checkbox("Show points", points_material.visible)
 				if (sel_point_visible) then 
@@ -280,7 +280,7 @@ function draw_node_properties(node, k, view)
 			local halfedges_material = node:get_material("halfedges")
 			if halfedges_material then 
 
-				local haldedges_style = halfedges_material:get_params("style")
+				local haldedges_style = halfedges_material["style"]
 
 				local sel_edge_visible, new_edge_visible = imgui.Checkbox("Show edges", halfedges_material.visible)
 				if (sel_edge_visible) then 
@@ -444,28 +444,28 @@ function draw_node_properties(node, k, view)
 		-- 			node.mesh.visible = new_mesh_visible
 		-- 		end
 
-		-- 		local sel_color, new_color = imgui.ColorEdit3("Color", node.mesh:get_params("style").color)
+		-- 		local sel_color, new_color = imgui.ColorEdit3("Color", node.mesh["style"].color)
 		-- 		if (sel_color) then 
 		-- 			print("Change color: " .. tostring(new_color))
-		-- 			node.mesh:get_params("style").color = new_color
+		-- 			node.mesh["style"].color = new_color
 		-- 		end
 
-		-- 		local sel_slider_mesh_size, new_mesh_size = imgui.SliderFloat("Mesh size", node.mesh:get_params("style").size, 0, 20)
+		-- 		local sel_slider_mesh_size, new_mesh_size = imgui.SliderFloat("Mesh size", node.mesh["style"].size, 0, 20)
 		-- 		if (sel_slider_mesh_size) then 
 		-- 			print("Change mesh size: " .. tostring(new_mesh_size))
-		-- 			node.mesh:get_params("style").size = new_mesh_size
+		-- 			node.mesh["style"].size = new_mesh_size
 		-- 		end
 
-		-- 		local sel_slider_mesh_shrink, new_mesh_shrink = imgui.SliderFloat("Mesh shrink", node.mesh:get_params("style").shrink, 0, 1)
+		-- 		local sel_slider_mesh_shrink, new_mesh_shrink = imgui.SliderFloat("Mesh shrink", node.mesh["style"].shrink, 0, 1)
 		-- 		if (sel_slider_mesh_shrink) then 
 		-- 			print("Change mesh shrink: " .. tostring(new_mesh_shrink))
-		-- 			node.mesh:get_params("style").shrink = new_mesh_shrink
+		-- 			node.mesh["style"].shrink = new_mesh_shrink
 		-- 		end
 
-		-- 		local sel_corner_visible, new_corner_visible = imgui.Checkbox("Show corners", node.mesh:get_params("style").corner_visible)
+		-- 		local sel_corner_visible, new_corner_visible = imgui.Checkbox("Show corners", node.mesh["style"].corner_visible)
 		-- 		if (sel_corner_visible) then 
 		-- 			print("Change corner visibility: " .. tostring(new_corner_visible))
-		-- 			node.mesh:get_params("style").corner_visible = new_corner_visible
+		-- 			node.mesh["style"].corner_visible = new_corner_visible
 		-- 		end
 
 		-- 	end
@@ -476,16 +476,16 @@ function draw_node_properties(node, k, view)
 		-- 		node.points.visible = new_point_visible
 		-- 	end
 
-		-- 	local sel_point_size, new_point_size = imgui.SliderFloat("Point size", node.points:get_params("style")["size"], 0, 50)
+		-- 	local sel_point_size, new_point_size = imgui.SliderFloat("Point size", node.points["style"]["size"], 0, 50)
 		-- 	if (sel_point_size) then 
 		-- 		print("Change point size: " .. tostring(new_point_size))
-		-- 		node.points:get_params("style")["size"] = new_point_size
+		-- 		node.points["style"]["size"] = new_point_size
 		-- 	end
 
-		-- 	local sel_point_color, new_point_color = imgui.ColorEdit3("Point color", node.points:get_params("style")["color"])
+		-- 	local sel_point_color, new_point_color = imgui.ColorEdit3("Point color", node.points["style"]["color"])
 		-- 	if (sel_point_color) then 
 		-- 		-- print("Change point color: " .. tostring(new_point_color))
-		-- 		node.points:get_params("style")["color"] = new_point_color
+		-- 		node.points["style"]["color"] = new_point_color
 		-- 	end
 
 		-- 	if node.edges then 
@@ -496,34 +496,34 @@ function draw_node_properties(node, k, view)
 		-- 			node.edges.visible = new_edge_visible
 		-- 		end
 
-		-- 		local sel_edge_thickness, new_edge_thickness = imgui.SliderFloat("Edge thickness", node.edges:get_params("style").thickness, 0, 50)
+		-- 		local sel_edge_thickness, new_edge_thickness = imgui.SliderFloat("Edge thickness", node.edges["style"].thickness, 0, 50)
 		-- 		if (sel_edge_thickness) then 
 		-- 			print("Change edge thickness: " .. tostring(new_edge_thickness))
-		-- 			node.edges:get_params("style").thickness = new_edge_thickness
+		-- 			node.edges["style"].thickness = new_edge_thickness
 		-- 		end
 
-		-- 		local sel_edge_spacing, new_edge_spacing = imgui.SliderFloat("Edge spacing", node.edges:get_params("style").spacing, 0, 1)
+		-- 		local sel_edge_spacing, new_edge_spacing = imgui.SliderFloat("Edge spacing", node.edges["style"].spacing, 0, 1)
 		-- 		if (sel_edge_spacing) then 
 		-- 			print("Change edge spacing: " .. tostring(new_edge_spacing))
-		-- 			node.edges:get_params("style").spacing = new_edge_spacing
+		-- 			node.edges["style"].spacing = new_edge_spacing
 		-- 		end
 
-		-- 		local sel_edge_padding, new_edge_padding = imgui.SliderFloat("Edge padding", node.edges:get_params("style").padding, 0, 1)
+		-- 		local sel_edge_padding, new_edge_padding = imgui.SliderFloat("Edge padding", node.edges["style"].padding, 0, 1)
 		-- 		if (sel_edge_padding) then 
 		-- 			print("Change edge padding: " .. tostring(new_edge_padding))
-		-- 			node.edges:get_params("style").padding = new_edge_padding
+		-- 			node.edges["style"].padding = new_edge_padding
 		-- 		end
 
-		-- 		local sel_edge_inside_color, new_edge_inside_color = imgui.ColorEdit3("Edge inside color", node.edges:get_params("style").inside_color)
+		-- 		local sel_edge_inside_color, new_edge_inside_color = imgui.ColorEdit3("Edge inside color", node.edges["style"].inside_color)
 		-- 		if (sel_edge_inside_color) then 
 		-- 			print("Change edge inside color: " .. tostring(new_edge_inside_color))
-		-- 			node.edges:get_params("style").inside_color = new_edge_inside_color
+		-- 			node.edges["style"].inside_color = new_edge_inside_color
 		-- 		end
 
-		-- 		local sel_edge_outside_color, new_edge_outside_color = imgui.ColorEdit3("Edge outside color", node.edges:get_params("style").outside_color)
+		-- 		local sel_edge_outside_color, new_edge_outside_color = imgui.ColorEdit3("Edge outside color", node.edges["style"].outside_color)
 		-- 		if (sel_edge_outside_color) then 
 		-- 			print("Change edge outside color: " .. tostring(new_edge_outside_color))
-		-- 			node.edges:get_params("style").outside_color = new_edge_outside_color
+		-- 			node.edges["style"].outside_color = new_edge_outside_color
 		-- 		end
 		-- 	end
 

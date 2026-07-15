@@ -17,7 +17,10 @@ namespace bindings {
 					return self.getParams();
 				}
 			),
-			"visible", sol::property(&Material::isVisible, &Material::setVisible)
+			"visible", sol::property(&Material::isVisible, &Material::setVisible),
+			sol::meta_function::index, [](Material &self, const std::string name) {
+				return self.getParams(name);
+			}
 		);
 	}
 }

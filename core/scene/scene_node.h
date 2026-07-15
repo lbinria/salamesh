@@ -80,9 +80,22 @@ struct SceneNode : std::enable_shared_from_this<SceneNode> {
 		return _visible;
 	}
 
+
+
+	void setClippingEnabled(bool enabled) {
+
+	}
+
+	void setClippingPoint() {
+
+	}
+
+	void setClippingNormal() {
+
+	}
+
 	std::optional<Colormap> getColormap();
 	void setColormap(Colormap colormap);
-
 
 	std::string getLayerAttr(Layer layer, ElementKind kind);
 	void setLayerAttr(Layer layer, ElementKind kind, const std::string name);
