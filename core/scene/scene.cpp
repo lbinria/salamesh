@@ -166,53 +166,6 @@ Colormap Scene::getColormap(const std::string name) {
 	return colormaps.at(name);
 }
 
-// void Scene::render(std::shared_ptr<SceneModel> model, std::unique_ptr<ShaderBase>& shader, std::map<std::string, bool> &wasUpdated) {
-// 	if (!model->isVisible())
-// 		return;
-
-	
-// 	auto &mesh = model->getMesh();
-	
-// 	// Get view components that uses shader
-// 	auto viewComponents = model->getViewComponents(*shader);
-
-// 	for (auto &viewComponent : viewComponents) {
-// 		auto &meshBuffer = viewComponent.get().getMeshBuffer();
-// 		auto &material = viewComponent.get().getMaterial();
-
-// 		// TODO: maybe we can delay update shader buffer when material is not visible
-// 		if (mesh.shouldUpdate()) {
-// 			// Update current mesh buffer for given mesh
-// 			shader->update(meshBuffer, mesh);
-// 			// Update layers (only activated layers) according to new mesh
-// 			model->updateLayers();
-// 			// Set model as updated
-// 			wasUpdated[model->getName()] = true;
-// 		}
-
-// 		if (!material.isVisible())
-// 			return;
-
-// 		// Setup
-// 		glBindVertexArray(meshBuffer.vao());
-// 		meshBuffer.setPosition(shader->getShader(), model->getWorldPosition());
-// 		material.apply(shader->getShader());
-
-// 		// Set textures
-// 		for (auto &tbo : meshBuffer.tbos) {
-// 			glActiveTexture(GL_TEXTURE0 + tbo.texUnit);
-// 			glBindTexture(GL_TEXTURE_BUFFER, tbo.tex);
-// 			shader->getShader().setInt(tbo.name, tbo.texUnit);
-// 		}
-// 		// Set mesh index
-// 		shader->getShader().setInt("meshIndex", model->getIndex());
-
-// 		// Draw
-// 		glDrawArrays(shader->renderElement(), 0, meshBuffer.nelements);
-// 	}
-
-// }
-
 void Scene::render(std::shared_ptr<SceneModel> model, std::unique_ptr<ShaderBase>& shader, std::map<std::string, bool> &wasUpdated) {
 	if (!model->isVisible())
 		return;

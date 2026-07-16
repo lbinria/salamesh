@@ -53,9 +53,8 @@ void LineShader::update(MeshBuffer &meshBuffer, Mesh &mesh) {
 		}
 
 		meshBuffer.nelements = lineComponents.size();
-		glBindVertexArray(meshBuffer.vao());
-		glBindBuffer(GL_ARRAY_BUFFER, meshBuffer.vbo());
-		glBufferData(GL_ARRAY_BUFFER, lineComponents.size() * sizeof(LineComponent), lineComponents.data(), GL_STATIC_DRAW);
+		glNamedBufferData(meshBuffer.vbo(), lineComponents.size() * sizeof(LineComponent), lineComponents.data(), GL_STATIC_DRAW);
+
 	}
 }
 
