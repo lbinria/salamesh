@@ -120,9 +120,7 @@ void HalfedgeShader::updateHalfedges(MeshBuffer &meshBuffer, Surface &m) {
 	}
 
 	meshBuffer.nelements = vertices.size();
-	glBindVertexArray(meshBuffer.vao());
-	glBindBuffer(GL_ARRAY_BUFFER, meshBuffer.vbo());
-	glBufferData(GL_ARRAY_BUFFER, vertices.size() * sizeof(LineVert), vertices.data(), GL_STATIC_DRAW);
+	glNamedBufferData(meshBuffer.vbo(), vertices.size() * sizeof(LineVert), vertices.data(), GL_STATIC_DRAW);
 }
 
 

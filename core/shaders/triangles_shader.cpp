@@ -1,16 +1,16 @@
-#include "surface_shader.h"
+#include "triangles_shader.h"
 #include "opengl_helper.h"
 #include "mesh_style_params.h"
 #include "layer_params.h"
 #include "light_params.h"
 #include "clipping_params.h"
 
-bool SurfaceShader::isCompatible(Mesh &mesh) {
+bool TrianglesShader::isCompatible(Mesh &mesh) {
 	auto trianglesMesh = dynamic_cast<TrianglesMesh*>(&mesh);
 	return trianglesMesh;
 }
 
-MeshBuffer SurfaceShader::createMeshBuffer() {
+MeshBuffer TrianglesShader::createMeshBuffer() {
 	unsigned int vao, vbo;
 	glGenVertexArrays(1, &vao);
 	glGenBuffers(1, &vbo);
@@ -28,7 +28,7 @@ MeshBuffer SurfaceShader::createMeshBuffer() {
 	return MeshBuffer(vao, vbo);
 };
 
-Material SurfaceShader::createMaterial() {
+Material TrianglesShader::createMaterial() {
 	std::map<std::string, std::shared_ptr<MaterialParams>> params;
 	params["style"] = std::make_shared<MeshStyleParams>();
 	params["layers"] = std::make_shared<LayersParams>();
@@ -37,7 +37,7 @@ Material SurfaceShader::createMaterial() {
 	return Material(params);
 }
 
-void SurfaceShader::update(MeshBuffer &meshBuffer, Mesh &mesh) {
+void TrianglesShader::update(MeshBuffer &meshBuffer, Mesh &mesh) {
 	auto trianglesMesh = dynamic_cast<TrianglesMesh*>(&mesh);
 
 	if (trianglesMesh) {
@@ -76,11 +76,11 @@ void SurfaceShader::update(MeshBuffer &meshBuffer, Mesh &mesh) {
 }
 
 
-void SurfaceShader::clear() {
+void TrianglesShader::clear() {
 
 }
 
-void SurfaceShader::clean() {
+void TrianglesShader::clean() {
 	// Clean
 	shader.clean();
 }

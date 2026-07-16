@@ -15,7 +15,7 @@ using namespace UM;
 
 #include "material_params.h"
 
-struct SurfaceShader : public ShaderBase {
+struct TrianglesShader : public ShaderBase {
 	
 	struct Vertex {
 		// int vertexIndex;
@@ -27,13 +27,13 @@ struct SurfaceShader : public ShaderBase {
 		int facetIndex;
 	};
 
-	SurfaceShader(std::string name, Surface &m) : 
-		ShaderBase(name, Shader(sl::shadersPath("surface.vert"), sl::shadersPath("surface.frag"))),
+	TrianglesShader(std::string name, Surface &m) : 
+		ShaderBase(name, Shader(sl::shadersPath("triangles.vert"), sl::shadersPath("surface.frag"))),
 		_m(m)
 		{}
 
-	SurfaceShader(std::string name) : 
-		ShaderBase(name, Shader(sl::shadersPath("surface.vert"), sl::shadersPath("surface.frag"))),
+	TrianglesShader(std::string name) : 
+		ShaderBase(name, Shader(sl::shadersPath("triangles.vert"), sl::shadersPath("surface.frag"))),
 		_m(*new Triangles())
 		{}
 
