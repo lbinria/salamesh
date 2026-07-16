@@ -16,7 +16,6 @@ using json = nlohmann::json;
 #include "mesh_buffer.h"
 #include "material.h"
 #include "mesh.h"
-#include "view_component.h"
 
 struct ShaderBase {
 
@@ -38,12 +37,6 @@ struct ShaderBase {
 	}
 
 	virtual bool isCompatible(Mesh &mesh) { return false; }
-
-	ViewComponent createViewComponent(const std::string name) {
-		auto meshBuffer = createMeshBuffer();
-		auto material = createMaterial();
-		return ViewComponent(name, meshBuffer, material, *this);
-	}
 
 
 	// TODO maybe to abstract
