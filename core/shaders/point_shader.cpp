@@ -11,7 +11,8 @@ bool PointShader::isCompatible(Mesh &mesh) {
 	auto quadsMesh = dynamic_cast<QuadsMesh*>(&mesh);
 	auto polygonsMesh = dynamic_cast<PolygonsMesh*>(&mesh);
 	auto polylineMesh = dynamic_cast<PolyLineMesh*>(&mesh);
-	return trianglesMesh || quadsMesh || polygonsMesh || polylineMesh;
+	auto tetrahedrasMesh = dynamic_cast<TetrahedrasMesh*>(&mesh);
+	return trianglesMesh || quadsMesh || polygonsMesh || polylineMesh || tetrahedrasMesh;
 }
 
 MeshBuffer PointShader::createMeshBuffer() {
@@ -66,6 +67,8 @@ void PointShader::update(MeshBuffer &meshBuffer, Mesh &mesh) {
 		updatePointSet(meshBuffer, polygonsMesh->_m.points);
 	else if (auto polyLineMesh = dynamic_cast<PolyLineMesh*>(&mesh))
 		updatePointSet(meshBuffer, polyLineMesh->_m.points);
+	else if (auto tetrahedrasMesh = dynamic_cast<TetrahedrasMesh*>(&mesh))
+		updatePointSet(meshBuffer, tetrahedrasMesh->_m.points);
 }
 
 

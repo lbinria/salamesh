@@ -3,6 +3,7 @@
 
 #include "point_shader.h"
 #include "triangles_shader.h"
+#include "tetrahedras_shader.h"
 #include "poly_shader.h"
 #include "halfedge_shader.h"
 #include "line_shader.h"
@@ -39,6 +40,7 @@ void Scene::init() {
 
 	auto pointsShader = std::make_unique<PointShader>("points");
 	auto trianglesShader = std::make_unique<TrianglesShader>("mesh");
+	auto tetrahedrasShader = std::make_unique<TetrahedrasShader>("mesh");
 	auto polygonsShader = std::make_unique<PolyShader>("mesh");
 	auto halfedgesShader = std::make_unique<HalfedgeShader>("halfedges");
 	auto lineShader = std::make_unique<LineShader>("line_shader");
@@ -48,6 +50,7 @@ void Scene::init() {
 	_shaders.emplace("a_polygon_shader", std::move(polygonsShader));
 	_shaders.emplace("line_shader", std::move(lineShader));
 	_shaders.emplace("halfedge_shader", std::move(halfedgesShader));
+	_shaders.emplace("a_tetrahedras_shader", std::move(tetrahedrasShader));
 
 }
 

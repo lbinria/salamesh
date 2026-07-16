@@ -9,11 +9,15 @@
 
 std::shared_ptr<SceneModel> ModelLoader::load(const std::string filename, const std::string name) {
 
-	std::shared_ptr<Mesh> mesh = loadMesh<PolygonsMesh>(filename);
+	std::shared_ptr<Mesh> mesh = loadMesh<TetrahedrasMesh>(filename);
 
 	// In that case polygon is a Triangles or Quads
-	if (mesh && mesh->isRegular() && (mesh->nfacets() == 3 || mesh->nfacets() == 4)) {
-		mesh = nullptr;
+	if (!mesh) {
+		mesh = loadMesh<PolygonsMesh>(filename);
+
+		if (mesh && mesh->isRegular() && (mesh->nfacets() == 3 || mesh->nfacets() == 4)) {
+			mesh = nullptr;
+		}
 	}
 
 	if (!mesh)
@@ -24,6 +28,8 @@ std::shared_ptr<SceneModel> ModelLoader::load(const std::string filename, const 
 
 	if (!mesh)
 		mesh = loadMesh<PolyLineMesh>(filename);
+
+
 
 	if (!mesh)
 		return nullptr;

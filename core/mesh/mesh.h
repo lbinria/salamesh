@@ -214,6 +214,11 @@ template<typename T>
 concept SurfaceDerived = std::is_base_of_v<Surface, std::remove_cv_t<T>> && 
 	!std::is_same_v<Surface, std::remove_cv_t<T>>;
 
+// Define concept to accept only types that are derived from Volume
+template<typename T>
+concept VolumeDerived = std::is_base_of_v<Volume, std::remove_cv_t<T>> && 
+	!std::is_same_v<Volume, std::remove_cv_t<T>>;
+
 template<SurfaceDerived TSurface>
 struct SurfaceMesh : public MeshMesh {
 
@@ -368,6 +373,133 @@ struct SurfaceMesh : public MeshMesh {
 typedef SurfaceMesh<Triangles> TrianglesMesh;
 typedef SurfaceMesh<Quads> QuadsMesh;
 typedef SurfaceMesh<Polygons> PolygonsMesh;
+
+
+template<VolumeDerived TVolume>
+struct VolumeMesh : public MeshMesh {
+
+	bool saveAs(const std::string filename) override {
+		// // Check path validity
+		// if (filename.empty()) {
+		// 	std::cerr << "Error: No path specified for saving the mesh." << std::endl;
+		// 	return false;
+		// }
+		
+		// // Save attributes ! Convert back from salamesh attributes to NamedContainer vectors
+		// std::vector<NamedContainer> point_attrs;
+		// std::vector<NamedContainer> facet_attrs;
+		// std::vector<NamedContainer> corner_attrs;
+		// for (auto &a : getAttributes()) {
+		// 	// Do not save splitted attributes 
+		// 	// For example, attr : vec2 => attr[0], attr[1] aren't saved
+		// 	if (a.isSplit)
+		// 		continue;
+
+		// 	std::string name = a.name;
+		// 	ElementKind kind = a.kind;
+		// 	auto &container = a.ptr;
+
+		// 	if (kind == ElementKind::POINTS_ELT) {
+		// 		point_attrs.push_back(NamedContainer(name, container));
+		// 	} else if (kind == ElementKind::FACETS_ELT) {
+		// 		facet_attrs.push_back(NamedContainer(name, container));
+		// 	} else if (kind == ElementKind::CORNERS_ELT) {
+		// 		corner_attrs.push_back(NamedContainer(name, container));
+		// 	}
+		// }
+
+		// SurfaceAttributes attributes(
+		// 	point_attrs,
+		// 	facet_attrs,
+		// 	corner_attrs
+		// );
+
+		// write_by_extension(filename, getSurface(), attributes);
+
+		return true;
+	}
+
+	bool load(const std::string filename) {
+		_attributes = read_by_extension(filename, _m);
+		return true;
+	}
+
+	int nverts() const override {
+		return _m.nverts();
+	} 
+	
+	int nfacets() const override {
+		return _m.nfacets();
+	}
+
+	int ncells() const override {
+		return _m.ncells();
+	}
+
+	int ncorners() const override {
+		return _m.ncorners();
+	}
+
+	int nhalfedges() const override {
+		return _m.ncorners();
+	}
+
+	// Check whether all cells have the same size
+	bool isRegular() override {
+		int s = -1;
+		for (auto &c : _m.iter_cells()) {
+			if (s > 0 && c.nfacets() != s)
+				return false;
+
+			s = c.nfacets();
+		}
+		return true;
+	}
+
+	long pickEdge(vec3 p0, int f) override {
+		return -1;
+	}
+
+	std::tuple<vec3, vec3> bbox() override {
+		vec3 min = vec3(FLT_MAX);
+		vec3 max = vec3(-FLT_MAX);
+
+		for (auto &v : _m.iter_vertices()) {
+			vec3 p = v;
+			min = sl::min(min, p);
+			max = sl::max(max, p);
+		}
+
+		return {min, max};
+	}
+
+	std::vector<std::pair<ElementKind, NamedContainer>> getAttributeContainers() const override {
+		std::vector<std::pair<ElementKind, NamedContainer>> containers;
+		
+		for (auto &c : _attributes.points)
+			containers.push_back({ElementKind::POINTS_ELT, c});
+		// for (auto &c : _attributes.corners) {
+		// 	containers.push_back({ElementKind::CORNERS_ELT, c});
+		// 	// containers.push_back({ElementKind::EDGES_ELT, c}); // TODO see pertinence
+		// }
+		for (auto &c : _attributes.cell_facets)
+			containers.push_back({ElementKind::CELL_FACETS_ELT, c});
+		for (auto &c : _attributes.cells)
+			containers.push_back({ElementKind::CELLS_ELT, c});
+
+		return containers;
+	}
+
+	Volume& getVolume() { return _m; }
+	const Volume& getVolume() const { return _m; }
+	TVolume& getMesh() { return _m; }
+
+	VolumeAttributes _attributes;
+	TVolume _m;
+
+};
+
+typedef VolumeMesh<Tetrahedra> TetrahedrasMesh;
 
 
 struct PolyLineMesh : public MeshMesh {
