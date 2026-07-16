@@ -10,11 +10,11 @@ struct ClippingParams : MaterialParams {
 	}
 
 	void apply(Shader &shader) override {
-		shader.setInt("clipping_mode", mode);		
-		shader.setInt("is_clipping_enabled", enabled);
-		shader.setFloat3("clipping_plane_point", point);
-		shader.setFloat3("clipping_plane_normal", normal);
-		shader.setInt("invert_clipping", invert);
+		shader.setInt("clippingMode", mode);		
+		shader.setInt("isClippingEnabled", enabled);
+		shader.setFloat3("clippingPlanePoint", point);
+		shader.setFloat3("clippingPlaneNormal", normal);
+		shader.setInt("invertClipping", invert);
 
 	}
 

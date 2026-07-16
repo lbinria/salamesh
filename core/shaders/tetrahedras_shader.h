@@ -21,6 +21,7 @@ struct TetrahedrasShader : public ShaderBase {
 		sl::algebra::vec3 p0;
 		sl::algebra::vec3 p1;
 		sl::algebra::vec3 p2;
+		sl::algebra::vec3 bary;
 		int localIndex;
 		int vertexIndex;
 		int facetIndex;

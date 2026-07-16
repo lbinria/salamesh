@@ -4,9 +4,11 @@
 layout (location = 1) in vec3 p0;
 layout (location = 2) in vec3 p1;
 layout (location = 3) in vec3 p2;
-layout (location = 5) in int facetIndex;
-layout (location = 6) in int localIndex;
-layout (location = 7) in int cornerIndex;
+layout (location = 4) in vec3 bary;
+layout (location = 5) in int vertexIndex;
+layout (location = 6) in int facetIndex;
+layout (location = 7) in int localIndex;
+layout (location = 8) in int cornerIndex;
 
 layout (std140, binding = 0) uniform Matrices
 {
@@ -36,7 +38,6 @@ flat out int volumeType; /* 0 => triangle, 1 => polygon */
 
 void main()
 {
-	vec3 bary = (p0 + p1 + p2) / 3.;
 	vec3 n = normalize(cross(p1 - p0, p2 - p0));
 
 	// Apply shrink

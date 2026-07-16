@@ -17,17 +17,17 @@ flat in vec3 flatFragHeights;
 in vec3 fragWorldPos;
 in vec3 fragBarycentric;
 
-uniform bool is_light_enabled;
+uniform bool isLightEnabled;
 uniform vec3 lightDir = vec3(-0.5f, -0.8f, 0.2f);
 
 uniform vec3 color;
 uniform float meshSize;
 
-uniform int clipping_mode = 1; // 0: cell, 1: std, 2: slice
-uniform bool is_clipping_enabled = false;
-uniform vec3 clipping_plane_normal;
-uniform vec3 clipping_plane_point;
-uniform int invert_clipping = 0; // 0: normal, 1: inverted
+uniform int clippingMode = 1; // 0: cell, 1: std, 2: slice
+uniform bool isClippingEnabled = false;
+uniform vec3 clippingPlaneNormal;
+uniform vec3 clippingPlanePoint;
+uniform int invertClipping = 0; // 0: normal, 1: inverted
 
 // uniform vec3 hoverColor = vec3(1.,1.,1.);
 // uniform vec3 selectColor = vec3(0., 0.22, 1.);
@@ -64,21 +64,21 @@ void clip(inout vec3 col) {
 	// Calculate the distance from the cell barycenter to the plane
 
 	vec3 ref_point;
-	if (clipping_mode == 0) {
+	if (clippingMode == 0) {
 		// Use the barycenter of the facets to exclude facets
 		// that are behind the clipping plane
 		ref_point = fragBary;
-	} else if (clipping_mode == 1) {
+	} else if (clippingMode == 1) {
 		// Use the fragment world position (interpolated) to exclude fragments
 		// that are behind the clipping plane
 		ref_point = fragWorldPos;
 	}
 
-		float distance = dot(clipping_plane_normal, ref_point - clipping_plane_point) / length(clipping_plane_normal);
-		
-		if ((invert_clipping == 0 && distance < 0.0) || (invert_clipping == 1 && distance >= 0.0)) {
-			discard;
-		}
+	float distance = dot(clippingPlaneNormal, ref_point - clippingPlanePoint) / length(clippingPlaneNormal);
+	
+	if ((invertClipping == 0 && distance < 0.0) || (invertClipping == 1 && distance >= 0.0)) {
+		discard;
+	}
 }
 
 void shading(inout vec3 col) {
@@ -99,10 +99,10 @@ void main()
 {
 	vec3 col = color;
     // _filter(col);
-	if (is_clipping_enabled)
+	if (isClippingEnabled)
     	clip(col);
 
-	if (is_light_enabled)
+	if (isLightEnabled)
 		shading(col);
 
 	wireframe(col);

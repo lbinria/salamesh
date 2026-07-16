@@ -15,12 +15,12 @@ in vec3 fragWorldPos;
 uniform vec3 pointColor;
 
 
-uniform bool is_light_enabled;
+uniform bool isLightEnabled;
 
-uniform bool is_clipping_enabled = false;
-uniform vec3 clipping_plane_normal; // (a, b, c)
-uniform vec3 clipping_plane_point;  // A point on the plane
-uniform int invert_clipping = 0; // 0: normal, 1: inverted
+uniform bool isClippingEnabled = false;
+uniform vec3 clippingPlaneNormal; // (a, b, c)
+uniform vec3 clippingPlanePoint;  // A point on the plane
+uniform int invertClipping = 0; // 0: normal, 1: inverted
 
 uniform vec3 hoverColor = vec3(1.,1.,1.);
 uniform vec3 selectColor = vec3(0., 0.22, 1.);
@@ -88,10 +88,10 @@ void _filter(inout vec3 col) {
 
 void clip(inout vec3 col) {
    // Calculate the distance from the cell barycenter to the plane
-   if (is_clipping_enabled) {
-      float distance = dot(clipping_plane_normal, fragWorldPos - clipping_plane_point) / length(clipping_plane_normal);
+   if (isClippingEnabled) {
+      float distance = dot(clippingPlaneNormal, fragWorldPos - clippingPlanePoint) / length(clippingPlaneNormal);
       
-      if ((invert_clipping == 0 && distance < 0.0) || (invert_clipping == 1 && distance >= 0.0)) {
+      if ((invertClipping == 0 && distance < 0.0) || (invertClipping == 1 && distance >= 0.0)) {
          discard;
       }
    }
@@ -139,7 +139,7 @@ void highlight(inout vec3 col) {
 
 void shading(vec3 N, inout vec3 col) {
     // Diffuse light
-    if (is_light_enabled) {
+    if (isLightEnabled) {
         vec3 dirLight;
 
         dirLight = vec3(-0.5f, -0.8f, 0.2f);

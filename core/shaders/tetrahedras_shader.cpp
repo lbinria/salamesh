@@ -22,6 +22,7 @@ MeshBuffer TetrahedrasShader::createMeshBuffer() {
 	sl::createVBOVec3(shader.id, "p0", sizeof(Vertex), (void*)offsetof(Vertex, p0)); 
 	sl::createVBOVec3(shader.id, "p1", sizeof(Vertex), (void*)offsetof(Vertex, p1)); 
 	sl::createVBOVec3(shader.id, "p2", sizeof(Vertex), (void*)offsetof(Vertex, p2)); 
+	sl::createVBOVec3(shader.id, "bary", sizeof(Vertex), (void*)offsetof(Vertex, bary)); 
 	sl::createVBOInteger(shader.id, "localIndex", sizeof(Vertex), (void*)offsetof(Vertex, localIndex));
 	sl::createVBOInteger(shader.id, "vertexIndex", sizeof(Vertex), (void*)offsetof(Vertex, vertexIndex));
 	sl::createVBOInteger(shader.id, "facetIndex", sizeof(Vertex), (void*)offsetof(Vertex, facetIndex));
@@ -52,6 +53,14 @@ void TetrahedrasShader::update(MeshBuffer &meshBuffer, Mesh &mesh) {
 		vertices.reserve(meshBuffer.nelements);
 
 		for (auto &c : m.iter_cells()) {
+
+			vec3 v0 = c.vertex(0);
+			vec3 v1 = c.vertex(1);
+			vec3 v2 = c.vertex(2);
+			vec3 v3 = c.vertex(3);
+
+			vec3 b = (v0 + v1 + v2 + v3) / 4.;
+
 			for (auto &f : c.iter_facets()) {
 				
 				vec3 p0 = f.vertex(0);
@@ -64,6 +73,7 @@ void TetrahedrasShader::update(MeshBuffer &meshBuffer, Mesh &mesh) {
 						.p0 = sl::algebra::vecf(p0),
 						.p1 = sl::algebra::vecf(p1),
 						.p2 = sl::algebra::vecf(p2),
+						.bary = sl::algebra::vecf(b),
 						.localIndex = lv,
 						.vertexIndex = f.vertex(lv),
 						.facetIndex = f,
