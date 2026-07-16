@@ -10,7 +10,8 @@ bool PointShader::isCompatible(Mesh &mesh) {
 	auto trianglesMesh = dynamic_cast<TrianglesMesh*>(&mesh);
 	auto quadsMesh = dynamic_cast<QuadsMesh*>(&mesh);
 	auto polygonsMesh = dynamic_cast<PolygonsMesh*>(&mesh);
-	return trianglesMesh || quadsMesh || polygonsMesh;
+	auto polylineMesh = dynamic_cast<PolyLineMesh*>(&mesh);
+	return trianglesMesh || quadsMesh || polygonsMesh || polylineMesh;
 }
 
 MeshBuffer PointShader::createMeshBuffer() {

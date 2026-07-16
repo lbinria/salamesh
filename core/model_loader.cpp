@@ -4,31 +4,23 @@
 #include "scene/scene_model.h"
 #include "lines_mesh.h"
 
+
+
+
 std::shared_ptr<SceneModel> ModelLoader::load(const std::string filename, const std::string name) {
 
-	// TODO important refactor this :vomit: 
-	std::string meshShaderName = "a_triangle_shader";
+	std::shared_ptr<Mesh> mesh = loadMesh<PolygonsMesh>(filename);
 
-	std::shared_ptr<Mesh> mesh;
-
-	if (!mesh) {
-		mesh = loadMesh<PolygonsMesh>(filename);
-		if (mesh->isRegular()) {
-			mesh = nullptr;
-		}
-
-		meshShaderName = "a_polygon_shader";
+	// In that case polygon is a Triangles or Quads
+	if (mesh && mesh->isRegular() && (mesh->nfacets() == 3 || mesh->nfacets() == 4)) {
+		mesh = nullptr;
 	}
 
-	if (!mesh) {
+	if (!mesh)
 		mesh = loadMesh<TrianglesMesh>(filename);
-		meshShaderName = "a_triangle_shader";
-	}
 
-	if (!mesh) {
+	if (!mesh)
 		mesh = loadMesh<QuadsMesh>(filename);
-		meshShaderName = "a_polygon_shader";
-	}
 
 	if (!mesh)
 		mesh = loadMesh<PolyLineMesh>(filename);
@@ -39,9 +31,12 @@ std::shared_ptr<SceneModel> ModelLoader::load(const std::string filename, const 
 	// Create model & add to scene
 	auto model = _scene.createModel(name, mesh);
 
-	model->addShaderPass(_scene.getShader("point_shader").value());
-	model->addShaderPass(_scene.getShader(meshShaderName).value());
-	model->addShaderPass(_scene.getShader("halfedge_shader").value());
+	// Add all compatible shaders
+	for (auto &[shaderName, shader] : _scene.getShaders()) {
+		if (shader->isCompatible(*mesh)) {
+			model->addShaderPass(*shader);
+		}
+	}
 
 	return model;
 }

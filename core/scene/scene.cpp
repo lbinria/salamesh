@@ -63,13 +63,15 @@ std::shared_ptr<SceneModel> Scene::loadModel(const std::string filename, const s
 	if (!model)
 		return nullptr;
 
-	// Setup default gfx
-	if (auto mat = model->getMaterial("points")) {
-		mat->get().setVisible(false);
-	}
+	// Setup default gfx for surfaces
+	if (model->hasMaterial("mesh")) {
+		if (auto mat = model->getMaterial("points")) {
+			mat->get().setVisible(false);
+		}
 
-	if (auto mat = model->getMaterial("halfedges")) {
-		mat->get().setVisible(false);
+		if (auto mat = model->getMaterial("halfedges")) {
+			mat->get().setVisible(false);
+		}
 	}
 
 	_models.emplace(modelName, model);

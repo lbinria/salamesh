@@ -283,7 +283,7 @@ struct SurfaceMesh : public MeshMesh {
 		return _m.ncorners();
 	}
 
-	// Check whehter all facets have the same size
+	// Check whether all facets have the same size
 	bool isRegular() override {
 		int s = -1;
 		for (auto &f : _m.iter_facets()) {
