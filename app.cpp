@@ -191,7 +191,7 @@ bool App::setup() {
 	glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
 
 	// MSAA
-	glfwWindowHint(GLFW_SAMPLES, 4);
+	glfwWindowHint(GLFW_SAMPLES, 8);
 
 	// Create a GLFW window
 	window = glfwCreateWindow(windowWidth, windowHeight, "SalaMesh", NULL, NULL);
@@ -431,24 +431,6 @@ void App::init() {
 
 	scene.init();
 	scene.getDefaultRenderSurface().resize(windowWidth, windowHeight);
-
-	// _transformRegistry.registerTransform<PointShader, TrianglesMesh>(
-	// 	[](PointShader& shader, const TrianglesMesh& mesh) -> std::vector<PointShader::Vertex> {
-	// 		auto &ps = mesh._m.points;
-	// 		std::vector<PointShader::Vertex> vertices(ps.size());
-	// 		for (int i = 0; i < ps.size(); ++i) {
-	// 			auto &v = ps[i];
-
-	// 			vertices[i] = { 
-	// 				.vertexIndex = i,
-	// 				.position = sl::algebra::vecf(v),
-	// 				.size = 1.f
-	// 			};
-	// 		}
-
-	// 		return vertices;
-	// 	}
-	// );
 
 	_transformRegistry.registerTransform<PointShader, TrianglesMesh>(
 		[](PointShader& shader, const TrianglesMesh& mesh) -> std::vector<PointShader::Vertex> {

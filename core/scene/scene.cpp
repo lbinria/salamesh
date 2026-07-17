@@ -188,15 +188,15 @@ void Scene::render(std::shared_ptr<SceneModel> model, std::unique_ptr<ShaderBase
 	// TODO: maybe we can delay update shader buffer when material is not visible
 	if (mesh.shouldUpdate()) {
 		// Update current mesh buffer for given mesh
-		// shader->update(meshBuffer, mesh);
+		shader->update(meshBuffer, mesh);
 		// Update layers (only activated layers) according to new mesh
 		model->updateLayers();
 		// Set model as updated
 		wasUpdated[model->getName()] = true;
 
-		auto &t = app.getTransformRegistry();
-		auto result = t.transform(*shader, mesh);
-		shader->update(meshBuffer, *result);
+		// auto &t = app.getTransformRegistry();
+		// auto result = t.transform(*shader, mesh);
+		// shader->update(meshBuffer, *result);
 	}
 
 	if (!material.isVisible())

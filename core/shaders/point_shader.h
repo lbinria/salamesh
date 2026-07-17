@@ -24,12 +24,8 @@ struct PointShader : public ShaderBase {
 		float size;
 	};
 
-	PointShader(std::string name, PointSet &ps) : 
-		ShaderBase(name, Shader(sl::shadersPath("point.vert"), sl::shadersPath("point.frag"))),
-		ps(ps) {}
-
 	PointShader(std::string name) : 
-		ShaderBase(name, Shader(sl::shadersPath("point.vert"), sl::shadersPath("point.frag"))), ps(*new PointSet()) {
+		ShaderBase(name, Shader(sl::shadersPath("point.vert"), sl::shadersPath("point.frag"))) {
 		}
 
 	virtual bool isCompatible(Mesh &mesh) override;
@@ -46,19 +42,7 @@ struct PointShader : public ShaderBase {
 	void clean() override;
 	void clear() override;
 
-	inline int count() {
-		return ps.size();
-	}
-
-	PointSet& getPointSet() { return ps; }
-
-	vec3& operator[](int index)
-	{
-		return ps[index];
-	}
-
 	private:
-	PointSet &ps;
 
 	void updatePointSet(MeshBuffer &meshBuffer, PointSet &ps);
 
