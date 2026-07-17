@@ -21,7 +21,6 @@ flat out float depthZ;
 
 void main()
 {
-
 	vec3 pos = p;
 
 	// To clip space
@@ -29,7 +28,6 @@ void main()
 	gl_Position = pvm * vec4(pos, 1.0);
 
 	vec3 viewDir = -vec3(view[0][2], view[1][2], view[2][2]);
-
 
 	gl_PointSize = pointSize * sizeScale;
 
@@ -41,10 +39,6 @@ void main()
 
 	// Add offset
 	screenPos.x += gl_PointSize * .5;
-	
-	// Just test, uncomment above when finish
-	// vec2 screenOff = screenPos;
-	// screenOff.x += (pointSize * sizeScale) * 0.5;
 
 	// Back to NDC
 	vec2 ndc2 = screenPos / viewport * 2.0 - 1.0;
@@ -61,16 +55,9 @@ void main()
 	float d = distance(world2, pos);
 	world2 = pos - d * viewDir;
 
-    vec4 clip3 = pvm * vec4(world2, 1.0);
-    float ndcZ = clip3.z / clip3.w; // range [-1,1]
-    depthZ = ndcZ * 0.5 + 0.5;
-
-
-
-
-	// // Try to retrieve point size to see if above is correct, should be invariant...
-	// float depthZ0 = ndc.z * 0.5 + 0.5;
-	// gl_PointSize = abs(depthZ - depthZ0) * 1000000.;
+	vec4 clip3 = pvm * vec4(world2, 1.0);
+	float ndcZ = clip3.z / clip3.w; // range [-1,1]
+	depthZ = ndcZ * 0.5 + 0.5;
 
 	fragWorldPos = pos;
 	FragVertexIndex = vertexIndex;
