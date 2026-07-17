@@ -57,12 +57,3 @@ void LineShader::update(MeshBuffer &meshBuffer, Mesh &mesh) {
 
 	}
 }
-
-
-void LineShader::clear() {
-}
-
-void LineShader::clean() {
-	// Clean up
-	shader.clean();
-}

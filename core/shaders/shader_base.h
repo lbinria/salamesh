@@ -98,9 +98,9 @@ struct ShaderBase {
 		return GL_POINTS;
 	}
 
-	virtual void clean() = 0;
-	virtual void clear() = 0;
-
+	virtual void clean() {
+		shader.clean();
+	}
 
 
 	std::string getName() { return name; }

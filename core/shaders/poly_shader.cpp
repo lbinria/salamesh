@@ -148,14 +148,3 @@ void PolyShader::update(MeshBuffer &meshBuffer, Mesh &mesh) {
 	}
 
 }
-
-
-void PolyShader::clear() {
-
-}
-
-void PolyShader::clean() {
-
-	// Clean shader
-	shader.clean();
-}

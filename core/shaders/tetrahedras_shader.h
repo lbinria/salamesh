@@ -47,10 +47,6 @@ struct TetrahedrasShader : public ShaderBase {
 		return GL_TRIANGLES;
 	}
 
-	void clear() override;
-	void clean() override;
-
-
 	protected:
 
 	Volume &_m;

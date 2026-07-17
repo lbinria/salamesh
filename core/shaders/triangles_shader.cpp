@@ -74,13 +74,3 @@ void TrianglesShader::update(MeshBuffer &meshBuffer, Mesh &mesh) {
 	}
 
 }
-
-
-void TrianglesShader::clear() {
-
-}
-
-void TrianglesShader::clean() {
-	// Clean
-	shader.clean();
-}

@@ -39,9 +39,6 @@ struct PointShader : public ShaderBase {
 		meshBuffer.write(c.vertices);
 	}
 
-	void clean() override;
-	void clear() override;
-
 	private:
 
 	void updatePointSet(MeshBuffer &meshBuffer, PointSet &ps);

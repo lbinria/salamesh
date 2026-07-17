@@ -88,13 +88,3 @@ void TetrahedrasShader::update(MeshBuffer &meshBuffer, Mesh &mesh) {
 	}
 
 }
-
-
-void TetrahedrasShader::clear() {
-
-}
-
-void TetrahedrasShader::clean() {
-	// Clean
-	shader.clean();
-}

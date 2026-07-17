@@ -33,11 +33,6 @@ struct LineShader : public ShaderBase {
 		return GL_LINES;
 	}
 
-
-	void clean() override;
-	void clear() override;
-
-
 	private:
 	
 };

@@ -41,10 +41,6 @@ struct HalfedgeShader : public ShaderBase {
 		return GL_TRIANGLES;
 	}
 
-	void clear() override;
-	void clean() override;
-
-
 	private:
 
 	void updateHalfedges(MeshBuffer &meshBuffer, Surface &m);

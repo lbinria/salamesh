@@ -135,15 +135,3 @@ void HalfedgeShader::update(MeshBuffer &meshBuffer, Mesh &mesh) {
 	else if (auto polyLineMesh = dynamic_cast<PolyLineMesh*>(&mesh))
 		updateHalfedges(meshBuffer, polyLineMesh->_m);
 }
-
-
-void HalfedgeShader::clear() {
-
-}
-
-void HalfedgeShader::clean() {
-	// Clean up
-
-	// Clean shader
-	shader.clean();
-}

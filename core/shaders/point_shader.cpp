@@ -70,12 +70,3 @@ void PointShader::update(MeshBuffer &meshBuffer, Mesh &mesh) {
 	else if (auto tetrahedrasMesh = dynamic_cast<TetrahedrasMesh*>(&mesh))
 		updatePointSet(meshBuffer, tetrahedrasMesh->_m.points);
 }
-
-
-void PointShader::clear() {
-}
-
-void PointShader::clean() {
-	// Clean up
-	shader.clean();
-}

@@ -46,10 +46,6 @@ struct TrianglesShader : public ShaderBase {
 		return GL_TRIANGLES;
 	}
 
-	void clear() override;
-	void clean() override;
-
-
 	protected:
 
 	Surface &_m;
