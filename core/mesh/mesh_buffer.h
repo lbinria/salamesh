@@ -33,6 +33,16 @@ struct MeshBuffer {
 		// TODO
 	}
 
+	template<typename T>
+	void write(std::vector<T> data, GLenum usage = GL_STATIC_DRAW) {
+		glNamedBufferData(vbo(), data.size() * sizeof(T), data.data(), usage);
+	}
+
+	template<typename T>
+	void write(const std::string tboName, std::vector<T> data, GLenum usage = GL_STATIC_DRAW) {
+		glNamedBufferData(tbos[tboName].buf, data.size() * sizeof(T), data.data(), usage);
+	}
+
 	unsigned int nelements = 0;
 
 	// Texture Buffer Object (like a SSBO array of data)

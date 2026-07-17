@@ -140,11 +140,10 @@ void PolyShader::update(MeshBuffer &meshBuffer, Mesh &mesh) {
 			cornerOff += f.size();
 		}
 
-		glNamedBufferData(meshBuffer.vbo(), vertices.size() * sizeof(Vertex), vertices.data(), GL_STATIC_DRAW);
-
+		// Write VBO buffer
+		meshBuffer.write(vertices);
 		// Write TBO buffer
-		glBindBuffer(GL_TEXTURE_BUFFER, meshBuffer.tbos["nvertsPerFacetBuf"].buf);
-		glBufferData(GL_TEXTURE_BUFFER, nVertsPerFacet.size() * sizeof(float), nVertsPerFacet.data(), GL_STATIC_DRAW);
+		meshBuffer.write("nvertsPerFacetBuf", nVertsPerFacet);
 
 	}
 
