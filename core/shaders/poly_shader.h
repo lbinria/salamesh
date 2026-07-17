@@ -29,17 +29,15 @@ struct PolyShader : public ShaderBase {
 	};
 
 	PolyShader(std::string name, Surface &m) : 
-		ShaderBase(name, Shader(sl::shadersPath("poly.vert"), sl::shadersPath("surface.frag"))),
-		_m(m)
-		{
+		ShaderBase(name, Shader(sl::shadersPath("poly.vert"), sl::shadersPath("surface.frag"))) {
 			shader.use();
 			shader.setFloat3("color", sl::algebra::vec3(0.71f, 0.71f, 0.71f));
 		}
 
 	PolyShader(std::string name) : 
-		ShaderBase(name, Shader(sl::shadersPath("poly.vert"), sl::shadersPath("surface.frag"))),
-		_m(*new Polygons())
-		{}
+		ShaderBase(name, Shader(sl::shadersPath("poly.vert"), sl::shadersPath("surface.frag"))) {
+			
+		}
 
 	virtual bool isCompatible(Mesh &mesh) override;
 	virtual MeshBuffer createMeshBuffer() override;
@@ -50,7 +48,4 @@ struct PolyShader : public ShaderBase {
 		return GL_TRIANGLES;
 	}
 
-	protected:
-
-	Surface &_m;
 };

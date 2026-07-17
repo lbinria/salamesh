@@ -29,14 +29,10 @@ struct TetrahedrasShader : public ShaderBase {
 	};
 
 	TetrahedrasShader(std::string name, Volume &m) : 
-		ShaderBase(name, Shader(sl::shadersPath("tetrahedras.vert"), sl::shadersPath("volumus.frag"))),
-		_m(m)
-		{}
+		ShaderBase(name, Shader(sl::shadersPath("tetrahedras.vert"), sl::shadersPath("volumus.frag"))) {}
 
 	TetrahedrasShader(std::string name) : 
-		ShaderBase(name, Shader(sl::shadersPath("tetrahedras.vert"), sl::shadersPath("volumus.frag"))),
-		_m(*new Tetrahedra())
-		{}
+		ShaderBase(name, Shader(sl::shadersPath("tetrahedras.vert"), sl::shadersPath("volumus.frag"))) {}
 
 	virtual bool isCompatible(Mesh &mesh) override;
 	virtual MeshBuffer createMeshBuffer() override;
@@ -47,9 +43,4 @@ struct TetrahedrasShader : public ShaderBase {
 		return GL_TRIANGLES;
 	}
 
-	protected:
-
-	Volume &_m;
-
-	private:
 };

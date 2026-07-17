@@ -28,14 +28,10 @@ struct TrianglesShader : public ShaderBase {
 	};
 
 	TrianglesShader(std::string name, Surface &m) : 
-		ShaderBase(name, Shader(sl::shadersPath("triangles.vert"), sl::shadersPath("surface.frag"))),
-		_m(m)
-		{}
+		ShaderBase(name, Shader(sl::shadersPath("triangles.vert"), sl::shadersPath("surface.frag"))) {}
 
 	TrianglesShader(std::string name) : 
-		ShaderBase(name, Shader(sl::shadersPath("triangles.vert"), sl::shadersPath("surface.frag"))),
-		_m(*new Triangles())
-		{}
+		ShaderBase(name, Shader(sl::shadersPath("triangles.vert"), sl::shadersPath("surface.frag"))) {}
 
 	virtual bool isCompatible(Mesh &mesh) override;
 	virtual MeshBuffer createMeshBuffer() override;
@@ -46,9 +42,4 @@ struct TrianglesShader : public ShaderBase {
 		return GL_TRIANGLES;
 	}
 
-	protected:
-
-	Surface &_m;
-
-	private:
 };
