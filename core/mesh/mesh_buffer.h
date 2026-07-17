@@ -29,6 +29,10 @@ struct MeshBuffer {
 		shader.setMat4("model", static_cast<sl::algebra::mat4x4>(model));
 	}
 
+	void clean() {
+		// TODO
+	}
+
 	unsigned int nelements = 0;
 
 	// Texture Buffer Object (like a SSBO array of data)
@@ -36,9 +40,11 @@ struct MeshBuffer {
 		std::string name;
 		unsigned int texUnit;
 		unsigned int tex;
+		unsigned int buf;
 	};
 
-	std::vector<TBO> tbos;
+	// std::vector<TBO> tbos;
+	std::map<std::string, TBO> tbos;
 
 	private:
 	unsigned int _vao;

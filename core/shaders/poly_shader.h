@@ -57,9 +57,4 @@ struct PolyShader : public ShaderBase {
 	protected:
 
 	Surface &_m;
-
-	private:
-
-	unsigned int bufNVertsPerFacet; 
-	unsigned int texNVertsPerFacet;
 };

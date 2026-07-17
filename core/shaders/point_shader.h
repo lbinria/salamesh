@@ -26,7 +26,13 @@ struct PointShader : public ShaderBase {
 
 	PointShader(std::string name, PointSet &ps) : 
 		ShaderBase(name, Shader(sl::shadersPath("point.vert"), sl::shadersPath("point.frag"))),
-		ps(ps) {}
+		ps(ps) {
+			// _dispatcher.registerHandler<PointShader, TrianglesMesh>(
+			// 	[](PointShader& s, TrianglesMesh& m, MeshBuffer& b) {
+
+			// 	}
+			// );
+		}
 
 	PointShader(std::string name) : 
 		ShaderBase(name, Shader(sl::shadersPath("point.vert"), sl::shadersPath("point.frag"))), ps(*new PointSet()) {
@@ -36,6 +42,8 @@ struct PointShader : public ShaderBase {
 	virtual MeshBuffer createMeshBuffer() override;
 	virtual Material createMaterial() override;
 	virtual void update(MeshBuffer &meshBuffer, Mesh &mesh) override;
+
+	// void update(PointShader &shader, TriangleMesh &mesh);
 
 	void clean() override;
 	void clear() override;

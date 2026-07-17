@@ -27,14 +27,17 @@ MeshBuffer PolyShader::createMeshBuffer() {
 	sl::createVBOVec3(shader.id, "p2", sizeof(Vertex), (void*)offsetof(Vertex, p2));
 	sl::createVBOVec3(shader.id, "n", sizeof(Vertex), (void*)offsetof(Vertex, n));
 
+	unsigned int bufNVertsPerFacet, texNVertsPerFacet;
 	sl::createTBO(bufNVertsPerFacet, texNVertsPerFacet);
 
 	auto meshBuffer = MeshBuffer(vao, vbo);
-	meshBuffer.tbos.push_back({ 
+	meshBuffer.tbos["nvertsPerFacetBuf"] = { 
 		.name = "nvertsPerFacetBuf", 
 		.texUnit = 8, 
-		.tex = texNVertsPerFacet
-	}); // Add TBO texNVertsPerFacet at the texture 8
+		.tex = texNVertsPerFacet,
+		.buf = bufNVertsPerFacet
+	}; // Add TBO texNVertsPerFacet at the texture 8
+
 
 	return meshBuffer;
 };
@@ -140,7 +143,7 @@ void PolyShader::update(MeshBuffer &meshBuffer, Mesh &mesh) {
 		glNamedBufferData(meshBuffer.vbo(), vertices.size() * sizeof(Vertex), vertices.data(), GL_STATIC_DRAW);
 
 		// Write TBO buffer
-		glBindBuffer(GL_TEXTURE_BUFFER, bufNVertsPerFacet);
+		glBindBuffer(GL_TEXTURE_BUFFER, meshBuffer.tbos["nvertsPerFacetBuf"].buf);
 		glBufferData(GL_TEXTURE_BUFFER, nVertsPerFacet.size() * sizeof(float), nVertsPerFacet.data(), GL_STATIC_DRAW);
 
 	}
@@ -153,11 +156,6 @@ void PolyShader::clear() {
 }
 
 void PolyShader::clean() {
-
-
-	glDeleteBuffers(1, &bufNVertsPerFacet);
-	glDeleteTextures(1, &texNVertsPerFacet);
-	glBindBuffer(GL_TEXTURE_BUFFER, 0);
 
 	// Clean shader
 	shader.clean();

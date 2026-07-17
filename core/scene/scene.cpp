@@ -201,7 +201,7 @@ void Scene::render(std::shared_ptr<SceneModel> model, std::unique_ptr<ShaderBase
 	material.apply(shader->getShader());
 
 	// Set textures
-	for (auto &tbo : meshBuffer.tbos) {
+	for (auto &[_, tbo] : meshBuffer.tbos) {
 		glActiveTexture(GL_TEXTURE0 + tbo.texUnit);
 		glBindTexture(GL_TEXTURE_BUFFER, tbo.tex);
 		shader->getShader().setInt(tbo.name, tbo.texUnit);
