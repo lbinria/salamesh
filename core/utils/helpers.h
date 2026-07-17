@@ -83,12 +83,12 @@ namespace sl {
 
 
 	inline mat4x4 ortho(double left, double right, double bottom, double top, double zNear, double zFar) {
-		mat4x4 res{
-			1, 0, 0, 0,
-			0, 1, 0, 0,
-			0, 0, 1, 0,
-			0, 0, 0, 1,
-		};
+		mat4x4 res{{
+			{1, 0, 0, 0},
+			{0, 1, 0, 0},
+			{0, 0, 1, 0},
+			{0, 0, 0, 1},
+		}};
 		res[0][0] = 2. / (right - left);
 		res[1][1] = 2. / (top - bottom);
 		res[2][2] = - 2. / (zFar - zNear);

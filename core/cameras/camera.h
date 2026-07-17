@@ -128,20 +128,20 @@ struct Camera {
 		_name = j["name"].get<std::string>();
 		_zoomFactor = j["zoom_factor"];
 		auto &jView = j["view"];
-		_view = mat4x4{
-			jView[0].get<double>(), jView[1].get<double>(), jView[2].get<double>(), jView[3].get<double>(),
-			jView[4].get<double>(), jView[5].get<double>(), jView[6].get<double>(), jView[7].get<double>(),
-			jView[8].get<double>(), jView[9].get<double>(), jView[10].get<double>(), jView[11].get<double>(),
-			jView[12].get<double>(), jView[13].get<double>(), jView[14].get<double>(), jView[15].get<double>()
-		};
+		_view = mat4x4{{
+			{jView[0].get<double>(), jView[1].get<double>(), jView[2].get<double>(), jView[3].get<double>()},
+			{jView[4].get<double>(), jView[5].get<double>(), jView[6].get<double>(), jView[7].get<double>()},
+			{jView[8].get<double>(), jView[9].get<double>(), jView[10].get<double>(), jView[11].get<double>()},
+			{jView[12].get<double>(), jView[13].get<double>(), jView[14].get<double>(), jView[15].get<double>()}
+		}};
 
 		auto &jProj = j["proj"];
-		_proj = mat4x4{
-			jProj[0].get<double>(), jProj[1].get<double>(), jProj[2].get<double>(), jProj[3].get<double>(),
-			jProj[4].get<double>(), jProj[5].get<double>(), jProj[6].get<double>(), jProj[7].get<double>(),
-			jProj[8].get<double>(), jProj[9].get<double>(), jProj[10].get<double>(), jProj[11].get<double>(),
-			jProj[12].get<double>(), jProj[13].get<double>(), jProj[14].get<double>(), jProj[15].get<double>()
-		};
+		_proj = mat4x4{{
+			{jProj[0].get<double>(), jProj[1].get<double>(), jProj[2].get<double>(), jProj[3].get<double>()},
+			{jProj[4].get<double>(), jProj[5].get<double>(), jProj[6].get<double>(), jProj[7].get<double>()},
+			{jProj[8].get<double>(), jProj[9].get<double>(), jProj[10].get<double>(), jProj[11].get<double>()},
+			{jProj[12].get<double>(), jProj[13].get<double>(), jProj[14].get<double>(), jProj[15].get<double>()}
+		}};
 
 		// Extract position from view matrix
 		mat4x4 c = _view.invert();
