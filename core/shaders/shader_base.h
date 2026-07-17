@@ -5,6 +5,7 @@
 
 #include "shader.h"
 #include "attribute.h"
+#include "vertex_container.h"
 
 #include "material_params.h"
 
@@ -86,6 +87,10 @@ struct ShaderBase {
 
 	// TODO maybe to abstract
 	virtual void update(MeshBuffer &meshBuffer, Mesh &mesh) {
+
+	}
+
+	virtual void update(MeshBuffer &meshBuffer, VertexContainer& vertices) {
 
 	}
 

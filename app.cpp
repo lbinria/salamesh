@@ -12,6 +12,9 @@
 
 #include <ranges>
 
+// Test
+#include "point_shader.h"
+
 
 struct UBOMatrices {
 	alignas(16) sl::algebra::mat4x4 view;
@@ -428,6 +431,42 @@ void App::init() {
 
 	scene.init();
 	scene.getDefaultRenderSurface().resize(windowWidth, windowHeight);
+
+	// _transformRegistry.registerTransform<PointShader, TrianglesMesh>(
+	// 	[](PointShader& shader, const TrianglesMesh& mesh) -> std::vector<PointShader::Vertex> {
+	// 		auto &ps = mesh._m.points;
+	// 		std::vector<PointShader::Vertex> vertices(ps.size());
+	// 		for (int i = 0; i < ps.size(); ++i) {
+	// 			auto &v = ps[i];
+
+	// 			vertices[i] = { 
+	// 				.vertexIndex = i,
+	// 				.position = sl::algebra::vecf(v),
+	// 				.size = 1.f
+	// 			};
+	// 		}
+
+	// 		return vertices;
+	// 	}
+	// );
+
+	_transformRegistry.registerTransform<PointShader, TrianglesMesh>(
+		[](PointShader& shader, const TrianglesMesh& mesh) -> std::vector<PointShader::Vertex> {
+			auto &ps = mesh._m.points;
+			std::vector<PointShader::Vertex> vertices(ps.size());
+			for (int i = 0; i < ps.size(); ++i) {
+				auto &v = ps[i];
+
+				vertices[i] = { 
+					.vertexIndex = i,
+					.position = sl::algebra::vecf(v),
+					.size = 1.f
+				};
+			}
+
+			return vertices;
+		}
+	);
 
 	// renderSurfaces[1]->setCamera(cameras[1]);
 

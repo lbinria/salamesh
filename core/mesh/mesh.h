@@ -83,7 +83,7 @@ struct Mesh {
 	virtual int ncells() const = 0; 
 	virtual int ncorners() const = 0; 
 	virtual int nhalfedges() const = 0;
-	virtual bool isRegular() = 0;
+	virtual int cellSize() = 0;
 
 	virtual long pickEdge(vec3 p0, int c) = 0;
 
@@ -289,15 +289,15 @@ struct SurfaceMesh : public MeshMesh {
 	}
 
 	// Check whether all facets have the same size
-	bool isRegular() override {
+	int cellSize() override {
 		int s = -1;
 		for (auto &f : _m.iter_facets()) {
 			if (s > 0 && f.size() != s)
-				return false;
+				return -1;
 
 			s = f.size();
 		}
-		return true;
+		return s;
 	}
 
 	long pickEdge(vec3 p0, int f) override {
@@ -445,15 +445,15 @@ struct VolumeMesh : public MeshMesh {
 	}
 
 	// Check whether all cells have the same size
-	bool isRegular() override {
+	int cellSize() override {
 		int s = -1;
 		for (auto &c : _m.iter_cells()) {
 			if (s > 0 && c.nfacets() != s)
-				return false;
+				return -1;
 
 			s = c.nfacets();
 		}
-		return true;
+		return s;
 	}
 
 	long pickEdge(vec3 p0, int f) override {
@@ -586,8 +586,8 @@ struct PolyLineMesh : public MeshMesh {
 		return _m.nedges();
 	}
 
-	bool isRegular() override {
-		return true;
+	int cellSize() override {
+		return 2;
 	}
 
 

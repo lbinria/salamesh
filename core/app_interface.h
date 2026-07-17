@@ -12,6 +12,7 @@
 #include "camera_collection.h"
 #include <string>
 
+#include "transformer.h"
 
 struct IApp {
 
@@ -59,5 +60,7 @@ struct IApp {
 
 	virtual bool isUIHovered() const = 0;
 	virtual bool isDebug() const = 0;
+
+	virtual TransformRegistry& getTransformRegistry() = 0;
 
 };

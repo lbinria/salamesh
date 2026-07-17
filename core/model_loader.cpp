@@ -15,7 +15,7 @@ std::shared_ptr<SceneModel> ModelLoader::load(const std::string filename, const 
 	if (!mesh) {
 		mesh = loadMesh<PolygonsMesh>(filename);
 
-		if (mesh && mesh->isRegular() && (mesh->nfacets() == 3 || mesh->nfacets() == 4)) {
+		if (mesh && (mesh->cellSize() == 3 || mesh->cellSize() == 4)) {
 			mesh = nullptr;
 		}
 	}
