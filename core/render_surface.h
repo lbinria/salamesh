@@ -45,7 +45,6 @@ struct RenderSurface {
 
 	PickState getPickState(double x, double y, int radius);
 
-	// long pickEdge(double x, double y);
 	// std::vector<long> pickFacets(double x, double y, int radius) override;
 	// std::vector<long> pickCells(double x, double y, int radius) override;
 	float getDepth(double x, double y);

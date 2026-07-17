@@ -85,8 +85,6 @@ struct Mesh {
 	virtual int nhalfedges() const = 0;
 	virtual int cellSize() = 0;
 
-	virtual long pickEdge(vec3 p0, int c) = 0;
-
 	// TODO set private (pass in constructor)
 	std::string path = "";
 
@@ -300,39 +298,6 @@ struct SurfaceMesh : public MeshMesh {
 		return s;
 	}
 
-	long pickEdge(vec3 p0, int f) override {
-		auto &m = getSurface();
-
-		// Search nearest edge
-		double min_d = std::numeric_limits<double>().max();
-		long found_e = -1;
-		
-		auto fc = m.facet(f);
-		int size = fc.size();
-
-		for (int lv = 0; lv < size; ++lv) {
-			
-			// Get global indices of vertex on edge extremities
-			auto v0 = fc.vertex(lv % size);
-			auto v1 = fc.vertex((lv + 1) % size);
-
-			// Get points from current edge
-			vec3 p1 = m.points[v0];
-			vec3 p2 = m.points[v1];
-			vec3 b = (p1 + p2) * .5;
-			// Compute dist from picked point to bary of edge points
-			double d = (p0 - b).norm(); // TODO maybe use norm2 will give the same result
-
-			// Keep min dist
-			if (d < min_d) {
-				min_d = d;
-				found_e = f * size + lv;
-			}
-		}
-
-		return found_e;
-	}
-
 	std::tuple<vec3, vec3> bbox() override {
 		vec3 min = vec3(FLT_MAX);
 		vec3 max = vec3(-FLT_MAX);
@@ -454,10 +419,6 @@ struct VolumeMesh : public MeshMesh {
 			s = c.nfacets();
 		}
 		return s;
-	}
-
-	long pickEdge(vec3 p0, int f) override {
-		return -1;
 	}
 
 	std::tuple<vec3, vec3> bbox() override {
@@ -590,11 +551,6 @@ struct PolyLineMesh : public MeshMesh {
 		return 2;
 	}
 
-
-	long pickEdge(vec3 p0, int f) override {
-		return -1;
-	}
-
 	PolyLineAttributes _attributes;
 	PolyLine _m;
 
@@ -612,37 +568,3 @@ struct PolyLineMesh : public MeshMesh {
 
 
 };
-
-
-
-// For volume
-// long pickEdge(vec3 p0, int c) override {
-// 	// Search nearest edge
-// 	double min_d = std::numeric_limits<double>().max();
-// 	long found_e = -1;
-
-// 	Volume::Cell cell(_m, c);
-// 	int nhalfedges = cell.nhalfedges(); 
-	
-// 	for (auto &f : cell.iter_facets()) {
-// 		for (auto &h : f.iter_halfedges()) {
-			
-// 			long e = c * nhalfedges + h;
-
-// 			// Get points from current edge
-// 			vec3 p1 = h.from();
-// 			vec3 p2 = h.to();
-// 			vec3 b = (p1 + p2) * .5;
-// 			// Compute dist from picked point to bary of edge points
-// 			double d = (vec3(p0.x, p0.y, p0.z) - b).norm(); // TODO maybe use norm2 will give the same result
-
-// 			// Keep min dist
-// 			if (d < min_d) {
-// 				min_d = d;
-// 				found_e = e;
-// 			}
-// 		}
-// 	}
-
-// 	return found_e;
-// }

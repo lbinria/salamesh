@@ -41,10 +41,6 @@ struct LinesMesh : public Mesh {
 		return _lines.size();
 	}
 
-	long pickEdge(vec3 p0, int f) override {
-		return -1;
-	}
-
 	std::tuple<vec3, vec3> bbox() override {
 		vec3 min(FLT_MAX);
 		vec3 max(-FLT_MAX);
