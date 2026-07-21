@@ -1,0 +1,1 @@
+xhost +local:docker && docker compose build salamesh-ubuntu && docker compose run salamesh-ubuntu
