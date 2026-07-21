@@ -39,7 +39,7 @@ struct RenderSurface {
 
 	// Add picking functions
 	vec3 pickPoint(double x, double y);
-	PickResult readBufferPixels(double xPos, double yPos, int radius);
+	PickResult readBufferPixels(double xPos, double yPos, int radius, int element);
 
 	PickResult pick(PickElement element, double x, double y, int radius);
 
@@ -64,4 +64,7 @@ struct RenderSurface {
 	private:
 	std::shared_ptr<Camera> _camera;
 
+	// unsigned int pickPBO[2][PickElement::PICK_ELEMENT_COUNT];
+	unsigned int pickPBO[2 * PickElement::PICK_ELEMENT_COUNT];
+	int currentPBO[PickElement::PICK_ELEMENT_COUNT] = {0};
 };

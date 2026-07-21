@@ -91,6 +91,16 @@ void RenderSurface::setup() {
 
 	// Unbind FBO
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
+
+
+	// PBO
+	glGenBuffers(2 * PickElement::PICK_ELEMENT_COUNT, pickPBO);
+	for (int i = 0; i < 2 * PickElement::PICK_ELEMENT_COUNT; ++i) {
+		glBindBuffer(GL_PIXEL_PACK_BUFFER, pickPBO[i]);
+		glBufferData(GL_PIXEL_PACK_BUFFER, width * height * 4, nullptr, GL_STREAM_READ);
+	}
+
+	glBindBuffer(GL_PIXEL_PACK_BUFFER, 0);
 }
 
 void RenderSurface::bind() {
@@ -211,6 +221,7 @@ void RenderSurface::clean() {
 	glDeleteTextures(1, &texFacetID);
 	glDeleteTextures(1, &texCellID);
 	glDeleteTextures(1, &texMeshID);
+	glDeleteBuffers(2 * PickElement::PICK_ELEMENT_COUNT, pickPBO);
 }
 
 
@@ -254,13 +265,17 @@ vec3 RenderSurface::pickPoint(double x, double y) {
 	return p;
 }
 
-PickResult RenderSurface::readBufferPixels(double xPos, double yPos, int radius) {
+PickResult RenderSurface::readBufferPixels(double xPos, double yPos, int radius, int element) {
 
 	const int diameter = radius * 2 + 1;
 	PickResult pickResult;
 
-	// Allocate buffer for square that bounds our circle
-	unsigned char* pixelData = new unsigned char[diameter * diameter * 4];
+	// // Allocate buffer for square that bounds our circle
+	// unsigned char* pixelData = new unsigned char[diameter * diameter * 4];
+	int writeIndex = currentPBO[element];
+	int readIndex = 1 - currentPBO[element];
+	// WRITE: Queue async read into current PBO
+	glBindBuffer(GL_PIXEL_PACK_BUFFER, pickPBO[element * 2 + writeIndex]);
 
 	// Read pixels in square that bounds our circle
 	glReadPixels(
@@ -270,38 +285,61 @@ PickResult RenderSurface::readBufferPixels(double xPos, double yPos, int radius)
 		diameter,
 		GL_RGBA,
 		GL_UNSIGNED_BYTE,
-		pixelData
+		0
 	);
 
-	// Process each pixel in the bounding square
-	for(int y = 0; y < diameter; ++y) {
-		for(int x = 0; x < diameter; ++x) {
-			// Calculate distance from center
-			int dx = x - radius;
-			int dy = y - radius;
-			float distSq = dx * dx + dy * dy;
+	// READ: Process data from previous frame (already available)
+	glBindBuffer(GL_PIXEL_PACK_BUFFER, pickPBO[element * 2 + readIndex]);
 
-			// Only process pixels within circle
-			if(distSq <= radius * radius) {
-				int offset = (y * diameter + x) * 4;
-				unsigned char r = pixelData[offset];
-				unsigned char g = pixelData[offset + 1];
-				unsigned char b = pixelData[offset + 2];
-				unsigned char a = pixelData[offset + 3];
-				
-				long pickID = a == 0 ? -1 :
-							r +
-							g * 256 +
-							b * 256 * 256;
+	// unsigned char* pixels = (unsigned char*)glMapBufferRange(
+	// 	GL_PIXEL_PACK_BUFFER, 
+	// 	0, 
+	// 	diameter * diameter * 4,
+	// 	GL_MAP_READ_BIT | GL_MAP_UNSYNCHRONIZED_BIT
+	// );
+	
+	unsigned char* pixels = (unsigned char*)glMapBuffer(
+		GL_PIXEL_PACK_BUFFER, 
+		GL_READ_ONLY
+	);
 
-				if (pickID != -1) {
-					pickResult.set(x, y, pickID);
+	if (pixels) {
+		// Process each pixel in the bounding square
+		for(int y = 0; y < diameter; ++y) {
+			for(int x = 0; x < diameter; ++x) {
+				// Calculate distance from center
+				int dx = x - radius;
+				int dy = y - radius;
+				float distSq = dx * dx + dy * dy;
+
+				// Only process pixels within circle
+				if(distSq <= radius * radius) {
+					int offset = (y * diameter + x) * 4;
+					unsigned char r = pixels[offset];
+					unsigned char g = pixels[offset + 1];
+					unsigned char b = pixels[offset + 2];
+					unsigned char a = pixels[offset + 3];
+					
+					long pickID = a == 0 ? -1 :
+								r +
+								g * 256 +
+								b * 256 * 256;
+
+					if (pickID != -1) {
+						pickResult.set(x, y, pickID);
+					}
 				}
 			}
 		}
+
+		glUnmapBuffer(GL_PIXEL_PACK_BUFFER);
 	}
 
-	delete[] pixelData;
+	glBindBuffer(GL_PIXEL_PACK_BUFFER, 0);
+	// Rotate buffers
+	currentPBO[element] = 1 - currentPBO[element];
+
+	// delete[] pixels;
 	return pickResult;
 }
 
@@ -310,7 +348,7 @@ PickResult RenderSurface::pick(PickElement element, double x, double y, int radi
 
 	// Get convenient color attachment according to pick element
 	glReadBuffer(GL_COLOR_ATTACHMENT0 + (static_cast<int>(element) + 1));
-	auto result = readBufferPixels(x, y, radius);
+	auto result = readBufferPixels(x, y, radius, static_cast<int>(element));
 	
 	glBindFramebuffer(GL_READ_FRAMEBUFFER, 0);
 	
