@@ -268,7 +268,7 @@ vec3 RenderSurface::pickPoint(double x, double y) {
 PickResult RenderSurface::readBufferPixels(double xPos, double yPos, int radius, int element) {
 
 	const int diameter = radius * 2 + 1;
-	PickResult pickResult;
+	PickResult pickResult(diameter, diameter);
 
 	// // Allocate buffer for square that bounds our circle
 	// unsigned char* pixelData = new unsigned char[diameter * diameter * 4];
@@ -292,10 +292,10 @@ PickResult RenderSurface::readBufferPixels(double xPos, double yPos, int radius,
 	glBindBuffer(GL_PIXEL_PACK_BUFFER, pickPBO[element * 2 + readIndex]);
 
 	// unsigned char* pixels = (unsigned char*)glMapBufferRange(
-	// 	GL_PIXEL_PACK_BUFFER, 
+	// 	GL_PIXEL_PACK_BUFFER,
 	// 	0, 
 	// 	diameter * diameter * 4,
-	// 	GL_MAP_READ_BIT | GL_MAP_UNSYNCHRONIZED_BIT
+	// GL_MAP_READ_BIT | GL_MAP_UNSYNCHRONIZED_BIT
 	// );
 	
 	unsigned char* pixels = (unsigned char*)glMapBuffer(

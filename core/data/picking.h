@@ -28,21 +28,25 @@ static std::string pickElementToString(PickElement e) {
 
 struct PickResult {
 
-	void set(int x, int y, long id) {
-		ids[{x, y}] = id;
+	PickResult() : PickResult(0, 0) {}
+	PickResult(int w, int h) : _w(w), _h(h) {
+		ids.resize(w * h, -1);
 	}
 
-	long get(int x, int y, long defaultId = -1) const {
-		auto it = ids.find({x, y});
-		return (it != ids.end()) ? it->second : defaultId;
+	void set(int x, int y, long id) {
+		ids[x * _w + y] = id;
+	}
+
+	long get(int x, int y) const {
+		return ids[x * _w + y];
 	}
 
 	bool exists(int x, int y) const {
-		return ids.find({x, y}) != ids.end();
+		return ids[x * _w + y] >= 0;
 	}
 
 	void erase(int x, int y) {
-		ids.erase({x, y});
+		ids[x * _w + y] = -1;
 	}
 
 	auto begin() { return ids.begin(); }
@@ -53,16 +57,16 @@ struct PickResult {
 	long count() const{ return ids.size(); }
 
 	std::vector<long> getIds() const {
-		std::vector<long> result;
-		result.reserve(ids.size());
-		for (const auto& [coord, id] : ids) {
-			result.push_back(id);
-		}
-		return result;
+		return ids;
 	}
 
+	int getWidth() const { return _w; }
+	int getHeight() const { return _h; }
+
 	private:
-		std::map<std::pair<int, int>, long> ids;
+		// std::map<std::pair<int, int>, long> ids;
+		std::vector<long> ids;
+		int _w, _h;
 };
 
 struct PickState {
@@ -78,49 +82,43 @@ struct PickState {
 	}
 
 	PickResult getResult(long meshId, PickElement e) {
-		if (_cache.contains({meshId, e}))
-			return _cache.at({meshId, e});
 
-		PickResult res;
-		for (auto &[xy, id] : _results[PickElement::PICK_MESH]) {
-			auto [x, y] = xy;
-			
-			if (id != meshId)
-				continue;
+		auto meshResult = _results[PickElement::PICK_MESH];
+		auto ids = meshResult.getIds();
 
-			auto result = _results[e];
+		PickResult res(meshResult.getWidth(), meshResult.getHeight());
 
-			if (!result.exists(x, y))
-				continue;
+		for (int x = 0; x < meshResult.getWidth(); ++x) {
+			for (int y = 0; y < meshResult.getHeight(); ++y) {
+				int i = x * meshResult.getWidth() + y;
+				int id = ids[i];
 
-			res.set(x, y, result.get(x, y));
+				if (id != meshId)
+					continue;
+				
+				auto result = _results[e];
+				if (!result.exists(x, y))
+					continue;
+				
+				res.set(x, y, result.get(x, y));
+			}
 		}
-
-		_cache[{meshId, e}] = res;
 
 		return res;
 	}
 
 	std::vector<long> getIds(PickElement e) {
-		std::set<long> uniqueIds;
-		auto result = getResult(e);
-		
-		for (const auto& [coord, id] : result) {
-			uniqueIds.insert(id);
-		}
-		
-		return std::vector<long>(uniqueIds.begin(), uniqueIds.end());
+		auto ids = getResult(e).getIds();
+		std::set<long> id_set(ids.begin(), ids.end());
+		id_set.erase(-1L);
+		return std::vector<long>(id_set.begin(), id_set.end());
 	}
 
 	std::vector<long> getIds(long meshId, PickElement e) {
-		std::set<long> uniqueIds;
-		auto result = getResult(meshId, e);
-
-		for (const auto& [coord, id] : result) {
-			uniqueIds.insert(id);
-		}
-		
-		return std::vector<long>(uniqueIds.begin(), uniqueIds.end());
+		auto ids = getResult(meshId, e).getIds();
+		std::set<long> id_set(ids.begin(), ids.end());
+		id_set.erase(-1L);
+		return std::vector<long>(id_set.begin(), id_set.end());
 	}
 
 	bool any(PickElement e) {
@@ -142,6 +140,4 @@ struct PickState {
 
 	private:
 		std::array<PickResult, PickElement::PICK_ELEMENT_COUNT> _results;
-		// Cache picking by mesh results
-		std::map<std::pair<long, PickElement>, PickResult> _cache;
 };
