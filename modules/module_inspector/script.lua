@@ -41,7 +41,6 @@ function draw_gui()
 			for element = 0, PickElement.PICK_ELEMENT_COUNT - 2 do 
 				local ids = pick_state:get_ids(mesh_id, element)
 				imgui.Text(tostring(#ids) .. " hovered " .. pick_element_to_string(element) .. ": {" .. format_str_ids(ids) .. "}")
-				
 			end
 
 			imgui.Separator()

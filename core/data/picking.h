@@ -64,7 +64,6 @@ struct PickResult {
 	int getHeight() const { return _h; }
 
 	private:
-		// std::map<std::pair<int, int>, long> ids;
 		std::vector<long> ids;
 		int _w, _h;
 };
@@ -77,13 +76,13 @@ struct PickState {
 
 	}
 
-	PickResult getResult(PickElement e) {
+	PickResult& getResult(PickElement e) {
 		return _results[e];
 	}
 
 	PickResult getResult(long meshId, PickElement e) {
 
-		auto meshResult = _results[PickElement::PICK_MESH];
+		auto &meshResult = _results[PickElement::PICK_MESH];
 		auto ids = meshResult.getIds();
 
 		PickResult res(meshResult.getWidth(), meshResult.getHeight());
@@ -96,7 +95,7 @@ struct PickState {
 				if (id != meshId)
 					continue;
 				
-				auto result = _results[e];
+				auto &result = _results[e];
 				if (!result.exists(x, y))
 					continue;
 				
@@ -120,6 +119,19 @@ struct PickState {
 		id_set.erase(-1L);
 		return std::vector<long>(id_set.begin(), id_set.end());
 	}
+
+	// std::vector<long> getIds(long meshId, PickElement e) {
+	// 	auto ids = getResult(meshId, e).getIds();
+	// 	// std::sort(ids.begin(), ids.end());
+	// 	// auto it = std::unique(ids.begin(), ids.end());
+	// 	// ids.erase(it, ids.end());
+	// 	// it = ids.begin();
+	// 	// if (*it == -1) {
+	// 	// 	ids.erase(it);
+	// 	// }
+	// 	// return ids;
+	// 	return ids;
+	// }
 
 	bool any(PickElement e) {
 		return count(e) > 0;

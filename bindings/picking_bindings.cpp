@@ -25,7 +25,7 @@ namespace bindings {
 
 		pickStateType = lua.new_usertype<PickState>("PickState",
 			"get_result", sol::overload(
-				sol::resolve<PickResult(PickElement)>(&PickState::getResult),
+				sol::resolve<PickResult&(PickElement)>(&PickState::getResult),
 				sol::resolve<PickResult(long, PickElement)>(&PickState::getResult)
 			),
 			"get_ids", sol::overload(
