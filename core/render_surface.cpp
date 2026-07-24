@@ -158,6 +158,14 @@ void RenderSurface::resize(int w, int h) {
 
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
+	// PBO resize
+	for (int i = 0; i < 2 * PickElement::PICK_ELEMENT_COUNT; ++i) {
+		glBindBuffer(GL_PIXEL_PACK_BUFFER, pickPBO[i]);
+		glBufferData(GL_PIXEL_PACK_BUFFER, width * height * 4, nullptr, GL_STREAM_READ);
+	}
+
+	glBindBuffer(GL_PIXEL_PACK_BUFFER, 0);
+
 	_camera->updateScreenSize(width, height);
 }
 
@@ -343,12 +351,85 @@ PickResult RenderSurface::readBufferPixels(double xPos, double yPos, int radius,
 	return pickResult;
 }
 
+PickResult RenderSurface::readBufferPixels(double xPos, double yPos, int width, int height, int element) {
+
+	PickResult pickResult(width, height);
+
+	// Allocate buffer for square
+	int writeIndex = currentPBO[element];
+	int readIndex = 1 - currentPBO[element];
+	// WRITE: Queue async read into current PBO
+	glBindBuffer(GL_PIXEL_PACK_BUFFER, pickPBO[element * 2 + writeIndex]);
+
+	// Read pixels in square
+	glReadPixels(
+		xPos,
+		height - yPos,
+		width,
+		height,
+		GL_RGBA,
+		GL_UNSIGNED_BYTE,
+		0
+	);
+
+	// READ: Process data from previous frame (already available)
+	glBindBuffer(GL_PIXEL_PACK_BUFFER, pickPBO[element * 2 + readIndex]);
+	
+	unsigned char* pixels = (unsigned char*)glMapBuffer(
+		GL_PIXEL_PACK_BUFFER, 
+		GL_READ_ONLY
+	);
+
+	if (pixels) {
+		// Process each pixel in the bounding square
+		for(int y = 0; y < height; ++y) {
+			for(int x = 0; x < width; ++x) {
+				int offset = (y * width + x) * 4;
+				unsigned char r = pixels[offset];
+				unsigned char g = pixels[offset + 1];
+				unsigned char b = pixels[offset + 2];
+				unsigned char a = pixels[offset + 3];
+				
+				long pickID = a == 0 ? -1 :
+							r +
+							g * 256 +
+							b * 256 * 256;
+
+				if (pickID != -1) {
+					pickResult.set(x, y, pickID);
+				}
+			}
+		}
+
+		glUnmapBuffer(GL_PIXEL_PACK_BUFFER);
+	}
+
+	glBindBuffer(GL_PIXEL_PACK_BUFFER, 0);
+	// Rotate buffers
+	currentPBO[element] = 1 - currentPBO[element];
+
+	// delete[] pixels;
+	return pickResult;
+}
+
 PickResult RenderSurface::pick(PickElement element, double x, double y, int radius) {
 	glBindFramebuffer(GL_READ_FRAMEBUFFER, fbo);
 
 	// Get convenient color attachment according to pick element
 	glReadBuffer(GL_COLOR_ATTACHMENT0 + (static_cast<int>(element) + 1));
 	auto result = readBufferPixels(x, y, radius, static_cast<int>(element));
+	
+	glBindFramebuffer(GL_READ_FRAMEBUFFER, 0);
+	
+	return result;
+}
+
+PickResult RenderSurface::pick(PickElement element, double x, double y, int width, int height) {
+	glBindFramebuffer(GL_READ_FRAMEBUFFER, fbo);
+
+	// Get convenient color attachment according to pick element
+	glReadBuffer(GL_COLOR_ATTACHMENT0 + (static_cast<int>(element) + 1));
+	auto result = readBufferPixels(x, y, width, height, static_cast<int>(element));
 	
 	glBindFramebuffer(GL_READ_FRAMEBUFFER, 0);
 	

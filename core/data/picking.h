@@ -56,8 +56,14 @@ struct PickResult {
 
 	long count() const{ return ids.size(); }
 
-	std::vector<long> getIds() const {
+	std::vector<long> getIndexedIds() const {
 		return ids;
+	}
+
+	std::vector<long> getIds() const {
+		std::set<long> id_set(ids.begin(), ids.end());
+		id_set.erase(-1L);
+		return std::vector<long>(id_set.begin(), id_set.end());
 	}
 
 	int getWidth() const { return _w; }
@@ -83,7 +89,7 @@ struct PickState {
 	PickResult getResult(long meshId, PickElement e) {
 
 		auto &meshResult = _results[PickElement::PICK_MESH];
-		auto ids = meshResult.getIds();
+		auto ids = meshResult.getIndexedIds();
 
 		PickResult res(meshResult.getWidth(), meshResult.getHeight());
 
@@ -107,14 +113,14 @@ struct PickState {
 	}
 
 	std::vector<long> getIds(PickElement e) {
-		auto ids = getResult(e).getIds();
+		auto ids = getResult(e).getIndexedIds();
 		std::set<long> id_set(ids.begin(), ids.end());
 		id_set.erase(-1L);
 		return std::vector<long>(id_set.begin(), id_set.end());
 	}
 
 	std::vector<long> getIds(long meshId, PickElement e) {
-		auto ids = getResult(meshId, e).getIds();
+		auto ids = getResult(meshId, e).getIndexedIds();
 		std::set<long> id_set(ids.begin(), ids.end());
 		id_set.erase(-1L);
 		return std::vector<long>(id_set.begin(), id_set.end());

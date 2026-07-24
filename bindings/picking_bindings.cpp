@@ -20,6 +20,7 @@ namespace bindings {
 			"get", &PickResult::get,
 			"exists", &PickResult::exists,
 			"ids", sol::readonly_property(&PickResult::getIds),
+			"indexed_ids", sol::readonly_property(&PickResult::getIndexedIds),
 			"count", sol::readonly_property(&PickResult::count)
 		);
 

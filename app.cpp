@@ -1175,6 +1175,19 @@ void App::mouseScroll(double xoffset, double yoffset) {
 
 void App::mouseButton(int button, int action, int mods) {
 
+	if (button == 1 && action == 1) {
+		auto &rs = scene.getDefaultRenderSurface();
+		// auto res = rs.pick(PickElement::PICK_FACET, 0, 0, rs.width, rs.height);
+		auto res = rs.pick(PickElement::PICK_FACET, st.mouse.pos.x, st.mouse.pos.y, st.mouse.getCursorRadius());
+		auto ids = res.getIds();
+		
+		std::cout << "Found " << ids.size() << " vertices:" << std::endl;
+		for (auto id: ids) {
+			std::cout << id << ", ";
+		}
+		std::cout << std::endl;
+	}
+
 	for (auto &script : scripts)
 		script->mouseButton(button, action, mods);
 }
@@ -1182,7 +1195,8 @@ void App::mouseButton(int button, int action, int mods) {
 void App::mouseMove(double x, double y) {
 
 	// TODO important remove just for test
-	st.pick = scene.getDefaultRenderSurface().getPickState(x, y, st.mouse.getCursorRadius());
+	// st.pick = scene.getDefaultRenderSurface().getPickState(x, y, st.mouse.getCursorRadius());
+
 
 	for (auto &script : scripts) {
 		script->mouseMove(x, y);
