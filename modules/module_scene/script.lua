@@ -466,6 +466,7 @@ function draw_model_properties(model, k, view)
 		if imgui.Button("Apply to all##Apply_all") then 
 			apply_to_all(model, false)
 		end
+		imgui.SameLine()
 		if imgui.Button("Apply to visibles##Apply_visibles") then 
 			apply_to_all(model, true)
 		end
@@ -520,12 +521,12 @@ function draw_gui()
 				end
 
 
-				local c = vec3{1, 1, 1}
-				if app.scene.selected_model == model.name then 
-					c = vec3{1, 0, 0}
-				end
 				imgui.SameLine()
-				imgui.TextColored(c, 1, model.name)
+				if app.scene.selected_model == model.name then 
+					imgui.TextColored(1, 1, 1, 1, model.name)
+				else 
+					imgui.TextColored(0.5, 0.5, 0.6, 1, model.name)
+				end
 
 				imgui.SameLine()
 				if (imgui.Button("View##" .. "btn_view_" .. model.name)) then

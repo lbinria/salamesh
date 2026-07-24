@@ -30,7 +30,7 @@ void Scene::init() {
 
 	// Init default render surface
 	auto renderSurface = std::make_shared<RenderSurface>(1024, 768);
-	renderSurface->setBackgroundColor({0.05, 0.1, 0.15});
+	renderSurface->setBackgroundColor({0.16, 0.17, 0.18});
 	renderSurface->setup(); 
 	renderSurfaces["default"] = std::move(renderSurface);
 
