@@ -746,13 +746,20 @@ function draw_gui()
 				app.scene.default_render_surface.background_color = new_background_color
 			end
 
-			-- local all_visible = true
-			-- for k, model in pairs(app.scene.models) do
-			-- 	if not model.visible then 
-			-- 		all_visible = false 
-			-- 		break 
-			-- 	end
-			-- end
+			local all_visible = true
+			for k, model in pairs(app.scene.models) do
+				if not model.visible then 
+					all_visible = false 
+					break 
+				end
+			end
+
+			local sel_all_visible, new_all_visible = imgui.Checkbox("All visibles##all_visibility", all_visible)
+			if (sel_all_visible) then 
+				for k, model in pairs(app.scene.models) do
+					model.visible = new_all_visible
+				end
+			end
 
 			for _, model in ipairs(app.scene.models) do
 				
