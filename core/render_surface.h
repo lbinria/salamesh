@@ -57,6 +57,10 @@ struct RenderSurface {
 		_camera->updateScreenSize(width, height);
 	}
 
+	sl::algebra::vec3 getBackgroundColor() const {
+		return backgroundColor;
+	}
+
 	void setBackgroundColor(sl::algebra::vec3 color) {
 		backgroundColor = color;
 	}

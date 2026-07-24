@@ -22,7 +22,7 @@ end
 
 function draw_gui() 
 
-	imgui.Begin("Inspector II")
+	imgui.Begin("Inspector")
 
 		local pick_state = app.input_state.pick
 
