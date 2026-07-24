@@ -61,6 +61,13 @@ struct MeshStyleParams : MaterialParams {
 		j["corner_visible"] = isCornerVisible;
 	}
 
+	void setValues(MaterialParams &params) override {
+		set("color", params.get("color"));
+		set("size", params.get("size"));
+		set("shrink", params.get("shrink"));
+		set("corner_visible", params.get("corner_visible"));
+	}
+
 
 	sl::algebra::vec3 color{0.71f, 0.71f, 0.71f};
 	float meshSize = 0.f;

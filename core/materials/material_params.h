@@ -21,7 +21,10 @@ struct MaterialParams {
 	virtual void setIndex(const std::string name, int index, ParamValue value) = 0;
 
 
+
 	virtual void loadState(json &j) = 0;
 	virtual void saveState(json &j) const = 0;
+
+	virtual void setValues(MaterialParams &params) = 0;
 
 };

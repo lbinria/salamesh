@@ -45,6 +45,12 @@ struct PointStyleParams : MaterialParams {
 		j["pointColor"] = json::array({color.x, color.y, color.z});
 	}
 
+	void setValues(MaterialParams &params) override {
+		set("size", params.get("size"));
+		set("color", params.get("color"));
+	}
+
+
 	float size = 4.f;
 	sl::algebra::vec3 color{0.23f, 0.85f, 0.66f};
 };

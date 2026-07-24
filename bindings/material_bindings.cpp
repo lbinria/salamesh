@@ -4,6 +4,7 @@ namespace bindings {
 
 	void MaterialBindings::loadBindings(sol::state &lua, IApp &app) {
 		type = lua.new_usertype<Material>("Material",
+			"set", &Material::set,
 			"params", sol::readonly_property(
 				[](Material& self) {
 					return self.getParams();

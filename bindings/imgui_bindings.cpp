@@ -62,6 +62,9 @@ namespace bindings {
 		));
 		
 		imgui.set_function("TextColored", sol::overload(
+			[](sl::algebra::vec3 c, const float a, const char* text) {
+				ImGui::TextColored(ImVec4(c.x, c.y, c.z, a), "%s", text);
+			},
 			[](const float r, const float g, const float b, const float a, const char* text) {
 				ImGui::TextColored(ImVec4(r, g, b, a), "%s", text);
 			},

@@ -69,6 +69,14 @@ struct EdgeStyleParams : MaterialParams {
 		j["outside_color"] = json::array({outsideColor.x, outsideColor.y, outsideColor.z});
 	}
 
+	void setValues(MaterialParams &params) override {
+		set("thickness", params.get("thickness"));
+		set("spacing", params.get("espacingd"));
+		set("padding", params.get("padding"));
+		set("inside_color", params.get("inside_color"));
+		set("outside_color", params.get("outside_color"));
+	}
+
 	float size = 2.f;
 	float spacing = 0.f;
 	float padding = 0.f;

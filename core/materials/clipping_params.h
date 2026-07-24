@@ -72,6 +72,14 @@ struct ClippingParams : MaterialParams {
 		j["invert"] = invert;
 	}
 
+	void setValues(MaterialParams &params) override {
+		set("mode", params.get("mode"));
+		set("enabled", params.get("enabled"));
+		set("point", params.get("point"));
+		set("normal", params.get("normal"));
+		set("invert", params.get("invert"));
+	}
+
 	ClippingMode mode = ClippingMode::STD;
 	bool enabled = false;
 	sl::algebra::vec3 point{0.,0.,0.};

@@ -50,18 +50,17 @@ local selected_attributes = {}
 
 function draw_model_properties(model, k, view)
 	local p = model.position
-	-- imgui.Text("world position: (%.4f, %.4f, %.4f)", model_pos.x, model_pos.y, model_pos.z);
-	-- imgui.Text("local position: (%.4f, %.4f, %.4f)", p.x, p.y, p.z);
-	-- TODO using ':' instead of '.' for to_string call... for sending self...
-	imgui.Text("Position: " .. p:to_string());
-	imgui.Text("Center: " .. model.mesh.center:to_string());
-	imgui.Text("Radius: " .. string.format("%.4f", model.mesh.radius));
 
-	-- imgui.Text("Bounding box: " .. model.bbox[1]:to_string());
-	imgui.Text("Number of vertices: " .. tostring(model.mesh.nverts));
-	imgui.Text("Number of facets: " .. tostring(model.mesh.nfacets));
+	if (imgui.CollapsingHeader("Infos##" .. k .. "_infos")) then 
 
+		imgui.Text("Position: " .. p:to_string());
+		imgui.Text("Center: " .. model.mesh.center:to_string());
+		imgui.Text("Radius: " .. string.format("%.4f", model.mesh.radius));
+		-- imgui.Text("Bounding box: " .. model.bbox[1]:to_string());
+		imgui.Text("Number of vertices: " .. tostring(model.mesh.nverts));
+		imgui.Text("Number of facets: " .. tostring(model.mesh.nfacets));
 
+	end
 	-- if (imgui.CollapsingHeader("Properties##" .. k .. "_properties")) then 
 
 
@@ -462,272 +461,27 @@ function draw_model_properties(model, k, view)
 			)
 		end
 
-		-- if (imgui.CollapsingHeader("Style##" .. k .. "_properties_style")) then 
+		imgui.Separator()
 
-		-- 	if model.mesh then
+		if imgui.Button("Apply to all##Apply_all") then 
+			apply_to_all(model, false)
+		end
+		if imgui.Button("Apply to visibles##Apply_visibles") then 
+			apply_to_all(model, true)
+		end
+end
 
-		-- 		local sel_mesh_visible, new_mesh_visible = imgui.Checkbox("Show mesh", model.mesh.visible)
-		-- 		if (sel_mesh_visible) then 
-		-- 			print("Change mesh visibility: " .. tostring(new_mesh_visible))
-		-- 			model.mesh.visible = new_mesh_visible
-		-- 		end
-
-		-- 		local sel_color, new_color = imgui.ColorEdit3("Color", model.mesh["style"].color)
-		-- 		if (sel_color) then 
-		-- 			print("Change color: " .. tostring(new_color))
-		-- 			model.mesh["style"].color = new_color
-		-- 		end
-
-		-- 		local sel_slider_mesh_size, new_mesh_size = imgui.SliderFloat("Mesh size", model.mesh["style"].size, 0, 20)
-		-- 		if (sel_slider_mesh_size) then 
-		-- 			print("Change mesh size: " .. tostring(new_mesh_size))
-		-- 			model.mesh["style"].size = new_mesh_size
-		-- 		end
-
-		-- 		local sel_slider_mesh_shrink, new_mesh_shrink = imgui.SliderFloat("Mesh shrink", model.mesh["style"].shrink, 0, 1)
-		-- 		if (sel_slider_mesh_shrink) then 
-		-- 			print("Change mesh shrink: " .. tostring(new_mesh_shrink))
-		-- 			model.mesh["style"].shrink = new_mesh_shrink
-		-- 		end
-
-		-- 		local sel_corner_visible, new_corner_visible = imgui.Checkbox("Show corners", model.mesh["style"].corner_visible)
-		-- 		if (sel_corner_visible) then 
-		-- 			print("Change corner visibility: " .. tostring(new_corner_visible))
-		-- 			model.mesh["style"].corner_visible = new_corner_visible
-		-- 		end
-
-		-- 	end
-
-		-- 	local sel_point_visible, new_point_visible = imgui.Checkbox("Show points", model.points.visible)
-		-- 	if (sel_point_visible) then 
-		-- 		print("Change point visibility: " .. tostring(new_point_visible))
-		-- 		model.points.visible = new_point_visible
-		-- 	end
-
-		-- 	local sel_point_size, new_point_size = imgui.SliderFloat("Point size", model.points["style"]["size"], 0, 50)
-		-- 	if (sel_point_size) then 
-		-- 		print("Change point size: " .. tostring(new_point_size))
-		-- 		model.points["style"]["size"] = new_point_size
-		-- 	end
-
-		-- 	local sel_point_color, new_point_color = imgui.ColorEdit3("Point color", model.points["style"]["color"])
-		-- 	if (sel_point_color) then 
-		-- 		-- print("Change point color: " .. tostring(new_point_color))
-		-- 		model.points["style"]["color"] = new_point_color
-		-- 	end
-
-		-- 	if model.edges then 
-
-		-- 		local sel_edge_visible, new_edge_visible = imgui.Checkbox("Show edges", model.edges.visible)
-		-- 		if (sel_edge_visible) then 
-		-- 			print("Change edge visibility: " .. tostring(new_edge_visible))
-		-- 			model.edges.visible = new_edge_visible
-		-- 		end
-
-		-- 		local sel_edge_thickness, new_edge_thickness = imgui.SliderFloat("Edge thickness", model.edges["style"].thickness, 0, 50)
-		-- 		if (sel_edge_thickness) then 
-		-- 			print("Change edge thickness: " .. tostring(new_edge_thickness))
-		-- 			model.edges["style"].thickness = new_edge_thickness
-		-- 		end
-
-		-- 		local sel_edge_spacing, new_edge_spacing = imgui.SliderFloat("Edge spacing", model.edges["style"].spacing, 0, 1)
-		-- 		if (sel_edge_spacing) then 
-		-- 			print("Change edge spacing: " .. tostring(new_edge_spacing))
-		-- 			model.edges["style"].spacing = new_edge_spacing
-		-- 		end
-
-		-- 		local sel_edge_padding, new_edge_padding = imgui.SliderFloat("Edge padding", model.edges["style"].padding, 0, 1)
-		-- 		if (sel_edge_padding) then 
-		-- 			print("Change edge padding: " .. tostring(new_edge_padding))
-		-- 			model.edges["style"].padding = new_edge_padding
-		-- 		end
-
-		-- 		local sel_edge_inside_color, new_edge_inside_color = imgui.ColorEdit3("Edge inside color", model.edges["style"].inside_color)
-		-- 		if (sel_edge_inside_color) then 
-		-- 			print("Change edge inside color: " .. tostring(new_edge_inside_color))
-		-- 			model.edges["style"].inside_color = new_edge_inside_color
-		-- 		end
-
-		-- 		local sel_edge_outside_color, new_edge_outside_color = imgui.ColorEdit3("Edge outside color", model.edges["style"].outside_color)
-		-- 		if (sel_edge_outside_color) then 
-		-- 			print("Change edge outside color: " .. tostring(new_edge_outside_color))
-		-- 			model.edges["style"].outside_color = new_edge_outside_color
-		-- 		end
-		-- 	end
-
-		-- end
-
-		-- if (imgui.CollapsingHeader("Attributes##" .. k .. "_properties_attributes")) then 
-
-		-- 	imgui.Text("Colormap 0")
-
-		-- 	local colormaps = app.scene.colormaps
-		-- 	local items = {}
-		-- 	for i = 1, #colormaps do 
-		-- 		table.insert(items, colormaps[i].name)
-		-- 	end
-
-		-- 	local colormap_size = imgui.ImVec2(320, 35)
-
-		-- 	if (imgui.BeginCombo("##combo_colormaps0_selection", items[model.selected_colormap0])) then
-		-- 		-- Display items in the popup
-		-- 		for i = 1, #items do
-		-- 			local is_selected = model.selected_colormap0 == i
-		-- 			-- Create a unique ID for each item to prevent conflicts
-		-- 			imgui.PushID(i)
-
-		-- 			-- Calculate total width including spacing
-		-- 			-- local total_width = imgui.CalcTextSize(items[i]).x + colormap_size.x + 10.0
-
-		-- 			-- Display the item with both text and image
-		-- 			if (imgui.Selectable(items[i], is_selected)) then
-		-- 				model.selected_colormap0 = i
-		-- 			end
-
-		-- 			-- Display the image after the text
-		-- 			imgui.Image(app.scene.colormaps[i].tex, colormap_size)
-
-		-- 			imgui.PopID()
-		-- 		end
-
-		-- 		imgui.EndCombo()
-		-- 	end
-
-		-- 	local selected_cm = app.scene.colormaps[model.selected_colormap0]
-		-- 	if selected_cm.height > 1 then 
-		-- 		local h = selected_cm.height / selected_cm.width * 320
-		-- 		colormap_size = imgui.ImVec2(320, h)
-		-- 	end
-
-		-- 	imgui.Image(
-		-- 		selected_cm.tex, 
-		-- 		colormap_size
-		-- 	)
-
-		-- 	imgui.Text("Colormap 1")
-
-		-- 	local colormaps = app.scene.colormaps
-		-- 	local items = {}
-		-- 	for i = 1, #colormaps do 
-		-- 		table.insert(items, colormaps[i].name)
-		-- 	end
-		-- 	local colormap_size = imgui.ImVec2(320, 35)
-
-		-- 	if (imgui.BeginCombo("##combo_colormaps1_selection", items[model.selected_colormap1])) then
-		-- 		-- Display items in the popup
-		-- 		for i = 1, #items do
-		-- 			local is_selected = model.selected_colormap1 == i
-		-- 			-- Create a unique ID for each item to prevent conflicts
-		-- 			imgui.PushID(i)
-
-		-- 			-- Calculate total width including spacing
-		-- 			-- local total_width = imgui.CalcTextSize(items[i]).x + colormap_size.x + 10.0
-
-		-- 			-- Display the item with both text and image
-		-- 			if (imgui.Selectable(items[i], is_selected)) then
-		-- 				model.selected_colormap1 = i
-		-- 			end
-
-		-- 			-- Display the image after the text
-		-- 			imgui.Image(app.scene.colormaps[i].tex, colormap_size)
-
-		-- 			imgui.PopID()
-		-- 		end
-
-		-- 		imgui.EndCombo()
-		-- 	end
-
-		-- 	local selected_cm = app.scene.colormaps[model.selected_colormap1]
-		-- 	if selected_cm.height > 1 then 
-		-- 		local h = selected_cm.height / selected_cm.width * 320
-		-- 		colormap_size = imgui.ImVec2(320, h)
-		-- 	end
-
-		-- 	imgui.Image(
-		-- 		selected_cm.tex, 
-		-- 		colormap_size
-		-- 	)
-
-		-- 	imgui.Text("Attribute 0")
-
-		-- 	if (#model.attrs > 0) then
-		-- 		-- local attr_name, attr_element = model.attrs[1]
-		-- 		local attr_name = model.attrs[1].name
-		-- 		local attr_element = model.attrs[1].kind
-		-- 		-- local attr_name, attr_element = model.get_attr(1);
-		-- 		-- print("first attr:" .. attr_name)
-		-- 		-- print("second attr:" .. attr_element)
-				
-		-- 		local selName = "None" 
-		-- 		if model.selected_attr0 > 0 then 
-		-- 			selName = model.attrs[model.selected_attr0].name
-		-- 		end
-
-		-- 		if (imgui.BeginCombo("##combo_attribute0_selection", selName)) then
-
-		-- 			local is_selected = model.selected_attr0 == 0
-		-- 			if (imgui.Selectable("None", is_selected)) then
-		-- 				model.selected_attr0 = 0
-		-- 			end
-
-		-- 			for n = 1, #model.attrs do
-		-- 				local is_selected = n == model.selected_attr0
-		-- 				local label = model.attrs[n].name 
-		-- 				.. " (" .. element_kind_to_string(model.attrs[n].kind) .. ")" 
-		-- 				.. " (" .. element_type_to_string(model.attrs[n].type) .. ")"
-		-- 				.. " (" .. tostring(model.attrs[n].dim) .. ")"
-
-		-- 				if (imgui.Selectable(label, is_selected)) then
-		-- 					model.selected_attr0 = n
-
-		-- 					-- print("set attr: " .. model.attrs[n][1] .. ":" .. model.attrs[n][2] .. ":" .. model.attrs[n][3])
-		-- 				end
-		-- 			end
-		-- 			imgui.EndCombo()
-		-- 		end
-		-- 	end
-
-		-- 	imgui.Text("Attribute 1")
-
-		-- 	if (#model.attrs > 0) then
-		-- 		-- local attr_name, attr_element = model.attrs[1]
-		-- 		local attr_name = model.attrs[1].name
-		-- 		local attr_element = model.attrs[1].kind
-		-- 		-- local attr_name, attr_element = model.get_attr(1);
-		-- 		-- print("first attr:" .. attr_name)
-		-- 		-- print("second attr:" .. attr_element)
-
-		-- 		local selName = "None" 
-		-- 		if model.selected_attr1 > 0 then 
-		-- 			selName = model.attrs[model.selected_attr1].name
-		-- 		end
-
-		-- 		if (imgui.BeginCombo("##combo_attribute1_selection", selName)) then
-
-		-- 			local is_selected = model.selected_attr1 == 0
-		-- 			if (imgui.Selectable("None", is_selected)) then
-		-- 				model.selected_attr1 = 0
-		-- 			end
-
-		-- 			for n = 1, #model.attrs do
-		-- 				local is_selected = n == model.selected_attr1
-		-- 				local label = model.attrs[n].name 
-		-- 				.. " (" .. element_kind_to_string(model.attrs[n].kind) .. ")" 
-		-- 				.. " (" .. element_type_to_string(model.attrs[n].type) .. ")"
-		-- 				.. " (" .. tostring(model.attrs[n].dim) .. ")"
-
-		-- 				if (imgui.Selectable(label, is_selected)) then
-		-- 					model.selected_attr1 = n
-
-		-- 					-- print("set attr: " .. model.attrs[n][1] .. ":" .. model.attrs[n][2] .. ":" .. model.attrs[n][3])
-		-- 				end
-		-- 			end
-		-- 			imgui.EndCombo()
-		-- 		end
-		-- 	end
-
-		-- end
-	-- end
+function apply_to_all(model, only_visible)
+	for cur_model_name, cur_model in pairs(app.scene.models) do
+		if not(only_visible) or only_visible and cur_model.visible then
+			for mat_name, mat in pairs(model.materials) do 
+				local cur_mat = cur_model:get_material(mat_name)
+				if cur_mat then 
+					cur_mat:set(mat)
+				end
+			end
+		end
+	end
 end
 
 function layout_gui() 
@@ -740,11 +494,6 @@ function draw_gui()
 	if (imgui.BeginTabBar("Scene Tabs")) then 
 
 		if (imgui.BeginTabItem("Flat view")) then
-
-			local sel_background_color, new_background_color = imgui.ColorEdit3("Background Color", app.scene.default_render_surface.background_color)
-			if (sel_background_color) then 
-				app.scene.default_render_surface.background_color = new_background_color
-			end
 
 			local all_visible = true
 			for k, model in pairs(app.scene.models) do
@@ -762,19 +511,33 @@ function draw_gui()
 			end
 
 			for _, model in ipairs(app.scene.models) do
-				
-				local sel_visible, new_visible = imgui.Checkbox(model.name .. "##" .. model.name, model.visible)
+
+
+
+				local sel_visible, new_visible = imgui.Checkbox("##" .. model.name, model.visible)
 				if (sel_visible) then 
 					model.visible = new_visible
 				end
 
+
+				local c = vec3{1, 1, 1}
+				if app.scene.selected_model == model.name then 
+					c = vec3{1, 0, 0}
+				end
+				imgui.SameLine()
+				imgui.TextColored(c, 1, model.name)
+
 				imgui.SameLine()
 				if (imgui.Button("View##" .. "btn_view_" .. model.name)) then
+					app.scene.current_camera:look_at_box(model.mesh.bbox)
+				end
+				imgui.SameLine()
+				if (imgui.Button("Select##" .. "btn_select_" .. model.name)) then
 					app.scene.selected_model = model.name
-					-- Set camera position !
-					-- local model_pos = model.center
-					-- app.scene.current_camera.position = vec3.new(model_pos.x, model_pos.y, model_pos.z - model.radius * 2.);
-					-- app.scene.current_camera.look_at = vec3.new(model_pos.x, model_pos.y, model_pos.z);
+				end
+				imgui.SameLine()
+				if (imgui.Button("Select and view##" .. "btn_select_and_view_" .. model.name)) then
+					app.scene.selected_model = model.name
 					app.scene.current_camera:look_at_box(model.mesh.bbox)
 				end
 				
@@ -856,6 +619,16 @@ function draw_gui()
 			imgui.Text("Position: " .. p:to_string());
 			imgui.Text("Look at: " .. camera.look_at:to_string());
 
+			imgui.EndTabItem()
+		end
+
+		if (imgui.BeginTabItem("Misc")) then
+
+			local sel_background_color, new_background_color = imgui.ColorEdit3("Background Color", app.scene.default_render_surface.background_color)
+			if (sel_background_color) then 
+				app.scene.default_render_surface.background_color = new_background_color
+			end
+			
 			imgui.EndTabItem()
 		end
 

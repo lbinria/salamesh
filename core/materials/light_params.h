@@ -37,6 +37,10 @@ struct LightParams : MaterialParams {
 		j["enabled"] = enabled;
 	}
 
+	void setValues(MaterialParams &params) override {
+		set("enabled", params.get("enabled"));
+	}
+
 	bool enabled = true;
 
 };

@@ -92,12 +92,20 @@ struct LayersParams : MaterialParams {
 		layerElement[static_cast<int>(layer)] = element;
 	}
 
+	bool getActivatedLayer(Layer layer, ElementKind kind) const {
+		return activatedLayers[static_cast<int>(layer)][static_cast<int>(kind)];
+	}
+
+	void setActivatedLayer(Layer layer, ElementKind kind, bool activated) {
+		activatedLayers[static_cast<int>(layer)][static_cast<int>(kind)] = activated;
+	}
+
 	void activateLayer(Layer layer, ElementKind kind) {
-		activatedLayers[static_cast<int>(layer)][static_cast<int>(kind)] = true;
+		setActivatedLayer(layer, kind, true);
 	}
 
 	void deactivateLayer(Layer layer, ElementKind kind) {
-		activatedLayers[static_cast<int>(layer)][static_cast<int>(kind)] = false;
+		setActivatedLayer(layer, kind, false);
 	}
 
 	bool isActivatedLayer(Layer layer, ElementKind kind) const {
@@ -180,10 +188,6 @@ struct LayersParams : MaterialParams {
 		}
 	}
 
-	// void setColormapTexture(int i, Colormap &colormap) {
-	// 	texColormaps[i] = colormap.tex;
-	// }
-
 	Colormap getColormap(ColormapLayer layer) const {
 		return colormaps[static_cast<int>(layer)];
 	}
@@ -220,6 +224,24 @@ struct LayersParams : MaterialParams {
 		// j["colormaps"]
 	}
 
+	void setValues(MaterialParams &params) override {
+		for (int i = 0; i < 5; ++i) {
+			setIndex("n_dims", i, params.getIndex("n_dims", i));
+			setIndex("range", i, params.getIndex("range", i));
+			setIndex("layer_element", i, params.getIndex("layer_element", i));
+
+			for (int k = 0; k < 7; ++k) {
+				Layer layer = static_cast<Layer>(i);
+				ElementKind kind =  static_cast<ElementKind>(k);
+				setActivatedLayer(layer, kind, getActivatedLayer(layer, kind));
+			}
+				
+		}
+
+		set("hover_color", params.get("hover_color"));
+		set("select_color", params.get("select_color"));
+	}
+
 	int nDims[5];
 	sl::algebra::vec2 range[5];
 	int layerElement[5] = {-1, -1, -1, -1, -1}; // TODO to remove replaced by activatedLayers
@@ -230,7 +252,6 @@ struct LayersParams : MaterialParams {
 	Colormap colormaps[3] = {};
 
 	private:
-	// unsigned int texColormaps[3]; // Colormap textures
 	unsigned int bufColormap0, bufColormap1, bufColormap2, bufHighlight, bufFilter; // Sample buffers
 	unsigned int tboColormap0, tboColormap1, tboColormap2, tboHighlight, tboFilter; // Textures
 };

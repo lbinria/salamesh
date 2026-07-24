@@ -9,3 +9,14 @@ void Material::saveState(json &j) {
 	}
 	j["params"] = jParams;
 }
+
+void Material::set(Material &material) {
+	for (auto &[paramName, params] : material.getParams()) {
+		if (!_params.contains(paramName) || typeid(params) != typeid(_params.at(paramName)))
+			continue;
+
+		_params.at(paramName)->setValues(*params);
+	}
+
+	_visible = material._visible;
+}
