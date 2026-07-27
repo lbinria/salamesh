@@ -17,6 +17,7 @@ bool SceneModel::addShaderPass(ShaderBase &shader) {
 	return true;
 }
 
+// Note: it return the first colormap found (model can have heterogeneous colormaps between materials)
 std::optional<Colormap> SceneModel::getColormap() {
 		
 	for (auto &[_, material] : getMaterials()) {
@@ -122,6 +123,11 @@ void SceneModel::unsetLayers(bool reset) {
 	}
 }
 
+void SceneModel::unsetLayers(Layer layer, bool reset) {
+	for (int k = 0; k < 7; ++k) {
+		unsetLayer(layer, static_cast<ElementKind>(k), reset);
+	}
+}
 
 void SceneModel::unsetLayer(Layer layer, ElementKind kind, bool reset) {
 	
@@ -203,7 +209,10 @@ void SceneModel::applyMaterialsFrom(SceneModel &model) {
 			if (model._attrNameByLayerAndKind.contains({layer, kind})) {
 				auto attrName = model._attrNameByLayerAndKind[{layer, kind}];
 				if (!attrName.empty()) {
-					setLayer(layer, attrName, true);
+					setSelectedAttribute(model.getSelectedAttribute());
+					if (model.getColormap().has_value()) {
+						setColormap(model.getColormap().value());
+					}
 				}
 			}
 		}

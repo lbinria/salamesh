@@ -363,6 +363,57 @@ function draw_model_properties(model, k, view)
 				selected_colormap = selected_colormaps[model.name]
 			end
 
+			-- if (#attributes > 0) then
+
+			-- 	-- local attr_name = attributes[1].name
+			-- 	-- local attr_element = attributes[1].kind
+			-- 	-- imgui.Text(attr_name)
+			-- 	-- imgui.Text(tostring(attr_element))
+				
+			-- 	local selName = "None" 
+			-- 	local selected_attribute = 0
+			-- 	if selected_attributes[model.name] then 
+			-- 		selected_attribute = selected_attributes[model.name]
+			-- 	end
+
+			-- 	if selected_attribute > 0 then 
+			-- 		selName = attributes[selected_attribute].name
+			-- 	end
+
+			-- 	imgui.Text("selected: " .. selName)
+
+			-- 	if (imgui.BeginCombo("##combo_attribute0_selection", selName)) then
+
+			-- 		local is_selected = selected_attribute == 0
+			-- 		if (imgui.Selectable("None", is_selected)) then
+			-- 			selected_attributes[model.name] = 0
+			-- 			-- Unset all colormap attribute 
+			-- 			for n = 1, #attributes do
+			-- 				model:unset_layers(false)
+			-- 			end
+			-- 		end
+
+			-- 		for n = 1, #attributes do
+			-- 			local is_selected = n == selected_attribute
+			-- 			local label = attributes[n].name 
+			-- 			.. " (" .. element_kind_to_string(attributes[n].kind) .. ")" 
+			-- 			.. " (" .. element_type_to_string(attributes[n].type) .. ")"
+			-- 			.. " (" .. tostring(attributes[n].dim) .. ")"
+
+			-- 			if (imgui.Selectable(label, is_selected)) then
+			-- 				selected_attributes[model.name] = n
+			-- 				-- Set attribute & colormap
+			-- 				selected_attribute = selected_attributes[model.name]
+			-- 				model:unset_layers(false)
+			-- 				model.selected_attribute = attributes[selected_attribute].name
+
+			-- 				model:set_colormap(app.scene.colormaps[selected_colormap])
+			-- 			end
+			-- 		end
+			-- 		imgui.EndCombo()
+			-- 	end
+			-- end
+
 			if (#attributes > 0) then
 
 				-- local attr_name = attributes[1].name
@@ -370,44 +421,45 @@ function draw_model_properties(model, k, view)
 				-- imgui.Text(attr_name)
 				-- imgui.Text(tostring(attr_element))
 				
+				-- local selName = "None" 
+				-- local selected_attribute = 0
+				-- if selected_attributes[model.name] then 
+				-- 	selected_attribute = selected_attributes[model.name]
+				-- end
+
+				-- if selected_attribute > 0 then 
+				-- 	selName = attributes[selected_attribute].name
+				-- end
+
+				-- imgui.Text("selected: " .. selName)
+
 				local selName = "None" 
-				local selected_attribute = 0
-				if selected_attributes[model.name] then 
-					selected_attribute = selected_attributes[model.name]
+				if model.selected_attribute ~= "" then 
+					selName = model.selected_attribute
 				end
-
-				if selected_attribute > 0 then 
-					selName = attributes[selected_attribute].name
-				end
-
-				imgui.Text("selected: " .. selName)
 
 				if (imgui.BeginCombo("##combo_attribute0_selection", selName)) then
 
-					local is_selected = selected_attribute == 0
+					local is_selected = model.selected_attribute == ""
 					if (imgui.Selectable("None", is_selected)) then
-						selected_attributes[model.name] = 0
+						model.selected_attribute = ""
 						-- Unset all colormap attribute 
-						for n = 1, #attributes do
-							model:unset_layers(false)
-						end
+						model:unset_layers(Layer.COLORMAP_0, false)
 					end
 
-					for n = 1, #attributes do
-						local is_selected = n == selected_attribute
-						local label = attributes[n].name 
-						.. " (" .. element_kind_to_string(attributes[n].kind) .. ")" 
-						.. " (" .. element_type_to_string(attributes[n].type) .. ")"
-						.. " (" .. tostring(attributes[n].dim) .. ")"
+					for i, attr in ipairs(attributes) do
+						local is_selected = attr.name == model.selected_attribute
+
+						local label = attr.name 
+						.. " (" .. element_kind_to_string(attr.kind) .. ")" 
+						.. " (" .. element_type_to_string(attr.type) .. ")"
+						.. " (" .. tostring(attr.dim) .. ")"
 
 						if (imgui.Selectable(label, is_selected)) then
-							selected_attributes[model.name] = n
 							-- Set attribute & colormap
-							selected_attribute = selected_attributes[model.name]
-							model:unset_layers(false)
-							model.selected_attribute = attributes[selected_attribute].name
-
+							model:unset_layers(Layer.COLORMAP_0, false)
 							model:set_colormap(app.scene.colormaps[selected_colormap])
+							model.selected_attribute = attr.name
 						end
 					end
 					imgui.EndCombo()

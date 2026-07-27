@@ -94,6 +94,7 @@ struct SceneModel : std::enable_shared_from_this<SceneModel> {
 
 
 	void unsetLayer(Layer layer, ElementKind kind, bool reset = false);
+	void unsetLayers(Layer layer, bool reset = false);
 	void unsetLayers(bool reset = false);
 	void updateLayers();
 
@@ -107,7 +108,7 @@ struct SceneModel : std::enable_shared_from_this<SceneModel> {
 
 	private:
 	std::string _name;
-	std::string _selectedAttribute;
+	std::string _selectedAttribute = "";
 
 	std::shared_ptr<Mesh> _mesh;
 
@@ -117,7 +118,6 @@ struct SceneModel : std::enable_shared_from_this<SceneModel> {
 
 	bool _visible = true;
 
-	// std::string _selectedAttribute;
 	std::map<std::tuple<Layer, ElementKind>, std::string> _attrNameByLayerAndKind;
 
 };
