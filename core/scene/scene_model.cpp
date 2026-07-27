@@ -74,25 +74,13 @@ void SceneModel::setLayer(Layer layer, ElementKind kind, bool update) {
 		return;
 
 	auto attr = attrOpt.value();
-	auto data = sl::getContainerData(attr.ptr.get(), attr.dim);
-	auto [min, max] = sl::getRange(data);
 
 	for (auto &[_, material] : getMaterials()) {
 		
 		auto layerParams = material.getParams<LayersParams>("layers");
 
-		if (!layerParams)
-			continue;
-
-		if (layerParams->isActivatedLayer(layer, kind) && !update)
-			continue;
-
-		layerParams->activateLayer(layer, kind);
-
-		layerParams->range[layer] = {min, max};
-		layerParams->nDims[layer] = attr.getNDims();
-		layerParams->setLayer(data, layer);
-
+		if (layerParams)
+			layerParams->setAttributeData(layer, kind, attr, update);
 	}
 
 }

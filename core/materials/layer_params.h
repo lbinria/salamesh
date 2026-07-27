@@ -140,6 +140,21 @@ struct LayersParams : MaterialParams {
 		}
 	}
 
+	void setAttributeData(Layer layer, ElementKind kind, Attribute attr, bool update) {
+
+		if (isActivatedLayer(layer, kind) && !update)
+			return;
+
+		auto data = sl::getContainerData(attr.ptr.get(), attr.dim);
+		auto [min, max] = sl::getRange(data);
+
+		activateLayer(layer, kind);
+
+		range[layer] = {min, max};
+		nDims[layer] = attr.getNDims();
+		setLayer(data, layer);
+	}
+
 	void setLayer(int idx, float val, Layer layer) {
 		unsigned int buf = getLayerBuffer(layer);
 		setBuf(buf, idx, val);
