@@ -43,7 +43,6 @@ void SceneModel::setColormap(Colormap colormap) {
 
 }
 
-
 std::string SceneModel::getLayerAttr(Layer layer, ElementKind kind) {
 	std::tuple<Layer, ElementKind> k = {layer, kind};
 	if (_attrNameByLayerAndKind.contains(k))
@@ -52,40 +51,34 @@ std::string SceneModel::getLayerAttr(Layer layer, ElementKind kind) {
 	return defaultAttrName(layer);
 }
 
-// Choose which attribute to bind to layer / kind
-void SceneModel::setLayerAttr(Layer layer, ElementKind kind, const std::string name) {
-	_attrNameByLayerAndKind[{layer, kind}] = name;
+std::string SceneModel::getSelectedAttribute() {
+	return _selectedAttribute;
 }
 
-void SceneModel::setLayer(Layer layer, ElementKind kind, const std::string attributeName, bool update) {
-	setLayerAttr(layer, kind, attributeName);
-	setLayer(layer, kind, update);
+void SceneModel::setSelectedAttribute(const std::string attributeName) {
+	setLayer(Layer::COLORMAP_0, attributeName, true);
+	_selectedAttribute = attributeName;
 }
 
-void SceneModel::setLayer(Layer layer, ElementKind kind, bool update) {
+void SceneModel::setLayer(Layer layer, const std::string attributeName, bool update) {
 
 	auto &mesh = getMesh();
-
-	_selectedAttribute = _attrNameByLayerAndKind[{layer, kind}];
-
-	auto attrOpt = mesh.getAttribute(_selectedAttribute);
+	auto attrOpt = mesh.getAttribute(attributeName);
 
 	if (!attrOpt.has_value())
 		return;
 
 	auto attr = attrOpt.value();
 
+	_attrNameByLayerAndKind[{layer, attr.getKind()}] = attr.name;
+
 	for (auto &[_, material] : getMaterials()) {
-		
 		auto layerParams = material.getParams<LayersParams>("layers");
 
 		if (layerParams)
-			layerParams->setAttributeData(layer, kind, attr, update);
+			layerParams->setAttribute(attr, layer, update);
 	}
-
 }
-
-
 
 void SceneModel::updateLayers() {
 	auto &mesh = getMesh();
@@ -96,14 +89,12 @@ void SceneModel::updateLayers() {
 			auto layer = static_cast<Layer>(l);
 			auto kind = static_cast<ElementKind>(k);
 
-			auto attrOpt = mesh.getAttribute(_attrNameByLayerAndKind[{layer, kind}]);
+			auto attrOpt = mesh.getAttribute(getLayerAttr(layer, kind));
 
 			if (!attrOpt.has_value())
 				continue;
 
 			auto attr = attrOpt.value();
-			auto data = sl::getContainerData(attr.ptr.get(), attr.dim);
-			auto [min, max] = sl::getRange(data);
 
 			for (auto &[_, material] : getMaterials()) {
 				auto layerParams = material.getParams<LayersParams>("layers");
@@ -115,9 +106,7 @@ void SceneModel::updateLayers() {
 				if (!activatedLayers[l][k])
 					continue;
 
-				layerParams->range[l] = {min, max};
-				layerParams->nDims[l] = attr.getNDims();
-				layerParams->setLayer(data, layer);
+				layerParams->setAttribute(attr, layer, true);
 			}
 
 		}
@@ -147,11 +136,7 @@ void SceneModel::unsetLayer(Layer layer, ElementKind kind, bool reset) {
 		if (!layerParams->isActivatedLayer(layer, kind))
 			continue;
 		
-		// Set requested layer data to zeros
-		// if (reset)
-		// 	resetLayer(kind, layer);
-
-		layerParams->setLayerElement(-1, layer);
+		// layerParams->setLayerElement(-1, layer);
 		layerParams->deactivateLayer(layer, kind);
 	}
 
@@ -196,4 +181,31 @@ void SceneModel::saveState(json &j, const std::string filename) {
 	}
 	j["materials"] = jMaterials;
 
+}
+
+void SceneModel::applyMaterialsFrom(SceneModel &model) {
+	for (auto &[materialName, sourceMaterial] : model.getMaterials()) {
+		auto targetMaterialOpt = getMaterial(materialName);
+
+		if (!targetMaterialOpt.has_value())
+			continue;
+
+		// Try to set source material to target material
+		targetMaterialOpt.value().get().set(sourceMaterial);
+	}
+
+	// Set layers
+	for (int k = 0; k < static_cast<int>(ElementKind::ELEMENT_KIND_COUNT); ++k) {
+		for (int l = 0; l < static_cast<int>(Layer::LAYER_COUNT); ++l) {
+
+			auto layer = static_cast<Layer>(l);
+			auto kind = static_cast<ElementKind>(k);
+			if (model._attrNameByLayerAndKind.contains({layer, kind})) {
+				auto attrName = model._attrNameByLayerAndKind[{layer, kind}];
+				if (!attrName.empty()) {
+					setLayer(layer, attrName, true);
+				}
+			}
+		}
+	}
 }

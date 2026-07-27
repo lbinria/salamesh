@@ -405,7 +405,8 @@ function draw_model_properties(model, k, view)
 							-- Set attribute & colormap
 							selected_attribute = selected_attributes[model.name]
 							model:unset_layers(false)
-							model:set_layer(Layer.COLORMAP_0, attributes[n].kind, attributes[selected_attribute].name, true)
+							model.selected_attribute = attributes[selected_attribute].name
+
 							model:set_colormap(app.scene.colormaps[selected_colormap])
 						end
 					end
@@ -475,12 +476,13 @@ end
 function apply_to_all(model, only_visible)
 	for cur_model_name, cur_model in pairs(app.scene.models) do
 		if not(only_visible) or only_visible and cur_model.visible then
-			for mat_name, mat in pairs(model.materials) do 
-				local cur_mat = cur_model:get_material(mat_name)
-				if cur_mat then 
-					cur_mat:set(mat)
-				end
-			end
+			cur_model:apply_material_from(model)
+			-- for mat_name, mat in pairs(model.materials) do 
+			-- 	local cur_mat = cur_model:get_material(mat_name)
+			-- 	if cur_mat then 
+			-- 		cur_mat:set(mat)
+			-- 	end
+			-- end
 		end
 	end
 end
@@ -528,17 +530,18 @@ function draw_gui()
 					imgui.TextColored(0.5, 0.5, 0.6, 1, model.name)
 				end
 
+				if imgui.IsItemClicked(0) then
+					app.scene.selected_model = model.name
+
+					if imgui.IsMouseDoubleClicked(0) then 
+						for model_name, m in pairs(app.scene.models) do
+							m.visible = (m.name == model.name)
+						end
+					end
+				end
+
 				imgui.SameLine()
 				if (imgui.Button("View##" .. "btn_view_" .. model.name)) then
-					app.scene.current_camera:look_at_box(model.mesh.bbox)
-				end
-				imgui.SameLine()
-				if (imgui.Button("Select##" .. "btn_select_" .. model.name)) then
-					app.scene.selected_model = model.name
-				end
-				imgui.SameLine()
-				if (imgui.Button("Select and view##" .. "btn_select_and_view_" .. model.name)) then
-					app.scene.selected_model = model.name
 					app.scene.current_camera:look_at_box(model.mesh.bbox)
 				end
 				

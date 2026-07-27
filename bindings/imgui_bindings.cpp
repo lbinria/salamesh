@@ -503,9 +503,17 @@ namespace bindings {
 			ImGui::GetBackgroundDrawList()->AddText(pos, col, text);
 		});
 
-		// Event
+		// Events
 		imgui.set_function("IsItemHovered", []() {
 			return ImGui::IsItemHovered();
+		});
+
+		imgui.set_function("IsItemClicked", [](ImGuiMouseButton mouseButton) {
+			return ImGui::IsItemClicked(mouseButton);
+		});
+
+		imgui.set_function("IsMouseDoubleClicked", [](ImGuiMouseButton mouseButton) {
+			return ImGui::IsMouseDoubleClicked(mouseButton);
 		});
 
 		lua["imgui"] = imgui;

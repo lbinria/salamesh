@@ -69,7 +69,7 @@ struct Mesh {
 		_dirty = false;
 	}
 
-	virtual  std::vector<Attribute> getAttributes() {
+	virtual std::vector<Attribute> getAttributes() {
 		return {};
 	}
 	

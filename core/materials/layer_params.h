@@ -88,9 +88,9 @@ struct LayersParams : MaterialParams {
 	}
 
 	// TODO to remove
-	void setLayerElement(int element, Layer layer) {
-		layerElement[static_cast<int>(layer)] = element;
-	}
+	// void setLayerElement(int element, Layer layer) {
+	// 	layerElement[static_cast<int>(layer)] = element;
+	// }
 
 	bool getActivatedLayer(Layer layer, ElementKind kind) const {
 		return activatedLayers[static_cast<int>(layer)][static_cast<int>(kind)];
@@ -98,10 +98,6 @@ struct LayersParams : MaterialParams {
 
 	void setActivatedLayer(Layer layer, ElementKind kind, bool activated) {
 		activatedLayers[static_cast<int>(layer)][static_cast<int>(kind)] = activated;
-	}
-
-	void activateLayer(Layer layer, ElementKind kind) {
-		setActivatedLayer(layer, kind, true);
 	}
 
 	void deactivateLayer(Layer layer, ElementKind kind) {
@@ -140,15 +136,16 @@ struct LayersParams : MaterialParams {
 		}
 	}
 
-	void setAttributeData(Layer layer, ElementKind kind, Attribute attr, bool update) {
+	void setAttribute(Attribute attr, Layer layer, bool update) {
 
-		if (isActivatedLayer(layer, kind) && !update)
+		if (isActivatedLayer(layer, attr.getKind()) && !update)
 			return;
 
 		auto data = sl::getContainerData(attr.ptr.get(), attr.dim);
 		auto [min, max] = sl::getRange(data);
 
-		activateLayer(layer, kind);
+		// Activate layer
+		setActivatedLayer(layer, attr.getKind(), true);
 
 		range[layer] = {min, max};
 		nDims[layer] = attr.getNDims();

@@ -90,19 +90,24 @@ struct SceneModel : std::enable_shared_from_this<SceneModel> {
 	void setColormap(Colormap colormap);
 
 	std::string getLayerAttr(Layer layer, ElementKind kind);
-	void setLayerAttr(Layer layer, ElementKind kind, const std::string name);
+	void setLayer(Layer layer, const std::string attributeName, bool update);
 
-	void setLayer(Layer layer, ElementKind kind, bool update);
-	void setLayer(Layer layer, ElementKind kind, const std::string attributeName, bool update);
 
 	void unsetLayer(Layer layer, ElementKind kind, bool reset = false);
 	void unsetLayers(bool reset = false);
 	void updateLayers();
+
+	void applyMaterialsFrom(SceneModel &model);
 	
+	std::string getSelectedAttribute();
+	void setSelectedAttribute(std::string attributeName);
+
+
 	vec3 position{0,0,0};
 
 	private:
 	std::string _name;
+	std::string _selectedAttribute;
 
 	std::shared_ptr<Mesh> _mesh;
 
@@ -112,7 +117,7 @@ struct SceneModel : std::enable_shared_from_this<SceneModel> {
 
 	bool _visible = true;
 
-	std::string _selectedAttribute;
+	// std::string _selectedAttribute;
 	std::map<std::tuple<Layer, ElementKind>, std::string> _attrNameByLayerAndKind;
 
 };
