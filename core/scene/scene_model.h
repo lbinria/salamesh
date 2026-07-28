@@ -95,6 +95,8 @@ struct SceneModel : std::enable_shared_from_this<SceneModel> {
 
 	void unsetLayer(Layer layer, ElementKind kind, bool reset = false);
 	void unsetLayers(Layer layer, bool reset = false);
+	void unsetLayers(ElementKind kind, bool reset);
+
 	void unsetLayers(bool reset = false);
 	void updateLayers();
 

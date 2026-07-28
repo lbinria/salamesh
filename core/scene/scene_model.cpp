@@ -129,6 +129,14 @@ void SceneModel::unsetLayers(Layer layer, bool reset) {
 	}
 }
 
+void SceneModel::unsetLayers(ElementKind kind, bool reset) {
+	for (int l = 0; l < 5; ++l) {
+		unsetLayer(static_cast<Layer>(l), kind, reset);
+	}
+}
+
+// TODO add unsetLayer by element
+
 void SceneModel::unsetLayer(Layer layer, ElementKind kind, bool reset) {
 	
 	for (auto &[_, material] : getMaterials()) {

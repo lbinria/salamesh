@@ -18,6 +18,7 @@ namespace bindings {
 			"unset_layer", &SceneModel::unsetLayer,
 			"unset_layers", sol::resolve<void(bool)>(&SceneModel::unsetLayers),
 			"unset_layers", sol::resolve<void(Layer, bool)>(&SceneModel::unsetLayers),
+			"unset_layers", sol::resolve<void(ElementKind, bool)>(&SceneModel::unsetLayers),
 			"set_colormap", &SceneModel::setColormap,
 			"get_colormap", &SceneModel::getColormap,
 			"get_layer_attr", &SceneModel::getLayerAttr,
