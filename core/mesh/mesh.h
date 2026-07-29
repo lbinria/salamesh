@@ -38,7 +38,13 @@ struct Mesh {
 		maxIndex = 0;
 	}
 
-	virtual bool save() = 0;
+	virtual bool save() {
+		if (path.empty())
+			return false;
+
+		return saveAs(path);
+	}
+
 	virtual bool saveAs(const std::string filename) = 0;
 	virtual bool load(const std::string filename) = 0;
 
@@ -69,15 +75,6 @@ struct Mesh {
 		_dirty = false;
 	}
 
-	virtual std::vector<Attribute> getAttributes() {
-		return {};
-	}
-	
-
-	virtual std::optional<Attribute> getAttribute(const std::string name) {
-		return std::nullopt;
-	}
-
 	virtual int nverts() const = 0; 
 	virtual int nfacets() const = 0; 
 	virtual int ncells() const = 0; 
@@ -88,30 +85,7 @@ struct Mesh {
 	// TODO set private (pass in constructor)
 	std::string path = "";
 
-	private:
-	mutable bool _dirty = true;
-
-	static inline int maxIndex = 0;
-	int _index;
-};
-
-struct MeshMesh : public Mesh {
-
-	// virtual int nverts() const = 0; 
-	// virtual int nfacets() const = 0; 
-	// virtual int ncells() const = 0; 
-	// virtual int ncorners() const = 0; 
-	// virtual int nhalfedges() const = 0;
-
-
-	virtual bool save() {
-		if (path.empty())
-			return false;
-
-		return saveAs(path);
-	}
-
-	std::vector<Attribute> getAttributes() override {
+	std::vector<Attribute> getAttributes() {
 		
 		std::vector<Attribute> attributes;
 		for (auto &[kind, c] : getAttributeContainers()) {
@@ -124,7 +98,7 @@ struct MeshMesh : public Mesh {
 
 	}
 
-	std::optional<Attribute> getAttribute(const std::string name) override {
+	std::optional<Attribute> getAttribute(const std::string name) {
 		std::string attrName = name;
 
 		// Extract selectedDim from string
@@ -144,7 +118,6 @@ struct MeshMesh : public Mesh {
 
 		return std::nullopt;
 	}
-
 
 	protected:
 
@@ -205,6 +178,11 @@ struct MeshMesh : public Mesh {
 		return {attrName, kind, type, container.ptr, selectedDim >= 0, selectedDim};
 	}
 
+	private:
+	mutable bool _dirty = true;
+
+	static inline int maxIndex = 0;
+	int _index;
 };
 
 // Define concept to accept only types that are derived from Surface
@@ -218,7 +196,7 @@ concept VolumeDerived = std::is_base_of_v<Volume, std::remove_cv_t<T>> &&
 	!std::is_same_v<Volume, std::remove_cv_t<T>>;
 
 template<SurfaceDerived TSurface>
-struct SurfaceMesh : public MeshMesh {
+struct SurfaceMesh : public Mesh {
 
 	bool saveAs(const std::string filename) override {
 		// Check path validity
@@ -341,7 +319,7 @@ typedef SurfaceMesh<Polygons> PolygonsMesh;
 
 
 template<VolumeDerived TVolume>
-struct VolumeMesh : public MeshMesh {
+struct VolumeMesh : public Mesh {
 
 	bool saveAs(const std::string filename) override {
 		// // Check path validity
@@ -463,7 +441,7 @@ struct VolumeMesh : public MeshMesh {
 typedef VolumeMesh<Tetrahedra> TetrahedrasMesh;
 
 
-struct PolyLineMesh : public MeshMesh {
+struct PolyLineMesh : public Mesh {
 
 	// Remove copy constructors, allow moves
 	PolyLineMesh() = default;

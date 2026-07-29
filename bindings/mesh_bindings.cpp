@@ -19,35 +19,35 @@ namespace bindings {
 			"saveAs", &Mesh::saveAs,
 			"request_update", &Mesh::requestUpdate,
 			"nverts",  sol::property([&lua](Mesh &self) -> sol::object {
-				auto meshGeo = dynamic_cast<MeshMesh*>(&self);
+				auto meshGeo = dynamic_cast<Mesh*>(&self);
 				if (meshGeo) {
 					return sol::make_object(lua, meshGeo->nverts());
 				}
 				return sol::nil;
 			}),
 			"ncorners",  sol::property([&lua](Mesh &self) -> sol::object {
-				auto meshGeo = dynamic_cast<MeshMesh*>(&self);
+				auto meshGeo = dynamic_cast<Mesh*>(&self);
 				if (meshGeo) {
 					return sol::make_object(lua, meshGeo->ncorners());
 				}
 				return sol::nil;
 			}),
 			"nhalfedges",  sol::property([&lua](Mesh &self) -> sol::object {
-				auto meshGeo = dynamic_cast<MeshMesh*>(&self);
+				auto meshGeo = dynamic_cast<Mesh*>(&self);
 				if (meshGeo) {
 					return sol::make_object(lua, meshGeo->nhalfedges());
 				}
 				return sol::nil;
 			}),
 			"nfacets",  sol::property([&lua](Mesh &self) -> sol::object {
-				auto meshGeo = dynamic_cast<MeshMesh*>(&self);
+				auto meshGeo = dynamic_cast<Mesh*>(&self);
 				if (meshGeo) {
 					return sol::make_object(lua, meshGeo->nfacets());
 				}
 				return sol::nil;
 			}),
 			"ncells",  sol::property([&lua](Mesh &self) -> sol::object {
-				auto meshGeo = dynamic_cast<MeshMesh*>(&self);
+				auto meshGeo = dynamic_cast<Mesh*>(&self);
 				if (meshGeo) {
 					return sol::make_object(lua, meshGeo->ncells());
 				}
@@ -56,7 +56,7 @@ namespace bindings {
 		);
 
 		// auto castToMeshGeo = [&lua](Mesh &self, auto getter) -> sol::object {
-		// 	auto meshGeo = dynamic_cast<MeshMesh*>(&self);
+		// 	auto meshGeo = dynamic_cast<Mesh*>(&self);
 		// 	if (meshGeo) {
 		// 		return sol::make_object(lua, getter(meshGeo));
 		// 	}
@@ -71,19 +71,19 @@ namespace bindings {
 		// 	"saveAs", &Mesh::saveAs,
 		// 	"request_update", &Mesh::requestUpdate,
 		// 	"nverts", sol::property([&](Mesh &self) {
-		// 		return castToMeshGeo(self, [](MeshMesh* m) { return m->nverts(); });
+		// 		return castToMeshGeo(self, [](Mesh* m) { return m->nverts(); });
 		// 	}),
 		// 	"ncorners", sol::property([&](Mesh &self) {
-		// 		return castToMeshGeo(self, [](MeshMesh* m) { return m->ncorners(); });
+		// 		return castToMeshGeo(self, [](Mesh* m) { return m->ncorners(); });
 		// 	}),
 		// 	"nhalfedges", sol::property([&](Mesh &self) {
-		// 		return castToMeshGeo(self, [](MeshMesh* m) { return m->nhalfedges(); });
+		// 		return castToMeshGeo(self, [](Mesh* m) { return m->nhalfedges(); });
 		// 	}),
 		// 	"nfacets", sol::property([&](Mesh &self) {
-		// 		return castToMeshGeo(self, [](MeshMesh* m) { return m->nfacets(); });
+		// 		return castToMeshGeo(self, [](Mesh* m) { return m->nfacets(); });
 		// 	}),
 		// 	"ncells", sol::property([&](Mesh &self) {
-		// 		return castToMeshGeo(self, [](MeshMesh* m) { return m->ncells(); });
+		// 		return castToMeshGeo(self, [](Mesh* m) { return m->ncells(); });
 		// 	})
 		// );
 	}
