@@ -26,23 +26,20 @@ struct EdgePrimitive {
 	sl::algebra::vec3 bary;
 };
 
-		// int cornerIndex;
-
-		// int cornerIndex;
-		// int cornerOff;
-
-		// int localIndex;
 
 struct TrianglePrimitive {
 	int id;
 	int facetIndex;
 	int cellIndex;
 	int localIndex;
+
+	int cornerIndex;
+
 	sl::algebra::vec3 p;
 	sl::algebra::vec3 p0;
 	sl::algebra::vec3 p1;
 	sl::algebra::vec3 p2;
 	sl::algebra::vec3 bary;
 	sl::algebra::vec3 normal;
-
+	int cornerOff;
 };

@@ -18,12 +18,12 @@ MeshBuffer TrianglesShader::createMeshBuffer() {
 	glBindVertexArray(vao);
 	glBindBuffer(GL_ARRAY_BUFFER, vbo);
 	// setup VBO
-	sl::createVBOVec3(shader.id, "p0", sizeof(Vertex), (void*)offsetof(Vertex, p0));
-	sl::createVBOVec3(shader.id, "p1", sizeof(Vertex), (void*)offsetof(Vertex, p1));
-	sl::createVBOVec3(shader.id, "p2", sizeof(Vertex), (void*)offsetof(Vertex, p2));
-	sl::createVBOInteger(shader.id, "facetIndex", sizeof(Vertex), (void*)offsetof(Vertex, facetIndex));
-	sl::createVBOInteger(shader.id, "localIndex", sizeof(Vertex), (void*)offsetof(Vertex, localIndex));
-	sl::createVBOInteger(shader.id, "cornerIndex", sizeof(Vertex), (void*)offsetof(Vertex, cornerIndex));
+	sl::createVBOVec3(shader.id, "p0", sizeof(TrianglePrimitive), (void*)offsetof(TrianglePrimitive, p0));
+	sl::createVBOVec3(shader.id, "p1", sizeof(TrianglePrimitive), (void*)offsetof(TrianglePrimitive, p1));
+	sl::createVBOVec3(shader.id, "p2", sizeof(TrianglePrimitive), (void*)offsetof(TrianglePrimitive, p2));
+	sl::createVBOInteger(shader.id, "facetIndex", sizeof(TrianglePrimitive), (void*)offsetof(TrianglePrimitive, facetIndex));
+	sl::createVBOInteger(shader.id, "localIndex", sizeof(TrianglePrimitive), (void*)offsetof(TrianglePrimitive, localIndex));
+	sl::createVBOInteger(shader.id, "cornerIndex", sizeof(TrianglePrimitive), (void*)offsetof(TrianglePrimitive, cornerIndex));
 
 	return MeshBuffer(vao, vbo);
 };
@@ -38,39 +38,7 @@ Material TrianglesShader::createMaterial() {
 }
 
 void TrianglesShader::update(MeshBuffer &meshBuffer, Mesh &mesh) {
-	auto trianglesMesh = dynamic_cast<TrianglesMesh*>(&mesh);
-
-	if (trianglesMesh) {
-
-		auto &m = trianglesMesh->_m;
-		meshBuffer.nelements = m.nfacets() * 3 /* 3 points per tri */;
-
-		std::vector<Vertex> vertices(meshBuffer.nelements);
-		for (auto &f : m.iter_facets()) {
-
-			auto p0 = f.vertex(0).pos();
-			auto p1 = f.vertex(1).pos();
-			auto p2 = f.vertex(2).pos();
-
-			for (int lv = 0; lv < 3; ++lv) {
-				auto v = f.vertex(lv);
-				auto p = v.pos();
-				const int firstCornerIdx = f * 3;
-				const int c = firstCornerIdx + lv;
-				
-				vertices[c] = { 
-					.localIndex = lv,
-					.cornerIndex = firstCornerIdx,
-					.p0 = sl::algebra::vecf(p0),
-					.p1 = sl::algebra::vecf(p1),
-					.p2 = sl::algebra::vecf(p2),
-					.facetIndex = f
-				};
-			}
-		}
-
-		glNamedBufferData(meshBuffer.vbo(), vertices.size() * sizeof(Vertex), vertices.data(), GL_STATIC_DRAW);
-
-	}
-
+	auto stream = mesh.getTrianglesStream();
+	meshBuffer.nelements = stream.size();
+	meshBuffer.write(stream);
 }

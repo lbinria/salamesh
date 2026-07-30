@@ -83,12 +83,10 @@ struct Mesh {
 	virtual int nhalfedges() const = 0;
 	virtual int cellSize() = 0;
 
+	virtual int facetSize(int f) const = 0;
+
 	virtual std::vector<PointPrimitive> getPointsStream() = 0;
-
-	virtual std::vector<PointPrimitive> getTrianglesStream() {
-		return {};
-	}
-
+	virtual std::vector<TrianglePrimitive> getTrianglesStream() = 0;
 	virtual std::vector<EdgePrimitive> getEdgesStream() = 0;
 
 	// TODO set private (pass in constructor)
@@ -291,6 +289,10 @@ struct SurfaceMesh : public Mesh {
 		return s;
 	}
 
+	int facetSize(int f) const override {
+		return _m.facet_size(f);
+	}
+
 	std::tuple<vec3, vec3> bbox() override {
 		vec3 min = vec3(FLT_MAX);
 		vec3 max = vec3(-FLT_MAX);
@@ -365,6 +367,74 @@ struct SurfaceMesh : public Mesh {
 		return vertices;
 	}
 
+	std::vector<TrianglePrimitive> getTrianglesStream() override {
+
+		int cornerOff = 0;
+		std::vector<TrianglePrimitive> vertices;
+		for (auto &f : _m.iter_facets()) {
+
+			// There is as much triangles as vertices in facet,
+			int nv = f.size();
+			const int ntri = nv;
+
+			// Compute bary
+			vec3 bary{0.};
+			for (int v = 0; v < nv; ++v) {
+				auto pos = f.vertex(v).pos();
+				bary += pos;
+			}
+			bary /= nv;
+
+			// Compute normal
+			std::vector<vec3> pts(nv);
+			for (int v = 0; v < nv; ++v) {
+				pts[v] = f.vertex(v).pos();
+			}
+			vec3 n = geo::normal(pts.data(), nv);
+
+			
+
+			for (int t = 0; t < ntri; ++t) {
+
+				const int lv = t;
+				// Three points of current triangle
+				vec3 verts[3] = {bary , f.vertex(lv).pos(), f.vertex((lv + 1) % nv).pos()};
+
+				// Compute first corner index of the triangle
+				int firstCornerIdx = cornerOff + lv;
+
+				for (int i = 0; i < 3; ++i) {
+
+					// Retrieve vertex id (0 is always the barycenter => no vertex associated)
+					int v = i == 0 ? -1 : f.vertex((lv + (i - 1)) % nv);
+
+					auto p = verts[i];
+					auto p1 = verts[1];
+					auto p2 = verts[2];
+
+					vertices.push_back({
+						.id = v, // useless i think
+						.facetIndex = f,
+						.cellIndex = -1, // Don't care
+						.localIndex = i,
+						// .cornerIndex = firstCornerIdx,
+						.cornerIndex = lv,
+						.p = sl::algebra::vecf(p),
+						.p0 = sl::algebra::vecf(bary),
+						.p1 = sl::algebra::vecf(p1),
+						.p2 = sl::algebra::vecf(p2),
+						.normal = sl::algebra::vecf(n),
+						.cornerOff = cornerOff
+					});
+				}
+			}
+
+			cornerOff += f.size();
+		}
+
+		return vertices;
+	}
+
 	std::vector<std::pair<ElementKind, NamedContainer>> getAttributeContainers() const override {
 		std::vector<std::pair<ElementKind, NamedContainer>> containers;
 		
@@ -389,11 +459,121 @@ struct SurfaceMesh : public Mesh {
 
 };
 
-typedef SurfaceMesh<Triangles> TrianglesMesh;
+// typedef SurfaceMesh<Triangles> TrianglesMesh;
 typedef SurfaceMesh<Quads> QuadsMesh;
 typedef SurfaceMesh<Polygons> PolygonsMesh;
 
+struct TrianglesMesh : public SurfaceMesh<Triangles> {
 
+
+	std::vector<TrianglePrimitive> getTrianglesStream() final override {
+		std::vector<TrianglePrimitive> vertices(_m.nfacets() * 3 /* 3 points per tri */);
+
+		for (auto &f : _m.iter_facets()) {
+
+			auto p0 = f.vertex(0).pos();
+			auto p1 = f.vertex(1).pos();
+			auto p2 = f.vertex(2).pos();
+
+			for (int lv = 0; lv < 3; ++lv) {
+				auto v = f.vertex(lv);
+				auto p = v.pos();
+				const int firstCornerIdx = f * 3;
+				const int c = firstCornerIdx + lv;
+				
+				vertices[c] = { 
+					.id = v,
+					.facetIndex = f,
+					.cellIndex = -1,
+					.localIndex = lv,
+					.cornerIndex = firstCornerIdx,
+					.p = sl::algebra::vecf(p),
+					.p0 = sl::algebra::vecf(p0),
+					.p1 = sl::algebra::vecf(p1),
+					.p2 = sl::algebra::vecf(p2)
+				};
+			}
+		}
+		return vertices;
+	}
+
+};
+
+// struct QuadsMesh : public SurfaceMesh<Quads> {
+	
+// };
+
+// struct PolygonsMesh : public SurfaceMesh<Polygons> {
+
+// 	std::vector<TrianglePrimitive> getTrianglesStream() override {
+
+// 		int cornerOff = 0;
+// 		std::vector<TrianglePrimitive> vertices;
+// 		for (auto &f : _m.iter_facets()) {
+
+// 			// There is as much triangles as vertices in facet,
+// 			int nv = f.size();
+// 			const int ntri = nv;
+
+// 			// Compute bary
+// 			vec3 bary{0.};
+// 			for (int v = 0; v < nv; ++v) {
+// 				auto pos = f.vertex(v).pos();
+// 				bary += pos;
+// 			}
+// 			bary /= nv;
+
+// 			// Compute normal
+// 			std::vector<vec3> pts(nv);
+// 			for (int v = 0; v < nv; ++v) {
+// 				pts[v] = f.vertex(v).pos();
+// 			}
+// 			vec3 n = geo::normal(pts.data(), nv);
+
+			
+
+// 			for (int t = 0; t < ntri; ++t) {
+
+// 				const int lv = t;
+// 				// Three points of current triangle
+// 				vec3 verts[3] = {bary , f.vertex(lv).pos(), f.vertex((lv + 1) % nv).pos()};
+
+// 				// Compute first corner index of the triangle
+// 				int firstCornerIdx = cornerOff + lv;
+
+// 				for (int i = 0; i < 3; ++i) {
+
+// 					// Retrieve vertex id (0 is always the barycenter => no vertex associated)
+// 					int v = i == 0 ? -1 : f.vertex((lv + (i - 1)) % nv);
+
+// 					auto p = verts[i];
+// 					auto p1 = verts[1];
+// 					auto p2 = verts[2];
+
+// 					vertices.push_back({
+// 						.id = v, // useless i think
+// 						.facetIndex = f,
+// 						.cellIndex = -1, // Don't care
+// 						.localIndex = i,
+// 						// .cornerIndex = firstCornerIdx,
+// 						.cornerIndex = lv,
+// 						.p = sl::algebra::vecf(p),
+// 						.p0 = sl::algebra::vecf(bary),
+// 						.p1 = sl::algebra::vecf(p1),
+// 						.p2 = sl::algebra::vecf(p2),
+// 						.normal = sl::algebra::vecf(n),
+// 						.cornerOff = cornerOff
+// 					});
+// 				}
+// 			}
+
+// 			cornerOff += f.size();
+// 		}
+
+// 		return vertices;
+// 	}
+
+// };
 
 
 
@@ -478,6 +658,10 @@ struct VolumeMesh : public Mesh {
 		return s;
 	}
 
+	int facetSize(int f) const override {
+		return _m.facet_size(f);
+	}
+
 	std::tuple<vec3, vec3> bbox() override {
 		vec3 min = vec3(FLT_MAX);
 		vec3 max = vec3(-FLT_MAX);
@@ -508,6 +692,48 @@ struct VolumeMesh : public Mesh {
 	std::vector<EdgePrimitive> getEdgesStream() final override {
 		// TODO implement
 		return {};
+	}
+
+	std::vector<TrianglePrimitive> getTrianglesStream() final override {
+
+		std::vector<TrianglePrimitive> vertices;
+		vertices.reserve(_m.ncells() * 4 /* 4 facets per cell */ * 3 /* 3 points per facet */);
+
+		for (auto &c : _m.iter_cells()) {
+
+			vec3 v0 = c.vertex(0);
+			vec3 v1 = c.vertex(1);
+			vec3 v2 = c.vertex(2);
+			vec3 v3 = c.vertex(3);
+
+			vec3 b = (v0 + v1 + v2 + v3) / 4.;
+
+			for (auto &f : c.iter_facets()) {
+				
+				vec3 p0 = f.vertex(0);
+				vec3 p1 = f.vertex(1);
+				vec3 p2 = f.vertex(2);
+
+				for (int lv = 0; lv < 3; ++lv) {
+					
+					vertices.push_back({
+						.id = f.vertex(lv),
+						.facetIndex = f,
+						.cellIndex = c,
+						.localIndex = lv,
+						.cornerIndex = -1, // Don't care
+						.p = {0, 0, 0}, // Don't care
+						.p0 = sl::algebra::vecf(p0),
+						.p1 = sl::algebra::vecf(p1),
+						.p2 = sl::algebra::vecf(p2),
+						.bary = sl::algebra::vecf(b),
+						.normal = {0, 0, 0} // Don't care
+					});
+				}
+			}
+		}
+
+		return vertices;
 	}
 
 	std::vector<std::pair<ElementKind, NamedContainer>> getAttributeContainers() const override {
@@ -627,6 +853,10 @@ struct PolyLineMesh : public Mesh {
 		return 2;
 	}
 
+	int facetSize(int f) const override {
+		return 0;
+	}
+
 	std::vector<PointPrimitive> getPointsStream() final override {
 		std::vector<PointPrimitive> points(_m.nverts());
 		for (auto &v : _m.iter_vertices()) {
@@ -673,7 +903,9 @@ struct PolyLineMesh : public Mesh {
 		return vertices;
 	}
 
-
+	std::vector<TrianglePrimitive> getTrianglesStream() final override {
+		return {};
+	}
 
 	PolyLineAttributes _attributes;
 	PolyLine _m;

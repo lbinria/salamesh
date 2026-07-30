@@ -42,9 +42,9 @@ Material PointShader::createMaterial() {
 }
 
 void PointShader::update(MeshBuffer &meshBuffer, Mesh &mesh) {
-	auto pointsStream = mesh.getPointsStream();
-	meshBuffer.nelements = pointsStream.size();
-	meshBuffer.write(pointsStream);
+	auto stream = mesh.getPointsStream();
+	meshBuffer.nelements = stream.size();
+	meshBuffer.write(stream);
 }
 
 void PointShader::transformStream(std::vector<PointPrimitive> points) {

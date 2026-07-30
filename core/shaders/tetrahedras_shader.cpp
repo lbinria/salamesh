@@ -19,14 +19,14 @@ MeshBuffer TetrahedrasShader::createMeshBuffer() {
 	glBindBuffer(GL_ARRAY_BUFFER, vbo);
 	// setup VBO
 	// sl::createVBOInteger(shader.id, "cornerIndex", sizeof(Vertex), (void*)offsetof(Vertex, cornerIndex));
-	sl::createVBOVec3(shader.id, "p0", sizeof(Vertex), (void*)offsetof(Vertex, p0)); 
-	sl::createVBOVec3(shader.id, "p1", sizeof(Vertex), (void*)offsetof(Vertex, p1)); 
-	sl::createVBOVec3(shader.id, "p2", sizeof(Vertex), (void*)offsetof(Vertex, p2)); 
-	sl::createVBOVec3(shader.id, "bary", sizeof(Vertex), (void*)offsetof(Vertex, bary)); 
-	sl::createVBOInteger(shader.id, "localIndex", sizeof(Vertex), (void*)offsetof(Vertex, localIndex));
-	sl::createVBOInteger(shader.id, "vertexIndex", sizeof(Vertex), (void*)offsetof(Vertex, vertexIndex));
-	sl::createVBOInteger(shader.id, "facetIndex", sizeof(Vertex), (void*)offsetof(Vertex, facetIndex));
-	sl::createVBOInteger(shader.id, "cellIndex", sizeof(Vertex), (void*)offsetof(Vertex, cellIndex));
+	sl::createVBOVec3(shader.id, "p0", sizeof(TrianglePrimitive), (void*)offsetof(TrianglePrimitive, p0)); 
+	sl::createVBOVec3(shader.id, "p1", sizeof(TrianglePrimitive), (void*)offsetof(TrianglePrimitive, p1)); 
+	sl::createVBOVec3(shader.id, "p2", sizeof(TrianglePrimitive), (void*)offsetof(TrianglePrimitive, p2)); 
+	sl::createVBOVec3(shader.id, "bary", sizeof(TrianglePrimitive), (void*)offsetof(TrianglePrimitive, bary)); 
+	sl::createVBOInteger(shader.id, "localIndex", sizeof(TrianglePrimitive), (void*)offsetof(TrianglePrimitive, localIndex));
+	sl::createVBOInteger(shader.id, "vertexIndex", sizeof(TrianglePrimitive), (void*)offsetof(TrianglePrimitive, id));
+	sl::createVBOInteger(shader.id, "facetIndex", sizeof(TrianglePrimitive), (void*)offsetof(TrianglePrimitive, facetIndex));
+	sl::createVBOInteger(shader.id, "cellIndex", sizeof(TrianglePrimitive), (void*)offsetof(TrianglePrimitive, cellIndex));
 
 	return MeshBuffer(vao, vbo);
 };
@@ -41,50 +41,7 @@ Material TetrahedrasShader::createMaterial() {
 }
 
 void TetrahedrasShader::update(MeshBuffer &meshBuffer, Mesh &mesh) {
-	auto tetrahedrasMesh = dynamic_cast<TetrahedrasMesh*>(&mesh);
-
-	if (tetrahedrasMesh) {
-
-		auto &m = tetrahedrasMesh->_m;
-		meshBuffer.nelements = m.ncells() * 4 /* 4 facets per cell */ * 3 /* 3 points per facet */;
-
-		// std::vector<Vertex> vertices(meshBuffer.nelements);
-		std::vector<Vertex> vertices;
-		vertices.reserve(meshBuffer.nelements);
-
-		for (auto &c : m.iter_cells()) {
-
-			vec3 v0 = c.vertex(0);
-			vec3 v1 = c.vertex(1);
-			vec3 v2 = c.vertex(2);
-			vec3 v3 = c.vertex(3);
-
-			vec3 b = (v0 + v1 + v2 + v3) / 4.;
-
-			for (auto &f : c.iter_facets()) {
-				
-				vec3 p0 = f.vertex(0);
-				vec3 p1 = f.vertex(1);
-				vec3 p2 = f.vertex(2);
-
-				for (int lv = 0; lv < 3; ++lv) {
-					
-					vertices.push_back({
-						.p0 = sl::algebra::vecf(p0),
-						.p1 = sl::algebra::vecf(p1),
-						.p2 = sl::algebra::vecf(p2),
-						.bary = sl::algebra::vecf(b),
-						.localIndex = lv,
-						.vertexIndex = f.vertex(lv),
-						.facetIndex = f,
-						.cellIndex = c
-					});
-				}
-			}
-		}
-
-		glNamedBufferData(meshBuffer.vbo(), vertices.size() * sizeof(Vertex), vertices.data(), GL_STATIC_DRAW);
-
-	}
-
+	auto stream = mesh.getTrianglesStream();
+	meshBuffer.nelements = stream.size();
+	meshBuffer.write(stream);
 }

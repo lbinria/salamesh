@@ -15,17 +15,17 @@ MeshBuffer PolyShader::createMeshBuffer() {
 
 
 	// Setup VBO
-	sl::createVBOInteger(shader.id, "vertexIndex", sizeof(Vertex), (void*)offsetof(Vertex, vertexIndex));
-	sl::createVBOInteger(shader.id, "localIndex", sizeof(Vertex), (void*)offsetof(Vertex, localIndex));
-	sl::createVBOInteger(shader.id, "cornerIndex", sizeof(Vertex), (void*)offsetof(Vertex, cornerIndex));
-	sl::createVBOInteger(shader.id, "cornerOff", sizeof(Vertex), (void*)offsetof(Vertex, cornerOff));
-	sl::createVBOInteger(shader.id, "facetIndex", sizeof(Vertex), (void*)offsetof(Vertex, facetIndex));
+	sl::createVBOInteger(shader.id, "vertexIndex", sizeof(TrianglePrimitive), (void*)offsetof(TrianglePrimitive, id));
+	sl::createVBOInteger(shader.id, "localIndex", sizeof(TrianglePrimitive), (void*)offsetof(TrianglePrimitive, localIndex));
+	sl::createVBOInteger(shader.id, "cornerIndex", sizeof(TrianglePrimitive), (void*)offsetof(TrianglePrimitive, cornerIndex));
+	sl::createVBOInteger(shader.id, "cornerOff", sizeof(TrianglePrimitive), (void*)offsetof(TrianglePrimitive, cornerOff));
+	sl::createVBOInteger(shader.id, "facetIndex", sizeof(TrianglePrimitive), (void*)offsetof(TrianglePrimitive, facetIndex));
 
-	sl::createVBOVec3(shader.id, "p", sizeof(Vertex), (void*)offsetof(Vertex, p));
-	sl::createVBOVec3(shader.id, "p0", sizeof(Vertex), (void*)offsetof(Vertex, p0));
-	sl::createVBOVec3(shader.id, "p1", sizeof(Vertex), (void*)offsetof(Vertex, p1));
-	sl::createVBOVec3(shader.id, "p2", sizeof(Vertex), (void*)offsetof(Vertex, p2));
-	sl::createVBOVec3(shader.id, "n", sizeof(Vertex), (void*)offsetof(Vertex, n));
+	sl::createVBOVec3(shader.id, "p", sizeof(TrianglePrimitive), (void*)offsetof(TrianglePrimitive, p));
+	sl::createVBOVec3(shader.id, "p0", sizeof(TrianglePrimitive), (void*)offsetof(TrianglePrimitive, p0));
+	sl::createVBOVec3(shader.id, "p1", sizeof(TrianglePrimitive), (void*)offsetof(TrianglePrimitive, p1));
+	sl::createVBOVec3(shader.id, "p2", sizeof(TrianglePrimitive), (void*)offsetof(TrianglePrimitive, p2));
+	sl::createVBOVec3(shader.id, "n", sizeof(TrianglePrimitive), (void*)offsetof(TrianglePrimitive, normal));
 
 	unsigned int bufNVertsPerFacet, texNVertsPerFacet;
 	sl::createTBO(bufNVertsPerFacet, texNVertsPerFacet);
@@ -59,92 +59,19 @@ bool PolyShader::isCompatible(Mesh &mesh) {
 }
 
 void PolyShader::update(MeshBuffer &meshBuffer, Mesh &mesh) {
-	auto quadsMesh = dynamic_cast<QuadsMesh*>(&mesh);
-	auto polygonsMesh = dynamic_cast<PolygonsMesh*>(&mesh);
 
-	if (quadsMesh || polygonsMesh) {
-
-		Surface& m = quadsMesh ? static_cast<Surface&>(quadsMesh->_m) : polygonsMesh->_m;
-
-		// auto &m = quadsMesh->_m;
-		std::vector<float> nVertsPerFacet(m.nfacets());
+		std::vector<float> nVertsPerFacet(mesh.nfacets());
 
 		// Compute number of triangles needed to represent a facet
-		int ntri = 0;
-		for (auto &f : m.iter_facets()) {
-			int nvertsFacet = f.size();
-			ntri += nvertsFacet;
-			nVertsPerFacet[f] = static_cast<float>(nvertsFacet);
-		}
-		meshBuffer.nelements = 3 * ntri /* 3 points per tri, n tri per facet */;
-
-		int cornerOff = 0;
-		std::vector<Vertex> vertices;
-		for (auto &f : m.iter_facets()) {
-
-			// There is as much triangles as vertices in facet,
-			int nv = f.size();
-			const int ntri = nv;
-
-			// Compute bary
-			vec3 bary{0.};
-			for (int v = 0; v < nv; ++v) {
-				auto pos = f.vertex(v).pos();
-				bary += pos;
-			}
-			bary /= nv;
-
-			// Compute normal
-			std::vector<vec3> pts(nv);
-			for (int v = 0; v < nv; ++v) {
-				pts[v] = f.vertex(v).pos();
-			}
-			vec3 n = geo::normal(pts.data(), nv);
-
-			
-
-			for (int t = 0; t < ntri; ++t) {
-
-				const int lv = t;
-				// Three points of current triangle
-				vec3 verts[3] = {bary , f.vertex(lv).pos(), f.vertex((lv + 1) % nv).pos()};
-
-				// Compute first corner index of the triangle
-				int firstCornerIdx = cornerOff + lv;
-
-				for (int i = 0; i < 3; ++i) {
-
-					// Retrieve vertex id (0 is always the barycenter => no vertex associated)
-					int v = i == 0 ? -1 : f.vertex((lv + (i - 1)) % nv);
-
-					auto p = verts[i];
-					auto p1 = verts[1];
-					auto p2 = verts[2];
-
-					vertices.push_back({
-						.vertexIndex = v, // useless i think
-						.localIndex = i,
-						// .cornerIndex = firstCornerIdx,
-						.cornerIndex = lv,
-						.cornerOff = cornerOff,
-						.facetIndex = f,
-						.p = sl::algebra::vecf(p),
-						.p0 = sl::algebra::vecf(bary),
-						.p1 = sl::algebra::vecf(p1),
-						.p2 = sl::algebra::vecf(p2),
-						.n = sl::algebra::vecf(n)
-					});
-				}
-			}
-
-			cornerOff += f.size();
+		for (int fi = 0; fi < mesh.nfacets(); ++fi) {
+			int nvertsFacet = mesh.facetSize(fi);
+			nVertsPerFacet[fi] = static_cast<float>(nvertsFacet);
 		}
 
+		auto stream = mesh.getTrianglesStream();
+		meshBuffer.nelements = stream.size();
 		// Write VBO buffer
-		meshBuffer.write(vertices);
+		meshBuffer.write(stream);
 		// Write TBO buffer
 		meshBuffer.write("nvertsPerFacetBuf", nVertsPerFacet);
-
-	}
-
 }
