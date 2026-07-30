@@ -83,17 +83,13 @@ struct Mesh {
 	virtual int nhalfedges() const = 0;
 	virtual int cellSize() = 0;
 
-	virtual std::vector<PointPrimitive> getPointsStream() {
-		return {};
-	}
+	virtual std::vector<PointPrimitive> getPointsStream() = 0;
 
 	virtual std::vector<PointPrimitive> getTrianglesStream() {
 		return {};
 	}
 
-	virtual std::vector<PointPrimitive> getEdgesStream() {
-		return {};
-	}
+	virtual std::vector<EdgePrimitive> getEdgesStream() = 0;
 
 	// TODO set private (pass in constructor)
 	std::string path = "";
@@ -200,19 +196,7 @@ struct Mesh {
 
 // struct UMMesh : public Mesh {
 
-// 	std::vector<PointPrimitive> getPointsStream() final override {
-// 		std::vector<PointPrimitive> points(nverts());
-// 		for (auto &v : _m.iter_vertices()) {
-// 			vec3 p = v;
-// 			points[v] = { 
-// 				.id = v, 
-// 				.pos = sl::algebra::vecf(p), 
-// 				.normal = {0,0,0},
-// 				.size = 1.f
-// 			};
-// 		}
-// 		return points;
-// 	}
+
 
 // };
 
@@ -332,6 +316,53 @@ struct SurfaceMesh : public Mesh {
 			};
 		}
 		return points;
+	}
+
+	std::vector<EdgePrimitive> getEdgesStream() final override {
+		std::vector<EdgePrimitive> vertices;
+		// pre-allocate to speed-up
+		vertices.reserve(_m.nfacets() * 4 /* reserve for 4 side facets */ * 6 /* 1 quad, 2 tri per quad, 3 points per tri */); 
+
+		for (auto &f : _m.iter_facets()) {
+			int facetSize = _m.facet_size(f);
+
+			vec3 b;
+			for (int lv = 0; lv < f.size(); ++lv) {
+				b += f.vertex(lv).pos();
+			}
+			b /= f.size();
+			sl::algebra::vec3 bary = sl::algebra::vecf(b);
+
+			for (int i = 0; i < facetSize; ++i) {
+				
+				auto v0 = f.vertex(i);
+				auto v1 = f.vertex((i + 1) % facetSize);
+				auto p0 = v0.pos();
+				auto p1 = v1.pos();
+				
+				int halfedgeIdx = f * facetSize + i;
+
+				sl::algebra::vec3 gp0 = sl::algebra::vecf(p0);
+				sl::algebra::vec3 gp1 = sl::algebra::vecf(p1);
+
+				// build the 4 “corner” vertices
+				EdgePrimitive lv0{halfedgeIdx, gp0, gp1, -1.0f, 0.0f, bary};  // corner: start, left side
+				EdgePrimitive lv1{halfedgeIdx, gp0, gp1, +1.0f, 0.0f, bary};  // corner: start, right side
+				EdgePrimitive lv2{halfedgeIdx, gp0, gp1, -1.0f, 1.0f, bary};  // corner: end,   left side
+				EdgePrimitive lv3{halfedgeIdx, gp0, gp1, +1.0f, 1.0f, bary};  // corner: end,   right side
+
+				vertices.push_back(lv0);
+				vertices.push_back(lv1);
+				vertices.push_back(lv2);
+				
+				vertices.push_back(lv2);
+				vertices.push_back(lv3);
+				vertices.push_back(lv1);
+
+			}
+		}
+
+		return vertices;
 	}
 
 	std::vector<std::pair<ElementKind, NamedContainer>> getAttributeContainers() const override {
@@ -474,6 +505,11 @@ struct VolumeMesh : public Mesh {
 		return points;
 	}
 
+	std::vector<EdgePrimitive> getEdgesStream() final override {
+		// TODO implement
+		return {};
+	}
+
 	std::vector<std::pair<ElementKind, NamedContainer>> getAttributeContainers() const override {
 		std::vector<std::pair<ElementKind, NamedContainer>> containers;
 		
@@ -604,6 +640,40 @@ struct PolyLineMesh : public Mesh {
 		}
 		return points;
 	}
+
+	std::vector<EdgePrimitive> getEdgesStream() final override {
+		std::vector<EdgePrimitive> vertices;
+		// pre-allocate to speed-up
+		vertices.reserve(_m.nedges() * 6 /* 1 quad, 2 tri per quad, 3 points per tri */); 
+
+		for (auto &e : _m.iter_edges()) {
+
+			vec3 b = vec3(e.from() + e.to()) * .5;
+			sl::algebra::vec3 bary = sl::algebra::vecf(b);
+
+			sl::algebra::vec3 gp0 = sl::algebra::vecf(e.from());
+			sl::algebra::vec3 gp1 = sl::algebra::vecf(e.to());
+
+			// build the 4 “corner” vertices
+			EdgePrimitive lv0{e, gp0, gp1, -1.0f, 0.0f, bary};  // corner: start, left side
+			EdgePrimitive lv1{e, gp0, gp1, +1.0f, 0.0f, bary};  // corner: start, right side
+			EdgePrimitive lv2{e, gp0, gp1, -1.0f, 1.0f, bary};  // corner: end,   left side
+			EdgePrimitive lv3{e, gp0, gp1, +1.0f, 1.0f, bary};  // corner: end,   right side
+
+			vertices.push_back(lv0);
+			vertices.push_back(lv1);
+			vertices.push_back(lv2);
+			
+			vertices.push_back(lv2);
+			vertices.push_back(lv3);
+			vertices.push_back(lv1);
+
+		}
+
+		return vertices;
+	}
+
+
 
 	PolyLineAttributes _attributes;
 	PolyLine _m;

@@ -8,6 +8,24 @@ struct PointPrimitive {
 	float size;
 };
 
+
+// sl::algebra::vec3 p;
+
+// int halfedgeIndex;
+// sl::algebra::vec3 P0;
+// sl::algebra::vec3 P1;
+// float side;
+// float end;
+// sl::algebra::vec3 bary;
+struct EdgePrimitive {
+	int id;
+	sl::algebra::vec3 p0;
+	sl::algebra::vec3 p1;
+	float side;
+	float end;
+	sl::algebra::vec3 bary;
+};
+
 		// int cornerIndex;
 
 		// int cornerIndex;
