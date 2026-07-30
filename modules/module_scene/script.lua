@@ -433,12 +433,10 @@ function draw_model_properties(model, k, view)
 
 				-- imgui.Text("selected: " .. selName)
 
-				local selName = "None" 
-				if model.selected_attribute ~= "" then 
-					selName = model.selected_attribute
-				end
+				local selected_attr = model.mesh:get_attribute(model.selected_attribute)
+				local selected_attr_label = format_label_attr(selected_attr)
 
-				if (imgui.BeginCombo("##combo_attribute0_selection", selName)) then
+				if (imgui.BeginCombo("##combo_attribute0_selection", selected_attr_label)) then
 
 					local is_selected = model.selected_attribute == ""
 					if (imgui.Selectable("None", is_selected)) then
@@ -448,14 +446,11 @@ function draw_model_properties(model, k, view)
 					end
 
 					for i, attr in ipairs(attributes) do
-						local is_selected = attr.name == model.selected_attribute
+						local cur_attr_label = format_label_attr(attr) 
+						
+						local is_selected = cur_attr_label == selected_attr_label
 
-						local label = attr.name 
-						.. " (" .. element_kind_to_string(attr.kind) .. ")" 
-						.. " (" .. element_type_to_string(attr.type) .. ")"
-						.. " (" .. tostring(attr.dim) .. ")"
-
-						if (imgui.Selectable(label, is_selected)) then
+						if (imgui.Selectable(cur_attr_label, is_selected)) then
 							-- Set attribute & colormap
 							model:unset_layers(Layer.COLORMAP_0, false)
 							model:set_colormap(app.scene.colormaps[selected_colormap])
@@ -695,4 +690,14 @@ function draw_gui()
 
 	imgui.End()
 
+end
+
+function format_label_attr(attr)
+	if not attr then 
+		return "None"
+	end
+	return attr.name 
+	.. " (" .. element_kind_to_string(attr.kind) .. ")" 
+	.. " (" .. element_type_to_string(attr.type) .. ")"
+	.. " (" .. tostring(attr.dim) .. ")"
 end
