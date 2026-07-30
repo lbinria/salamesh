@@ -1176,7 +1176,7 @@ void App::mouseButton(int button, int action, int mods) {
 void App::mouseMove(double x, double y) {
 
 	// TODO important remove just for test
-	// st.pick = scene.getDefaultRenderSurface().getPickState(x, y, st.mouse.getCursorRadius());
+	st.pick = scene.getDefaultRenderSurface().getPickState(x, y, st.mouse.getCursorRadius());
 
 
 	for (auto &script : scripts) {

@@ -4,7 +4,7 @@
 using namespace UM;
 
 #include "attribute.h"
-#include "mesh_primitives.h"
+#include "mesh_primitive.h"
 #include <optional>
 #include <float.h>
 

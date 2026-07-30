@@ -33,8 +33,6 @@ struct PointShader : public ShaderBase {
 	virtual Material createMaterial() override;
 	virtual void update(MeshBuffer &meshBuffer, Mesh &mesh) override;
 
-	void transformStream(std::vector<PointPrimitive> points) override;
-
 	private:
 
 	void updatePointSet(MeshBuffer &meshBuffer, PointSet &ps);

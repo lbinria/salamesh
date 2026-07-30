@@ -6,15 +6,10 @@
 #include "light_params.h"
 #include "clipping_params.h"
 
-#include "mesh_primitives.h"
+#include "mesh_primitive.h"
 
 bool PointShader::isCompatible(Mesh &mesh) {
-	auto trianglesMesh = dynamic_cast<TrianglesMesh*>(&mesh);
-	auto quadsMesh = dynamic_cast<QuadsMesh*>(&mesh);
-	auto polygonsMesh = dynamic_cast<PolygonsMesh*>(&mesh);
-	auto polylineMesh = dynamic_cast<PolyLineMesh*>(&mesh);
-	auto tetrahedrasMesh = dynamic_cast<TetrahedrasMesh*>(&mesh);
-	return trianglesMesh || quadsMesh || polygonsMesh || polylineMesh || tetrahedrasMesh;
+	return true;
 }
 
 MeshBuffer PointShader::createMeshBuffer() {
@@ -45,8 +40,4 @@ void PointShader::update(MeshBuffer &meshBuffer, Mesh &mesh) {
 	auto stream = mesh.getPointsStream();
 	meshBuffer.nelements = stream.size();
 	meshBuffer.write(stream);
-}
-
-void PointShader::transformStream(std::vector<PointPrimitive> points) {
-
 }

@@ -189,16 +189,12 @@ void Scene::render(std::shared_ptr<SceneModel> model, std::unique_ptr<ShaderBase
 	if (mesh.shouldUpdate()) {
 		// Update current mesh buffer for given mesh
 		shader->update(meshBuffer, mesh);
-		auto pstr = mesh.getPointsStream();
+		// auto pstr = mesh.getPointsStream();
 		// Test meshBuffer.write(mesh.getPointsStream());
 		// Update layers (only activated layers) according to new mesh
 		model->updateLayers();
 		// Set model as updated
 		wasUpdated[model->getName()] = true;
-
-		// auto &t = app.getTransformRegistry();
-		// auto result = t.transform(*shader, mesh);
-		// shader->update(meshBuffer, *result);
 	}
 
 	if (!material.isVisible())

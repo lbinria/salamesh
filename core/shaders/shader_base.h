@@ -46,10 +46,6 @@ struct ShaderBase {
 
 	}
 
-	virtual void transformStream(std::vector<PointPrimitive> points) {
-		
-	}
-
 	virtual unsigned int renderElement() {
 		return GL_POINTS;
 	}
