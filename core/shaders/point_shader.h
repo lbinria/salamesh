@@ -33,11 +33,7 @@ struct PointShader : public ShaderBase {
 	virtual Material createMaterial() override;
 	virtual void update(MeshBuffer &meshBuffer, Mesh &mesh) override;
 
-	void update(MeshBuffer &meshBuffer, VertexContainer &container) {
-		auto &c = dynamic_cast<ConcreteVertexContainer<PointShader::Vertex>&>(container);
-		meshBuffer.nelements = c.vertices.size();
-		meshBuffer.write(c.vertices);
-	}
+	void transformStream(std::vector<PointPrimitive> points) override;
 
 	private:
 

@@ -6,6 +6,8 @@
 #include "light_params.h"
 #include "clipping_params.h"
 
+#include "mesh_primitives.h"
+
 bool PointShader::isCompatible(Mesh &mesh) {
 	auto trianglesMesh = dynamic_cast<TrianglesMesh*>(&mesh);
 	auto quadsMesh = dynamic_cast<QuadsMesh*>(&mesh);
@@ -23,9 +25,9 @@ MeshBuffer PointShader::createMeshBuffer() {
 	glBindVertexArray(vao);
 	glBindBuffer(GL_ARRAY_BUFFER, vbo);
 	// setup VBO
-	sl::createVBOInteger(shader.id, "vertexIndex", sizeof(Vertex), (void*)offsetof(Vertex, vertexIndex));
-	sl::createVBOVec3(shader.id, "p", sizeof(Vertex), (void*)offsetof(Vertex, position));
-	sl::createVBOFloat(shader.id, "sizeScale", sizeof(Vertex), (void*)offsetof(Vertex, size));
+	sl::createVBOInteger(shader.id, "vertexIndex", sizeof(PointPrimitive), (void*)offsetof(PointPrimitive, id));
+	sl::createVBOVec3(shader.id, "p", sizeof(PointPrimitive), (void*)offsetof(PointPrimitive, pos));
+	sl::createVBOFloat(shader.id, "sizeScale", sizeof(PointPrimitive), (void*)offsetof(PointPrimitive, size));
 
 	return MeshBuffer(vao, vbo);
 };
@@ -39,34 +41,12 @@ Material PointShader::createMaterial() {
 	return Material(params);
 }
 
-void PointShader::updatePointSet(MeshBuffer &meshBuffer, PointSet &ps) {
-	std::vector<Vertex> vertices(ps.size());
-	for (int i = 0; i < ps.size(); ++i) {
-		auto &v = ps[i];
-
-		vertices[i] = { 
-			.vertexIndex = i,
-			.position = sl::algebra::vecf(v),
-			.size = 1.f
-		};
-	}
-
-	meshBuffer.nelements = vertices.size();
-	glNamedBufferData(meshBuffer.vbo(), vertices.size() * sizeof(Vertex), vertices.data(), GL_STATIC_DRAW);
-
+void PointShader::update(MeshBuffer &meshBuffer, Mesh &mesh) {
+	auto pointsStream = mesh.getPointsStream();
+	meshBuffer.nelements = pointsStream.size();
+	meshBuffer.write(pointsStream);
 }
 
+void PointShader::transformStream(std::vector<PointPrimitive> points) {
 
-void PointShader::update(MeshBuffer &meshBuffer, Mesh &mesh) {
-	auto trianglesMesh = dynamic_cast<TrianglesMesh*>(&mesh);
-	if (trianglesMesh)
-		updatePointSet(meshBuffer, trianglesMesh->_m.points);
-	else if (auto quadsMesh = dynamic_cast<QuadsMesh*>(&mesh))
-		updatePointSet(meshBuffer, quadsMesh->_m.points);
-	else if (auto polygonsMesh = dynamic_cast<PolygonsMesh*>(&mesh))
-		updatePointSet(meshBuffer, polygonsMesh->_m.points);
-	else if (auto polyLineMesh = dynamic_cast<PolyLineMesh*>(&mesh))
-		updatePointSet(meshBuffer, polyLineMesh->_m.points);
-	else if (auto tetrahedrasMesh = dynamic_cast<TetrahedrasMesh*>(&mesh))
-		updatePointSet(meshBuffer, tetrahedrasMesh->_m.points);
 }

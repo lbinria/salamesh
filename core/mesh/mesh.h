@@ -4,6 +4,7 @@
 using namespace UM;
 
 #include "attribute.h"
+#include "mesh_primitives.h"
 #include <optional>
 #include <float.h>
 
@@ -81,6 +82,18 @@ struct Mesh {
 	virtual int ncorners() const = 0; 
 	virtual int nhalfedges() const = 0;
 	virtual int cellSize() = 0;
+
+	virtual std::vector<PointPrimitive> getPointsStream() {
+		return {};
+	}
+
+	virtual std::vector<PointPrimitive> getTrianglesStream() {
+		return {};
+	}
+
+	virtual std::vector<PointPrimitive> getEdgesStream() {
+		return {};
+	}
 
 	// TODO set private (pass in constructor)
 	std::string path = "";
@@ -184,6 +197,24 @@ struct Mesh {
 	static inline int maxIndex = 0;
 	int _index;
 };
+
+// struct UMMesh : public Mesh {
+
+// 	std::vector<PointPrimitive> getPointsStream() final override {
+// 		std::vector<PointPrimitive> points(nverts());
+// 		for (auto &v : _m.iter_vertices()) {
+// 			vec3 p = v;
+// 			points[v] = { 
+// 				.id = v, 
+// 				.pos = sl::algebra::vecf(p), 
+// 				.normal = {0,0,0},
+// 				.size = 1.f
+// 			};
+// 		}
+// 		return points;
+// 	}
+
+// };
 
 // Define concept to accept only types that are derived from Surface
 template<typename T>
@@ -289,6 +320,20 @@ struct SurfaceMesh : public Mesh {
 		return {min, max};
 	}
 
+	std::vector<PointPrimitive> getPointsStream() final override {
+		std::vector<PointPrimitive> points(_m.nverts());
+		for (auto &v : _m.iter_vertices()) {
+			vec3 p = v;
+			points[v] = { 
+				.id = v, 
+				.pos = sl::algebra::vecf(p), 
+				.normal = {0,0,0},
+				.size = 1.f
+			};
+		}
+		return points;
+	}
+
 	std::vector<std::pair<ElementKind, NamedContainer>> getAttributeContainers() const override {
 		std::vector<std::pair<ElementKind, NamedContainer>> containers;
 		
@@ -316,6 +361,9 @@ struct SurfaceMesh : public Mesh {
 typedef SurfaceMesh<Triangles> TrianglesMesh;
 typedef SurfaceMesh<Quads> QuadsMesh;
 typedef SurfaceMesh<Polygons> PolygonsMesh;
+
+
+
 
 
 template<VolumeDerived TVolume>
@@ -410,6 +458,20 @@ struct VolumeMesh : public Mesh {
 		}
 
 		return {min, max};
+	}
+
+	std::vector<PointPrimitive> getPointsStream() final override {
+		std::vector<PointPrimitive> points(_m.nverts());
+		for (auto &v : _m.iter_vertices()) {
+			vec3 p = v;
+			points[v] = { 
+				.id = v, 
+				.pos = sl::algebra::vecf(p), 
+				.normal = {0,0,0},
+				.size = 1.f
+			};
+		}
+		return points;
 	}
 
 	std::vector<std::pair<ElementKind, NamedContainer>> getAttributeContainers() const override {
@@ -527,6 +589,20 @@ struct PolyLineMesh : public Mesh {
 
 	int cellSize() override {
 		return 2;
+	}
+
+	std::vector<PointPrimitive> getPointsStream() final override {
+		std::vector<PointPrimitive> points(_m.nverts());
+		for (auto &v : _m.iter_vertices()) {
+			vec3 p = v;
+			points[v] = { 
+				.id = v, 
+				.pos = sl::algebra::vecf(p), 
+				.normal = {0,0,0},
+				.size = 1.f
+			};
+		}
+		return points;
 	}
 
 	PolyLineAttributes _attributes;

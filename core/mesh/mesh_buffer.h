@@ -1,6 +1,8 @@
 #pragma once
+
 #include "shader.h"
 #include "material_params.h"
+#include "mesh_primitives.h"
 #include "helpers.h"
 
 #include <ultimaille/all.h>
@@ -41,6 +43,11 @@ struct MeshBuffer {
 	template<typename T>
 	void write(const std::string tboName, std::vector<T> data, GLenum usage = GL_STATIC_DRAW) {
 		glNamedBufferData(tbos[tboName].buf, data.size() * sizeof(T), data.data(), usage);
+	}
+
+	void update(std::vector<PointPrimitive> points) {
+		// auto vertices = shader.transformStream(points);
+		// write(vertices);
 	}
 
 	unsigned int nelements = 0;

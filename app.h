@@ -46,8 +46,6 @@
 
 #include "core/navigation_path.h"
 
-#include "transformer.h"
-
 using namespace UM;
 
 #include <filesystem>
@@ -188,14 +186,9 @@ struct App final : public IApp {
 		return false;
 		#endif
 	}
-
-	TransformRegistry& getTransformRegistry() override {
-		return _transformRegistry;
-	}
-
+	
 	private:
 
-	TransformRegistry _transformRegistry;
 
 	Args args;
 
