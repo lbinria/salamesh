@@ -692,6 +692,42 @@ function draw_gui()
 
 end
 
+function key_event(key, scancode, action, mods)
+	-- up: key 265, scancode: 103 
+	-- down: key: 264, scancode: 125
+	-- print(tostring(key))
+	local sel_i = 1
+	local indexed_models = {}
+	if action == 0 and (key == 265 or key == 264) then 
+		print("ok")
+		local i = 1
+
+		print("n models:" .. tostring(#app.scene.models))
+		for model_name, model in pairs(app.scene.models) do
+			print("add to indexed_model: " .. tostring(model.name) .. " at " .. tostring(i))
+			indexed_models[i] = model.name
+			if model.name == app.scene.selected_model then 
+				sel_i = i
+			end
+			i = i + 1
+		end
+		print("oki")
+
+	end
+
+
+
+	if action == 0 and key == 265 then 
+		print("sel_i:" .. tostring(sel_i))
+		print("select: " .. tostring(indexed_models[sel_i]))
+		app.scene.selected_model = indexed_models[sel_i - 1]
+	elseif action == 0 and key == 264 then 
+		print("bab")
+		-- print("select: " .. indexed_models[sel_i])
+		app.scene.selected_model = indexed_models[sel_i + 1]
+	end
+end
+
 function format_label_attr(attr)
 	if not attr then 
 		return "None"
