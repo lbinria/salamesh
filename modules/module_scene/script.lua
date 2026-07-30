@@ -3,42 +3,6 @@ function init()
 	print("Number of models: " .. tostring(#app.scene.models))
 end
 
-function draw_tree(model, k)
-	if (imgui.TreeNode(k)) then 
-
-		if (app.scene.selected_model == k) then
-			imgui.TextColored(1, 1, 0, 1, "Selected")
-		end
-
-		local sel_visible, new_visible = imgui.Checkbox("Visible##" .. k .. "_visible", model.visible)
-		if (sel_visible) then 
-			model.visible = new_visible
-		end
-
-
-		imgui.SameLine()
-		if (imgui.SmallButton("View")) then 
-			app.scene.selected_model = k
-			-- Set camera position !
-			app.scene.current_camera:look_at_box(model.mesh.bbox)
-		end
-
-		draw_model_properties(model, k, 0)
-
-		imgui.Separator()
-
-		
-		for _, child in ipairs(app.scene.models) do
-			-- TODO ImGuiTreeNodeFlags_Selected if model selected
-			if (child.parent == model) then 
-				draw_tree(child, child.name)
-			end
-		end
-
-		imgui.TreePop()
-	end 
-end
-
 local clipping_planes = {"x", "y", "z"}
 local sel_clipping_plane = {}
 local invert_clipping = false
@@ -605,27 +569,6 @@ function draw_gui()
 
 		end 
 
-		if (imgui.BeginTabItem("Hierarchical view")) then
-
-			-- Scene graph
-			imgui.Separator()
-			if (imgui.TreeNode("Scene##tree_model_scene")) then 
-
-				-- for k, model in app.scene.models do 
-				for _, model in ipairs(app.scene.models) do
-					-- TODO ImGuiTreeNodeFlags_Selected if model selected
-					if (model.parent == nil) then 
-						-- draw_tree(model, k)
-					end
-				end
-
-				imgui.TreePop()
-			end
-
-			
-			imgui.EndTabItem()
-		end
-
 		if (imgui.BeginTabItem("Cameras")) then
 
 			imgui.Text("Cameras")
@@ -673,7 +616,7 @@ function draw_gui()
 			imgui.EndTabItem()
 		end
 
-		if (imgui.BeginTabItem("Misc")) then
+		if (imgui.BeginTabItem("Render options")) then
 
 			local sel_background_color, new_background_color = imgui.ColorEdit3("Background Color", app.scene.default_render_surface.background_color)
 			if (sel_background_color) then 
@@ -695,36 +638,45 @@ end
 function key_event(key, scancode, action, mods)
 	-- up: key 265, scancode: 103 
 	-- down: key: 264, scancode: 125
-	-- print(tostring(key))
+	print("key: "..tostring(key))
+
+	local sel_model_name = app.scene.selected_model
+
 	local sel_i = 1
 	local indexed_models = {}
 	if action == 0 and (key == 265 or key == 264) then 
-		print("ok")
 		local i = 1
 
-		print("n models:" .. tostring(#app.scene.models))
-		for model_name, model in pairs(app.scene.models) do
-			print("add to indexed_model: " .. tostring(model.name) .. " at " .. tostring(i))
-			indexed_models[i] = model.name
-			if model.name == app.scene.selected_model then 
+		for model_name, m in pairs(app.scene.models) do
+			indexed_models[i] = m.name
+			if m.name == app.scene.selected_model then 
 				sel_i = i
 			end
 			i = i + 1
 		end
-		print("oki")
 
 	end
 
 
 
 	if action == 0 and key == 265 then 
-		print("sel_i:" .. tostring(sel_i))
-		print("select: " .. tostring(indexed_models[sel_i]))
 		app.scene.selected_model = indexed_models[sel_i - 1]
 	elseif action == 0 and key == 264 then 
-		print("bab")
 		-- print("select: " .. indexed_models[sel_i])
 		app.scene.selected_model = indexed_models[sel_i + 1]
+	elseif key == 257 then 
+		print("enter")
+		for model_name, m in pairs(app.scene.models) do
+			m.visible = (m.name == model.name)
+		end
+	elseif key == 71 then 
+		print("go")
+
+		for model_name, m in pairs(app.scene.models) do
+			if m.name == model.name then
+				app.scene.current_camera:look_at_box(model.mesh.bbox)
+			end
+		end
 	end
 end
 
