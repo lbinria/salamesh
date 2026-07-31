@@ -67,7 +67,6 @@ void SceneModel::setSelectedAttribute(std::optional<Attribute> attr) {
 }
 
 void SceneModel::setLayer(Layer layer, Attribute attr, bool update) {
-	auto &mesh = getMesh();
 
 	_attrNameByLayerAndKind[{layer, attr.getKind()}] = attr.name;
 
@@ -79,14 +78,7 @@ void SceneModel::setLayer(Layer layer, Attribute attr, bool update) {
 	}
 }
 
-void SceneModel::setLayerRange(Layer layer, const std::string attributeName, sl::algebra::vec2 range, bool update) {
-	auto &mesh = getMesh();
-	auto attrOpt = mesh.getAttribute(attributeName);
-
-	if (!attrOpt.has_value())
-		return;
-
-	auto attr = attrOpt.value();
+void SceneModel::setLayerRange(Layer layer, Attribute attr, sl::algebra::vec2 range, bool update) {
 
 	_attrNameByLayerAndKind[{layer, attr.getKind()}] = attr.name;
 
@@ -228,24 +220,22 @@ void SceneModel::applyMaterialsFrom(SceneModel &model) {
 		targetMaterialOpt.value().get().set(sourceMaterial);
 	}
 
-	// Set layers
+	// // Set layers
 	// for (int k = 0; k < static_cast<int>(ElementKind::ELEMENT_KIND_COUNT); ++k) {
 	// 	for (int l = 0; l < static_cast<int>(Layer::LAYER_COUNT); ++l) {
 
 	// 		auto layer = static_cast<Layer>(l);
 	// 		auto kind = static_cast<ElementKind>(k);
-	// 		if (model._attrNameByLayerAndKind.contains({layer, kind})) {
-	// 			auto attrName = model._attrNameByLayerAndKind[{layer, kind}];
-	// 			if (!attrName.empty()) {
-	// 				auto selectedAttrOpt = model.getSelectedAttribute();
-	// 				if (selectedAttrOpt.has_value())
-	// 					setSelectedAttribute(selectedAttrOpt.value());
 
-	// 				if (model.getColormap().has_value()) {
-	// 					setColormap(model.getColormap().value());
-	// 				}
-	// 			}
-	// 		}
+	// 		if (!model._attrNameByLayerAndKind.contains({layer, kind}))
+	// 			continue;
+
+	// 		auto attrName = model._attrNameByLayerAndKind[{layer, kind}];
+
+	// 		if (attrName.empty())
+	// 			continue;
+			
+
 	// 	}
 	// }
 

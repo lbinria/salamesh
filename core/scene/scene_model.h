@@ -90,8 +90,8 @@ struct SceneModel : std::enable_shared_from_this<SceneModel> {
 	void setColormap(Colormap colormap);
 
 	std::string getLayerAttr(Layer layer, ElementKind kind);
-	void setLayer(Layer layer, Attribute attributeName, bool update);
-	void setLayerRange(Layer layer, const std::string attributeName, sl::algebra::vec2 range, bool update);
+	void setLayer(Layer layer, Attribute attr, bool update);
+	void setLayerRange(Layer layer, Attribute attr, sl::algebra::vec2 range, bool update);
 
 
 	void unsetLayer(Layer layer, ElementKind kind, bool reset = false);
