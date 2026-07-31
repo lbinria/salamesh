@@ -52,17 +52,34 @@ std::string SceneModel::getLayerAttr(Layer layer, ElementKind kind) {
 	return defaultAttrName(layer);
 }
 
-std::string SceneModel::getSelectedAttribute() {
+std::optional<Attribute> SceneModel::getSelectedAttribute() {
 	return _selectedAttribute;
 }
 
-void SceneModel::setSelectedAttribute(const std::string attributeName) {
-	setLayer(Layer::COLORMAP_0, attributeName, true);
-	_selectedAttribute = attributeName;
+void SceneModel::setSelectedAttribute(std::optional<Attribute> attr) {
+	// Unset previous colormap layer for the whole model
+	unsetLayers(Layer::COLORMAP_0);
+
+	if (attr.has_value())
+		setLayer(Layer::COLORMAP_0, attr.value(), true);
+	
+	_selectedAttribute = attr;
 }
 
-void SceneModel::setLayer(Layer layer, const std::string attributeName, bool update) {
+void SceneModel::setLayer(Layer layer, Attribute attr, bool update) {
+	auto &mesh = getMesh();
 
+	_attrNameByLayerAndKind[{layer, attr.getKind()}] = attr.name;
+
+	for (auto &[_, material] : getMaterials()) {
+		auto layerParams = material.getParams<LayersParams>("layers");
+
+		if (layerParams)
+			layerParams->setAttribute(attr, layer, true, update);
+	}
+}
+
+void SceneModel::setLayerRange(Layer layer, const std::string attributeName, sl::algebra::vec2 range, bool update) {
 	auto &mesh = getMesh();
 	auto attrOpt = mesh.getAttribute(attributeName);
 
@@ -76,10 +93,13 @@ void SceneModel::setLayer(Layer layer, const std::string attributeName, bool upd
 	for (auto &[_, material] : getMaterials()) {
 		auto layerParams = material.getParams<LayersParams>("layers");
 
-		if (layerParams)
-			layerParams->setAttribute(attr, layer, update);
+		if (layerParams) {
+			layerParams->setAttribute(attr, layer, false, update);
+			layerParams->range[static_cast<int>(layer)] = range;
+		}
 	}
 }
+
 
 void SceneModel::updateLayers() {
 	auto &mesh = getMesh();
@@ -107,7 +127,7 @@ void SceneModel::updateLayers() {
 				if (!activatedLayers[l][k])
 					continue;
 
-				layerParams->setAttribute(attr, layer, true);
+				layerParams->setAttribute(attr, layer, false, true);
 			}
 
 		}
@@ -166,7 +186,7 @@ void SceneModel::saveState(json &j, const std::string filename) {
 
 	j["position"] = json::array({position.x, position.y, position.z});
 
-	j["selected_attribute"] = _selectedAttribute;
+	// j["selected_attribute"] = _selectedAttribute;
 
 	auto jAttrNameByLayer = json::object();
 	for (auto &[k, attrName] : _attrNameByLayerAndKind) {
@@ -209,20 +229,31 @@ void SceneModel::applyMaterialsFrom(SceneModel &model) {
 	}
 
 	// Set layers
-	for (int k = 0; k < static_cast<int>(ElementKind::ELEMENT_KIND_COUNT); ++k) {
-		for (int l = 0; l < static_cast<int>(Layer::LAYER_COUNT); ++l) {
+	// for (int k = 0; k < static_cast<int>(ElementKind::ELEMENT_KIND_COUNT); ++k) {
+	// 	for (int l = 0; l < static_cast<int>(Layer::LAYER_COUNT); ++l) {
 
-			auto layer = static_cast<Layer>(l);
-			auto kind = static_cast<ElementKind>(k);
-			if (model._attrNameByLayerAndKind.contains({layer, kind})) {
-				auto attrName = model._attrNameByLayerAndKind[{layer, kind}];
-				if (!attrName.empty()) {
-					setSelectedAttribute(model.getSelectedAttribute());
-					if (model.getColormap().has_value()) {
-						setColormap(model.getColormap().value());
-					}
-				}
-			}
-		}
+	// 		auto layer = static_cast<Layer>(l);
+	// 		auto kind = static_cast<ElementKind>(k);
+	// 		if (model._attrNameByLayerAndKind.contains({layer, kind})) {
+	// 			auto attrName = model._attrNameByLayerAndKind[{layer, kind}];
+	// 			if (!attrName.empty()) {
+	// 				auto selectedAttrOpt = model.getSelectedAttribute();
+	// 				if (selectedAttrOpt.has_value())
+	// 					setSelectedAttribute(selectedAttrOpt.value());
+
+	// 				if (model.getColormap().has_value()) {
+	// 					setColormap(model.getColormap().value());
+	// 				}
+	// 			}
+	// 		}
+	// 	}
+	// }
+
+	// Apply selected attr if possible
+	// If source has same attribute than target, select !
+	auto sourceSelectedAttrOpt = model.getSelectedAttribute();
+	if (sourceSelectedAttrOpt.has_value() && _mesh->hasAttribute(sourceSelectedAttrOpt.value())) {
+		setSelectedAttribute(sourceSelectedAttrOpt);
+		setColormap(model.getColormap().value());
 	}
 }

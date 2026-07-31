@@ -397,28 +397,29 @@ function draw_model_properties(model, k, view)
 
 				-- imgui.Text("selected: " .. selName)
 
-				local selected_attr = model.mesh:get_attribute(model.selected_attribute)
-				local selected_attr_label = format_label_attr(selected_attr)
+				local selected_attr = model.selected_attribute
+				
+				local selected_attr_label = "None"
+				if selected_attr then 
+					selected_attr_label =  selected_attr.fullname
+				end
 
 				if (imgui.BeginCombo("##combo_attribute0_selection", selected_attr_label)) then
 
-					local is_selected = model.selected_attribute == ""
+					local is_selected = selected_attr == nil
 					if (imgui.Selectable("None", is_selected)) then
-						model.selected_attribute = ""
-						-- Unset all colormap attribute 
-						model:unset_layers(Layer.COLORMAP_0, false)
+						model.selected_attribute = nil
 					end
 
 					for i, attr in ipairs(attributes) do
-						local cur_attr_label = format_label_attr(attr) 
+						local cur_attr_label = attr.fullname
 						
-						local is_selected = cur_attr_label == selected_attr_label
+						local is_selected = attr == selected_attr
 
 						if (imgui.Selectable(cur_attr_label, is_selected)) then
 							-- Set attribute & colormap
-							model:unset_layers(Layer.COLORMAP_0, false)
 							model:set_colormap(app.scene.colormaps[selected_colormap])
-							model.selected_attribute = attr.name
+							model.selected_attribute = attr
 						end
 					end
 					imgui.EndCombo()
@@ -680,12 +681,12 @@ function key_event(key, scancode, action, mods)
 	end
 end
 
-function format_label_attr(attr)
-	if not attr then 
-		return "None"
-	end
-	return attr.name 
-	.. " (" .. element_kind_to_string(attr.kind) .. ")" 
-	.. " (" .. element_type_to_string(attr.type) .. ")"
-	.. " (" .. tostring(attr.dim) .. ")"
-end
+-- function format_label_attr(attr)
+-- 	if not attr then 
+-- 		return "None"
+-- 	end
+-- 	return attr.name 
+-- 	.. " (" .. element_kind_to_string(attr.kind) .. ")" 
+-- 	.. " (" .. element_type_to_string(attr.type) .. ")"
+-- 	.. " (" .. tostring(attr.dim) .. ")"
+-- end

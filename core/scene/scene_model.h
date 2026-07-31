@@ -90,7 +90,8 @@ struct SceneModel : std::enable_shared_from_this<SceneModel> {
 	void setColormap(Colormap colormap);
 
 	std::string getLayerAttr(Layer layer, ElementKind kind);
-	void setLayer(Layer layer, const std::string attributeName, bool update);
+	void setLayer(Layer layer, Attribute attributeName, bool update);
+	void setLayerRange(Layer layer, const std::string attributeName, sl::algebra::vec2 range, bool update);
 
 
 	void unsetLayer(Layer layer, ElementKind kind, bool reset = false);
@@ -102,15 +103,15 @@ struct SceneModel : std::enable_shared_from_this<SceneModel> {
 
 	void applyMaterialsFrom(SceneModel &model);
 	
-	std::string getSelectedAttribute();
-	void setSelectedAttribute(std::string attributeName);
+	std::optional<Attribute> getSelectedAttribute();
+	void setSelectedAttribute(std::optional<Attribute> attribute);
 
 
 	vec3 position{0,0,0};
 
 	private:
 	std::string _name;
-	std::string _selectedAttribute = "";
+	std::optional<Attribute> _selectedAttribute;
 
 	std::shared_ptr<Mesh> _mesh;
 

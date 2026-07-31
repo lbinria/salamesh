@@ -1,5 +1,7 @@
 #pragma once 
 #include "element_type.h"
+#include "vec.h"
+#include "helpers.h"
 
 #include <ultimaille/all.h>
 using namespace UM;
@@ -7,6 +9,7 @@ using namespace UM;
 #include <vector>
 #include <string>
 #include <memory>
+#include <format>
 
 struct Attribute {
 	std::string name;
@@ -19,6 +22,26 @@ struct Attribute {
 	std::string getName() const { return name; }
 	ElementKind getKind() const { return kind; }
 	ElementType getType() const { return type; }
+
+	std::string getFullName() const {
+		return std::format("{}.{}[{}]{}",
+			elementKindToString(kind),
+			name,
+			elementTypeToString(type),
+			getNDims() > 1 ? std::format("[{}]", dim) : "");
+	}
+
+	bool operator==(const Attribute& other) const {
+		return name == other.name &&
+				kind == other.kind &&
+				type == other.type &&
+				dim == other.dim;
+	}
+
+	bool operator!=(const Attribute& other) const {
+		return !(*this == other);
+	}
+
 	// std::shared_ptr<ContainerBase> getPtr() const { return ptr; }
 
 	// This wrapper enable the modification of the attribute data for Lua
@@ -40,7 +63,7 @@ struct Attribute {
 		return Container<T>(ptr);
 	}
 
-	int getNDims() {
+	int getNDims() const {
 		switch (type)
 		{
 		case ElementType::VEC3_ELT:
@@ -50,6 +73,12 @@ struct Attribute {
 		default:
 			return 1;
 		}
+	}
+
+	sl::algebra::vec2 getRange() {
+		auto data = sl::getContainerData(ptr.get(), dim);
+		auto [min, max] = sl::getRange(data);
+		return {min, max};
 	}
 
 };

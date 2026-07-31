@@ -136,7 +136,7 @@ struct LayersParams : MaterialParams {
 		}
 	}
 
-	void setAttribute(Attribute attr, Layer layer, bool update) {
+	void setAttribute(Attribute attr, Layer layer, bool autorange, bool update) {
 
 		if (isActivatedLayer(layer, attr.getKind()) && !update)
 			return;
@@ -147,7 +147,9 @@ struct LayersParams : MaterialParams {
 		// Activate layer
 		setActivatedLayer(layer, attr.getKind(), true);
 
-		range[layer] = {min, max};
+		if (autorange)
+			range[layer] = {min, max};
+		
 		nDims[layer] = attr.getNDims();
 		setLayer(data, layer);
 	}

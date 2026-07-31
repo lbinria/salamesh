@@ -126,6 +126,24 @@ struct Mesh {
 		return std::nullopt;
 	}
 
+	bool hasAttribute(const std::string fullname) {
+		for (auto &attr : getAttributes()) {
+			if (attr.getFullName() == fullname)
+				return true;
+		}
+
+		return false;
+	}
+
+	bool hasAttribute(Attribute a) {
+		for (auto &attr : getAttributes()) {
+			if (attr == a)
+				return true;
+		}
+
+		return false;
+	}
+
 	protected:
 
 	virtual std::vector<std::pair<ElementKind, NamedContainer>> getAttributeContainers() const = 0;

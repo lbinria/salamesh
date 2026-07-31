@@ -72,11 +72,13 @@ namespace bindings {
 			"kind", sol::readonly_property(&Attribute::getKind),
 			"type", sol::readonly_property(&Attribute::getType),
 			"dim", sol::readonly_property(&Attribute::getNDims),
+			"fullname", sol::readonly_property(&Attribute::getFullName),
 			"double_data", sol::readonly_property(&Attribute::getContainer<double>),
 			"int_data", sol::readonly_property(&Attribute::getContainer<int>),
 			"bool_data", sol::readonly_property(&Attribute::getContainer<bool>),
 			"vec2_data", sol::readonly_property(&Attribute::getContainer<vec2>),
-			"vec3_data", sol::readonly_property(&Attribute::getContainer<vec3>)
+			"vec3_data", sol::readonly_property(&Attribute::getContainer<vec3>),
+			sol::meta_function::equal_to, &Attribute::operator==
 		);
 
 		createAttributeContainerType<double>(lua, "DoubleContainer");
