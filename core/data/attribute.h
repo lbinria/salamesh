@@ -24,12 +24,20 @@ struct Attribute {
 	ElementType getType() const { return type; }
 
 	std::string getFullName() const {
-		return std::format("{}.{}[{}]{}",
+		return std::format("{}.{}{}",
 			elementKindToString(kind),
 			name,
-			elementTypeToString(type),
-			getNDims() > 1 ? std::format("[{}]", dim) : "");
+			// elementTypeToString(type),
+			getNDims() > 1 && dim >= 0 ? std::format("[{}]", dim) : "");
 	}
+
+	// std::string getDisplayName() const {
+	// 	return std::format("{}.{}[{}]{}",
+	// 		elementKindToString(kind),
+	// 		name,
+	// 		elementTypeToString(type),
+	// 		getNDims() > 1 ? std::format("[{}]", dim) : "");
+	// }
 
 	bool operator==(const Attribute& other) const {
 		return name == other.name &&
