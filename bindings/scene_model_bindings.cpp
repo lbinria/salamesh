@@ -14,16 +14,13 @@ namespace bindings {
 			"get_material", &SceneModel::getMaterial,
 			"get_material_params_group", &SceneModel::getMaterialParamsGroup,
 			"set_layer", &SceneModel::setLayer,
-			"set_layer_range", &SceneModel::setLayerRange,
-			// "set_layer", sol::resolve<void(Layer, ElementKind, const std::string, bool)>(&SceneModel::setLayer),
+			// "set_layer_range", &SceneModel::setLayerRange,
 			"unset_layer", &SceneModel::unsetLayer,
 			"unset_layers", sol::resolve<void(bool)>(&SceneModel::unsetLayers),
 			"unset_layers", sol::resolve<void(Layer, bool)>(&SceneModel::unsetLayers),
-			// "unset_layers", sol::resolve<void(ElementKind, bool)>(&SceneModel::unsetLayers),
 			"set_colormap", &SceneModel::setColormap,
 			"get_colormap", &SceneModel::getColormap,
 			"get_layer_attr", &SceneModel::getLayerAttr,
-			// "set_layer_attr", &SceneModel::setLayerAttr,
 			"apply_material_from", &SceneModel::applyMaterialsFrom
 		);
 	}

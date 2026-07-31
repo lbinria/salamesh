@@ -32,9 +32,6 @@ struct PointStyleParams : MaterialParams {
 		}
 	}
 
-	ParamValue getIndex(const std::string name, int index) override { return 0.f; }
-	void setIndex(const std::string name, int index, ParamValue value) override {}
-
 	void loadState(json &j) {
 		size = j["pointSize"].get<float>();
 		color = {j["pointColor"][0].get<float>(), j["pointColor"][1].get<float>(), j["pointColor"][2].get<float>()};

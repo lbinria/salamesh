@@ -91,7 +91,7 @@ struct SceneModel : std::enable_shared_from_this<SceneModel> {
 
 	std::string getLayerAttr(Layer layer, ElementKind kind);
 	void setLayer(Layer layer, Attribute attr, bool update);
-	void setLayerRange(Layer layer, Attribute attr, sl::algebra::vec2 range, bool update);
+	// void setLayerRange(Layer layer, Attribute attr, sl::algebra::vec2 range, bool update);
 
 
 	void unsetLayer(Layer layer, ElementKind kind, bool reset = false);

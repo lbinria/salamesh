@@ -19,7 +19,7 @@ enum Layer {
 
 static std::string layerToString(Layer l) {
 	switch (l) {
-		case Layer::COLORMAP_0: return "colormap_0";
+		case Layer::COLORMAP_0: return "colormap";
 		case Layer::COLORMAP_1: return "colormap_1";
 		case Layer::COLORMAP_2: return "colormap_2";
 		case Layer::HIGHLIGHT: return "highlight";

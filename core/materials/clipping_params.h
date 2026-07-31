@@ -53,9 +53,6 @@ struct ClippingParams : MaterialParams {
 		}
 	}
 
-	ParamValue getIndex(const std::string name, int index) override { return 0.f; }
-	void setIndex(const std::string name, int index, ParamValue value) override {}
-
 	void loadState(json &j) {
 		mode = static_cast<ClippingMode>(j["mode"].get<int>());
 		enabled = j["enabled"].get<bool>();

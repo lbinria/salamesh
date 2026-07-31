@@ -50,9 +50,6 @@ struct EdgeStyleParams : MaterialParams {
 		}
 	}
 
-	ParamValue getIndex(const std::string name, int index) override { return 0.f; }
-	void setIndex(const std::string name, int index, ParamValue value) override {}
-
 	void loadState(json &j) {
 		size = j["thickness"].get<float>();
 		spacing = j["spacing"].get<float>();

@@ -44,9 +44,6 @@ struct MeshStyleParams : MaterialParams {
 		}
 	}
 
-	ParamValue getIndex(const std::string name, int index) override { return 0.f; }
-	void setIndex(const std::string name, int index, ParamValue value) override {}
-
 	void loadState(json &j) {
 		color = {j["color"][0].get<float>(), j["color"][1].get<float>(), j["color"][2].get<float>()};
 		meshSize = j["size"].get<float>();

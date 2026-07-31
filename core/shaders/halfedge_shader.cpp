@@ -35,7 +35,9 @@ MeshBuffer HalfedgeShader::createMeshBuffer() {
 Material HalfedgeShader::createMaterial() {
 	std::map<std::string, std::shared_ptr<MaterialParams>> params;
 	params["style"] = std::make_shared<EdgeStyleParams>();
-	params["layers"] = std::make_shared<LayersParams>();
+	params["colormap"] = std::make_shared<ColormapLayerParams>();
+	params["highlight"] = std::make_shared<HighlightLayerParams>();
+	params["filter"] = std::make_shared<FilterLayerParams>();
 	params["clipping"] = std::make_shared<ClippingParams>();
 	params["light"] = std::make_shared<LightParams>();
 	return Material(params);

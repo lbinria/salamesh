@@ -4,75 +4,10 @@
 #include "layer.h"
 #include "opengl_helper.h"
 
-struct LayersParams : MaterialParams {
+struct MyLayerParams : MaterialParams {
 
-
-	LayersParams() {
-		sl::createTBO(bufHighlight, tboHighlight);
-		sl::createTBO(bufFilter, tboFilter);
-		sl::createTBO(bufColormap0, tboColormap0);
-		sl::createTBO(bufColormap1, tboColormap1);
-		sl::createTBO(bufColormap2, tboColormap2);
-	}
-
-	void init() override {
-
-	}
-
-	void apply(Shader &shader) override {
-
-		for (int layer = 0; layer < 5; ++layer) {
-			shader.setInt("attrNDims[" + std::to_string(int(layer)) + "]", nDims[layer]);
-			shader.setFloat2("attrRange[" + std::to_string(int(layer)) + "]", sl::algebra::vec2(range[layer].x, range[layer].y));
-
-			// TODO important refactor this, just to do transition during refactorign
-			if (layer < 3)
-				shader.setInt("colormapElement[" + std::to_string(int(layer)) + "]", layerElement[layer]);
-			else if (layer == 3)
-			shader.setInt("highlightElement", layerElement[layer]);
-			else if (layer == 4)
-			shader.setInt("filterElement", layerElement[layer]);
-
-			for (int kind = 0; kind < 7; ++kind) {
-				shader.setBool("activatedLayers[" + std::to_string(layer) + "][" + std::to_string(kind) + "]", activatedLayers[layer][kind]);
-			}
-		}
-
-		shader.setFloat3("selectColor", selectColor);
-		shader.setFloat3("hoverColor", hoverColor);
-
-		shader.setInt("colormap0", 0);
-		shader.setInt("colormap1", 1);
-		shader.setInt("colormap2", 2);
-		shader.setInt("highlightBuf", 3);
-		shader.setInt("filterBuf", 4);
-		shader.setInt("colormap0Buf", 5);
-		shader.setInt("colormap1Buf", 6);
-		shader.setInt("colormap2Buf", 7);
-
-		glActiveTexture(GL_TEXTURE0 + 0);
-		glBindTexture(GL_TEXTURE_2D, colormaps[0].tex);
-
-		glActiveTexture(GL_TEXTURE0 + 1);
-		glBindTexture(GL_TEXTURE_2D, colormaps[1].tex);
-
-		glActiveTexture(GL_TEXTURE0 + 2);
-		glBindTexture(GL_TEXTURE_2D, colormaps[2].tex);
-
-		glActiveTexture(GL_TEXTURE0 + 3);
-		glBindTexture(GL_TEXTURE_BUFFER, tboHighlight);
-
-		glActiveTexture(GL_TEXTURE0 + 4);
-		glBindTexture(GL_TEXTURE_BUFFER, tboFilter);
-
-		glActiveTexture(GL_TEXTURE0 + 5);
-		glBindTexture(GL_TEXTURE_BUFFER, tboColormap0);
-
-		glActiveTexture(GL_TEXTURE0 + 6);
-		glBindTexture(GL_TEXTURE_BUFFER, tboColormap1);
-
-		glActiveTexture(GL_TEXTURE0 + 7);
-		glBindTexture(GL_TEXTURE_BUFFER, tboColormap2);
+	MyLayerParams() {
+		sl::createTBO(buf, tbo);
 	}
 
 	// Put data to buffer
@@ -87,185 +22,247 @@ struct LayersParams : MaterialParams {
 		glBufferSubData(GL_TEXTURE_BUFFER, idx * sizeof(float), sizeof(float), &val);
 	}
 
-	// TODO to remove
-	// void setLayerElement(int element, Layer layer) {
-	// 	layerElement[static_cast<int>(layer)] = element;
-	// }
-
-	bool getActivatedLayer(Layer layer, ElementKind kind) const {
-		return activatedLayers[static_cast<int>(layer)][static_cast<int>(kind)];
+	bool getActivatedLayer(ElementKind kind) const {
+		return activatedLayers[static_cast<int>(kind)];
 	}
 
-	void setActivatedLayer(Layer layer, ElementKind kind, bool activated) {
-		activatedLayers[static_cast<int>(layer)][static_cast<int>(kind)] = activated;
+	void setActivatedLayer(ElementKind kind, bool activated) {
+		activatedLayers[static_cast<int>(kind)] = activated;
 	}
 
-	void deactivateLayer(Layer layer, ElementKind kind) {
-		setActivatedLayer(layer, kind, false);
+	void deactivateLayer(ElementKind kind) {
+		setActivatedLayer(kind, false);
 	}
 
-	bool isActivatedLayer(Layer layer, ElementKind kind) const {
-		return activatedLayers[static_cast<int>(layer)][static_cast<int>(kind)];
+	bool isActivatedLayer(ElementKind kind) const {
+		return activatedLayers[static_cast<int>(kind)];
 	}
 
-	std::array<std::array<bool, 7>, 5> getActivatedLayers() {
+	std::array<bool, 7> getActivatedLayers() {
 		return activatedLayers;
 	}
 
-	// Obtain buffer that matches with requested layer
-	unsigned int getLayerBuffer(Layer layer) {
-		switch (layer)
-		{
-		case Layer::COLORMAP_0:
-			return bufColormap0;
-		case Layer::COLORMAP_1:
-			return bufColormap1;
-		case Layer::COLORMAP_2:
-			return bufColormap2;
-		case Layer::HIGHLIGHT:
-			return bufHighlight;
-		case Layer::FILTER:
-			return bufFilter;
-		// Should never happen (except if all the case aren't covered)
-		default:
-			throw std::runtime_error(
-				"getLayerBuffer for layer: " + 
-				layerToString(layer) + 
-				" is not implemented."
-			);
-		}
-	}
+	void setAttribute(Attribute attr, bool autorange, bool update) {
 
-	void setAttribute(Attribute attr, Layer layer, bool autorange, bool update) {
-
-		if (isActivatedLayer(layer, attr.getKind()) && !update)
+		if (isActivatedLayer(attr.getKind()) && !update)
 			return;
 
 		auto data = sl::getContainerData(attr.ptr.get(), attr.dim);
 		auto [min, max] = sl::getRange(data);
 
 		// Activate layer
-		setActivatedLayer(layer, attr.getKind(), true);
+		setActivatedLayer(attr.getKind(), true);
 
 		if (autorange)
-			range[layer] = {min, max};
+			range = {min, max};
 		
-		nDims[layer] = attr.getNDims();
-		setLayer(data, layer);
+		nDims = attr.getNDims();
+		setLayer(data);
 	}
 
-	void setLayer(int idx, float val, Layer layer) {
-		unsigned int buf = getLayerBuffer(layer);
+	void setLayer(int idx, float val) {
 		setBuf(buf, idx, val);
 	}
 
-	void setLayer(std::vector<float> data, Layer layer) {
-		unsigned int buf = getLayerBuffer(layer);
+	void setLayer(std::vector<float> data) {
 		setBuf(buf, data);
 	}
 
-	ParamValue get(const std::string name) override { return 0.f; }
-	void set(const std::string name, ParamValue value) override {}
-
-	ParamValue getIndex(const std::string name, int index) override {
+	virtual ParamValue get(const std::string name) override { 
 		if (name == "nDims") {
-			return nDims[index];
+			return nDims;
 		} else if (name == "range") {
-			return range[index];
-		} else if (name == "layer_element") {
-			return layerElement[index];
-		} else if (name == "hover_color") {
-			return hoverColor;
-		} else if (name == "select_color") {
-			return selectColor;
+			return range;
 		} else {
 			return 0.f;
 		}
 	}
 
-	void setIndex(const std::string name, int index, ParamValue value) override {
+	virtual void set(const std::string name, ParamValue value) override {
 		if (name == "nDims") {
 			if (auto* pVal = std::get_if<int>(&value))
-				nDims[index] = *pVal;
+				nDims = *pVal;
 		} else if (name == "range") {
 			if (auto* pVal = std::get_if<sl::algebra::vec2>(&value))
-				range[index] = *pVal;
-		} else if (name == "layer_element") {
-			if (auto* pVal = std::get_if<int>(&value))
-				layerElement[index] = *pVal;
-		} else if (name == "hover_color") {
+				range = *pVal;
+		}
+	}
+
+	// TODO maybe move to ColormapLayerParams
+	Colormap getColormap(ColormapLayer l) const {
+		return colormaps[static_cast<int>(l)];
+	}
+
+	// TODO maybe move to ColormapLayerParams
+	void setColormap(ColormapLayer l, Colormap colormap) {
+		colormaps[static_cast<int>(l)] = colormap;
+	}
+
+	virtual void loadState(json &j) {
+
+		nDims = j["n_dims"].get<int>();
+		range = {j["range"][0].get<float>(), j["range"][1].get<float>()};
+
+		// TODO colormaps
+	}
+
+	virtual void saveState(json &j) const {
+
+		j["n_dims"] = nDims;
+		j["range"] = {range.x, range.y};
+
+		for (int k = 0; k < 7; ++k)
+			j["activated_layers"][k] = activatedLayers[k];
+
+		// TODO colormaps
+	}
+
+	virtual void setValues(MaterialParams &params) override {
+		set("n_dims", params.get("n_dims"));
+		set("range", params.get("range"));
+
+		for (int k = 0; k < 7; ++k) {
+			ElementKind kind =  static_cast<ElementKind>(k);
+			setActivatedLayer(kind, getActivatedLayer(kind));
+		}
+	}
+
+	int nDims;
+	sl::algebra::vec2 range;
+	std::array<bool, 7> activatedLayers{};
+
+	Colormap colormaps[3] = {};
+
+	protected:
+
+	unsigned int buf, tbo; // buffer and texture buffer
+};
+
+template<int layer>
+struct LayerParams : MyLayerParams {
+
+	LayerParams() = default;
+
+
+	void init() override {
+
+	}
+
+	virtual void apply(Shader &shader) override {
+		shader.setInt("attrNDims[" + std::to_string(layer) + "]", nDims);
+		shader.setFloat2("attrRange[" + std::to_string(layer) + "]", sl::algebra::vec2(range.x, range.y));
+
+		for (int kind = 0; kind < 7; ++kind) {
+			shader.setBool("activatedLayers[" + std::to_string(layer) + "][" + std::to_string(kind) + "]", activatedLayers[kind]);
+		}
+
+	}
+
+};
+
+struct ColormapLayerParams : public LayerParams<Layer::COLORMAP_0> {
+
+	ColormapLayerParams() = default;
+
+
+	void apply(Shader &shader) override {
+		LayerParams<Layer::COLORMAP_0>::apply(shader);
+		shader.setInt("colormap0", 0);
+		shader.setInt("colormap1", 1);
+		shader.setInt("colormap2", 2);
+		shader.setInt("colormap0Buf", 5);
+		shader.setInt("colormap1Buf", 6);
+		shader.setInt("colormap2Buf", 7);
+
+		glActiveTexture(GL_TEXTURE0 + 0);
+		glBindTexture(GL_TEXTURE_2D, colormaps[0].tex);
+
+		glActiveTexture(GL_TEXTURE0 + 1);
+		glBindTexture(GL_TEXTURE_2D, colormaps[1].tex);
+
+		glActiveTexture(GL_TEXTURE0 + 2);
+		glBindTexture(GL_TEXTURE_2D, colormaps[2].tex);
+
+		glActiveTexture(GL_TEXTURE0 + 5);
+		glBindTexture(GL_TEXTURE_BUFFER, tbo);
+
+		glActiveTexture(GL_TEXTURE0 + 6);
+		glBindTexture(GL_TEXTURE_BUFFER, tbo);
+
+		glActiveTexture(GL_TEXTURE0 + 7);
+		glBindTexture(GL_TEXTURE_BUFFER, tbo);
+	}
+
+};
+
+struct HighlightLayerParams : public LayerParams<Layer::HIGHLIGHT> {
+
+	void apply(Shader &shader) override {
+		LayerParams<Layer::HIGHLIGHT>::apply(shader);
+		shader.setFloat3("selectColor", selectColor);
+		shader.setFloat3("hoverColor", hoverColor);
+		shader.setInt("highlightBuf", 3);
+		
+		glActiveTexture(GL_TEXTURE0 + 3);
+		glBindTexture(GL_TEXTURE_BUFFER, tbo);
+	}
+
+	virtual ParamValue get(const std::string name) override { 
+		if (name == "hover_color") {
+			return hoverColor;
+		} else if (name == "select_color") {
+			return selectColor;
+		} else {
+			return LayerParams<Layer::HIGHLIGHT>::get(name);
+		}
+	}
+
+	virtual void set(const std::string name, ParamValue value) override {
+		if (name == "hover_color") {
 			if (auto* pVal = std::get_if<sl::algebra::vec3>(&value))
 				hoverColor = *pVal;
 		} else if (name == "select_color") {
 			if (auto* pVal = std::get_if<sl::algebra::vec3>(&value))
 				selectColor = *pVal;
+		} else {
+			LayerParams<Layer::HIGHLIGHT>::set(name, value);
 		}
 	}
 
-	Colormap getColormap(ColormapLayer layer) const {
-		return colormaps[static_cast<int>(layer)];
-	}
-
-	void setColormap(ColormapLayer layer, Colormap colormap) {
-		colormaps[static_cast<int>(layer)] = colormap;
-	}
-
-	void loadState(json &j) {
-
-		for (int i = 0; i < 5; ++i) {
-			nDims[i] = j["n_dims"][i].get<int>();
-			range[i] = {j["range"][i][0].get<float>(), j["range"][i][1].get<float>()};
-			layerElement[i] = j["layer_element"][i].get<int>();
-		}
+	virtual void loadState(json &j) {
+		LayerParams<Layer::HIGHLIGHT>::loadState(j);
 
 		hoverColor = {j["hover_color"][0].get<float>(), j["hover_color"][1].get<float>(), j["hover_color"][2].get<float>()};
 		selectColor = {j["select_color"][0].get<float>(), j["select_color"][1].get<float>(), j["select_color"][2].get<float>()};
 	}
 
-	void saveState(json &j) const {
-
-		for (int i = 0; i < 5; ++i) {
-			j["n_dims"][i] = nDims[i];
-			j["range"][i] = {range[i].x, range[i].y};
-			j["layer_element"][i] = layerElement[i];
-
-			for (int k = 0; k < 7; ++k)
-				j["activated_layers"][i][k] = activatedLayers[i][k];
-		}
+	virtual void saveState(json &j) const {
+		LayerParams<Layer::HIGHLIGHT>::saveState(j);
 
 		j["hover_color"] = json::array({hoverColor.x, hoverColor.y, hoverColor.z});
 		j["select_color"] = json::array({selectColor.x, selectColor.y, selectColor.z});
-		// j["colormaps"]
 	}
 
-	void setValues(MaterialParams &params) override {
-		for (int i = 0; i < 5; ++i) {
-			setIndex("n_dims", i, params.getIndex("n_dims", i));
-			setIndex("range", i, params.getIndex("range", i));
-			setIndex("layer_element", i, params.getIndex("layer_element", i));
-
-			for (int k = 0; k < 7; ++k) {
-				Layer layer = static_cast<Layer>(i);
-				ElementKind kind =  static_cast<ElementKind>(k);
-				setActivatedLayer(layer, kind, getActivatedLayer(layer, kind));
-			}
-				
-		}
+	virtual void setValues(MaterialParams &params) override {
+		LayerParams<Layer::HIGHLIGHT>::setValues(params);
 
 		set("hover_color", params.get("hover_color"));
 		set("select_color", params.get("select_color"));
 	}
 
-	int nDims[5];
-	sl::algebra::vec2 range[5];
-	int layerElement[5] = {-1, -1, -1, -1, -1}; // TODO to remove replaced by activatedLayers
-	std::array<std::array<bool, 7>, 5> activatedLayers{};
 	sl::algebra::vec3 hoverColor{1.f, 1.f, 1.f};
 	sl::algebra::vec3 selectColor{0.f, 0.22f, 1.f};
 
-	Colormap colormaps[3] = {};
+};
 
-	private:
-	unsigned int bufColormap0, bufColormap1, bufColormap2, bufHighlight, bufFilter; // Sample buffers
-	unsigned int tboColormap0, tboColormap1, tboColormap2, tboHighlight, tboFilter; // Textures
+struct FilterLayerParams : public LayerParams<Layer::FILTER> {
+
+	void apply(Shader &shader) override {
+		LayerParams<Layer::FILTER>::apply(shader);
+		shader.setInt("filterBuf", 4);
+		
+		glActiveTexture(GL_TEXTURE0 + 4);
+		glBindTexture(GL_TEXTURE_BUFFER, tbo);
+	}
+
 };
