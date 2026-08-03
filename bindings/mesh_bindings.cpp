@@ -15,7 +15,6 @@ namespace bindings {
 			"radius", sol::readonly_property(&Mesh::getRadius),
 			"attributes", sol::readonly_property(&Mesh::getAttributes),
 			"get_attribute", &Mesh::getAttribute,
-			"get_attribute2", &Mesh::getAttribute2,
 			"save", &Mesh::save,
 			"saveAs", &Mesh::saveAs,
 			"request_update", &Mesh::requestUpdate,

@@ -105,28 +105,28 @@ struct Mesh {
 
 	}
 
-	std::optional<Attribute> getAttribute(const std::string name) {
-		std::string attrName = name;
+	// std::optional<Attribute> getAttribute(const std::string name) {
+	// 	std::string attrName = name;
 
-		// Extract selectedDim from string
-		int selectedDim = -1;
-		auto lbrPos = name.find('[');
-		auto rbrPos = name.find(']');
-		// if "attr[0]" requested for example, we would like to see selectedDim=0, so nDims of attribute = 1
-		if (lbrPos != std::string::npos && rbrPos != std::string::npos) {
-			selectedDim = std::stoi(name.substr(lbrPos + 1, rbrPos - lbrPos));
-			attrName = name.substr(0, lbrPos);
-		}
+	// 	// Extract selectedDim from string
+	// 	int selectedDim = -1;
+	// 	auto lbrPos = name.find('[');
+	// 	auto rbrPos = name.find(']');
+	// 	// if "attr[0]" requested for example, we would like to see selectedDim=0, so nDims of attribute = 1
+	// 	if (lbrPos != std::string::npos && rbrPos != std::string::npos) {
+	// 		selectedDim = std::stoi(name.substr(lbrPos + 1, rbrPos - lbrPos));
+	// 		attrName = name.substr(0, lbrPos);
+	// 	}
 
-		for (auto &[kind, c] : getAttributeContainers()) {
-			if (c.name == attrName)
-				return getAttributeFromContainer(kind, c, selectedDim);
-		}
+	// 	for (auto &[kind, c] : getAttributeContainers()) {
+	// 		if (c.name == attrName)
+	// 			return getAttributeFromContainer(kind, c, selectedDim);
+	// 	}
 
-		return std::nullopt;
-	}
+	// 	return std::nullopt;
+	// }
 
-	std::optional<Attribute> getAttribute2(const std::string fullname) {
+	std::optional<Attribute> getAttribute(const std::string fullname) {
 
 		for (auto &attr : getAttributes()) {
 			if (attr.getFullName() == fullname)

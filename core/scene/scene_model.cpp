@@ -49,7 +49,19 @@ std::string SceneModel::getLayerAttr(Layer layer, ElementKind kind) {
 	if (_attrNameByLayerAndKind.contains(k))
 		return _attrNameByLayerAndKind[k];
 	
-	return defaultAttrName(layer);
+
+	// return std::format("{}.{}{}",
+	// 	elementKindToString(kind),
+	// 	defaultAttrName(layer),
+	// 	getNDims() > 1 && dim >= 0 ? std::format("[{}]", dim) : "");
+
+	// Below old version
+	// return defaultAttrName(layer);
+
+	// TODO maybe not necessary anymore
+	return std::format("{}.{}",
+		elementKindToString(kind),
+		defaultAttrName(layer));
 }
 
 std::optional<Attribute> SceneModel::getSelectedAttribute() {
@@ -68,7 +80,7 @@ void SceneModel::setSelectedAttribute(std::optional<Attribute> attr) {
 
 void SceneModel::setLayer(Layer layer, Attribute attr, bool update) {
 
-	_attrNameByLayerAndKind[{layer, attr.getKind()}] = attr.name;
+	_attrNameByLayerAndKind[{layer, attr.getKind()}] = attr.getFullName();
 
 	for (auto &[_, material] : getMaterials()) {
 		auto layerParams = material.getParams<MyLayerParams>(layerToString(layer)); 
@@ -77,20 +89,6 @@ void SceneModel::setLayer(Layer layer, Attribute attr, bool update) {
 			layerParams->setAttribute(attr, true, update);
 	}
 }
-
-// void SceneModel::setLayerRange(Layer layer, Attribute attr, sl::algebra::vec2 range, bool update) {
-
-// 	_attrNameByLayerAndKind[{layer, attr.getKind()}] = attr.name;
-
-// 	for (auto &[_, material] : getMaterials()) {
-// 		auto layerParams = material.getParams<MyLayerParams>(layerToString(layer)); 
-
-// 		if (layerParams) {
-// 			layerParams->setAttribute(attr, false, update);
-// 			layerParams->range[static_cast<int>(layer)] = range;
-// 		}
-// 	}
-// }
 
 
 void SceneModel::updateLayers() {
