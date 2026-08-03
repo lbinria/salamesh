@@ -14,7 +14,7 @@ namespace bindings {
 			"get_material", &SceneModel::getMaterial,
 			"get_material_params_group", &SceneModel::getMaterialParamsGroup,
 			"set_layer", &SceneModel::setLayer,
-			// "set_layer_range", &SceneModel::setLayerRange,
+			"set_layer_range", &SceneModel::setLayerRange,
 			"unset_layer", &SceneModel::unsetLayer,
 			"unset_layers", sol::resolve<void(bool)>(&SceneModel::unsetLayers),
 			"unset_layers", sol::resolve<void(Layer, bool)>(&SceneModel::unsetLayers),

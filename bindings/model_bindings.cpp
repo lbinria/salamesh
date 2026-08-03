@@ -78,6 +78,7 @@ namespace bindings {
 			"bool_data", sol::readonly_property(&Attribute::getContainer<bool>),
 			"vec2_data", sol::readonly_property(&Attribute::getContainer<vec2>),
 			"vec3_data", sol::readonly_property(&Attribute::getContainer<vec3>),
+			"range", sol::readonly_property(&Attribute::getRange),
 			sol::meta_function::equal_to, &Attribute::operator==
 		);
 

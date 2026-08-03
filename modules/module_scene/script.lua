@@ -327,75 +327,7 @@ function draw_model_properties(model, k, view)
 				selected_colormap = selected_colormaps[model.name]
 			end
 
-			-- if (#attributes > 0) then
-
-			-- 	-- local attr_name = attributes[1].name
-			-- 	-- local attr_element = attributes[1].kind
-			-- 	-- imgui.Text(attr_name)
-			-- 	-- imgui.Text(tostring(attr_element))
-				
-			-- 	local selName = "None" 
-			-- 	local selected_attribute = 0
-			-- 	if selected_attributes[model.name] then 
-			-- 		selected_attribute = selected_attributes[model.name]
-			-- 	end
-
-			-- 	if selected_attribute > 0 then 
-			-- 		selName = attributes[selected_attribute].name
-			-- 	end
-
-			-- 	imgui.Text("selected: " .. selName)
-
-			-- 	if (imgui.BeginCombo("##combo_attribute0_selection", selName)) then
-
-			-- 		local is_selected = selected_attribute == 0
-			-- 		if (imgui.Selectable("None", is_selected)) then
-			-- 			selected_attributes[model.name] = 0
-			-- 			-- Unset all colormap attribute 
-			-- 			for n = 1, #attributes do
-			-- 				model:unset_layers(false)
-			-- 			end
-			-- 		end
-
-			-- 		for n = 1, #attributes do
-			-- 			local is_selected = n == selected_attribute
-			-- 			local label = attributes[n].name 
-			-- 			.. " (" .. element_kind_to_string(attributes[n].kind) .. ")" 
-			-- 			.. " (" .. element_type_to_string(attributes[n].type) .. ")"
-			-- 			.. " (" .. tostring(attributes[n].dim) .. ")"
-
-			-- 			if (imgui.Selectable(label, is_selected)) then
-			-- 				selected_attributes[model.name] = n
-			-- 				-- Set attribute & colormap
-			-- 				selected_attribute = selected_attributes[model.name]
-			-- 				model:unset_layers(false)
-			-- 				model.selected_attribute = attributes[selected_attribute].name
-
-			-- 				model:set_colormap(app.scene.colormaps[selected_colormap])
-			-- 			end
-			-- 		end
-			-- 		imgui.EndCombo()
-			-- 	end
-			-- end
-
 			if (#attributes > 0) then
-
-				-- local attr_name = attributes[1].name
-				-- local attr_element = attributes[1].kind
-				-- imgui.Text(attr_name)
-				-- imgui.Text(tostring(attr_element))
-				
-				-- local selName = "None" 
-				-- local selected_attribute = 0
-				-- if selected_attributes[model.name] then 
-				-- 	selected_attribute = selected_attributes[model.name]
-				-- end
-
-				-- if selected_attribute > 0 then 
-				-- 	selName = attributes[selected_attribute].name
-				-- end
-
-				-- imgui.Text("selected: " .. selName)
 
 				local selected_attr = model.selected_attribute
 				
@@ -424,6 +356,16 @@ function draw_model_properties(model, k, view)
 					end
 					imgui.EndCombo()
 				end
+
+				-- Display attribute range
+				if selected_attr then 
+					local sel_range, new_range = imgui.InputFloat2("Range", selected_attr.range)
+					if sel_range then 
+						print(new_range:to_string())
+						-- mat["facets"]["colormap"]["range"] = new_range
+					end
+				end
+
 			end
 
 			imgui.Text("Colormap")

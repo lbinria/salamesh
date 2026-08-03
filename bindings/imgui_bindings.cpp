@@ -144,39 +144,71 @@ namespace bindings {
 			}
 		});
 
-		imgui.set_function("InputFloat2", [](const char* label, sol::object v, sol::this_state s) -> std::optional<std::tuple<bool, std::array<float, 2>>> {
+		// imgui.set_function("InputFloat2", [](const char* label, sol::object v, sol::this_state s) -> std::optional<std::tuple<bool, sol::object>> {
+		// 	sol::state_view lua(s);
+
+		// 	std::array<float, 2> vals;
+
+		// 	if (v.is<sl::algebra::vec2>()) {
+		// 		auto vec = v.as<sl::algebra::vec2>();
+		// 		vals = {vec.x, vec.y};
+		// 	} else if (v.is<sol::table>()) {
+		// 		sol::table table = v.as<sol::table>();
+		// 		vals = {
+		// 			table.get_or(1, 0.0f),
+		// 			table.get_or(2, 0.0f)
+		// 		};
+		// 	} else {
+		// 		return std::nullopt;
+		// 	}
+			
+		// 	bool sel = ImGui::InputFloat2(label, vals.data());
+			
+		// 	// If input was a table, update the original table
+		// 	// If input was a sl::algebra::vec2, update the original vector
+		// 	// if (sel && v.is<sol::table>()) {
+		// 	// 	sol::table table = v.as<sol::table>();
+		// 	// 	table[1] = vals[0];
+		// 	// 	table[2] = vals[1];
+		// 	// } else if (sel && v.is<sl::algebra::vec2>()) {
+		// 	// 	auto& vec = v.as<sl::algebra::vec2>();
+		// 	// 	vec.x = vals[0];
+		// 	// 	vec.y = vals[1];
+		// 	// }
+
+		// 	sol::object res;
+		// 	if (sel && v.is<sol::table>()) {
+		// 		sol::table table;
+		// 		table[1] = vals[0];
+		// 		table[2] = vals[1];
+		// 		res = table;
+		// 	} else if (sel && v.is<sl::algebra::vec2>()) {
+		// 		sl::algebra::vec2 vec;
+		// 		vec.x = vals[0];
+		// 		vec.y = vals[1];
+		// 		res = sol::object(vec);
+		// 	}
+			
+		// 	// return std::make_optional(std::make_tuple(sel, vals));
+		// 	return std::make_optional(std::make_tuple(sel, res));
+		// });
+
+		imgui.set_function("InputFloat2", [](const char* label, sl::algebra::vec2 v, sol::this_state s) -> std::optional<std::tuple<bool, sl::algebra::vec2>> {
 			sol::state_view lua(s);
 
 			std::array<float, 2> vals;
+			vals = {v.x, v.y};
 
-			if (v.is<sl::algebra::vec2>()) {
-				auto vec = v.as<sl::algebra::vec2>();
-				vals = {vec.x, vec.y};
-			} else if (v.is<sol::table>()) {
-				sol::table table = v.as<sol::table>();
-				vals = {
-					table.get_or(1, 0.0f),
-					table.get_or(2, 0.0f)
-				};
-			} else {
-				return std::nullopt;
-			}
 			
 			bool sel = ImGui::InputFloat2(label, vals.data());
 			
-			// If input was a table, update the original table
-			// If input was a sl::algebra::vec2, update the original vector
-			if (sel && v.is<sol::table>()) {
-				sol::table table = v.as<sol::table>();
-				table[1] = vals[0];
-				table[2] = vals[1];
-			} else if (sel && v.is<sl::algebra::vec2>()) {
-				auto& vec = v.as<sl::algebra::vec2>();
-				vec.x = vals[0];
-				vec.y = vals[1];
+			sl::algebra::vec2 res;
+			if (sel) {
+				res.x = vals[0];
+				res.y = vals[1];
 			}
 			
-			return std::make_optional(std::make_tuple(sel, vals));
+			return std::make_optional(std::make_tuple(sel, res));
 		});
 
 		imgui.set_function("InputFloat3", [](const char* label, sol::object v, sol::this_state s) -> std::optional<std::tuple<bool, std::array<float, 3>>> {

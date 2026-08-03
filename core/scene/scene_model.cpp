@@ -90,6 +90,20 @@ void SceneModel::setLayer(Layer layer, Attribute attr, bool update) {
 	}
 }
 
+void SceneModel::setLayerRange(Layer layer, Attribute attr, sl::algebra::vec2 range, bool update) {
+
+	_attrNameByLayerAndKind[{layer, attr.getKind()}] = attr.getFullName();
+
+	for (auto &[_, material] : getMaterials()) {
+		auto layerParams = material.getParams<MyLayerParams>(layerToString(layer)); 
+
+		if (layerParams) {
+			layerParams->setAttribute(attr, true, update);
+			layerParams->range = range;
+		}
+	}
+}
+
 
 void SceneModel::updateLayers() {
 	auto &mesh = getMesh();
