@@ -51,6 +51,16 @@ uniform samplerBuffer colormap0Buf;
 uniform samplerBuffer colormap1Buf;
 uniform samplerBuffer colormap2Buf;
 
+// Test
+uniform samplerBuffer layers[3][7];
+uniform sampler2D colormaps[7];
+uniform int ndims[3][7];
+uniform int repeats[3][7];
+uniform vec2 ranges[3][7];
+uniform bool activateds[3][7];
+
+
+
 uniform vec2 attrRange[3];
 uniform int attrRepeat[3] = {1, 1, 1};
 uniform int attrNDims[3] = {1, 1, 1};
@@ -276,6 +286,8 @@ void _filter(inout vec3 col) {
         return;
         
     bool filtered = texelFetch(filterBuf, fragFacetIndex).x >= .5;
+
+    bool gg = texelFetch(layers[0][0], fragFacetIndex).x >= .5;
 
     if (filtered)
         discard;

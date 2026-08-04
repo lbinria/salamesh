@@ -10,14 +10,12 @@ struct MyLayerParams : MaterialParams {
 		sl::createTBO(buf, tbo);
 	}
 
-	// Put data to buffer
-	void setBuf(unsigned int buf, std::vector<float> data) {
+	void setLayer(std::vector<float> data) {
 		glBindBuffer(GL_TEXTURE_BUFFER, buf);
 		glBufferData(GL_TEXTURE_BUFFER, data.size() * sizeof(float), data.data(), GL_DYNAMIC_DRAW);
 	}
 
-	// Put data chunk to buffer
-	void setBuf(unsigned int buf, int idx, float val) {
+	void setLayer(int idx, float val) {
 		glBindBuffer(GL_TEXTURE_BUFFER, buf);
 		glBufferSubData(GL_TEXTURE_BUFFER, idx * sizeof(float), sizeof(float), &val);
 	}
@@ -58,14 +56,6 @@ struct MyLayerParams : MaterialParams {
 		
 		nDims = attr.getNDims();
 		setLayer(data);
-	}
-
-	void setLayer(int idx, float val) {
-		setBuf(buf, idx, val);
-	}
-
-	void setLayer(std::vector<float> data) {
-		setBuf(buf, data);
 	}
 
 	virtual ParamValue get(const std::string name) override { 

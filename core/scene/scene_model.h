@@ -8,6 +8,8 @@
 #include "shader_base.h"
 #include "colormap.h"
 
+#include "layerus.h"
+
 #include <ultimaille/all.h>
 using namespace UM;
 
@@ -74,6 +76,10 @@ struct SceneModel : std::enable_shared_from_this<SceneModel> {
 		return _meshBuffer.at(name);
 	}
 
+	LayerSetCollection& getLayers() {
+		return _layers;
+	}
+
 	const std::string getName() const {
 		return _name;
 	}
@@ -117,6 +123,8 @@ struct SceneModel : std::enable_shared_from_this<SceneModel> {
 
 	std::map<std::string, MeshBuffer> _meshBuffer;
 	std::map<std::string, Material> _materials;
+
+	LayerSetCollection _layers;
 
 
 	bool _visible = true;
