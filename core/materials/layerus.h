@@ -22,9 +22,9 @@ struct LayerUnit : public MaterialParams {
 		shader.setFloat2("ranges" + indexation, sl::algebra::vec2(range.x, range.y));
 		shader.setBool("activateds" + indexation, activated);
 
-		auto texId = static_cast<int>(l) * static_cast<int>(k);
 		// Note: offset = ElementKind::ELEMENT_KIND_COUNT = 7 because 0-6 are reserved for colormap textures
-		shader.setInt("layers" + indexation, ElementKind::ELEMENT_KIND_COUNT + texId); 
+		auto texId = static_cast<int>(l) * ElementKind::ELEMENT_KIND_COUNT + static_cast<int>(k) + ElementKind::ELEMENT_KIND_COUNT;
+		shader.setInt("layers" + indexation, texId); 
 		// Set tex id for tex unit & bind TBO (=> bind buffer)
 		glActiveTexture(GL_TEXTURE0 + texId);
 		glBindTexture(GL_TEXTURE_BUFFER, tbo);
@@ -55,16 +55,14 @@ struct LayerUnit : public MaterialParams {
 		}
 	}
 
-	template<typename T>
-	void write(std::vector<T> data) {
+	void write(std::vector<float> data) {
 		glBindBuffer(GL_TEXTURE_BUFFER, buf);
-		glBufferData(GL_TEXTURE_BUFFER, data.size() * sizeof(T), data.data(), GL_DYNAMIC_DRAW);
+		glBufferData(GL_TEXTURE_BUFFER, data.size() * sizeof(float), data.data(), GL_DYNAMIC_DRAW);
 	}
 
-	template<typename T>
-	void write(int idx, T val) {
+	void write(int idx, float val) {
 		glBindBuffer(GL_TEXTURE_BUFFER, buf);
-		glBufferSubData(GL_TEXTURE_BUFFER, idx * sizeof(T), sizeof(T), &val);
+		glBufferSubData(GL_TEXTURE_BUFFER, idx * sizeof(float), sizeof(float), &val);
 	}
 
 	virtual void loadState(json &j) {
@@ -87,8 +85,8 @@ struct LayerUnit : public MaterialParams {
 	}
 
 	// Fields
-	int nDims;
-	int repeat;
+	int nDims = 1;
+	int repeat = 1;
 	sl::algebra::vec2 range;
 	bool activated = false;
 
@@ -177,10 +175,12 @@ struct ColormapLayerUnit : public LayerUnitus<Layer::COLORMAP_0> {
 
 	void apply(Shader &shader) override {
 		LayerUnitus<Layer::COLORMAP_0>::apply(shader);
-		shader.setInt("colormaps[" + std::to_string(k) + "]", k);
 
-		glActiveTexture(GL_TEXTURE0 + k);
-		glBindTexture(GL_TEXTURE_2D, colormaps[k].tex);
+		int ki = static_cast<int>(k);
+		shader.setInt("colormaps[" + std::to_string(ki) + "]", k);
+
+		glActiveTexture(GL_TEXTURE0 + ki);
+		glBindTexture(GL_TEXTURE_2D, colormaps[ki].tex);
 	}
 
 	Colormap getColormap() const {
@@ -212,27 +212,42 @@ struct LayerSet {
 		}
 	}
 
-	void setAttribute(Attribute &attr, sl::algebra::vec2 range) {
-		auto &layer = _layers.at(attr.getKind());
-
-		if (layer->activated)
-			return;
-
-		auto data = sl::getContainerData(attr.ptr.get(), attr.dim);
-		layer->range = range;
-		layer->write(data);
-		// Activate layer
-		layer->activated = true;
+	void setAttribute(Attribute attr) {
+		setAttribute(attr, attr.getRange());
 	}
 
-	std::map<ElementKind, std::unique_ptr<LayerUnit>>& getLayers() {
-		return _layers;
+	void setAttribute(Attribute attr, sl::algebra::vec2 range) {
+		auto &layer = _layers.at(attr.getKind());
+		auto data = sl::getContainerData(attr.ptr.get(), attr.dim);
+		layer->write(data);
+		layer->range = range;
+		layer->activated = true;
+		_bindAttr = attr;
+	}
+
+	void update() {
+		if (!_bindAttr.has_value())
+			return;
+
+		auto &layer = _layers.at(_bindAttr.value().getKind());
+		
+		if (layer->activated)
+			setAttribute(_bindAttr.value());
+	}
+
+	LayerUnit& operator[](ElementKind kind) {
+		return *_layers[kind];
+	}
+
+	const LayerUnit& operator[](ElementKind kind) const {
+		return *_layers.at(kind);
 	}
 
 	protected:
 	Layer l;
 	std::map<ElementKind, std::unique_ptr<LayerUnit>> _layers;
 
+	std::optional<Attribute> _bindAttr;
 
 };
 
@@ -281,8 +296,12 @@ struct LayerSetCollection {
 		}
 	}
 
-	std::map<Layer, std::unique_ptr<LayerSet>>& getLayers() {
-		return _layers;
+	LayerSet& operator[](Layer layer) {
+		return *_layers[layer];
+	}
+
+	const LayerSet& operator[](Layer layer) const {
+		return *_layers.at(layer);
 	}
 
 	private:

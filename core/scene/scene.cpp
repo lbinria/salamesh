@@ -203,6 +203,7 @@ void Scene::render(std::shared_ptr<SceneModel> model, std::unique_ptr<ShaderBase
 	glBindVertexArray(meshBuffer.vao());
 	meshBuffer.setPosition(shader->getShader(), model->position);
 	material.apply(shader->getShader());
+	model->getLayers().apply(shader->getShader());
 
 	// Set textures
 	for (auto &[_, tbo] : meshBuffer.tbos) {

@@ -49,6 +49,14 @@ flat in float depthZ;
 
 uniform int meshIndex;
 
+// Test
+uniform samplerBuffer layers[3][7];
+uniform sampler2D colormaps[7];
+uniform int ndims[3][7];
+uniform int repeats[3][7];
+uniform vec2 ranges[3][7];
+uniform bool activateds[3][7];
+
 
 vec3 encode_id(int id) {
     int r = id & 0x000000FF;

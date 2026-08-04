@@ -8,12 +8,21 @@ enum ColormapLayer {
 	COLORMAP_LAYER_2 = 2
 };
 
+// enum Layer {
+// 		COLORMAP_0 = 0,
+// 		COLORMAP_1 = 1,
+// 		COLORMAP_2 = 2,
+// 		HIGHLIGHT = 3,
+// 		FILTER = 4,
+// 		LAYER_COUNT
+// };
+
 enum Layer {
 		COLORMAP_0 = 0,
-		COLORMAP_1 = 1,
-		COLORMAP_2 = 2,
-		HIGHLIGHT = 3,
-		FILTER = 4,
+		COLORMAP_1 = 3,
+		COLORMAP_2 = 4,
+		HIGHLIGHT = 1,
+		FILTER = 2,
 		LAYER_COUNT
 };
 

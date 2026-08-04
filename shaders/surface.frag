@@ -88,27 +88,33 @@ int getCurrentPointIdx(vec3 b) {
     }
 }
 
-float fetchLayer(int idx, int layer) {
-    if (layer == 0) return texelFetch(colormap0Buf, idx).x;
-    if (layer == 1) return texelFetch(colormap1Buf, idx).x;
-    if (layer == 2) return texelFetch(colormap2Buf, idx).x;
-    if (layer == 3) return texelFetch(highlightBuf, idx).x;
-    if (layer == 4) return texelFetch(filterBuf, idx).x;
+float fetchLayer(int idx, int kind) {
+    if (kind == 0) return texelFetch(layers[0][0], idx).x;
+    if (kind == 1) return texelFetch(layers[0][1], idx).x;
+    if (kind == 2) return texelFetch(layers[0][2], idx).x;
+    if (kind == 3) return texelFetch(layers[0][3], idx).x;
+    if (kind == 4) return texelFetch(layers[0][4], idx).x;
+    if (kind == 5) return texelFetch(layers[0][5], idx).x;
+    if (kind == 6) return texelFetch(layers[0][6], idx).x;
     return 0.;
 }
 
-vec4 fetchColormap(int layer, vec2 coords) {
-    if (layer == 0) return texture(colormap0, coords);
-    if (layer == 1) return texture(colormap1, coords);
-    if (layer == 2) return texture(colormap2, coords);
+vec4 fetchColormap(int kind, vec2 coords) {
+    if (kind == 0) return texture(colormaps[0], coords);
+    if (kind == 1) return texture(colormaps[1], coords);
+    if (kind == 2) return texture(colormaps[2], coords);
+    if (kind == 3) return texture(colormaps[3], coords);
+    if (kind == 4) return texture(colormaps[4], coords);
+    if (kind == 5) return texture(colormaps[5], coords);
+    if (kind == 6) return texture(colormaps[6], coords);
     return vec4(0.);
 }
 
-vec4 getLayerColor(int idx, int layer) {
+vec4 getLayerColor(int idx, int kind) {
 
-    vec2 range = attrRange[layer];
-    int nRepeat = attrRepeat[layer];
-    int nDims = attrNDims[layer];
+    vec2 range = ranges[0][kind];
+    int nRepeat = repeats[0][kind];
+    int nDims = ndims[0][kind];
     // bool automap = getLayerAutomap(layer);
 
     float rangeLength = range.y - range.x;
@@ -118,7 +124,7 @@ vec4 getLayerColor(int idx, int layer) {
     vec2 coords = vec2(0.);
     for (int d = 0; d < nDims; d++) {
 
-        float val = fetchLayer(idx * nDims + d, layer).x;
+        float val = fetchLayer(idx * nDims + d, kind).x;
         if (nDims == 1) {
             // Apply range
             // val = (mod(attrVal - attrRange.x, rangeRepeat + 1)) / rangeRepeat;
@@ -129,7 +135,7 @@ vec4 getLayerColor(int idx, int layer) {
         coords[d] = v;
     }
     
-    return fetchColormap(layer, coords);
+    return fetchColormap(kind, coords);
 
     // float attrVal = fetchLayer(idx, layer).x;
     // // float remapVal = (mod(attrVal - range.x, rangeRepeat + 1)) / rangeRepeat;
@@ -158,7 +164,7 @@ vec4 getLayerColor(int idx, int layer) {
 //     return texture(colormap, coords);
 // }
 
-vec4 showCornerAttributes(int layer) {
+vec4 showCornerAttributes() {
     if (isCornerVisible) {
         // Which triangle vertex is the nearest ?
         // Use barycentric coordinates to get the closest point of the current fragment
@@ -203,7 +209,7 @@ vec4 showCornerAttributes(int layer) {
         // plus the current point index
         // int cornerIdx = fragCornerIndex + curPointIdx + curPointOff;
         int cornerIdx = fragCornerOff + (fragCornerIndex + curPointIdx + curPointOff) % nvertsPerFacet;
-        vec4 attrCol = getLayerColor(cornerIdx, layer);
+        vec4 attrCol = getLayerColor(cornerIdx, 2 /* edges */);
 
         // Check distance from point is lesser than 0.333 
         // (as we use bary coords: a value of 1. means fragment is on point, a value of 0. means the furthest)
@@ -221,9 +227,9 @@ vec4 showCornerAttributes(int layer) {
 
         if (surfaceType == 0) {
             // Surface is a tri
-            p0Col = getLayerColor(fragCornerIndex, layer);
-            p1Col = getLayerColor(fragCornerIndex + 1, layer);
-            p2Col = getLayerColor(fragCornerIndex + 2, layer);
+            p0Col = getLayerColor(fragCornerIndex, 2 /* edges */);
+            p1Col = getLayerColor(fragCornerIndex + 1, 2 /* edges */);
+            p2Col = getLayerColor(fragCornerIndex + 2, 2 /* edges */);
 
         } else {
             // Get number of vertex for facet
@@ -237,12 +243,12 @@ vec4 showCornerAttributes(int layer) {
             // So color of bary is the average of the colors of all corners
             p0Col = vec4(0.);
             for (int lc = 0; lc < nvertsPerFacet; ++lc)
-                p0Col += getLayerColor(fragCornerOff + (fragCornerIndex + lc) % nvertsPerFacet, layer);
+                p0Col += getLayerColor(fragCornerOff + (fragCornerIndex + lc) % nvertsPerFacet, 2 /* edges */);
 
             p0Col /= nvertsPerFacet;
 
-            p1Col = getLayerColor(fragCornerOff + fragCornerIndex, layer);
-            p2Col = getLayerColor(fragCornerOff + ((fragCornerIndex + 1) % nvertsPerFacet), layer);
+            p1Col = getLayerColor(fragCornerOff + fragCornerIndex, 2 /* edges */);
+            p2Col = getLayerColor(fragCornerOff + ((fragCornerIndex + 1) % nvertsPerFacet), 2 /* edges */);
         }
 
         // Compute color from barycentric coords
@@ -250,48 +256,28 @@ vec4 showCornerAttributes(int layer) {
     }
 }
 
-vec4 showColormap(int layer) {
-    // int kind = colormapElement[layer];
-
-    // Facet activated
-    if (activatedLayers[layer][3 /* facet */]) {
-        return getLayerColor(fragFacetIndex, layer);
-    } else if (activatedLayers[layer][1 /* corner */]) {
-        return showCornerAttributes(layer);
+vec4 showColormap() {
+    if (activateds[0 /* colormap */][3 /* facet */]) {
+        return getLayerColor(fragFacetIndex, 3 /* facet */);
+    } else if (activatedLayers[0 /* colormap */][1 /* corner */]) {
+        return showCornerAttributes();
     } else {
         return vec4(0., 0., 0., -1.);
     }
-    
-    // if (kind == 8 /* facets */) {
-    //     return getLayerColor(fragFacetIndex, layer);
-    // }
-
-    // if (kind == 2 /* corners */) {
-    //     return showCornerAttributes(layer);
-    // }
-    
-    // if (kind == -1 /* Layer deactivated */) {
-    //     return vec4(0., 0., 0., -1.);
-    // }
-
-    // return vec4(1., 0., 0., 1.);
 }
 
+
 void _filter(inout vec3 col) {
-    // if (filterElement == -1)
-    //     return;
-
     // Check whether layer filter is activated on facet
-    if (!activatedLayers[4 /* filter */][3 /* facet */])
+    if (!activateds[2 /* filter */][3 /* facet */])
         return;
-        
-    bool filtered = texelFetch(filterBuf, fragFacetIndex).x >= .5;
 
-    bool gg = texelFetch(layers[0][0], fragFacetIndex).x >= .5;
+    bool filtered = texelFetch(layers[2][3], fragFacetIndex).x >= .5;
 
     if (filtered)
         discard;
 }
+
 
 void clip(inout vec3 col) {
    // Calculate the distance from the cell barycenter to the plane
@@ -316,16 +302,12 @@ void clip(inout vec3 col) {
 }
 
 void highlight(inout vec3 col) {
-    // // Only highlight facets
-    // if (highlightElement != 8)
-    //     return;
-
     // Check whether layer highlight on facet is activated
-    if (!activatedLayers[3 /* hightlight */][3 /* facet */])
+    if (!activateds[1 /* hightlight */][3 /* facet */])
         return;
 
     // Highlight
-    float highlightVal = texelFetch(highlightBuf, fragFacetIndex).x;
+    float highlightVal = texelFetch(layers[1][3], fragFacetIndex).x;
 
     if (highlightVal > 0) {
         // Interpolate between hover / select colors according to highlight value
@@ -379,13 +361,7 @@ void main()
     clip(col);
 
     // Show colormap data if activated
-    vec4 c[3];
-    c[0] = showColormap(0);
-    c[1] = showColormap(1);
-    c[2] = showColormap(2);
-
-    // Blend
-    vec4 b = blendMix(c[0], blendMix(c[1], c[2], .5), .5);
+    vec4 b = showColormap();
 
     if (b.a > -1.) {
         if (b.a > 0.)

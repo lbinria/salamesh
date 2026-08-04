@@ -105,38 +105,47 @@ void SceneModel::setLayerRange(Layer layer, Attribute attr, sl::algebra::vec2 ra
 }
 
 
+// void SceneModel::updateLayers() {
+// 	auto &mesh = getMesh();
+
+// 	for (int k = 0; k < static_cast<int>(ElementKind::ELEMENT_KIND_COUNT); ++k) {
+// 		for (int l = 0; l < static_cast<int>(Layer::LAYER_COUNT); ++l) {
+
+// 			auto layer = static_cast<Layer>(l);
+// 			auto kind = static_cast<ElementKind>(k);
+
+// 			auto attrOpt = mesh.getAttribute(getLayerAttr(layer, kind));
+
+// 			if (!attrOpt.has_value())
+// 				continue;
+
+// 			auto attr = attrOpt.value();
+
+// 			for (auto &[_, material] : getMaterials()) {
+// 				auto layerParams = material.getParams<MyLayerParams>(layerToString(layer));
+
+// 				if (!layerParams)
+// 					continue;
+
+// 				auto activatedLayers = layerParams->getActivatedLayers();
+// 				if (!activatedLayers[k])
+// 					continue;
+
+// 				layerParams->setAttribute(attr, true, true);
+// 			}
+
+// 		}
+// 	}
+
+// }
+
 void SceneModel::updateLayers() {
 	auto &mesh = getMesh();
 
-	for (int k = 0; k < static_cast<int>(ElementKind::ELEMENT_KIND_COUNT); ++k) {
-		for (int l = 0; l < static_cast<int>(Layer::LAYER_COUNT); ++l) {
-
-			auto layer = static_cast<Layer>(l);
-			auto kind = static_cast<ElementKind>(k);
-
-			auto attrOpt = mesh.getAttribute(getLayerAttr(layer, kind));
-
-			if (!attrOpt.has_value())
-				continue;
-
-			auto attr = attrOpt.value();
-
-			for (auto &[_, material] : getMaterials()) {
-				auto layerParams = material.getParams<MyLayerParams>(layerToString(layer));
-
-				if (!layerParams)
-					continue;
-
-				auto activatedLayers = layerParams->getActivatedLayers();
-				if (!activatedLayers[k])
-					continue;
-
-				layerParams->setAttribute(attr, true, true);
-			}
-
-		}
+	for (int l = 0; l < static_cast<int>(Layer::LAYER_COUNT); ++l) {
+		auto layer = static_cast<Layer>(l);
+		_layers[layer].update();
 	}
-
 }
 
 void SceneModel::unsetLayers(bool reset) {
