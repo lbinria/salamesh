@@ -168,8 +168,6 @@ void SceneModel::unsetLayers(ElementKind kind, bool reset) {
 	}
 }
 
-// TODO add unsetLayer by element
-
 void SceneModel::unsetLayer(Layer layer, ElementKind kind, bool reset) {
 	
 	for (auto &[_, material] : getMaterials()) {

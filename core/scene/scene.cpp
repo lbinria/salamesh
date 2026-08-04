@@ -192,6 +192,8 @@ void Scene::render(std::shared_ptr<SceneModel> model, std::unique_ptr<ShaderBase
 		// auto pstr = mesh.getPointsStream();
 		// Test meshBuffer.write(mesh.getPointsStream());
 		// Update layers (only activated layers) according to new mesh
+		// TODO important can optimize that, it enter as many times as there is shader attached to model, there is no need to pass each time here !!!
+
 		model->updateLayers();
 		// Set model as updated
 		wasUpdated[model->getName()] = true;

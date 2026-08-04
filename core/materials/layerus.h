@@ -65,6 +65,14 @@ struct LayerUnit : public MaterialParams {
 		glBufferSubData(GL_TEXTURE_BUFFER, idx * sizeof(float), sizeof(float), &val);
 	}
 
+	void unset(bool freeMemory = true) {
+		activated = false;
+
+		if (freeMemory) {
+			glInvalidateBufferData(buf);
+		}
+	}
+
 	virtual void loadState(json &j) {
 		nDims = j["n_dims"].get<int>();
 		repeat = j["repeat"].get<int>();
@@ -225,12 +233,17 @@ struct LayerSet {
 		_bindAttr = attr;
 	}
 
+	void unset() {
+		for (auto &[_, layer] : _layers)
+			layer->unset();
+	}
+
 	void update() {
 		if (!_bindAttr.has_value())
 			return;
 
 		auto &layer = _layers.at(_bindAttr.value().getKind());
-		
+
 		if (layer->activated)
 			setAttribute(_bindAttr.value());
 	}
@@ -294,6 +307,11 @@ struct LayerSetCollection {
 		for (auto &[_, l] : _layers) {
 			l->apply(shader);
 		}
+	}
+
+	void unset() {
+		for (auto &[_, layer] : _layers)
+			layer->unset();
 	}
 
 	LayerSet& operator[](Layer layer) {
