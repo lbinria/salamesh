@@ -236,6 +236,8 @@ struct LayerSet {
 	void unset() {
 		for (auto &[_, layer] : _layers)
 			layer->unset();
+
+		_bindAttr = std::nullopt;
 	}
 
 	void update() {
@@ -260,7 +262,7 @@ struct LayerSet {
 	Layer l;
 	std::map<ElementKind, std::unique_ptr<LayerUnit>> _layers;
 
-	std::optional<Attribute> _bindAttr;
+	std::optional<Attribute> _bindAttr; // last bind attribute (need when mesh update)
 
 };
 

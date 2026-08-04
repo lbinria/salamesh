@@ -76,9 +76,9 @@ struct SceneModel : std::enable_shared_from_this<SceneModel> {
 		return _meshBuffer.at(name);
 	}
 
-	LayerSetCollection& getLayers() {
-		return _layers;
-	}
+    // // Direct member access
+    // auto& layer() { return _layers; }
+    // const auto& layer() const { return _layers; }
 
 	const std::string getName() const {
 		return _name;
@@ -97,7 +97,6 @@ struct SceneModel : std::enable_shared_from_this<SceneModel> {
 
 	std::string getLayerAttr(Layer layer, ElementKind kind);
 	void setLayer(Layer layer, Attribute attr, bool update);
-	void setLayerRange(Layer layer, Attribute attr, sl::algebra::vec2 range, bool update);
 
 
 	void unsetLayer(Layer layer, ElementKind kind, bool reset = false);
@@ -115,6 +114,9 @@ struct SceneModel : std::enable_shared_from_this<SceneModel> {
 
 	vec3 position{0,0,0};
 
+	LayerSetCollection layers;
+
+
 	private:
 	std::string _name;
 	std::optional<Attribute> _selectedAttribute;
@@ -124,7 +126,6 @@ struct SceneModel : std::enable_shared_from_this<SceneModel> {
 	std::map<std::string, MeshBuffer> _meshBuffer;
 	std::map<std::string, Material> _materials;
 
-	LayerSetCollection _layers;
 
 
 	bool _visible = true;
