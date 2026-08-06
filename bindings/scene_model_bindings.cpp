@@ -13,7 +13,6 @@ namespace bindings {
 			"materials", sol::readonly_property(&SceneModel::getMaterials),
 			"layers", sol::readonly_property(&SceneModel::layers),
 			"get_material", &SceneModel::getMaterial,
-			"get_material_params_group", &SceneModel::getMaterialParamsGroup,
 			"set_colormap", &SceneModel::setColormap,
 			"get_colormap", &SceneModel::getColormap,
 			"apply_material_from", &SceneModel::applyMaterialsFrom
