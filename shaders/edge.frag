@@ -15,10 +15,15 @@ in vec3 fragWorldPos;
 
 uniform bool isLightEnabled;
 
-uniform bool isClippingEnabled = false;
-uniform vec3 clippingPlaneNormal; // (a, b, c)
-uniform vec3 clippingPlanePoint;  // A point on the plane
-uniform int invertClipping = 0; // 0: normal, 1: inverted
+struct Clipping {
+    int mode; // {0 = cell, 1 = std, 2 = slice}
+    vec3 normal;
+    vec3 point;
+    bool invert;
+    bool enabled;
+};
+
+uniform Clipping clipping;
 
 uniform vec3 hoverColor = vec3(1.,1.,1.);
 uniform vec3 selectColor = vec3(0., 0.22, 1.);
@@ -119,14 +124,11 @@ void _filter(inout vec3 col) {
 
 
 void clip(inout vec3 col) {
-   // Calculate the distance from the cell barycenter to the plane
-   if (isClippingEnabled) {
-      float distance = dot(clippingPlaneNormal, fragWorldPos - clippingPlanePoint) / length(clippingPlaneNormal);
-      
-      if ((invertClipping == 0 && distance < 0.0) || (invertClipping == 1 && distance >= 0.0)) {
-         discard;
-      }
-   }
+    // Calculate the distance from the cell barycenter to the plane
+    float distance = dot(clipping.normal, fragWorldPos - clipping.point) / length(clipping.normal);
+
+    if (clipping.invert != distance < 0.)
+        discard;
 }
 
 vec4 trace(inout vec3 col) {
@@ -204,7 +206,9 @@ void main()
 {
     vec3 col = uColorInside;
     _filter(col);
-    clip(col);
+
+    if (clipping.enabled)
+        clip(col);
 
     vec4 Nt = trace(col);
     vec3 N = vec3(Nt);

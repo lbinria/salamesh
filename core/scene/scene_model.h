@@ -7,7 +7,7 @@
 #include "shader_base.h"
 #include "colormap.h"
 
-#include "layerus.h"
+#include "layer_collection.h"
 
 #include <ultimaille/all.h>
 using namespace UM;

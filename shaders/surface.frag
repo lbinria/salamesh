@@ -22,11 +22,15 @@ uniform bool isLightEnabled;
 
 uniform float meshSize;
 
-uniform int clippingMode = 1; // 0: cell, 1: std, 2: slice
-uniform bool isClippingEnabled = false;
-uniform vec3 clippingPlaneNormal;
-uniform vec3 clippingPlanePoint;
-uniform int invertClipping = 0; // 0: normal, 1: inverted
+struct Clipping {
+    int mode; // {0 = cell, 1 = std, 2 = slice}
+    vec3 normal;
+    vec3 point;
+    bool invert;
+    bool enabled;
+};
+
+uniform Clipping clipping;
 
 uniform vec3 hoverColor = vec3(1.,1.,1.);
 uniform vec3 selectColor = vec3(0., 0.22, 1.);
@@ -243,25 +247,23 @@ void _filter(inout vec3 col) {
 
 
 void clip(inout vec3 col) {
-   // Calculate the distance from the cell barycenter to the plane
-   if (isClippingEnabled) {
+    // Calculate the distance from the cell barycenter to the plane
     vec3 ref_point;
-    if (clippingMode == 0) {
+
+    if (clipping.mode == 0) {
         // Use the barycenter of the facets to exclude facets
         // that are behind the clipping plane
         ref_point = fragBary;
-    } else if (clippingMode == 1) {
+    } else if (clipping.mode == 1) {
         // Use the fragment world position (interpolated) to exclude fragments
         // that are behind the clipping plane
         ref_point = fragWorldPos;
     }
 
-      float distance = dot(clippingPlaneNormal, ref_point - clippingPlanePoint) / length(clippingPlaneNormal);
-      
-      if ((invertClipping == 0 && distance < 0.0) || (invertClipping == 1 && distance >= 0.0)) {
-         discard;
-      }
-   }
+    float distance = dot(clipping.normal, ref_point - clipping.point) / length(clipping.normal);
+
+    if (clipping.invert != distance < 0.0)
+        discard;
 }
 
 void highlight(inout vec3 col) {
@@ -321,7 +323,9 @@ void main()
     vec3 col = color;
 
     _filter(col);
-    clip(col);
+    
+    if (clipping.enabled)
+        clip(col);
 
     // Show colormap data if activated
     vec4 b = showColormap();

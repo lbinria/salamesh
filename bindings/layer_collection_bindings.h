@@ -3,7 +3,7 @@
 #include "lua_binding.h"
 
 #include "../core/app_interface.h"
-#include "layerus.h"
+#include "layer_collection.h"
 
 namespace bindings {
 
