@@ -30,7 +30,6 @@ flat in float depthZ;
 
 uniform int meshIndex;
 
-// Test
 uniform samplerBuffer layers[3][7];
 uniform sampler2D colormaps[7];
 uniform int ndims[3][7];
