@@ -114,7 +114,7 @@ struct SceneModel : std::enable_shared_from_this<SceneModel> {
 
 	vec3 position{0,0,0};
 
-	LayerSetCollection layers;
+	LayerCollection layers;
 
 
 	private:

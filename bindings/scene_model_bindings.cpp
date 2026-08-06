@@ -11,15 +11,11 @@ namespace bindings {
 			"mesh", sol::readonly_property(&SceneModel::getMesh),
 			"add_shader", &SceneModel::addShaderPass,
 			"materials", sol::readonly_property(&SceneModel::getMaterials),
+			"layers", sol::readonly_property(&SceneModel::layers),
 			"get_material", &SceneModel::getMaterial,
 			"get_material_params_group", &SceneModel::getMaterialParamsGroup,
-			// "set_layer", &SceneModel::setLayer,
-			// "unset_layer", &SceneModel::unsetLayer,
-			// "unset_layers", sol::resolve<void(bool)>(&SceneModel::unsetLayers),
-			// "unset_layers", sol::resolve<void(Layer, bool)>(&SceneModel::unsetLayers),
 			"set_colormap", &SceneModel::setColormap,
 			"get_colormap", &SceneModel::getColormap,
-			// "get_layer_attr", &SceneModel::getLayerAttr,
 			"apply_material_from", &SceneModel::applyMaterialsFrom
 		);
 	}

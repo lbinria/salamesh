@@ -29,6 +29,7 @@
 #include "../bindings/clipping_mode_bindings.h"
 #include "../bindings/material_bindings.h"
 #include "../bindings/material_params_bindings.h"
+#include "../bindings/layer_collection_bindings.h"
 #include "../bindings/material_params_group_bindings.h"
 #include "../bindings/mesh_bindings.h"
 #include "../bindings/picking_bindings.h"
@@ -137,6 +138,7 @@ struct LuaScript final : public Script {
 		bindings.push_back(std::make_unique<bindings::ClippingModeBindings>());
 		bindings.push_back(std::make_unique<bindings::MaterialBindings>());
 		bindings.push_back(std::make_unique<bindings::MaterialParamsBindings>());
+		bindings.push_back(std::make_unique<bindings::LayerCollectionBindings>());
 		bindings.push_back(std::make_unique<bindings::MaterialParamsGroupBindings>());
 		bindings.push_back(std::make_unique<bindings::MeshBindings>());
 		bindings.push_back(std::make_unique<bindings::PickingBindings>());

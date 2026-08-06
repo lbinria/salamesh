@@ -359,12 +359,19 @@ function draw_model_properties(model, k, view)
 
 				-- Display attribute range
 				if selected_attr then 
-					local sel_range, new_range = imgui.InputFloat2("Range", selected_attr.range)
+					local l = model.layers[Layer.COLORMAP_0][selected_attr.kind]
+					local sel_range, new_range = imgui.InputFloat2("Range", l.range)
 					if sel_range then 
-						print(new_range:to_string())
-						-- model.layers[Layer.COLORMAP_0][selected_attr.kind].range = new_range
+						-- print(new_range:to_string())
+						l.range = new_range
+					end
+					imgui.SameLine()
+					if imgui.SmallButton("Autorange") then 
+						l.range = selected_attr.range
 					end
 				end
+
+
 
 			end
 

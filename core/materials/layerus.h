@@ -316,9 +316,9 @@ struct FilterLayerSet : public LayerSet {
 	}
 };
 
-struct LayerSetCollection {
+struct LayerCollection {
 
-	LayerSetCollection() {
+	LayerCollection() {
 		// Init layer objects
 		_layers.emplace(Layer::COLORMAP_0, std::make_unique<ColormapLayerSet>());
 		_layers.emplace(Layer::HIGHLIGHT, std::make_unique<HighlightLayerSet>());
@@ -347,4 +347,3 @@ struct LayerSetCollection {
 	private:
 	std::map<Layer, std::unique_ptr<LayerSet>> _layers;
 };
-
