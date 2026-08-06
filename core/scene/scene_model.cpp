@@ -44,25 +44,25 @@ void SceneModel::setColormap(Colormap colormap) {
 
 }
 
-std::string SceneModel::getLayerAttr(Layer layer, ElementKind kind) {
-	std::tuple<Layer, ElementKind> k = {layer, kind};
-	if (_attrNameByLayerAndKind.contains(k))
-		return _attrNameByLayerAndKind[k];
+// std::string SceneModel::getLayerAttr(Layer layer, ElementKind kind) {
+// 	std::tuple<Layer, ElementKind> k = {layer, kind};
+// 	if (_attrNameByLayerAndKind.contains(k))
+// 		return _attrNameByLayerAndKind[k];
 	
 
-	// return std::format("{}.{}{}",
-	// 	elementKindToString(kind),
-	// 	defaultAttrName(layer),
-	// 	getNDims() > 1 && dim >= 0 ? std::format("[{}]", dim) : "");
+// 	// return std::format("{}.{}{}",
+// 	// 	elementKindToString(kind),
+// 	// 	defaultAttrName(layer),
+// 	// 	getNDims() > 1 && dim >= 0 ? std::format("[{}]", dim) : "");
 
-	// Below old version
-	// return defaultAttrName(layer);
+// 	// Below old version
+// 	// return defaultAttrName(layer);
 
-	// TODO maybe not necessary anymore
-	return std::format("{}.{}",
-		elementKindToString(kind),
-		defaultAttrName(layer));
-}
+// 	// TODO maybe not necessary anymore
+// 	return std::format("{}.{}",
+// 		elementKindToString(kind),
+// 		defaultAttrName(layer));
+// }
 
 std::optional<Attribute> SceneModel::getSelectedAttribute() {
 	return _selectedAttribute;
@@ -78,52 +78,20 @@ void SceneModel::setSelectedAttribute(std::optional<Attribute> attr) {
 	_selectedAttribute = attr;
 }
 
-void SceneModel::setLayer(Layer layer, Attribute attr, bool update) {
+// void SceneModel::setLayer(Layer layer, Attribute attr, bool update) {
 
-	_attrNameByLayerAndKind[{layer, attr.getKind()}] = attr.getFullName();
+// 	_attrNameByLayerAndKind[{layer, attr.getKind()}] = attr.getFullName();
 
-	for (auto &[_, material] : getMaterials()) {
-		auto layerParams = material.getParams<MyLayerParams>(layerToString(layer)); 
+// 	for (auto &[_, material] : getMaterials()) {
+// 		auto layerParams = material.getParams<MyLayerParams>(layerToString(layer)); 
 
-		if (layerParams)
-			layerParams->setAttribute(attr, true, update);
-	}
-}
-
-
-// void SceneModel::updateLayers() {
-// 	auto &mesh = getMesh();
-
-// 	for (int k = 0; k < static_cast<int>(ElementKind::ELEMENT_KIND_COUNT); ++k) {
-// 		for (int l = 0; l < static_cast<int>(Layer::LAYER_COUNT); ++l) {
-
-// 			auto layer = static_cast<Layer>(l);
-// 			auto kind = static_cast<ElementKind>(k);
-
-// 			auto attrOpt = mesh.getAttribute(getLayerAttr(layer, kind));
-
-// 			if (!attrOpt.has_value())
-// 				continue;
-
-// 			auto attr = attrOpt.value();
-
-// 			for (auto &[_, material] : getMaterials()) {
-// 				auto layerParams = material.getParams<MyLayerParams>(layerToString(layer));
-
-// 				if (!layerParams)
-// 					continue;
-
-// 				auto activatedLayers = layerParams->getActivatedLayers();
-// 				if (!activatedLayers[k])
-// 					continue;
-
-// 				layerParams->setAttribute(attr, true, true);
-// 			}
-
-// 		}
+// 		if (layerParams)
+// 			layerParams->setAttribute(attr, true, update);
 // 	}
-
 // }
+
+
+
 
 void SceneModel::updateLayers() {
 	auto &mesh = getMesh();
@@ -134,43 +102,43 @@ void SceneModel::updateLayers() {
 	}
 }
 
-void SceneModel::unsetLayers(bool reset) {
-	for (int l = 0; l < 5; ++l) {
-		for (int k = 0; k < 7; ++k) {
-			unsetLayer(static_cast<Layer>(l), static_cast<ElementKind>(k), reset);
-		}
-	}
-}
+// void SceneModel::unsetLayers(bool reset) {
+// 	for (int l = 0; l < 5; ++l) {
+// 		for (int k = 0; k < 7; ++k) {
+// 			unsetLayer(static_cast<Layer>(l), static_cast<ElementKind>(k), reset);
+// 		}
+// 	}
+// }
 
-void SceneModel::unsetLayers(Layer layer, bool reset) {
-	for (int k = 0; k < 7; ++k) {
-		unsetLayer(layer, static_cast<ElementKind>(k), reset);
-	}
-}
+// void SceneModel::unsetLayers(Layer layer, bool reset) {
+// 	for (int k = 0; k < 7; ++k) {
+// 		unsetLayer(layer, static_cast<ElementKind>(k), reset);
+// 	}
+// }
 
-void SceneModel::unsetLayers(ElementKind kind, bool reset) {
-	for (int l = 0; l < 5; ++l) {
-		unsetLayer(static_cast<Layer>(l), kind, reset);
-	}
-}
+// void SceneModel::unsetLayers(ElementKind kind, bool reset) {
+// 	for (int l = 0; l < 5; ++l) {
+// 		unsetLayer(static_cast<Layer>(l), kind, reset);
+// 	}
+// }
 
-void SceneModel::unsetLayer(Layer layer, ElementKind kind, bool reset) {
+// void SceneModel::unsetLayer(Layer layer, ElementKind kind, bool reset) {
 	
-	for (auto &[_, material] : getMaterials()) {
-		auto layerParams = material.getParams<MyLayerParams>(layerToString(layer));
+// 	for (auto &[_, material] : getMaterials()) {
+// 		auto layerParams = material.getParams<MyLayerParams>(layerToString(layer));
 
-		if (!layerParams)
-			continue;
+// 		if (!layerParams)
+// 			continue;
 
-		// Little optimisation, doesn't update data
-		// if layer isn't activated, no need to unset
-		if (!layerParams->isActivatedLayer(kind))
-			continue;
+// 		// Little optimisation, doesn't update data
+// 		// if layer isn't activated, no need to unset
+// 		if (!layerParams->isActivatedLayer(kind))
+// 			continue;
 		
-		layerParams->deactivateLayer(kind);
-	}
+// 		layerParams->deactivateLayer(kind);
+// 	}
 
-}
+// }
 
 void SceneModel::loadState(json &j, const std::string filename) {
 

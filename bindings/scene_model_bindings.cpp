@@ -13,13 +13,13 @@ namespace bindings {
 			"materials", sol::readonly_property(&SceneModel::getMaterials),
 			"get_material", &SceneModel::getMaterial,
 			"get_material_params_group", &SceneModel::getMaterialParamsGroup,
-			"set_layer", &SceneModel::setLayer,
-			"unset_layer", &SceneModel::unsetLayer,
-			"unset_layers", sol::resolve<void(bool)>(&SceneModel::unsetLayers),
-			"unset_layers", sol::resolve<void(Layer, bool)>(&SceneModel::unsetLayers),
+			// "set_layer", &SceneModel::setLayer,
+			// "unset_layer", &SceneModel::unsetLayer,
+			// "unset_layers", sol::resolve<void(bool)>(&SceneModel::unsetLayers),
+			// "unset_layers", sol::resolve<void(Layer, bool)>(&SceneModel::unsetLayers),
 			"set_colormap", &SceneModel::setColormap,
 			"get_colormap", &SceneModel::getColormap,
-			"get_layer_attr", &SceneModel::getLayerAttr,
+			// "get_layer_attr", &SceneModel::getLayerAttr,
 			"apply_material_from", &SceneModel::applyMaterialsFrom
 		);
 	}

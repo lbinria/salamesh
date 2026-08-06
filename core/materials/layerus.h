@@ -176,6 +176,7 @@ struct HighlightLayerUnit : public LayerUnitus<Layer::HIGHLIGHT> {
 };
 
 // TODO rename to ColormapLayerParams
+// TODO important here it is apply for each layer (CM, HL, FL) for each kind, whereas there is only one colormap to set by kind
 struct ColormapLayerUnit : public LayerUnitus<Layer::COLORMAP_0> {
 
 	ColormapLayerUnit(ElementKind k) : LayerUnitus<Layer::COLORMAP_0>(k) {}
@@ -200,7 +201,7 @@ struct ColormapLayerUnit : public LayerUnitus<Layer::COLORMAP_0> {
 	}
 
 	private:
-	Colormap colormaps[ElementKind::ELEMENT_KIND_COUNT] = {};
+	std::array<Colormap, ElementKind::ELEMENT_KIND_COUNT> colormaps;
 
 };
 
