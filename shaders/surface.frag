@@ -31,10 +31,6 @@ uniform int invertClipping = 0; // 0: normal, 1: inverted
 uniform vec3 hoverColor = vec3(1.,1.,1.);
 uniform vec3 selectColor = vec3(0., 0.22, 1.);
 
-// Note: cannot index samplerBuffer with dynamic indexing !
-uniform sampler2D colormap0;
-uniform sampler2D colormap1;
-uniform sampler2D colormap2;
 
 uniform vec3 color;
 
@@ -44,12 +40,7 @@ uniform int meshIndex;
 
 flat in int surfaceType;
 
-// Note: cannot index samplerBuffer with dynamic indexing !
-uniform samplerBuffer filterBuf;
-uniform samplerBuffer highlightBuf;
-uniform samplerBuffer colormap0Buf;
-uniform samplerBuffer colormap1Buf;
-uniform samplerBuffer colormap2Buf;
+
 
 // Test
 uniform samplerBuffer layers[3][7];
@@ -58,17 +49,6 @@ uniform int ndims[3][7];
 uniform int repeats[3][7];
 uniform vec2 ranges[3][7];
 uniform bool activateds[3][7];
-
-
-
-uniform vec2 attrRange[3];
-uniform int attrRepeat[3] = {1, 1, 1};
-uniform int attrNDims[3] = {1, 1, 1};
-
-uniform int colormapElement[3] = {-1, -1, -1};
-uniform int highlightElement;
-uniform int filterElement;
-uniform bool activatedLayers[5 /* layer */][7 /* element kind */];
 
 uniform samplerBuffer nvertsPerFacetBuf;
 
@@ -146,25 +126,6 @@ vec4 getLayerColor(int idx, int kind) {
     
     // return fetchColormap(layer, vec2(v, 0.));
 }
-
-// vec4 getAttributeColor(int index) {
-//     float range = attrRange.y - attrRange.x;
-//     float rangeRepeat = range / attrRepeat;
-
-//     vec2 coords = vec2(0.);
-//     for (int d = 0; d < attrNDims; d++) {
-
-//         float attrVal = texelFetch(attrBuf, index * attrNDims + d).x;
-//         // TODO uncomment for colormap but comment for texture....
-//         float remapVal = (mod(attrVal - attrRange.x, rangeRepeat + 1)) / rangeRepeat;
-//         // float remapVal = attrVal;
-//         float v = clamp(remapVal, 0., 1.);
-//         coords[d] = v;
-
-//     }
-    
-//     return texture(colormap, coords);
-// }
 
 vec4 showCornerAttributes() {
     if (isCornerVisible) {

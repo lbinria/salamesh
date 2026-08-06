@@ -25,25 +25,6 @@ uniform int invertClipping = 0; // 0: normal, 1: inverted
 uniform vec3 hoverColor = vec3(1.,1.,1.);
 uniform vec3 selectColor = vec3(0., 0.22, 1.);
 
-// Note: cannot index samplerBuffer with dynamic indexing !
-uniform sampler2D colormap0;
-uniform sampler2D colormap1;
-uniform sampler2D colormap2;
-
-uniform samplerBuffer filterBuf;
-uniform samplerBuffer highlightBuf;
-uniform samplerBuffer colormap0Buf;
-uniform samplerBuffer colormap1Buf;
-uniform samplerBuffer colormap2Buf;
-
-uniform vec2 attrRange[3];
-uniform int attrRepeat[3] = {1, 1, 1};
-uniform int attrNDims[3] = {1, 1, 1};
-
-uniform int colormapElement[3] = {-1, -1, -1};
-uniform int highlightElement;
-uniform int filterElement;
-uniform bool activatedLayers[5 /* layer */][7 /* element kind */];
 
 flat in float depthZ;
 
