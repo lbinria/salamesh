@@ -362,7 +362,7 @@ function draw_model_properties(model, k, view)
 					local sel_range, new_range = imgui.InputFloat2("Range", selected_attr.range)
 					if sel_range then 
 						print(new_range:to_string())
-						-- mat["facets"]["colormap"]["range"] = new_range
+						-- model.layers[Layer.COLORMAP_0][selected_attr.kind].range = new_range
 					end
 				end
 

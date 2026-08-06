@@ -234,6 +234,25 @@ struct LayerSet {
 		_bindAttr = attr;
 	}
 
+	std::optional<Colormap> getColormap() {
+		assert(l == Layer::COLORMAP_0 && "Unable to get colormap from layers highlight or filter"); // For now, must be compile time
+		for (auto &[_, l] : _layers) {
+			auto &lcm = static_cast<ColormapLayerUnit&>(*l);
+			// Get arbitrary the first...
+			return lcm.getColormap();
+		}
+		
+		return std::nullopt;
+	}
+
+	void setColormap(Colormap colormap) {
+		assert(l == Layer::COLORMAP_0 && "Unable to set colormap to layers highlight or filter"); // For now, must be compile time
+		for (auto &[_, l] : _layers) {
+			auto &lcm = static_cast<ColormapLayerUnit&>(*l);
+			lcm.setColormap(colormap);
+		}
+	}
+
 	void unset() {
 		for (auto &[_, layer] : _layers)
 			layer->unset();

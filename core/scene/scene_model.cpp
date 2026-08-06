@@ -17,32 +17,42 @@ bool SceneModel::addShaderPass(ShaderBase &shader) {
 	return true;
 }
 
-// Note: it return the first colormap found (model can have heterogeneous colormaps between materials)
 std::optional<Colormap> SceneModel::getColormap() {
-		
-	for (auto &[_, material] : getMaterials()) {
-		auto layerParams = material.getParams<ColormapLayerParams>("colormap");
-		if (!layerParams)
-			continue;
-		
-		return layerParams->getColormap(ColormapLayer::COLORMAP_LAYER_0);
-	}
-
-	return std::nullopt;
+	auto &l = layers[Layer::COLORMAP_0];
+	return l.getColormap();
 }
-
 
 void SceneModel::setColormap(Colormap colormap) {
-
-	for (auto &[_, material] : getMaterials()) {
-		auto layerParams = material.getParams<ColormapLayerParams>("colormap");
-		if (!layerParams)
-			continue;
-		
-		layerParams->setColormap(ColormapLayer::COLORMAP_LAYER_0, colormap);
-	}
-
+	auto &l = layers[Layer::COLORMAP_0];
+	return l.setColormap(colormap);
 }
+
+// // Note: it return the first colormap found (model can have heterogeneous colormaps between materials)
+// std::optional<Colormap> SceneModel::getColormap() {
+		
+// 	for (auto &[_, material] : getMaterials()) {
+// 		auto layerParams = material.getParams<ColormapLayerParams>("colormap");
+// 		if (!layerParams)
+// 			continue;
+		
+// 		return layerParams->getColormap(ColormapLayer::COLORMAP_LAYER_0);
+// 	}
+
+// 	return std::nullopt;
+// }
+
+
+// void SceneModel::setColormap(Colormap colormap) {
+
+// 	for (auto &[_, material] : getMaterials()) {
+// 		auto layerParams = material.getParams<ColormapLayerParams>("colormap");
+// 		if (!layerParams)
+// 			continue;
+		
+// 		layerParams->setColormap(ColormapLayer::COLORMAP_LAYER_0, colormap);
+// 	}
+
+// }
 
 // std::string SceneModel::getLayerAttr(Layer layer, ElementKind kind) {
 // 	std::tuple<Layer, ElementKind> k = {layer, kind};
@@ -69,14 +79,25 @@ std::optional<Attribute> SceneModel::getSelectedAttribute() {
 }
 
 void SceneModel::setSelectedAttribute(std::optional<Attribute> attr) {
-	// Unset previous colormap layer for the whole model
-	unsetLayers(Layer::COLORMAP_0);
+	// Unset previous colormaps layers for the whole model (colormap for all kind of elements)
+	layers[Layer::COLORMAP_0].unset();
 
+	
 	if (attr.has_value())
-		setLayer(Layer::COLORMAP_0, attr.value(), true);
+		layers[Layer::COLORMAP_0].setAttribute(attr.value());
 	
 	_selectedAttribute = attr;
 }
+
+// void SceneModel::setSelectedAttribute(std::optional<Attribute> attr) {
+// 	// Unset previous colormap layer for the whole model
+// 	unsetLayers(Layer::COLORMAP_0);
+
+// 	if (attr.has_value())
+// 		setLayer(Layer::COLORMAP_0, attr.value(), true);
+	
+// 	_selectedAttribute = attr;
+// }
 
 // void SceneModel::setLayer(Layer layer, Attribute attr, bool update) {
 
