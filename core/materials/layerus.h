@@ -2,7 +2,7 @@
 #include "attribute.h"
 #include "vec.h"
 #include "layer.h"
-#include "layer_params.h"
+#include "opengl_helper.h"
 
 struct LayerUnit : public MaterialParams {
 

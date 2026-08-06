@@ -1,7 +1,6 @@
 #include "halfedge_shader.h"
 #include "opengl_helper.h"
 #include "helpers.h"
-#include "layer_params.h"
 #include "edge_style_params.h"
 #include "light_params.h"
 #include "clipping_params.h"
@@ -35,9 +34,6 @@ MeshBuffer HalfedgeShader::createMeshBuffer() {
 Material HalfedgeShader::createMaterial() {
 	std::map<std::string, std::shared_ptr<MaterialParams>> params;
 	params["style"] = std::make_shared<EdgeStyleParams>();
-	params["colormap"] = std::make_shared<ColormapLayerParams>();
-	params["highlight"] = std::make_shared<HighlightLayerParams>();
-	params["filter"] = std::make_shared<FilterLayerParams>();
 	params["clipping"] = std::make_shared<ClippingParams>();
 	params["light"] = std::make_shared<LightParams>();
 	return Material(params);

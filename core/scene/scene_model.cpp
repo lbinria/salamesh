@@ -1,7 +1,5 @@
 #include "scene_model.h"
 
-#include "layer_params.h"
-
 bool SceneModel::addShaderPass(ShaderBase &shader) {
 	auto name = shader.getName();
 	

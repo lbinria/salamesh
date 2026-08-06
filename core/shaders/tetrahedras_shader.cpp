@@ -1,7 +1,6 @@
 #include "tetrahedras_shader.h"
 #include "opengl_helper.h"
 #include "mesh_style_params.h"
-#include "layer_params.h"
 #include "light_params.h"
 #include "clipping_params.h"
 
@@ -34,9 +33,6 @@ MeshBuffer TetrahedrasShader::createMeshBuffer() {
 Material TetrahedrasShader::createMaterial() {
 	std::map<std::string, std::shared_ptr<MaterialParams>> params;
 	params["style"] = std::make_shared<MeshStyleParams>();
-	params["colormap"] = std::make_shared<ColormapLayerParams>();
-	params["highlight"] = std::make_shared<HighlightLayerParams>();
-	params["filter"] = std::make_shared<FilterLayerParams>();
 	params["clipping"] = std::make_shared<ClippingParams>();
 	params["light"] = std::make_shared<LightParams>();
 	return Material(params);
