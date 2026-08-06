@@ -189,7 +189,7 @@ vec4 getLayerColor(int idx, int kind) {
 }
 
 vec4 showColormap() {
-    if (activatedLayers[0 /* colormap */][0 /* point */]) {
+    if (activateds[0 /* colormap */][0 /* point */]) {
         return getLayerColor(FragVertexIndex, 0 /* point */);
     } else {
         return vec4(0., 0., 0., -1.);

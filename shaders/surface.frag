@@ -211,7 +211,7 @@ vec4 showCornerAttributes() {
         // plus the current point index
         // int cornerIdx = fragCornerIndex + curPointIdx + curPointOff;
         int cornerIdx = fragCornerOff + (fragCornerIndex + curPointIdx + curPointOff) % nvertsPerFacet;
-        vec4 attrCol = getLayerColor(cornerIdx, 2 /* edges */);
+        vec4 attrCol = getLayerColor(cornerIdx, 1 /* corner */);
 
         // Check distance from point is lesser than 0.333 
         // (as we use bary coords: a value of 1. means fragment is on point, a value of 0. means the furthest)
@@ -229,9 +229,9 @@ vec4 showCornerAttributes() {
 
         if (surfaceType == 0) {
             // Surface is a tri
-            p0Col = getLayerColor(fragCornerIndex, 2 /* edges */);
-            p1Col = getLayerColor(fragCornerIndex + 1, 2 /* edges */);
-            p2Col = getLayerColor(fragCornerIndex + 2, 2 /* edges */);
+            p0Col = getLayerColor(fragCornerIndex, 1 /* corner */);
+            p1Col = getLayerColor(fragCornerIndex + 1, 1 /* corner */);
+            p2Col = getLayerColor(fragCornerIndex + 2, 1 /* corner */);
 
         } else {
             // Get number of vertex for facet
@@ -245,12 +245,12 @@ vec4 showCornerAttributes() {
             // So color of bary is the average of the colors of all corners
             p0Col = vec4(0.);
             for (int lc = 0; lc < nvertsPerFacet; ++lc)
-                p0Col += getLayerColor(fragCornerOff + (fragCornerIndex + lc) % nvertsPerFacet, 2 /* edges */);
+                p0Col += getLayerColor(fragCornerOff + (fragCornerIndex + lc) % nvertsPerFacet, 1 /* corner */);
 
             p0Col /= nvertsPerFacet;
 
-            p1Col = getLayerColor(fragCornerOff + fragCornerIndex, 2 /* edges */);
-            p2Col = getLayerColor(fragCornerOff + ((fragCornerIndex + 1) % nvertsPerFacet), 2 /* edges */);
+            p1Col = getLayerColor(fragCornerOff + fragCornerIndex, 1 /* corner */);
+            p2Col = getLayerColor(fragCornerOff + ((fragCornerIndex + 1) % nvertsPerFacet), 1 /* corner */);
         }
 
         // Compute color from barycentric coords
@@ -261,7 +261,7 @@ vec4 showCornerAttributes() {
 vec4 showColormap() {
     if (activateds[0 /* colormap */][3 /* facet */]) {
         return getLayerColor(fragFacetIndex, 3 /* facet */);
-    } else if (activatedLayers[0 /* colormap */][1 /* corner */]) {
+    } else if (activateds[0 /* colormap */][1 /* corner */]) {
         return showCornerAttributes();
     } else {
         return vec4(0., 0., 0., -1.);
