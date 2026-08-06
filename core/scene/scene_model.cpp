@@ -43,12 +43,7 @@ void SceneModel::setSelectedAttribute(std::optional<Attribute> attr) {
 }
 
 void SceneModel::updateLayers() {
-	auto &mesh = getMesh();
-
-	for (int l = 0; l < static_cast<int>(Layer::LAYER_COUNT); ++l) {
-		auto layer = static_cast<Layer>(l);
-		layers[layer].update();
-	}
+	layers.update();
 }
 
 void SceneModel::loadState(json &j, const std::string filename) {

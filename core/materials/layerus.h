@@ -221,6 +221,10 @@ struct LayerSet {
 		}
 	}
 
+	std::optional<Attribute> getAttribute() {
+		return _bindAttr;
+	}
+
 	void setAttribute(Attribute attr) {
 		setAttribute(attr, attr.getRange());
 	}
@@ -334,6 +338,12 @@ struct LayerCollection {
 	void unset() {
 		for (auto &[_, layer] : _layers)
 			layer->unset();
+	}
+
+	void update() {
+		for (auto &[_, layer] : _layers) {
+			layer->update();
+		}
 	}
 
 	LayerSet& operator[](Layer layer) {
