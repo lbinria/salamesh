@@ -35,26 +35,6 @@ uniform int repeats[3][7];
 uniform vec2 ranges[3][7];
 uniform bool activateds[3][7];
 
-// Note: cannot index samplerBuffer with dynamic indexing !
-uniform sampler2D colormap0;
-uniform sampler2D colormap1;
-uniform sampler2D colormap2;
-
-uniform samplerBuffer filterBuf;
-uniform samplerBuffer highlightBuf;
-uniform samplerBuffer colormap0Buf;
-uniform samplerBuffer colormap1Buf;
-uniform samplerBuffer colormap2Buf;
-
-uniform vec2 attrRange[3];
-uniform int attrRepeat[3] = {1, 1, 1};
-uniform int attrNDims[3] = {1, 1, 1};
-
-uniform int colormapElement[3] = {-1, -1, -1};
-uniform int highlightElement;
-uniform int filterElement;
-uniform bool activatedLayers[5 /* layer */][7 /* element kind */];
-
 uniform int meshIndex;
 
 
@@ -205,18 +185,6 @@ vec4 showColormap() {
     } else {
         return vec4(0., 0., 0., -1.);
     }
-
-    // int kind = colormapElement[layer];
-    
-    // if (kind == 2 /* corners */) {
-    //     return getLayerColor(FragHalfedgeIndex, layer);
-    // } 
-    
-    // if (kind == -1 /* no element => layer deactivated */) {
-    //     return vec4(0., 0., 0., -1.);
-    // }
-
-    // return vec4(1., 0., 0., 1.);
 }
 
 // Mix with alpha discard
