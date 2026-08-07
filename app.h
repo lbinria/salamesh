@@ -186,6 +186,54 @@ struct App final : public IApp {
 		return false;
 		#endif
 	}
+
+	bool Trackball3(const char* label, sl::algebra::vec3& v, float radius = 20.0f) {
+		ImGuiWindow* window = ImGui::GetCurrentWindow();
+		if (window->SkipItems) return false;
+
+		ImGuiContext& g = *GImGui;
+		const ImGuiID id = window->GetID(label);
+		const ImVec2 pos = window->DC.CursorPos;
+		const float diameter = radius * 2.0f;
+		const ImRect bb(pos, ImVec2(pos.x + diameter, pos.y + diameter));
+		
+		ImGui::ItemSize(bb);
+		if (!ImGui::ItemAdd(bb, id)) return false;
+
+		bool hovered, held;
+		bool pressed = ImGui::ButtonBehavior(bb, id, &hovered, &held);
+		bool value_changed = false;
+
+		if (held) {
+			ImVec2 mouse_delta = g.IO.MouseDelta;
+			if (mouse_delta.x != 0.0f || mouse_delta.y != 0.0f) {
+				float sensitivity = 0.01f;
+				
+				// Map mouse movement to angular changes around axes
+				v.y += mouse_delta.x * sensitivity; // Yaw
+				v.x -= mouse_delta.y * sensitivity; // Pitch
+				
+				value_changed = true;
+			}
+		}
+
+		// Render the trackball UI
+		ImDrawList* draw_list = window->DrawList;
+		ImVec2 center = ImVec2(pos.x + radius, pos.y + radius);
+		
+		// Background circle and outer ring
+		ImU32 bg_color = ImGui::GetColorU32(held ? ImGuiCol_ButtonActive : (hovered ? ImGuiCol_ButtonHovered : ImGuiCol_Button));
+		draw_list->AddCircleFilled(center, radius, bg_color, 16);
+		draw_list->AddCircle(center, radius, ImGui::GetColorU32(ImGuiCol_Border), 16, 1.0f);
+
+		// Draw a small indicator line or dot showing orientation based on float3 values
+		float indicator_x = center.x + std::sin(v.y) * (radius * 0.6f);
+		float indicator_y = center.y - std::sin(v.x) * (radius * 0.6f);
+		draw_list->AddLine(center, ImVec2(indicator_x, indicator_y), ImGui::GetColorU32(ImGuiCol_PlotLines), 2.0f);
+		draw_list->AddCircleFilled(ImVec2(indicator_x, indicator_y), 3.0f, ImGui::GetColorU32(ImGuiCol_Text));
+
+		return value_changed;
+	}
 	
 	private:
 

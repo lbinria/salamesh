@@ -49,6 +49,20 @@ function draw_model_properties(model, k, view)
 
 			end
 
+			local light_dir
+			for _, material in pairs(model.materials) do
+				light_dir = material["light"]["dir"]
+				break
+			end
+
+			local sel_chk_light_dir, new_light_dir = imgui.DragFloat3("light dir", light_dir, 0.01, -1., 1.)
+
+			if (sel_chk_light_dir) then 
+				for _, material in pairs(model.materials) do
+					material["light"]["dir"] = new_light_dir
+				end
+			end
+
 
 			-- local lightParamsGroup = model:get_material_params_group("light")
 			-- local enableds = lightParamsGroup:get_bools("enabled")

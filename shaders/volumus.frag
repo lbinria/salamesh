@@ -17,8 +17,12 @@ flat in vec3 flatFragHeights;
 in vec3 fragWorldPos;
 in vec3 fragBarycentric;
 
-uniform bool isLightEnabled;
-uniform vec3 lightDir = vec3(-0.5f, -0.8f, 0.2f);
+struct Light {
+	vec3 dir;
+	bool enabled;
+};
+
+uniform Light light;
 
 struct Clipping {
     int mode; // {0 = cell, 1 = std, 2 = slice}
@@ -138,7 +142,7 @@ void clip(inout vec3 col) {
 }
 
 void shading(inout vec3 col) {
-	float diffuse = max((1.f - dot(lightDir, fragNormal)) * .5f + .45f /* ambiant */, 0.f);
+	float diffuse = max((1.f - dot(light.dir, fragNormal)) * .5f + .45f /* ambiant */, 0.f);
 	col *= diffuse;
 }
 
@@ -158,7 +162,7 @@ void main()
 	if (clipping.enabled)
     	clip(col);
 
-	if (isLightEnabled)
+	if (light.enabled)
 		shading(col);
 
 	wireframe(col);

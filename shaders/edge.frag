@@ -13,7 +13,12 @@ flat in int FragHalfedgeIndex;
 
 in vec3 fragWorldPos;
 
-uniform bool isLightEnabled;
+struct Light {
+	vec3 dir;
+	bool enabled;
+};
+
+uniform Light light;
 
 struct Clipping {
     int mode; // {0 = cell, 1 = std, 2 = slice}
@@ -186,9 +191,13 @@ void highlight(inout vec3 col) {
 
 void shading(inout vec3 col, vec3 N, float t) {
     // Diffuse light
-    float lightPower = isLightEnabled ? dot(N, vec3(0.35,0.45,1.)) : 0.;
-    float light = 1. - lightPower /** .5 + .5*/;
-    col *= light * 0.5 + 0.5;
+    // float light = 1. - dot(N, light.dir) /** .5 + .5*/;
+    // col *= light * 0.5 + 0.5;
+
+    // Diffuse light    
+    // float diffuse = max((1.f - dot(N, light.dir)) * .75f + .25f /* ambiant */, 0.f);
+    float diffuse = 1.f - dot(N, light.dir);
+    col = col * diffuse;
 }
 
 vec4 showColormap() {
@@ -238,7 +247,9 @@ void main()
     }
 
     highlight(col);
-    shading(col, N, t);
+
+    if (light.enabled)
+        shading(col, N, t);
 
     fragHalfedgeIndexOut = vec4(encode_id(FragHalfedgeIndex), 1.);
     fragFacetIndexOut = vec4(0., 0., 0., 0.);

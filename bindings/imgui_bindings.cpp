@@ -193,6 +193,7 @@ namespace bindings {
 		// 	return std::make_optional(std::make_tuple(sel, res));
 		// });
 
+		// TODO accept lua table input
 		imgui.set_function("InputFloat2", [](const char* label, sl::algebra::vec2 v, sol::this_state s) -> std::optional<std::tuple<bool, sl::algebra::vec2>> {
 			sol::state_view lua(s);
 
@@ -211,42 +212,44 @@ namespace bindings {
 			return std::make_optional(std::make_tuple(sel, res));
 		});
 
-		imgui.set_function("InputFloat3", [](const char* label, sol::object v, sol::this_state s) -> std::optional<std::tuple<bool, std::array<float, 3>>> {
+		// TODO accept lua table input
+		imgui.set_function("InputFloat3", [](const char* label, sl::algebra::vec3 v, sol::this_state s) -> std::optional<std::tuple<bool, sl::algebra::vec3>> {
 			sol::state_view lua(s);
 
 			std::array<float, 3> vals;
+			vals = {v.x, v.y, v.z};
 
-			if (v.is<sl::algebra::vec3>()) {
-				auto vec = v.as<sl::algebra::vec3>();
-				vals = {vec.x, vec.y, vec.z};
-			} else if (v.is<sol::table>()) {
-				sol::table table = v.as<sol::table>();
-				vals = {
-					table.get_or(1, 0.0f),
-					table.get_or(2, 0.0f),
-					table.get_or(3, 0.0f)
-				};
-			} else {
-				return std::nullopt;
-			}
 			
 			bool sel = ImGui::InputFloat3(label, vals.data());
 			
-			// If input was a table, update the original table
-			// If input was a sl::algebra::vec3, update the original vector
-			if (sel && v.is<sol::table>()) {
-				sol::table table = v.as<sol::table>();
-				table[1] = vals[0];
-				table[2] = vals[1];
-				table[3] = vals[2];
-			} else if (sel && v.is<sl::algebra::vec3>()) {
-				auto& vec = v.as<sl::algebra::vec3>();
-				vec.x = vals[0];
-				vec.y = vals[1];
-				vec.z = vals[2];
+			sl::algebra::vec3 res;
+			if (sel) {
+				res.x = vals[0];
+				res.y = vals[1];
+				res.z = vals[2];
 			}
 			
-			return std::make_optional(std::make_tuple(sel, vals));
+			return std::make_optional(std::make_tuple(sel, res));
+		});
+
+		// TODO accept lua table input
+		imgui.set_function("DragFloat3", [](const char* label, sl::algebra::vec3 v, float v_speed, float v_min, float v_max, sol::this_state s) -> std::optional<std::tuple<bool, sl::algebra::vec3>> {
+			sol::state_view lua(s);
+
+			std::array<float, 3> vals;
+			vals = {v.x, v.y, v.z};
+
+			
+			bool sel = ImGui::DragFloat3(label, vals.data(), v_speed, v_min, v_max);
+			
+			sl::algebra::vec3 res;
+			if (sel) {
+				res.x = vals[0];
+				res.y = vals[1];
+				res.z = vals[2];
+			}
+			
+			return std::make_optional(std::make_tuple(sel, res));
 		});
 
 		imgui.set_function("SliderFloat", [](const char* label, sol::object v, float v_min, float v_max, sol::this_state s) -> std::optional<std::tuple<bool, float>> {

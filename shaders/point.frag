@@ -19,8 +19,12 @@ struct Style {
 
 uniform Style style;
 
+struct Light {
+	vec3 dir;
+	bool enabled;
+};
 
-uniform bool isLightEnabled;
+uniform Light light;
 
 struct Clipping {
     int mode; // {0 = cell, 1 = std, 2 = slice}
@@ -142,15 +146,9 @@ void highlight(inout vec3 col) {
 }
 
 void shading(vec3 N, inout vec3 col) {
-    // Diffuse light
-    if (isLightEnabled) {
-        vec3 dirLight;
-
-        dirLight = vec3(-0.5f, -0.8f, 0.2f);
-        
-        float diffuse = max((1.f - dot(N, dirLight)) * .75f + .25f /* ambiant */, 0.f);
-        col = col * diffuse;
-    }
+    // Diffuse light    
+    float diffuse = max((1.f - dot(N, light.dir)) * .75f + .25f /* ambiant */, 0.f);
+    col = col * diffuse;
 }
 
 vec4 getLayerColor(int idx, int kind) {
@@ -221,7 +219,9 @@ void main()
     }
 
     highlight(col);
-    shading(N, col);
+
+    if (light.enabled)
+        shading(N, col);
 
     FragVertexIndexOut = vec4(encode_id(FragVertexIndex), 1.);
     fragMeshIndexOut = vec4(encode_id(meshIndex), 1.);
