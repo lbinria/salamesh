@@ -3,11 +3,11 @@
 bool SceneModel::addShaderPass(ShaderBase &shader) {
 	auto name = shader.getName();
 	
-	if (_meshBuffer.contains(name))
+	if (_meshBuffers.contains(name))
 		return false;
 	
 	auto meshBuffer = shader.createMeshBuffer();
-	_meshBuffer.emplace(name, std::move(meshBuffer));
+	_meshBuffers.emplace(name, std::move(meshBuffer));
 	
 	auto material = shader.createMaterial();
 	_materials.emplace(name, std::move(material));
@@ -56,17 +56,6 @@ void SceneModel::saveState(json &j, const std::string filename) {
 
 	// j["selected_attribute"] = _selectedAttribute;
 
-	auto jAttrNameByLayer = json::object();
-	for (auto &[k, attrName] : _attrNameByLayerAndKind) {
-		auto [layer, kind] = k;
-		std::string compositeKey = 
-			std::to_string(static_cast<int>(layer)) + "_" + 
-			std::to_string(static_cast<int>(kind));
-
-		jAttrNameByLayer[compositeKey] = attrName;
-	}
-
-	j["attr_name_by_layer"] = jAttrNameByLayer;
 
 	j["mesh"] = json::object();
 	_mesh->saveState(j["mesh"], filename);
@@ -103,4 +92,27 @@ void SceneModel::applyMaterialsFrom(SceneModel &model) {
 		setSelectedAttribute(sourceSelectedAttrOpt);
 		setColormap(model.getColormap().value());
 	}
+}
+
+void SceneModel::clean() {
+
+	layers.clean();
+
+	// Clean up materials
+	for (auto &[_, material] : _materials) {
+		material.clean();
+	}
+
+	// Clean up mesh
+	_mesh->clean();
+	_mesh.reset();
+
+	// Clean up mesh buffers
+	for (auto &[_, meshBuffer] : _meshBuffers) {
+		meshBuffer.clean();
+	}
+
+	// Clear dicts
+	_materials.clear();
+	_meshBuffers.clear();
 }

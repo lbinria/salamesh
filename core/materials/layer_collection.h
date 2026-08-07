@@ -92,6 +92,12 @@ struct LayerUnit : public MaterialParams {
 		set("range", params.get("range"));
 	}
 
+	void clean() {
+		// Free buffer
+		glGenBuffers(1, &buf);
+		glGenTextures(1, &tbo);
+	}
+
 	// Fields
 	int nDims = 1;
 	int repeat = 1;
@@ -274,6 +280,17 @@ struct LayerSet {
 			setAttribute(_bindAttr.value());
 	}
 
+	void clean() {
+		// Unset layers data (free vram)
+		unset();
+
+		for (auto &[_, layer] : _layers) {
+			layer->clean();
+		}
+
+		_layers.clear();
+	}
+
 	LayerUnit& operator[](ElementKind kind) {
 		return *_layers[kind];
 	}
@@ -352,6 +369,14 @@ struct LayerCollection {
 
 	const LayerSet& operator[](Layer layer) const {
 		return *_layers.at(layer);
+	}
+
+	void clean() {
+		for (auto &[_, layer] : _layers) {
+			layer->clean();
+		}
+
+		_layers.clear();
 	}
 
 	private:

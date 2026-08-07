@@ -20,3 +20,7 @@ void Material::set(Material &material) {
 
 	_visible = material._visible;
 }
+
+void Material::clean() {
+	
+}

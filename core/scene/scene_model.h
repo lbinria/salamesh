@@ -61,14 +61,14 @@ struct SceneModel : std::enable_shared_from_this<SceneModel> {
 	}
 
 	std::map<std::string, MeshBuffer>& getMeshBuffer() {
-		return _meshBuffer;
+		return _meshBuffers;
 	}
 
 	std::optional<std::reference_wrapper<MeshBuffer>> getMeshBuffer(const std::string name) {
-		if (!_meshBuffer.contains(name))
+		if (!_meshBuffers.contains(name))
 			return std::nullopt;
 		
-		return _meshBuffer.at(name);
+		return _meshBuffers.at(name);
 	}
 
     // // Direct member access
@@ -106,6 +106,7 @@ struct SceneModel : std::enable_shared_from_this<SceneModel> {
 	std::optional<Attribute> getSelectedAttribute();
 	void setSelectedAttribute(std::optional<Attribute> attribute);
 
+	void clean();
 
 	vec3 position{0,0,0};
 
@@ -118,13 +119,9 @@ struct SceneModel : std::enable_shared_from_this<SceneModel> {
 
 	std::shared_ptr<Mesh> _mesh;
 
-	std::map<std::string, MeshBuffer> _meshBuffer;
+	std::map<std::string, MeshBuffer> _meshBuffers;
 	std::map<std::string, Material> _materials;
 
-
-
 	bool _visible = true;
-
-	std::map<std::tuple<Layer, ElementKind>, std::string> _attrNameByLayerAndKind;
 
 };

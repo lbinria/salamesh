@@ -158,7 +158,13 @@ void Scene::addColormap(const std::string name, const std::string filename) {
 }
 
 void Scene::removeColormap(const std::string name) {
-	// TODO free memory
+	// Free vram, not for the moment because dangerous to gain a little of memory
+	// (because of Colormap is copyable and contains unsigned int tex pointer)
+	// if (colormaps.contains(name)) {
+	// 	auto &colormap = colormaps.at(name);
+	// 	glDeleteTextures(1, &colormap.tex);
+	// }
+
 	colormaps.erase(name);
 }
 
@@ -169,12 +175,12 @@ Colormap Scene::getColormap(const std::string name) {
 	return colormaps.at(name);
 }
 
-void Scene::render(std::shared_ptr<SceneModel> model, std::unique_ptr<ShaderBase>& shader, std::map<std::string, bool> &wasUpdated) {
+void Scene::render(std::shared_ptr<SceneModel> model, ShaderBase& shader, std::map<std::string, bool> &wasUpdated) {
 	if (!model->isVisible())
 		return;
 
-	auto meshBufferOpt = model->getMeshBuffer(shader->getName());
-	auto materialOpt = model->getMaterial(shader->getName());
+	auto meshBufferOpt = model->getMeshBuffer(shader.getName());
+	auto materialOpt = model->getMaterial(shader.getName());
 
 	if (!meshBufferOpt.has_value() || !materialOpt.has_value())
 		return;
@@ -188,7 +194,7 @@ void Scene::render(std::shared_ptr<SceneModel> model, std::unique_ptr<ShaderBase
 	// TODO: maybe we can delay update shader buffer when material is not visible
 	if (mesh.shouldUpdate()) {
 		// Update current mesh buffer for given mesh
-		shader->update(meshBuffer, mesh);
+		shader.update(meshBuffer, mesh);
 		// auto pstr = mesh.getPointsStream();
 		// Test meshBuffer.write(mesh.getPointsStream());
 		// Update layers (only activated layers) according to new mesh
@@ -203,21 +209,21 @@ void Scene::render(std::shared_ptr<SceneModel> model, std::unique_ptr<ShaderBase
 		return;
 
 	glBindVertexArray(meshBuffer.vao());
-	meshBuffer.setPosition(shader->getShader(), model->position);
-	material.apply(shader->getShader());
-	model->layers.apply(shader->getShader());
+	meshBuffer.setPosition(shader.getShader(), model->position);
+	material.apply(shader.getShader());
+	model->layers.apply(shader.getShader());
 
 	// Set textures
 	for (auto &[_, tbo] : meshBuffer.tbos) {
 		glActiveTexture(GL_TEXTURE0 + tbo.texUnit);
 		glBindTexture(GL_TEXTURE_BUFFER, tbo.tex);
-		shader->getShader().setInt(tbo.name, tbo.texUnit);
+		shader.getShader().setInt(tbo.name, tbo.texUnit);
 	}
 
 	// Set mesh index
-	shader->getShader().setInt("meshIndex", mesh.getIndex());
+	shader.getShader().setInt("meshIndex", mesh.getIndex());
 
-	glDrawArrays(shader->renderElement(), 0, meshBuffer.nelements);
+	glDrawArrays(shader.renderElement(), 0, meshBuffer.nelements);
 }
 
 void Scene::render() {
@@ -229,7 +235,7 @@ void Scene::render() {
 	for (auto &[_, shader] : _shaders) {
 		// Loop through models in scene
 		for (auto &[modelName, model] : _models) {
-			render(model, shader, wasUpdated);
+			render(model, *shader, wasUpdated);
 		}
 
 	}

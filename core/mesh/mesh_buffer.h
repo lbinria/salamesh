@@ -33,7 +33,12 @@ struct MeshBuffer {
 	}
 
 	void clean() {
-		// TODO
+		// Delete buffers and VAO from the GPU
+		glDeleteVertexArrays(1, &_vao);
+		glDeleteBuffers(1, &_vbo);
+		// Prevent accidental reuse
+		_vao = 0;
+		_vbo = 0;
 	}
 
 	template<typename T>

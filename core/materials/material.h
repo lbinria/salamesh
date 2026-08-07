@@ -44,6 +44,8 @@ struct Material {
 
 	void set(Material &material);
 
+	void clean();
+
 	private:
 	std::map<std::string, std::shared_ptr<MaterialParams>> _params;
 	bool _visible = true;

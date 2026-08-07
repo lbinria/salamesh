@@ -34,7 +34,7 @@ struct Scene {
 
 
 	void clean() {
-		// TODO clean models
+		clear();
 
 		// Clear textures
 		for (auto &[_, colormap] : colormaps)
@@ -42,16 +42,25 @@ struct Scene {
 	}
 
 	void clear() {
-		// TODO clear models
 		setSelectedModel("");
+
+		// Clean models
+		for (auto &[_, model] : _models) {
+			model->clean();
+		}
+
+		_models.clear();
+
 		cameras.clear();
 		setupCameras();
 		clearColormaps();
 	}
 
 	bool setSelectedModel(std::string name) {
-		if (name.empty())
+		if (name.empty()) {
+			selectedModel = "";
 			return false;
+		}
 
 		if (!_models.contains(name)) {
 			std::cerr << "Invalid model selection: " << name << std::endl;
@@ -200,7 +209,7 @@ struct Scene {
 
 	std::map<std::string, std::shared_ptr<RenderSurface>> renderSurfaces;
 	
-	void render(std::shared_ptr<SceneModel> model, std::unique_ptr<ShaderBase> &shader, std::map<std::string, bool> &wasUpdated);
+	void render(std::shared_ptr<SceneModel> model, ShaderBase &shader, std::map<std::string, bool> &wasUpdated);
 
 
 
