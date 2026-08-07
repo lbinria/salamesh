@@ -18,14 +18,14 @@ MeshBuffer TetrahedrasShader::createMeshBuffer() {
 	glBindBuffer(GL_ARRAY_BUFFER, vbo);
 	// setup VBO
 	// sl::createVBOInteger(shader.id, "cornerIndex", sizeof(Vertex), (void*)offsetof(Vertex, cornerIndex));
-	sl::createVBOVec3(shader.id, "p0", sizeof(TrianglePrimitive), (void*)offsetof(TrianglePrimitive, p0)); 
-	sl::createVBOVec3(shader.id, "p1", sizeof(TrianglePrimitive), (void*)offsetof(TrianglePrimitive, p1)); 
-	sl::createVBOVec3(shader.id, "p2", sizeof(TrianglePrimitive), (void*)offsetof(TrianglePrimitive, p2)); 
-	sl::createVBOVec3(shader.id, "bary", sizeof(TrianglePrimitive), (void*)offsetof(TrianglePrimitive, bary)); 
-	sl::createVBOInteger(shader.id, "localIndex", sizeof(TrianglePrimitive), (void*)offsetof(TrianglePrimitive, localIndex));
-	sl::createVBOInteger(shader.id, "vertexIndex", sizeof(TrianglePrimitive), (void*)offsetof(TrianglePrimitive, id));
-	sl::createVBOInteger(shader.id, "facetIndex", sizeof(TrianglePrimitive), (void*)offsetof(TrianglePrimitive, facetIndex));
-	sl::createVBOInteger(shader.id, "cellIndex", sizeof(TrianglePrimitive), (void*)offsetof(TrianglePrimitive, cellIndex));
+	sl::createVBOVec3(shader.id, "p0", sizeof(TriangleVertex), (void*)offsetof(TriangleVertex, p0)); 
+	sl::createVBOVec3(shader.id, "p1", sizeof(TriangleVertex), (void*)offsetof(TriangleVertex, p1)); 
+	sl::createVBOVec3(shader.id, "p2", sizeof(TriangleVertex), (void*)offsetof(TriangleVertex, p2)); 
+	sl::createVBOVec3(shader.id, "bary", sizeof(TriangleVertex), (void*)offsetof(TriangleVertex, bary)); 
+	sl::createVBOInteger(shader.id, "localIndex", sizeof(TriangleVertex), (void*)offsetof(TriangleVertex, localIndex));
+	sl::createVBOInteger(shader.id, "vertexIndex", sizeof(TriangleVertex), (void*)offsetof(TriangleVertex, id));
+	sl::createVBOInteger(shader.id, "facetIndex", sizeof(TriangleVertex), (void*)offsetof(TriangleVertex, facetIndex));
+	sl::createVBOInteger(shader.id, "cellIndex", sizeof(TriangleVertex), (void*)offsetof(TriangleVertex, cellIndex));
 
 	return MeshBuffer(vao, vbo);
 };

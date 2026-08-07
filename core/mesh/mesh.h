@@ -85,9 +85,9 @@ struct Mesh {
 
 	virtual int facetSize(int f) const = 0;
 
-	virtual std::vector<PointPrimitive> getPointsStream() = 0;
-	virtual std::vector<TrianglePrimitive> getTrianglesStream() = 0;
-	virtual std::vector<EdgePrimitive> getEdgesStream() = 0;
+	virtual std::vector<PointVertex> getPointsStream() = 0;
+	virtual std::vector<TriangleVertex> getTrianglesStream() = 0;
+	virtual std::vector<EdgeVertex> getEdgesStream() = 0;
 
 	// TODO set private (pass in constructor)
 	std::string path = "";
@@ -168,44 +168,12 @@ struct Mesh {
 		return attributes;
 	}
 
-	Attribute getAttributeFromContainer(ElementKind kind, NamedContainer &container, int selectedDim) {
-		
-		// Get the type of the container
-		ElementType type = ElementType::DOUBLE_ELT; // Default type
-		if (auto a = dynamic_cast<AttributeContainer<double>*>(container.ptr.get())) {
-			type = ElementType::DOUBLE_ELT;
-		} else if (auto a = dynamic_cast<AttributeContainer<int>*>(container.ptr.get())) {
-			type = ElementType::INT_ELT;
-		} else if (auto a = dynamic_cast<AttributeContainer<bool>*>(container.ptr.get())) {
-			type = ElementType::BOOL_ELT;
-		} else if (auto a = dynamic_cast<AttributeContainer<vec2>*>(container.ptr.get())) {
-			type = selectedDim < 0 ? ElementType::VEC2_ELT : ElementType::DOUBLE_ELT;
-		} else if (auto a = dynamic_cast<AttributeContainer<vec3>*>(container.ptr.get())) {
-			type = selectedDim < 0 ? ElementType::VEC3_ELT : ElementType::DOUBLE_ELT;
-		} else {
-			throw std::runtime_error("Unknown attribute type for container: " + container.name);
-		}
-
-		std::string attrName = container.name;
-		if (selectedDim >= 0) {
-			attrName += "[" + std::to_string(selectedDim) + "]";
-		}
-
-		return {attrName, kind, type, container.ptr, selectedDim >= 0, selectedDim};
-	}
-
 	private:
 	mutable bool _dirty = true;
 
 	static inline int maxIndex = 0;
 	int _index;
 };
-
-// struct UMMesh : public Mesh {
-
-
-
-// };
 
 // Define concept to accept only types that are derived from Surface
 template<typename T>
@@ -315,8 +283,8 @@ struct SurfaceMesh : public Mesh {
 		return {min, max};
 	}
 
-	std::vector<PointPrimitive> getPointsStream() final override {
-		std::vector<PointPrimitive> points(_m.nverts());
+	std::vector<PointVertex> getPointsStream() final override {
+		std::vector<PointVertex> points(_m.nverts());
 		for (auto &v : _m.iter_vertices()) {
 			vec3 p = v;
 			points[v] = { 
@@ -329,8 +297,8 @@ struct SurfaceMesh : public Mesh {
 		return points;
 	}
 
-	std::vector<EdgePrimitive> getEdgesStream() final override {
-		std::vector<EdgePrimitive> vertices;
+	std::vector<EdgeVertex> getEdgesStream() final override {
+		std::vector<EdgeVertex> vertices;
 		// pre-allocate to speed-up
 		vertices.reserve(_m.nfacets() * 4 /* reserve for 4 side facets */ * 6 /* 1 quad, 2 tri per quad, 3 points per tri */); 
 
@@ -357,10 +325,10 @@ struct SurfaceMesh : public Mesh {
 				sl::algebra::vec3 gp1 = sl::algebra::vecf(p1);
 
 				// build the 4 “corner” vertices
-				EdgePrimitive lv0{halfedgeIdx, gp0, gp1, -1.0f, 0.0f, bary};  // corner: start, left side
-				EdgePrimitive lv1{halfedgeIdx, gp0, gp1, +1.0f, 0.0f, bary};  // corner: start, right side
-				EdgePrimitive lv2{halfedgeIdx, gp0, gp1, -1.0f, 1.0f, bary};  // corner: end,   left side
-				EdgePrimitive lv3{halfedgeIdx, gp0, gp1, +1.0f, 1.0f, bary};  // corner: end,   right side
+				EdgeVertex lv0{halfedgeIdx, gp0, gp1, -1.0f, 0.0f, bary};  // corner: start, left side
+				EdgeVertex lv1{halfedgeIdx, gp0, gp1, +1.0f, 0.0f, bary};  // corner: start, right side
+				EdgeVertex lv2{halfedgeIdx, gp0, gp1, -1.0f, 1.0f, bary};  // corner: end,   left side
+				EdgeVertex lv3{halfedgeIdx, gp0, gp1, +1.0f, 1.0f, bary};  // corner: end,   right side
 
 				vertices.push_back(lv0);
 				vertices.push_back(lv1);
@@ -376,10 +344,10 @@ struct SurfaceMesh : public Mesh {
 		return vertices;
 	}
 
-	std::vector<TrianglePrimitive> getTrianglesStream() override {
+	std::vector<TriangleVertex> getTrianglesStream() override {
 
 		int cornerOff = 0;
-		std::vector<TrianglePrimitive> vertices;
+		std::vector<TriangleVertex> vertices;
 		for (auto &f : _m.iter_facets()) {
 
 			// There is as much triangles as vertices in facet,
@@ -475,8 +443,8 @@ typedef SurfaceMesh<Polygons> PolygonsMesh;
 struct TrianglesMesh : public SurfaceMesh<Triangles> {
 
 
-	std::vector<TrianglePrimitive> getTrianglesStream() final override {
-		std::vector<TrianglePrimitive> vertices(_m.nfacets() * 3 /* 3 points per tri */);
+	std::vector<TriangleVertex> getTrianglesStream() final override {
+		std::vector<TriangleVertex> vertices(_m.nfacets() * 3 /* 3 points per tri */);
 
 		for (auto &f : _m.iter_facets()) {
 
@@ -570,8 +538,8 @@ struct VolumeMesh : public Mesh {
 		return {min, max};
 	}
 
-	std::vector<PointPrimitive> getPointsStream() final override {
-		std::vector<PointPrimitive> points(_m.nverts());
+	std::vector<PointVertex> getPointsStream() final override {
+		std::vector<PointVertex> points(_m.nverts());
 		for (auto &v : _m.iter_vertices()) {
 			vec3 p = v;
 			points[v] = { 
@@ -584,14 +552,14 @@ struct VolumeMesh : public Mesh {
 		return points;
 	}
 
-	std::vector<EdgePrimitive> getEdgesStream() final override {
+	std::vector<EdgeVertex> getEdgesStream() final override {
 		// TODO implement
 		return {};
 	}
 
-	std::vector<TrianglePrimitive> getTrianglesStream() final override {
+	std::vector<TriangleVertex> getTrianglesStream() final override {
 
-		std::vector<TrianglePrimitive> vertices;
+		std::vector<TriangleVertex> vertices;
 		vertices.reserve(_m.ncells() * 4 /* 4 facets per cell */ * 3 /* 3 points per facet */);
 
 		for (auto &c : _m.iter_cells()) {
@@ -752,8 +720,8 @@ struct PolyLineMesh : public Mesh {
 		return 0;
 	}
 
-	std::vector<PointPrimitive> getPointsStream() final override {
-		std::vector<PointPrimitive> points(_m.nverts());
+	std::vector<PointVertex> getPointsStream() final override {
+		std::vector<PointVertex> points(_m.nverts());
 		for (auto &v : _m.iter_vertices()) {
 			vec3 p = v;
 			points[v] = { 
@@ -766,8 +734,8 @@ struct PolyLineMesh : public Mesh {
 		return points;
 	}
 
-	std::vector<EdgePrimitive> getEdgesStream() final override {
-		std::vector<EdgePrimitive> vertices;
+	std::vector<EdgeVertex> getEdgesStream() final override {
+		std::vector<EdgeVertex> vertices;
 		// pre-allocate to speed-up
 		vertices.reserve(_m.nedges() * 6 /* 1 quad, 2 tri per quad, 3 points per tri */); 
 
@@ -780,10 +748,10 @@ struct PolyLineMesh : public Mesh {
 			sl::algebra::vec3 gp1 = sl::algebra::vecf(e.to());
 
 			// build the 4 “corner” vertices
-			EdgePrimitive lv0{e, gp0, gp1, -1.0f, 0.0f, bary};  // corner: start, left side
-			EdgePrimitive lv1{e, gp0, gp1, +1.0f, 0.0f, bary};  // corner: start, right side
-			EdgePrimitive lv2{e, gp0, gp1, -1.0f, 1.0f, bary};  // corner: end,   left side
-			EdgePrimitive lv3{e, gp0, gp1, +1.0f, 1.0f, bary};  // corner: end,   right side
+			EdgeVertex lv0{e, gp0, gp1, -1.0f, 0.0f, bary};  // corner: start, left side
+			EdgeVertex lv1{e, gp0, gp1, +1.0f, 0.0f, bary};  // corner: start, right side
+			EdgeVertex lv2{e, gp0, gp1, -1.0f, 1.0f, bary};  // corner: end,   left side
+			EdgeVertex lv3{e, gp0, gp1, +1.0f, 1.0f, bary};  // corner: end,   right side
 
 			vertices.push_back(lv0);
 			vertices.push_back(lv1);
@@ -798,7 +766,7 @@ struct PolyLineMesh : public Mesh {
 		return vertices;
 	}
 
-	std::vector<TrianglePrimitive> getTrianglesStream() final override {
+	std::vector<TriangleVertex> getTrianglesStream() final override {
 		return {};
 	}
 

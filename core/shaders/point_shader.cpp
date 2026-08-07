@@ -19,9 +19,9 @@ MeshBuffer PointShader::createMeshBuffer() {
 	glBindVertexArray(vao);
 	glBindBuffer(GL_ARRAY_BUFFER, vbo);
 	// setup VBO
-	sl::createVBOInteger(shader.id, "vertexIndex", sizeof(PointPrimitive), (void*)offsetof(PointPrimitive, id));
-	sl::createVBOVec3(shader.id, "p", sizeof(PointPrimitive), (void*)offsetof(PointPrimitive, pos));
-	sl::createVBOFloat(shader.id, "sizeScale", sizeof(PointPrimitive), (void*)offsetof(PointPrimitive, size));
+	sl::createVBOInteger(shader.id, "vertexIndex", sizeof(PointVertex), (void*)offsetof(PointVertex, id));
+	sl::createVBOVec3(shader.id, "p", sizeof(PointVertex), (void*)offsetof(PointVertex, pos));
+	sl::createVBOFloat(shader.id, "sizeScale", sizeof(PointVertex), (void*)offsetof(PointVertex, size));
 
 	return MeshBuffer(vao, vbo);
 };

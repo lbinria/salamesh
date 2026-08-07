@@ -21,12 +21,12 @@ MeshBuffer HalfedgeShader::createMeshBuffer() {
 	glBindVertexArray(vao);
 	glBindBuffer(GL_ARRAY_BUFFER, vbo);
 	// setup VBO
-	sl::createVBOInteger(shader.id, "halfedgeIndex", sizeof(EdgePrimitive), (void*)offsetof(EdgePrimitive, id));
-	sl::createVBOVec3(shader.id, "aP0", sizeof(EdgePrimitive), (void*)offsetof(EdgePrimitive, p0));
-	sl::createVBOVec3(shader.id, "aP1", sizeof(EdgePrimitive), (void*)offsetof(EdgePrimitive, p1));
-	sl::createVBOFloat(shader.id, "aSide", sizeof(EdgePrimitive), (void*)offsetof(EdgePrimitive, side));
-	sl::createVBOFloat(shader.id, "aEnd", sizeof(EdgePrimitive), (void*)offsetof(EdgePrimitive, end));
-	sl::createVBOVec3(shader.id, "bary", sizeof(EdgePrimitive), (void*)offsetof(EdgePrimitive, bary));
+	sl::createVBOInteger(shader.id, "halfedgeIndex", sizeof(EdgeVertex), (void*)offsetof(EdgeVertex, id));
+	sl::createVBOVec3(shader.id, "aP0", sizeof(EdgeVertex), (void*)offsetof(EdgeVertex, p0));
+	sl::createVBOVec3(shader.id, "aP1", sizeof(EdgeVertex), (void*)offsetof(EdgeVertex, p1));
+	sl::createVBOFloat(shader.id, "aSide", sizeof(EdgeVertex), (void*)offsetof(EdgeVertex, side));
+	sl::createVBOFloat(shader.id, "aEnd", sizeof(EdgeVertex), (void*)offsetof(EdgeVertex, end));
+	sl::createVBOVec3(shader.id, "bary", sizeof(EdgeVertex), (void*)offsetof(EdgeVertex, bary));
 
 	return MeshBuffer(vao, vbo);
 };

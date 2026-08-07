@@ -1,23 +1,14 @@
 #pragma once
 #include "vec.h"
 
-struct PointPrimitive {
+struct PointVertex {
 	int id;
 	sl::algebra::vec3 pos;
 	sl::algebra::vec3 normal;
 	float size;
 };
 
-
-// sl::algebra::vec3 p;
-
-// int halfedgeIndex;
-// sl::algebra::vec3 P0;
-// sl::algebra::vec3 P1;
-// float side;
-// float end;
-// sl::algebra::vec3 bary;
-struct EdgePrimitive {
+struct EdgeVertex {
 	int id;
 	sl::algebra::vec3 p0;
 	sl::algebra::vec3 p1;
@@ -26,8 +17,7 @@ struct EdgePrimitive {
 	sl::algebra::vec3 bary;
 };
 
-
-struct TrianglePrimitive {
+struct TriangleVertex {
 	int id;
 	int facetIndex;
 	int cellIndex;

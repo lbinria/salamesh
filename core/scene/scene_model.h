@@ -90,15 +90,7 @@ struct SceneModel : std::enable_shared_from_this<SceneModel> {
 	std::optional<Colormap> getColormap();
 	void setColormap(Colormap colormap);
 
-	std::string getLayerAttr(Layer layer, ElementKind kind);
-	void setLayer(Layer layer, Attribute attr, bool update);
 
-
-	void unsetLayer(Layer layer, ElementKind kind, bool reset = false);
-	void unsetLayers(Layer layer, bool reset = false);
-	void unsetLayers(ElementKind kind, bool reset);
-
-	void unsetLayers(bool reset = false);
 	void updateLayers();
 
 	void applyMaterialsFrom(SceneModel &model);

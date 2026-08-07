@@ -14,17 +14,17 @@ MeshBuffer PolyShader::createMeshBuffer() {
 
 
 	// Setup VBO
-	sl::createVBOInteger(shader.id, "vertexIndex", sizeof(TrianglePrimitive), (void*)offsetof(TrianglePrimitive, id));
-	sl::createVBOInteger(shader.id, "localIndex", sizeof(TrianglePrimitive), (void*)offsetof(TrianglePrimitive, localIndex));
-	sl::createVBOInteger(shader.id, "cornerIndex", sizeof(TrianglePrimitive), (void*)offsetof(TrianglePrimitive, cornerIndex));
-	sl::createVBOInteger(shader.id, "cornerOff", sizeof(TrianglePrimitive), (void*)offsetof(TrianglePrimitive, cornerOff));
-	sl::createVBOInteger(shader.id, "facetIndex", sizeof(TrianglePrimitive), (void*)offsetof(TrianglePrimitive, facetIndex));
+	sl::createVBOInteger(shader.id, "vertexIndex", sizeof(TriangleVertex), (void*)offsetof(TriangleVertex, id));
+	sl::createVBOInteger(shader.id, "localIndex", sizeof(TriangleVertex), (void*)offsetof(TriangleVertex, localIndex));
+	sl::createVBOInteger(shader.id, "cornerIndex", sizeof(TriangleVertex), (void*)offsetof(TriangleVertex, cornerIndex));
+	sl::createVBOInteger(shader.id, "cornerOff", sizeof(TriangleVertex), (void*)offsetof(TriangleVertex, cornerOff));
+	sl::createVBOInteger(shader.id, "facetIndex", sizeof(TriangleVertex), (void*)offsetof(TriangleVertex, facetIndex));
 
-	sl::createVBOVec3(shader.id, "p", sizeof(TrianglePrimitive), (void*)offsetof(TrianglePrimitive, p));
-	sl::createVBOVec3(shader.id, "p0", sizeof(TrianglePrimitive), (void*)offsetof(TrianglePrimitive, p0));
-	sl::createVBOVec3(shader.id, "p1", sizeof(TrianglePrimitive), (void*)offsetof(TrianglePrimitive, p1));
-	sl::createVBOVec3(shader.id, "p2", sizeof(TrianglePrimitive), (void*)offsetof(TrianglePrimitive, p2));
-	sl::createVBOVec3(shader.id, "n", sizeof(TrianglePrimitive), (void*)offsetof(TrianglePrimitive, normal));
+	sl::createVBOVec3(shader.id, "p", sizeof(TriangleVertex), (void*)offsetof(TriangleVertex, p));
+	sl::createVBOVec3(shader.id, "p0", sizeof(TriangleVertex), (void*)offsetof(TriangleVertex, p0));
+	sl::createVBOVec3(shader.id, "p1", sizeof(TriangleVertex), (void*)offsetof(TriangleVertex, p1));
+	sl::createVBOVec3(shader.id, "p2", sizeof(TriangleVertex), (void*)offsetof(TriangleVertex, p2));
+	sl::createVBOVec3(shader.id, "n", sizeof(TriangleVertex), (void*)offsetof(TriangleVertex, normal));
 
 	unsigned int bufNVertsPerFacet, texNVertsPerFacet;
 	sl::createTBO(bufNVertsPerFacet, texNVertsPerFacet);
