@@ -39,6 +39,12 @@ struct MeshBuffer {
 		// Prevent accidental reuse
 		_vao = 0;
 		_vbo = 0;
+
+		for (auto &[_, tbo] : tbos) {
+			glDeleteBuffers(1, &tbo.buf);
+			glDeleteTextures(1, &tbo.tex);
+		}
+		tbos.clear();
 	}
 
 	template<typename T>
@@ -65,7 +71,6 @@ struct MeshBuffer {
 		unsigned int buf;
 	};
 
-	// std::vector<TBO> tbos;
 	std::map<std::string, TBO> tbos;
 
 	private:
