@@ -33,12 +33,16 @@ in vec2 vLocalUV;  // u in [0..1] across thickness, v in [0..1] along length
 uniform vec3 uColorInside = vec3(0.0, 0.97, 0.73);
 uniform vec3 uColorOutside = vec3(0.0, 0.6, 0.45);
 
-uniform samplerBuffer layers[3][7];
+struct LayerData {
+    int ndims;
+    int repeat;
+    vec2 range;
+    bool activated;
+};
+
+uniform samplerBuffer layerBuffers[3][7];
+uniform LayerData layers[3][7];
 uniform sampler2D colormaps[7];
-uniform int ndims[3][7];
-uniform int repeats[3][7];
-uniform vec2 ranges[3][7];
-uniform bool activateds[3][7];
 
 uniform int meshIndex;
 
@@ -51,7 +55,7 @@ vec3 encode_id(int id) {
 }
 
 float fetchLayer(int idx, const int kind) {
-    return texelFetch(layers[0][kind], idx).x;
+    return texelFetch(layerBuffers[0][kind], idx).x;
     // if (kind == 0) return texelFetch(layers[0][0], idx).x;
     // if (kind == 1) return texelFetch(layers[0][1], idx).x;
     // if (kind == 2) return texelFetch(layers[0][2], idx).x;
@@ -77,9 +81,9 @@ vec4 fetchColormap(const int kind, vec2 coords) {
 
 vec4 getLayerColor(int idx, int kind) {
 
-    vec2 range = ranges[0][kind];
-    int nRepeat = repeats[0][kind];
-    int nDims = ndims[0][kind];
+    vec2 range = layers[0][kind].range;
+    int nRepeat = layers[0][kind].repeat;
+    int nDims = layers[0][kind].ndims;
 
     float rangeLength = range.y - range.x;
     float rangeRepeat = rangeLength / nRepeat;
@@ -113,10 +117,10 @@ float sdfEquilateralTriangle(vec2 p) {
 
 void _filter(inout vec3 col) {
     // Check whether layer filter is activated on corner
-    if (!activateds[2 /* filter */][1 /* corner */])
+    if (!layers[2 /* filter */][1 /* corner */].activated)
         return;
 
-    bool filtered = texelFetch(layers[2][1], FragHalfedgeIndex).x >= .5;
+    bool filtered = texelFetch(layerBuffers[2][1], FragHalfedgeIndex).x >= .5;
 
     if (filtered)
         discard;
@@ -156,11 +160,11 @@ vec4 trace(inout vec3 col) {
 
 void highlight(inout vec3 col) {
     // Check whether layer highlight on corner is activated
-    if (!activateds[1 /* hightlight */][1 /* corner */])
+    if (!layers[1 /* hightlight */][1 /* corner */].activated)
         return;
 
     // Highlight
-    float highlightVal = texelFetch(layers[1][1], FragHalfedgeIndex).x;
+    float highlightVal = texelFetch(layerBuffers[1][1], FragHalfedgeIndex).x;
 
     if (highlightVal > 0) {
         // Interpolate between hover / select colors according to highlight value
@@ -182,7 +186,7 @@ void shading(inout vec3 col, vec3 N, float t) {
 
 vec4 showColormap() {
 
-    if (activateds[0 /* colormap */][1 /* corner */]) {
+    if (layers[0 /* colormap */][1 /* corner */].activated) {
         return getLayerColor(FragHalfedgeIndex, 1 /* corner */);
     } else {
         return vec4(0., 0., 0., -1.);

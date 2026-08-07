@@ -46,13 +46,17 @@ flat in int surfaceType;
 
 
 
-// Test
-uniform samplerBuffer layers[3][7];
+struct LayerData {
+    int ndims;
+    int repeat;
+    vec2 range;
+    bool activated;
+};
+
+uniform samplerBuffer layerBuffers[3][7];
+uniform LayerData layers[3][7];
 uniform sampler2D colormaps[7];
-uniform int ndims[3][7];
-uniform int repeats[3][7];
-uniform vec2 ranges[3][7];
-uniform bool activateds[3][7];
+
 
 uniform samplerBuffer nvertsPerFacetBuf;
 
@@ -73,7 +77,7 @@ int getCurrentPointIdx(vec3 b) {
 }
 
 float fetchLayer(int idx, const int kind) {
-    return texelFetch(layers[0][kind], idx).x;
+    return texelFetch(layerBuffers[0][kind], idx).x;
     // if (kind == 0) return texelFetch(layers[0][0], idx).x;
     // if (kind == 1) return texelFetch(layers[0][1], idx).x;
     // if (kind == 2) return texelFetch(layers[0][2], idx).x;
@@ -98,9 +102,9 @@ vec4 fetchColormap(const int kind, vec2 coords) {
 
 vec4 getLayerColor(int idx, int kind) {
 
-    vec2 range = ranges[0][kind];
-    int nRepeat = repeats[0][kind];
-    int nDims = ndims[0][kind];
+    vec2 range = layers[0][kind].range;
+    int nRepeat = layers[0][kind].repeat;
+    int nDims = layers[0][kind].ndims;
     // bool automap = getLayerAutomap(layer);
 
     float rangeLength = range.y - range.x;
@@ -224,9 +228,9 @@ vec4 showCornerAttributes() {
 }
 
 vec4 showColormap() {
-    if (activateds[0 /* colormap */][3 /* facet */]) {
+    if (layers[0 /* colormap */][3 /* facet */].activated) {
         return getLayerColor(fragFacetIndex, 3 /* facet */);
-    } else if (activateds[0 /* colormap */][1 /* corner */]) {
+    } else if (layers[0 /* colormap */][1 /* corner */].activated) {
         return showCornerAttributes();
     } else {
         return vec4(0., 0., 0., -1.);
@@ -236,10 +240,10 @@ vec4 showColormap() {
 
 void _filter(inout vec3 col) {
     // Check whether layer filter is activated on facet
-    if (!activateds[2 /* filter */][3 /* facet */])
+    if (!layers[2 /* filter */][3 /* facet */].activated)
         return;
 
-    bool filtered = texelFetch(layers[2][3], fragFacetIndex).x >= .5;
+    bool filtered = texelFetch(layerBuffers[2][3], fragFacetIndex).x >= .5;
 
     if (filtered)
         discard;
@@ -268,11 +272,11 @@ void clip(inout vec3 col) {
 
 void highlight(inout vec3 col) {
     // Check whether layer highlight on facet is activated
-    if (!activateds[1 /* hightlight */][3 /* facet */])
+    if (!layers[1 /* hightlight */][3 /* facet */].activated)
         return;
 
     // Highlight
-    float highlightVal = texelFetch(layers[1][3], fragFacetIndex).x;
+    float highlightVal = texelFetch(layerBuffers[1][3], fragFacetIndex).x;
 
     if (highlightVal > 0) {
         // Interpolate between hover / select colors according to highlight value
@@ -323,7 +327,7 @@ void main()
     vec3 col = color;
 
     _filter(col);
-    
+
     if (clipping.enabled)
         clip(col);
 

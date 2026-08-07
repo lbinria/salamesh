@@ -17,14 +17,14 @@ struct LayerUnit : public MaterialParams {
 	virtual void apply(Shader &shader) override {
 		auto indexation = "[" + std::to_string(l) + "][" + std::to_string(k) + "]";
 
-		shader.setInt("ndims" + indexation, nDims);
-		shader.setInt("repeats" + indexation, repeat);
-		shader.setFloat2("ranges" + indexation, sl::algebra::vec2(range.x, range.y));
-		shader.setBool("activateds" + indexation, activated);
+		shader.setInt("layers" + indexation + ".ndims", nDims);
+		shader.setInt("layers" + indexation + ".repeat", repeat);
+		shader.setFloat2("layers" + indexation + ".range", sl::algebra::vec2(range.x, range.y));
+		shader.setBool("layers" + indexation + ".activated", activated);
 
 		// Note: offset = ElementKind::ELEMENT_KIND_COUNT = 7 because 0-6 are reserved for colormap textures
 		auto texId = static_cast<int>(l) * ElementKind::ELEMENT_KIND_COUNT + static_cast<int>(k) + ElementKind::ELEMENT_KIND_COUNT;
-		shader.setInt("layers" + indexation, texId); 
+		shader.setInt("layerBuffers" + indexation, texId); 
 		// Set tex id for tex unit & bind TBO (=> bind buffer)
 		glActiveTexture(GL_TEXTURE0 + texId);
 		glBindTexture(GL_TEXTURE_BUFFER, tbo);
