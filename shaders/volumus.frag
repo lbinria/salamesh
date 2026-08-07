@@ -20,9 +20,6 @@ in vec3 fragBarycentric;
 uniform bool isLightEnabled;
 uniform vec3 lightDir = vec3(-0.5f, -0.8f, 0.2f);
 
-uniform vec3 color;
-uniform float meshSize;
-
 struct Clipping {
     int mode; // {0 = cell, 1 = std, 2 = slice}
     vec3 normal;
@@ -32,6 +29,16 @@ struct Clipping {
 };
 
 uniform Clipping clipping;
+
+
+struct Style {
+   vec3 color;
+   float size;
+   float shrink;
+   bool cornerVisible;
+};
+
+uniform Style style;
 
 // uniform vec3 hoverColor = vec3(1.,1.,1.);
 // uniform vec3 selectColor = vec3(0., 0.22, 1.);
@@ -136,9 +143,9 @@ void shading(inout vec3 col) {
 }
 
 void wireframe(inout vec3 col) {
-	float f1 = 1. - smoothstep(flatFragHeights.x - meshSize, flatFragHeights.x, flatFragHeights.x - fragHeights.x);
-	float f2 = 1. - smoothstep(flatFragHeights.y - meshSize, flatFragHeights.y, flatFragHeights.y - fragHeights.y);
-	float f3 = 1. - smoothstep(flatFragHeights.z - meshSize, flatFragHeights.z, flatFragHeights.z - fragHeights.z);
+	float f1 = 1. - smoothstep(flatFragHeights.x - style.size, flatFragHeights.x, flatFragHeights.x - fragHeights.x);
+	float f2 = 1. - smoothstep(flatFragHeights.y - style.size, flatFragHeights.y, flatFragHeights.y - fragHeights.y);
+	float f3 = 1. - smoothstep(flatFragHeights.z - style.size, flatFragHeights.z, flatFragHeights.z - fragHeights.z);
 	col *= f1 * f2 * f3;
 	// col *= min(f1, min(f2, f3));
 }
@@ -146,7 +153,7 @@ void wireframe(inout vec3 col) {
 
 void main()
 {
-	vec3 col = color;
+	vec3 col = style.color;
     // _filter(col);
 	if (clipping.enabled)
     	clip(col);

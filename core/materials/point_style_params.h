@@ -8,8 +8,8 @@ struct PointStyleParams : MaterialParams {
 	}
 
 	void apply(Shader &shader) override {
-		shader.setFloat("pointSize", size);
-		shader.setFloat3("pointColor", color);
+		shader.setFloat("style.size", size);
+		shader.setFloat3("style.color", color);
 	}
 
 	ParamValue get(const std::string name) override {

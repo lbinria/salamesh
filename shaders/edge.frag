@@ -30,8 +30,15 @@ uniform vec3 selectColor = vec3(0., 0.22, 1.);
 
 in vec2 vLocalUV;  // u in [0..1] across thickness, v in [0..1] along length
 
-uniform vec3 uColorInside = vec3(0.0, 0.97, 0.73);
-uniform vec3 uColorOutside = vec3(0.0, 0.6, 0.45);
+struct Style {
+    float thickness; // in pixels
+    float spacing;
+    float padding;
+    vec3 colorInside;
+    vec3 colorOutside;
+};
+
+uniform Style style;
 
 struct LayerData {
     int ndims;
@@ -208,7 +215,7 @@ vec4 blendMix(vec4 c1, vec4 c2, float t) {
 
 void main()
 {
-    vec3 col = uColorInside;
+    vec3 col = style.colorInside;
     _filter(col);
 
     if (clipping.enabled)
@@ -218,7 +225,7 @@ void main()
     vec3 N = vec3(Nt);
     float t = Nt.w;
 
-    col = mix(uColorOutside, uColorInside, t);
+    col = mix(style.colorOutside, style.colorInside, t);
 
     // Show colormap data if activated
     vec4 b = showColormap();

@@ -13,7 +13,12 @@ layout (std140, binding = 0) uniform Matrices
 
 uniform mat4 model;
 
-uniform float pointSize;
+struct Style {
+    vec3 color;
+    float size;
+};
+
+uniform Style style;
 
 flat out int FragVertexIndex;
 out vec3 fragWorldPos;
@@ -29,7 +34,7 @@ void main()
 
 	vec3 viewDir = -vec3(view[0][2], view[1][2], view[2][2]);
 
-	gl_PointSize = pointSize * sizeScale;
+	gl_PointSize = style.size * sizeScale;
 
 	// Compute radius in world space from point size
 

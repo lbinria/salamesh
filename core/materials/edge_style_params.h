@@ -8,11 +8,11 @@ struct EdgeStyleParams : MaterialParams {
 	}
 
 	void apply(Shader &shader) override {
-		shader.setFloat("thickness", size);
-		shader.setFloat("spacing", spacing);
-		shader.setFloat("padding", padding);
-		shader.setFloat3("uColorInside", insideColor);
-		shader.setFloat3("uColorOutside", outsideColor);
+		shader.setFloat("style.thickness", size);
+		shader.setFloat("style.spacing", spacing);
+		shader.setFloat("style.padding", padding);
+		shader.setFloat3("style.colorInside", insideColor);
+		shader.setFloat3("style.colorOutside", outsideColor);
 	}
 
 	ParamValue get(const std::string name) override {

@@ -15,9 +15,17 @@ layout (std140, binding = 0) uniform Matrices
 };
 
 uniform mat4 model;
-uniform float thickness; // in pixels
-uniform float spacing;
-uniform float padding;
+
+struct Style {
+    float thickness; // in pixels
+    float spacing;
+    float padding;
+    vec3 colorInside;
+    vec3 colorOutside;
+};
+
+uniform Style style;
+
 
 out vec2 vLocalUV; // (u,v) in [0..1] for fragment
 flat out int FragHalfedgeIndex;
@@ -32,15 +40,15 @@ void main()
     // It's a sort of shrinking
     // 0 => line are on the facet's border
     // 1 => line are on the facet's barycenter
-    vec3 p0 = aP0 - (aP0 - bary) * padding;
-    vec3 p1 = aP1 - (aP1 - bary) * padding;
+    vec3 p0 = aP0 - (aP0 - bary) * style.padding;
+    vec3 p1 = aP1 - (aP1 - bary) * style.padding;
 
     // Spacing is the space between line extremities and points
     // 0 => line extremities lying to points
     // 1 => line extremities lying to the center of line
     vec3 d = p1 - p0;
-    p0 += d * spacing * .5;
-    p1 -= d * spacing * .5;
+    p0 += d * style.spacing * .5;
+    p1 -= d * style.spacing * .5;
 
     // 1) World→view→clip for both endpoints
     vec4 c0 = projection * view * model * vec4(p0, 1.0);
@@ -59,7 +67,7 @@ void main()
     vec2 perp = vec2(-dir.y, dir.x);
 
     // 5) half thickness in pixels
-    float halfT = thickness * 0.5;
+    float halfT = style.thickness * 0.5;
 
     // 6) pick endpoint and move it sideways
     vec2 base = mix(s0, s1, aEnd);      // if aEnd=0 → s0, if 1→ s1

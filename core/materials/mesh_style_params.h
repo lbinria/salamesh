@@ -8,10 +8,10 @@ struct MeshStyleParams : MaterialParams {
 	}
 
 	void apply(Shader &shader) override {
-		shader.setFloat3("color", color);
-		shader.setFloat("meshSize", meshSize);
-		shader.setFloat("meshShrink", meshShrink);
-		shader.setInt("isCornerVisible", isCornerVisible);
+		shader.setFloat3("style.color", color);
+		shader.setFloat("style.size", meshSize);
+		shader.setFloat("style.shrink", meshShrink);
+		shader.setBool("style.cornerVisible", isCornerVisible);
 	}
 
 	ParamValue get(const std::string name) override {

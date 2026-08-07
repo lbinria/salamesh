@@ -12,7 +12,12 @@ flat in int FragVertexIndex;
 
 in vec3 fragWorldPos;
 
-uniform vec3 pointColor;
+struct Style {
+    vec3 color;
+    float size;
+};
+
+uniform Style style;
 
 
 uniform bool isLightEnabled;
@@ -198,7 +203,7 @@ vec4 blendMix(vec4 c1, vec4 c2, float t) {
 
 void main()
 {
-    vec3 col = pointColor;
+    vec3 col = style.color;
     _filter(col);
     if (clipping.enabled)
         clip(col);

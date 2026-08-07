@@ -12,7 +12,6 @@ layout (location = 7) in int cornerIndex;
 layout (location = 8) in int cornerOff;
 layout (location = 9) in int facetIndex;
 
-uniform mat4 model;
 
 layout (std140, binding = 0) uniform Matrices
 {
@@ -21,6 +20,16 @@ layout (std140, binding = 0) uniform Matrices
 	vec2 viewport;
 };
 
+uniform mat4 model;
+
+struct Style {
+   vec3 color;
+   float size;
+   float shrink;
+   bool cornerVisible;
+};
+
+uniform Style style;
 
 out vec3 fragBary;
 out vec3 fragNormal;
@@ -36,9 +45,6 @@ flat out int fragCornerOff;
 
 out vec3 fragWorldPos;
 
-
-uniform float meshShrink;
-
 flat out int surfaceType; /* 0 => triangle, 1 => polygon */
 
 
@@ -46,7 +52,7 @@ flat out int surfaceType; /* 0 => triangle, 1 => polygon */
 void main()
 {
    // Apply shrink
-   vec3 world = p - (p - p0) * meshShrink;
+   vec3 world = p - (p - p0) * style.shrink;
    mat4 pvm = projection * view * model;
 
    // To clip space

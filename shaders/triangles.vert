@@ -18,6 +18,16 @@ layout (std140, binding = 0) uniform Matrices
    vec2 viewport;
 };
 
+uniform mat4 model;
+
+struct Style {
+   vec3 color;
+   float size;
+   float shrink;
+   bool cornerVisible;
+};
+
+uniform Style style;
 
 out vec3 fragBary;
 out vec3 fragNormal;
@@ -33,9 +43,6 @@ flat out int fragCornerOff;
 
 out vec3 fragWorldPos;
 
-uniform mat4 model;
-
-uniform float meshShrink;
 
 flat out int surfaceType; /* 0 => triangle, 1 => polygon */
 
@@ -46,9 +53,9 @@ void main()
    vec3 n = normalize(cross(p1 - p0, p2 - p0));
 
    // Apply shrink
-   vec3 sp0 = p0 - (p0 - bary) * meshShrink;
-   vec3 sp1 = p1 - (p1 - bary) * meshShrink;
-   vec3 sp2 = p2 - (p2 - bary) * meshShrink;
+   vec3 sp0 = p0 - (p0 - bary) * style.shrink;
+   vec3 sp1 = p1 - (p1 - bary) * style.shrink;
+   vec3 sp2 = p2 - (p2 - bary) * style.shrink;
 
    vec3 points[3] = vec3[3](sp0, sp1, sp2);
    vec3 sp = points[localIndex];
