@@ -34,26 +34,42 @@ struct Scene {
 
 
 	void clean() {
-		clear();
+		cleanupModels();
+		cleanupShaders();
+		cleanupColormaps();
+		cleanupRenderSurfaces();
+	}
 
-		// Clear textures
+	void clear() {
+		// Keep shaders
+		// Keep render surfaces for now
+		setSelectedModel("");
+
+		cleanupModels();
+		_models.clear();
+
+		resetCameras();
+		resetColormaps();
+	}
+
+	void cleanupModels() {
+		for (auto &[_, model] : _models)
+			model->clean();
+	}
+
+	void cleanupColormaps() {
 		for (auto &[_, colormap] : colormaps)
 			glDeleteTextures(1, &colormap.tex);
 	}
 
-	void clear() {
-		setSelectedModel("");
+	void cleanupShaders() {
+		for (auto &[_, shader] : _shaders)
+			shader->clean();
+	}
 
-		// Clean models
-		for (auto &[_, model] : _models) {
-			model->clean();
-		}
-
-		_models.clear();
-
-		cameras.clear();
-		setupCameras();
-		clearColormaps();
+	void cleanupRenderSurfaces() {
+		for (auto &[_, renderSurface] : renderSurfaces)
+			renderSurface->clean();
 	}
 
 	bool setSelectedModel(std::string name) {
@@ -126,7 +142,13 @@ struct Scene {
 	void addColormap(const std::string name, const std::string filename);
 	void removeColormap(const std::string name);
 
-	void clearColormaps() {
+	void resetCameras() {
+		cameras.clear();
+		setupCameras();
+	}
+
+	void resetColormaps() {
+		cleanupColormaps();
 		colormaps.clear();
 		setupColormaps();
 	}

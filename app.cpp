@@ -816,11 +816,6 @@ void App::clean() {
 
 	glDeleteVertexArrays(1, &quadVAO);
 	glDeleteBuffers(1, &quadVBO);
-
-	// Clean views (can be merge into scene.clean() i think )
-	for (auto &[rsName, rs] : scene.getRenderSurfaces())
-		rs->clean();
-
 }
 
 void App::showOpenModelDialog() {
