@@ -7,6 +7,8 @@ using namespace UM;
 #include "mesh_primitive.h"
 #include <optional>
 #include <float.h>
+#include <unordered_set>
+#include <typeindex>
 
 #include "json.hpp"
 using json = nlohmann::json;
@@ -135,6 +137,12 @@ struct Mesh {
 
 	virtual void clean() {}
 
+	// virtual void registerSupportedShaders() = 0;
+
+	bool support(std::type_index tid) const {
+		return supportedShaders.find(tid) != supportedShaders.end();
+	}
+
 	protected:
 
 	virtual std::vector<std::pair<ElementKind, NamedContainer>> getAttributeContainers() const = 0;
@@ -168,11 +176,20 @@ struct Mesh {
 		return attributes;
 	}
 
+	// TODO add constraint Shaders must be derived of ShaderBase
+	template <typename... Shaders>
+	void support() {
+		// Fold expression (C++17 and up) to insert each type into the set
+		(supportedShaders.insert(std::type_index(typeid(Shaders))), ...);
+	}
+
 	private:
 	mutable bool _dirty = true;
 
 	static inline int maxIndex = 0;
 	int _index;
+
+	std::unordered_set<std::type_index> supportedShaders;
 };
 
 // Define concept to accept only types that are derived from Surface
