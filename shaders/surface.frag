@@ -86,15 +86,39 @@ int getCurrentPointIdx(vec3 b) {
     }
 }
 
+// float fetchLayer(int idx, const int kind) {
+//     return texelFetch(layerBuffers[0][kind], idx).x;
+//     // if (kind == 0) return texelFetch(layers[0][0], idx).x;
+//     // if (kind == 1) return texelFetch(layers[0][1], idx).x;
+//     // if (kind == 2) return texelFetch(layers[0][2], idx).x;
+//     // if (kind == 3) return texelFetch(layers[0][kind], idx).x;
+//     // if (kind == 4) return texelFetch(layers[0][4], idx).x;
+//     // if (kind == 5) return texelFetch(layers[0][5], idx).x;
+//     // if (kind == 6) return texelFetch(layers[0][6], idx).x;
+//     // return 0.;
+// }
+
+// vec4 fetchColormap(const int kind, vec2 coords) {
+//     return texture(colormaps[kind], coords);
+//     // if (kind == 0) return texture(colormaps[0], coords);
+//     // if (kind == 1) return texture(colormaps[1], coords);
+//     // if (kind == 2) return texture(colormaps[2], coords);
+//     // if (kind == 3) return texture(colormaps[3], coords);
+//     // if (kind == 4) return texture(colormaps[4], coords);
+//     // if (kind == 5) return texture(colormaps[5], coords);
+//     // if (kind == 6) return texture(colormaps[6], coords);
+//     // return vec4(0.);
+// }
+
 float fetchLayer(int idx, const int kind) {
     return texelFetch(layerBuffers[0][kind], idx).x;
-    // if (kind == 0) return texelFetch(layers[0][0], idx).x;
-    // if (kind == 1) return texelFetch(layers[0][1], idx).x;
-    // if (kind == 2) return texelFetch(layers[0][2], idx).x;
-    // if (kind == 3) return texelFetch(layers[0][kind], idx).x;
-    // if (kind == 4) return texelFetch(layers[0][4], idx).x;
-    // if (kind == 5) return texelFetch(layers[0][5], idx).x;
-    // if (kind == 6) return texelFetch(layers[0][6], idx).x;
+    // if (kind == 0) return texelFetch(layerBuffers[0][0], idx).x;
+    // if (kind == 1) return texelFetch(layerBuffers[0][1], idx).x;
+    // if (kind == 2) return texelFetch(layerBuffers[0][2], idx).x;
+    // if (kind == 3) return texelFetch(layerBuffers[0][3], idx).x;
+    // if (kind == 4) return texelFetch(layerBuffers[0][4], idx).x;
+    // if (kind == 5) return texelFetch(layerBuffers[0][5], idx).x;
+    // if (kind == 6) return texelFetch(layerBuffers[0][6], idx).x;
     // return 0.;
 }
 

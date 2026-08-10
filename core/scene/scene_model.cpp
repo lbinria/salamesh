@@ -40,10 +40,6 @@ void SceneModel::setSelectedAttribute(std::optional<Attribute> attr) {
 	_selectedAttribute = attr;
 }
 
-void SceneModel::updateLayers() {
-	layers.update();
-}
-
 void SceneModel::loadState(json &j, const std::string filename) {
 
 }

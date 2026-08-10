@@ -52,8 +52,12 @@ struct LayerData {
 };
 
 uniform samplerBuffer layerBuffers[3][7];
-uniform LayerData layers[3][7];
+// uniform LayerData layers[3][7];
 uniform sampler2D colormaps[7];
+
+layout(std140) uniform LayerBlock {
+    LayerData layers[3][7];
+};
 
 
 vec3 encode_id(int id) {

@@ -19,7 +19,7 @@ struct LayerUnit : public MaterialParams {
 
 		shader.setInt("layers" + indexation + ".ndims", nDims);
 		shader.setInt("layers" + indexation + ".repeat", repeat);
-		shader.setFloat2("layers" + indexation + ".range", sl::algebra::vec2(range.x, range.y));
+		shader.setFloat2("layers" + indexation + ".range", range);
 		shader.setBool("layers" + indexation + ".activated", activated);
 
 		// Note: offset = ElementKind::ELEMENT_KIND_COUNT = 7 because 0-6 are reserved for colormap textures
@@ -242,6 +242,12 @@ struct LayerSet {
 		layer->range = range;
 		layer->activated = true;
 		_bindAttr = attr;
+		std::cout << "write data attribute" << std::endl;
+		std::cout << "data: " << data[0] << "," << data[1] << std::endl;
+		std::cout << "range: " << range.x << "," << range.y << std::endl;
+		std::cout << "kind: " << elementKindToString(attr.getKind()) << std::endl;
+		std::cout << "layer unit: " << layer << std::endl;
+
 	}
 
 	std::optional<Colormap> getColormap() {

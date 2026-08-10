@@ -91,8 +91,6 @@ struct SceneModel : std::enable_shared_from_this<SceneModel> {
 	void setColormap(Colormap colormap);
 
 
-	void updateLayers();
-
 	void applyMaterialsFrom(SceneModel &model);
 	
 	std::optional<Attribute> getSelectedAttribute();

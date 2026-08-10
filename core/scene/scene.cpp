@@ -200,7 +200,7 @@ void Scene::render(std::shared_ptr<SceneModel> model, ShaderBase& shader, std::m
 		// Update layers (only activated layers) according to new mesh
 		// TODO important can optimize that, it enter as many times as there is shader attached to model, there is no need to pass each time here !!!
 
-		model->updateLayers();
+		model->layers.update();
 		// Set model as updated
 		wasUpdated[model->getName()] = true;
 	}
