@@ -207,7 +207,7 @@ struct ColormapLayerUnit : public LayerUnitus<Layer::COLORMAP_0> {
 	}
 
 	private:
-	std::array<Colormap, ElementKind::ELEMENT_KIND_COUNT> colormaps;
+	std::array<Colormap, ElementKind::ELEMENT_KIND_COUNT> colormaps{};
 
 };
 
