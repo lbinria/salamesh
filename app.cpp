@@ -777,12 +777,12 @@ void App::drawGui() {
 		ImGui::GetBackgroundDrawList()->AddText(ImVec2(15, 30), ImGui::GetColorU32(ImVec4(1., 1., 1., 1.)), ("FPS: " + std::to_string(static_cast<int>(fps))).c_str());
 	// }
 
-	ImGui::Begin("test");
-	static sl::algebra::vec3 rotAngles{0.f, 0.f, 0.f};
-	Trackball3("##rot_trackball", rotAngles, 30.0f);
-	ImGui::SameLine();
-	ImGui::Text("Angles:\nX: %.2f\nY: %.2f\nZ: %.2f", rotAngles.x, rotAngles.y, rotAngles.z);
-	ImGui::End();
+	// ImGui::Begin("test");
+	// static sl::algebra::vec3 rotAngles{0.f, 0.f, 0.f};
+	// Trackball3("##rot_trackball", rotAngles, 30.0f);
+	// ImGui::SameLine();
+	// ImGui::Text("Angles:\nX: %.2f\nY: %.2f\nZ: %.2f", rotAngles.x, rotAngles.y, rotAngles.z);
+	// ImGui::End();
 
 	for (auto &script : scripts) {
 
