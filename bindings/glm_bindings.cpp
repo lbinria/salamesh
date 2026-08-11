@@ -28,7 +28,8 @@ namespace bindings {
 			sol::call_constructor, [](sol::table t) {
 				return sl::algebra::vec3{
 					t.get_or(1, 0.f),
-					t.get_or(2, 0.f)
+					t.get_or(2, 0.f),
+					t.get_or(3, 0.f)
 				};
 			},
 			
