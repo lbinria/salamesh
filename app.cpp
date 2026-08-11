@@ -335,11 +335,13 @@ bool App::setup() {
 	std::cout << "GPU Renderer: " << (renderer ? reinterpret_cast<const char*>(renderer) : "Unknown") << "\n";
 	std::cout << "GL Version  : " << (version  ? reinterpret_cast<const char*>(version)  : "Unknown") << "\n";
 
-	// GLint64 maxUnits;
-	// glGetInteger64i_v(GL_MAX_COMBINED_TEXTURE_IMAGE_UNITS, 0, &maxUnits);
 	GLint maxUnits;
-	glGetIntegerv(GL_MAX_COMBINED_TEXTURE_IMAGE_UNITS, &maxUnits);
-	std::cout << "GL_MAX_COMBINED_TEXTURE_IMAGE_UNITS: " << maxUnits << std::endl;
+	glGetIntegerv(GL_MAX_TEXTURE_IMAGE_UNITS, &maxUnits);
+	std::cout << "GL_MAX_TEXTURE_IMAGE_UNITS: " << maxUnits << std::endl;
+
+	GLint maxCombinedUnits;
+	glGetIntegerv(GL_MAX_COMBINED_TEXTURE_IMAGE_UNITS, &maxCombinedUnits);
+	std::cout << "GL_MAX_COMBINED_TEXTURE_IMAGE_UNITS: " << maxCombinedUnits << std::endl;
 
 	GLint maxColorAttachments = 0;
 	GLint maxDrawBuffers     = 0;

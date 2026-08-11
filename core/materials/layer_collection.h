@@ -94,14 +94,14 @@ struct LayerUnit : public MaterialParams {
 
 	void clean() {
 		// Free buffer
-		glGenBuffers(1, &buf);
-		glGenTextures(1, &tbo);
+		glDeleteBuffers(1, &buf);
+		glDeleteTextures(1, &tbo);
 	}
 
 	// Fields
 	int nDims = 1;
 	int repeat = 1;
-	sl::algebra::vec2 range;
+	sl::algebra::vec2 range{0, 0};
 	bool activated = false;
 
 	protected:
@@ -242,12 +242,6 @@ struct LayerSet {
 		layer->range = range;
 		layer->activated = true;
 		_bindAttr = attr;
-		std::cout << "write data attribute" << std::endl;
-		std::cout << "data: " << data[0] << "," << data[1] << std::endl;
-		std::cout << "range: " << range.x << "," << range.y << std::endl;
-		std::cout << "kind: " << elementKindToString(attr.getKind()) << std::endl;
-		std::cout << "layer unit: " << layer << std::endl;
-
 	}
 
 	std::optional<Colormap> getColormap() {
