@@ -57,7 +57,7 @@ struct MaterialParams {
 			{"color", sl::algebra::vec3{0.71f, 0.71f, 0.71f}},
 			{"size", 0.f},
 			{"shrink", 0.f},
-			{"cornerVisible", false},
+			{"corner_visible", false},
 		}};
 	}
 

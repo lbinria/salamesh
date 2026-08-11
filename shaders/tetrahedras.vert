@@ -35,7 +35,7 @@ struct Style {
    vec3 color;
    float size;
    float shrink;
-   bool cornerVisible;
+   bool corner_visible;
 };
 
 uniform Style style;

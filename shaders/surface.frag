@@ -39,16 +39,13 @@ struct Style {
    vec3 color;
    float size;
    float shrink;
-   bool cornerVisible;
+   bool corner_visible;
 };
 
 uniform Style style;
 
 uniform vec3 hoverColor = vec3(1.,1.,1.);
 uniform vec3 selectColor = vec3(0., 0.22, 1.);
-
-
-uniform bool isCornerVisible;
 
 uniform int meshIndex;
 
@@ -170,7 +167,7 @@ vec4 getLayerColor(int idx, int kind) {
 }
 
 vec4 showCornerAttributes() {
-    if (isCornerVisible) {
+    if (style.corner_visible) {
         // Which triangle vertex is the nearest ?
         // Use barycentric coordinates to get the closest point of the current fragment
         int curPointIdx = getCurrentPointIdx(fragBarycentric);

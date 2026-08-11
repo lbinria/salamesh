@@ -39,7 +39,7 @@ struct Style {
    vec3 color;
    float size;
    float shrink;
-   bool cornerVisible;
+   bool corner_visible;
 };
 
 uniform Style style;
@@ -58,8 +58,6 @@ uniform samplerBuffer highlightBuf;
 uniform samplerBuffer colormap0Buf;
 uniform samplerBuffer colormap1Buf;
 uniform samplerBuffer colormap2Buf;
-
-// uniform bool isCornerVisible;
 
 // uniform int meshIndex;
 
