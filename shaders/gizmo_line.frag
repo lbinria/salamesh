@@ -1,4 +1,4 @@
-#version 440 core
+#version 450 core
 
 // Color output
 layout(location = 0) out vec4 FragColor;

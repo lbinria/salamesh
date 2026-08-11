@@ -5,7 +5,7 @@ void Material::saveState(json &j) {
 
 	auto jParams = json::object();
 	for (auto &[paramsName, params] : _params) {
-		params->saveState(jParams[paramsName]);
+		params.saveState(jParams[paramsName]);
 	}
 	j["params"] = jParams;
 }
@@ -15,7 +15,7 @@ void Material::set(Material &material) {
 		if (!_params.contains(paramName) || typeid(params) != typeid(_params.at(paramName)))
 			continue;
 
-		_params.at(paramName)->setValues(*params);
+		_params.at(paramName).setValues(params);
 	}
 
 	_visible = material._visible;

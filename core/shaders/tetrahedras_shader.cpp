@@ -31,11 +31,11 @@ MeshBuffer TetrahedrasShader::createMeshBuffer() {
 };
 
 Material TetrahedrasShader::createMaterial() {
-	std::map<std::string, std::shared_ptr<MaterialParams>> params;
-	params["style"] = std::make_shared<MeshStyleParams>();
-	params["clipping"] = std::make_shared<ClippingParams>();
-	params["light"] = std::make_shared<LightParams>();
-	return Material(params);
+	return Material{{
+		{"style", MaterialParams::getStyleMaterialParams()},
+		{"clipping", MaterialParams::getClippingMaterialParams()},
+		{"light", MaterialParams::getLightMaterialParams()}
+	}};
 }
 
 void TetrahedrasShader::update(MeshBuffer &meshBuffer, Mesh &mesh) {

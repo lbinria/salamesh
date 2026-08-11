@@ -6,27 +6,26 @@
 
 struct Material {
 
-	Material() = default;
+
 	
-	Material(std::map<std::string, std::shared_ptr<MaterialParams>> &params) : 
-		_params(std::move(params)) {}
+	Material(std::map<std::string, MaterialParams> params) : 
+		_params(params) {}
 
 	void apply(Shader &shader) {
 		for (auto &[paramsName, params] : _params)
-			params->apply(shader);
+			params.apply(shader);
 	}
 
-	const std::map<std::string, std::shared_ptr<MaterialParams>> getParams() const {
+	std::map<std::string, MaterialParams>& getParams() {
 		return _params;
 	}
 
-	std::shared_ptr<MaterialParams> getParams(const std::string name) {
-		return _params.contains(name) ? _params.at(name) : nullptr;
-	}
-
-	template<typename TParams>
-	std::shared_ptr<TParams> getParams(const std::string name) {
-		return _params.contains(name) ? std::static_pointer_cast<TParams>(_params.at(name)) : nullptr;
+	std::optional<std::reference_wrapper<MaterialParams>> getParams(const std::string name) {
+		auto it = _params.find(name);
+			if (it != _params.end()) {
+				return std::ref(it->second);
+			}
+			return std::nullopt;
 	}
 
 	bool isVisible() const {
@@ -47,7 +46,7 @@ struct Material {
 	void clean();
 
 	private:
-	std::map<std::string, std::shared_ptr<MaterialParams>> _params;
+	std::map<std::string, MaterialParams> _params;
 	bool _visible = true;
 
 };

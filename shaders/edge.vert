@@ -1,4 +1,4 @@
-#version 440 core
+#version 450 core
 
 layout (location = 0) in vec3 aP0;
 layout (location = 1) in vec3 aP1;
@@ -20,8 +20,8 @@ struct Style {
     float thickness; // in pixels
     float spacing;
     float padding;
-    vec3 colorInside;
-    vec3 colorOutside;
+    vec3 inside_color;
+    vec3 outside_color;
 };
 
 uniform Style style;

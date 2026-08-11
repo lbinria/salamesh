@@ -1,4 +1,4 @@
-#version 440 core
+#version 450 core
 
 // Avoid the disable of earlier Depth-testing
 layout(depth_less) out float gl_FragDepth;
@@ -39,8 +39,8 @@ struct Style {
     float thickness; // in pixels
     float spacing;
     float padding;
-    vec3 colorInside;
-    vec3 colorOutside;
+    vec3 inside_color;
+    vec3 outside_color;
 };
 
 uniform Style style;
@@ -224,7 +224,7 @@ vec4 blendMix(vec4 c1, vec4 c2, float t) {
 
 void main()
 {
-    vec3 col = style.colorInside;
+    vec3 col = style.inside_color;
     _filter(col);
 
     if (clipping.enabled)
@@ -234,7 +234,7 @@ void main()
     vec3 N = vec3(Nt);
     float t = Nt.w;
 
-    col = mix(style.colorOutside, style.colorInside, t);
+    col = mix(style.outside_color, style.inside_color, t);
 
     // Show colormap data if activated
     vec4 b = showColormap();

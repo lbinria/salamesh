@@ -1,4 +1,4 @@
-#version 440 core
+#version 450 core
 
 // Vertex attributes
 layout (location = 1) in vec3 p0;

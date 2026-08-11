@@ -27,11 +27,11 @@ MeshBuffer PointShader::createMeshBuffer() {
 };
 
 Material PointShader::createMaterial() {
-	std::map<std::string, std::shared_ptr<MaterialParams>> params;
-	params["style"] = std::make_shared<PointStyleParams>();
-	params["clipping"] = std::make_shared<ClippingParams>();
-	params["light"] = std::make_shared<LightParams>();
-	return Material(params);
+	return Material{{
+		{"style", MaterialParams::getPointStyleMaterialParams()},
+		{"clipping", MaterialParams::getClippingMaterialParams()},
+		{"light", MaterialParams::getLightMaterialParams()}
+	}};
 }
 
 void PointShader::update(MeshBuffer &meshBuffer, Mesh &mesh) {

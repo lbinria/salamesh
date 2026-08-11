@@ -4,6 +4,7 @@
 #include "layer.h"
 #include "opengl_helper.h"
 
+#include <map>
 struct LayerUnit : public MaterialParams {
 
 	LayerUnit(Layer l, ElementKind k) : l(l), k(k) {

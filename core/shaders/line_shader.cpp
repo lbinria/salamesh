@@ -27,9 +27,9 @@ MeshBuffer LineShader::createMeshBuffer() {
 };
 
 Material LineShader::createMaterial() {
-	std::map<std::string, std::shared_ptr<MaterialParams>> params;
-	params["light"] = std::make_shared<LightParams>();
-	return Material(params);
+	return Material{{
+		{"light", MaterialParams::getLightMaterialParams()}
+	}};
 }
 
 void LineShader::update(MeshBuffer &meshBuffer, Mesh &mesh) {
