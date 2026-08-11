@@ -20,7 +20,7 @@ MeshBuffer TetrahedrasShader::createMeshBuffer() {
 	sl::createVBOVec3(shader.id, "p2", sizeof(TriangleVertex), (void*)offsetof(TriangleVertex, p2)); 
 	sl::createVBOVec3(shader.id, "bary", sizeof(TriangleVertex), (void*)offsetof(TriangleVertex, bary)); 
 	sl::createVBOInteger(shader.id, "localIndex", sizeof(TriangleVertex), (void*)offsetof(TriangleVertex, localIndex));
-	sl::createVBOInteger(shader.id, "vertexIndex", sizeof(TriangleVertex), (void*)offsetof(TriangleVertex, id));
+	sl::createVBOInteger(shader.id, "vertexIndex", sizeof(TriangleVertex), (void*)offsetof(TriangleVertex, vertexIndex));
 	sl::createVBOInteger(shader.id, "facetIndex", sizeof(TriangleVertex), (void*)offsetof(TriangleVertex, facetIndex));
 	sl::createVBOInteger(shader.id, "cellIndex", sizeof(TriangleVertex), (void*)offsetof(TriangleVertex, cellIndex));
 

@@ -305,7 +305,7 @@ struct SurfaceMesh : public Mesh {
 		for (auto &v : _m.iter_vertices()) {
 			vec3 p = v;
 			points[v] = { 
-				.id = v, 
+				.vertexIndex = v, 
 				.pos = sl::algebra::vecf(p), 
 				.normal = {0,0,0},
 				.size = 1.f
@@ -407,7 +407,7 @@ struct SurfaceMesh : public Mesh {
 					auto p2 = verts[2];
 
 					vertices.push_back({
-						.id = v, // useless i think
+						.vertexIndex = v, // useless i think
 						.facetIndex = f,
 						.cellIndex = -1, // Don't care
 						.localIndex = i,
@@ -476,7 +476,7 @@ struct TrianglesMesh : public SurfaceMesh<Triangles> {
 				const int c = firstCornerIdx + lv;
 				
 				vertices[c] = { 
-					.id = v,
+					.vertexIndex = v,
 					.facetIndex = f,
 					.cellIndex = -1,
 					.localIndex = lv,
@@ -560,7 +560,7 @@ struct VolumeMesh : public Mesh {
 		for (auto &v : _m.iter_vertices()) {
 			vec3 p = v;
 			points[v] = { 
-				.id = v, 
+				.vertexIndex = v, 
 				.pos = sl::algebra::vecf(p), 
 				.normal = {0,0,0},
 				.size = 1.f
@@ -597,7 +597,7 @@ struct VolumeMesh : public Mesh {
 				for (int lv = 0; lv < 3; ++lv) {
 					
 					vertices.push_back({
-						.id = f.vertex(lv),
+						.vertexIndex = f.vertex(lv),
 						.facetIndex = f,
 						.cellIndex = c,
 						.localIndex = lv,
@@ -742,7 +742,7 @@ struct PolyLineMesh : public Mesh {
 		for (auto &v : _m.iter_vertices()) {
 			vec3 p = v;
 			points[v] = { 
-				.id = v, 
+				.vertexIndex = v, 
 				.pos = sl::algebra::vecf(p), 
 				.normal = {0,0,0},
 				.size = 1.f

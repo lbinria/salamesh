@@ -5,6 +5,9 @@
 #include "opengl_helper.h"
 
 #include <map>
+
+// TODO important need to remove copy constructor as it contains buffer here
+
 struct LayerUnit : public MaterialParams {
 
 	LayerUnit(Layer l, ElementKind k) : l(l), k(k) {

@@ -39,7 +39,6 @@ struct Material {
 	void saveState(json &j);
 
 
-	// TODO must remove copy constructor as it copy buffer id of params (layerParams for example)
 
 	void set(Material &material);
 

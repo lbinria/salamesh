@@ -63,26 +63,6 @@ function draw_model_properties(model, k, view)
 				end
 			end
 
-
-			-- local lightParamsGroup = model:get_material_params_group("light")
-			-- local enableds = lightParamsGroup:get_bools("enabled")
-			
-			-- local light = true
-			-- for _, e in ipairs(enableds) do 
-			-- 	if not e then 
-			-- 		light = false 
-			-- 		break 
-			-- 	end
-			-- end
-
-			-- local sel_chk_enable_light, new_enable_light = imgui.Checkbox("Enable light", light)
-
-			-- if (sel_chk_enable_light) then 
-			-- 	print("Enable light: " .. tostring(new_enable_light))
-			-- 	lightParamsGroup:set("enabled", new_enable_light)
-			-- end
-
-
 		end
 
 		if (imgui.CollapsingHeader("Clipping##" .. k .. "_properties_clipping")) then

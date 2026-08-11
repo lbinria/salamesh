@@ -11,7 +11,7 @@ MeshBuffer PolyShader::createMeshBuffer() {
 
 
 	// Setup VBO
-	sl::createVBOInteger(shader.id, "vertexIndex", sizeof(TriangleVertex), (void*)offsetof(TriangleVertex, id));
+	sl::createVBOInteger(shader.id, "vertexIndex", sizeof(TriangleVertex), (void*)offsetof(TriangleVertex, vertexIndex));
 	sl::createVBOInteger(shader.id, "localIndex", sizeof(TriangleVertex), (void*)offsetof(TriangleVertex, localIndex));
 	sl::createVBOInteger(shader.id, "cornerIndex", sizeof(TriangleVertex), (void*)offsetof(TriangleVertex, cornerIndex));
 	sl::createVBOInteger(shader.id, "cornerOff", sizeof(TriangleVertex), (void*)offsetof(TriangleVertex, cornerOff));

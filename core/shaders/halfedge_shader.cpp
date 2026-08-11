@@ -18,7 +18,7 @@ MeshBuffer HalfedgeShader::createMeshBuffer() {
 	glBindVertexArray(vao);
 	glBindBuffer(GL_ARRAY_BUFFER, vbo);
 	// setup VBO
-	sl::createVBOInteger(shader.id, "halfedgeIndex", sizeof(EdgeVertex), (void*)offsetof(EdgeVertex, id));
+	sl::createVBOInteger(shader.id, "halfedgeIndex", sizeof(EdgeVertex), (void*)offsetof(EdgeVertex, vertexIndex));
 	sl::createVBOVec3(shader.id, "aP0", sizeof(EdgeVertex), (void*)offsetof(EdgeVertex, p0));
 	sl::createVBOVec3(shader.id, "aP1", sizeof(EdgeVertex), (void*)offsetof(EdgeVertex, p1));
 	sl::createVBOFloat(shader.id, "aSide", sizeof(EdgeVertex), (void*)offsetof(EdgeVertex, side));

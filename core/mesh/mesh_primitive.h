@@ -2,14 +2,14 @@
 #include "vec.h"
 
 struct PointVertex {
-	int id;
+	int vertexIndex;
 	sl::algebra::vec3 pos;
 	sl::algebra::vec3 normal;
 	float size;
 };
 
 struct EdgeVertex {
-	int id;
+	int vertexIndex;
 	sl::algebra::vec3 p0;
 	sl::algebra::vec3 p1;
 	float side;
@@ -18,7 +18,7 @@ struct EdgeVertex {
 };
 
 struct TriangleVertex {
-	int id;
+	int vertexIndex;
 	int facetIndex;
 	int cellIndex;
 	int localIndex;
