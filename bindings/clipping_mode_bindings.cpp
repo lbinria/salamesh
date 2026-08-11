@@ -1,5 +1,4 @@
 #include "clipping_mode_bindings.h"
-#include "clipping_params.h"
 
 namespace bindings {
 
@@ -10,10 +9,15 @@ namespace bindings {
 			"CELL", ClippingMode::CELL
 		);
 
-		auto type = lua.new_usertype<ClippingParams>("ClippingParams", 
-			"clipping_mode_strings", sol::readonly_property(&getClippingModeStrings)
+		lua.new_usertype<ClippingInfo>("ClippingInfo",
+			"clipping_mode_strings", sol::property(
+				[]() -> std::array<std::string_view, 2> {
+					return {
+						ClippingInfo::clippingModeStrings[0],
+						ClippingInfo::clippingModeStrings[1]
+					};
+				}
+			)
 		);
-
-		
 	}
 }

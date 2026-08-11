@@ -110,10 +110,10 @@ function draw_model_properties(model, k, view)
 		
 			end
 
-			if (imgui.BeginCombo("##Clipping plane mode", ClippingParams.clipping_mode_strings[clipping_mode + 1])) then
-				for i = 1, #ClippingParams.clipping_mode_strings do
+			if (imgui.BeginCombo("##Clipping plane mode", ClippingInfo.clipping_mode_strings[clipping_mode + 1])) then
+				for i = 1, #ClippingInfo.clipping_mode_strings do
 					local is_selected = i - 1 == clipping_mode
-					if (imgui.Selectable(ClippingParams.clipping_mode_strings[i], is_selected)) then
+					if (imgui.Selectable(ClippingInfo.clipping_mode_strings[i], is_selected)) then
 
 						for _, material in pairs(model.materials) do
 							material["clipping"]["mode"] = i - 1

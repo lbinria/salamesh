@@ -1,8 +1,5 @@
 #include "tetrahedras_shader.h"
 #include "opengl_helper.h"
-#include "mesh_style_params.h"
-#include "light_params.h"
-#include "clipping_params.h"
 
 bool TetrahedrasShader::isCompatible(Mesh &mesh) {
 	auto tetrahedrasMesh = dynamic_cast<TetrahedrasMesh*>(&mesh);

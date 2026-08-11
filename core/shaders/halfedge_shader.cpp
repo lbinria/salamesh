@@ -1,9 +1,6 @@
 #include "halfedge_shader.h"
 #include "opengl_helper.h"
 #include "helpers.h"
-#include "edge_style_params.h"
-#include "light_params.h"
-#include "clipping_params.h"
 
 bool HalfedgeShader::isCompatible(Mesh &mesh) {
 	auto trianglesMesh = dynamic_cast<TrianglesMesh*>(&mesh);

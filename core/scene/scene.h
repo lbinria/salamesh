@@ -14,7 +14,6 @@
 #include "shader_base.h"
 
 #include "scene_model.h"
-#include "point_style_params.h" // TODO remove test
 #include "../model_loader.h"// TODO remove test
 
 

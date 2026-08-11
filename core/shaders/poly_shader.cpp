@@ -1,8 +1,5 @@
 #include "poly_shader.h"
 #include "opengl_helper.h"
-#include "mesh_style_params.h"
-#include "light_params.h"
-#include "clipping_params.h"
 
 MeshBuffer PolyShader::createMeshBuffer() {
 	unsigned int vao, vbo;

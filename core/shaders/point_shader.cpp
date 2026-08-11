@@ -1,9 +1,6 @@
 #include "point_shader.h"
 #include "opengl_helper.h"
 #include "material_params.h"
-#include "point_style_params.h"
-#include "light_params.h"
-#include "clipping_params.h"
 
 #include "mesh_primitive.h"
 

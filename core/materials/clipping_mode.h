@@ -4,8 +4,12 @@ enum ClippingMode {
 	STD = 1
 };
 
-static constexpr const char* clippingModeStrings[2] = {"Cell", "Std"};
+struct ClippingInfo {
 
-constexpr std::array<std::string_view, 2> getClippingModeStrings() {
-	return {clippingModeStrings[0], clippingModeStrings[1]};
-}
+	static constexpr const char* clippingModeStrings[2] = {"Cell", "Std"};
+
+	constexpr std::array<std::string_view, 2> getClippingModeStrings() {
+		return {clippingModeStrings[0], clippingModeStrings[1]};
+	}
+	
+};
