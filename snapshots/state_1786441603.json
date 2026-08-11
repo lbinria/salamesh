@@ -1,0 +1,105 @@
+{
+    "cameras": {
+        "default": {
+            "box": [
+                -0.3412561297835357,
+                -0.47135297566512085,
+                -0.2654556839404044,
+                0.27606754915025344,
+                0.5530380021800484,
+                0.317832664384503
+            ],
+            "name": "default",
+            "proj": [
+                2.082931936107519,
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+                1.9523600944922206,
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+                -0.22848124677058052,
+                0.0,
+                -0.0,
+                -0.0,
+                -1.0228481250175216,
+                1.0
+            ],
+            "type": "TrackBallCamera",
+            "view": [
+                0.986972849995639,
+                -0.02017628776833736,
+                -0.15961676222557733,
+                0.0,
+                0.04058348067192156,
+                0.991244746681527,
+                0.1256456655552713,
+                0.0,
+                0.15568421393333043,
+                -0.13048666440738138,
+                0.979150476660151,
+                0.0,
+                0.026435013745703118,
+                -0.03772530975382433,
+                -1.8066674498870245,
+                1.0
+            ],
+            "zoom_factor": 1.0
+        }
+    },
+    "cull_mode": 1029,
+    "header": {
+        "type": "state"
+    },
+    "models": {
+        "catorus_quad0": {
+            "materials": {
+                "halfedges": {
+                    "params": {
+                        "clipping": null,
+                        "light": null,
+                        "style": null
+                    },
+                    "visible": false
+                },
+                "mesh": {
+                    "params": {
+                        "clipping": null,
+                        "light": null,
+                        "style": null
+                    },
+                    "visible": true
+                },
+                "points": {
+                    "params": {
+                        "clipping": null,
+                        "light": null,
+                        "style": null
+                    },
+                    "visible": false
+                }
+            },
+            "mesh": {
+                "filename": "snapshots/state_1786441603.json"
+            },
+            "name": "catorus_quad0",
+            "position": [
+                0.0,
+                0.0,
+                0.0
+            ],
+            "shader_passes": [
+                "halfedges",
+                "mesh",
+                "points"
+            ],
+            "visible": true
+        }
+    },
+    "nav_path": [],
+    "selected_camera": "default",
+    "selected_model": "catorus_quad0"
+}
