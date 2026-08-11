@@ -106,6 +106,10 @@ function draw_model_properties(model, k, view)
 
 			if not sel_clipping_plane[k] then 
 				sel_clipping_plane[k] = 1
+				-- Init clipping plane to x axis
+				for _, material in pairs(model.materials) do 
+					material["clipping"]["normal"] = vec3{1,0,0}
+				end
 			end
 
 			if (imgui.BeginCombo("##Clipping plane normal", clipping_planes[sel_clipping_plane[k]])) then
