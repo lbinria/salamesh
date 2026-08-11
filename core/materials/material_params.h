@@ -108,7 +108,7 @@ struct MaterialParams {
 		_params[name] = value;
 	}
 
-	std::string getType(const std::string name) {
+	std::string getType(const std::string name) const {
 		if (!_params.contains(name))
 			return "";
 		
@@ -130,8 +130,47 @@ struct MaterialParams {
 		return _params[key];
 	}
 
-	virtual void loadState(json &j) {}
-	virtual void saveState(json &j) const {}
+	// beurk !
+	virtual void loadState(json &j) {
+		for (auto &[paramName, val] : _params) {
+			if (auto *pVal = std::get_if<bool>(&val))
+				set(paramName, j[paramName].get<bool>());
+			else if (auto *pVal = std::get_if<int>(&val))
+				set(paramName, j[paramName].get<int>());
+			else if (auto *pVal = std::get_if<float>(&val))
+				set(paramName, j[paramName].get<float>());
+			else if (auto *pVal = std::get_if<sl::algebra::vec2>(&val))
+				set(paramName, sl::algebra::vec2{
+					j[paramName][0].get<float>(), 
+					j[paramName][1].get<float>()
+				});
+			else if (auto *pVal = std::get_if<sl::algebra::vec3>(&val))
+				set(paramName, sl::algebra::vec3{
+					j[paramName][0].get<float>(), 
+					j[paramName][1].get<float>(), 
+					j[paramName][2].get<float>()
+				});
+		}
+	}
+
+	// beurk !
+	virtual void saveState(json &j) const {
+		for (auto &[paramName, val] : _params) {
+			if (auto *pVal = std::get_if<bool>(&val))
+				j[paramName] = *pVal;
+			else if (auto *pVal = std::get_if<int>(&val))
+				j[paramName] = *pVal;
+			else if (auto *pVal = std::get_if<float>(&val))
+				j[paramName] = *pVal;
+			else if (auto *pVal = std::get_if<sl::algebra::vec2>(&val)) {
+				auto val = *pVal;
+				j[paramName] = json::array({val.x, val.y});
+			} else if (auto *pVal = std::get_if<sl::algebra::vec3>(&val)) {
+				auto val = *pVal;
+				j[paramName] = json::array({val.x, val.y, val.z});
+			}
+		}
+	}
 
 	virtual void setValues(MaterialParams &params) {
 		for (auto &[paramName, param] : params._params) {
