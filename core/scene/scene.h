@@ -139,7 +139,6 @@ struct Scene {
 	void setupColormaps();
 
 	void addColormap(const std::string name, const std::string filename);
-	void removeColormap(const std::string name);
 
 	void resetCameras() {
 		cameras.clear();

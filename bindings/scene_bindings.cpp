@@ -31,7 +31,6 @@ namespace bindings {
 			// Colormap functions
 			"colormaps", sol::readonly_property(&Scene::getColormaps),
 			"add_colormap", &Scene::addColormap,
-			"remove_colormap", &Scene::removeColormap,
 			"get_colormap", &Scene::getColormap
 		);
 	}

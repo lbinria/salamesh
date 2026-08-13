@@ -157,17 +157,6 @@ void Scene::addColormap(const std::string name, const std::string filename) {
 	colormaps.emplace(name, cm);
 }
 
-void Scene::removeColormap(const std::string name) {
-	// Free vram, not for the moment because dangerous to gain a little of memory
-	// (because of Colormap is copyable and contains unsigned int tex pointer)
-	// if (colormaps.contains(name)) {
-	// 	auto &colormap = colormaps.at(name);
-	// 	glDeleteTextures(1, &colormap.tex);
-	// }
-
-	colormaps.erase(name);
-}
-
 Colormap Scene::getColormap(const std::string name) {
 	if (!colormaps.contains(name))
 		throw std::runtime_error("Colormap " + name + " not found.");
