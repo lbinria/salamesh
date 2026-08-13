@@ -71,9 +71,9 @@ struct SceneModel : std::enable_shared_from_this<SceneModel> {
 		return _meshBuffers.at(name);
 	}
 
-    // // Direct member access
-    // auto& layer() { return _layers; }
-    // const auto& layer() const { return _layers; }
+	// // Direct member access
+	// auto& layer() { return _layers; }
+	// const auto& layer() const { return _layers; }
 
 	const std::string getName() const {
 		return _name;

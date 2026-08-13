@@ -78,7 +78,8 @@ void SceneModel::applyMaterialsFrom(SceneModel &model) {
 			continue;
 
 		// Try to set source material to target material
-		targetMaterialOpt.value().get().set(sourceMaterial);
+		// targetMaterialOpt.value().get().set(sourceMaterial);
+		targetMaterialOpt.value().get() = sourceMaterial;
 	}
 
 	// Apply selected attr if possible
