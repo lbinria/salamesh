@@ -21,7 +21,7 @@ MeshBuffer TrianglesShader::createMeshBuffer() {
 	sl::createVBOInteger(shader.id, "localIndex", sizeof(TriangleVertex), (void*)offsetof(TriangleVertex, localIndex));
 	sl::createVBOInteger(shader.id, "cornerIndex", sizeof(TriangleVertex), (void*)offsetof(TriangleVertex, cornerIndex));
 
-	return MeshBuffer(vao, vbo);
+	return MeshBuffer(vao, vbo, MeshBuffer::Stream::TRIANGLES_STREAM);
 };
 
 Material TrianglesShader::createMaterial() {

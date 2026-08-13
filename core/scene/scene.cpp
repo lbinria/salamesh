@@ -175,57 +175,6 @@ Colormap Scene::getColormap(const std::string name) {
 	return colormaps.at(name);
 }
 
-void Scene::render(std::shared_ptr<SceneModel> model, ShaderBase& shader, std::map<std::string, bool> &wasUpdated) {
-	if (!model->isVisible())
-		return;
-
-	auto meshBufferOpt = model->getMeshBuffer(shader.getName());
-	auto materialOpt = model->getMaterial(shader.getName());
-
-	if (!meshBufferOpt.has_value() || !materialOpt.has_value())
-		return;
-
-	auto &mesh = model->getMesh();
-	auto &meshBuffer = meshBufferOpt.value().get();
-	auto &material = materialOpt.value().get();
-
-
-
-	// TODO: maybe we can delay update shader buffer when material is not visible
-	if (mesh.shouldUpdate()) {
-		// Update current mesh buffer for given mesh
-		shader.update(meshBuffer, mesh);
-		// auto pstr = mesh.getPointsStream();
-		// Test meshBuffer.write(mesh.getPointsStream());
-		// Update layers (only activated layers) according to new mesh
-		// TODO important can optimize that, it enter as many times as there is shader attached to model, there is no need to pass each time here !!!
-
-		model->layers.update();
-		// Set model as updated
-		wasUpdated[model->getName()] = true;
-	}
-
-	if (!material.isVisible())
-		return;
-
-	glBindVertexArray(meshBuffer.vao());
-	meshBuffer.setPosition(shader.getShader(), model->position);
-	material.apply(shader.getShader());
-	model->layers.apply(shader.getShader());
-
-	// Set textures
-	for (auto &[_, tbo] : meshBuffer.tbos) {
-		glActiveTexture(GL_TEXTURE0 + tbo.texUnit);
-		glBindTexture(GL_TEXTURE_BUFFER, tbo.tex);
-		shader.getShader().setInt(tbo.name, tbo.texUnit);
-	}
-
-	// Set mesh index
-	shader.getShader().setInt("meshIndex", mesh.getIndex());
-
-	glDrawArrays(shader.renderElement(), 0, meshBuffer.nelements);
-}
-
 void Scene::render() {
 
 	// Keep updated models in memory
@@ -235,7 +184,66 @@ void Scene::render() {
 	for (auto &[_, shader] : _shaders) {
 		// Loop through models in scene
 		for (auto &[modelName, model] : _models) {
-			render(model, *shader, wasUpdated);
+			if (!model->isVisible())
+				continue;
+
+			auto meshBufferOpt = model->getMeshBuffer(shader->getName());
+			auto materialOpt = model->getMaterial(shader->getName());
+
+			if (!meshBufferOpt.has_value() || !materialOpt.has_value())
+				continue;
+
+			auto &mesh = model->getMesh();
+			auto &meshBuffer = meshBufferOpt.value().get();
+			auto &material = materialOpt.value().get();
+
+			if (mesh.shouldUpdate()) {
+				switch (meshBuffer.streams()) {
+					case MeshBuffer::Stream::POINTS_STREAM: {
+						auto stream = mesh.getPointsStream();
+						meshBuffer.nelements = stream.size();
+						meshBuffer.write(stream);
+						break;
+					};
+					case MeshBuffer::Stream::EDGES_STREAM: {
+						auto stream = mesh.getEdgesStream();
+						meshBuffer.nelements = stream.size();
+						meshBuffer.write(stream);
+						break;
+					};
+					case MeshBuffer::Stream::TRIANGLES_STREAM: {
+						auto stream = mesh.getTrianglesStream();
+						meshBuffer.nelements = stream.size();
+						meshBuffer.write(stream);
+						break;
+					};
+				}
+				// TODO important can optimize this loop, it enter as many times as there is shader attached to model, there is no need to pass each time here !!!
+
+				model->layers.update();
+				// Set model as updated
+				wasUpdated[model->getName()] = true;
+			}
+
+			if (!material.isVisible())
+				continue;
+
+			glBindVertexArray(meshBuffer.vao());
+			meshBuffer.setPosition(shader->getShader(), model->position);
+			material.apply(shader->getShader());
+			model->layers.apply(shader->getShader());
+
+			// Set textures
+			for (auto &[_, tbo] : meshBuffer.tbos) {
+				glActiveTexture(GL_TEXTURE0 + tbo.texUnit);
+				glBindTexture(GL_TEXTURE_BUFFER, tbo.tex);
+				shader->getShader().setInt(tbo.name, tbo.texUnit);
+			}
+
+			// Set mesh index
+			shader->getShader().setInt("meshIndex", mesh.getIndex());
+
+			glDrawArrays(shader->renderElement(), 0, meshBuffer.nelements);
 		}
 
 	}

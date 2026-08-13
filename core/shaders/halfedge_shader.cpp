@@ -25,7 +25,7 @@ MeshBuffer HalfedgeShader::createMeshBuffer() {
 	sl::createVBOFloat(shader.id, "aEnd", sizeof(EdgeVertex), (void*)offsetof(EdgeVertex, end));
 	sl::createVBOVec3(shader.id, "bary", sizeof(EdgeVertex), (void*)offsetof(EdgeVertex, bary));
 
-	return MeshBuffer(vao, vbo);
+	return MeshBuffer(vao, vbo, MeshBuffer::Stream::EDGES_STREAM);
 };
 
 Material HalfedgeShader::createMaterial() {

@@ -20,7 +20,7 @@ MeshBuffer PointShader::createMeshBuffer() {
 	sl::createVBOVec3(shader.id, "p", sizeof(PointVertex), (void*)offsetof(PointVertex, pos));
 	sl::createVBOFloat(shader.id, "sizeScale", sizeof(PointVertex), (void*)offsetof(PointVertex, size));
 
-	return MeshBuffer(vao, vbo);
+	return MeshBuffer(vao, vbo, MeshBuffer::Stream::POINTS_STREAM);
 };
 
 Material PointShader::createMaterial() {

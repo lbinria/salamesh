@@ -13,15 +13,24 @@ using namespace UM;
 
 struct MeshBuffer {
 
-	MeshBuffer(unsigned int vao, unsigned int vbo) : 
+	enum Stream {
+		POINTS_STREAM = 1,
+		LINES_STREAM = 2,
+		EDGES_STREAM = 4,
+		TRIANGLES_STREAM = 8
+	};
+
+	MeshBuffer(unsigned int vao, unsigned int vbo, Stream streams) : 
 		_vao(vao),
-		_vbo(vbo)
+		_vbo(vbo),
+		_streams(streams)
 	{
 
 	}
 
 	unsigned int vao() const { return _vao; }
 	unsigned int vbo() const { return _vbo; }
+	Stream streams() const { return _streams; }
 
 	// TODO move that, just for test
 	void setPosition(Shader &shader, vec3 position) {
@@ -46,10 +55,6 @@ struct MeshBuffer {
 		glNamedBufferData(tbos[tboName].buf, data.size() * sizeof(T), data.data(), usage);
 	}
 
-	void update(Mesh &mesh) {
-		// shader.update(mesh);
-	}
-
 	unsigned int nelements = 0;
 
 	// Texture Buffer Object (like a SSBO array of data)
@@ -66,5 +71,6 @@ struct MeshBuffer {
 	private:
 	unsigned int _vao;
 	unsigned int _vbo;
+	Stream _streams;
 
 };

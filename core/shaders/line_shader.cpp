@@ -20,7 +20,7 @@ MeshBuffer LineShader::createMeshBuffer() {
 	sl::createVBOVec3(shader.id, "p", sizeof(LineComponent), (void*)offsetof(LineComponent, p));
 	sl::createVBOVec3(shader.id, "color", sizeof(LineComponent), (void*)offsetof(LineComponent, color));
 
-	return MeshBuffer(vao, vbo);
+	return MeshBuffer(vao, vbo, MeshBuffer::Stream::LINES_STREAM);
 };
 
 Material LineShader::createMaterial() {

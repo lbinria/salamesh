@@ -230,8 +230,4 @@ struct Scene {
 
 	std::map<std::string, std::shared_ptr<RenderSurface>> renderSurfaces;
 	
-	void render(std::shared_ptr<SceneModel> model, ShaderBase &shader, std::map<std::string, bool> &wasUpdated);
-
-
-
 };

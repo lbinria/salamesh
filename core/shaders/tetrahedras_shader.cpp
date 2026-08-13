@@ -24,7 +24,7 @@ MeshBuffer TetrahedrasShader::createMeshBuffer() {
 	sl::createVBOInteger(shader.id, "facetIndex", sizeof(TriangleVertex), (void*)offsetof(TriangleVertex, facetIndex));
 	sl::createVBOInteger(shader.id, "cellIndex", sizeof(TriangleVertex), (void*)offsetof(TriangleVertex, cellIndex));
 
-	return MeshBuffer(vao, vbo);
+	return MeshBuffer(vao, vbo, MeshBuffer::Stream::TRIANGLES_STREAM);
 };
 
 Material TetrahedrasShader::createMaterial() {
