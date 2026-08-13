@@ -43,7 +43,7 @@ struct SceneModel : std::enable_shared_from_this<SceneModel> {
 		_mesh->requestUpdate();
 	}
 
-	bool addShaderPass(ShaderBase &shader);
+	bool addShaderPass(const std::string shaderId, ShaderBase &shader);
 
 	bool hasMaterial(const std::string name) const {
 		return _materials.contains(name);

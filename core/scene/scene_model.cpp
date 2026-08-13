@@ -1,13 +1,13 @@
 #include "scene_model.h"
 
-bool SceneModel::addShaderPass(ShaderBase &shader) {
+bool SceneModel::addShaderPass(const std::string shaderId, ShaderBase &shader) {
 	auto name = shader.getName();
 	
 	if (_meshBuffers.contains(name))
 		return false;
 	
 	auto meshBuffer = shader.createMeshBuffer();
-	_meshBuffers.emplace(name, std::move(meshBuffer));
+	_meshBuffers.emplace(shaderId, std::move(meshBuffer));
 	
 	auto material = shader.createMaterial();
 	_materials.emplace(name, std::move(material));

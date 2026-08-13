@@ -181,14 +181,15 @@ void Scene::render() {
 	std::map<std::string, bool> wasUpdated;
 
 	// Loop through available shaders
-	for (auto &[_, shader] : _shaders) {
+	for (auto &[shaderId, shader] : _shaders) {
 		// Loop through models in scene
 		for (auto &[modelName, model] : _models) {
 			
 			if (!model->isVisible())
 				continue;
 
-			auto meshBufferOpt = model->getMeshBuffer(shader->getName());
+			// auto meshBufferOpt = model->getMeshBuffer(shader->getName());
+			auto meshBufferOpt = model->getMeshBuffer(shaderId);
 			auto materialOpt = model->getMaterial(shader->getName());
 
 			if (!meshBufferOpt.has_value() || !materialOpt.has_value())

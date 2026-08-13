@@ -38,9 +38,9 @@ std::shared_ptr<SceneModel> ModelLoader::load(const std::string filename, const 
 	auto model = _scene.createModel(name, mesh);
 
 	// Add all default shaders
-	for (auto &[shaderName, shader] : _scene.getShaders()) {
+	for (auto &[shaderId, shader] : _scene.getShaders()) {
 		if (shader->isCompatible(*mesh)) {
-			model->addShaderPass(*shader);
+			model->addShaderPass(shaderId, *shader);
 		}
 	}
 
