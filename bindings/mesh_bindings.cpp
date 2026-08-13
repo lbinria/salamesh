@@ -17,7 +17,6 @@ namespace bindings {
 			"get_attribute", &Mesh::getAttribute,
 			"save", &Mesh::save,
 			"saveAs", &Mesh::saveAs,
-			"request_update", &Mesh::requestUpdate,
 			"nverts",  sol::property([&lua](Mesh &self) -> sol::object {
 				auto meshGeo = dynamic_cast<Mesh*>(&self);
 				if (meshGeo) {

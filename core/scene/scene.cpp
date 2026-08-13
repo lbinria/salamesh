@@ -177,9 +177,6 @@ Colormap Scene::getColormap(const std::string name) {
 
 void Scene::render() {
 
-	// Keep updated models in memory
-	std::map<std::string, bool> wasUpdated;
-
 	// Loop through available shaders
 	for (auto &[shaderId, shader] : _shaders) {
 		// Loop through models in scene
@@ -198,7 +195,7 @@ void Scene::render() {
 			auto &mesh = model->getMesh();
 			auto &meshBuffer = meshBufferOpt.value().get();
 
-			if (mesh.shouldUpdate()) {
+			if (meshBuffer.dirty) {
 				switch (meshBuffer.streams()) {
 					case MeshBuffer::Stream::POINTS_STREAM: {
 						auto stream = mesh.getPointsStream();
@@ -225,11 +222,9 @@ void Scene::render() {
 					meshBuffer.write(dataName, data);
 				}
 
-				// TODO important can optimize this loop, it enter as many times as there is shader attached to model, there is no need to pass each time here !!!
-
 				model->layers.update();
-				// Set model as updated
-				wasUpdated[model->getName()] = true;
+				
+				meshBuffer.dirty = false;
 			}
 
 			auto &material = materialOpt.value().get();
@@ -256,13 +251,6 @@ void Scene::render() {
 		}
 
 	}
-
-	for (auto &[_, model] : _models) {
-		if (wasUpdated.contains(model->getName())) {
-				model->getMesh().updateDone();
-		}
-	}
-
 }
 
 void Scene::loadState(json &j, const std::string filename) {

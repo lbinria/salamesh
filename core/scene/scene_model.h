@@ -38,10 +38,7 @@ struct SceneModel : std::enable_shared_from_this<SceneModel> {
 		return *_mesh;
 	}
 
-	// TODO remove! 
-	void requestUpdate() {
-		_mesh->requestUpdate();
-	}
+	void requestUpdate();
 
 	bool addShaderPass(const std::string shaderId, ShaderBase &shader);
 

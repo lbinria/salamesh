@@ -66,18 +66,6 @@ struct Mesh {
 		return (bmax - bmin).norm2() / 2.f;
 	}
 
-	void requestUpdate() {
-		_dirty = true;
-	}
-
-	bool shouldUpdate() const {
-		return _dirty;
-	}
-
-	void updateDone() const {
-		_dirty = false;
-	}
-
 	virtual int nverts() const = 0; 
 	virtual int nfacets() const = 0; 
 	virtual int ncells() const = 0; 
@@ -185,8 +173,6 @@ struct Mesh {
 	}
 
 	private:
-	mutable bool _dirty = true;
-
 	static inline int maxIndex = 0;
 	int _index;
 

@@ -78,6 +78,8 @@ struct MeshBuffer {
 
 	std::map<std::string, TBO> tbos;
 
+	bool dirty = true;
+
 	private:
 	unsigned int _vao;
 	unsigned int _vbo;
