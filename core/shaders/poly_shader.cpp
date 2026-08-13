@@ -52,21 +52,3 @@ bool PolyShader::isCompatible(Mesh &mesh) {
 	auto polygonsMesh = dynamic_cast<PolygonsMesh*>(&mesh);
 	return quadsMesh || polygonsMesh;
 }
-
-void PolyShader::update(MeshBuffer &meshBuffer, Mesh &mesh) {
-
-		std::vector<float> nVertsPerFacet(mesh.nfacets());
-
-		// Compute number of triangles needed to represent a facet
-		for (int fi = 0; fi < mesh.nfacets(); ++fi) {
-			int nvertsFacet = mesh.facetSize(fi);
-			nVertsPerFacet[fi] = static_cast<float>(nvertsFacet);
-		}
-
-		auto stream = mesh.getTrianglesStream();
-		meshBuffer.nelements = stream.size();
-		// Write VBO buffer
-		meshBuffer.write(stream);
-		// Write TBO buffer
-		meshBuffer.write("nvertsPerFacetBuf", nVertsPerFacet);
-}

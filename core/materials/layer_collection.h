@@ -196,22 +196,23 @@ struct ColormapLayerUnit : public LayerUnitus<Layer::COLORMAP_0> {
 		LayerUnitus<Layer::COLORMAP_0>::apply(shader);
 
 		int ki = static_cast<int>(k);
-		shader.setInt("colormaps[" + std::to_string(ki) + "]", k);
+		shader.setInt("colormaps[" + std::to_string(ki) + "]", ki);
 
 		glActiveTexture(GL_TEXTURE0 + ki);
-		glBindTexture(GL_TEXTURE_2D, colormaps[ki].tex);
+		glBindTexture(GL_TEXTURE_2D, _colormap.tex);
 	}
 
 	Colormap getColormap() const {
-		return colormaps[static_cast<int>(k)];
+		return _colormap;
 	}
 
 	void setColormap(Colormap colormap) {
-		colormaps[static_cast<int>(k)] = colormap;
+		_colormap = colormap;
 	}
 
 	private:
-	std::array<Colormap, ElementKind::ELEMENT_KIND_COUNT> colormaps{};
+	// std::array<Colormap, ElementKind::ELEMENT_KIND_COUNT> colormaps{};
+	Colormap _colormap{};
 
 };
 

@@ -29,24 +29,24 @@ Material LineShader::createMaterial() {
 	}};
 }
 
-void LineShader::update(MeshBuffer &meshBuffer, Mesh &mesh) {
+// void LineShader::update(MeshBuffer &meshBuffer, Mesh &mesh) {
 
-	auto linesMesh = dynamic_cast<LinesMesh*>(&mesh);
+// 	auto linesMesh = dynamic_cast<LinesMesh*>(&mesh);
 
-	if (linesMesh) {
-		std::vector<LineComponent> lineComponents;
+// 	if (linesMesh) {
+// 		std::vector<LineComponent> lineComponents;
 
-		// Map Line -> LineComponent for VBO
-		for (auto &l : linesMesh->getLines()) {
-			sl::algebra::vec3 la = sl::algebra::vecf(l.a);
-			sl::algebra::vec3 lb = sl::algebra::vecf(l.b);
-			sl::algebra::vec3 c = sl::algebra::vecf(l.color);
-			lineComponents.push_back({.p = la, .color = c});
-			lineComponents.push_back({ .p = lb, .color = c });
-		}
+// 		// Map Line -> LineComponent for VBO
+// 		for (auto &l : linesMesh->getLines()) {
+// 			sl::algebra::vec3 la = sl::algebra::vecf(l.a);
+// 			sl::algebra::vec3 lb = sl::algebra::vecf(l.b);
+// 			sl::algebra::vec3 c = sl::algebra::vecf(l.color);
+// 			lineComponents.push_back({.p = la, .color = c});
+// 			lineComponents.push_back({ .p = lb, .color = c });
+// 		}
 
-		meshBuffer.nelements = lineComponents.size();
-		glNamedBufferData(meshBuffer.vbo(), lineComponents.size() * sizeof(LineComponent), lineComponents.data(), GL_STATIC_DRAW);
+// 		meshBuffer.nelements = lineComponents.size();
+// 		glNamedBufferData(meshBuffer.vbo(), lineComponents.size() * sizeof(LineComponent), lineComponents.data(), GL_STATIC_DRAW);
 
-	}
-}
+// 	}
+// }

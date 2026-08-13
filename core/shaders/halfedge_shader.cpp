@@ -35,9 +35,3 @@ Material HalfedgeShader::createMaterial() {
 		{"light", MaterialParams::getLightMaterialParams()}
 	}};
 }
-
-void HalfedgeShader::update(MeshBuffer &meshBuffer, Mesh &mesh) {
-	auto edgeStream = mesh.getEdgesStream();
-	meshBuffer.nelements = edgeStream.size();
-	meshBuffer.write(edgeStream);
-}

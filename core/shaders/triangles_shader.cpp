@@ -31,9 +31,3 @@ Material TrianglesShader::createMaterial() {
 		{"light", MaterialParams::getLightMaterialParams()}
 	}};
 }
-
-void TrianglesShader::update(MeshBuffer &meshBuffer, Mesh &mesh) {
-	auto stream = mesh.getTrianglesStream();
-	meshBuffer.nelements = stream.size();
-	meshBuffer.write(stream);
-}

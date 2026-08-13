@@ -36,7 +36,6 @@ struct TrianglesShader : public ShaderBase {
 	virtual bool isCompatible(Mesh &mesh) override;
 	virtual MeshBuffer createMeshBuffer() override;
 	virtual Material createMaterial() override;
-	virtual void update(MeshBuffer &meshBuffer, Mesh &mesh) override;
 
 	virtual unsigned int renderElement() override {
 		return GL_TRIANGLES;

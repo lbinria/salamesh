@@ -40,12 +40,6 @@ struct ShaderBase {
 
 	virtual bool isCompatible(Mesh &mesh) { return false; }
 
-
-	// TODO maybe to abstract
-	virtual void update(MeshBuffer &meshBuffer, Mesh &mesh) {
-
-	}
-
 	virtual unsigned int renderElement() {
 		return GL_POINTS;
 	}

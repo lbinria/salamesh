@@ -90,6 +90,7 @@ struct Mesh {
 	virtual std::vector<PointVertex> getPointsStream() = 0;
 	virtual std::vector<TriangleVertex> getTrianglesStream() = 0;
 	virtual std::vector<EdgeVertex> getEdgesStream() = 0;
+	virtual std::map<std::string, std::vector<float>> getDataStreams() = 0;
 
 	// TODO set private (pass in constructor)
 	std::string path = "";
@@ -429,6 +430,10 @@ struct SurfaceMesh : public Mesh {
 		return vertices;
 	}
 
+	virtual std::map<std::string, std::vector<float>> getDataStreams() override {
+		return {};
+	}
+
 	std::vector<std::pair<ElementKind, NamedContainer>> getAttributeContainers() const override {
 		std::vector<std::pair<ElementKind, NamedContainer>> containers;
 		
@@ -453,9 +458,24 @@ struct SurfaceMesh : public Mesh {
 
 };
 
-// typedef SurfaceMesh<Triangles> TrianglesMesh;
 typedef SurfaceMesh<Quads> QuadsMesh;
-typedef SurfaceMesh<Polygons> PolygonsMesh;
+
+struct PolygonsMesh : public SurfaceMesh<Polygons> {
+
+	std::map<std::string, std::vector<float>> getDataStreams() override {
+
+		std::vector<float> nVertsPerFacet(nfacets());
+
+		// Compute number of triangles needed to represent a facet
+		for (int fi = 0; fi < nfacets(); ++fi) {
+			int nvertsFacet = facetSize(fi);
+			nVertsPerFacet[fi] = static_cast<float>(nvertsFacet);
+		}
+
+		return {{"nvertsPerFacetBuf", nVertsPerFacet}};
+	}
+
+};
 
 struct TrianglesMesh : public SurfaceMesh<Triangles> {
 
@@ -614,6 +634,10 @@ struct VolumeMesh : public Mesh {
 		}
 
 		return vertices;
+	}
+
+	std::map<std::string, std::vector<float>> getDataStreams() override {
+		return {};
 	}
 
 	std::vector<std::pair<ElementKind, NamedContainer>> getAttributeContainers() const override {
@@ -784,6 +808,10 @@ struct PolyLineMesh : public Mesh {
 	}
 
 	std::vector<TriangleVertex> getTrianglesStream() final override {
+		return {};
+	}
+
+	std::map<std::string, std::vector<float>> getDataStreams() override {
 		return {};
 	}
 

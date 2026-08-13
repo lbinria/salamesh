@@ -184,6 +184,7 @@ void Scene::render() {
 	for (auto &[_, shader] : _shaders) {
 		// Loop through models in scene
 		for (auto &[modelName, model] : _models) {
+			
 			if (!model->isVisible())
 				continue;
 
@@ -195,7 +196,6 @@ void Scene::render() {
 
 			auto &mesh = model->getMesh();
 			auto &meshBuffer = meshBufferOpt.value().get();
-			auto &material = materialOpt.value().get();
 
 			if (mesh.shouldUpdate()) {
 				switch (meshBuffer.streams()) {
@@ -218,12 +218,20 @@ void Scene::render() {
 						break;
 					};
 				}
+
+				// Check for data streams
+				for (auto &[dataName, data] : mesh.getDataStreams()) {
+					meshBuffer.write(dataName, data);
+				}
+
 				// TODO important can optimize this loop, it enter as many times as there is shader attached to model, there is no need to pass each time here !!!
 
 				model->layers.update();
 				// Set model as updated
 				wasUpdated[model->getName()] = true;
 			}
+
+			auto &material = materialOpt.value().get();
 
 			if (!material.isVisible())
 				continue;

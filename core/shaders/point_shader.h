@@ -31,7 +31,6 @@ struct PointShader : public ShaderBase {
 	virtual bool isCompatible(Mesh &mesh) override;
 	virtual MeshBuffer createMeshBuffer() override;
 	virtual Material createMaterial() override;
-	virtual void update(MeshBuffer &meshBuffer, Mesh &mesh) override;
 
 	private:
 

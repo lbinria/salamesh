@@ -30,9 +30,3 @@ Material PointShader::createMaterial() {
 		{"light", MaterialParams::getLightMaterialParams()}
 	}};
 }
-
-void PointShader::update(MeshBuffer &meshBuffer, Mesh &mesh) {
-	auto stream = mesh.getPointsStream();
-	meshBuffer.nelements = stream.size();
-	meshBuffer.write(stream);
-}
