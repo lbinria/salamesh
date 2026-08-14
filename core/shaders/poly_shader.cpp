@@ -31,7 +31,7 @@ MeshBuffer PolyShader::createMeshBuffer() {
 		.name = "nvertsPerFacetBuf", 
 		.tex = texNVertsPerFacet,
 		.buf = bufNVertsPerFacet
-	}; // Add TBO texNVertsPerFacet at the texture 8
+	};
 
 
 	return meshBuffer;

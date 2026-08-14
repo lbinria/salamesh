@@ -240,9 +240,10 @@ void Scene::render() {
 			unsigned int texUnitOff = 28; // 0-6 colormaps & 21 tex unit for data
 			int i = 0;
 			for (auto &[_, tbo] : meshBuffer.tbos) {
-				glActiveTexture(GL_TEXTURE0 + texUnitOff + i);
+				unsigned int texUnit = texUnitOff + i;
+				glActiveTexture(GL_TEXTURE0 + texUnit);
 				glBindTexture(GL_TEXTURE_BUFFER, tbo.tex);
-				shaderProgram.setInt(tbo.name, texUnitOff + i);
+				shaderProgram.setInt(tbo.name, texUnit);
 				++i;
 			}
 
