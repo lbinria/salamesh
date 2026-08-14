@@ -168,6 +168,10 @@ void Scene::render() {
 
 	// Loop through available shaders
 	for (auto &[shaderId, shader] : _shaders) {
+
+		auto &shaderProgram = shader->getShader();
+		shaderProgram.use();
+
 		// Loop through models in scene
 		for (auto &[modelName, model] : _models) {
 			
@@ -188,27 +192,25 @@ void Scene::render() {
 				switch (meshBuffer.streams()) {
 					case MeshBuffer::Stream::POINTS_STREAM: {
 						auto stream = mesh.getPointsStream();
-						meshBuffer.nelements = stream.size();
 						meshBuffer.write(stream);
 						break;
 					};
 					case MeshBuffer::Stream::EDGES_STREAM: {
 						auto stream = mesh.getEdgesStream();
-						meshBuffer.nelements = stream.size();
 						meshBuffer.write(stream);
 						break;
 					};
 					case MeshBuffer::Stream::TRIANGLES_STREAM: {
 						auto stream = mesh.getTrianglesStream();
-						meshBuffer.nelements = stream.size();
 						meshBuffer.write(stream);
 						break;
 					};
 				}
 
-				// Check for data streams
+				// Check for data streams (TBO / SSBO)
 				for (auto &[dataName, data] : mesh.getDataStreams()) {
-					meshBuffer.write(dataName, data);
+					if (meshBuffer.tbos.contains(dataName))
+						meshBuffer.write(dataName, data);
 				}
 
 				model->layers.update();
@@ -222,19 +224,20 @@ void Scene::render() {
 				continue;
 
 			glBindVertexArray(meshBuffer.vao());
-			meshBuffer.setPosition(shader->getShader(), model->position);
-			material.apply(shader->getShader());
-			model->layers.apply(shader->getShader());
+
+			meshBuffer.setPosition(shaderProgram, model->position);
+			material.apply(shaderProgram);
+			model->layers.apply(shaderProgram);
 
 			// Set textures
 			for (auto &[_, tbo] : meshBuffer.tbos) {
 				glActiveTexture(GL_TEXTURE0 + tbo.texUnit);
 				glBindTexture(GL_TEXTURE_BUFFER, tbo.tex);
-				shader->getShader().setInt(tbo.name, tbo.texUnit);
+				shaderProgram.setInt(tbo.name, tbo.texUnit);
 			}
 
 			// Set mesh index
-			shader->getShader().setInt("meshIndex", mesh.getIndex());
+			shaderProgram.setInt("meshIndex", mesh.getIndex());
 
 			glDrawArrays(shader->renderElement(), 0, meshBuffer.nelements);
 		}

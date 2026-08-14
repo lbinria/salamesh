@@ -28,10 +28,11 @@ struct LayerUnit : public MaterialParams {
 
 		// Note: offset = ElementKind::ELEMENT_KIND_COUNT = 7 because 0-6 are reserved for colormap textures
 		auto texId = static_cast<int>(l) * ElementKind::ELEMENT_KIND_COUNT + static_cast<int>(k) + ElementKind::ELEMENT_KIND_COUNT;
-		shader.setInt("layerBuffers" + indexation, texId); 
 		// Set tex id for tex unit & bind TBO (=> bind buffer)
 		glActiveTexture(GL_TEXTURE0 + texId);
 		glBindTexture(GL_TEXTURE_BUFFER, tbo);
+
+		shader.setInt("layerBuffers" + indexation, texId); 
 	}
 
 	virtual ParamValue get(const std::string name) override { 
@@ -196,10 +197,11 @@ struct ColormapLayerUnit : public LayerUnitus<Layer::COLORMAP_0> {
 		LayerUnitus<Layer::COLORMAP_0>::apply(shader);
 
 		int ki = static_cast<int>(k);
-		shader.setInt("colormaps[" + std::to_string(ki) + "]", ki);
 
 		glActiveTexture(GL_TEXTURE0 + ki);
 		glBindTexture(GL_TEXTURE_2D, _colormap.tex);
+
+		shader.setInt("colormaps[" + std::to_string(ki) + "]", ki);
 	}
 
 	Colormap getColormap() const {
@@ -207,11 +209,10 @@ struct ColormapLayerUnit : public LayerUnitus<Layer::COLORMAP_0> {
 	}
 
 	void setColormap(Colormap colormap) {
-		_colormap = colormap;
+		// _colormap = colormap;
 	}
 
 	private:
-	// std::array<Colormap, ElementKind::ELEMENT_KIND_COUNT> colormaps{};
 	Colormap _colormap{};
 
 };

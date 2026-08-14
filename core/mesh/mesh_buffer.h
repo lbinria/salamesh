@@ -37,7 +37,7 @@ struct MeshBuffer {
 		mat4x4 model = mat<4,4>::identity();
 		model = sl::translate(model, position);
 		// Set model to shader
-		shader.use();
+		// shader.use();
 		shader.setMat4("model", static_cast<sl::algebra::mat4x4>(model));
 	}
 
@@ -58,12 +58,13 @@ struct MeshBuffer {
 
 	template<typename T>
 	void write(std::vector<T> data, GLenum usage = GL_STATIC_DRAW) {
+		nelements = data.size();
 		glNamedBufferData(vbo(), data.size() * sizeof(T), data.data(), usage);
 	}
 
 	template<typename T>
 	void write(const std::string tboName, std::vector<T> data, GLenum usage = GL_STATIC_DRAW) {
-		glNamedBufferData(tbos[tboName].buf, data.size() * sizeof(T), data.data(), usage);
+		glNamedBufferData(tbos.at(tboName).buf, data.size() * sizeof(T), data.data(), usage);
 	}
 
 	unsigned int nelements = 0;
