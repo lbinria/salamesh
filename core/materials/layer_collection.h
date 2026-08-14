@@ -209,7 +209,7 @@ struct ColormapLayerUnit : public LayerUnitus<Layer::COLORMAP_0> {
 	}
 
 	void setColormap(Colormap colormap) {
-		// _colormap = colormap;
+		_colormap = colormap;
 	}
 
 	private:

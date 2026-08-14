@@ -166,6 +166,13 @@ Colormap Scene::getColormap(const std::string name) {
 
 void Scene::render() {
 
+	// Quick & dirty fix unbind textures
+	for (int i = 0; i < 32; ++i) {
+		glActiveTexture(GL_TEXTURE0 + i);
+		glBindTexture(GL_TEXTURE_2D, 0);
+		glBindTexture(GL_TEXTURE_BUFFER, 0);
+	}
+
 	// Loop through available shaders
 	for (auto &[shaderId, shader] : _shaders) {
 
@@ -230,10 +237,13 @@ void Scene::render() {
 			model->layers.apply(shaderProgram);
 
 			// Set textures
+			unsigned int texUnitOff = 28; // 0-6 colormaps & 21 tex unit for data
+			int i = 0;
 			for (auto &[_, tbo] : meshBuffer.tbos) {
-				glActiveTexture(GL_TEXTURE0 + tbo.texUnit);
+				glActiveTexture(GL_TEXTURE0 + texUnitOff + i);
 				glBindTexture(GL_TEXTURE_BUFFER, tbo.tex);
-				shaderProgram.setInt(tbo.name, tbo.texUnit);
+				shaderProgram.setInt(tbo.name, texUnitOff + i);
+				++i;
 			}
 
 			// Set mesh index

@@ -72,7 +72,6 @@ struct MeshBuffer {
 	// Texture Buffer Object (like a SSBO array of data)
 	struct TBO {
 		std::string name;
-		unsigned int texUnit;
 		unsigned int tex;
 		unsigned int buf;
 	};
