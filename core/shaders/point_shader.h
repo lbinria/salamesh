@@ -18,12 +18,6 @@ using namespace UM;
 
 struct PointShader : public ShaderBase {
 
-	struct Vertex {
-		int vertexIndex;
-		sl::algebra::vec3 position;
-		float size;
-	};
-
 	PointShader(std::string name) : 
 		ShaderBase(name, Shader(sl::shadersPath("point.vert"), sl::shadersPath("point.frag"))) {
 		}
@@ -31,9 +25,6 @@ struct PointShader : public ShaderBase {
 	virtual bool isCompatible(Mesh &mesh) override;
 	virtual MeshBuffer createMeshBuffer() override;
 	virtual Material createMaterial() override;
-
-	private:
-
-	void updatePointSet(MeshBuffer &meshBuffer, PointSet &ps);
+	// virtual ShaderLayout getLayout() const override;
 
 };

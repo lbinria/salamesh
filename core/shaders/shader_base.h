@@ -13,6 +13,7 @@ using json = nlohmann::json;
 
 #include "helpers.h"
 
+#include "shader_layout.h"
 #include "mesh_buffer.h"
 #include "material.h"
 #include "mesh.h"
@@ -57,6 +58,10 @@ struct ShaderBase {
 	// TODO move to protected
 	virtual MeshBuffer createMeshBuffer() = 0;
 	virtual Material createMaterial() = 0;
+
+	// virtual ShaderLayout getLayout() const {
+
+	// }
 
 	protected:
 	Shader shader;

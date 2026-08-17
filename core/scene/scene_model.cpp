@@ -1,7 +1,6 @@
 #include "scene_model.h"
 
 void SceneModel::requestUpdate() {
-	// _mesh->requestUpdate();
 	for (auto &[_, meshBuffer] : _meshBuffers)
 		meshBuffer.dirty = true;
 }

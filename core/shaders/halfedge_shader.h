@@ -14,15 +14,6 @@ using namespace UM;
 
 struct HalfedgeShader : public ShaderBase {
 
-	struct LineVert {
-		int halfedgeIndex;
-		sl::algebra::vec3 P0;
-		sl::algebra::vec3 P1;
-		float side;
-		float end;
-		sl::algebra::vec3 bary;
-	};
-
 	HalfedgeShader(std::string name) : 
 		ShaderBase(name, Shader(sl::shadersPath("edge.vert"), sl::shadersPath("edge.frag")))
 		{}
@@ -39,10 +30,5 @@ struct HalfedgeShader : public ShaderBase {
 	virtual unsigned int renderElement() {
 		return GL_TRIANGLES;
 	}
-
-	private:
-
-	void updateHalfedges(MeshBuffer &meshBuffer, Surface &m);
-	void updateHalfedges(MeshBuffer &meshBuffer, PolyLine &m);
 	
 };

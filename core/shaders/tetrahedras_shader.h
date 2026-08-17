@@ -16,17 +16,6 @@ using namespace UM;
 #include "material_params.h"
 
 struct TetrahedrasShader : public ShaderBase {
-	
-	struct Vertex {
-		sl::algebra::vec3 p0;
-		sl::algebra::vec3 p1;
-		sl::algebra::vec3 p2;
-		sl::algebra::vec3 bary;
-		int localIndex;
-		int vertexIndex;
-		int facetIndex;
-		int cellIndex;
-	};
 
 	TetrahedrasShader(std::string name, Volume &m) : 
 		ShaderBase(name, Shader(sl::shadersPath("tetrahedras.vert"), sl::shadersPath("volumus.frag"))) {}

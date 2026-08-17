@@ -17,16 +17,6 @@ using namespace UM;
 
 struct TrianglesShader : public ShaderBase {
 	
-	struct Vertex {
-		// int vertexIndex;
-		int localIndex;
-		int cornerIndex;
-		sl::algebra::vec3 p0;
-		sl::algebra::vec3 p1;
-		sl::algebra::vec3 p2;
-		int facetIndex;
-	};
-
 	TrianglesShader(std::string name, Surface &m) : 
 		ShaderBase(name, Shader(sl::shadersPath("triangles.vert"), sl::shadersPath("surface.frag"))) {}
 

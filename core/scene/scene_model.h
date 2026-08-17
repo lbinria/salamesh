@@ -14,7 +14,7 @@ using namespace UM;
 
 #include <map>
 
-struct SceneModel : std::enable_shared_from_this<SceneModel> {
+struct SceneModel {
 
 	SceneModel(std::string name, std::shared_ptr<Mesh> mesh) :  
 	_name(name),

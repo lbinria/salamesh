@@ -15,19 +15,6 @@ using namespace UM;
 
 struct PolyShader : public ShaderBase {
 
-	struct Vertex {
-		int vertexIndex;
-		int localIndex;
-		int cornerIndex;
-		int cornerOff;
-		int facetIndex;
-		sl::algebra::vec3 p;
-		sl::algebra::vec3 p0;
-		sl::algebra::vec3 p1;
-		sl::algebra::vec3 p2;
-		sl::algebra::vec3 n;
-	};
-
 	PolyShader(std::string name, Surface &m) : 
 		ShaderBase(name, Shader(sl::shadersPath("poly.vert"), sl::shadersPath("surface.frag"))) {
 			shader.use();

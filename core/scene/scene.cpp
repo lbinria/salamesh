@@ -232,7 +232,6 @@ void Scene::render() {
 
 			glBindVertexArray(meshBuffer.vao());
 
-			meshBuffer.setPosition(shaderProgram, model->position);
 			material.apply(shaderProgram);
 			model->layers.apply(shaderProgram);
 
@@ -249,6 +248,10 @@ void Scene::render() {
 
 			// Set mesh index
 			shaderProgram.setInt("meshIndex", mesh.getIndex());
+			// Set position
+			mat4x4 modelPos = mat<4,4>::identity();
+			modelPos = sl::translate(modelPos, model->position);
+			shaderProgram.setMat4("model", static_cast<sl::algebra::mat4x4>(modelPos));
 
 			glDrawArrays(shader->renderElement(), 0, meshBuffer.nelements);
 		}

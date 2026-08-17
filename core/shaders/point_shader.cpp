@@ -23,6 +23,17 @@ MeshBuffer PointShader::createMeshBuffer() {
 	return MeshBuffer(vao, vbo, MeshBuffer::Stream::POINTS_STREAM);
 };
 
+// ShaderLayout PointShader::getLayout() const {
+// 	return {
+// 		.size = sizeof(PointVertex),
+// 		.elements = {
+// 			{"vertexIndex", offsetof(PointVertex, vertexIndex)},
+// 			{"p", offsetof(PointVertex, pos)},
+// 			{"sizeScale", offsetof(PointVertex, size)}
+// 		}
+// 	};
+// }
+
 Material PointShader::createMaterial() {
 	return Material{{
 		{"style", MaterialParams::getPointStyleMaterialParams()},
