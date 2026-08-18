@@ -631,11 +631,9 @@ struct VolumeMesh : public Mesh {
 		
 		for (auto &c : _attributes.points)
 			containers.push_back({ElementKind::POINTS_ELT, c});
-		// for (auto &c : _attributes.corners) {
-		// 	containers.push_back({ElementKind::CORNERS_ELT, c});
-		// 	// containers.push_back({ElementKind::EDGES_ELT, c}); // TODO see pertinence
-		// }
 		for (auto &c : _attributes.cell_facets)
+			containers.push_back({ElementKind::CELL_CORNERS_ELT, c});
+		for (auto &c : _attributes.cell_corners)
 			containers.push_back({ElementKind::CELL_FACETS_ELT, c});
 		for (auto &c : _attributes.cells)
 			containers.push_back({ElementKind::CELLS_ELT, c});
@@ -643,9 +641,9 @@ struct VolumeMesh : public Mesh {
 		return containers;
 	}
 
-	Volume& getVolume() { return _m; }
-	const Volume& getVolume() const { return _m; }
-	TVolume& getMesh() { return _m; }
+	Volume& getVolume() { return _m; } // TODO maybe delete no need same for surface
+	const Volume& getVolume() const { return _m; } // TODO maybe delete no need same for surface
+	TVolume& getMesh() { return _m; } // TODO rename to get
 
 	VolumeAttributes _attributes;
 	TVolume _m;

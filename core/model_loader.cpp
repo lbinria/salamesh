@@ -2,10 +2,6 @@
 
 #include "scene.h"
 #include "scene/scene_model.h"
-#include "lines_mesh.h"
-
-
-
 
 std::shared_ptr<SceneModel> ModelLoader::load(const std::string filename, const std::string name) {
 
@@ -28,8 +24,6 @@ std::shared_ptr<SceneModel> ModelLoader::load(const std::string filename, const 
 
 	if (!mesh)
 		mesh = loadMesh<PolyLineMesh>(filename);
-
-
 
 	if (!mesh)
 		return nullptr;

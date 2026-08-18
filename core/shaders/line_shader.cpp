@@ -2,11 +2,11 @@
 #include "helpers.h"
 #include "opengl_helper.h"
 #include "material_params.h"
-#include "lines_mesh.h"
 
 bool LineShader::isCompatible(Mesh &mesh) {
-	auto lineMesh = dynamic_cast<LinesMesh*>(&mesh);
-	return lineMesh;
+	return true;
+	// auto lineMesh = dynamic_cast<LinesMesh*>(&mesh);
+	// return lineMesh;
 }
 
 MeshBuffer LineShader::createMeshBuffer() {

@@ -70,7 +70,7 @@ function draw_model_properties(model, k, view)
 			local clip = false
 			local clipping_mode = ClippingMode.CELL
 			for _, material in pairs(model.materials) do
-				if (material["clipping"]["enabled"]) then 
+				if (material["clipping"] and material["clipping"]["enabled"]) then 
 					clip = true
 				end
 				if (material["clipping"]) then 
@@ -85,7 +85,9 @@ function draw_model_properties(model, k, view)
 				print("Enable clipping: " .. tostring(new_enable_clipping))
 
 				for _, material in pairs(model.materials) do
-					material["clipping"]["enabled"] = new_enable_clipping
+					if material["clipping"] then 
+						material["clipping"]["enabled"] = new_enable_clipping
+					end
 				end
 		
 			end
@@ -96,7 +98,9 @@ function draw_model_properties(model, k, view)
 					if (imgui.Selectable(ClippingInfo.clipping_mode_strings[i], is_selected)) then
 
 						for _, material in pairs(model.materials) do
-							material["clipping"]["mode"] = i - 1
+							if material["clipping"] then
+								material["clipping"]["mode"] = i - 1
+							end
 						end
 
 					end
@@ -107,8 +111,10 @@ function draw_model_properties(model, k, view)
 			if not sel_clipping_plane[k] then 
 				sel_clipping_plane[k] = 1
 				-- Init clipping plane to x axis
-				for _, material in pairs(model.materials) do 
-					material["clipping"]["normal"] = vec3{1,0,0}
+				for _, material in pairs(model.materials) do
+					if material["clipping"] then  
+						material["clipping"]["normal"] = vec3{1,0,0}
+					end
 				end
 			end
 
@@ -126,8 +132,10 @@ function draw_model_properties(model, k, view)
 							v = vec3{0,0,1}
 						end
 
-						for _, material in pairs(model.materials) do 
-							material["clipping"]["normal"] = v
+						for _, material in pairs(model.materials) do
+							if material["clipping"] then 
+								material["clipping"]["normal"] = v
+							end
 						end
 
 						print("Set clipping plane normal to: " .. v:to_string())
@@ -138,9 +146,11 @@ function draw_model_properties(model, k, view)
 
 			-- Get clipping point (arbitrary the first found)
 			local clipping_plane_point = vec3{0,0,0}
-			for _, material in pairs(model.materials) do 
-				clipping_plane_point = material["clipping"]["point"]
-				break 
+			for _, material in pairs(model.materials) do
+				if material["clipping"] then 
+					clipping_plane_point = material["clipping"]["point"]
+					break
+				end
 			end
 
 			local plane_pos = 0
@@ -179,7 +189,9 @@ function draw_model_properties(model, k, view)
 
 
 				for _, material in pairs(model.materials) do 
-					material["clipping"]["point"] = v
+					if material["clipping"] then
+						material["clipping"]["point"] = v
+					end
 				end
 			end
 
@@ -188,7 +200,9 @@ function draw_model_properties(model, k, view)
 				invert_clipping = new_invert_clipping
 
 				for _, material in pairs(model.materials) do 
-					material["clipping"]["invert"] = invert_clipping
+					if material["clipping"] then
+						material["clipping"]["invert"] = invert_clipping
+					end
 				end
 			end
 
